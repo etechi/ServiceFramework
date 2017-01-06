@@ -1,21 +1,20 @@
-using Microsoft.Extensions.DependencyInjection;
+using SF.DI;
 using System.Linq;
 namespace SF.ServiceManagement
 {
-
 	public static class ServiceCollectionExtension
 	{
 		public static void UseManagedService(
-			this IServiceCollection sc, 
+			this IDIServiceCollection sc, 
 			IManagedServiceCollection ManagedServiceCollection
 			)
 		{
 			var mc = new Internal.ServiceMetadata(
-				sc.Select(s => s.ServiceType).Distinct(),
+				sc.ServiceTypes,
 				ManagedServiceCollection
 				);
 
-			if (!sc.Any(s => s.ServiceType == typeof(IServiceImplementTypeResolver)))
+			if (!sc.ServiceTypes.Any(t=>t== typeof(IServiceImplementTypeResolver)))
 				sc.AddSingleton<IServiceImplementTypeResolver, DefaultServiceImplementTypeResolver>();
 
 			var factory = new Internal.ManagedServiceFactory(mc);
@@ -24,12 +23,18 @@ namespace SF.ServiceManagement
 			sc.AddSingleton<IManagedServiceConfigChangedNotifier>(factory);
 
 			foreach (var type in mc.ManagedServices.Select(p=>p.Key))
-				sc.Insert(sc.Count, new ServiceDescriptor(
-					type,
-					isp => isp.GetRequiredService<IManagedServiceScope>().Resolve(isp, type, null),
-					ServiceLifetime.Scoped
+				sc.Add(
+					new ServiceDescriptor(
+						type,
+						isp => isp.Resolve<IManagedServiceScope>().Resolve(isp, type, null),
+						ServiceLifetime.Scoped
 					)
 				);
+		}
+		public static void UseMemoryManagedServiceSource(this IDIServiceCollection sc)
+		{
+			sc.AddScoped<IServiceConfigLoader, MemoryServiceSource>();
+			sc.AddScoped<IDefaultServiceLocator>(isp => (IDefaultServiceLocator)isp.Resolve<IServiceConfigLoader>());
 		}
 	}
 

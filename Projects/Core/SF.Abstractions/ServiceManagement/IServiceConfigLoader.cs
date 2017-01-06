@@ -2,6 +2,10 @@
 
 namespace SF.ServiceManagement
 {
+	public interface IServiceStartup<T>
+	{
+		void Startup();
+	}
 	public interface IServiceConfig
 	{
 		string ServiceType { get; }
@@ -12,4 +16,5 @@ namespace SF.ServiceManagement
 	{
 		IServiceConfig GetConfig(string Id);
 	}
+	
 }
