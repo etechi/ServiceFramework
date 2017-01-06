@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SF.Reflection;
 namespace SF.AspNetCore.Mvc
 {
 	class ServiceActionDescProvider : IActionDescriptorProvider
@@ -21,7 +22,7 @@ namespace SF.AspNetCore.Mvc
 		string GetControllerName(Type Type)
 		{
 			var name = Type.Name;
-			if (Type.GetTypeInfo().IsInterface &&
+			if (Type.IsInterfaceType() &&
 				name.Length > 2 &&
 				name[0] == 'I' &&
 				char.IsUpper(name[1]))

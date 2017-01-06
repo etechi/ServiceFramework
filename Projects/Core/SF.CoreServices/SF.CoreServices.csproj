@@ -18,6 +18,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.0" />
     <PackageReference Include="NETStandard.Library" Version="1.6.1" />
     <PackageReference Include="newtonsoft.json" Version="9.0.1" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.3.0" />
+    <PackageReference Include="system.componentmodel.primitives" Version="4.3.0" />
     <PackageReference Include="system.reflection.typeextensions" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>

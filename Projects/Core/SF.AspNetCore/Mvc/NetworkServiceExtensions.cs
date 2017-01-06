@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
+using SF.Reflection;
 namespace SF.AspNetCore.Mvc
 {
 	public class NetworkServiceConfig
@@ -26,7 +26,7 @@ namespace SF.AspNetCore.Mvc
 				new ServiceActionDescProvider(
 					cfg?.RouterPrefix ?? "api",
 					cfg?.ServiceTypes ??
-					sc.ServiceTypes.Where(st=>st.GetTypeInfo().GetCustomAttribute<Annontations.NetworkServiceAttribute>()!=null)
+					sc.ServiceTypes.Where(st=>st.GetCustomAttribute<Annotations.NetworkServiceAttribute>()!=null)
 					)
 				);
 

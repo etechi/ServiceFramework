@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
-
+using SF.Reflection;
 namespace SF.Serialization.Newtonsoft
 {
 	class FixedContractResolver : DefaultContractResolver
@@ -14,7 +14,7 @@ namespace SF.Serialization.Newtonsoft
 		protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
 		{
 			var p = base.CreateProperty(member, memberSerialization);
-			if (member is PropertyInfo pi && pi.PropertyType.GetTypeInfo().IsEnum)
+			if ((member is PropertyInfo pi) && pi.PropertyType.IsEnumType())
 				p.DefaultValue = Enum.ToObject(pi.PropertyType, -1);
 			return p;
 		}

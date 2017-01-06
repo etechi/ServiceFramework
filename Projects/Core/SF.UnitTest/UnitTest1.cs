@@ -5,7 +5,7 @@ using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using System.Linq.Expressions;
 using System.Collections.Generic;
-
+using SF.Reflection;
 namespace SF.UnitTest
 {
     public class UnitTest1
@@ -15,7 +15,7 @@ namespace SF.UnitTest
 			protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
 			{
 				var p=base.CreateProperty(member, memberSerialization);
-				if (member is PropertyInfo pi && pi.PropertyType.GetTypeInfo().IsEnum)
+				if (member is PropertyInfo pi && pi.PropertyType.IsEnumType())
 					p.DefaultValue = Enum.ToObject(pi.PropertyType, -1);
 				return p;
 			}

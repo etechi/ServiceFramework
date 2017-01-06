@@ -9,9 +9,9 @@ using Microsoft.Extensions.Logging;
 using SF.AspNetCore.Mvc;
 using SF.DI.Microsoft;
 using SF.DI;
-using SF.ServiceManagement;
+using SF.Services.Management;
 using Microsoft.Extensions.DependencyInjection;
-using SF.Annontations;
+using SF.Annotations;
 
 namespace ManagementConsole
 {

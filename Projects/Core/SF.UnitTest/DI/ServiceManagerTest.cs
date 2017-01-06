@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
 using Newtonsoft.Json;
-using SF.ServiceManagement;
+using SF.Services.Management;
 using SF.DI;
 using SF.DI.Microsoft;
 
