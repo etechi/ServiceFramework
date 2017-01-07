@@ -21,6 +21,18 @@ namespace SF.Services.Metadata
 		{
 			return Library;
 		}
+
+		public string Typescript(bool all = true)
+		{
+			var tb = new TypeScriptProxyBuilder(
+				(c, a) =>
+				all ||
+				a.GrantInfo==null
+				);
+			var code = tb.Build(Library);
+			return code;
+		}
+
 	}
 
 }

@@ -8,5 +8,6 @@ namespace SF.Services.Metadata
 	{
 		//[Authorize(Roles ="admin")]
 		Models.Library Json();
+		string Typescript(bool all = true);
 	}
 }
