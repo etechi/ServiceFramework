@@ -11,8 +11,8 @@ namespace SF.Serialization
 	}
 	public interface IJsonSerializer
 	{
-		string Serialize(object Object, Type Type, JsonSetting Config);
-		object Deserialize(string Text, Type Type, JsonSetting Config);
+		string Serialize(object Object, Type Type, JsonSetting Config=null);
+		object Deserialize(string Text, Type Type, JsonSetting Config=null);
 	}
 	
 }

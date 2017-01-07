@@ -31,20 +31,31 @@ namespace SF.UT
 	}
 	public class AggConfig
 	{
-		public IOperator op { get; set; }
-		public int add { get; set; }
+		public IOperator Op { get; set; }
+		public int Add { get; set; }
 	}
 	public class Agg : IAgg
 	{
-		IOperator op { get; }
-		AggConfig cfg { get; }
+		private readonly IOperator op;
+
+		private IOperator GetOp()
+		{
+			return Op;
+		}
+
+		AggConfig Cfg { get; }
+
+		public IOperator Op => Op1;
+
+		public IOperator Op1 => op;
+
 		public Agg(IOperator op,AggConfig cfg)
 		{
 			this.op = op;
-			this.cfg = cfg;
+			this.Cfg = cfg;
 		}
 		public int Sum(int[] ss) => 
-			ss.Aggregate(cfg.add, (s, i) => op.Eval(s, cfg.op.Eval(i,i)));
+			ss.Aggregate(Cfg.Add, (s, i) => GetOp().Eval(s, Cfg.Op.Eval(i,i)));
 	}
 
 	

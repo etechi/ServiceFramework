@@ -13,5 +13,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
+    <ProjectReference Include="..\SF.CoreServices\SF.CoreServices.csproj" />
   </ItemGroup>
 </Project>

@@ -4,15 +4,22 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.ComponentModel;
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using SF.Reflection;
+using SF.Serialization;
 namespace SF.Metadata
 {
 	public class BaseMetadataBuilder
 	{
 		Dictionary<Type, Models.Type> Types { get; } = new Dictionary<Type, Models.Type>();
+		public Serialization.IJsonSerializer JsonSerializer { get; }
+		public BaseMetadataBuilder(Serialization.IJsonSerializer JsonSerializer)
+		{
+			this.JsonSerializer = JsonSerializer;
+		}
+
 		public Models.Type[] GetTypes() { return Types.Values.ToArray(); }
+
 		protected void AddType(Type Type,Models.Type ModelType)
 		{
 			Types.Add(Type, ModelType);
@@ -40,7 +47,7 @@ namespace SF.Metadata
 				Name = parameter.Name,
 				Optional=optional,
 				Type = ResolveType(param_type),
-                DefaultValue= parameter.HasDefaultValue?JsonConvert.SerializeObject(parameter.DefaultValue):null
+                DefaultValue= parameter.HasDefaultValue? JsonSerializer.Serialize(parameter.DefaultValue):null
             },attrs);
 		}
 
@@ -72,8 +79,7 @@ namespace SF.Metadata
 
 		public virtual Models.Type TryGenerateType(Type type)
 		{
-			Models.Type re;
-			if (Types.TryGetValue(type, out re))
+			if (Types.TryGetValue(type, out var re))
 				return re;
 			return GenerateType(type);
 		}
@@ -222,11 +228,11 @@ namespace SF.Metadata
 				.ToArray();
 		}
 
-        static object _GetTypeDefaultValue<T>(){
+        static object TypeDefaultValue<T>(){
             return default(T);
         }
         static MethodInfo MethodGetTypeDefaultValue = typeof(BaseMetadataBuilder).GetMethod(
-			"_GetTypeDefaultValue",
+			"TypeDefaultValue",
             BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.NonPublic
             );
         static object GetTypeDefaultValue(Type type)
@@ -262,7 +268,7 @@ namespace SF.Metadata
             {
                 var v = prop.GetValue(DefaultValueObject);
                 if (v != null && !v.Equals(GetTypeDefaultValue(prop.PropertyType)))
-                    def_value = JsonConvert.SerializeObject(v);
+                    def_value = JsonSerializer.Serialize(v);
             }
 
 			return LoadAttributes(new Models.Property
@@ -324,12 +330,11 @@ namespace SF.Metadata
 		Models.Attribute GenerateAttribute(Attribute attr)
 		{
 			var type = attr.GetType();
-			var values = JsonConvert.SerializeObject(attr);
-
+			var values = JsonSerializer.Serialize(attr);
 			return new Models.Attribute
 			{
 				Type = type.FullName,
-				Values = values.Length > 0 ? values : null
+				Values = values.Length > 0 && values!="{}" ? values : null
 			};
 		}
 		

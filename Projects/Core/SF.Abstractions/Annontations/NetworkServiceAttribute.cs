@@ -7,7 +7,7 @@ namespace SF.Annotations
 	[AttributeUsage(AttributeTargets.Interface)]
 	public class NetworkServiceAttribute : Attribute
 	{
-		public string InterfaceName { get; set; }
+		public string Name { get; set; }
 	}
 	
 }

@@ -66,13 +66,13 @@ namespace SF.UnitTest
 		}
 		public class CfgItem
 		{
-			public IService2 svc2 { get; set; }
+			public IService2 Svc2 { get; set; }
 			public int V1 { get; set; }
 		}
 		public class CfgTest
 		{
-			public string str1 { get; set; }
-			public IService1 svc1 { get; set; }
+			public string Str1 { get; set; }
+			public IService1 Svc1 { get; set; }
 			public IEnumerable<CfgItem> Items { get; set; }
 		}
 

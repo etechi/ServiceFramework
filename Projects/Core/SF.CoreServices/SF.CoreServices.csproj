@@ -25,4 +25,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\Utils\" />
+    <Folder Include="Services\Exports\" />
+  </ItemGroup>
 </Project>

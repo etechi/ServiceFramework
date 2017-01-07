@@ -31,5 +31,15 @@ namespace ManagementConsole.Controllers
         {
             return View();
         }
+		public class Arg
+		{
+			public int a1 { get; set; }
+			public int a2 { get; set; }
+		}
+		[HttpPost]
+		public string Add(int a,[FromBody]Arg aa)
+		{
+			return "aaa";
+		}
     }
 }

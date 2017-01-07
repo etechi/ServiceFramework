@@ -10,37 +10,37 @@ namespace SF.Services.Metadata.Models
 	}
 	public class Service : Entity
 	{
-        private System.Type _SysType { get; }
-        public System.Type GetSysType() => _SysType;
+        private System.Type ServiceSysType { get; }
+        public System.Type GetSysType() => ServiceSysType;
 
         public Service(System.Type SysType)
         {
-            this._SysType = SysType;
+            this.ServiceSysType = SysType;
         }
 
-        public Method[] Actions { get; set; }
+        public Method[] Methods { get; set; }
 
 		public GrantInfo GrantInfo { get; set; }
 	}
 
 	public class Method : SF.Metadata.Models.Method
 	{
-        private System.Reflection.MethodInfo _SysMethod { get; }
-        public System.Reflection.MethodInfo GetSysMethod() => _SysMethod;
+        private System.Reflection.MethodInfo ServiceSysMethod { get; }
+        public System.Reflection.MethodInfo GetSysMethod() => ServiceSysMethod;
 
 		public Method(System.Reflection.MethodInfo Method)
         {
-            this._SysMethod = Method;
+            this.ServiceSysMethod = Method;
         }
 
-        public string NetworkMethod { get; set; }
+        public string HeavyParameter { get; set; }
 
 		public GrantInfo GrantInfo { get; set; }
 	}
 
 	public class Parameter : SF.Metadata.Models.Parameter
 	{
-		public string TransportMode { get; set; }
+		//public bool TransportMode { get; set; }
 	}
 	public class Library: SF.Metadata.Models.Library
 	{

@@ -191,18 +191,18 @@ namespace SF.Services.Management.Internal
 				{
 					return Expression.Call(
 						EnumerableCopyExpression(
-							Expression.Convert(src, typeof(IEnumerable<>).MakeGenericType(pti.GetElementType())),
-							pti.GetElementType(),
+							Expression.Convert(src, typeof(IEnumerable<>).MakeGenericType(Type.GetElementType())),
+							Type.GetElementType(),
 							PropPathExpr,
 							PropPath
 						),
-						typeof(List<>).MakeGenericType(pti.GetElementType()).GetMethod("ToArray", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
+						typeof(List<>).MakeGenericType(Type.GetElementType()).GetMethod("ToArray", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
 					);
 				}
-				else if (pti.IsGenericType && pti.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+				else if (Type.IsGeneric() && Type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
 				{
 					return Expression.Convert(
-						EnumerableCopyExpression(src, pti.GetGenericArguments()[0], PropPathExpr,PropPath),
+						EnumerableCopyExpression(src, Type.GetGenericArguments()[0], PropPathExpr,PropPath),
 						Type
 						);
 				}

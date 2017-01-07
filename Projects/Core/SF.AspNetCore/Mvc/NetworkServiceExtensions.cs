@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SF.Reflection;
+using SF.Services.Metadata;
+
 namespace SF.AspNetCore.Mvc
 {
 	public class NetworkServiceConfig
@@ -17,16 +19,17 @@ namespace SF.AspNetCore.Mvc
 	}
 	public static class MvcNetworkServiceExtensions
 	{
-		public static void AddNetworkServices(
+		public static void UseMvcServiceInterface(
 			this DI.IDIServiceCollection sc,
 			NetworkServiceConfig cfg=null
 			)
 		{
-			sc.AddSingleton<IActionDescriptorProvider>(
+			sc.AddSingleton<IActionDescriptorProvider>(sp =>
 				new ServiceActionDescProvider(
 					cfg?.RouterPrefix ?? "api",
 					cfg?.ServiceTypes ??
-					sc.ServiceTypes.Where(st=>st.GetCustomAttribute<Annotations.NetworkServiceAttribute>()!=null)
+					sc.ServiceTypes.Where(st => st.GetCustomAttribute<Annotations.NetworkServiceAttribute>() != null),
+					sp.Resolve<IServiceBuildRuleProvider>()
 					)
 				);
 

@@ -8,10 +8,10 @@ namespace SF.Services.Management.Internal
 		public IEnumerable<KeyValuePair<Type, IReadOnlyList<Type>>> ManagedServices { get; }
 		public IEnumerable<Type> NormalServices { get; }
 
-		Dictionary<Type,ServiceType> serviceTypes { get; }
+		Dictionary<Type,ServiceType> ServiceTypes { get; }
 		public ServiceType GetServiceType(Type type)
 		{
-			return serviceTypes.TryGetValue(type, out var st) ? st : ServiceType.Unknown;
+			return ServiceTypes.TryGetValue(type, out var st) ? st : ServiceType.Unknown;
 		}
 
 		public ServiceMetadata(IEnumerable<Type> NormalServices,IEnumerable<ManagedServiceDescriptor> ManagedServices)
@@ -24,7 +24,7 @@ namespace SF.Services.Management.Internal
 					g.Select(i => i.ImplementType).ToArray()
 					))
 				.ToArray();
-			this.serviceTypes=
+			this.ServiceTypes=
 				this.NormalServices.Select(s => new { s = s, t = ServiceType.Normal })
 				.Union(this.ManagedServices.Select(p => new { s = p.Key, t = ServiceType.Managed }))
 				.ToDictionary(p => p.s, p => p.t);

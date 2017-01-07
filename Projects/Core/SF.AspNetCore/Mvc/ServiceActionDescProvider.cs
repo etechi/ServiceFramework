@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SF.Reflection;
+using SF.Services.Metadata;
+
 namespace SF.AspNetCore.Mvc
 {
 	class ServiceActionDescProvider : IActionDescriptorProvider
@@ -14,20 +16,16 @@ namespace SF.AspNetCore.Mvc
 		public int Order => 0;
 		public Type[] ServiceTypes { get; }
 		public string RoutePrefix { get; }
-		public ServiceActionDescProvider(string RoutePrefix,IEnumerable<Type> ServiceTypes)
+		public IServiceBuildRuleProvider ServiceBuildRule { get; }
+		public ServiceActionDescProvider(string RoutePrefix,IEnumerable<Type> ServiceTypes, IServiceBuildRuleProvider ServiceBuildRule)
 		{
 			this.RoutePrefix = RoutePrefix;
 			this.ServiceTypes = ServiceTypes.ToArray();
+			this.ServiceBuildRule = ServiceBuildRule;
 		}
 		string GetControllerName(Type Type)
 		{
-			var name = Type.Name;
-			if (Type.IsInterfaceType() &&
-				name.Length > 2 &&
-				name[0] == 'I' &&
-				char.IsUpper(name[1]))
-				return name.Substring(1);
-			return name;
+			return ServiceBuildRule.FormatServiceName(Type);
 		}
 		public void OnProvidersExecuted(ActionDescriptorProviderContext context)
 		{
@@ -37,6 +35,7 @@ namespace SF.AspNetCore.Mvc
 				foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod))
 				{
 					var args = method.GetParameters();
+					var heavyParameter = ServiceBuildRule.DetectHeavyParameter(method);
 					context.Results.Add(new ControllerActionDescriptor
 					{
 						ActionName = method.Name,
@@ -47,7 +46,15 @@ namespace SF.AspNetCore.Mvc
 						{
 							Template = $"{RoutePrefix}/{controllerName}/{method.Name}",
 						},
-						ActionConstraints = new List<IActionConstraintMetadata>(),
+						ActionConstraints = new List<IActionConstraintMetadata>
+						{
+							new Microsoft.AspNetCore.Mvc.Internal.HttpMethodActionConstraint(
+								new[]
+								{
+									heavyParameter==null?"GET":"POST"
+								}
+								)
+						},
 						BoundProperties = new List<ParameterDescriptor>(),
 						Properties = new Dictionary<object, object>(),
 						FilterDescriptors = new List<FilterDescriptor>(),
@@ -56,7 +63,11 @@ namespace SF.AspNetCore.Mvc
 							{
 								Name = a.Name,
 								ParameterType = a.ParameterType,
-								ParameterInfo = a
+								ParameterInfo = a,
+								BindingInfo= heavyParameter==a?new Microsoft.AspNetCore.Mvc.ModelBinding.BindingInfo
+								{
+									BindingSource=Microsoft.AspNetCore.Mvc.ModelBinding.BindingSource.Body
+								}:null
 							}
 							).Cast<ParameterDescriptor>().ToList(),
 						DisplayName = $"{controllerName}/{method.Name}",

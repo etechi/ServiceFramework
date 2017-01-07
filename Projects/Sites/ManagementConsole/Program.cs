@@ -13,7 +13,7 @@ namespace ManagementConsole
     {
         public static void Main(string[] args)
         {
-			ReadOnlyAttribute 
+			 
 				  var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())

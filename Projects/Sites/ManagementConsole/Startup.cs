@@ -12,24 +12,29 @@ using SF.DI;
 using SF.Services.Management;
 using Microsoft.Extensions.DependencyInjection;
 using SF.Annotations;
-
+using SF.Services.Metadata;
+using SF.Serialization;
 namespace ManagementConsole
 {
+	public class PostArgument
+	{
+		public string arg { get; }
+	}
 	[NetworkService]
 	public interface IAdd
 	{
-		int add(int a, int b);
+		int Calc(int a, int b, PostArgument pa);
 	}
 	public class Add : IAdd
 	{
-		public int offset { get; }
+		public int Offset { get; }
 		public Add(int offset)
 		{
-			this.offset = offset;
+			this.Offset = offset;
 		}
-		public int add(int a, int b)
+		public int Calc(int a, int b, PostArgument pa)
 		{
-			return a + b+offset;
+			return a + b+Offset;
 		}
 	}
 	public class Startup
@@ -51,6 +56,8 @@ namespace ManagementConsole
         {
 			// Add framework services.
 			var sc = services.GetDIServiceCollection();
+			sc.UseNewtonsoftJson();
+			
 			//sc.AddTransient<IAdd, Add>();
 			sc.UseMemoryManagedServiceSource();
 
@@ -58,9 +65,14 @@ namespace ManagementConsole
 			msc.AddScoped<IAdd, Add>();
 			sc.UseManagedService(msc);
 
-			sc.AddNetworkServices();
+			sc.UseServiceMetadata();
+			sc.UseMvcServiceInterface();
 
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(opt =>
+			{
+				opt.SerializerSettings.ContractResolver = SF.Serialization.Newtonsoft.FixedContractResolver.Instance;
+				opt.SerializerSettings.DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate;
+			});
 
 			var sp=services.BuildServiceProvider();
 

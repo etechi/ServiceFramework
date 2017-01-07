@@ -8,10 +8,16 @@ using SF.Annotations;
 using SF.Reflection;
 namespace SF.Services.Metadata
 {
-	public class NetworkServiceMetadataBuilder : SF.Metadata.BaseMetadataBuilder
+	public class ServiceMetadataBuilder : SF.Metadata.BaseMetadataBuilder
     {
         List<Models.Service> Services { get; } = new List<Models.Service>();
-        public Models.Library BuildLibrary(IEnumerable<Type> ServiceTypes)
+		IServiceBuildRuleProvider BuildRule { get; }
+		public ServiceMetadataBuilder(IServiceBuildRuleProvider BuildRule, Serialization.IJsonSerializer JsonSerializer):
+			base(JsonSerializer)
+		{
+			this.BuildRule = BuildRule;
+		}
+		public Models.Library BuildLibrary(IEnumerable<Type> ServiceTypes)
         {
             Services.AddRange(
 				ServiceTypes
@@ -45,9 +51,9 @@ namespace SF.Services.Metadata
             return LoadAttributes(
 				new Models.Service(type)
 				{
-					Name = type.Name.Substring(0, type.Name.Length - "Controller".Length),
-					Actions = GenerateMethodsMetadata(type, ac),
-					GrantInfo=ac
+					Name = BuildRule.FormatServiceName( type),
+					Methods = GenerateMethodsMetadata(type, ac),
+					GrantInfo= UseOrIgnoreGrantInfo(ac)
 				},
 				attrs
 				);
@@ -70,22 +76,28 @@ namespace SF.Services.Metadata
 			}
 			return re.ToArray();
 		}
-		static Type[] HttpMethodAttributes { get; } = new[]
-		{
-			typeof(HttpGetAttribute),
-			typeof(HttpPostAttribute),
-			typeof(HttpPutAttribute),
-			typeof(HttpDeleteAttribute),
-			typeof(HttpPatchAttribute)
-		};
+		//static Type[] HttpMethodAttributes { get; } = new[]
+		//{
+		//	typeof(HttpGetAttribute),
+		//	typeof(HttpPostAttribute),
+		//	typeof(HttpPutAttribute),
+		//	typeof(HttpDeleteAttribute),
+		//	typeof(HttpPatchAttribute)
+		//};
 		bool IsActionMethod(MethodInfo method)
 		{
 			var cas=method.GetCustomAttributes();
-			if (cas.All(a => !HttpMethodAttributes.Contains(a.GetType())))
-				return false;
+			//if (cas.All(a => !HttpMethodAttributes.Contains(a.GetType())))
+			//	return false;
 			if (method.GetCustomAttribute<IgnoreAttribute>(true) != null)
 				return false;
 			return true;
+		}
+		static Models.GrantInfo UseOrIgnoreGrantInfo(Models.GrantInfo ac)
+		{
+			if (!ac.UserRequired && (ac.RolesRequired == null || ac.RolesRequired.Length == 0) && (ac.PermissionsRequired == null || ac.PermissionsRequired.Length == 0))
+				return null;
+			return ac;
 		}
 		Models.Method GenerateMethodMetadata(MethodInfo method, Models.GrantInfo ac)
 		{
@@ -105,16 +117,16 @@ namespace SF.Services.Metadata
 					Name = method.Name,
 					Parameters = parameters.Length==0? null : parameters,
 					Type = ResolveResultType(method.ReturnType),
-					GrantInfo=new Models.GrantInfo
+					GrantInfo= UseOrIgnoreGrantInfo(new Models.GrantInfo
 					{
 						UserRequired = aas.Length > 0 || ac.UserRequired,
 						RolesRequired = roles != null && roles.Length > 0 ? roles : ac.RolesRequired,
 						PermissionsRequired = rps != null && rps.Length > 0 ? rps.Select(rp => rp.Resource + ":" + rp.Operation).ToArray() : ac.PermissionsRequired
-					},
-					NetworkMethod = "Get"
+					}),
+					HeavyParameter = BuildRule.DetectHeavyParameter(method)?.Name
 				},
 				attrs,
-				a=>!HttpMethodAttributes.Contains(a.GetType())
+				null//a=>!HttpMethodAttributes.Contains(a.GetType())
 				);
 		}
 		new Models.Parameter[] GenerateMethodParameters(MethodInfo method)
@@ -135,9 +147,9 @@ namespace SF.Services.Metadata
 			{
 				Name = parameter.Name,
 				Optional=optional,
-				TransportMode=attrs.Any(a=>a is FromBodyAttribute),
+				//TransportMode=attrs.Any(a=>a is FromBodyAttribute),
 				Type = ResolveType(param_type)
-			},attrs,a=>!(a is FromBodyAttribute));
+			},attrs/*,a=>!(a is FromBodyAttribute)*/);
 		}
 	
 		protected override SF.Metadata.Models.Type GenerateType(System.Type type)
@@ -155,7 +167,7 @@ namespace SF.Services.Metadata
 		}
 		
 		
-		static Type[] ignoreAttributeTypes { get; } = SF.Metadata.BaseMetadataBuilder.DefaultIgnoreAttributeTypes.Concat(
+		static Type[] IgnoreAttributeTypes { get; } = SF.Metadata.BaseMetadataBuilder.DefaultIgnoreAttributeTypes.Concat(
 			new[]{
 				typeof(AuthorizeAttribute),
 				typeof(RequirePermissionAttribute),
@@ -164,7 +176,7 @@ namespace SF.Services.Metadata
 
 		protected override Type[] GetIgnoreAttributeTypes()
 		{
-			return ignoreAttributeTypes;
+			return IgnoreAttributeTypes;
 		}
 
 
