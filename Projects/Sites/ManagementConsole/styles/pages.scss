@@ -1,0 +1,38 @@
+﻿div.data-table.full-page-list{
+    position:fixed;
+    bottom:10px;
+    top:100px;
+    left:20px;
+    right:10px;
+}
+.page-content-wrapper .page-content{
+    padding:10px !important;
+    min-height:100px;
+}
+
+.breadcrumb>li+li:before {
+    content: "/\00a0";
+}
+
+@media (min-width: 992px)
+{
+    div.data-table.full-page-list{
+        left:245px;
+    }
+}
+
+div.iframe-page-content{
+
+    position:fixed;
+    left:244px;
+    right:0;
+    bottom:0;
+    top:100px;
+    min-height:100px;
+    >iframe{
+        width:100%;
+        height:100%;
+        border:none;
+
+    }
+}

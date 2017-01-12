@@ -3,7 +3,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 
-namespace SF.DI.Microsoft
+namespace SF.DI
 {
 	public static class MSDIExtensions
 	{

@@ -129,9 +129,9 @@ namespace SF.Services.Metadata
 					sb.AppendLine(",");
 				}
 			}
-			sb.AppendLine("\t__opts?:api.ICallOptions");
+			sb.AppendLine("\t__opts?:ICallOptions");
 			sb.AppendLine($"\t) : PromiseLike<{to_js_type(method.Type)}> {{");
-			sb.AppendLine($"\treturn api.call<{to_js_type(method.Type)}>(\n\t\t'{service.Name}',\n\t\t'{method.Name}',");
+			sb.AppendLine($"\treturn _invoker(\n\t\t'{service.Name}',\n\t\t'{method.Name}',");
 			if (method.Parameters != null && method.Parameters.Cast<SF.Metadata.Models.Parameter>().Any(p => p.Name!=method.HeavyParameter))
 			{
 				sb.AppendLine("\t\t{");
@@ -173,7 +173,31 @@ namespace SF.Services.Metadata
 
 		public string Build(Metadata.Models.Library Library)
 		{
-			sb.AppendLine("import api=require('./apicall');");
+			sb.AppendLine(@"
+export interface IQueryPaging {
+    offset?: number;
+    limit?: number;
+    sortMethod?: string;
+    sortOrder?: ""Asc"" | ""Desc"";
+
+	totalRequired ?: boolean;
+	summaryRequired ?: boolean;
+}
+export interface ICallOptions
+{
+	paging?: IQueryPaging,
+	query?:any
+}
+export interface IApiInvoker{
+	(type: string,method: string,query: { [index: string]: any},post: { [index: string]: any}, opts?: ICallOptions) :any
+}
+
+var _invoker:IApiInvoker=null;
+export function setApiInvoker(invoker:IApiInvoker){
+	_invoker=invoker;
+}
+
+");
 			foreach (var t in Library.Types)
 				BuildType(t);
 			foreach (var c in Library.Services)

@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "@types/classnames": "^0.0.32",
+    "@types/es6-promise": "^0.0.32",
+    "@types/react": "^0.0.0",
+    "@types/react-dom": "^0.14.20",
+    "@types/react-router": "^2.0.41",
+    "@types/react-scrollbar": "^0.4.5",
+    "bluebird": "^3.4.7",
+    "classnames": "^2.2.5",
+    "fixed-data-table": "^0.6.3",
+    "moment": "^2.17.1",
+    "react": "^15.4.2",
+    "react-addons-css-transition-group": "^15.4.2",
+    "react-datepicker": "^0.39.0",
+    "react-dom": "^15.4.2",
+    "react-router": "^3.0.0",
+    "react-scrollbar": "^0.5.1",
+    "superagent": "^3.3.1"
+  },
+  "devDependencies": {
+    "assets-webpack-plugin": "^3.5.0",
+    "awesome-typescript-loader": "^3.0.0-beta.17",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.8",
+    "source-map-loader": "^0.1.5",
+    "typescript": "^2.1.4",
+    "webpack": "^1.14.0"
+  }
+}

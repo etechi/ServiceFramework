@@ -1,0 +1,13 @@
+{
+  "name": "service-protocol-react",
+  "version": "0.0.1",
+  "description": "service-protocol-react",
+  "main": "lib/index.js",
+  "files": ["lib"],
+  "author": {
+    "name": "chenyang",
+    "email": "cy2000@gmail.com"
+  },
+  "dependencies": {
+  }
+}

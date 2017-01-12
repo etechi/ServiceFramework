@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.Features.Authentication;
 
 namespace ManagementConsole.Controllers
 {
@@ -10,7 +11,10 @@ namespace ManagementConsole.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+			IAuthenticationHandler a
+			HttpContext.Authentication.SignInAsync(null, null);
+
+			return View();
         }
 
         public IActionResult About()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Linq;
 namespace SF.Reflection
 {
 	public static class TypeExtensions
@@ -13,6 +14,14 @@ namespace SF.Reflection
 		{
 			return dst.GetTypeInfo().IsAssignableFrom(src.GetTypeInfo());
 		}
+		//public static MethodInfo GetMethod(this Type type,string Name,BindingFlags Flags)
+		//{
+		//	return type.GetTypeInfo().GetMethod(Name, Flags);
+		//}
+		//public static PropertyInfo GetProperty(this Type type, string Name)
+		//{
+		//	return type.GetTypeInfo().GetProperty(Name);
+		//}
 		public static T GetCustomAttribute<T>(this Type type)
 			where T:Attribute
 		{
@@ -25,6 +34,14 @@ namespace SF.Reflection
 		public static IEnumerable<Attribute> GetCustomAttributes(this Type type,bool inherit)
 		{
 			return type.GetTypeInfo().GetCustomAttributes(inherit);
+		}
+		public static IEnumerable<T> GetCustomAttributes<T>(this Type type, bool inherit)
+		{
+			return type.GetTypeInfo().GetCustomAttributes(inherit).Where(a=>a is T).Cast<T>();
+		}
+		public static T GetCustomAttribute<T>(this Type type, bool inherit) where T:Attribute
+		{
+			return (T)type.GetTypeInfo().GetCustomAttributes(inherit).FirstOrDefault(a=>a is T);
 		}
 		public static bool IsEnumType(this Type type)
 		{
@@ -55,6 +72,9 @@ namespace SF.Reflection
 		{
 			return type.GetTypeInfo().Assembly;
 		}
-
+		public static Type GetInterface(this Type type,string Name)
+		{
+			return type.GetTypeInfo().GetInterface(Name);
+		}
 	}
 }

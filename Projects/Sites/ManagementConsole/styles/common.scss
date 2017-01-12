@@ -1,0 +1,172 @@
+﻿@import "defaultStyle.scss";
+
+h1,h2,h3,h4,h5,h6,body{
+	font-family:微软雅黑;
+}
+.page-wrapper {
+}
+h4.logo-default{
+	color:#fff;
+	margin-top:-1px;
+}
+@media (min-width: 992px) {
+	.page-wrapper {
+		margin-top: 43px;
+	}
+	  .page-content-white .page-bar{
+		position:fixed;top:45px;right:0;height:43px;margin:0;z-index:1000;left:241px
+	}
+
+}
+
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    background-color:$defaultBGColor;
+    font-size:12px;
+    
+}
+h3,h4,h5,h6{
+    font-family:新宋体 !important;
+}
+p,div,a{
+    font-size:12px !important;
+    font-family:新宋体 !important;
+}
+.page-header{
+    h2{
+        font-size:18px;
+        color:#eee;
+    }
+}
+a:hover{
+    text-decoration:none;
+}
+.page-toolbar{
+    .btn{
+        padding:6px 10px;
+        margin-left:10px;
+    }
+}
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.page-content{
+    background-color:$defaultBGColor;
+}
+.page-footer{
+    background-color:$defaultBGColor;
+}
+@media (min-width: 992px){
+    .page-footer {
+            background-color:$defaultBGColor !important;
+     }
+}
+
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+
+/* Set padding to display errors that occur during databinding */
+.padding-error {
+    padding-top: 20px;
+}
+
+@media only screen and (max-width: 767px) {
+    .nofloat {
+        float: none;
+        padding: 10px 15px;
+    }
+}
+
+form{
+    font-size:12px;
+    font-family:新宋体;
+    input,select,textarea,button,div.form-control{
+        font-size:12px !important;
+        font-family:新宋体 !important;
+    }
+    .btn{
+        border-radius:2px;
+    }
+    .form-group{
+        padding:8px 0;
+        margin:0;
+        .form-control{
+            border-radius:2px;
+            height:26px;
+            padding:4px 12px;
+            width:100%;
+        }
+        textarea.form-control{
+            height:auto;
+        }
+        div.form-control{
+            overflow:hidden;
+        }
+        div.multi-lines-text.form-control{
+            height:auto;
+            min-height:26px;
+        }
+    }
+    .input-group-addon{
+        padding:6px 8px;
+    }
+    .input-group-btn {
+        border-radius:0 2px 2px 0;
+        border:1px solid $gray;
+        >button.btn{
+            padding:3px 8px 4px;
+            border:none;
+            height:22px !important;
+            overflow:hidden;
+            
+        }
+    }
+    select{
+        cursor:pointer;
+    }
+    span{
+        font-size:12px !important;
+    }
+}
+
+.btn-primary,.btn-primary[disabled]{
+    background-color:$primaryBGColor;
+    border-color:$primaryBGColor;
+}
+
+.btn-primary:hover,.btn-primary:focus,.btn-primary:active{
+        background-color:$primaryBGColorDark !important;
+        border-color:$primaryBGColorDark  !important;
+    }
+
+.form-control{
+    border-radius:2px;
+}
+input.form-control{
+    padding-top:1px !important;
+    padding-bottom:1px !important;
+}
+p{
+    line-height:2;
+}
+.btn-group{
+    >div.btn{
+        >button.btn{
+            display:block;
+            overflow:hidden;
+            border:none;
+            padding:0 5px;
+            margin:0 -5px;
+            background-color:transparent;
+        }
+    }
+}

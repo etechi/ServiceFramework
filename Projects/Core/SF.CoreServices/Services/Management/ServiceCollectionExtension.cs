@@ -4,11 +4,11 @@ namespace SF.Services.Management
 {
 	public static class ServiceCollectionExtension
 	{
-		public static void UseManagedService(
-			this IDIServiceCollection sc, 
-			IManagedServiceCollection ManagedServiceCollection
+		public static void SetupServices(
+			this IManagedServiceCollection ManagedServiceCollection
 			)
 		{
+			var sc = ManagedServiceCollection.NormalServiceCollection;
 			var mc = new Internal.ServiceMetadata(
 				sc.ServiceTypes,
 				ManagedServiceCollection

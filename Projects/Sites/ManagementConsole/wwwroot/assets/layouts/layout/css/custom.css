@@ -1,0 +1,20 @@
+﻿/* here you can put your own css to customize and override the theme */
+
+h1,h2,h3,h4,h5,h6,body{
+	font-family:微软雅黑;
+}
+.page-wrapper {
+}
+h4.logo-default{
+	color:#fff;
+	margin-top:-1px;
+}
+@media (min-width: 992px) {
+	.page-wrapper {
+		margin-top: 43px;
+	}
+	  .page-content-white .page-bar{
+		position:fixed;top:45px;right:0;height:43px;margin:0;z-index:1000;left:241px
+	}
+
+}

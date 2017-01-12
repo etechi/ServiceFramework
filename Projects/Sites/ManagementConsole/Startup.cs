@@ -61,9 +61,11 @@ namespace ManagementConsole
 			//sc.AddTransient<IAdd, Add>();
 			sc.UseMemoryManagedServiceSource();
 
-			var msc = new ManagedServiceCollection();
+			var msc = new ManagedServiceCollection(sc);
+
 			msc.AddScoped<IAdd, Add>();
-			sc.UseManagedService(msc);
+
+			msc.SetupServices();
 
 			sc.UseServiceMetadata();
 			sc.UseMvcServiceInterface();

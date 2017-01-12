@@ -27,6 +27,100 @@ namespace SF.AspNetCore.Mvc
 		{
 			return ServiceBuildRule.FormatServiceName(Type);
 		}
+		ControllerActionDescriptor BuildDescriptor(
+			Type type, 
+			string controllerName, 
+			string ActionName, 
+			string HttpMethod,
+			ParameterInfo HeavyParameter,
+			MethodInfo method
+			)
+		{
+			var args = method.GetParameters();
+			return new ControllerActionDescriptor
+			{
+				ActionName = ActionName,
+				ControllerName = controllerName,
+				ControllerTypeInfo = type.GetTypeInfo(),
+				MethodInfo = method,
+				AttributeRouteInfo = new Microsoft.AspNetCore.Mvc.Routing.AttributeRouteInfo
+				{
+					Template = $"{RoutePrefix}/{controllerName}/{ActionName}",
+				},
+				ActionConstraints = new List<IActionConstraintMetadata>
+						{
+							new Microsoft.AspNetCore.Mvc.Internal.HttpMethodActionConstraint(
+								new[]
+								{
+									HttpMethod
+								}
+								)
+						},
+				BoundProperties = new List<ParameterDescriptor>(),
+				Properties = new Dictionary<object, object>(),
+				FilterDescriptors = new List<FilterDescriptor>(),
+				Parameters = args.Select(
+					a => new ControllerParameterDescriptor
+					{
+						Name = a.Name,
+						ParameterType = a.ParameterType,
+						ParameterInfo = a,
+						BindingInfo = HeavyParameter == a ? new Microsoft.AspNetCore.Mvc.ModelBinding.BindingInfo
+						{
+							BindingSource = Microsoft.AspNetCore.Mvc.ModelBinding.BindingSource.Body
+						} : null
+					}
+					).Cast<ParameterDescriptor>().ToList(),
+				DisplayName = $"{controllerName}/{ActionName}",
+				RouteValues = new Dictionary<string, string>
+							{
+								{"controller", controllerName},
+								{"action",ActionName}
+							},
+			};
+		}
+		ControllerActionDescriptor BuildDescriptorByMethod(Type type,string controllerName,MethodInfo method)
+		{
+			var heavyParameter = ServiceBuildRule.DetectHeavyParameter(method);
+			return BuildDescriptor(
+					type,
+					controllerName,
+					method.Name,
+					heavyParameter == null ? "GET" : "POST",
+					heavyParameter,
+					method
+					);
+			
+		}
+		IEnumerable<ControllerActionDescriptor> BuildDescriptorByProperty(Type type, string controllerName, PropertyInfo prop)
+		{
+			if (prop.CanWrite)
+			{
+				var writeMethod = prop.GetSetMethod();
+				var heavyParameter = ServiceBuildRule.DetectHeavyParameter(writeMethod);
+				yield return BuildDescriptor(
+						type,
+						controllerName,
+						prop.Name,
+						"PUT",
+						heavyParameter,
+						writeMethod
+						);
+			}
+			if (prop.CanRead)
+			{
+				var readMethod = prop.GetGetMethod();
+				yield return BuildDescriptor(
+						type,
+						controllerName,
+						prop.Name,
+						"GET",
+						null,
+						readMethod
+						);
+			}
+
+		}
 		public void OnProvidersExecuted(ActionDescriptorProviderContext context)
 		{
 			foreach (var type in ServiceTypes)
@@ -34,49 +128,12 @@ namespace SF.AspNetCore.Mvc
 				var controllerName = GetControllerName(type);
 				foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod))
 				{
-					var args = method.GetParameters();
-					var heavyParameter = ServiceBuildRule.DetectHeavyParameter(method);
-					context.Results.Add(new ControllerActionDescriptor
-					{
-						ActionName = method.Name,
-						ControllerName = controllerName,
-						ControllerTypeInfo = type.GetTypeInfo(),
-						MethodInfo = method,
-						AttributeRouteInfo = new Microsoft.AspNetCore.Mvc.Routing.AttributeRouteInfo
-						{
-							Template = $"{RoutePrefix}/{controllerName}/{method.Name}",
-						},
-						ActionConstraints = new List<IActionConstraintMetadata>
-						{
-							new Microsoft.AspNetCore.Mvc.Internal.HttpMethodActionConstraint(
-								new[]
-								{
-									heavyParameter==null?"GET":"POST"
-								}
-								)
-						},
-						BoundProperties = new List<ParameterDescriptor>(),
-						Properties = new Dictionary<object, object>(),
-						FilterDescriptors = new List<FilterDescriptor>(),
-						Parameters = args.Select(
-							a => new ControllerParameterDescriptor
-							{
-								Name = a.Name,
-								ParameterType = a.ParameterType,
-								ParameterInfo = a,
-								BindingInfo= heavyParameter==a?new Microsoft.AspNetCore.Mvc.ModelBinding.BindingInfo
-								{
-									BindingSource=Microsoft.AspNetCore.Mvc.ModelBinding.BindingSource.Body
-								}:null
-							}
-							).Cast<ParameterDescriptor>().ToList(),
-						DisplayName = $"{controllerName}/{method.Name}",
-						RouteValues = new Dictionary<string, string>
-							{
-								{"controller", controllerName},
-								{"action",method.Name}
-							},
-					});
+					context.Results.Add(BuildDescriptorByMethod(type, controllerName, method));
+				}
+				foreach(var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty))
+				{
+					foreach (var desc in BuildDescriptorByProperty(type, controllerName, prop))
+						context.Results.Add(desc);
 				}
 			}
 		}
