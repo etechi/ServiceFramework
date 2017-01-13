@@ -1,0 +1,5 @@
+obj
+bin
+*.user
+/Projects/Sites/ManagementConsole/node_modules
+*.suo

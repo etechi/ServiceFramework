@@ -8,7 +8,7 @@
 		APP,
 		Wechat
 	}
-	public class ClientInfo
+	public class ClientAccessInfo
 	{
 		public string Address { get; set; }
 		public string Agent { get; set; }

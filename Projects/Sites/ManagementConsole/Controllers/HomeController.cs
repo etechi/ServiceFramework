@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Features.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace ManagementConsole.Controllers
 {
@@ -11,7 +12,8 @@ namespace ManagementConsole.Controllers
     {
         public IActionResult Index()
         {
-			IAuthenticationHandler a
+			IDataProtectionProvider aa
+			   IAuthenticationHandler a
 			HttpContext.Authentication.SignInAsync(null, null);
 
 			return View();
