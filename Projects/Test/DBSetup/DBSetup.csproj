@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <OutputType>exe</OutputType>
+    <TargetFramework>netcoreapp1.1</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="**\*.cs" />
+    <EmbeddedResource Include="**\*.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.1.0" />
+    <PackageReference Include="microsoft.entityframeworkcore.sqlserver" Version="1.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="1.1.0-preview4-final" />
+    <PackageReference Include="microsoft.extensions.dependencyinjection" Version="1.1.0" />
+    <PackageReference Include="Microsoft.NETCore.App" Version="1.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Biz\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\SF.CoreServices.EFCore\SF.CoreServices.EFCore.csproj" />
+    <ProjectReference Include="..\..\Core\SF.CoreServices\SF.CoreServices.csproj" />
+    <ProjectReference Include="..\..\Core\SF.Core\SF.Core.csproj" />
+    <ProjectReference Include="..\..\Core\SF.Data.Entity.EFCore\SF.Data.Entity.EFCore.csproj" />
+    <ProjectReference Include="..\..\Core\SF.DataService\SF.DataService.csproj" />
+  </ItemGroup>
+</Project>
