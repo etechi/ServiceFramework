@@ -8,57 +8,43 @@ namespace SF.Data.Entity
 {
 	public static class DataContextExtension
 	{
-		public static T Add<T>(this IDataContext ctx,T item) where T:class
-		{
-			return ctx.Set<T>().Add(item);
-		}
-		public static T Update<T>(this IDataContext ctx, T item) where T : class
-		{
-			return ctx.Set<T>().Update(item);
-		}
-		public static T Remove<T>(this IDataContext ctx, T item) where T : class
-		{
-			return ctx.Set<T>().Remove(item);
-		}
-		public static void AddRange<T>(this IDataContext ctx, IEnumerable<T> items, Action<T> init = null) where T : class
+		
+		public static void AddRange<T>(this IDataSet<T> set, IEnumerable<T> items, Action<T> init = null) where T : class
 		{
 			if (items == null) return;
-			var set = ctx.Set<T>();
 			if (init != null)
 				foreach (var it in items)
 					init(it);
 			set.AddRange(items);
 		}
-        public static Task<T> Find<T>(this IDataContext ctx,params object[] Ids) where T:class
-        {
-            return ctx.Set<T>().FindAsync(Ids);
-        }
 
         public static async Task AddOrUpdate<T>(
-			this IDataContext ctx,
+			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter,
 			Func<T> creator,
 			Action<T> updater
 			) where T : class
 		{
-			var e = await ctx.Set<T>().AsQueryable(false).Where(filter).SingleOrDefaultAsync();
+			var e = await set.AsQueryable(false).Where(filter).SingleOrDefaultAsync();
 			if (e == null)
-				ctx.Add(creator());
+				set.Add(creator());
 			else
 			{
 				updater(e);
-				ctx.Update(e);
+				set.Update(e);
 			}
-			await ctx.SaveChangesAsync();
+			await set.Context.SaveChangesAsync();
 		}
 
-		public static async Task ValidateTreeParent<TKey>(
-			this IDataContext context,
+		public static async Task ValidateTreeParent<T,TKey>(
+			this IDataSet<T> set,
 			string Title,
 			TKey Id,
 			TKey NewParentId,
 			Func<TKey ,IContextQueryable<TKey>> GetParentId
-			)where TKey:IEquatable<TKey>
+			)
+			where TKey:IEquatable<TKey>
+			where T:class
 		{
 			//检查父节点不能是自身，或自身的子节点
 			if (Id.Equals(default(TKey)) || NewParentId.Equals(default(TKey)))
@@ -77,15 +63,15 @@ namespace SF.Data.Entity
 			}
 		}
         public static List<M> Merge<M, E>(
-            this IDataContext ctx,
-            IEnumerable<M> orgItems,
+			this IDataSet<M> set,
+			IEnumerable<M> orgItems,
             IEnumerable<E> newItems,
             Func<M, E, bool> Equals,
             Action<M, E> updater,
             Action<M> remover = null
             )
             where M : class, new()
-            => ctx.Merge(
+            => set.Merge(
                 orgItems,
                 newItems,
                 Equals,
@@ -101,7 +87,7 @@ namespace SF.Data.Entity
 
 
         public static List<M> Merge<M,E>(
-			this IDataContext ctx,
+			this IDataSet<M> set,
 			IEnumerable<M> orgItems,
 			IEnumerable<E> newItems,
 			Func<M, E, bool> Equals,
@@ -117,7 +103,7 @@ namespace SF.Data.Entity
 				foreach (var i in orgItems.Where(i => newItems == null || !newItems.Any(ni => Equals(i, ni))).ToArray())
 				{
 					if (remover == null)
-                        ctx.Set<M>().Remove(i);
+                        set.Remove(i);
                     else
                         remover(i);				
 				}
@@ -132,14 +118,14 @@ namespace SF.Data.Entity
 					var org_item = orgItems == null ? null : orgItems.Where(oi => Equals(oi, i)).SingleOrDefault();
 					if (org_item == null)
 					{
-						return ctx.Set<M>().Add(newItem(i));
+						return set.Add(newItem(i));
 					}
 					else
 					{
 						if (updater != null)
 						{
 							updater(org_item, i);
-							ctx.Update(org_item);
+							set.Update(org_item);
 						}
 						return org_item;
 					}
@@ -158,7 +144,7 @@ namespace SF.Data.Entity
 			}
 		}
 		static M EnumTree<M,E,K>(
-			IDataContext ctx,
+			this IDataSet<M> set,
 			Dictionary<K,M> exists,
 			M parent,
 			E cur,
@@ -174,7 +160,7 @@ namespace SF.Data.Entity
 			exists.TryGetValue(get_editable_ident(cur),out var exist);
 			var new_children= get_children(cur)?.Where(e=>get_editable_ident(e).Equals(default(K))).Select(chd=>
 				EnumTree<M, E, K>(
-					ctx,
+					set,
 					exists,
 					exist,
 					chd,
@@ -192,14 +178,14 @@ namespace SF.Data.Entity
 			{
 				if(new_children!=null)
 					foreach (var nc in new_children)
-						ctx.Add(nc);
+						set.Add(nc);
 				updater(exist, cur);
 			}
 			var exists_children = get_children(cur)?.Where(e => !get_editable_ident(e).Equals(default(K)));
 			if(exists_children!=null)
 				foreach (var chd in exists_children)
 					EnumTree<M, E, K>(
-						ctx,
+						set,
 						exists,
 						exist,
 						chd,
@@ -213,7 +199,7 @@ namespace SF.Data.Entity
 			return exist;
 		}
 		public static List<M> MergeTree<M, E, K>(
-			this IDataContext ctx,
+			this IDataSet<M> set,
 			IEnumerable<M> org_items,	//旧节点，包含整颗树的节点
 			IEnumerable<E> new_items,	//新节点，只包含树的顶层节点
 			Func<M, K> get_model_ident,
@@ -234,7 +220,6 @@ namespace SF.Data.Entity
 			var updated_items = all_items
 				.Where(it => !get_editable_ident(it).Equals(default(K)))
 				.ToDictionary(i => get_editable_ident(i));
-			var set = ctx.Set<M>();
 
 			//删除节点
 			foreach (var it in org_items.Where(i => !updated_items.ContainsKey(get_model_ident(i))))
@@ -245,9 +230,9 @@ namespace SF.Data.Entity
 			}
 
 			var results = new List<M>();
-			foreach (var c in new_items.Select(c => EnumTree(ctx, org_item_dict, null, c, get_editable_ident, new_item, updater, get_children, results)))
+			foreach (var c in new_items.Select(c => EnumTree(set, org_item_dict, null, c, get_editable_ident, new_item, updater, get_children, results)))
 				if (get_model_ident(c).Equals(default(K)))
-					ctx.Add(c);
+					set.Add(c);
 
 
 			////顶层新节点，需要新增
@@ -305,48 +290,47 @@ namespace SF.Data.Entity
 		//	await col.LoadAsync();
 		//	col.IsLoaded = true;
 		//}
-		public static void RemoveRange<T>(this IDataContext Context, IEnumerable<T> items)
-			where T:class
-		{
-			Context.Set<T>().RemoveRange(items);
+		//public static void RemoveRange<T>(this IDataContext Context, IEnumerable<T> items)
+		//	where T:class
+		//{
+		//	Context.Set<T>().RemoveRange(items);
 
-		}
+		//}
 		public static async Task<T[]> RemoveRange<T>(
-			this IDataContext Context,
+			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter
 			) where T : class
 		{
-			var set = Context.Set<T>();
 			var items = await set.AsQueryable(false).Where(filter).ToArrayAsync();
 			if (items.Length > 0)
 				set.RemoveRange(items);
 			return items;
 		}
-        public static async Task RetryForConcurrencyException(
-            this IDataContext Context, 
-            Func<Task> Action,
-            int Retry=5,
-            int DelayMilliseconds = 500
-            )
-        {
-            await Context.RetryForConcurrencyException(
-                async () =>
-                {
-                    await Action();
-                    return 0;
-                },
-                Retry,
-                DelayMilliseconds
-                );
-        }
-        public static async Task<T> RetryForConcurrencyException<T>(
-            this IDataContext Context, 
-            Func<Task<T>> Action,
+		public static async Task RetryForConcurrencyException<T>(
+			this IDataSet<T> set,
+			Func<Task> Action,
+			int Retry = 5,
+			int DelayMilliseconds = 500
+			) where T : class
+		{
+			await set.RetryForConcurrencyException(
+				async () =>
+				{
+					await Action();
+					return 0;
+				},
+				Retry,
+				DelayMilliseconds
+				);
+		}
+		public static async Task<R> RetryForConcurrencyException<T,R>(
+			this IDataSet<T> set,
+			Func<Task<R>> Action,
             int Retry=5,
             int DelayMilliseconds=500
-            )
-        {
-            var i = -1;
+			) where T : class
+		{
+			var i = -1;
             var r = new Random();
             for(;;)
             {
@@ -359,36 +343,32 @@ namespace SF.Data.Entity
                     i++;
                     if (i >=Retry)
                         throw;
-                    var dc = Context as DataContext;
-                    if (dc == null)
-                        throw;
-                    dc.Reset();
+					(set.Context as DataContext).Reset();
                 }
                 await Task.Delay(DelayMilliseconds/2+r.Next(DelayMilliseconds));
-                
             }
         }
 		public static async Task<TEntity> AddOrUpdate<TKey,TEntity>(
-			this IDataContext Context,
+			this IDataSet<TEntity> set,
 			TKey key,
 			Func<TEntity> Creator,
 			Action<TEntity> Updater
 			)
 			where TEntity:class
 		{
-			var obj = await Context.Find<TEntity>(key);
+			var obj = await set.FindAsync(key);
 			if (obj == null)
 			{
 				obj = Creator();
 				Updater(obj);
-				Context.Add(obj);
+				set.Add(obj);
 			}
 			else
 			{
 				Updater(obj);
-				Context.Update(obj);
+				set.Update(obj);
 			}
-			await Context.SaveChangesAsync();
+			await set.Context.SaveChangesAsync();
 			return obj;
 		}
 

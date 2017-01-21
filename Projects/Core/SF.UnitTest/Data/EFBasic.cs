@@ -34,7 +34,7 @@ namespace SF.UT.Data
 					//op.Options.WithExtension();
 				},Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient
 				);
-
+			
 
 
 			var isc = sc.GetDIServiceCollection();
@@ -46,11 +46,11 @@ namespace SF.UT.Data
 			using(var s = sf.CreateScope())
 			{
 				var isp = s.ServiceProvider;
-				var ac = isp.GetRequiredService<IDataContext>();
+				var ac = isp.GetRequiredService<IDataSet<DataModels.User>>();
 				ac.Add(new DataModels.User { Id = "aa", FirstName = "c", LastName = "y" });
-				ac.SaveChanges();
+				ac.Context.SaveChanges();
 
-				var re=ac.Set<DataModels.User>().AsQueryable(true) .ToArrayAsync().Result;
+				var re=ac.AsQueryable(true) .ToArrayAsync().Result;
 				Assert.Equal(1, re.Length);
 				Assert.Equal("c", re[0].FirstName);
 			}

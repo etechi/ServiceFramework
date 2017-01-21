@@ -13,16 +13,16 @@ namespace SF.Auth.Users.EFCore
 		IUserProvider
 		where TUser:DataModels.User
 	{
-		public IDataContext Context { get; }
-		public UserProvider(IAuthSessionProvider AuthSessionProvider, IDataContext Context)
+		public IDataSet<TUser> DataSet { get; }
+		public UserProvider(IAuthSessionProvider AuthSessionProvider, IDataSet<TUser> DataSet)
 		{
-			this.Context = Context;
+			this.DataSet = DataSet;
 		}
 
 		
 		public virtual async Task Update(UserInfo User)
 		{
-			var u = await Context.Set<TUser>().FindAsync(User.Id);
+			var u = await DataSet.FindAsync(User.Id);
 			u.NickName = User.NickName.Trim();
 			if (string.IsNullOrWhiteSpace(u.NickName)) throw new PublicArgumentException("请输入昵称");
 			if(u.NickName.Length < 2) throw new PublicArgumentException("昵称太短");
@@ -31,14 +31,13 @@ namespace SF.Auth.Users.EFCore
 			u.Icon = User.Icon;
 			u.Image = User.Image;
 			u.Sex = User.Sex;
-			Context.Update(u);
-			await Context.SaveChangesAsync();
+			DataSet.Update(u);
+			await DataSet.Context.SaveChangesAsync();
 		}
 
 		public virtual Task<UserInfo> FindById(long UserId)
 		{
-			return Context
-				.Set<TUser>()
+			return DataSet
 				.AsQueryable(true)
 				.Where(u => u.Id == UserId && u.ObjectState == LogicObjectState.Enabled)
 				.Select(u => new UserInfo

@@ -14,7 +14,7 @@ namespace SF.Data.Services
 		where TKey : IEquatable<TKey>
 		where TModel : class, IObjectWithId<TKey>
 	{
-		public EntitySource(IDataContext Context) : base(Context)
+		public EntitySource(IDataSet<TModel> DataSet) : base(DataSet)
 		{
 		}
 	}
@@ -25,10 +25,10 @@ namespace SF.Data.Services
 		where TKey : IEquatable<TKey>
 		where TModel: class,IObjectWithId<TKey>
 	{
-		public IDataContext Context { get; }
-		public EntitySource(IDataContext Context)
+		public IDataSet<TModel> DataSet { get; }
+		public EntitySource(IDataSet<TModel> DataSet)
 		{
-			this.Context = Context;
+			this.DataSet = DataSet;
 		}
 		protected abstract IContextQueryable<TTemp> MapModelToPublic(IContextQueryable<TModel> Query);
 		protected abstract Task<TPublic[]> OnPreparePublics(TTemp[] Internals);
@@ -37,7 +37,7 @@ namespace SF.Data.Services
 		public async Task<TPublic[]> Load(TKey[] Ids)
 		{
 			var re = await MapModelToPublic(
-				Context.Set<TModel>().AsQueryable(true).Where(s => Ids.Contains(s.Id))
+				DataSet.AsQueryable(true).Where(s => Ids.Contains(s.Id))
 				).ToArrayAsync();
 
 			if (re == null)
@@ -50,7 +50,7 @@ namespace SF.Data.Services
 		public async Task<TPublic> Load(TKey Id)
 		{
 			var re = await MapModelToPublic(
-				Context.Set<TModel>().AsQueryable(true).Where(s => s.Id.Equals(Id))
+				DataSet.AsQueryable(true).Where(s => s.Id.Equals(Id))
 				).SingleOrDefaultAsync();
 
 			if (re == null)

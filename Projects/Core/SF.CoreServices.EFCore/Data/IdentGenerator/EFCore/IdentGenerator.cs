@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 using SF.Caching;
+using System.Collections.Concurrent;
 
 namespace SF.Data.IdentGenerator.EFCore
 {
@@ -12,13 +13,13 @@ namespace SF.Data.IdentGenerator.EFCore
 	}
 	public class IdentGeneratorSetting
 	{
-		public IDataContext DataContext { get; set; }
+		public IDataSet<DataModels.IdentSeed> IdentSeedSet { get; set; }
 		public SF.Services.IServiceIdent Ident { get; set; }
 		public int CountPerBatch { get; set; } = 100;
 	}
 	public class IdentGenerator : IIdentGenerator
 	{
-		static System.Collections.Concurrent.ConcurrentDictionary<string, IdentBatch> Cache { get; } = new System.Collections.Concurrent.ConcurrentDictionary<string, IdentBatch>();
+		static ConcurrentDictionary<string, IdentBatch> Cache { get; } = new ConcurrentDictionary<string, IdentBatch>();
 		static Threading.ObjectSyncQueue<string> SyncQueue { get; } = new Threading.ObjectSyncQueue<string>();
 		public IdentGeneratorSetting Setting { get; }
 		public IdentGenerator(IdentGeneratorSetting Setting)
@@ -27,8 +28,8 @@ namespace SF.Data.IdentGenerator.EFCore
 		}
 		async Task<long> GetNextBatchStart(string Type)
 		{
-			var re = await Setting.DataContext.RetryForConcurrencyException(() =>
-				  Setting.DataContext.AddOrUpdate(
+			var re = await Setting.IdentSeedSet.RetryForConcurrencyException(() =>
+				  Setting.IdentSeedSet.AddOrUpdate(
 					  Type,
 					  () => new DataModels.IdentSeed { NextValue = 1, Type = Type },
 					  s => s.NextValue += Setting.CountPerBatch

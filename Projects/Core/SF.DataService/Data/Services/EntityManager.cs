@@ -20,7 +20,7 @@ namespace SF.Data.Services
 		where TQueryArgument : class, IQueryArgument<TKey>
 		where TEditable : class, IObjectWithId<TKey>
 	{
-		public EntityManager(IDataContext Context) : base(Context)
+		public EntityManager(IDataSet<TModel> DataSet) : base(DataSet)
 		{
 		}
 	}
@@ -49,7 +49,7 @@ namespace SF.Data.Services
 			public TEditable Editable { get; set; }
 			public TModel Model { get; set; }
 			public object OwnerId { get; set; }
-			public IDataContext Context { get; }
+			public IDataSet<TModel> ModelSet { get; }
 
 			
 			public void AddPostAction(
@@ -84,20 +84,18 @@ namespace SF.Data.Services
 			}
 			public ModifyContext(
 				EntityManager<TKey, TPublic, TTemp, TQueryArgument, TEditable, TModel> Manager,
-				IDataContext Context,
+				IDataSet<TModel> ModelSet,
 				ModifyAction Action
 				)
 			{
 				this.Manager = Manager;
-				this.Context = Context;
+				this.ModelSet = ModelSet;
 				this.Action = Action;
 			}
 		}
 
-		public IDataSet<TModel> Set { get { return Context.Set<TModel>(); } }
-
         protected virtual int RetryForConcurrencyExceptionCount => 0;
-        public EntityManager(IDataContext Context):base(Context)
+        public EntityManager(IDataSet<TModel> DataSet) :base(DataSet)
         {
         }
 
@@ -115,7 +113,7 @@ namespace SF.Data.Services
 		}
 		protected virtual Task OnSaveChangesAsync()
 		{
-			return Context.SaveChangesAsync();	
+			return DataSet.Context.SaveChangesAsync();	
 		}
 
 		#region create
@@ -129,16 +127,16 @@ namespace SF.Data.Services
 			ctx.Model = new TModel();
 			await OnNewModel(ctx);
 			await OnUpdateModel(ctx);
-			Set.Add(ctx.Model);
+			DataSet.Add(ctx.Model);
 		}
 
         
 		public virtual async Task<TKey> Create(TEditable obj)
 		{
             ModifyContext ctx = null;
-            var saved=await Context.RetryForConcurrencyException(async () =>
+            var saved=await DataSet.RetryForConcurrencyException(async () =>
             {
-                ctx = new ModifyContext(this, Context, ModifyAction.Create);
+                ctx = new ModifyContext(this, DataSet, ModifyAction.Create);
                 ctx.Editable = obj;
                 await OnCreate(ctx);
                 return await SaveChangesAsync();
@@ -157,9 +155,9 @@ namespace SF.Data.Services
 		public virtual async Task Delete(TKey Id)
 		{
             ModifyContext ctx = null;
-            var saved = await Context.RetryForConcurrencyException(async () =>
+            var saved = await DataSet.RetryForConcurrencyException(async () =>
             {
-                ctx = new ModifyContext(this,Context,ModifyAction.Delete);
+                ctx = new ModifyContext(this, DataSet, ModifyAction.Delete);
                 ctx.Id = Id;
 
                 await OnDelete(ctx);
@@ -176,7 +174,7 @@ namespace SF.Data.Services
 
 		protected virtual Task OnRemoveModel(ModifyContext ctx)
 		{
-			Context.Remove(ctx.Model);
+			DataSet.Remove(ctx.Model);
 			return Task.CompletedTask;
 		}
 		#endregion
@@ -189,14 +187,14 @@ namespace SF.Data.Services
 		{
 			ctx.Model = await OnLoadModelForUpdate(ctx);
 			await OnUpdateModel(ctx);
-			Context.Update(ctx.Model);
+			DataSet.Update(ctx.Model);
 		}
 		public virtual async Task Update(TEditable obj)
 		{
             ModifyContext ctx = null;
-            var saved = await Context.RetryForConcurrencyException(async () =>
+            var saved = await DataSet.RetryForConcurrencyException(async () =>
             {
-                ctx = new ModifyContext(this, Context, ModifyAction.Update);
+                ctx = new ModifyContext(this, DataSet, ModifyAction.Update);
                 ctx.Editable = obj;
                 ctx.Id = obj.Id;
                 await OnUpdate(ctx);
@@ -215,7 +213,7 @@ namespace SF.Data.Services
 		protected virtual Task<TModel> OnLoadModelForUpdate(ModifyContext ctx)
 		{
             var id = ctx.Id;
-			return OnLoadChildObjectsForUpdate(ctx, Set.AsQueryable(false).Where(s => s.Id.Equals(id)))
+			return OnLoadChildObjectsForUpdate(ctx, DataSet.AsQueryable(false).Where(s => s.Id.Equals(id)))
 				.SingleOrDefaultAsync();
 		}
 
@@ -223,7 +221,7 @@ namespace SF.Data.Services
 
 		public virtual Task<TEditable> LoadForUpdate(TKey Id)
 		{
-			return MapModelToEditable(Context.Set<TModel>().AsQueryable(false).Where(m => m.Id.Equals(Id)));
+			return MapModelToEditable(DataSet.AsQueryable(false).Where(m => m.Id.Equals(Id)));
 		}
 	}
     

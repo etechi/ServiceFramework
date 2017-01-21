@@ -12,7 +12,7 @@ namespace SF.Data.Services
 		where TModel : class, IObjectWithId<TKey>
 		where TQueryArgument : class, IQueryArgument<TKey>
 	{
-		public QuerableEntitySource(IDataContext Context) : base(Context)
+		public QuerableEntitySource(IDataSet<TModel> DataSet) : base(DataSet)
 		{
 		}
 	}
@@ -24,7 +24,7 @@ namespace SF.Data.Services
 		where TModel : class, IObjectWithId<TKey>
 		where TQueryArgument: class, IQueryArgument<TKey>
 	{
-		public QuerableEntitySource(IDataContext Context) : base(Context)
+		public QuerableEntitySource(IDataSet<TModel> DataSet) : base(DataSet)
 		{
 		}
 
@@ -32,7 +32,7 @@ namespace SF.Data.Services
 		abstract protected PagingQueryBuilder<TModel> PagingQueryBuilder { get; }
 		public async Task<QueryResult<TPublic>> Query(TQueryArgument Arg, Paging paging)
 		{
-			var q=OnBuildQuery(Context.Set<TModel>().AsQueryable(true), Arg, paging);
+			var q=OnBuildQuery(DataSet.AsQueryable(true), Arg, paging);
 			var re=await q.ToQueryResultAsync(
 				MapModelToPublic,
 				OnPreparePublics,
