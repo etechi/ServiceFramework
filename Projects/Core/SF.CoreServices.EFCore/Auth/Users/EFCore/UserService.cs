@@ -14,7 +14,6 @@ namespace SF.Auth.Users.EFCore
 		where TUser:DataModels.User
 	{
 		public IDataContext Context { get; }
-		public IIdentGenerator IdentGenerator { get; }
 		public UserProvider(IAuthSessionProvider AuthSessionProvider, IDataContext Context)
 		{
 			this.Context = Context;
@@ -23,7 +22,7 @@ namespace SF.Auth.Users.EFCore
 		
 		public virtual async Task Update(UserInfo User)
 		{
-			var u = await Context.Editable<TUser>().FindAsync(User.Id);
+			var u = await Context.Set<TUser>().FindAsync(User.Id);
 			u.NickName = User.NickName.Trim();
 			if (string.IsNullOrWhiteSpace(u.NickName)) throw new PublicArgumentException("请输入昵称");
 			if(u.NickName.Length < 2) throw new PublicArgumentException("昵称太短");
@@ -39,7 +38,8 @@ namespace SF.Auth.Users.EFCore
 		public virtual Task<UserInfo> FindById(long UserId)
 		{
 			return Context
-				.ReadOnly<TUser>()
+				.Set<TUser>()
+				.AsQueryable(true)
 				.Where(u => u.Id == UserId && u.ObjectState == LogicObjectState.Enabled)
 				.Select(u => new UserInfo
 				{

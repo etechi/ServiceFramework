@@ -94,7 +94,7 @@ namespace SF.Data.Services
 			}
 		}
 
-		public IDataSetEditable<TModel> Set { get { return Context.Editable<TModel>(); } }
+		public IDataSet<TModel> Set { get { return Context.Set<TModel>(); } }
 
         protected virtual int RetryForConcurrencyExceptionCount => 0;
         public EntityManager(IDataContext Context):base(Context)
@@ -215,7 +215,7 @@ namespace SF.Data.Services
 		protected virtual Task<TModel> OnLoadModelForUpdate(ModifyContext ctx)
 		{
             var id = ctx.Id;
-			return OnLoadChildObjectsForUpdate(ctx, Set.Where(s => s.Id.Equals(id)))
+			return OnLoadChildObjectsForUpdate(ctx, Set.AsQueryable(false).Where(s => s.Id.Equals(id)))
 				.SingleOrDefaultAsync();
 		}
 
@@ -223,7 +223,7 @@ namespace SF.Data.Services
 
 		public virtual Task<TEditable> LoadForUpdate(TKey Id)
 		{
-			return MapModelToEditable(Context.ReadOnly<TModel>().Where(m => m.Id.Equals(Id)));
+			return MapModelToEditable(Context.Set<TModel>().AsQueryable(false).Where(m => m.Id.Equals(Id)));
 		}
 	}
     

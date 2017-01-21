@@ -5,28 +5,22 @@ using System.Threading.Tasks;
 
 namespace SF.Data.Entity
 {
-	public interface IDataSet<T> :
-		IContextQueryable<T>
+	public interface IDataSet<T>
 		where T : class
 	{
+		IDataContext Context { get; }
+
 		Task<T> FindAsync(object Ident);
 		Task<T> FindAsync(params object[] Idents);
-	}
-	public interface IDataSetReadonly<T> : IDataSet<T>
-		where T : class
-	{
 
-	}
-	public interface IDataSetEditable<T> : IDataSet<T>
-		where T : class
-	{
 		T Add(T Model);
 		void AddRange(IEnumerable<T> Items);
 
 		T Remove(T Model);
 		void RemoveRange(IEnumerable<T> Items);
 
-		T Update(T item);
-	}
+		T Update(T Model);
 
+		IContextQueryable<T> AsQueryable(bool ReadOnly);
+	}
 }

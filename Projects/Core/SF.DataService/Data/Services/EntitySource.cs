@@ -37,7 +37,7 @@ namespace SF.Data.Services
 		public async Task<TPublic[]> Load(TKey[] Ids)
 		{
 			var re = await MapModelToPublic(
-				Context.ReadOnly<TModel>().Where(s => Ids.Contains(s.Id))
+				Context.Set<TModel>().AsQueryable(true).Where(s => Ids.Contains(s.Id))
 				).ToArrayAsync();
 
 			if (re == null)
@@ -50,7 +50,7 @@ namespace SF.Data.Services
 		public async Task<TPublic> Load(TKey Id)
 		{
 			var re = await MapModelToPublic(
-				Context.ReadOnly<TModel>().Where(s => s.Id.Equals(Id))
+				Context.Set<TModel>().AsQueryable(true).Where(s => s.Id.Equals(Id))
 				).SingleOrDefaultAsync();
 
 			if (re == null)

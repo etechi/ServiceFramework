@@ -50,7 +50,7 @@ namespace SF.UT.Data
 				ac.Add(new DataModels.User { Id = "aa", FirstName = "c", LastName = "y" });
 				ac.SaveChanges();
 
-				var re=ac.ReadOnly<DataModels.User>().ToArrayAsync().Result;
+				var re=ac.Set<DataModels.User>().AsQueryable(true) .ToArrayAsync().Result;
 				Assert.Equal(1, re.Length);
 				Assert.Equal("c", re[0].FirstName);
 			}

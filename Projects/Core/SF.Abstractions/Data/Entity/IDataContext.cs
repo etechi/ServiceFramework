@@ -14,8 +14,7 @@ namespace SF.Data.Entity
 
     public interface IDataContext :IDisposable
 	{
-		IDataSetReadonly<T> ReadOnly<T>() where T : class;
-		IDataSetEditable<T> Editable<T>() where T : class;
+		IDataSet<T> Set<T>() where T : class;
 
         int SaveChanges();
 

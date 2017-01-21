@@ -10,8 +10,7 @@ namespace SF.Data.Entity
 
     public interface IDataContextProvider :IDisposable, IQueryableContext,IAsyncQueryableContext
 	{
-		IDataSetReadonly<T> ReadOnly<T>() where T : class;
-		IDataSetEditable<T> Editable<T>() where T : class;
+		IDataSet<T> Set<T>() where T : class;
 
 		IEntityQueryableProvider EntityQueryableProvider { get; }
     

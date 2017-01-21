@@ -10,20 +10,20 @@ namespace SF.Data.Entity
 	{
 		public static T Add<T>(this IDataContext ctx,T item) where T:class
 		{
-			return ctx.Editable<T>().Add(item);
+			return ctx.Set<T>().Add(item);
 		}
 		public static T Update<T>(this IDataContext ctx, T item) where T : class
 		{
-			return ctx.Editable<T>().Update(item);
+			return ctx.Set<T>().Update(item);
 		}
 		public static T Remove<T>(this IDataContext ctx, T item) where T : class
 		{
-			return ctx.Editable<T>().Remove(item);
+			return ctx.Set<T>().Remove(item);
 		}
 		public static void AddRange<T>(this IDataContext ctx, IEnumerable<T> items, Action<T> init = null) where T : class
 		{
 			if (items == null) return;
-			var set = ctx.Editable<T>();
+			var set = ctx.Set<T>();
 			if (init != null)
 				foreach (var it in items)
 					init(it);
@@ -31,7 +31,7 @@ namespace SF.Data.Entity
 		}
         public static Task<T> Find<T>(this IDataContext ctx,params object[] Ids) where T:class
         {
-            return ctx.Editable<T>().FindAsync(Ids);
+            return ctx.Set<T>().FindAsync(Ids);
         }
 
         public static async Task AddOrUpdate<T>(
@@ -41,7 +41,7 @@ namespace SF.Data.Entity
 			Action<T> updater
 			) where T : class
 		{
-			var e = await ctx.Editable<T>().Where(filter).SingleOrDefaultAsync();
+			var e = await ctx.Set<T>().AsQueryable(false).Where(filter).SingleOrDefaultAsync();
 			if (e == null)
 				ctx.Add(creator());
 			else
@@ -117,7 +117,7 @@ namespace SF.Data.Entity
 				foreach (var i in orgItems.Where(i => newItems == null || !newItems.Any(ni => Equals(i, ni))).ToArray())
 				{
 					if (remover == null)
-                        ctx.Editable<M>().Remove(i);
+                        ctx.Set<M>().Remove(i);
                     else
                         remover(i);				
 				}
@@ -132,7 +132,7 @@ namespace SF.Data.Entity
 					var org_item = orgItems == null ? null : orgItems.Where(oi => Equals(oi, i)).SingleOrDefault();
 					if (org_item == null)
 					{
-						return ctx.Editable<M>().Add(newItem(i));
+						return ctx.Set<M>().Add(newItem(i));
 					}
 					else
 					{
@@ -234,7 +234,7 @@ namespace SF.Data.Entity
 			var updated_items = all_items
 				.Where(it => !get_editable_ident(it).Equals(default(K)))
 				.ToDictionary(i => get_editable_ident(i));
-			var set = ctx.Editable<M>();
+			var set = ctx.Set<M>();
 
 			//删除节点
 			foreach (var it in org_items.Where(i => !updated_items.ContainsKey(get_model_ident(i))))
@@ -308,7 +308,7 @@ namespace SF.Data.Entity
 		public static void RemoveRange<T>(this IDataContext Context, IEnumerable<T> items)
 			where T:class
 		{
-			Context.Editable<T>().RemoveRange(items);
+			Context.Set<T>().RemoveRange(items);
 
 		}
 		public static async Task<T[]> RemoveRange<T>(
@@ -316,8 +316,8 @@ namespace SF.Data.Entity
 			System.Linq.Expressions.Expression<Func<T, bool>> filter
 			) where T : class
 		{
-			var set = Context.Editable<T>();
-			var items = await set.Where(filter).ToArrayAsync();
+			var set = Context.Set<T>();
+			var items = await set.AsQueryable(false).Where(filter).ToArrayAsync();
 			if (items.Length > 0)
 				set.RemoveRange(items);
 			return items;

@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceProtocol.Data.Entity;
+using SF.Data.Entity;
+using SF.Data.Entity.EntityFrameworkCore;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,8 +19,7 @@ namespace SF.DI
 			where TDbContext : DbContext
 		{
 			sc.AddScoped<SF.Data.Entity.IDataContext, SF.Data.Entity.DataContext>();
-			sc.AddTransient<SF.Data.Entity.IDataContextProvider, SF.Data.Entity.EntityFrameworkCore.EntityDbContextProvider<TDbContext>>();
-			sc.AddTransient<Func<SF.Data.Entity.IDataContextProvider>>(x => () => x.GetRequiredService<SF.Data.Entity.IDataContextProvider>());
+			sc.AddScoped<IDataContextProviderFactory>(x => new DataContextProviderFactory<TDbContext>(()=>x.GetRequiredService<TDbContext>()));
 			return sc;
 		}
 	}

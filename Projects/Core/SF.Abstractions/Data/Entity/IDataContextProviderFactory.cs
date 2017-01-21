@@ -8,7 +8,8 @@ namespace SF.Data.Entity
 {
 	public interface IDataContextProviderFactory
 	{
-		IDataContextProvider Create(string Name);
+		IDataContextProvider Create(IDataContext Context);
 	}
+
 
 }

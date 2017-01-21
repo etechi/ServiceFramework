@@ -11,17 +11,17 @@ namespace SF.Data.Entity
     {
         IDataContextProvider _Provider;
 		public IDataContextProvider Provider => _Provider;
-        public Func<IDataContextProvider> ProviderFactory { get; }
+        public IDataContextProviderFactory ProviderFactory { get; }
 
-		public DataContext(Func<IDataContextProvider> ProviderFactory)
+		public DataContext(IDataContextProviderFactory ProviderFactory)
         {
             this.ProviderFactory = ProviderFactory;
-            _Provider = ProviderFactory();
+            _Provider = ProviderFactory.Create(this);
         }
         public void Reset()
         {
             Dispose();
-            _Provider = ProviderFactory();
+            _Provider = ProviderFactory.Create(this);
         }
 
 
@@ -43,14 +43,9 @@ namespace SF.Data.Entity
 			}
         }
 
-        public IDataSetEditable<T> Editable<T>() where T : class
+        public IDataSet<T> Set<T>() where T : class
         {
-            return _Provider.Editable<T>();
-        }
-
-        public IDataSetReadonly<T> ReadOnly<T>() where T : class
-        {
-            return _Provider.ReadOnly<T>();
+            return _Provider.Set<T>();
         }
 
         public int SaveChanges()

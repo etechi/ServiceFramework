@@ -36,7 +36,7 @@ namespace SF.Data.Entity.EntityFrameworkCore
 		EntityDbContextProvider
 		where T : DbContext
 	{
-		public EntityDbContextProvider(T Context):base(Context)
+		public EntityDbContextProvider(T Context, IDataContext DataContext) : base(Context, DataContext)
 		{
 		}
 	}
@@ -45,10 +45,12 @@ namespace SF.Data.Entity.EntityFrameworkCore
         IDataStorageEngine,
         IDataContextExtension
     {
-		public DbContext Context { get; }
-		public EntityDbContextProvider(DbContext Context)
+		public DbContext DbContext { get; }
+		public IDataContext DataContext { get; }
+		public EntityDbContextProvider(DbContext DbContext, IDataContext DataContext)
 		{
-			this.Context = Context;
+			this.DbContext = DbContext;
+			this.DataContext = DataContext;
 		}
 		public IAsyncQueryableProvider AsyncQueryableProvider
 		{
@@ -150,7 +152,7 @@ namespace SF.Data.Entity.EntityFrameworkCore
 		{
 			try
 			{
-				return Context.SaveChanges();
+				return DbContext.SaveChanges();
 			}
 			catch (Exception e)
 			{
@@ -161,7 +163,7 @@ namespace SF.Data.Entity.EntityFrameworkCore
 		{
 			try
 			{
-				return Context.SaveChangesAsync();
+				return DbContext.SaveChangesAsync();
 			}
 			catch (Exception e)
 			{
@@ -169,18 +171,12 @@ namespace SF.Data.Entity.EntityFrameworkCore
 			}
 		}
 		
-		public IDataSetReadonly<T> ReadOnly<T>() where T:class
+		public IDataSet<T> Set<T>() where T:class
 		{
             
-			return new DataSetReadonly<T>(this, Context.Set<T>());
+			return new DataSet<T>(this, DbContext.Set<T>());
 		}
 
-		public IDataSetEditable<T> Editable<T>() where T : class
-		{
-			return new DataSetEditable<T>(this, Context.Set<T>());
-		}
-
-		
 
 		public IContextQueryable<T> CreateQueryable<T>(IQueryable<T> Query)
 		{
@@ -246,12 +242,12 @@ namespace SF.Data.Entity.EntityFrameworkCore
 
         IDataTransaction IDataStorageEngine.BeginTransaction()
 		{
-			return new DataTransaction(Context.Database.BeginTransaction());
+			return new DataTransaction(DbContext.Database.BeginTransaction());
 		}
 
 		IDataTransaction IDataStorageEngine.BeginTransaction(IsolationLevel isolationLevel)
 		{
-			return new DataTransaction(Context.Database.BeginTransaction());
+			return new DataTransaction(DbContext.Database.BeginTransaction());
 		}
 
         public object GetEntityOriginalValue(object Entity,string Field) 
@@ -299,7 +295,7 @@ namespace SF.Data.Entity.EntityFrameworkCore
 
 		public void Dispose()
 		{
-			Context.Dispose();
+			DbContext.Dispose();
 		}
     }
 	
