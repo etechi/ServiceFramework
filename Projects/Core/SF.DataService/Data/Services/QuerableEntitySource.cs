@@ -30,7 +30,7 @@ namespace SF.Data.Services
 
 		abstract protected IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query,TQueryArgument Arg, Paging paging);
 		abstract protected PagingQueryBuilder<TModel> PagingQueryBuilder { get; }
-		public async Task<QueryResult<TPublic>> Query(TQueryArgument Arg, Paging paging)
+		public async Task<QueryResult<TPublic>> QueryAsync(TQueryArgument Arg, Paging paging)
 		{
 			var q=OnBuildQuery(DataSet.AsQueryable(true), Arg, paging);
 			var re=await q.ToQueryResultAsync(

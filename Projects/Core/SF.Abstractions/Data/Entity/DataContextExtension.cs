@@ -18,7 +18,7 @@ namespace SF.Data.Entity
 			set.AddRange(items);
 		}
 
-        public static async Task AddOrUpdate<T>(
+        public static async Task AddOrUpdateAsync<T>(
 			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter,
 			Func<T> creator,
@@ -36,7 +36,7 @@ namespace SF.Data.Entity
 			await set.Context.SaveChangesAsync();
 		}
 
-		public static async Task ValidateTreeParent<T,TKey>(
+		public static async Task ValidateTreeParentAsync<T,TKey>(
 			this IDataSet<T> set,
 			string Title,
 			TKey Id,
@@ -115,7 +115,7 @@ namespace SF.Data.Entity
 			return newItems.Select(
 				i =>
 				{
-					var org_item = orgItems == null ? null : orgItems.Where(oi => Equals(oi, i)).SingleOrDefault();
+					var org_item = orgItems?.Where(oi => Equals(oi, i)).SingleOrDefault();
 					if (org_item == null)
 					{
 						return set.Add(newItem(i));
@@ -224,8 +224,7 @@ namespace SF.Data.Entity
 			//删除节点
 			foreach (var it in org_items.Where(i => !updated_items.ContainsKey(get_model_ident(i))))
 			{
-				if (remover != null)
-					remover(it);
+				remover?.Invoke(it);
 				set.Remove(it);
 			}
 
@@ -296,7 +295,7 @@ namespace SF.Data.Entity
 		//	Context.Set<T>().RemoveRange(items);
 
 		//}
-		public static async Task<T[]> RemoveRange<T>(
+		public static async Task<T[]> RemoveRangeAsync<T>(
 			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter
 			) where T : class
@@ -306,14 +305,14 @@ namespace SF.Data.Entity
 				set.RemoveRange(items);
 			return items;
 		}
-		public static async Task RetryForConcurrencyException<T>(
+		public static async Task RetryForConcurrencyExceptionAsync<T>(
 			this IDataSet<T> set,
 			Func<Task> Action,
 			int Retry = 5,
 			int DelayMilliseconds = 500
 			) where T : class
 		{
-			await set.RetryForConcurrencyException(
+			await set.RetryForConcurrencyExceptionAsync(
 				async () =>
 				{
 					await Action();
@@ -323,7 +322,7 @@ namespace SF.Data.Entity
 				DelayMilliseconds
 				);
 		}
-		public static async Task<R> RetryForConcurrencyException<T,R>(
+		public static async Task<R> RetryForConcurrencyExceptionAsync<T,R>(
 			this IDataSet<T> set,
 			Func<Task<R>> Action,
             int Retry=5,
@@ -348,7 +347,7 @@ namespace SF.Data.Entity
                 await Task.Delay(DelayMilliseconds/2+r.Next(DelayMilliseconds));
             }
         }
-		public static async Task<TEntity> AddOrUpdate<TKey,TEntity>(
+		public static async Task<TEntity> AddOrUpdateAsync<TKey,TEntity>(
 			this IDataSet<TEntity> set,
 			TKey key,
 			Func<TEntity> Creator,

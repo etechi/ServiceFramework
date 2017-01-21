@@ -38,7 +38,7 @@ namespace SF.Auth.Users
 			if (string.IsNullOrWhiteSpace(User.NickName)) throw new PublicArgumentException("请输入昵称");
 			if(User.NickName.Length < 2) throw new PublicArgumentException("昵称太短");
 			if (User.NickName.Length > 20) throw new PublicArgumentException("昵称太长");
-			await Setting.UserProvider.Update(User);
+			await Setting.UserProvider.UpdateAsync(User);
 		}
 
 
@@ -123,7 +123,7 @@ namespace SF.Auth.Users
 			if (ui != null)
 				throw new PublicArgumentException($"您输入的{Setting.SignupIdentProvider.Name}已被注册");
 
-			var uid = await Setting.IdentGenerator.Value.Generate("Sys.User");
+			var uid = await Setting.IdentGenerator.Value.GenerateAsync("Sys.User");
 
 			ui = await Setting.SignupIdentProvider.FindOrBind(
 				Arg.Ident, 

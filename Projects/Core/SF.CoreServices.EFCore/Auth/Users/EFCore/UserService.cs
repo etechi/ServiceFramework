@@ -20,7 +20,7 @@ namespace SF.Auth.Users.EFCore
 		}
 
 		
-		public virtual async Task Update(UserInfo User)
+		public virtual async Task UpdateAsync(UserInfo User)
 		{
 			var u = await DataSet.FindAsync(User.Id);
 			u.NickName = User.NickName.Trim();

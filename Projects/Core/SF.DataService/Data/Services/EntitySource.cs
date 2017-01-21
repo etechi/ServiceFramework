@@ -34,7 +34,7 @@ namespace SF.Data.Services
 		protected abstract Task<TPublic[]> OnPreparePublics(TTemp[] Internals);
 		public virtual string ResourceType => ResourceTypeCache.GetResourceType(GetType());
 
-		public async Task<TPublic[]> Load(TKey[] Ids)
+		public async Task<TPublic[]> LoadAsync(TKey[] Ids)
 		{
 			var re = await MapModelToPublic(
 				DataSet.AsQueryable(true).Where(s => Ids.Contains(s.Id))
@@ -47,7 +47,7 @@ namespace SF.Data.Services
 			return res;
 		}
 
-		public async Task<TPublic> Load(TKey Id)
+		public async Task<TPublic> LoadAsync(TKey Id)
 		{
 			var re = await MapModelToPublic(
 				DataSet.AsQueryable(true).Where(s => s.Id.Equals(Id))

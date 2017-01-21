@@ -4,6 +4,6 @@ namespace SF.Data.Services
 {
 	public interface IEntityBatchLoader<TKey, TEntity>
 	{
-		Task<TEntity[]> Load(TKey[] Ids);
+		Task<TEntity[]> LoadAsync(TKey[] Ids);
 	}
 }

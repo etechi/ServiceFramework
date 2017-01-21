@@ -18,7 +18,7 @@ namespace SF.Auth.Users
 	public interface IUserProvider
 	{
 		Task<UserInfo> FindById(long UserId);
-		Task Update(UserInfo User);
+		Task UpdateAsync(UserInfo User);
 
 		Task<UserInfo> Create(UserCreateArgument Arg);
 

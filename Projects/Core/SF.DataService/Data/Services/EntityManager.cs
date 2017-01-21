@@ -37,9 +37,9 @@ namespace SF.Data.Services
 		{
 			class ActionItem
 			{
-				public bool callOnSaved { get; set; }
-				public Action func { get; set; }
-				public Func<Task> asyncFunc { get; set; }
+				public bool CallOnSaved { get; set; }
+				public Action Func { get; set; }
+				public Func<Task> AsyncFunc { get; set; }
 			}
 
 			List<ActionItem> _postActions;
@@ -59,7 +59,7 @@ namespace SF.Data.Services
 			{
 				if (_postActions == null)
 					_postActions = new List<ActionItem>();
-				_postActions.Add(new ActionItem { func = action, callOnSaved = CallOnSaved });
+				_postActions.Add(new ActionItem { Func = action, CallOnSaved = CallOnSaved });
 			}
 			public void AddPostAction(
 			   Func<Task> action,
@@ -68,18 +68,18 @@ namespace SF.Data.Services
 			{
 				if (_postActions == null)
 					_postActions = new List<ActionItem>();
-				_postActions.Add(new ActionItem { asyncFunc = action, callOnSaved = CallOnSaved });
+				_postActions.Add(new ActionItem { AsyncFunc = action, CallOnSaved = CallOnSaved });
 			}
-			public async Task ExecutePostActions(bool ChangedSaved)
+			public async Task ExecutePostActionsAsync(bool ChangedSaved)
 			{
 				if (_postActions == null)
 					return;
 				foreach (var action in _postActions)
-					if (ChangedSaved || !action.callOnSaved)
+					if (ChangedSaved || !action.CallOnSaved)
 					{
-						action.func?.Invoke();
-						if (action.asyncFunc != null)
-							await action.asyncFunc();
+						action.Func?.Invoke();
+						if (action.AsyncFunc != null)
+							await action.AsyncFunc();
 					}
 			}
 			public ModifyContext(
@@ -122,7 +122,7 @@ namespace SF.Data.Services
 		{
 			return Task.CompletedTask;
 		}
-		protected virtual async Task OnCreate(ModifyContext ctx)
+		protected virtual async Task OnCreateAsync(ModifyContext ctx)
 		{
 			ctx.Model = new TModel();
 			await OnNewModel(ctx);
@@ -131,19 +131,21 @@ namespace SF.Data.Services
 		}
 
         
-		public virtual async Task<TKey> Create(TEditable obj)
+		public virtual async Task<TKey> CreateAsync(TEditable obj)
 		{
             ModifyContext ctx = null;
-            var saved=await DataSet.RetryForConcurrencyException(async () =>
+            var saved=await DataSet.RetryForConcurrencyExceptionAsync(async () =>
             {
-                ctx = new ModifyContext(this, DataSet, ModifyAction.Create);
-                ctx.Editable = obj;
-                await OnCreate(ctx);
+				ctx = new ModifyContext(this, DataSet, ModifyAction.Create)
+				{
+					Editable = obj
+				};
+				await OnCreateAsync(ctx);
                 return await SaveChangesAsync();
             }, RetryForConcurrencyExceptionCount);
 
             ctx.Id = ctx.Model.Id;
-            await ctx.ExecutePostActions(saved);
+            await ctx.ExecutePostActionsAsync(saved);
 
             return ctx.Model.Id;
 		}
@@ -152,21 +154,22 @@ namespace SF.Data.Services
 
 		#region delete
 
-		public virtual async Task Delete(TKey Id)
+		public virtual async Task DeleteAsync(TKey Id)
 		{
             ModifyContext ctx = null;
-            var saved = await DataSet.RetryForConcurrencyException(async () =>
+            var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
             {
-                ctx = new ModifyContext(this, DataSet, ModifyAction.Delete);
-                ctx.Id = Id;
-
-                await OnDelete(ctx);
+				ctx = new ModifyContext(this, DataSet, ModifyAction.Delete)
+				{
+					Id = Id
+				};
+				await OnDeleteAsync(ctx);
 
                 return await SaveChangesAsync();
             }, RetryForConcurrencyExceptionCount);
-            await ctx.ExecutePostActions(saved);
+            await ctx.ExecutePostActionsAsync(saved);
 		}
-		protected virtual async Task OnDelete(ModifyContext ctx)
+		protected virtual async Task OnDeleteAsync(ModifyContext ctx)
 		{
 			ctx.Model = await OnLoadModelForUpdate(ctx);
 			await OnRemoveModel(ctx);
@@ -183,24 +186,26 @@ namespace SF.Data.Services
 		#region Update
 		protected abstract Task OnUpdateModel(ModifyContext ctx);
 
-		protected virtual async Task OnUpdate(ModifyContext ctx)
+		protected virtual async Task OnUpdateAsync(ModifyContext ctx)
 		{
 			ctx.Model = await OnLoadModelForUpdate(ctx);
 			await OnUpdateModel(ctx);
 			DataSet.Update(ctx.Model);
 		}
-		public virtual async Task Update(TEditable obj)
+		public virtual async Task UpdateAsync(TEditable obj)
 		{
             ModifyContext ctx = null;
-            var saved = await DataSet.RetryForConcurrencyException(async () =>
+            var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
             {
-                ctx = new ModifyContext(this, DataSet, ModifyAction.Update);
-                ctx.Editable = obj;
-                ctx.Id = obj.Id;
-                await OnUpdate(ctx);
+				ctx = new ModifyContext(this, DataSet, ModifyAction.Update)
+				{
+					Editable = obj,
+					Id = obj.Id
+				};
+				await OnUpdateAsync(ctx);
                 return await SaveChangesAsync();
             }, RetryForConcurrencyExceptionCount);
-            await ctx.ExecutePostActions(saved);
+            await ctx.ExecutePostActionsAsync(saved);
                 
         }
 

@@ -14,8 +14,8 @@ namespace SF.Data.Services
 	{
 		EntityManagerCapability Capabilities { get; }
 		Task<TEntity> LoadForUpdate(TKey Id);
-		Task<TKey> Create(TEntity Entity);
-		Task Update(TEntity Entity);
-		Task Delete(TKey Key);
+		Task<TKey> CreateAsync(TEntity Entity);
+		Task UpdateAsync(TEntity Entity);
+		Task DeleteAsync(TKey Key);
 	}
 }

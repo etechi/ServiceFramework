@@ -26,10 +26,10 @@ namespace SF.Data.IdentGenerator.EFCore
 		{
 			this.Setting = Setting;
 		}
-		async Task<long> GetNextBatchStart(string Type)
+		async Task<long> GetNextBatchStartAsync(string Type)
 		{
-			var re = await Setting.IdentSeedSet.RetryForConcurrencyException(() =>
-				  Setting.IdentSeedSet.AddOrUpdate(
+			var re = await Setting.IdentSeedSet.RetryForConcurrencyExceptionAsync(() =>
+				  Setting.IdentSeedSet.AddOrUpdateAsync(
 					  Type,
 					  () => new DataModels.IdentSeed { NextValue = 1, Type = Type },
 					  s => s.NextValue += Setting.CountPerBatch
@@ -37,7 +37,7 @@ namespace SF.Data.IdentGenerator.EFCore
 				);
 			return re.NextValue - Setting.CountPerBatch;
 		}
-		public async Task<long> Generate(string Type)
+		public async Task<long> GenerateAsync(string Type)
 		{
 			var cacheKey = Setting.Ident.Value + "/" + Type;
 			if(!Cache.TryGetValue(cacheKey,out var v))
@@ -46,7 +46,7 @@ namespace SF.Data.IdentGenerator.EFCore
 			{
 				if (v.Current == v.End)
 				{
-					v.Current = await GetNextBatchStart(Type);
+					v.Current = await GetNextBatchStartAsync(Type);
 					v.End = v.Current + Setting.CountPerBatch;
 				}
 				var re = v.Current;

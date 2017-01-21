@@ -8,6 +8,6 @@ namespace SF.Data
 {
 	public interface IIdentGenerator
 	{
-        Task<long> Generate(string Type);
+        Task<long> GenerateAsync(string Type);
 	}
 }
