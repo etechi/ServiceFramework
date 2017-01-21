@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
     <ProjectReference Include="..\SF.CoreServices\SF.CoreServices.csproj" />
+    <ProjectReference Include="..\SF.Core\SF.Core.csproj" />
     <ProjectReference Include="..\SF.Data.Entity.EFCore\SF.Data.Entity.EFCore.csproj" />
   </ItemGroup>
 </Project>

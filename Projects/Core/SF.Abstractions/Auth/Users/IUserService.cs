@@ -20,21 +20,16 @@ namespace SF.Auth.Users
 		public string Password { get; set; }
 	}
 
-	public class UserSignupIdent
-	{
-		public string ProviderId { get; }
-		public string Ident { get; }
-	}
 	public class UserSignupArgument
 	{
 		public string Icon { get; set; }
 		public string Image { get; set; }
 		public SexType Sex { get; set; }
+		public string Ident { get; set; }
 		public string NickName { get; set; }
 		public string Password { get; set; }
 		public string VerifyCode { get; set; }
 		public string CaptchaCode { get; set; }
-		public UserSignupIdent[] Idents { get; set; }
 	}
 	public class SetPasswordArgument
 	{
@@ -65,7 +60,7 @@ namespace SF.Auth.Users
 		Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg);
 
 		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
-		Task ResertPasswordByRecoveryCode(ResePasswordByRecorveryCodeArgument Arg);
+		Task ResetPasswordByRecoveryCode(ResePasswordByRecorveryCodeArgument Arg);
 
 
 		[Authorize]

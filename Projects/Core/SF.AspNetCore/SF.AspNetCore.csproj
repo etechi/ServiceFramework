@@ -14,5 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
     <ProjectReference Include="..\SF.CoreServices\SF.CoreServices.csproj" />
+    <ProjectReference Include="..\SF.Core\SF.Core.csproj" />
   </ItemGroup>
 </Project>

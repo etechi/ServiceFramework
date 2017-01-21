@@ -65,18 +65,20 @@ namespace SF.UT
         [Fact]
         public void Test1()
         {
-			var msc = new ManagedServiceCollection();
-			msc.AddScoped<IOperator, Add>();
-			msc.AddScoped<IOperator, Substract>();
-			msc.AddScoped<IAgg, Agg>();
+		
 
 			var sc = new ServiceCollection();
 
 			sc.AddScoped<IServiceConfigLoader, MemoryServiceSource>();
 			sc.AddScoped<IDefaultServiceLocator>(sp=>(IDefaultServiceLocator)sp.GetRequiredService< IServiceConfigLoader>());
 
-			sc.GetDIServiceCollection().UseManagedService(msc);
-			
+			var isc = sc.GetDIServiceCollection();
+
+			var msc = new ManagedServiceCollection(isc);
+			msc.AddScoped<IOperator, Add>();
+			msc.AddScoped<IOperator, Substract>();
+			msc.AddScoped<IAgg, Agg>();
+
 			var rsp = sc.BuildServiceProvider();
 			var sf = rsp.GetRequiredService<IServiceScopeFactory>();
 			using (var s = sf.CreateScope())

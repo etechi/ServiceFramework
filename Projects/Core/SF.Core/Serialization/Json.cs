@@ -6,7 +6,7 @@ namespace SF
 {
 	public static class Json
 	{
-		public static Serialization.IJsonSerializer DefaultSerializer { get; set; }
+		public static Serialization.IJsonSerializer DefaultSerializer { get; set; } = Serialization.Newtonsoft.JsonSerializer.Instance;
 		public static Serialization.JsonSetting DefaultSetting { get; set; } = new Serialization.JsonSetting
 		{
 			IgnoreDefaultValue = true,

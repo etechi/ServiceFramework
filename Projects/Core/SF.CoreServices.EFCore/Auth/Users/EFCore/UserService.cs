@@ -52,17 +52,22 @@ namespace SF.Auth.Users.EFCore
 				}).SingleOrDefaultAsync();
 		}
 
-		public virtual Task<UserInfo> Create(UserCreateArgument Arg)
+		public Task<UserInfo> Create(UserCreateArgument Arg)
 		{
-			
+			return null;
 		}
 
-		public virtual Task<bool> VerifyPassword(long UserId, string Password)
+		public Task<string> GetPasswordHash(long UserId, bool ForSignin)
 		{
 			throw new NotImplementedException();
 		}
 
-		public Task Signin(long UserId, ClientAccessInfo AccessInfo)
+		public Task SetPasswordHash(long UserId, string PasswordHash, string SecurityStamp)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<UserInfo> Signin(long UserId, bool Success, ClientAccessInfo AccessInfo)
 		{
 			throw new NotImplementedException();
 		}

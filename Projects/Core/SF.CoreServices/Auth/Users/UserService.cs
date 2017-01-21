@@ -51,22 +51,20 @@ namespace SF.Auth.Users
 			if (string.IsNullOrWhiteSpace(Arg.Password))
 				throw new PublicArgumentException("请输入密码");
 
-			long? userId = null;
-			foreach(var ip in Setting.IdentProviders)
+			UserIdent ui = null;
+			foreach(var ip in Setting.SigninIdentProviders)
 			{
-				if (ip.Disabled)
-					continue;
-				userId =await ip.IdentProvider.FindUserId(Arg.Ident);
-				if (userId.HasValue)
+				ui =await ip.Find(Arg.Ident,null);
+				if (ui!=null)
 					break;
 			}
-			if (!userId.HasValue)
+			if (ui==null)
 				throw new PublicArgumentException("用户或密码错误！");
 
-			var passwordHash = await Setting.UserProvider.GetPasswordHash(userId.Value,true);
+			var passwordHash = await Setting.UserProvider.GetPasswordHash(ui.UserId,true);
 			var passwordVerified = Setting.PasswordHasher.Hash(Arg.Password) == passwordHash;
 			var user=await Setting.UserProvider.Signin(
-				userId.Value, 
+				ui.UserId, 
 				passwordVerified, 
 				Setting.AccessInfo.Value
 				);
@@ -81,20 +79,60 @@ namespace SF.Auth.Users
 			return Setting.AuthSessionProvider.UnbindUser();
 		}
 
+		public async Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg)
+		{
+			if (string.IsNullOrWhiteSpace(Arg.Ident))
+				throw new ArgumentException($"需要提供{Setting.SignupIdentProvider.Name}");
+			var msg = await Setting.SignupIdentProvider.Verify(Arg.Ident);
+			if (msg != null)
+				throw new ArgumentException(msg);
+
+			if (!await Setting.SignupIdentProvider.CanSendMessage())
+				throw new NotSupportedException();
+
+			await Setting.SignupIdentProvider.SendMessage(
+				Arg.Ident,
+				"注册",
+				"注册用户",
+				null
+				);
+
+			return null;
+		}
+		void CheckVerifyCode(string Ident,string Code,string Purpose)
+		{
+			if (string.IsNullOrWhiteSpace(Code))
+				throw new PublicArgumentException("请输入验证码");
+			if (Code != Ident)
+				throw new PublicArgumentException("验证码有误，请重新输入");
+		}
 		public async Task<UserInfo> Signup(UserSignupArgument Arg)
 		{
-			if ((Arg?.Idents?.Length ?? 0) == 0)
-				throw new PublicArgumentException("必须提供用户标识");
-			foreach (var id in Arg.Idents)
-				if (!Setting.IdentProviders.Any(ip => ip.IdentProvider.Id == id.ProviderId))
-					throw new ArgumentException("不支持用户标识类型:" + id.ProviderId);
+			if(string.IsNullOrWhiteSpace(Arg.Ident))
+				throw new ArgumentException("请输入用户标识");
+			var msg = await Setting.SignupIdentProvider.Verify(Arg.Ident);
+			if (msg != null)
+				throw new ArgumentException(msg);
 
-			if(Setting.SignupVerifyCodeRequired)
-			{
-				if (string.IsNullOrWhiteSpace(Arg.VerifyCode))
-					throw new PublicArgumentException("需要验证码");
+			var canSendMessage = await Setting.SignupIdentProvider.CanSendMessage();
+			if (canSendMessage)
+				CheckVerifyCode(Arg.Ident, Arg.VerifyCode, "User.Signup");
 
-			}
+
+			var ui=await Setting.SignupIdentProvider.Find(Arg.Ident,null);
+			if (ui != null)
+				throw new PublicArgumentException($"您输入的{Setting.SignupIdentProvider.Name}已被注册");
+
+			var uid = await Setting.IdentGenerator.Value.Generate("Sys.User");
+
+			ui = await Setting.SignupIdentProvider.FindOrBind(
+				Arg.Ident, 
+				null, 
+				canSendMessage,
+				uid
+				);
+			if(ui.UserId!=uid)
+				throw new PublicArgumentException($"您输入的{Setting.SignupIdentProvider.Name}已被注册");
 
 			var nickName = Arg.NickName?.Trim();
 			if (nickName == null)
@@ -103,24 +141,21 @@ namespace SF.Auth.Users
 			if (string.IsNullOrWhiteSpace(Arg.Password))
 				throw new PublicArgumentException("请输入密码");
 
-			var user=await Setting.UserProvider.Create(new UserCreateArgument
-			{
-				AccessInfo = Setting.AccessInfo.Value,
-				Password = Setting.PasswordHasher.Hash(Arg.Password),
-				User = new UserInfo
+			var user=await Setting.UserProvider.Create(
+				new UserCreateArgument
 				{
-					Icon = Arg.Icon,
-					Image = Arg.Image,
-					NickName = nickName,
-					Sex = Arg.Sex
-				},
-				Idents = Arg.Idents.Select(id => new UserIdent
-				{
-					ProviderId = id.ProviderId,
-					Ident = id.Ident
-				}).ToArray()
-			});
-
+					AccessInfo = Setting.AccessInfo.Value,
+					PasswordHash = Setting.PasswordHasher.Hash(Arg.Password),
+					SecurityStamp=Guid.NewGuid().ToString("N"),
+					User = new UserInfo
+					{
+						Id=uid,
+						Icon = Arg.Icon,
+						Image = Arg.Image,
+						NickName = nickName,
+						Sex = Arg.Sex
+					}
+				});
 			await Setting.AuthSessionProvider.BindUser(user);
 			return user;
 		}
@@ -130,7 +165,7 @@ namespace SF.Auth.Users
 			throw new NotImplementedException();
 		}
 
-		public async Task ResertPasswordByRecoveryCode(ResePasswordByRecorveryCodeArgument Arg)
+		public async Task ResetPasswordByRecoveryCode(ResePasswordByRecorveryCodeArgument Arg)
 		{
 			if (string.IsNullOrWhiteSpace(Arg.IdentProviderId))
 				throw new ArgumentException("缺少用户标识类型");
@@ -138,12 +173,17 @@ namespace SF.Auth.Users
 				throw new PublicArgumentException("需要输入用户标识");
 
 			//verify code 
-			var uid = await Setting.UserProvider.FindUserIdByIdent(Arg.IdentProviderId, Arg.Ident);
-			if (uid == null)
+			var ui = await Setting.SignupIdentProvider.Find(Arg.Ident,null);
+			if (ui == null)
 				throw new PublicArgumentException("找不到指定的用户");
 
-			await Setting.UserProvider.SetPasswordHash(uid.Value, Setting.PasswordHasher.Hash(Arg.NewPassword));
-			var user = await Setting.UserProvider.FindById(uid.Value);
+			await Setting.UserProvider.SetPasswordHash(
+				ui.UserId, 
+				Setting.PasswordHasher.Hash(Arg.NewPassword),
+				Guid.NewGuid().ToString("N")
+				);
+
+			var user = await Setting.UserProvider.FindById(ui.UserId);
 			await Setting.AuthSessionProvider.BindUser(user);
 		}
 
@@ -163,7 +203,12 @@ namespace SF.Auth.Users
 			if (!passwordVerified)
 				throw new PublicArgumentException("旧密码错误");
 
-			await Setting.UserProvider.SetPasswordHash(uid.Value, Setting.PasswordHasher.Hash(Arg.NewPassword));
+			await Setting.UserProvider.SetPasswordHash(
+				uid.Value, 
+				Setting.PasswordHasher.Hash(Arg.NewPassword),
+				Guid.NewGuid().ToString("N")
+				);
 		}
+
 	}
 }

@@ -12,8 +12,6 @@ namespace ManagementConsole.Controllers
     {
         public IActionResult Index()
         {
-			IDataProtectionProvider aa
-			   IAuthenticationHandler a
 			HttpContext.Authentication.SignInAsync(null, null);
 
 			return View();

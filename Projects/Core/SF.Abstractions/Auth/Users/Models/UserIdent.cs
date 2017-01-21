@@ -4,7 +4,7 @@ namespace SF.Auth.Users
 {
 	public class UserIdent
 	{
-		public string ProviderId { get; set; }
+		public long UserId { get; set; }
 		public string Ident { get; set; }
 		public string UnionIdent { get; set; }
 		public DateTime BindTime { get; set; }

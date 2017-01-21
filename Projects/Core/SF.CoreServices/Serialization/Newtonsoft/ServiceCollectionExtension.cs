@@ -6,9 +6,8 @@ namespace SF.Serialization
 	{
 		public static void UseNewtonsoftJson(this IDIServiceCollection sc)
 		{
-			var s = new Newtonsoft.JsonSerilaizer();
+			var s = new SF.Serialization.Newtonsoft.JsonSerializer();
 			sc.AddSingleton<IJsonSerializer>(s);
-			Json.DefaultSerializer = s;
 		}
 	}
 

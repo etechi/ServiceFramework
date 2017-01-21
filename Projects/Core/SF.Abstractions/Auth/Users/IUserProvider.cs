@@ -11,8 +11,8 @@ namespace SF.Auth.Users
 	public class UserCreateArgument
 	{
 		public UserInfo User { get; set; }
-		public string Password { get; set; }
-		public UserIdent[] Idents { get; set; }
+		public string PasswordHash { get; set; }
+		public string SecurityStamp { get; set; }
 		public ClientAccessInfo AccessInfo { get; set; }
 	}
 	public interface IUserProvider
@@ -23,17 +23,8 @@ namespace SF.Auth.Users
 		Task<UserInfo> Create(UserCreateArgument Arg);
 
 		Task<string> GetPasswordHash(long UserId,bool ForSignin);
-		Task SetPasswordHash(long UserId, string PasswordHash);
+		Task SetPasswordHash(long UserId, string PasswordHash,string SecurityStamp);
 		Task<UserInfo> Signin(long UserId,bool Success, ClientAccessInfo AccessInfo);
-
-		Task BindUserIdent(string IdentProviderId, string Ident, long UserId, string UnionIdent);
-		Task UnbindUserIdent(string IdentProviderId, string Ident, long UserId);
-
-		Task<UserIdent[]> GetUserIdents(long UserId);
-		Task<UserIdent[]> GetUserIdentsByUnionIdent(string IdentProviderId, string UnionIdent);
-
-		Task<long?> FindUserIdByIdent(string IdentProviderId, string Ident);
-
 
 	}
 

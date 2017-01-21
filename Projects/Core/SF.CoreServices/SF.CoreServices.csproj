@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
+    <ProjectReference Include="..\SF.Core\SF.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\Entity\" />

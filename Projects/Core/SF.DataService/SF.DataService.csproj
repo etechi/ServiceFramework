@@ -11,10 +11,11 @@
     <EmbeddedResource Remove="Data\Services\ModifyFilters\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NETStandard.Library" Version="1.6" />
+    <PackageReference Include="NETStandard.Library" Version="1.6.1" />
     <PackageReference Include="system.reflection.typeextensions" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
+    <ProjectReference Include="..\SF.Core\SF.Core.csproj" />
   </ItemGroup>
 </Project>

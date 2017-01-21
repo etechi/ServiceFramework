@@ -14,6 +14,16 @@
     <EmbeddedResource Include="**\*.resx" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Sessions\**" />
+    <EmbeddedResource Remove="Sessions\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="TextMessages\IMsgLogger.cs" />
+    <Compile Remove="TextMessages\IMsgRecordManager.cs" />
+    <Compile Remove="TextMessages\IMsgService.cs" />
+    <Compile Remove="TextMessages\ITextMessageSender.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="NETStandard.Library" Version="1.6.1" />
     <PackageReference Include="system.componentmodel" Version="4.3.0" />
     <PackageReference Include="system.componentmodel.annotations" Version="4.3.0" />
@@ -22,5 +32,8 @@
   <ItemGroup>
     <Folder Include="Security\" />
     <Folder Include="Users\Auth\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SF.Core\SF.Core.csproj" />
   </ItemGroup>
 </Project>

@@ -8,9 +8,9 @@ using SF.Reflection;
 namespace SF.Serialization.Newtonsoft
 {
 	
-	public class JsonSerilaizer : IJsonSerializer
+	public class JsonSerializer : IJsonSerializer
 	{
-		public static JsonSerializer Instance { get; } = new JsonSerializer();
+		public static IJsonSerializer Instance { get; } = new JsonSerializer();
 
 		JsonSerializerSettings MapSetting(JsonSetting Setting)
 		{

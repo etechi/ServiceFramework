@@ -10,7 +10,7 @@ namespace SF.Sessions
 {
 	public class SessionCreateArgument
 	{
-		public ClientInfo ClientInfo { get; set; }
+		public ClientAccessInfo ClientInfo { get; set; }
 		public Dictionary<string,string> Options { get; set; }
 	}
 	public interface ISessionFactory
