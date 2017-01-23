@@ -9,7 +9,6 @@ namespace SF.Data.Entity
 		where T : class
 	{
 		IDataContext Context { get; }
-
 		Task<T> FindAsync(object Ident);
 		Task<T> FindAsync(params object[] Idents);
 
@@ -21,6 +20,8 @@ namespace SF.Data.Entity
 
 		T Update(T Model);
 
-		IContextQueryable<T> AsQueryable(bool ReadOnly);
+		IContextQueryable<T> AsQueryable(bool ReadOnly=true);
+
+		IDataSetMetadata Metadata { get; }
 	}
 }

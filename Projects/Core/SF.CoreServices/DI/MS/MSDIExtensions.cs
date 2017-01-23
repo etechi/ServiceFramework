@@ -10,6 +10,7 @@ namespace SF.DI
 		
 		public static IDIServiceCollection GetDIServiceCollection(this IServiceCollection sc)
 		{
+			sc.AddTransient<IDIScopeFactory, SF.DI.Microsoft.ScopeFactory>();
 			return new DIServcieCollection(sc);
 		}
 	}

@@ -11,7 +11,8 @@ namespace SF.Services.Management.Internal
 		Dictionary<Type,ServiceType> ServiceTypes { get; }
 		public ServiceType GetServiceType(Type type)
 		{
-			return ServiceTypes.TryGetValue(type, out var st) ? st : ServiceType.Unknown;
+			ServiceType st;
+			return ServiceTypes.TryGetValue(type, out st) ? st : ServiceType.Unknown;
 		}
 
 		public ServiceMetadata(IEnumerable<Type> NormalServices,IEnumerable<ManagedServiceDescriptor> ManagedServices)

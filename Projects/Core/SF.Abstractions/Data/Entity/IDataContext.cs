@@ -16,6 +16,7 @@ namespace SF.Data.Entity
 	{
 		IDataSet<T> Set<T>() where T : class;
 
+		void Reset();
         int SaveChanges();
 
 		Task<int> SaveChangesAsync();

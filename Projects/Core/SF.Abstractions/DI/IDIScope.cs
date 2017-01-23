@@ -11,6 +11,6 @@ namespace SF.DI
 	}
 	public interface IDIScopeFactory
 	{
-		IDIScope BeginScope();
+		IDIScope CreateScope();
 	}
 }

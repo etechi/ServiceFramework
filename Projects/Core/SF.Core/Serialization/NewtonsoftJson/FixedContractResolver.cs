@@ -16,7 +16,8 @@ namespace SF.Serialization.Newtonsoft
 		protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
 		{
 			var p = base.CreateProperty(member, memberSerialization);
-			if (member is PropertyInfo pi)
+			var pi = member as PropertyInfo;
+			if (pi!=null)
 			{
 				if (pi.PropertyType.IsEnumType())
 					p.DefaultValue = Enum.ToObject(pi.PropertyType, -1);

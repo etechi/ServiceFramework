@@ -79,7 +79,8 @@ namespace SF.Metadata
 
 		public virtual Models.Type TryGenerateType(Type type)
 		{
-			if (Types.TryGetValue(type, out var re))
+			Models.Type re;
+			if (Types.TryGetValue(type, out re))
 				return re;
 			return GenerateType(type);
 		}
@@ -152,7 +153,7 @@ namespace SF.Metadata
 					re.BaseTypes = baseTypes.ToArray();
 				var props=GenerateTypeProperties(type);
 				re.Properties = props.Length > 0 ? props : null;
-				LoadAttributes(re, type.GetCustomAttributes(true));
+				LoadAttributes(re, type.GetCustomAttributes(true).Cast<Attribute>());
 			}
 			
 			return re;

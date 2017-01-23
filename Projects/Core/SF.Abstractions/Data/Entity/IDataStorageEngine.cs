@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SF.Data.Entity
@@ -18,7 +19,7 @@ namespace SF.Data.Entity
 	}
 	public interface IDataStorageEngine
 	{
-        Task<object> ExecuteCommandAsync(string Sql, params object[] Args);
+        Task<object> ExecuteCommandAsync(string Sql, CancellationToken CancellationToken,params object[] Args);
 		IDataTransaction BeginTransaction();
 		IDataTransaction BeginTransaction(IsolationLevel isolationLevel);
 	}

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using ServiceProtocol.Data.Entity;
 using SF.Data.Entity;
 using SF.Data.Entity.EntityFrameworkCore;
 using System;

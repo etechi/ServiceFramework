@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using ServiceProtocol.Data.Entity;
+using SF.Data.Entity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,6 +9,8 @@ using System.Linq;
 using System.Reflection;
 using SF.Reflection;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations;
 
 namespace SF.Data.Entity.EntityFrameworkCore
 {
@@ -21,10 +23,10 @@ namespace SF.Data.Entity.EntityFrameworkCore
 	{
 		public override void Customize(ModelBuilder modelBuilder, DbContext dbContext)
 		{
+			base.Customize(modelBuilder, dbContext);
 			var mi = dbContext.GetService<DataModalInitializer>();
 			if (mi != null)
 				mi.Init(modelBuilder);
-			base.Customize(modelBuilder, dbContext);
 		}
 	}
 	class DataModalInitializer
@@ -35,34 +37,59 @@ namespace SF.Data.Entity.EntityFrameworkCore
 			
 			this.EntityItems = EntityItems;
 		}
+		void BuildIndex(EntityItem item,EntityTypeBuilder builder)
+		{
+			var indexs = (
+					from p in item.Type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy)
+					from idx in p.GetCustomAttributes().Where(a => a is IndexAttribute).Cast<IndexAttribute>()
+					let rec = new { name = idx.Name ?? p.Name, field = p.Name, unique = idx.IsUnique, clustered = idx.IsClustered, order = idx.Order }
+					group rec by rec.name into g
+					select new
+					{
+						name = g.Key,
+						unique = g.Any(i => i.unique),
+						clustered = g.Any(i => i.clustered),
+						fields = g.OrderBy(i => i.order).Select(i => i.field).ToArray()
+					}
+					).ToArray();
+			foreach (var idx in indexs)
+			{
+				builder.HasIndex(idx.fields).IsUnique(idx.unique);
+			}
+		}
+		void TryBuildCompositPrimaryKey(EntityItem item, EntityTypeBuilder builder)
+		{
+			var keys = (from p in item.Type
+				.GetProperties(
+					BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy
+					)
+						where p.GetCustomAttribute<KeyAttribute>(true) != null
+						let col = p.GetCustomAttribute<ColumnAttribute>(true)
+						orderby col?.Order
+						select col?.Name ?? p.Name
+					).ToArray();
+			if (keys.Length <= 1)
+				return;
+			foreach (var key in builder.Metadata.GetKeys().ToArray())
+				builder.Metadata.RemoveKey(key.Properties);
+			builder.HasKey(keys);
+		}
 		public void Init(ModelBuilder modelBuilder)
 		{
-			foreach(var item in EntityItems)
+			foreach (var item in EntityItems)
 			{
-				var entity = modelBuilder.Entity(item.Type);
+				var builder = modelBuilder.Entity(item.Type);
 				if (!string.IsNullOrWhiteSpace(item.Prefix))
 				{
 					var tableAttr = item.Type.GetCustomAttribute<TableAttribute>();
 					var tableName = item.Prefix + (tableAttr?.Name ?? item.Type.Name);
-					entity.ToTable(tableName);
+					builder.ToTable(tableName);
 				}
-				
-				var indexs = (
-					from p in item.Type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy)
-					from idx in p.GetCustomAttributes().Where(a => a is IndexAttribute).Cast<IndexAttribute>()
-					let rec = new { name = idx.Name ?? p.Name, field=p.Name, unique = idx.IsUnique, clustered = idx.IsClustered, order = idx.Order }
-					group rec by rec.name into g
-					select new {
-						name = g.Key,
-						unique =g.Any(i=>i.unique),
-						clustered =g.Any(i=>i.clustered),
-						fields =g.OrderBy(i => i.order).Select(i=>i.field).ToArray() }
-					).ToArray();
-				foreach(var idx in indexs)
-				{
-					entity.HasIndex(idx.fields).IsUnique(idx.unique);
-				}
+
+				TryBuildCompositPrimaryKey(item, builder);
+				BuildIndex(item, builder);
 			}
+			
 		}
 	}
 	class DataModalLoaderExtension : IDbContextOptionsExtension

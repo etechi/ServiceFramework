@@ -22,24 +22,28 @@ namespace SF.Reflection
 		//{
 		//	return type.GetTypeInfo().GetProperty(Name);
 		//}
-		public static T GetCustomAttribute<T>(this Type type)
-			where T:Attribute
-		{
-			return type.GetTypeInfo().GetCustomAttribute<T>();
-		}
 		public static bool IsValue(this Type Type)
 		{
 			return Type.GetTypeInfo().IsValueType;
 		}
+
+#if NETCORE
+		public static T GetCustomAttribute<T>(this Type type)
+			where T:Attribute
+		{
+			var ti = type.GetTypeInfo();
+			return ti.GetCustomAttribute<T>();
+		}
+#endif
 		public static IEnumerable<Attribute> GetCustomAttributes(this Type type,bool inherit)
 		{
-			return type.GetTypeInfo().GetCustomAttributes(inherit);
+			return type.GetTypeInfo().GetCustomAttributes(inherit).Cast<Attribute>();
 		}
 		public static IEnumerable<T> GetCustomAttributes<T>(this Type type, bool inherit)
 		{
 			return type.GetTypeInfo().GetCustomAttributes(inherit).Where(a=>a is T).Cast<T>();
 		}
-		public static T GetCustomAttribute<T>(this Type type, bool inherit) where T:Attribute
+		public static T GetCustomAttribute<T>(this Type type, bool inherit=true) where T:Attribute
 		{
 			return (T)type.GetTypeInfo().GetCustomAttributes(inherit).FirstOrDefault(a=>a is T);
 		}

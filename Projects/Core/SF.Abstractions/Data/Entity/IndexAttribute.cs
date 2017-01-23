@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServiceProtocol.Data.Entity
+namespace SF.Data.Entity
 {
 	[AttributeUsage(AttributeTargets.Property,AllowMultiple =true)]
 	public class IndexAttribute : Attribute

@@ -27,6 +27,6 @@ namespace SF.Data
         {
             Items = Enumerable.Empty<T>()
         };
-		IEnumerable IQueryResult.Items { get => Items; set { Items = (IEnumerable<T>)value; } }
+		IEnumerable IQueryResult.Items { get { return Items; } set { Items = (IEnumerable<T>)value; } }
 	}
 }

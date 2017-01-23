@@ -83,45 +83,46 @@ namespace SF.Services.Management.Internal
 		}
 
 
-		public static ServiceFactory Build(
-			IServiceDetector ServiceDetector,
-			Type ImplementType,
-			ConstructorInfo constructorInfo
-			)
+		class InitCopyRequiredPathsHelper
 		{
-			var CopyRequiredPaths = new HashSet<string>();
-			void InitCopyRequiredPaths() { 
-				var TypePath = new HashSet<Type>();
-				var PathList = new List<string>();
-				void DetectCopyRequiredPath(Type t)
-				{
-					if (!TypePath.Add(t))
-						throw new NotSupportedException($"配置类型循环依赖:根类型{ImplementType} 当期类型:{t}");
-					try
-					{
-						if (t.IsArray)
-							t = t.GetElementType();
-						else if (t.IsGeneric() && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-							t = t.GetGenericArguments()[0];
-						if (ServiceDetector.IsServiceType(t))
-						{
-							for (var i = 0; i < PathList.Count; i++)
-								CopyRequiredPaths.Add(string.Join(".", PathList.Take(i + 1)));
-							return;
-						}
+			public HashSet<string> CopyRequiredPaths;
+			public IServiceDetector ServiceDetector;
+			public Type ImplementType;
+			public ConstructorInfo constructorInfo;
 
-						foreach (var pi in t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty))
-						{
-							PathList.Add(pi.Name);
-							DetectCopyRequiredPath(pi.PropertyType);
-							PathList.RemoveAt(PathList.Count - 1);
-						}
-					}
-					finally
+			HashSet<Type> TypePath = new HashSet<Type>();
+			List<string> PathList = new List<string>();
+			void DetectCopyRequiredPath(Type t)
+			{
+				if (!TypePath.Add(t))
+					throw new NotSupportedException($"配置类型循环依赖:根类型{ImplementType} 当期类型:{t}");
+				try
+				{
+					if (t.IsArray)
+						t = t.GetElementType();
+					else if (t.IsGeneric() && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+						t = t.GetGenericArguments()[0];
+					if (ServiceDetector.IsServiceType(t))
 					{
-						TypePath.Remove(t);
+						for (var i = 0; i < PathList.Count; i++)
+							CopyRequiredPaths.Add(string.Join(".", PathList.Take(i + 1)));
+						return;
+					}
+
+					foreach (var pi in t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty))
+					{
+						PathList.Add(pi.Name);
+						DetectCopyRequiredPath(pi.PropertyType);
+						PathList.RemoveAt(PathList.Count - 1);
 					}
 				}
+				finally
+				{
+					TypePath.Remove(t);
+				}
+			}
+			public void InitCopyRequiredPaths()
+			{
 				var ps = constructorInfo.GetParameters();
 				PathList.Add(null);
 				for (var i = 0; i < ps.Length; i++)
@@ -130,11 +131,15 @@ namespace SF.Services.Management.Internal
 					DetectCopyRequiredPath(ps[i].ParameterType);
 				}
 			}
+		}
 
-			InitCopyRequiredPaths();
-
-
-			Expression EnumerableCopyExpression( Expression src, Type ElementType,Expression PropPathExpr, string PropPath)
+		class Builder
+		{
+			public HashSet<string> CopyRequiredPaths;
+			public IServiceDetector ServiceDetector;
+			public Type ImplementType;
+			public ConstructorInfo constructorInfo;
+			Expression EnumerableCopyExpression(Expression src, Type ElementType, Expression PropPathExpr, string PropPath)
 			{
 				var label = Expression.Label();
 				var listType = typeof(List<>).MakeGenericType(ElementType);
@@ -144,7 +149,7 @@ namespace SF.Services.Management.Internal
 				var idx = Expression.Parameter(typeof(int));
 				var path = Expression.Parameter(typeof(string));
 				return Expression.Block(
-					new[] { al, ae , idx},
+					new[] { al, ae, idx },
 					Expression.Assign(al, Expression.New(listType)),
 					Expression.Assign(ae, Expression.Call(
 						src,
@@ -160,13 +165,13 @@ namespace SF.Services.Management.Internal
 								Expression.Break(label)
 								),
 							Expression.Assign(
-								path, 
+								path,
 								Expression.Call(
-									null, 
-									StringConcat4, 
+									null,
+									StringConcat4,
 									PropPathExpr,
-									Expression.Constant("["), 
-									Expression.Call(idx,Int32ToString),
+									Expression.Constant("["),
+									Expression.Call(idx, Int32ToString),
 									Expression.Constant("]")
 									)
 								),
@@ -175,14 +180,14 @@ namespace SF.Services.Management.Internal
 								listType.GetMethod("Add", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
 								CopyExpression(ElementType, Expression.Property(ae, "Current"), path, PropPath)
 								),
-							Expression.AddAssign(idx,Expression.Constant(1))
+							Expression.AddAssign(idx, Expression.Constant(1))
 						),
 						label
 					),
 					al
 				);
 			}
-			Expression CopyExpression(Type Type, Expression src, Expression PropPathExpr,string PropPath)
+			Expression CopyExpression(Type Type, Expression src, Expression PropPathExpr, string PropPath)
 			{
 				if (!CopyRequiredPaths.Contains(PropPath))
 					return src;
@@ -202,7 +207,7 @@ namespace SF.Services.Management.Internal
 				else if (Type.IsGeneric() && Type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
 				{
 					return Expression.Convert(
-						EnumerableCopyExpression(src, Type.GetGenericArguments()[0], PropPathExpr,PropPath),
+						EnumerableCopyExpression(src, Type.GetGenericArguments()[0], PropPathExpr, PropPath),
 						Type
 						);
 				}
@@ -222,26 +227,26 @@ namespace SF.Services.Management.Internal
 					);
 			}
 
-			Expression PropCopyExpression(Type Type, Expression src, PropertyInfo pi, Expression PropPathExpr,string PropPath)
+			Expression PropCopyExpression(Type Type, Expression src, PropertyInfo pi, Expression PropPathExpr, string PropPath)
 			{
-				return CopyExpression(pi.PropertyType, Expression.Property(src, pi), StrConcat(PropPathExpr, Expression.Constant("." + pi.Name)), PropPath+"."+pi.Name);
+				return CopyExpression(pi.PropertyType, Expression.Property(src, pi), StrConcat(PropPathExpr, Expression.Constant("." + pi.Name)), PropPath + "." + pi.Name);
 			}
-			IEnumerable<MemberBinding> MemberInitExpressions(Type Type, Expression src, Expression PropPathExpr,string PropPath)
+			IEnumerable<MemberBinding> MemberInitExpressions(Type Type, Expression src, Expression PropPathExpr, string PropPath)
 			{
 				return Type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy)
 					.Select(pi => Expression.Bind(pi, PropCopyExpression(Type, src, pi, PropPathExpr, PropPath)));
 			}
-			Expression ObjectCreateExpression(Type Type, Expression Src, Expression PropPathExpr,string PropPath)
+			Expression ObjectCreateExpression(Type Type, Expression Src, Expression PropPathExpr, string PropPath)
 			{
-				return Expression.MemberInit(Expression.New(Type), MemberInitExpressions(Type, Src, PropPathExpr,PropPath));
+				return Expression.MemberInit(Expression.New(Type), MemberInitExpressions(Type, Src, PropPathExpr, PropPath));
 			}
 
-			Expression BuildParamExpression(ParameterInfo pi,int Index)
+			Expression BuildParamExpression(ParameterInfo pi, int Index)
 			{
-				var svcType=ServiceDetector.GetServiceType(pi.ParameterType);
-				if(svcType==Internal.ServiceType.Normal)
+				var svcType = ServiceDetector.GetServiceType(pi.ParameterType);
+				if (svcType == Internal.ServiceType.Normal)
 					return ServiceProviderResolveExpression(pi.ParameterType);
-				else if(svcType==Internal.ServiceType.Managed)
+				else if (svcType == Internal.ServiceType.Managed)
 					return ManagedServiceResolveExpression(pi.ParameterType, Expression.Constant(pi.Name));
 				else
 				{
@@ -281,14 +286,39 @@ namespace SF.Services.Management.Internal
 						);
 				}
 			}
-		
-			var args = constructorInfo.GetParameters().Select((pi,i) => BuildParamExpression(pi,i)).ToArray();
-			return Expression.Lambda<ServiceFactory>(
-				Expression.New(constructorInfo, args),
-				ParamServiceProvider,
-				ParamManagedNamedServiceScope,
-				ParamServiceCreateParameterProvider
-				).Compile();
+			public ServiceFactory Build()
+			{ 
+				var args = constructorInfo.GetParameters().Select((pi, i) => BuildParamExpression(pi, i)).ToArray();
+				return Expression.Lambda<ServiceFactory>(
+					Expression.New(constructorInfo, args),
+					ParamServiceProvider,
+					ParamManagedNamedServiceScope,
+					ParamServiceCreateParameterProvider
+					).Compile();
+			}
+		}
+		public static ServiceFactory Build(
+			IServiceDetector ServiceDetector,
+			Type ImplementType,
+			ConstructorInfo constructorInfo
+			)
+		{
+			var CopyRequiredPaths = new HashSet<string>();
+			new InitCopyRequiredPathsHelper
+			{
+				constructorInfo = constructorInfo,
+				CopyRequiredPaths = CopyRequiredPaths,
+				ImplementType = ImplementType,
+				ServiceDetector = ServiceDetector
+			}.InitCopyRequiredPaths();
+
+			return new Builder
+			{
+				constructorInfo = constructorInfo,
+				CopyRequiredPaths = CopyRequiredPaths,
+				ImplementType = ImplementType,
+				ServiceDetector = ServiceDetector
+			}.Build();
 		}
 	}
 }

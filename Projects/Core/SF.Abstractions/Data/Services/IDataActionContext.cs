@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
-using ServiceProtocol.Data.Entity;
+using SF.Data.Entity;
 namespace SF.Data.Services
 {
 	public enum DataActionType

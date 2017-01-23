@@ -1,6 +1,5 @@
-﻿using ServiceProtocol.Data.Entity;
+﻿using SF.Data.Entity;
 using SF.Data;
-using SF.Data.Entity;
 using SF.Services;
 using System;
 using System.ComponentModel.DataAnnotations;

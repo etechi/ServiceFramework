@@ -16,6 +16,8 @@ namespace SF.Auth.Users.EFCore.DataModels
 		public virtual string Ident { get; set; }
 
 		[Index]
+		[Key]
+		[Column(Order = 2)]
 		public virtual long UserId { get; set; }
 
 		[Display(Name = "创建时间")]

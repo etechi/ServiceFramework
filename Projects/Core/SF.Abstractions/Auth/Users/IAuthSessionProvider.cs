@@ -1,5 +1,4 @@
-﻿using ServiceProtocol;
-using SF.Annotations;
+﻿using SF.Annotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -16,7 +16,8 @@ namespace SF.Services.Management.Internal
 			if (_Services == null)
 				_Services = new Dictionary<Tuple<Type, string>, object>();
 			var key = Tuple.Create(Type, Id ?? string.Empty);
-			if (_Services.TryGetValue(key, out var s))
+			object s;
+			if (_Services.TryGetValue(key, out s))
 				return s;
 			return _Services[key]=Factory.Create(sp,this, Type, Id);
 		}

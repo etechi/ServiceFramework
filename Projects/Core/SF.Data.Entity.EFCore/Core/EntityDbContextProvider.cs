@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace SF.Data.Entity.EntityFrameworkCore
 {
@@ -47,6 +48,7 @@ namespace SF.Data.Entity.EntityFrameworkCore
     {
 		public DbContext DbContext { get; }
 		public IDataContext DataContext { get; }
+		Dictionary<Type, object> _DataSets;
 		public EntityDbContextProvider(DbContext DbContext, IDataContext DataContext)
 		{
 			this.DbContext = DbContext;
@@ -173,8 +175,13 @@ namespace SF.Data.Entity.EntityFrameworkCore
 		
 		public IDataSet<T> Set<T>() where T:class
 		{
-            
-			return new DataSet<T>(this, DbContext.Set<T>());
+			if (_DataSets == null)
+				_DataSets = new Dictionary<Type, object>();
+			object re;
+			if (_DataSets.TryGetValue(typeof(T), out re))
+				return (IDataSet<T>)re;
+			_DataSets.Add(typeof(T),re=new DataSet<T>(this, DbContext.Set<T>()));
+			return (IDataSet<T>)re;
 		}
 
 
@@ -234,9 +241,10 @@ namespace SF.Data.Entity.EntityFrameworkCore
 				return Transaction.GetHashCode();
 			}
 		}
-        Task<object> IDataStorageEngine.ExecuteCommandAsync(string Sql, params object[] Args)
+        async Task<object> IDataStorageEngine.ExecuteCommandAsync(string Sql, CancellationToken CancellationToken, params object[] Args)
         {
-			throw new NotSupportedException();
+			return await DbContext.Database.ExecuteSqlCommandAsync(Sql, CancellationToken, Args);
+			//throw new NotSupportedException();
             //return Database..ExecuteSqlCommandAsync(Sql, Args);
         }
 

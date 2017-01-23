@@ -26,7 +26,7 @@ namespace SF.DI.Microsoft
 			this.ServiceScopeFactory = ServiceScopeFactory;
 		}
 
-		public IDIScope BeginScope()
+		public IDIScope CreateScope()
 		{
 			return new Scope(ServiceScopeFactory.CreateScope());
 		}

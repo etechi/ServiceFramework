@@ -86,7 +86,8 @@ namespace SF.Services.Management.Internal
 		{
 			if (Id == null)
 			{
-				if (!TypeServiceMap.TryGetValue(type.FullName, out var id))
+				string id;
+				if (!TypeServiceMap.TryGetValue(type.FullName, out id))
 				{
 					var DefaultServiceLocator = (IDefaultServiceLocator)ServiceProvider.GetService(typeof(IDefaultServiceLocator));
 					if (DefaultServiceLocator == null)
@@ -97,7 +98,8 @@ namespace SF.Services.Management.Internal
 				}
 			}
 
-			if (!IdentServiceMap.TryGetValue(Id, out var entry))
+			ServiceImplementEntry entry;
+			if (!IdentServiceMap.TryGetValue(Id, out entry))
 				entry=IdentServiceMap.GetOrAdd(Id, new ServiceImplementEntry(Id,type));
 
 			entry.Ensure(ServiceProvider, ServiceMetadata);
@@ -107,12 +109,14 @@ namespace SF.Services.Management.Internal
 
 		void IManagedServiceConfigChangedNotifier.NotifyChanged(string Id)
 		{
-			IdentServiceMap.TryRemove(Id, out var v);
+			ServiceImplementEntry v;
+			IdentServiceMap.TryRemove(Id, out v);
 		}
 
 		void IManagedServiceConfigChangedNotifier.NotifyDefaultChanged(string Type)
 		{
-			TypeServiceMap.TryRemove(Type, out var v);
+			string v;
+			TypeServiceMap.TryRemove(Type, out v);
 		}
 	}
 
