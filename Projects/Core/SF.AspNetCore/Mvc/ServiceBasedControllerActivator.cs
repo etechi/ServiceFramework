@@ -32,7 +32,8 @@ namespace SF.AspNetCore.Mvc
 		/// <inheritdoc />
 		public override void Release(ControllerContext context, object controller)
 		{
-			if (context.HttpContext.Items.TryGetValue(IsCreatedFromDefaultActivator, out object v) && v == IsCreatedFromDefaultActivator)
+			object v;
+			if (context.HttpContext.Items.TryGetValue(IsCreatedFromDefaultActivator, out v) && v == IsCreatedFromDefaultActivator)
 				base.Release(context, controller);
 		}
 	}

@@ -8,16 +8,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-namespace SF.DI
+using SF.Core.DI;
+namespace SF.Core.DI
 {
-	
 	public static class EFCoreServiceCollectioExtension
 	{
 		
 		public static IDIServiceCollection UseEFCoreDataEntity<TDbContext>(this IDIServiceCollection sc)
 			where TDbContext : DbContext
 		{
-			sc.AddScoped<SF.Data.Entity.IDataContext, SF.Data.Entity.DataContext>();
 			sc.AddScoped<IDataContextProviderFactory>(x => new DataContextProviderFactory<TDbContext>(()=>x.GetRequiredService<TDbContext>()));
 			return sc;
 		}

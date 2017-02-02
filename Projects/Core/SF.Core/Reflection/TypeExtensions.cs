@@ -10,10 +10,10 @@ namespace SF.Reflection
 		{
 			return Type.GetTypeInfo().IsInterface;
 		}
-		public static bool IsAssignableFrom(this Type dst, Type src)
-		{
-			return dst.GetTypeInfo().IsAssignableFrom(src.GetTypeInfo());
-		}
+		//public static bool IsAssignableFrom(this Type dst, Type src)
+		//{
+		//	return dst.GetTypeInfo().IsAssignableFrom(src.GetTypeInfo());
+		//}
 		//public static MethodInfo GetMethod(this Type type,string Name,BindingFlags Flags)
 		//{
 		//	return type.GetTypeInfo().GetMethod(Name, Flags);

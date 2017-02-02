@@ -258,7 +258,7 @@ namespace SF.Metadata
                 optional = true;
 
 
-            if (attrs.Any(a => a is SF.Annotations.OptionalAttribute || a is ReadOnlyAttribute && ((ReadOnlyAttribute)a).IsReadOnly))
+            if (attrs.Any(a => a is SF.Annotations.OptionalAttribute /*|| a is ReadOnlyAttribute && ((ReadOnlyAttribute)a).IsReadOnly*/))
                 optional = true;
             else if (attrs.Any(a => a is RequiredAttribute))
                 optional = false;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace SF.Data.Entity
 
     public interface IFieldUpdater<T>
     {
-        IFieldUpdater<T> Update<P>(System.Linq.Expressions.Expression<Func<T, P>> field);
+        IFieldUpdater<T> Update<P>(Expression<Func<T, P>> field);
     }
 
     public interface IDataContext :IDisposable
@@ -23,7 +24,9 @@ namespace SF.Data.Entity
 
 		IDataStorageEngine Engine { get; }
 		
-    }
+		IDataContextProvider Provider { get; }
+
+	}
     public interface IDataContextExtension
     {
 		void UpdateFields<T>(T item, Func<IFieldUpdater<T>, IFieldUpdater<T>> updater) where T : class;

@@ -1,4 +1,4 @@
-﻿using ServiceProtocol.Data.Entity;
+﻿using SF.Data.Entity;
 using SF.Data;
 using System;
 using System.ComponentModel.DataAnnotations;

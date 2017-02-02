@@ -10,7 +10,7 @@ namespace SF.Data.Entity
 
     public interface IDataContextProvider :IDisposable, IQueryableContext,IAsyncQueryableContext
 	{
-		IDataSet<T> Set<T>() where T : class;
+		IDataSetProvider<T> SetProvider<T>() where T : class;
 
 		IEntityQueryableProvider EntityQueryableProvider { get; }
     

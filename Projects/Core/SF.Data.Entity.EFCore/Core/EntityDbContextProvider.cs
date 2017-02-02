@@ -48,7 +48,11 @@ namespace SF.Data.Entity.EntityFrameworkCore
     {
 		public DbContext DbContext { get; }
 		public IDataContext DataContext { get; }
-		Dictionary<Type, object> _DataSets;
+		public bool IsChanged { get; private set; }
+		internal void SetChanged()
+		{
+			IsChanged = true;
+		}
 		public EntityDbContextProvider(DbContext DbContext, IDataContext DataContext)
 		{
 			this.DbContext = DbContext;
@@ -152,36 +156,38 @@ namespace SF.Data.Entity.EntityFrameworkCore
 		}
 		public int SaveChanges()
 		{
-			try
-			{
-				return DbContext.SaveChanges();
-			}
-			catch (Exception e)
-			{
-				throw MapException(e);
-			}
+			if(IsChanged)
+				try
+				{
+					var re=DbContext.SaveChanges();
+					IsChanged = false;
+					return re;
+				}
+				catch (Exception e)
+				{
+					throw MapException(e);
+				}
+			return 0;
 		}
-		public Task<int> SaveChangesAsync()
+		public async Task<int> SaveChangesAsync()
 		{
-			try
-			{
-				return DbContext.SaveChangesAsync();
-			}
-			catch (Exception e)
-			{
-				throw MapException(e);
-			}
+			if (IsChanged)
+				try
+				{
+					var re= await DbContext.SaveChangesAsync();
+					IsChanged = false;
+					return re;
+				}
+				catch (Exception e)
+				{
+					throw MapException(e);
+				}
+			return 0;
 		}
 		
-		public IDataSet<T> Set<T>() where T:class
+		public IDataSetProvider<T> SetProvider<T>() where T:class
 		{
-			if (_DataSets == null)
-				_DataSets = new Dictionary<Type, object>();
-			object re;
-			if (_DataSets.TryGetValue(typeof(T), out re))
-				return (IDataSet<T>)re;
-			_DataSets.Add(typeof(T),re=new DataSet<T>(this, DbContext.Set<T>()));
-			return (IDataSet<T>)re;
+			return new DataSetProvider<T>(this);
 		}
 
 

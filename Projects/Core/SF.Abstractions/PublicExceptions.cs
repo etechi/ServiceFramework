@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SF
 {
-	public class ServiceProtocolException : System.Exception
+	public class ServiceProtocolException : global::System.Exception
 	{
 		public ServiceProtocolException(string message) : base(message) { }
 		public ServiceProtocolException(string message,System.Exception innerException) : base(message,innerException) { }
