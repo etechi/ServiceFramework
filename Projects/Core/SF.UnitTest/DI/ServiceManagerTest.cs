@@ -74,6 +74,7 @@ namespace SF.UT
 			msc.AddScoped<IOperator, Add>();
 			msc.AddScoped<IOperator, Substract>();
 			msc.AddScoped<IAgg, Agg>();
+			msc.SetupServices();
 
 			var rsp = isc.BuildServiceProvider();
 			var sf = rsp.Resolve<IDIScopeFactory>();
@@ -84,8 +85,8 @@ namespace SF.UT
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
 				ts.SetConfig<IOperator, Add>("add", null);
 				ts.SetConfig<IOperator, Substract>("substract", null);
-				ts.SetConfig<IAgg, Agg>("agg1", new { op = "add", cfg = new { op = "add", add = 10000 } });
-				ts.SetConfig<IAgg, Agg>("agg2", new { op = "add", cfg = new { op = "add", add = 20000 } });
+				ts.SetConfig<IAgg, Agg>("agg1", new { op = "add", cfg = new { Op = "add", Add = 10000 } });
+				ts.SetConfig<IAgg, Agg>("agg2", new { op = "add", cfg = new { Op = "add", Add = 20000 } });
 				ts.SetDefaultService<IAgg>("agg1");
 
 				var agg = sp.TryResolve<IAgg>();
@@ -108,7 +109,7 @@ namespace SF.UT
 				var sp = s.ServiceProvider;
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
-				ts.SetConfig<IAgg, Agg>("agg2", new { op = "add", cfg = new { op = "substract", add = 20000 } });
+				ts.SetConfig<IAgg, Agg>("agg2", new { op = "add", cfg = new { Op = "substract", Add = 20000 } });
 
 				var agg = sp.TryResolve<IAgg>();
 				var re = agg.Sum(new[] { 1, 2, 3, 4 });

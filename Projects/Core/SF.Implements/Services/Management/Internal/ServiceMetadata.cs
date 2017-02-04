@@ -1,3 +1,4 @@
+using SF.Core.DI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +16,10 @@ namespace SF.Services.Management.Internal
 			return ServiceTypes.TryGetValue(type, out st) ? st : ServiceType.Unknown;
 		}
 
-		public ServiceMetadata(IEnumerable<Type> NormalServices,IEnumerable<ManagedServiceDescriptor> ManagedServices)
+		public ServiceMetadata(IEnumerable<Type> NormalServices,IEnumerable<ServiceDescriptor> SerciceDescriptors)
 		{
 			this.NormalServices = NormalServices.ToArray();
-			this.ManagedServices = ManagedServices
+			this.ManagedServices = SerciceDescriptors
 				.GroupBy(m => m.ServiceType)
 				.Select(g => new KeyValuePair<Type, IReadOnlyList<Type>>(
 					g.Key, 

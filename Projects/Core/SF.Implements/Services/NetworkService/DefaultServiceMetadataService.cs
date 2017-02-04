@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using SF.Services.NetworkService.Metadata;
+using System.Text;
 
 namespace SF.Services.NetworkService
 {
@@ -19,7 +20,7 @@ namespace SF.Services.NetworkService
 			return Library;
 		}
 
-		public string Typescript(bool all = true)
+		public StringContent Typescript(bool all = true)
 		{
 			var tb = new TypeScriptProxyBuilder(
 				(c, a) =>
@@ -27,7 +28,7 @@ namespace SF.Services.NetworkService
 				a.GrantInfo==null
 				);
 			var code = tb.Build(Library);
-			return code;
+			return new StringContent(code,Encoding.UTF8,"text/javascript");
 		}
 
 	}

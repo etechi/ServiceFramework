@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SF.Core.DI
 {
 	public static class DIServiceCollectionExtension
 	{
+		public static IEnumerable<Type> GetServiceTypes(this IDIServiceCollection sc)
+		{
+			return sc.Select(d => d.ServiceType).Distinct();
+		}
 		public static IDIServiceCollection Replace(this IDIServiceCollection sc,ServiceDescriptor service)
 		{
 			sc.Remove(service.ServiceType);

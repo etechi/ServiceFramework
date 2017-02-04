@@ -22,6 +22,20 @@ namespace SF.Core.DI.MicrosoftExtensions
 					throw new NotSupportedException();
 			}
 		}
+		static ServiceLifetime UnmapLifeTime(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime)
+		{
+			switch (lifetime)
+			{
+				case global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped:
+					return ServiceLifetime.Scoped;
+				case global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton:
+					return ServiceLifetime.Singleton;
+				case global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient:
+					return ServiceLifetime.Transient;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 		static global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor MapDescriptor(ServiceDescriptor Descriptor)
 		{
 			switch (Descriptor.ServiceImplementType)
@@ -50,8 +64,7 @@ namespace SF.Core.DI.MicrosoftExtensions
 
 		public IServiceCollection InnerCollection { get; }
 
-		public IEnumerable<Type> ServiceTypes =>
-			InnerCollection.Select(s => s.ServiceType).Distinct();
+		
 
 
 		public DIServiceCollection(IServiceCollection InnerCollection)
@@ -82,6 +95,25 @@ namespace SF.Core.DI.MicrosoftExtensions
 			return sc;
 		}
 
+		public IEnumerator<ServiceDescriptor> GetEnumerator()
+		{
+			return InnerCollection.Select(s =>
+			{
+				if (s.ImplementationInstance != null)
+					return new ServiceDescriptor(s.ServiceType, s.ImplementationInstance);
+				else if (s.ImplementationType != null)
+					return new ServiceDescriptor(s.ServiceType, s.ImplementationType, UnmapLifeTime(s.Lifetime));
+				else if (s.ImplementationFactory != null)
+					return new ServiceDescriptor(s.ServiceType, s.ImplementationFactory, UnmapLifeTime(s.Lifetime));
+				else
+					throw new NotSupportedException();
+			}).GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
 	}
 	public static class IDIServiceCollectionExtension
 	{

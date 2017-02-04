@@ -86,8 +86,7 @@ namespace SF.Services.Management.Internal
 		{
 			if (Id == null)
 			{
-				string id;
-				if (!TypeServiceMap.TryGetValue(type.FullName, out id))
+				if (!TypeServiceMap.TryGetValue(type.FullName, out Id))
 				{
 					var DefaultServiceLocator = (IDefaultServiceLocator)ServiceProvider.GetService(typeof(IDefaultServiceLocator));
 					if (DefaultServiceLocator == null)
@@ -95,6 +94,7 @@ namespace SF.Services.Management.Internal
 					Id = DefaultServiceLocator.Locate(type.FullName);
 					if (Id == null)
 						throw new ArgumentException($"找不到服务类型:{type.FullName}的默认服务");
+					Id = TypeServiceMap.GetOrAdd(type.FullName, Id);
 				}
 			}
 

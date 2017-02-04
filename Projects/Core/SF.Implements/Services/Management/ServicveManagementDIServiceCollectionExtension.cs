@@ -10,11 +10,11 @@ namespace SF.Services.Management
 		{
 			var sc = ManagedServiceCollection.NormalServiceCollection;
 			var mc = new Internal.ServiceMetadata(
-				sc.ServiceTypes,
+				sc.GetServiceTypes(),
 				ManagedServiceCollection
 				);
 
-			if (!sc.ServiceTypes.Any(t=>t== typeof(IServiceImplementTypeResolver)))
+			if (!sc.GetServiceTypes().Any(t=>t== typeof(IServiceImplementTypeResolver)))
 				sc.AddSingleton<IServiceImplementTypeResolver, DefaultServiceImplementTypeResolver>();
 
 			var factory = new Internal.ManagedServiceFactory(mc);

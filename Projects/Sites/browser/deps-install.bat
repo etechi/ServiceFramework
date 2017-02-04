@@ -1,0 +1,1 @@
+cnpm  install @types/classnames @types/es6-promise @types/react @types/react-dom @types/react-router @types/react-scrollbar bluebird classnames fixed-data-table moment react react-addons-css-transition-group react-datepicker react-dom react-router react-scrollbar superagent --save

@@ -16,7 +16,7 @@ namespace SF.Core.DI
 					IEnumerable<Type> Services=null
 					)
 		{
-			Services = Services ?? sc.ServiceTypes.Where(st => st.GetCustomAttribute<NetworkServiceAttribute>() != null);
+			Services = Services ?? sc.GetServiceTypes().Where(st => st.GetCustomAttribute<NetworkServiceAttribute>() != null);
 			sc.AddSingleton<IServiceBuildRuleProvider, DefaultServiceBuildRuleProvider>();
 			sc.AddSingleton(sp =>
 				new ServiceMetadataBuilder(
@@ -28,7 +28,7 @@ namespace SF.Core.DI
 			sc.AddSingleton<IServiceTypeCollection>(sp =>
 			{
 				var ServiceTypes = (Services ??
-					sc.ServiceTypes
+					sc.GetServiceTypes()
 					.Where(st => st.GetCustomAttribute<NetworkServiceAttribute>() != null)
 					).ToArray();
 				return new ServiceTypeCollection(ServiceTypes);

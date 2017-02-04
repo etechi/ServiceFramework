@@ -57,7 +57,7 @@ namespace SF.Services.Management.Internal
 
 		public static ConstructorInfo FindBestConstructorInfo(Type Type)
 		{
-			var constructors = Type.GetConstructors(BindingFlags.Public)
+			var constructors = Type.GetConstructors(BindingFlags.Public | BindingFlags.Instance| BindingFlags.CreateInstance)
 				.ToArray();
 
 

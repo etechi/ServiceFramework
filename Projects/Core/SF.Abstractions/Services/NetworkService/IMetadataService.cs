@@ -1,5 +1,6 @@
 ﻿using SF.Metadata;
 using SF.Metadata.Models;
+using System.Net.Http;
 using System.Reflection;
 namespace SF.Services.NetworkService
 {
@@ -8,6 +9,6 @@ namespace SF.Services.NetworkService
 	{
 		//[Authorize(Roles ="admin")]
 		Metadata.Library Json();
-		string Typescript(bool all = true);
+		StringContent Typescript(bool all = true);
 	}
 }

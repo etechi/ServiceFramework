@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Web.Http;
 
 namespace SF.AdminSite.Api
@@ -19,5 +20,12 @@ namespace SF.AdminSite.Api
 		{
 			return calc.Add(a,b);
 		}
-    }
+
+		[HttpGet]
+		public IHttpActionResult Typescript(bool all = true)
+		{
+			return Content( Request.CreateResponse(((new StringContent("asdasdasdasda", Encoding.UTF8, "text/javascript");
+		}
+
+	}
 }
