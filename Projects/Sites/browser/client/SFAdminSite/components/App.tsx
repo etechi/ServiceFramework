@@ -38,9 +38,9 @@ export default class App extends React.Component<AppProps, state>
                 </WA.Header.Text>
                 <WA.Header.Button onClick={() => this.handleSignout() }><i className="icon-logout"></i></WA.Header.Button>
             </WA.Header.Container>
-            <WA.SideBar.Container pathPrefix="/admin" menuCategories={config.ManagerBuildResult.menus/* modules.map(m => m.menu) */} >
+            <WA.SideBar.Container pathPrefix="/" menuCategories={config.ManagerBuildResult.menus/* modules.map(m => m.menu) */} >
                 {/*<WA.SideBar.SearchBox></WA.SideBar.SearchBox>*/}
-                <WA.SideBar.MenuItem icon='icon-home' name='首页' to='/admin/dashboard' />
+                <WA.SideBar.MenuItem icon='icon-home' name='首页' to='/dashboard' />
             </WA.SideBar.Container>
             {/*<WA.Footer>footer</WA.Footer>*/}
             {this.props.children}

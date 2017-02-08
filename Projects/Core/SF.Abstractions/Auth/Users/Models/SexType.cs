@@ -1,14 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using SF.Metadata;
 
 namespace SF.Auth.Users
 {
 	public enum SexType
     {
-        [Display(Name = "未指定")]
+        [Comment(Name = "未指定")]
         Unknown,
-        [Display(Name = "男")]
+        [Comment(Name = "男")]
         Male,
-        [Display(Name = "女")]
+        [Comment(Name = "女")]
         Female
     }
 

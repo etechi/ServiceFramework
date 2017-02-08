@@ -14,8 +14,11 @@ namespace SF.Services.NetworkService
     {
         List<Metadata.Service> Services { get; } = new List<Metadata.Service>();
 		IServiceBuildRuleProvider BuildRule { get; }
-		public ServiceMetadataBuilder(IServiceBuildRuleProvider BuildRule, IJsonSerializer JsonSerializer):
-			base(JsonSerializer)
+		public ServiceMetadataBuilder(
+			IServiceBuildRuleProvider BuildRule, 
+			IJsonSerializer JsonSerializer,
+			IMetadataTypeCollection Types=null):
+			base(JsonSerializer,Types)
 		{
 			this.BuildRule = BuildRule;
 		}
@@ -28,7 +31,7 @@ namespace SF.Services.NetworkService
             return new Metadata.Library
 			{
                 Services = Services.ToArray(),
-                Types = GetTypes()
+                Types = TypeCollection.GetTypes().ToArray()
             };
         }
 
@@ -61,11 +64,13 @@ namespace SF.Services.NetworkService
 				);
 
 		}
+
+		
+		
 		Metadata.Method[] GenerateMethodsMetadata(Type type, Metadata.GrantInfo ac)
 		{
 			var re = new List<Metadata.Method>();
-			foreach (var m in type.
-				GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.InvokeMethod)
+			foreach (var m in BuildRule.GetServiceMethods(type)
 				.Where(m => IsActionMethod(m)))
 			{
 				var a = GenerateMethodMetadata(m,ac);
@@ -89,6 +94,8 @@ namespace SF.Services.NetworkService
 		bool IsActionMethod(MethodInfo method)
 		{
 			var cas=method.GetCustomAttributes();
+			if (method.Name.StartsWith("get_") || method.Name.StartsWith("set_"))
+				return false;
 			//if (cas.All(a => !HttpMethodAttributes.Contains(a.GetType())))
 			//	return false;
 			if (method.GetCustomAttribute<IgnoreAttribute>(true) != null)
@@ -116,7 +123,7 @@ namespace SF.Services.NetworkService
 			return LoadAttributes(
 				new Metadata.Method(method)
 				{
-					Name = method.Name,
+					Name = BuildRule.FormatMethodName(method),
 					Parameters = parameters.Length==0? null : parameters,
 					Type = ResolveResultType(method.ReturnType),
 					GrantInfo= UseOrIgnoreGrantInfo(new Metadata.GrantInfo
@@ -133,7 +140,7 @@ namespace SF.Services.NetworkService
 		}
 		new Metadata.Parameter[] GenerateMethodParameters(MethodInfo method)
 		{
-			return method.GetParameters().Select(p => GenerateParameter(method, p)).ToArray();
+			return BuildRule.GetMethodParameters(method).Select(p => GenerateParameter(method, p)).ToArray();
 		}
 		Metadata.Parameter GenerateParameter(MethodInfo method, ParameterInfo parameter)
 		{
@@ -154,7 +161,7 @@ namespace SF.Services.NetworkService
 			},attrs/*,a=>!(a is FromBodyAttribute)*/);
 		}
 	
-		protected override SF.Metadata.Models.Type GenerateType(System.Type type)
+		public override SF.Metadata.Models.Type GenerateAndAddType(System.Type type)
 		{
 			if (type == typeof(HttpResponseMessage))
 			{
@@ -162,10 +169,10 @@ namespace SF.Services.NetworkService
 				{
 					Name = "unknown"
 				};
-				AddType(type, re);
+				TypeCollection.AddType( re);
 				return re;
 			}
-			return base.GenerateType(type);
+			return base.GenerateAndAddType(type);
 		}
 		
 		
@@ -173,7 +180,7 @@ namespace SF.Services.NetworkService
 			new[]{
 				typeof(AuthorizeAttribute),
 				typeof(RequirePermissionAttribute),
-                typeof(DisplayAttribute)
+                typeof(CommentAttribute)
             }).ToArray();
 
 		protected override Type[] GetIgnoreAttributeTypes()
@@ -182,9 +189,9 @@ namespace SF.Services.NetworkService
 		}
 
 
-		protected override T LoadAttributes<T>(T item,IEnumerable<Attribute> attrs,Predicate<Attribute> predicate=null)
+		public override T LoadAttributes<T>(T item,IEnumerable<Attribute> attrs,Predicate<Attribute> predicate=null)
 		{
-			var display= (DisplayAttribute)attrs.FirstOrDefault(a => a is DisplayAttribute);
+			var display= (CommentAttribute)attrs.FirstOrDefault(a => a is CommentAttribute);
 			if (display != null)
 			{
 				if (!string.IsNullOrWhiteSpace(display.Name)) item.Title = display.Name;

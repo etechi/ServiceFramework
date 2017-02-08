@@ -14,13 +14,13 @@ using System.Data.Entity;
 #endif
 using SF.Core.DI.MicrosoftExtensions;
 using SF.Core.DI;
-using SF.Data.Entity;
+using SF.Data.Storage;
 using System.Linq;
 
 namespace SF.UT.Data
 {
 	
-	public class AppContext : SF.Data.Entity.DbContext
+	public class AppContext : SF.Data.Storage.DbContext
 	{
 		public AppContext():this(new EFStartup().ConfigureService())
 		{

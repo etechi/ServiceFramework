@@ -37,7 +37,7 @@ function init(
     config.build(lib, permissions, window.location.href.indexOf("all=true")!=-1);
 
     //const module_routes = modules.map(m => m.route);
-    setupEntityLinkBuilder([config.ManagerBuildResult.entityLinkBuilders]);
+    setupEntityLinkBuilder([config.ManagerBuildResult.entityLinkBuilders],"/");
 
     var tm = new ApiTableManager.ApiTableManager(apiForms);
     //modules.filter(m => m.api && m.api.queries ? true : false).forEach(m =>

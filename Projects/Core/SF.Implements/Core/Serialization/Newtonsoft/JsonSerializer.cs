@@ -3,11 +3,27 @@ using Newtonsoft.Json.Converters;
 using System;
 namespace SF.Core.Serialization.Newtonsoft
 {
-	
+	class OptionConverter : JsonConverter
+	{
+		public override bool CanConvert(Type objectType)
+		{
+			return objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(Option<>);
+		}
+
+		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, global::Newtonsoft.Json.JsonSerializer serializer)
+		{
+			return Activator.CreateInstance(objectType,serializer.Deserialize(reader,objectType.GetGenericArguments()[0]));
+		}
+
+		public override void WriteJson(JsonWriter writer, object value, global::Newtonsoft.Json.JsonSerializer serializer)
+		{
+			throw new NotImplementedException();
+		}
+	}
 	public class JsonSerializer : IJsonSerializer
 	{
 		public static IJsonSerializer Instance { get; } = new JsonSerializer();
-
+		
 		JsonSerializerSettings MapSetting(JsonSetting Setting)
 		{
 			return new JsonSerializerSettings
@@ -22,7 +38,8 @@ namespace SF.Core.Serialization.Newtonsoft
 				TypeNameHandling = Setting?.WithType ?? false ? TypeNameHandling.Objects:TypeNameHandling.None,
 				Converters = new[] {
 					(JsonConverter) new global::Newtonsoft.Json.Converters.StringEnumConverter(),
-					(JsonConverter)new ExpandoObjectConverter()
+					(JsonConverter)new ExpandoObjectConverter(),
+					new OptionConverter()
 				},
 				ReferenceLoopHandling = global::Newtonsoft.Json.ReferenceLoopHandling.Ignore,
 			};

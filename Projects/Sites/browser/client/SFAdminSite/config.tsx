@@ -18,6 +18,7 @@ import * as ApiMeta from "SF/utils/ApiMeta";
 //var help_user = require("./help/user/index.md");
  
 var cfg: ManagerBuilder.IManagerConfig = {
+    urlRoot:"/",
     groups: [
         //{
         //    title: "",
@@ -181,45 +182,48 @@ var cfg: ManagerBuilder.IManagerConfig = {
         //    ]
 
         //},
-        //{
-        //    title: "系统管理",
-        //    modules: [
-        //        {
-        //            title: "系统安全",
-        //            items: [
-        //                { type: "entity", source: "管理员" },
-        //                { type: "entity", source: "用户角色" },
-        //                { type: "form", source: "AuthAdminManager/AdminInfo", hidden:true }
-        //            ]
-        //        },
-        //        {
-        //            title: "系统日志",
-        //            icon: "fa fa-magic",
-        //            items: [
-        //                { type: "entity", source: "文本消息记录" },
-        //                { type: "entity", source: "支付收款记录" },
-        //                { type: "entity", source: "支付退款记录" },
-        //                { type: "entity", source: "安全审核记录" }
-        //            ]
-        //        },
-        //        {
-        //            title: "系统设置",
-        //            icon: "fa fa-server",
-        //            items: [
-        //                { type: "setting", source: null, hidden: true}
-        //            ]
-        //        },
-        //        {
-        //            title: "系统服务管理",
-        //            items: [
-        //                { type: "entity", source: "系统服务", hidden: true },
-        //                { type: "entity", source: "系统服务类型", hidden: true},
-        //                { type: "entity", source: "系统服务提供者" ,hidden: true },
-        //                { type: "entity", source: "系统服务协议", hidden: true}
-        //            ]
-        //        }
-        //    ]
-        //}
+        {
+            title: "系统管理",
+            modules: [
+                //{
+                //    title: "系统安全",
+                //    items: [
+                //        { type: "entity", source: "管理员" },
+                //        { type: "entity", source: "用户角色" },
+                //        { type: "form", source: "AuthAdminManager/AdminInfo", hidden:true }
+                //    ]
+                //},
+                //{
+                //    title: "系统日志",
+                //    icon: "fa fa-magic",
+                //    items: [
+                //        { type: "entity", source: "文本消息记录" },
+                //        { type: "entity", source: "支付收款记录" },
+                //        { type: "entity", source: "支付退款记录" },
+                //        { type: "entity", source: "安全审核记录" }
+                //    ]
+                //},
+                //{
+                //    title: "系统设置",
+                //    icon: "fa fa-server",
+                //    items: [
+                //        { type: "setting", source: null, hidden: true}
+                //    ]
+                //},
+                {
+                    title: "系统服务管理",
+                    items: [
+                        { type: "entity", source: "系统服务定义" },
+                        { type: "entity", source: "系统服务实现" },
+                        { type: "entity", source: "系统服务实例" },
+                        //{ type: "entity", source: "系统服务", hidden: true },
+                        //{ type: "entity", source: "系统服务类型", hidden: true},
+                        //{ type: "entity", source: "系统服务提供者" ,hidden: true },
+                        //{ type: "entity", source: "系统服务协议", hidden: true}
+                    ]
+                }
+            ]
+        }
     ]
 };
 

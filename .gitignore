@@ -3,3 +3,8 @@ bin
 *.user
 /Projects/Sites/ManagementConsole/node_modules
 *.suo
+/Projects/packages
+/Projects/Sites/SF.AdminSite/client
+/Projects/Sites/SF.AdminSite/node_modules
+/Projects/Sites/SF.AdminSite/vender
+/Projects/Sites/browser/node_modules

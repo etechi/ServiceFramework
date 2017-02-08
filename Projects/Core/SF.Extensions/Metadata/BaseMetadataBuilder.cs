@@ -8,24 +8,33 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Metadata
 {
-	public class BaseMetadataBuilder
+	public class MetadataTypeCollection : IMetadataTypeCollection
 	{
-		Dictionary<Type, Models.Type> Types { get; } = new Dictionary<Type, Models.Type>();
+		Dictionary<string, Models.Type> Types { get; } = new Dictionary<string, Models.Type>();
+
+		public IEnumerable<Models.Type> GetTypes() { return Types.Values; }
+		public Models.Type FindType(string Name)
+		{
+			return Types.Get(Name);
+		}
+		public void AddType(Models.Type ModelType)
+		{
+			Types.Add(ModelType.Name, ModelType);
+		}
+	}
+	public class BaseMetadataBuilder : IMetadataBuilder
+	{
+		public IMetadataTypeCollection TypeCollection { get; }
 		public IJsonSerializer JsonSerializer { get; }
-		public BaseMetadataBuilder(IJsonSerializer JsonSerializer)
+		public BaseMetadataBuilder(IJsonSerializer JsonSerializer, IMetadataTypeCollection Types)
 		{
 			this.JsonSerializer = JsonSerializer;
+			this.TypeCollection = Types ?? new MetadataTypeCollection();
 		}
 
-		public Models.Type[] GetTypes() { return Types.Values.ToArray(); }
-
-		protected void AddType(Type Type,Models.Type ModelType)
-		{
-			Types.Add(Type, ModelType);
-		}
 		public virtual Models.Library Build()
 		{
-			return new Models.Library { Types = GetTypes() };
+			return new Models.Library { Types = TypeCollection.GetTypes().ToArray() };
 		}
 		protected virtual Models.Parameter[] GenerateMethodParameters(MethodInfo method)
 		{
@@ -60,7 +69,7 @@ namespace SF.Metadata
 		}
 		protected virtual string ResolveType(Type type)
 		{
-			return TryGenerateType(type).Name;
+			return TryGenerateAndAddType(type).Name;
 		}
 		protected virtual Type TryDetectDictType(Type type)
 		{
@@ -76,14 +85,14 @@ namespace SF.Metadata
 			return null;
 		}
 
-		public virtual Models.Type TryGenerateType(Type type)
+		public virtual Models.Type TryGenerateAndAddType(Type type)
 		{
-			Models.Type re;
-			if (Types.TryGetValue(type, out re))
-				return re;
-			return GenerateType(type);
+			var re = TypeCollection.FindType(FormatTypeName(type));
+			if (re != null) return re;
+			return GenerateAndAddType(type);
 		}
-		protected virtual Models.Type GenerateType(Type type)
+		
+		public virtual Models.Type GenerateAndAddType(Type type)
 		{ 
 			var re = new Models.Type
 			{
@@ -91,8 +100,7 @@ namespace SF.Metadata
 				IsEnumType = type.IsEnumType(),
 				IsInterface = type.IsInterfaceType()
 			};
-			Types.Add(type, re);
-
+			TypeCollection.AddType(re);
 			if (type.IsArray)
 			{
 				re.ElementType = ResolveType(type.GetElementType());
@@ -122,7 +130,7 @@ namespace SF.Metadata
 					.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.GetField)
 					.Select(p =>
 					{
-						var da = p.GetCustomAttribute<DisplayAttribute>();
+						var da = p.GetCustomAttribute<CommentAttribute>();
 						var i= new Models.Property
 						{
 							Name = p.Name,
@@ -138,26 +146,24 @@ namespace SF.Metadata
 					.ToArray();
 				return re;
 			}
-			 if (!IsRootType(type))
+			if (IsRootType(type))
+				return re;
+			var baseTypes = new List<string>();
+			if (!IsRootType(type.GetBaseType()))
+				baseTypes.Add(ResolveType(type.GetBaseType()));
+			if(type.IsInterfaceType())
 			{
-				var baseTypes = new List<string>();
-				if (!IsRootType(type.GetBaseType()))
-					baseTypes.Add(ResolveType(type.GetBaseType()));
-				if(type.IsInterfaceType())
-				{
-					foreach (var i in type.GetInterfaces())
-						baseTypes.Add(ResolveType(i));
-				}
-				if (baseTypes.Count > 0)
-					re.BaseTypes = baseTypes.ToArray();
-				var props=GenerateTypeProperties(type);
-				re.Properties = props.Length > 0 ? props : null;
-				LoadAttributes(re, type.GetCustomAttributes(true).Cast<Attribute>());
+				foreach (var i in type.GetInterfaces())
+					baseTypes.Add(ResolveType(i));
 			}
-			
+			if (baseTypes.Count > 0)
+				re.BaseTypes = baseTypes.ToArray();
+			var props=GenerateTypeProperties(type);
+			re.Properties = props.Length > 0 ? props : null;
+			LoadAttributes(re, type.GetCustomAttributes(true).Cast<Attribute>());
 			return re;
 		}
-		protected virtual string FormatTypeName(Type type)
+		public virtual string FormatTypeName(Type type)
 		{
 			if (type.IsArray)
 				return FormatTypeName(type.GetElementType()) + "[]";
@@ -210,7 +216,24 @@ namespace SF.Metadata
 					return name;
 			}
 		}
-		protected virtual Models.Property[] GenerateTypeProperties(Type type)
+		//public IEnumerable<System.Reflection.MethodInfo> GetTypeMethods(Type type)
+		//{
+		//	if (!type.IsInterfaceType())
+		//	{
+
+		//	}
+		//}
+
+		public virtual IEnumerable< PropertyInfo> GetTypeProperties(Type type)
+		{
+			return type.GetProperties(
+				BindingFlags.Public |
+				BindingFlags.Instance |
+				BindingFlags.FlattenHierarchy
+				)
+				.Where(p => p.DeclaringType == type);
+		}
+		public virtual Models.Property[] GenerateTypeProperties(Type type)
 		{
             object obj = null;
             if (!type.IsAbstractType() && !type.IsInterfaceType() && !type.IsGenericDefinition())
@@ -219,12 +242,8 @@ namespace SF.Metadata
                 if (ci != null)
                     obj = Activator.CreateInstance(type);
             }
-			return type.GetProperties(
-				BindingFlags.Public |
-				BindingFlags.Instance
-				)
-				.Where(p=>p.DeclaringType== type)
-				.Select(p => GenerateTypeProperty(type, p, obj))
+			return GetTypeProperties(type)
+				.Select(p => GenerateTypeProperty(p, obj))
 				.ToArray();
 		}
 
@@ -240,12 +259,14 @@ namespace SF.Metadata
             var m = MethodGetTypeDefaultValue.MakeGenericMethod(type);
             return m.Invoke(null,Array.Empty<object>());
         }
-		protected virtual Models.Property GenerateTypeProperty(Type type,PropertyInfo prop,object DefaultValueObject)
+		public virtual Models.Property GenerateTypeProperty(PropertyInfo prop,object DefaultValueObject)
 		{
 			var attrs = prop.GetCustomAttributes();
 			var prop_type = prop.PropertyType;
             bool optional;
-			if (prop_type.IsGeneric() && prop_type.GetGenericTypeDefinition() == typeof(Nullable<>))
+			if (prop_type.IsGeneric() && 
+				(prop_type.GetGenericTypeDefinition() == typeof(Nullable<>) ||
+				prop_type.GetGenericTypeDefinition() == typeof(Option<>)))
 			{
 				prop_type = prop_type.GetGenericArguments()[0];
                 optional = true;
@@ -297,6 +318,7 @@ namespace SF.Metadata
 			typeof(System.Runtime.CompilerServices.AsyncStateMachineAttribute),
 			typeof(System.Diagnostics.DebuggerStepThroughAttribute),
 			typeof(DisplayAttribute),
+			typeof(CommentAttribute),
 			typeof(System.ComponentModel.DataAnnotations.RequiredAttribute),
             typeof(System.Runtime.InteropServices.OptionalAttribute),
         };
@@ -306,16 +328,15 @@ namespace SF.Metadata
 			return DefaultIgnoreAttributeTypes;
 		}
 
-		protected virtual T LoadAttributes<T>(T item,IEnumerable<Attribute> attrs,Predicate<Attribute> predicate=null)where T : Models.Entity
+		public virtual T LoadAttributes<T>(T item,IEnumerable<Attribute> attrs,Predicate<Attribute> predicate=null)where T : Models.Entity
 		{
-			var display = (System.ComponentModel.DataAnnotations.DisplayAttribute)
-				attrs.FirstOrDefault(a => a is System.ComponentModel.DataAnnotations.DisplayAttribute);
+			var display = (CommentAttribute)
+				attrs.FirstOrDefault(a => a is CommentAttribute);
 			if (display != null)
 			{
 				item.Title = display.Name;
 				item.Description = display.Description;
 				item.Group = display.GroupName;
-				item.Prompt = display.Prompt;
 				item.ShortName = display.ShortName;
 			}
 			

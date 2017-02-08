@@ -7,4 +7,9 @@ namespace SF.Services.NetworkService
 	{
 		System.Type[] Types { get; }
 	}
+
+	public interface IExtraServiceTypeSource
+	{
+		void AddExtraServiceType(IMetadataBuilder Builder);
+	}
 }

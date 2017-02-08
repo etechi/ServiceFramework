@@ -1,6 +1,6 @@
 ﻿using SF.Core.DI;
 using SF.Metadata;
-using SF.Services.Management;
+using SF.Services.ManagedServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;

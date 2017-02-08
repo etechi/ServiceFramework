@@ -10,8 +10,10 @@ namespace SF
 {
 	public enum EnvironmentType
 	{
+		Utils,
 		Development,
 		Staging,
 		Production
 	}
+	
 }

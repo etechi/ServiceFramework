@@ -1,6 +1,6 @@
 ﻿using SF.Core.DI;
 using SF.Metadata;
-using SF.Services.Management;
+using SF.Services.ManagedServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +41,9 @@ namespace SF.AspNet.NetworkService
 			this.ActionExecutorInstance = new Lazy<ActionExecutor>(() => new ActionExecutor(Method));
 			this.HeavyParameter = HeavyParameter;
 			this.Parameters = new Collection<HttpParameterDescriptor>(
-				Method.GetParameters().Select(p => new ParameterDescriptor(
+				Method.GetParameters()
+				.Where(p=>p.ParameterType!=typeof(Data.Paging))
+				.Select(p => new ParameterDescriptor(
 					this,
 					p,
 					p == HeavyParameter
@@ -135,7 +137,10 @@ namespace SF.AspNet.NetworkService
 			object[] array = new object[num];
 			for (int i = 0; i < num; i++)
 			{
-				array[i] = this.ExtractParameterFromDictionary(parameterInfos[i], parameters, controllerContext);
+				if (parameterInfos[i].ParameterType == typeof(Data.Paging))
+					array[i] = Data.Paging.Create(controllerContext.Request.GetQueryNameValuePairs(),40);
+				else
+					array[i] = this.ExtractParameterFromDictionary(parameterInfos[i], parameters, controllerContext);
 			}
 			return array;
 		}

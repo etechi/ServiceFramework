@@ -9,6 +9,6 @@ namespace SF.Services.NetworkService
 	{
 		//[Authorize(Roles ="admin")]
 		Metadata.Library Json();
-		StringContent Typescript(bool all = true);
+		string Typescript(bool all = true);
 	}
 }

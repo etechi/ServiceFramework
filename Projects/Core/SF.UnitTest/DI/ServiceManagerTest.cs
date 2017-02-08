@@ -4,9 +4,11 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
-using SF.Services.Management;
+using SF.Services.ManagedServices;
 using SF.Core.DI;
 using SF.Core.DI.MicrosoftExtensions;
+using SF.Services.ManagedServices.Storages;
+using SF.Services.ManagedServices.Runtime;
 
 namespace SF.UT
 {
@@ -65,16 +67,14 @@ namespace SF.UT
         {
 			var isc = SF.Core.DI.MicrosoftExtensions.DIServiceCollection.Create();
 
-			isc.AddScoped<IServiceConfigLoader, MemoryServiceSource>();
-			isc.AddScoped<IDefaultServiceLocator>(sp=>(IDefaultServiceLocator)sp.Resolve<IServiceConfigLoader>());
 
 			//var isc = sc.GetDIServiceCollection();
+			isc.UseMemoryManagedServiceSource();
 
-			var msc = new ManagedServiceCollection(isc);
+			var msc = isc.UseManagedService();
 			msc.AddScoped<IOperator, Add>();
 			msc.AddScoped<IOperator, Substract>();
 			msc.AddScoped<IAgg, Agg>();
-			msc.SetupServices();
 
 			var rsp = isc.BuildServiceProvider();
 			var sf = rsp.Resolve<IDIScopeFactory>();

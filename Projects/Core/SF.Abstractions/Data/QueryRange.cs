@@ -8,15 +8,15 @@ namespace SF.Data
 	public class QueryRange<T>
 		where T :struct,IComparable<T>
 	{
-		[Display(Prompt ="开始")]
+		[Comment(Prompt ="开始")]
 		public virtual T? Begin { get; set; }
-		[Display(Prompt = "结束")]
+		[Comment(Prompt = "结束")]
 		public virtual T? End { get; set; }
 	}
     public class DateQueryRange:
        QueryRange<DateTime>
     {
-        [Display(Prompt = "开始(默认为最近31天)")]
+        [Comment(Prompt = "开始(默认为最近31天)")]
         public override DateTime? Begin { get; set; }
         [Date(EndTime=true)]
         public override DateTime? End { get; set; }
@@ -26,9 +26,9 @@ namespace SF.Data
         where T : struct, IComparable<T>
     {
         public virtual bool NotNull { get; set; }
-        [Display(Prompt = "开始")]
+        [Comment(Prompt = "开始")]
         public virtual T? Begin { get; set; }
-        [Display(Prompt = "结束")]
+        [Comment(Prompt = "结束")]
         public virtual T? End { get; set; }
     }
     public class NullableDateQueryRange :
@@ -39,9 +39,9 @@ namespace SF.Data
     }
     public enum QueryableBoolean
     {
-        [Display(Name = "是")]
+        [Comment(Name = "是")]
         True,
-        [Display(Name = "否")]
+        [Comment(Name = "否")]
         False
     }
     

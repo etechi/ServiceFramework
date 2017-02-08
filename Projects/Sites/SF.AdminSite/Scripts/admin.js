@@ -6481,7 +6481,7 @@ function attrFirstValue(entity, type) {
     var re = attrFirst(entity, type);
     if (!re)
         return null;
-    return JSON.parse(re.Values);
+    return re.Values ? JSON.parse(re.Values) : {};
 }
 exports.attrFirstValue = attrFirstValue;
 function attrValues(entity, type) {
@@ -6491,21 +6491,21 @@ function attrValues(entity, type) {
     var re = [];
     for (var i = 0, l = attrs.length; i < l; i++)
         if (attrs[i].Type == type)
-            re.push(JSON.parse(attrs[i].Values));
+            re.push(attrs[i].Values ? JSON.parse(attrs[i].Values) : {});
     return re;
 }
 exports.attrValues = attrValues;
 exports.KeyAttribute = "System.ComponentModel.DataAnnotations.KeyAttribute";
-exports.EntityTitleAttribute = "ServiceProtocol.Annotations.EntityTitleAttribute";
-exports.EntityIdentAttribute = "ServiceProtocol.Annotations.EntityIdentAttribute";
-exports.EntityObjectAttribute = "ServiceProtocol.Annotations.EntityObjectAttribute";
-exports.TableVisibleAttribute = "ServiceProtocol.Annotations.TableVisibleAttribute";
-exports.EntityManagerAttribute = "ServiceProtocol.Annotations.EntityManagerAttribute";
-exports.EntityActionAttribute = "ServiceProtocol.Annotations.EntityActionAttribute";
-exports.EntityRelatedAttribute = "ServiceProtocol.Annotations.EntityRelatedAttribute";
-exports.CopyableAttribute = "ServiceProtocol.Annotations.CopyableAttribute";
-exports.DateAttribute = "ServiceProtocol.Annotations.DateAttribute";
-exports.IgnoreAttribute = "ServiceProtocol.Annotations.IgnoreAttribute";
+exports.EntityTitleAttribute = "SF.Metadata.EntityTitleAttribute";
+exports.EntityIdentAttribute = "SF.Metadata.EntityIdentAttribute";
+exports.EntityObjectAttribute = "SF.Metadata.EntityObjectAttribute";
+exports.TableVisibleAttribute = "SF.Metadata.TableVisibleAttribute";
+exports.EntityManagerAttribute = "SF.Metadata.EntityManagerAttribute";
+exports.EntityActionAttribute = "SF.Metadata.EntityActionAttribute";
+exports.EntityRelatedAttribute = "SF.Metadata.EntityRelatedAttribute";
+exports.CopyableAttribute = "SF.Metadata.CopyableAttribute";
+exports.DateAttribute = "SF.Metadata.DateAttribute";
+exports.IgnoreAttribute = "SF.Metadata.IgnoreAttribute";
 
 
 /***/ }),
@@ -10183,13 +10183,15 @@ module.exports = __webpack_require__(73);
 "use strict";
 
 var entityMap = {};
-function setup(arg) {
+var rootUrl = "/";
+function setup(arg, newRootUrl) {
     entityMap = arg
         .filter(function (es) { return !!es; })
         .reduce(function (map, es) {
         Object.keys(es).forEach(function (k) { return map[k] = es[k]; });
         return map;
     }, {});
+    rootUrl = newRootUrl;
 }
 exports.setup = setup;
 function buildEntityLink(type, ids) {
@@ -10198,7 +10200,7 @@ function buildEntityLink(type, ids) {
     var builder = entityMap[type];
     if (!builder)
         return null;
-    return "/admin/" + builder(ids);
+    return rootUrl + builder(ids);
 }
 exports.buildEntityLink = buildEntityLink;
 
@@ -15275,7 +15277,198 @@ var ManagerBuilder = __webpack_require__(445);
 //var help_uimanager = require("./help/uimanager/index.md");
 //var help_user = require("./help/user/index.md");
 var cfg = {
-    groups: []
+    urlRoot: "/",
+    groups: [
+        //{
+        //    title: "",
+        //    modules: [
+        //        {
+        //            title: "订单管理",
+        //            icon: "fa fa-shopping-cart",
+        //            items: [
+        //                { type: "entity", source: "交易", icon: "fa fa-list-alt", title: "订单查询" },
+        //                { type: "entity", source: "交易项目", icon: "fa fa-list-alt", title: "订单明细查询" },
+        //                { type: "help", source: help_trade}
+        //           ]
+        //        },
+        //        {
+        //            title: "夺宝管理",
+        //            icon: "fa fa-trophy",
+        //            items: [
+        //                { type: "entity", source: "夺宝轮次", icon: "fa fa-flag-o", title: "夺宝轮次查询" },
+        //                { type: "entity", source: "夺宝中奖纪录", icon: "fa fa-flag-o", title: "中奖纪录查询" },
+        //                { type: "entity", source: "晒单", icon: "fa fa-flag-o", title: "用户晒单查询", entityMode: ManagerBuilder.EntityItemMode.NoCreate},
+        //                { type: "entity", source: "夺宝调整设置", icon: "fa fa-flag-o", title: "夺宝调整设置" },
+        //                { type: "entity", source: "夺宝调整记录", icon: "fa fa-flag-o", title: "夺宝调整记录" },
+        //                { type: "entity", source: "彩票断网请求", icon: "fa fa-flag-o", title: "彩票断网记录" },
+        //                { type: "help", source: help_round }
+        //            ]
+        //        },
+        //        {
+        //            title: "促销管理",
+        //            icon: "fa fa-bullhorn",
+        //            items: [
+        //                //{ type: "entity", source: "积分", icon: "fa fa-star-o", title:"积分管理" },
+        //                //{ type: "entity", source: "积分记录", icon:"fa fa-star-half-o" },
+        //                //{ type: "entity", source: "积分等级",icon:"fa fa-signal" },
+        //                { type: "entity", source: "活动", icon:"fa fa-rocket"},
+        //                { type: "entity", source: "活动记录", icon:"fa fa-list-ol"},
+        //                { type: "entity", source: "活动获奖记录", icon: "fa fa-list-ol"},
+        //                { type: "entity", source: "专属活动", icon: "fa fa-user-secret" },
+        //                { type: "entity", source: "专属活动参与记录", icon: "fa fa-user-secret" },
+        //                { type: "entity", source: "优惠券", icon: "fa fa-barcode" },
+        //                { type: "entity", source: "优惠券获取记录", icon: "fa fa-barcode" },
+        //                { type: "entity", source: "优惠券使用记录", icon: "fa fa-barcode" },
+        //                { type: "entity", source: "优惠券模板", icon:"fa fa-clone" },
+        //                { type: "entity", source: "实物奖品", icon:"fa fa-gift" },
+        //                { type: "entity", source: "实物获奖记录", icon: "fa fa-list" },
+        //                { type: "help", source: help_promotion }
+        //            ]
+        //        },
+        //        {
+        //            title: "产品管理",
+        //            icon: "fa fa-diamond",
+        //            items: [
+        //                { type: "entity", source: "产品", icon:"fa fa-list"},
+        //                { type: "entity", source: "产品类型", icon:"fa fa-cubes" },
+        //                { type: "entity", source: "产品目录", icon:"fa fa-server" },
+        //                { type: "help", source: help_product}
+        //            ]
+        //        },
+        //        {
+        //            title: "发货管理", 
+        //            icon: "fa fa-truck",
+        //            items: [
+        //                { type: "entity", source: "发货", icon:"fa fa-send-o"},
+        //                { type: "entity", source: "发货地址", icon:"fa fa-building-o"},
+        //                { type: "entity", source: "发货渠道", icon: "fa fa-plane" },
+        //                { type: "entity", source: "虚拟项目自动发货规格", icon: "fa fa-plane", title: "自动发货规格"},
+        //                { type: "entity", source: "虚拟项目自动发货导入批次", icon: "fa fa-plane", title: "导入自动发货数据" },
+        //                { type: "entity", source: "虚拟项目自动发货导入记录", icon: "fa fa-plane", title: "自动发货导入记录查询" },
+        //                { type: "entity", source: "虚拟项目自动发货记录", icon: "fa fa-plane", title: "自动发货记录查询"},
+        //                { type: "open", title:"快递查询", source: "http://www.kuaidi100.com/frame/910.html", icon: "fa fa-search" },
+        //                { type: "help", source: help_delivery }
+        //            ]
+        //        },
+        //        {
+        //            title: "用户管理",
+        //            icon: "fa fa-user",
+        //            items: [
+        //                { type: "entity", source: "用户", icon: "fa fa-users" },
+        //                { type: "entity", source: "用户渠道", icon: "fa fa-road" },
+        //                { type: "entity", source: "模拟用户", icon: "fa fa-users" },
+        //                { type: "help", source: help_user }
+        //            ]
+        //        },
+        //        {
+        //            title: "财务管理",
+        //            icon: "fa fa-money",
+        //            items: [
+        //                { type: "entity", source: "账户" },
+        //                { type: "entity", source: "账户充值记录" },
+        //                { type: "entity", source: "账户转账记录" },
+        //                { type: "entity", source: "账户退款记录" },
+        //                { type: "entity", source: "账户科目" },
+        //                { type: "help", source: help_accounting }
+        //            ]
+        //        }
+        //    ]
+        //},
+        //{
+        //    title: "客服管理",
+        //    modules: [
+        //        {
+        //            title: "用户反馈",
+        //            items: [
+        //                { type: "entity", source: "用户反馈", entityMode: ManagerBuilder.EntityItemMode.NoCreate }
+        //            ] 
+        //        },
+        //        {
+        //            title: "通知管理",
+        //            items: [
+        //                { type: "entity", source: "全体通知" },
+        //                { type: "entity", source: "普通通知" }
+        //            ]
+        //        }
+        //    ]
+        //},
+        //{
+        //    title: "网站管理",
+        //    modules: [
+        //        {
+        //            title: "常用设置",
+        //            items: [
+        //                { type: "form", source: "UIManagerFriendlyManager/PCHeadMenu", icon: "fa fa-align-left", },
+        //                { type: "form", source: "UIManagerFriendlyManager/PCHeadProductCategory", icon: "fa fa-align-left",},
+        //                { type: "form", source: "UIManagerFriendlyManager/PCHomeSlider", icon: "fa fa-align-left",},
+        //                { type: "form", source: "UIManagerFriendlyManager/PCTailMenu", icon: "fa fa-align-left",},
+        //                { type: "list", source: "UIManagerAdManager/PCAdArea", icon: "fa fa-align-left", },
+        //                { type: "form", source: "UIManagerFriendlyManager/MobileProductCategory", icon: "fa fa-align-left", },
+        //                { type: "form", source: "UIManagerFriendlyManager/MobileHomeMenu", icon: "fa fa-align-left",},
+        //                { type: "form", source: "UIManagerFriendlyManager/MobileHomeSlider", icon: "fa fa-align-left", }
+        //            ]
+        //        },
+        //        {
+        //            title: "高级页面管理",
+        //            icon: "fa fa-magic",
+        //            items: [
+        //                { type: "entity", source: "界面内容", icon: "fa fa-align-left", hidden:true},
+        //                { type: "entity", source: "界面站点", icon: "fa fa-globe", hidden: true },
+        //                { type: "entity", source: "界面站点模板", icon: "fa fa-sitemap", hidden: true }
+        //                //{ type: "help", source: help_uimanager, hidden: true }
+        //            ]
+        //        },
+        //        {
+        //            title: "文档管理",
+        //            icon: "fa fa-file-image-o",
+        //            items: [
+        //                { type: "entity", source: "文档", icon: "fa fa-list" },
+        //                { type: "entity", source: "文档目录", icon: "fa fa-folder-open-o" },
+        //                { type: "entity", source: "文档分区", icon: "fa fa-th-large" },
+        //                { type: "help", source: help_doc}
+        //            ]
+        //        }
+        //    ]
+        //},
+        {
+            title: "系统管理",
+            modules: [
+                //{
+                //    title: "系统安全",
+                //    items: [
+                //        { type: "entity", source: "管理员" },
+                //        { type: "entity", source: "用户角色" },
+                //        { type: "form", source: "AuthAdminManager/AdminInfo", hidden:true }
+                //    ]
+                //},
+                //{
+                //    title: "系统日志",
+                //    icon: "fa fa-magic",
+                //    items: [
+                //        { type: "entity", source: "文本消息记录" },
+                //        { type: "entity", source: "支付收款记录" },
+                //        { type: "entity", source: "支付退款记录" },
+                //        { type: "entity", source: "安全审核记录" }
+                //    ]
+                //},
+                //{
+                //    title: "系统设置",
+                //    icon: "fa fa-server",
+                //    items: [
+                //        { type: "setting", source: null, hidden: true}
+                //    ]
+                //},
+                {
+                    title: "系统服务管理",
+                    items: [
+                        { type: "entity", source: "系统服务定义" },
+                        { type: "entity", source: "系统服务实现" },
+                        { type: "entity", source: "系统服务实例" },
+                    ]
+                }
+            ]
+        }
+    ]
 };
 exports.ManagerBuildResult = null;
 function build(lib, permissions, all) {
@@ -15315,7 +15508,7 @@ var Library = (function (_super) {
             .map(function (c) { return ({
             c: c, e: c.Attributes &&
                 c.Attributes.filter(function (a) {
-                    return a.Type == "ServiceProtocol.Annotations.EntityManagerAttribute";
+                    return a.Type == "SF.Metadata.EntityManagerAttribute";
                 })[0]
         }); }).filter(function (c) { return !!c.e; })
             .forEach(function (c) { return _this._entityControllers[JSON.parse(c.e.Values).Entity] = c.c; });
@@ -15356,7 +15549,7 @@ var Library = (function (_super) {
             throw "\u52A8\u4F5C\u4E0D\u5B58\u5728" + controller + "/" + action;
         var query, forms;
         if (act.HeavyParameter) {
-            if (act.Parameters && act.Parameters.length == 1 && act.Parameters[0].FromBody) {
+            if (act.Parameters && act.Parameters.length == 1 && act.Parameters[0].Name == act.HeavyParameter) {
                 query = null;
                 forms = args;
             }
@@ -15368,7 +15561,7 @@ var Library = (function (_super) {
                         var v = args[p.Name];
                         if (v === undefined)
                             return;
-                        if (p.FromBody)
+                        if (p.Name == act.HeavyParameter)
                             forms[p.Name] = v;
                         else
                             query[p.Name] = v;
@@ -32624,7 +32817,9 @@ var Container = (function (_super) {
                 return path;
             if (base.charAt(0) == '/')
                 return base + "/" + path;
-            return prefix + "/" + base + "/" + path;
+            if (prefix[prefix.length - 1] != '/')
+                prefix += '/';
+            return prefix + base + "/" + path;
         };
         if (this.props.menuCategories) {
             var pathPrefix = this.props.pathPrefix || "";
@@ -33660,8 +33855,8 @@ var App = (function (_super) {
                     React.createElement("span", { className: "username username-hide-on-mobile" }, u.nick)),
                 React.createElement(WA.Header.Button, { onClick: function () { return _this.handleSignout(); } },
                     React.createElement("i", { className: "icon-logout" }))),
-            React.createElement(WA.SideBar.Container, { pathPrefix: "/admin", menuCategories: config.ManagerBuildResult.menus /* modules.map(m => m.menu) */ },
-                React.createElement(WA.SideBar.MenuItem, { icon: 'icon-home', name: '首页', to: '/admin/dashboard' })),
+            React.createElement(WA.SideBar.Container, { pathPrefix: "/", menuCategories: config.ManagerBuildResult.menus /* modules.map(m => m.menu) */ },
+                React.createElement(WA.SideBar.MenuItem, { icon: 'icon-home', name: '首页', to: '/dashboard' })),
             this.props.children);
     };
     return App;
@@ -33764,25 +33959,150 @@ function setApiInvoker(invoker) {
     _invoker = invoker;
 }
 exports.setApiInvoker = setApiInvoker;
+exports.SF$Data$SortOrderNames = {
+    "Default": "Default",
+    "Asc": "Asc",
+    "Desc": "Desc",
+    "Random": "Random",
+};
+exports.SF$Data$LogicObjectStateNames = {
+    "Enabled": "有效",
+    "Disabled": "无效",
+    "Deleted": "已删除",
+};
 //
 //
-exports.Add = {
+exports.Calc = {
     //
     //
-    Calc: function (
+    Add: function (
         //
         //类型:int
         a, 
         //
         //类型:int
-        b, 
-        //
-        //类型:ManagementConsole.PostArgument
-        pa, __opts) {
-        return _invoker('Add', 'Calc', {
+        b, __opts) {
+        return _invoker('Calc', 'Add', {
             a: a,
             b: b
-        }, pa, __opts);
+        }, null, __opts);
+    },
+};
+//
+//
+exports.ServiceDeclarationManager = {
+    //
+    //
+    Load: function (
+        //
+        //类型:string
+        Id, __opts) {
+        return _invoker('ServiceDeclarationManager', 'Load', {
+            Id: Id
+        }, null, __opts);
+    },
+    //
+    //
+    Query: function (
+        //
+        //类型:SF.Services.ManagedServices.Admin.ServiceDeclarationQueryArgument
+        Arg, 
+        //
+        //类型:SF.Data.Paging
+        paging, __opts) {
+        return _invoker('ServiceDeclarationManager', 'Query', {
+            Arg: Arg
+        }, paging, __opts);
+    },
+};
+//
+//
+exports.ServiceImplementManager = {
+    //
+    //
+    Load: function (
+        //
+        //类型:string
+        Id, __opts) {
+        return _invoker('ServiceImplementManager', 'Load', {
+            Id: Id
+        }, null, __opts);
+    },
+    //
+    //
+    Query: function (
+        //
+        //类型:SF.Services.ManagedServices.Admin.ServiceImplementQueryArgument
+        Arg, 
+        //
+        //类型:SF.Data.Paging
+        paging, __opts) {
+        return _invoker('ServiceImplementManager', 'Query', {
+            Arg: Arg
+        }, paging, __opts);
+    },
+};
+//
+//
+exports.ServiceInstanceManager = {
+    //
+    //
+    LoadForUpdate: function (
+        //
+        //类型:string
+        Id, __opts) {
+        return _invoker('ServiceInstanceManager', 'LoadForUpdate', {
+            Id: Id
+        }, null, __opts);
+    },
+    //
+    //
+    Create: function (
+        //
+        //类型:SF.Services.ManagedServices.Models.ServiceInstance
+        Entity, __opts) {
+        return _invoker('ServiceInstanceManager', 'Create', null, Entity, __opts);
+    },
+    //
+    //
+    Update: function (
+        //
+        //类型:SF.Services.ManagedServices.Models.ServiceInstance
+        Entity, __opts) {
+        return _invoker('ServiceInstanceManager', 'Update', null, Entity, __opts);
+    },
+    //
+    //
+    Delete: function (
+        //
+        //类型:string
+        Key, __opts) {
+        return _invoker('ServiceInstanceManager', 'Delete', {
+            Key: Key
+        }, null, __opts);
+    },
+    //
+    //
+    Load: function (
+        //
+        //类型:string
+        Id, __opts) {
+        return _invoker('ServiceInstanceManager', 'Load', {
+            Id: Id
+        }, null, __opts);
+    },
+    //
+    //
+    Query: function (
+        //
+        //类型:SF.Services.ManagedServices.Admin.ServiceInstanceQueryArgument
+        Arg, 
+        //
+        //类型:SF.Data.Paging
+        paging, __opts) {
+        return _invoker('ServiceInstanceManager', 'Query', {
+            Arg: Arg
+        }, paging, __opts);
     },
 };
 //
@@ -52351,7 +52671,7 @@ function newTypeFormItems(baseName, type, ctx) {
         return [];
     var re = ctx.lib.allTypeProperties(type).filter(function (p) {
         return !p.Attributes ||
-            !p.Attributes.filter(function (a) { return a.Type == "ServiceProtocol.Annotations.IgnoreAttribute"; }).length;
+            !p.Attributes.filter(function (a) { return a.Type == "SF.Metadata.IgnoreAttribute"; }).length;
     }).map(function (p) {
         return newFormItem(baseName, p, p.Type, p.Optional, ctx);
     });
@@ -52362,7 +52682,7 @@ function newTypeFormItems(baseName, type, ctx) {
     //        .map(t => t.Properties)
     //).filter(p => 
     //    !p.Attributes ||
-    //    !p.Attributes.filter(a => a.Type == "ServiceProtocol.Annotations.IgnoreAttribute").length
+    //    !p.Attributes.filter(a => a.Type == "SF.Metadata.IgnoreAttribute").length
     //).map(p =>
     //    newFormItem(baseName, p, p.Type, p.Optional,ctx)
     //); 
@@ -53201,7 +53521,7 @@ exports.TreeEditor = TreeEditor;
 var FI = __webpack_require__(37);
 var Meta = __webpack_require__(19);
 var attrs = (_a = {},
-    _a["ServiceProtocol.Annotations.LayoutAttribute"] = function (item, values) {
+    _a["SF.Metadata.LayoutAttribute"] = function (item, values) {
         item.position = values.Positions;
     },
     _a["System.ComponentModel.DataAnnotations.KeyAttribute"] = function (item, values) {
@@ -53257,12 +53577,12 @@ var attrs = (_a = {},
             return !v ? "请输入" + item.entity.Title : v.length < min ? item.entity.Title + "至少需要" + min + "个字" : null;
         });
     },
-    _a["ServiceProtocol.Annotations.PasswordAttribute"] = function (item, values) {
+    _a["SF.Metadata.PasswordAttribute"] = function (item, values) {
         if (item.type != "string")
             throw "Password标记必须应用于字符串字段";
         item.componentProps.type = "password";
     },
-    _a["ServiceProtocol.Annotations.DateAttribute"] = function (item, values) {
+    _a["SF.Metadata.DateAttribute"] = function (item, values) {
         if (item.type != "datetime")
             throw "Date标记必须应用于时间类型字段";
         if (values.EndTime)
@@ -53283,26 +53603,26 @@ var attrs = (_a = {},
                 return v && v.length && v.length < values.Length ? "至少需要" + values.Length + "个" + type : null;
             });
     },
-    _a["ServiceProtocol.Annotations.RelationAttribute"] = function (item, values) {
+    _a["SF.Metadata.RelationAttribute"] = function (item, values) {
     },
-    _a["ServiceProtocol.Annotations.UserRelationAttribute"] = function (item, values) {
+    _a["SF.Metadata.UserRelationAttribute"] = function (item, values) {
     },
-    _a["ServiceProtocol.Annotations.HtmlAttribute"] = function (item, values, ctx) {
+    _a["SF.Metadata.HtmlAttribute"] = function (item, values, ctx) {
         if (item.itemType != FI.FormItemType.Field)
             throw "图片只能是简单字段:" + item.formField;
         item.editor = "rich-editor";
     },
-    _a["ServiceProtocol.Annotations.MultipleLinesAttribute"] = function (item, values, ctx) {
+    _a["SF.Metadata.MultipleLinesAttribute"] = function (item, values, ctx) {
         if (item.type != "string")
             throw "多行标志只能是文本字段:" + item.formField;
         item.componentProps.rows = 4;
     },
-    _a["ServiceProtocol.Annotations.CopyableAttribute"] = function (item, values, ctx) {
+    _a["SF.Metadata.CopyableAttribute"] = function (item, values, ctx) {
         if (item.type != "string")
             throw "可复制标志只能是文本字段:" + item.formField;
         item.componentProps.copyable = true;
     },
-    _a["ServiceProtocol.Annotations.ImageAttribute"] = function (item, values, ctx) {
+    _a["SF.Metadata.ImageAttribute"] = function (item, values, ctx) {
         if (item.itemType != FI.FormItemType.Field)
             throw "图片只能是简单字段:" + item.formField;
         var fi = item;
@@ -53320,7 +53640,7 @@ var attrs = (_a = {},
             if (!top2Type || !Meta.isArrayType(top2Type) ||
                 top2.Attributes &&
                     top2.Attributes.filter(function (a) {
-                        return a.Type == "ServiceProtocol.Annotations.ArrayLayoutAttribute" &&
+                        return a.Type == "SF.Metadata.ArrayLayoutAttribute" &&
                             JSON.parse(a.Values).HertMode;
                     }).length > 0)
                 return;
@@ -53330,20 +53650,20 @@ var attrs = (_a = {},
                 .filter(function (p) {
                 return !p.Attributes ||
                     p.Attributes.filter(function (a) {
-                        return a.Type == "ServiceProtocol.Annotations.IgnoreAttribute";
+                        return a.Type == "SF.Metadata.IgnoreAttribute";
                     }).length == 0;
             }).length > 1)
                 return;
             item.componentProps.fullWidth = true;
         }
     },
-    _a["ServiceProtocol.Annotations.TreeNodesAttribute"] = function (item, values) {
+    _a["SF.Metadata.TreeNodesAttribute"] = function (item, values) {
         if (item.itemType != FI.FormItemType.Array)
             throw "TreeNodes必须在数组上使用";
         item.editor = "tree-editor";
         item.formField += "[]";
     },
-    _a["ServiceProtocol.Annotations.TableRowsAttribute"] = function (item, values) {
+    _a["SF.Metadata.TableRowsAttribute"] = function (item, values) {
         if (item.itemType != FI.FormItemType.Array)
             throw "TableRows必须在数组上使用";
         item.editor = "table-editor";
@@ -53355,7 +53675,7 @@ var attrs = (_a = {},
         item.cfgs.rowDescProp = values.RowDescriptionPropertyName;
         item.cfgs.cellsProp = values.CellsPropertyName;
     },
-    _a["ServiceProtocol.Annotations.ArrayLayoutAttribute"] = function (item, values) {
+    _a["SF.Metadata.ArrayLayoutAttribute"] = function (item, values) {
         if (item.itemType != FI.FormItemType.Array)
             throw "ArrayLayout必须在数组上使用";
         item.hertMode = values.HertMode || false;
@@ -53388,22 +53708,29 @@ var attrs = (_a = {},
         //}
         if (values.ScopeField) {
             var cur_type = ctx.pathEntities[ctx.pathEntities.length - 1];
-            if (cur_type.Name == "[]")
+            if (cur_type && cur_type.Name == "[]")
                 cur_type = ctx.pathEntities[ctx.pathEntities.length - 2];
-            if (cur_type.Type && Meta.isArrayType(cur_type.Type))
+            if (cur_type && cur_type.Type && Meta.isArrayType(cur_type.Type))
                 cur_type = ctx.lib.type(Meta.arrayElementType(cur_type.Type));
-            var prop = ctx.lib.allTypeProperties(cur_type)
+            var prop = cur_type && ctx.lib.allTypeProperties(cur_type)
                 .filter(function (p) { return p.Name == values.ScopeField; })[0];
-            var prop = ctx.lib.allTypeProperties(cur_type)
-                .filter(function (p) { return p.Name == values.ScopeField; })[0];
-            if (!prop)
-                throw "在类" + cur_type.Name + "中找不到范围字段:" + values.ScopeField;
-            item.componentProps.scopeName = prop.Title;
-            var scopeField = values.ScopeField;
-            item.componentProps.scopeField = scopeField;
-            item.componentProps.scopeId = function (field, rc) {
-                return rc.path[rc.path.length - 1][scopeField] || null;
-            };
+            if (!prop || values.ScopeValue) {
+                if (!values.ScopeValue)
+                    throw "在类" + (cur_type ? cur_type.Name : "(未定义)") + "中找不到范围字段:" + values.ScopeField;
+                var scopeField = values.ScopeField;
+                item.componentProps.scopeField = scopeField;
+                item.componentProps.scopeId = function (field, rc) {
+                    return values.ScopeValue;
+                };
+            }
+            else {
+                item.componentProps.scopeName = prop.Title;
+                var scopeField = values.ScopeField;
+                item.componentProps.scopeField = scopeField;
+                item.componentProps.scopeId = function (field, rc) {
+                    return rc.path[rc.path.length - 1][scopeField] || null;
+                };
+            }
         }
         if (item.itemType == FI.FormItemType.Array) {
             var ai = item;
@@ -53443,7 +53770,7 @@ var attrs = (_a = {},
             item.componentProps.postfix = "元";
         //(item as FI.FormItemArray).hertMode = values.HertMode || false
     },
-    _a["ServiceProtocol.Annotations.PropertyTypeAttribute"] = function (item, values) {
+    _a["SF.Metadata.PropertyTypeAttribute"] = function (item, values) {
         if (item.itemType != FI.FormItemType.Field)
             throw "动态属性必须是简单字段:" + item.formField;
         item.editor = "dyn-prop-editor";
@@ -53455,12 +53782,12 @@ function apply(item, ctx) {
     if (!item.entity.Attributes)
         return item;
     item.entity.Attributes.forEach(function (a) {
-        if (a.Type == "ServiceProtocol.Annotations.IgnoreAttribute")
+        if (a.Type == "SF.Metadata.IgnoreAttribute")
             return;
         var attr = attrs[a.Type];
         if (!attr)
             return;
-        attr(item, JSON.parse(a.Values), ctx);
+        attr(item, a.Values ? JSON.parse(a.Values) : {}, ctx);
     });
     return item;
 }
@@ -54193,7 +54520,7 @@ function prepareTreeOptions(act, items) {
     var type = lib.type(lib.type(act.Type).ElementType);
     var pid = lib.allTypeProperties(type).filter(function (p) {
         return !lib.attr(p, "System.ComponentModel.DataAnnotations.KeyAttribute") &&
-            lib.attrValue(p, "ServiceProtocol.Annotations.EntityIdentAttribute").IsTreeParentId;
+            lib.attrValue(p, "SF.Metadata.EntityIdentAttribute").IsTreeParentId;
     })[0];
     if (!pid)
         return items.map(function (i) { return ({ value: i.Id, text: lib.getTitle(i, type.Name) }); });
@@ -54406,7 +54733,7 @@ var LargeSingleEntityPicker = (function (_super) {
         }
         this.selectActionDetect(nextProps.entity);
         if (nextProps.scopeId != this.props.scopeId) {
-            this.setState({ text: undefined });
+            this.setState({ text: "" });
             if (this.props.value)
                 this.props.onChange("");
         }
@@ -55980,7 +56307,7 @@ function buildEntityItem(ctx) {
         if (globalActions.length > 0) {
             headActionBuilders = globalActions.map(function (a) {
                 var cond = a.attr.ConditionExpression ? new Function("return " + a.attr.ConditionExpression) : function () { return true; };
-                var linkBase = '/admin/' + ctx.linkBase + entityEncoded + "/" + a.action.Name + "/";
+                var linkBase = ctx.cfg.urlRoot + ctx.linkBase + entityEncoded + "/" + a.action.Name + "/";
                 return {
                     build: function (r, idx) {
                         return cond.call(r) ?
@@ -56033,7 +56360,7 @@ function buildEntityItem(ctx) {
             actionBuilders = listItemActions.map(function (a) {
                 var cond = a.attr.ConditionExpression ? new Function("return " + a.attr.ConditionExpression) : function () { return true; };
                 if (a.type == ActionType.ContextForm || a.type == ActionType.ContextView) {
-                    var linkBase_3 = '/admin/' + ctx.linkBase + entityEncoded + "/" + a.action.Name + "/";
+                    var linkBase_3 = ctx.cfg.urlRoot + ctx.linkBase + entityEncoded + "/" + a.action.Name + "/";
                     return {
                         build: function (r, idx) {
                             return cond.call(r) ?
@@ -56044,7 +56371,7 @@ function buildEntityItem(ctx) {
                     };
                 }
                 else if (a.type == ActionType.ContextQuery) {
-                    var linkBase_4 = '/admin/' + ctx.linkBase + entityEncoded;
+                    var linkBase_4 = ctx.cfg.urlRoot + ctx.linkBase + entityEncoded;
                     var lib = ctx.lib;
                     var startQuery = function (id) {
                         lib.call(controller.Name, a.action.Name, (_a = {},
@@ -56083,7 +56410,7 @@ function buildEntityItem(ctx) {
             links: [{ text: ctx.module.title }, { text: title }],
             controller: controller.Name,
             action: QueryAction ? "Query" : "List",
-            headerLinks: !readonly && CreateAction && (ctx.item.entityMode != EntityItemMode.NoCreate) ? [{ to: "/admin/" + ctx.linkBase + entityEncoded + "/new", text: "添加" + entity }] : null,
+            headerLinks: !readonly && CreateAction && (ctx.item.entityMode != EntityItemMode.NoCreate) ? [{ to: ctx.cfg.urlRoot + ctx.linkBase + entityEncoded + "/new", text: "添加" + entity }] : null,
             headerActionBuilders: headActionBuilders,
             actionBuilders: actionBuilders,
             readonly: readonly
@@ -56201,7 +56528,7 @@ function buildListItem(ctx) {
             });
     }
     var actionNameEncoded = encodeURI(actionName);
-    var linkBase = '/admin/' + ctx.linkBase + actionNameEncoded + '/' + (!readonly && saveAction ? 'edit' : 'detail') + '/';
+    var linkBase = ctx.cfg.urlRoot + ctx.linkBase + actionNameEncoded + '/' + (!readonly && saveAction ? 'edit' : 'detail') + '/';
     ctx.routes.push({
         path: actionName,
         component: Views.ListView({
@@ -56209,7 +56536,7 @@ function buildListItem(ctx) {
             controller: controller.Name,
             action: listAction.Name,
             titleLinkBuilder: function (ids) { return linkBase + ids.join('/'); },
-            headerLinks: !readonly && createAction ? [{ to: "/admin/" + ctx.linkBase + actionNameEncoded + "/new", text: "添加" + objTitle }] : null
+            headerLinks: !readonly && createAction ? [{ to: ctx.cfg.urlRoot + ctx.linkBase + actionNameEncoded + "/new", text: "添加" + objTitle }] : null
         }),
         childRoutes: chdRoutes
     });
@@ -78109,7 +78436,7 @@ function init(lib, permissions //api.ServiceProtocol$Auth$Permission[]
     ApiFormManager.setDefaultFormManager(apiForms);
     config.build(lib, permissions, window.location.href.indexOf("all=true") != -1);
     //const module_routes = modules.map(m => m.route);
-    EntityLinkBuilder_1.setup([config.ManagerBuildResult.entityLinkBuilders]);
+    EntityLinkBuilder_1.setup([config.ManagerBuildResult.entityLinkBuilders], "/");
     var tm = new ApiTableManager.ApiTableManager(apiForms);
     //modules.filter(m => m.api && m.api.queries ? true : false).forEach(m =>
     //    m.api.queries.forEach(f => tm.createTable(f))

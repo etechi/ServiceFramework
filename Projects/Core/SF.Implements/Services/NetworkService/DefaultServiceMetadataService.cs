@@ -20,7 +20,7 @@ namespace SF.Services.NetworkService
 			return Library;
 		}
 
-		public StringContent Typescript(bool all = true)
+		public string Typescript(bool all = true)
 		{
 			var tb = new TypeScriptProxyBuilder(
 				(c, a) =>
@@ -28,7 +28,7 @@ namespace SF.Services.NetworkService
 				a.GrantInfo==null
 				);
 			var code = tb.Build(Library);
-			return new StringContent(code,Encoding.UTF8,"text/javascript");
+			return code;
 		}
 
 	}

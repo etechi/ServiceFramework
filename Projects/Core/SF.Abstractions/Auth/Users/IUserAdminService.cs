@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.Users
 {
-	public class UserQueryArgument : Data.Services.IQueryArgument<long>
+	public class UserQueryArgument : Data.Entity.IQueryArgument<long>
 	{
 		public Option<long> Id { get; set; }
 		public string NickName { get; set; }
 	}
 	public interface IUserAdminService : 
-		Data.Services.IEntitySource<long,UserInternal,UserQueryArgument>,
-		Data.Services.IEntityManager<long,UserEditable>
+		Data.Entity.IEntitySource<long,UserInternal,UserQueryArgument>,
+		Data.Entity.IEntityManager<long,UserEditable>
     {
     }
 

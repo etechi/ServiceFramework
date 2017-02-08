@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF
+namespace System
 {
 	public static class Strings
 	{
@@ -23,7 +23,7 @@ namespace SF
 
 		public static byte[] Base64(this string str)
 		{
-			Ensure.NotNull(str,nameof(str));
+			SF.Ensure.NotNull(str,nameof(str));
 			return Convert.FromBase64String(str);
 		}
         static Random DefaultRandom { get; } = new System.Random();

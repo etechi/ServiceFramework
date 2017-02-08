@@ -15,7 +15,7 @@ namespace SF.AdminSite
 
 			routes.MapRoute(
 				name: "Default",
-				url: "{controller}/{action}/{id}",
+				url: "{*id}",
 				defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
 			);
 		}

@@ -49,7 +49,7 @@ namespace SF.AspNet.NetworkService
 			var heavyParameter = ServiceBuildRule.DetectHeavyParameter(method);
 			return BuildDescriptor(
 					ControllerDescriptor,
-					method.Name,
+					ServiceBuildRule.FormatMethodName(method),
 					heavyParameter == null ? HttpMethod.Get:HttpMethod.Post,
 					heavyParameter,
 					method
@@ -89,7 +89,7 @@ namespace SF.AspNet.NetworkService
 		{
 			var type = controllerDescriptor.ControllerType;
 			var descriptors = new List<HttpActionDescriptor>();
-			foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod))
+			foreach (var method in ServiceBuildRule.GetServiceMethods(type))
 			{
 				descriptors.Add(BuildDescriptorByMethod(controllerDescriptor, method));
 			}

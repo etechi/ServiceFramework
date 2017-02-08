@@ -16,14 +16,16 @@ namespace SF.Core.DI
 					IEnumerable<Type> Services=null
 					)
 		{
-			Services = Services ?? sc.GetServiceTypes().Where(st => st.GetCustomAttribute<NetworkServiceAttribute>() != null);
 			sc.AddSingleton<IServiceBuildRuleProvider, DefaultServiceBuildRuleProvider>();
-			sc.AddSingleton(sp =>
-				new ServiceMetadataBuilder(
+			sc.AddSingleton(sp => {
+				var builder = new ServiceMetadataBuilder(
 					sp.Resolve<IServiceBuildRuleProvider>(),
 					sp.Resolve<IJsonSerializer>()
-					).BuildLibrary(Services)
 					);
+				foreach (var ests in sp.TryResolve<IEnumerable<IExtraServiceTypeSource>>())
+					ests.AddExtraServiceType(builder);
+				return builder.BuildLibrary(sp.Resolve<IServiceTypeCollection>().Types);
+			});
 			sc.AddScoped<IServiceMetadataService, DefaultServiceMetadataService>();
 			sc.AddSingleton<IServiceTypeCollection>(sp =>
 			{

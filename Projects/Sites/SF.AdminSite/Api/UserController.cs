@@ -21,11 +21,7 @@ namespace SF.AdminSite.Api
 			return calc.Add(a,b);
 		}
 
-		[HttpGet]
-		public IHttpActionResult Typescript(bool all = true)
-		{
-			return Content( Request.CreateResponse(((new StringContent("asdasdasdasda", Encoding.UTF8, "text/javascript");
-		}
+		
 
 	}
 }

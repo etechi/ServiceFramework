@@ -85,9 +85,9 @@
       <Project>{958914a9-ccdd-43ff-8620-3588ef099539}</Project>
       <Name>SF.Core.MicrosoftExtensions.net46</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Implements\SF.Data.Entity.EF6\SF.Data.Entity.EF6.csproj">
+    <ProjectReference Include="..\..\Implements\SF.Data.Storage.EF6\SF.Data.Storage.EF6.csproj">
       <Project>{0bacd331-8e70-451b-b290-06dcc35324bf}</Project>
-      <Name>SF.Data.Entity.EF6</Name>
+      <Name>SF.Data.Storage.EF6</Name>
     </ProjectReference>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.net46.csproj">
       <Project>{69691ef2-2eff-4e50-aa49-93e9fdc5c34b}</Project>
