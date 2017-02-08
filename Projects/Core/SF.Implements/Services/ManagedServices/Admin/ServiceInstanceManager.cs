@@ -48,6 +48,7 @@ namespace SF.Services.ManagedServices.Admin
 				LogicState = i.LogicState,
 				IsDefaultService=i.IsDefaultService,
 				Name = i.Name,
+				Title = i.Title,
 				Description=i.Description,
 				Image=i.Image,
 				Icon=i.Icon,
@@ -68,6 +69,7 @@ namespace SF.Services.ManagedServices.Admin
 				LogicState = i.LogicState,
 				IsDefaultService=i.IsDefaultService,
 				Name = i.Name,
+				Title=i.Title,
 				Description=i.Description,
 				Icon=i.Icon,
 				Image=i.Image
@@ -105,6 +107,7 @@ namespace SF.Services.ManagedServices.Admin
 			UIEnsure.HasContent(e.ImplementId,"服务实现");
 			UIEnsure.HasContent(e.DeclarationId,"服务定义");
 			UIEnsure.HasContent(e.Name,"服务名称");
+			UIEnsure.HasContent(e.Title, "服务标题");
 			//UIEnsure.HasContent(e.Setting, "服务配置");
 
 			m.CreateArguments = e.Setting;
@@ -112,6 +115,7 @@ namespace SF.Services.ManagedServices.Admin
 			m.ImplementId = e.ImplementId;
 			m.LogicState = e.LogicState;
 			m.Name = e.Name;
+			m.Title = e.Title;
 			m.Description = e.Description;
 			m.Icon = e.Icon;
 			m.Remarks = e.Remarks;

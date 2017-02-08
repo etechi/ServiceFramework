@@ -40,7 +40,13 @@ namespace SF.Services.ManagedServices.Models
 		[Required]
 		public string Name { get; set; }
 
-		[Comment("服务实例说明")]
+		[Comment("服务实例标题","用于UI显示")]
+		[TableVisible]
+		[MaxLength(100)]
+		[Required]
+		public string Title { get; set; }
+
+		[Comment("服务实例说明","用于UI显示")]
 		[MaxLength(200)]
 		public string Description { get; set; }
 
@@ -65,7 +71,7 @@ namespace SF.Services.ManagedServices.Models
 	public class ServiceInstanceEditable : ServiceInstance
 	{
 
-		[Comment("服务实例说明")]
+		[Comment("备注",Description="内部使用")]
 		[MaxLength(200)]
 		public string Remarks { get; set; }
 

@@ -37,7 +37,7 @@ export interface DashboardProps {
 export default class Dashboard extends React.Component<DashboardProps, {}> {
     render() {
         return <div>
-            <h2>好云购管理中心</h2>
+            <h2>系统管理中心</h2>
             
         </div>
     }

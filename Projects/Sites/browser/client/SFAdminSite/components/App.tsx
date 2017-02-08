@@ -31,7 +31,7 @@ export default class App extends React.Component<AppProps, state>
         var u :any= {};//auth.user();
         return <WA.Application>
             <WA.Header.Container>
-                <WA.Header.Logo>好云购管理中心</WA.Header.Logo>
+                <WA.Header.Logo>系统管理中心</WA.Header.Logo>
                 <WA.Header.Text to={"/admin/" + encodeURIComponent("系统安全") + "/AdminInfo"}>
                     <Image className="img-circle" format="c30" res={u.icon} />
                     <span className="username username-hide-on-mobile">{u.nick}</span>

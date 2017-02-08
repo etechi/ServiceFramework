@@ -21,6 +21,12 @@ namespace SF.Services.ManagedServices.Admin.DataModels
 		[Required]
 		public string Name { get; set; }
 
+		[Comment("服务实例标题")]
+		[MaxLength(100)]
+		[Required]
+		public string Title { get; set; }
+
+
 		[Comment("服务实例说明","用于UI显示")]
 		[MaxLength(200)]
 		public string Description { get; set; }

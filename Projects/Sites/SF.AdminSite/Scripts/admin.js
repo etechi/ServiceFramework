@@ -33849,7 +33849,7 @@ var App = (function (_super) {
         var u = {}; //auth.user();
         return React.createElement(WA.Application, null,
             React.createElement(WA.Header.Container, null,
-                React.createElement(WA.Header.Logo, null, "\u597D\u4E91\u8D2D\u7BA1\u7406\u4E2D\u5FC3"),
+                React.createElement(WA.Header.Logo, null, "\u7CFB\u7EDF\u7BA1\u7406\u4E2D\u5FC3"),
                 React.createElement(WA.Header.Text, { to: "/admin/" + encodeURIComponent("系统安全") + "/AdminInfo" },
                     React.createElement(Image_1.Image, { className: "img-circle", format: "c30", res: u.icon }),
                     React.createElement("span", { className: "username username-hide-on-mobile" }, u.nick)),
@@ -33940,7 +33940,7 @@ var Dashboard = (function (_super) {
     }
     Dashboard.prototype.render = function () {
         return React.createElement("div", null,
-            React.createElement("h2", null, "\u597D\u4E91\u8D2D\u7BA1\u7406\u4E2D\u5FC3"));
+            React.createElement("h2", null, "\u7CFB\u7EDF\u7BA1\u7406\u4E2D\u5FC3"));
     };
     return Dashboard;
 }(React.Component));
