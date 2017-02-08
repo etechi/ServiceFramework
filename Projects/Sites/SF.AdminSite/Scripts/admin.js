@@ -54385,7 +54385,7 @@ var EntityTableModal = (function (_super) {
         return React.createElement(Modal.Modal, { height: "90%", minWidth: "90%" },
             React.createElement(Modal.ModalHeader, { closable: true }, p.title),
             React.createElement(Modal.ModalBody, null,
-                React.createElement(EntityTable_1.EntityTable, { controller: this.props.controller, action: this.props.action, entitySelected: this.state.selectedIdent, linkTarget: "_blank", onEntitySelected: function (e, c) {
+                React.createElement(EntityTable_1.EntityTable, { controller: this.props.controller, action: this.props.action, entitySelected: this.state.selectedIdent, linkTarget: "_blank", filterValue: p.filterValue, onEntitySelected: function (e, c) {
                         var id = e ? e.Id : null;
                         if (c)
                             _this.handleClose(id || null);
@@ -54753,9 +54753,11 @@ var LargeSingleEntityPicker = (function (_super) {
             action: s.selectAction,
             entityIdent: this.props.value || null,
             title: "\u9009\u62E9" + p.targetName,
+            filterValue: this.props.scopeId ? (_a = {}, _a[this.props.scopeField] = this.props.scopeId, _a) : null
         }).promise.then(function (id) {
             _this.props.onChange(!id ? null : _this.props.dynamicEntityType ? _this.props.entity + "-" + id : id);
         });
+        var _a;
         //this.setState({ modalVisible: visible });
     };
     LargeSingleEntityPicker.prototype.render = function () {
