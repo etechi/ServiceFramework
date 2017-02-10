@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using System.Linq;
+using System.Reflection;
+
 namespace SF.Core.DI.MicrosoftExtensions
 {
 	public class DIServiceCollection :  IDIServiceCollection
@@ -64,8 +66,6 @@ namespace SF.Core.DI.MicrosoftExtensions
 
 		public IServiceCollection InnerCollection { get; }
 
-		
-
 
 		public DIServiceCollection(IServiceCollection InnerCollection)
 		{
@@ -73,7 +73,28 @@ namespace SF.Core.DI.MicrosoftExtensions
 		}
 		public void Add(ServiceDescriptor Descriptor)
 		{
-			InnerCollection.Add(MapDescriptor(Descriptor));
+			var desc = MapDescriptor(Descriptor);
+			InnerCollection.Add(desc);
+			if (Descriptor.ServiceImplementType==ServiceImplementType.Type &&
+				(!Descriptor.ImplementType.IsGeneric() ||
+				Descriptor.ImplementType.GetGenericTypeDefinition()!=typeof(Lazy<>)
+				))
+			{
+				InnerCollection.Add(new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
+					typeof(Lazy<>).MakeGenericType(desc.ServiceType),
+					sp =>(object)new Lazy<object>(() =>
+							sp.GetRequiredService(desc.ServiceType)
+							),
+					desc.Lifetime
+					));
+				InnerCollection.Add(new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
+					typeof(Func<>).MakeGenericType(desc.ServiceType),
+					sp => (object)new Func<object>(() =>
+						sp.GetRequiredService(desc.ServiceType)
+						),
+					desc.Lifetime
+					));
+			}
 		}
 
 		public void Remove(Type Service)
@@ -97,7 +118,13 @@ namespace SF.Core.DI.MicrosoftExtensions
 
 		public IEnumerator<ServiceDescriptor> GetEnumerator()
 		{
-			return InnerCollection.Select(s =>
+			return InnerCollection.Where(s=>
+			{
+				var type = s.ServiceType;
+				if (!type.IsGeneric()) return true;
+				var gd = type.GetGenericTypeDefinition();
+				return gd != typeof(Func<>) && gd != typeof(Lazy<>);
+			}).Select(s =>
 			{
 				if (s.ImplementationInstance != null)
 					return new ServiceDescriptor(s.ServiceType, s.ImplementationInstance);

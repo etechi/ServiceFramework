@@ -162,6 +162,10 @@
       <Project>{69691ef2-2eff-4e50-aa49-93e9fdc5c34b}</Project>
       <Name>SF.Abstractions.net46</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.net46.csproj">
+      <Project>{CA3CCEB7-AD9A-41B1-A06F-483C32B697B7}</Project>
+      <Name>SF.Extensions.net46</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

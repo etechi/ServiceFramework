@@ -42,7 +42,6 @@ namespace SF.Services.ManagedServices
 					new ServiceDescriptor(
 						Descriptor.ServiceType,
 						isp => isp.Resolve<Runtime.IManagedServiceScope>().Resolve(
-							isp, 
 							Descriptor.ServiceType, 
 							null
 							),

@@ -62,6 +62,7 @@
     <Compile Include="Data\Storage\DataContext.cs" />
     <Compile Include="Data\Storage\DataContextDICollectionExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\KB\DefaultMimeResolver.cs" />
     <Compile Include="Services\ManagedServices\Admin\DataModels\ServiceInstance.cs" />
     <Compile Include="Services\ManagedServices\Admin\ServiceDeclarationManager.cs" />
     <Compile Include="Services\ManagedServices\Admin\ServiceImplementManager.cs" />
@@ -81,6 +82,9 @@
     <Compile Include="Services\ManagedServices\ImplementConfigTypeSource.cs" />
     <Compile Include="Services\ManagedServices\Storages\MemoryServiceSource.cs" />
     <Compile Include="Services\ManagedServices\ServicveManagementDIServiceCollectionExtension.cs" />
+    <Compile Include="Services\Media\FileSystem\MediaStorage.cs" />
+    <Compile Include="Services\Media\MediaService.cs" />
+    <Compile Include="Services\Media\StaticFiles\MediaStorage.cs" />
     <Compile Include="Services\NetworkService\DefaultServiceBuildRuleProvider.cs" />
     <Compile Include="Services\NetworkService\DefaultServiceMetadataService.cs" />
     <Compile Include="Services\NetworkService\NetworkServiceDICollectionExtension.cs" />
@@ -101,7 +105,9 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Services\Media\Managers\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -6,16 +6,18 @@ namespace SF.Services.ManagedServices.Runtime
 	{
 		IManagedServiceFactoryManager FactoryManager { get; }
 		Dictionary<Tuple<Type, string>, object> _Services;
-		public ManagedServiceScope(IManagedServiceFactoryManager FactoryManager)
+		IServiceProvider ServiceProvider { get; }
+		public ManagedServiceScope(IManagedServiceFactoryManager FactoryManager, IServiceProvider ServiceProvider)
 		{
 			this.FactoryManager = FactoryManager;
+			this.ServiceProvider = ServiceProvider;
 		}
 		
-		public object Resolve(IServiceProvider sp, Type Type, string Id)
+		public object Resolve(Type Type, string Id)
 		{
-			var factory = FactoryManager.GetServiceFactory(sp, Type, Id);
+			var factory = FactoryManager.GetServiceFactory(ServiceProvider, Type, Id);
 			if (!factory.IsScopedLifeTime)
-				return factory.Create(sp, this);
+				return factory.Create(ServiceProvider, this);
 
 			if (_Services == null)
 				_Services = new Dictionary<Tuple<Type, string>, object>();
@@ -23,7 +25,7 @@ namespace SF.Services.ManagedServices.Runtime
 			object s;
 			if (_Services.TryGetValue(key, out s))
 				return s;
-			return _Services[key]= factory.Create(sp,this);
+			return _Services[key]= factory.Create(ServiceProvider, this);
 		}
 
 		public void Dispose()

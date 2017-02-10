@@ -33,6 +33,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Data.Storage.EF6", "Impl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Data.Storage.EFCore.net46", "Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.net46.csproj", "{F69BE9A4-1E81-4AA1-9B11-71077DF6CA3D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{21ADA552-95B6-443B-BEDB-8A420182B2E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Services.dotNetFramework", "Implements\SF.Services.dotNetFramework\SF.Services.dotNetFramework.csproj", "{1111E437-2D49-4773-83DF-BA42F6CA20F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +83,10 @@ Global
 		{F69BE9A4-1E81-4AA1-9B11-71077DF6CA3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F69BE9A4-1E81-4AA1-9B11-71077DF6CA3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F69BE9A4-1E81-4AA1-9B11-71077DF6CA3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1111E437-2D49-4773-83DF-BA42F6CA20F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1111E437-2D49-4773-83DF-BA42F6CA20F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1111E437-2D49-4773-83DF-BA42F6CA20F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1111E437-2D49-4773-83DF-BA42F6CA20F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -94,5 +102,6 @@ Global
 		{59D8F739-0EE8-4131-92A1-1A1C344BEE96} = {66A4F4E4-6A67-479D-8650-013BD4A3913B}
 		{0BACD331-8E70-451B-B290-06DCC35324BF} = {5ADFB606-7537-4C30-A712-663E4DDCED81}
 		{F69BE9A4-1E81-4AA1-9B11-71077DF6CA3D} = {5ADFB606-7537-4C30-A712-663E4DDCED81}
+		{1111E437-2D49-4773-83DF-BA42F6CA20F8} = {5ADFB606-7537-4C30-A712-663E4DDCED81}
 	EndGlobalSection
 EndGlobal

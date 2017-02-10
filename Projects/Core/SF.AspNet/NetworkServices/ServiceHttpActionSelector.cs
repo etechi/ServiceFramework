@@ -50,7 +50,7 @@ namespace SF.AspNet.NetworkService
 			return BuildDescriptor(
 					ControllerDescriptor,
 					ServiceBuildRule.FormatMethodName(method),
-					heavyParameter == null ? HttpMethod.Get:HttpMethod.Post,
+					heavyParameter == null && !method.IsDefined(typeof(HeavyMethodAttribute),true) ? HttpMethod.Get:HttpMethod.Post,
 					heavyParameter,
 					method
 					);
