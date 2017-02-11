@@ -46,9 +46,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Caching\CacheExtensions.cs" />
+    <Compile Include="Core\CallGuarantors\CallableDIServoceCollectionExtension.cs" />
+    <Compile Include="Core\CallGuarantors\ICallGuarantorExtension.cs" />
     <Compile Include="Core\DI\ServiceConfiguration.cs" />
     <Compile Include="Core\Serialization\Json.cs" />
     <Compile Include="Core\Serialization\JsonSerializerExtension.cs" />
+    <Compile Include="Core\TaskServices\TaskServiceDIServiceCollectionExtension.cs" />
+    <Compile Include="Core\TaskServices\TaskServiceWithScope.cs" />
+    <Compile Include="Core\TaskServices\TaskService.cs" />
     <Compile Include="Data\Entity\EntityServiceDIServiceCollectionExtension.cs" />
     <Compile Include="Data\Storage\DataContextExtension.cs" />
     <Compile Include="Data\Storage\DataSetExtension.cs" />
@@ -70,6 +75,7 @@
     <Compile Include="Maths\RectExtension.cs" />
     <Compile Include="Metadata\BaseMetadataBuilder.cs" />
     <Compile Include="Content.cs" />
+    <Compile Include="Core\Timer.cs" />
     <Compile Include="Services\Images\BasicTransforms.cs" />
     <Compile Include="Services\Images\CoreTranforms.cs" />
     <Compile Include="Services\Images\ExifTranforms.cs" />
@@ -79,6 +85,7 @@
     <Compile Include="System\ArrayExtension.cs" />
     <Compile Include="System\BytesExtension.cs" />
     <Compile Include="System\Collections\Generic\DictExtension.cs" />
+    <Compile Include="System\Disposable.cs" />
     <Compile Include="System\IO\StreamExtension.cs" />
     <Compile Include="System\Linq\IEnumerableExtension.cs" />
     <Compile Include="EnvironmentTypeDetector.cs" />
@@ -94,7 +101,7 @@
     <Compile Include="Core\Logging\LoggerExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\Reflection\TypeExtensions.cs" />
-    <Compile Include="Services\Management\ManagedServiceCollectionExtension.cs" />
+    <Compile Include="Core\ManagedServices\ManagedServiceCollectionExtension.cs" />
     <Compile Include="System\Threading\ObjectSyncQueue.cs" />
     <Compile Include="System\Threading\SyncScope.cs" />
     <Compile Include="UIEnsure.cs" />

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
-using SF.Services.ManagedServices;
+using SF.Core.ManagedServices;
 using SF.Core.DI;
 using SF.Core.DI.MicrosoftExtensions;
 

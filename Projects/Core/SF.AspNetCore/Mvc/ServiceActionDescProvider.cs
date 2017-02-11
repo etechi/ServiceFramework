@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using SF.Services.NetworkService;
+using SF.Core.NetworkService;
 using System;
 using System.Collections.Generic;
 using System.Linq;

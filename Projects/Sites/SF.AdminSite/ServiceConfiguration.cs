@@ -9,7 +9,8 @@ using SF.AspNet.DI;
 using System.Web.Http;
 using SF.AdminSite;
 using SF.Metadata;
-using SF.Services.ManagedServices;
+using SF.Core.ManagedServices;
+using SF.Services.Test;
 
 [assembly: PreApplicationStartMethod(typeof(ServiceConfiguration), nameof(ServiceConfiguration.RegisterDIHttpModule))]
 
@@ -119,6 +120,9 @@ namespace SF.AdminSite
 		protected override void OnConfigServices(IDIServiceCollection Services, EnvironmentType EnvType)
 		{
 			Services.UseNewtonsoftJson();
+			Services.UseLocalFileCache();
+			Services.UseSystemMemoryCache();
+			Services.UseSystemTimeService();
 
 			Services.AddTransient<AppContext>(tsp => new AppContext(tsp));
 			Services.UseEF6DataEntity<AppContext>();
@@ -138,6 +142,8 @@ namespace SF.AdminSite
 			//msc.AddScoped<ICalc, Calc>();
 			//msc.AddScoped<IOperator, Substract>();
 			//msc.AddScoped<IAgg, Agg>();
+			msc.AddScoped<ITestService, TestService>();
+
 			msc.UseManagedServiceAdminServices();
 			msc.UseIdentGenerator();
 

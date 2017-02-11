@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace SF.Core.TaskServices
+{
+	public enum TaskServiceState
+	{
+		Init,
+		Stopped,
+		Starting,
+		Running,
+		Stopping,
+		Error,
+		Disposed
+	}
+	public interface ITaskServiceState
+	{
+		string Name { get; }
+		TaskServiceState State { get; }
+	}
+	public interface ITaskService : ITaskServiceState
+	{
+		Task Start(CancellationToken cancellationToken);
+		Task Stop(CancellationToken cancellationToken);
+	}
+	public interface ITaskServiceDefination
+	{
+		string Name { get; }
+		Func<IServiceProvider,ITaskServiceState,CancellationToken,Task> Entry { get; }
+	}
+	public interface ITaskServiceManager
+	{
+		IEnumerable<ITaskService> Services { get; }
+		ITaskService GetService(string Name);
+	}
+}

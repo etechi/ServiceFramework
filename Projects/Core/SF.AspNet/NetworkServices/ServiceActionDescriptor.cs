@@ -1,6 +1,6 @@
 ﻿using SF.Core.DI;
 using SF.Metadata;
-using SF.Services.ManagedServices;
+using SF.Core.ManagedServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +16,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
 using System.Web.Http.Filters;
+using System.Web.Http.Results;
 
 namespace SF.AspNet.NetworkService
 {	
@@ -27,6 +28,9 @@ namespace SF.AspNet.NetworkService
 		public override Collection<HttpMethod> SupportedHttpMethods { get; }
 		public ParameterInfo HeavyParameter { get; }
 		public Collection<HttpParameterDescriptor> Parameters { get; }
+		
+		bool IsHttpResponseMessage { get; }
+
 		public ServiceActionDescriptor(
 			HttpControllerDescriptor ControllerDescriptor,
 			string ActionName,
@@ -49,6 +53,18 @@ namespace SF.AspNet.NetworkService
 					p == HeavyParameter
 					)).ToArray()
 					);
+
+			ReturnType = DefaultActionDescriptor.ReturnType;
+			if (ReturnType == typeof(HttpResponseMessage))
+			{
+				IsHttpResponseMessage = true;
+				ReturnType = typeof(System.Web.Http.Results.ResponseMessageResult);
+			}
+			else if (ReturnType.GetGenericArgumentTypeAsTask() == typeof(HttpResponseMessage))
+			{
+				ReturnType = typeof(Task<System.Web.Http.Results.ResponseMessageResult>);
+				IsHttpResponseMessage = true;
+			}
 		}
 		//internal sealed class FilterInfoComparer : IComparer<FilterInfo>
 		//{
@@ -89,13 +105,7 @@ namespace SF.AspNet.NetworkService
 		//	return new Collection<FilterInfo>(source.ToList<FilterInfo>());
 		//	//return base.GetFilterPipeline();
 		//}
-		public override Type ReturnType
-		{
-			get
-			{
-				return DefaultActionDescriptor.ReturnType;
-			}
-		}
+		public override Type ReturnType { get; }
 		static bool TypeAllowsNullValue(Type type)
 		{
 			return !type.IsValueType || Nullable.GetUnderlyingType(type) != null;
@@ -144,14 +154,12 @@ namespace SF.AspNet.NetworkService
 			}
 			return array;
 		}
-
-		public override Task<object> ExecuteAsync(HttpControllerContext controllerContext, IDictionary<string, object> arguments, CancellationToken cancellationToken)
+		Task<object> ExecuteAsyncInner(HttpControllerContext controllerContext, IDictionary<string, object> arguments, CancellationToken cancellationToken)
 		{
 			var ctrl = controllerContext.Controller as ServiceController;
 			if (ctrl == null)
 				return DefaultActionDescriptor.ExecuteAsync(controllerContext, arguments, cancellationToken);
 
-			
 			if (controllerContext == null)
 			{
 				throw new ArgumentException("controllerContext");
@@ -175,6 +183,13 @@ namespace SF.AspNet.NetworkService
 				result = TaskHelpers.FromError<object>(exception);
 			}
 			return result;
+		}
+		public override async Task<object> ExecuteAsync(HttpControllerContext controllerContext, IDictionary<string, object> arguments, CancellationToken cancellationToken)
+		{
+			var re = await ExecuteAsyncInner(controllerContext, arguments, cancellationToken);
+			if (IsHttpResponseMessage)
+				return new ResponseMessageResult((HttpResponseMessage)re);
+			return re;
 		}
 
 		public override Collection<HttpParameterDescriptor> GetParameters()

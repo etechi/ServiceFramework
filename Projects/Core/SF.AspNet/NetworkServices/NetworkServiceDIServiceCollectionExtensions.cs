@@ -14,7 +14,7 @@ using System.Collections.ObjectModel;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
-using SF.Services.NetworkService;
+using SF.Core.NetworkService;
 using SF.AspNet.NetworkService;
 
 namespace SF.Core.DI
@@ -55,6 +55,7 @@ namespace SF.Core.DI
 					sp.Resolve<IServiceTypeCollection>().Types,
 					sp.Resolve<IServiceBuildRuleProvider>()
 				));
+			sc.AddScoped<IUploadedFileCollection, UploadedFileCollection>();
 		}
 	}
 }

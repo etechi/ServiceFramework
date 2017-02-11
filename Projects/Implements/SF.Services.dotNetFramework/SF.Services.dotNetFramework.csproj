@@ -41,10 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Drawing\Codecs.cs" />
-    <Compile Include="Drawing\DrawContext.cs" />
-    <Compile Include="Drawing\Image.cs" />
-    <Compile Include="Drawing\ImageProcessor.cs" />
+    <Compile Include="Core\Drawing\Codecs.cs" />
+    <Compile Include="Core\Drawing\DrawContext.cs" />
+    <Compile Include="Core\Drawing\Image.cs" />
+    <Compile Include="Core\Drawing\ImageProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

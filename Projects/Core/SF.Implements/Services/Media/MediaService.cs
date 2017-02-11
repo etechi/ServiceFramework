@@ -1,8 +1,8 @@
 ﻿using SF.Core;
 using SF.Core.Caching;
 using SF.Metadata;
-using SF.Services.Drawing;
-using SF.Services.NetworkService;
+using SF.Core.Drawing;
+using SF.Core.NetworkService;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -291,5 +291,6 @@ namespace SF.Services.Media
 			msg.Headers.ETag = new System.Net.Http.Headers.EntityTagHeaderValue(etag);
 			return msg;
 		}
+
 	}
 }

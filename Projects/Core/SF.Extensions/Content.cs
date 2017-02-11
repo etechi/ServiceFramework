@@ -66,7 +66,7 @@ namespace SF
 	{
 		public byte[] Data { get; set; }
 		
-		public Task<byte[]> GetByteArrayAsync()
+		public override Task<byte[]> GetByteArrayAsync()
 		{
 			return Task.FromResult(Data);
 		}

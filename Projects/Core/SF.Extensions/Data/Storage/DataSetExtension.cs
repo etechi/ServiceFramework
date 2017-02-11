@@ -62,13 +62,31 @@ namespace SF.Data.Storage
 		{
 			return set.AsQueryable(false).SingleOrDefaultAsync(filter);
 		}
-		public static Task<T[]> LoadAsync<T>(
+		public static Task<T[]> LoadListAsync<T>(
 			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter
 			)
 			where T : class
 		{
 			return set.AsQueryable(false).Where(filter).ToArrayAsync();
+		}
+		public static Task<T[]> LoadListAndOrderByAsync<T,F>(
+		   this IDataSet<T> set,
+		   System.Linq.Expressions.Expression<Func<T, bool>> filter,
+		   System.Linq.Expressions.Expression<Func<T, F>> order
+		)
+		   where T : class
+		{
+			return set.AsQueryable(false).Where(filter).OrderBy(order).ToArrayAsync();
+		}
+		public static Task<T[]> LoadListAndOrderByDescendingAsync<T, F>(
+		   this IDataSet<T> set,
+		   System.Linq.Expressions.Expression<Func<T, bool>> filter,
+		   System.Linq.Expressions.Expression<Func<T, F>> order
+		)
+		   where T : class
+		{
+			return set.AsQueryable(false).Where(filter).OrderByDescending(order).ToArrayAsync();
 		}
 		public static Task<M[]> QueryAsync<T,M>(
 		   this IDataSet<T> set,

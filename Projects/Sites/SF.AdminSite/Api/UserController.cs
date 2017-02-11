@@ -20,7 +20,10 @@ namespace SF.AdminSite.Api
 		{
 			return calc.Add(a,b);
 		}
-
+		public HttpResponseMessage Test()
+		{
+			return Http.Text("asasdas");
+		}
 		
 
 	}

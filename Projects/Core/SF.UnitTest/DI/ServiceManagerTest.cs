@@ -4,11 +4,11 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
-using SF.Services.ManagedServices;
+using SF.Core.ManagedServices;
 using SF.Core.DI;
 using SF.Core.DI.MicrosoftExtensions;
-using SF.Services.ManagedServices.Storages;
-using SF.Services.ManagedServices.Runtime;
+using SF.Core.ManagedServices.Storages;
+using SF.Core.ManagedServices.Runtime;
 
 namespace SF.UT
 {

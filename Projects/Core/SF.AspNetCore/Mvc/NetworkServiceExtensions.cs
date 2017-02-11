@@ -9,7 +9,7 @@ using System.Reflection;
 using SF.Core.DI;
 using SF.AspNetCore.Mvc;
 using SF.Metadata;
-using SF.Services.NetworkService;
+using SF.Core.NetworkService;
 
 namespace SF.Core.DI
 {

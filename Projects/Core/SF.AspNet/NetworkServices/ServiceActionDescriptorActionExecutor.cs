@@ -1,6 +1,6 @@
 ﻿using SF.Core.DI;
 using SF.Metadata;
-using SF.Services.ManagedServices;
+using SF.Core.ManagedServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,10 +48,7 @@ namespace SF.AspNet.NetworkService
 			{
 				return (Func<object, Task<object>>)Delegate.CreateDelegate(
 					typeof(Func<object, Task<object>>),
-					_convertOfTMethod.MakeGenericMethod(new Type[]
-					{
-						taskValueType
-					}));
+					_convertOfTMethod.MakeGenericMethod(taskValueType));
 			}
 			static readonly Type TaskGenericType = typeof(Task<>);
 			static Type GetTaskInnerTypeOrNull(Type type)

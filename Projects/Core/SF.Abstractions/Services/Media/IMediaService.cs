@@ -1,6 +1,6 @@
 ﻿using SF.Auth;
 using SF.Metadata;
-using SF.Services.NetworkService;
+using SF.Core.NetworkService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,5 +22,7 @@ namespace SF.Services.Media
 		Task<string> Clip(string src, double x, double y, double w, double h);
 
 		Task<HttpResponseMessage> Get(string id, string format = null);
+
+
 	}
 }

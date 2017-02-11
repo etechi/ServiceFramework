@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using System.Threading.Tasks;
+
 namespace System.Reflection
 {
 	public static class TypeExtensions
@@ -80,5 +82,17 @@ namespace System.Reflection
 		{
 			return type.GetTypeInfo().GetInterface(Name);
 		}
+		public static Type GetTypedGenericArgument(this Type Type,Type GenericDefination)
+		{
+			if (Type.IsGeneric() && Type.GetGenericTypeDefinition() == GenericDefination)
+				return Type.GetGenericArguments()[0];
+			return null;
+		}
+		public static Type GetGenericArgumentTypeAsTask(this Type type) =>
+			GetTypedGenericArgument(type, typeof(Task<>));
+		public static Type GetGenericArgumentTypeAsLazy(this Type type) =>
+			GetTypedGenericArgument(type, typeof(Lazy<>));
+		public static Type GetGenericArgumentTypeAsFunc(this Type type) =>
+			GetTypedGenericArgument(type, typeof(Func<>));
 	}
 }

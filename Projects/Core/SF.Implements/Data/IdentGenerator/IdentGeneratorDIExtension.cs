@@ -1,5 +1,5 @@
 ﻿using SF.Core.DI;
-namespace SF.Services.ManagedServices
+namespace SF.Core.ManagedServices
 {
 	public static class IdentGeneratorDIExtension
 	{

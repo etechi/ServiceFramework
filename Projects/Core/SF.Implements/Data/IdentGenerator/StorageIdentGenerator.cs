@@ -15,7 +15,7 @@ namespace SF.Data.IdentGenerator
 	public class IdentGeneratorSetting
 	{
 		public IDataSet<DataModels.IdentSeed> IdentSeedSet { get;private set; }
-		public SF.Services.ManagedService.IServiceInstanceIdent Ident { get; private set; }
+		public SF.Core.ManagedServices.IServiceInstanceIdent Ident { get; private set; }
 		[Comment("预分配数量","每次预分配的数量")]
 		public int CountPerBatch { get; private set; } = 100;
 	}

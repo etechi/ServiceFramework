@@ -9,7 +9,6 @@ namespace System.Threading
 {
 	public class ObjectSyncQueue<K> : IDisposable
 	{
-		
 		class Item : SemaphoreSlim
 		{
 			public Item() : base(1) {}

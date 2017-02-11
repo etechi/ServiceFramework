@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Services.Drawing
+namespace SF.Core.Drawing
 {
 	
 	[Flags]
