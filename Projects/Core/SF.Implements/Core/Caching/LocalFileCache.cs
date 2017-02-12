@@ -27,8 +27,7 @@ namespace SF.Core.Caching
 
 		public async Task<string> Cache(
 			string FileName, 
-			SemaphoreSlim Locker, 
-			Func<Task<KeyValuePair<string, byte[]>>> Loader, 
+			FileContentGenerator ContentGenerator, 
 			string FilePath = null
 			)
 		{
@@ -48,13 +47,13 @@ namespace SF.Core.Caching
 					if (file != null)
 						return file;
 					Directory.CreateDirectory(file_path);
-					var ctn = await Loader();
-					if (ctn.Value == null)
+					var ctn = await ContentGenerator();
+					if (ctn==null || ctn.Content == null)
 						return null;
 
-					file = Path.Combine(file_path, FileName + (ctn.Key[0] == '.' ? ctn.Key : "." + ctn.Key));
+					file = Path.Combine(file_path, FileName + (ctn.FileExtension[0] == '.' ? ctn.FileExtension : "." + ctn.FileExtension));
 					using (var fs = new FileStream(file, FileMode.CreateNew, FileAccess.Write, FileShare.Read))
-						await fs.WriteAsync(ctn.Value, 0, ctn.Value.Length);
+						await fs.WriteAsync(ctn.Content, 0, ctn.Content.Length);
 
 					return file;
 				});

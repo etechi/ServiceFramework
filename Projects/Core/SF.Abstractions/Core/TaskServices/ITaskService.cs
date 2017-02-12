@@ -9,18 +9,18 @@ namespace SF.Core.TaskServices
 {
 	public enum TaskServiceState
 	{
-		Init,
 		Stopped,
 		Starting,
 		Running,
 		Stopping,
-		Error,
-		Disposed
+		Exited,
+		Error
 	}
 	public interface ITaskServiceState
 	{
 		string Name { get; }
 		TaskServiceState State { get; }
+		Exception Exception { get; }
 	}
 	public interface ITaskService : ITaskServiceState
 	{

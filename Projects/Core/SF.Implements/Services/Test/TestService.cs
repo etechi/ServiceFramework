@@ -19,11 +19,11 @@ namespace SF.Services.Test
     {
 		public Task<HttpResponseMessage> Test1()
 		{
-			return Task.FromResult(Http.Text("test1111"));
+			return Task.FromResult(HttpResponse.Text("test1111"));
 		}
 		public HttpResponseMessage Test2()
 		{
-			return Http.Text("test2222");
+			return HttpResponse.Text("test2222");
 		}
 	}
 }

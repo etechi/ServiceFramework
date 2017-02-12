@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
+using SF.Core.NetworkService;
 
 namespace SF.AspNet.NetworkService
 {
@@ -23,6 +24,7 @@ namespace SF.AspNet.NetworkService
 	{
 		HashSet<Type> ServiceTypes { get; }
 		DefaultHttpControllerActivator DefaultActivator { get; } = new DefaultHttpControllerActivator();
+
 		public ServiceApiControllerActivator(Type[] ServiceTypes)
 		{
 			this.ServiceTypes = new HashSet<Type>(ServiceTypes);
@@ -35,7 +37,7 @@ namespace SF.AspNet.NetworkService
 			)
 		{
 			if (ServiceTypes.Contains(controllerType))
-				return new ServiceController(controllerType,request.GetDependencyScope().GetService(controllerType));
+				return new ServiceController(controllerType, request.GetDependencyScope().GetService(controllerType));
 			return DefaultActivator.Create(request, controllerDescriptor, controllerType);
 		}
 	}

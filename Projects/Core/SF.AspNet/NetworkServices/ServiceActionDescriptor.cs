@@ -17,6 +17,7 @@ using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
+using SF.Core.NetworkService;
 
 namespace SF.AspNet.NetworkService
 {	
@@ -172,6 +173,10 @@ namespace SF.AspNet.NetworkService
 			{
 				return TaskHelpers.Canceled<object>();
 			}
+
+			((HttpRequestSource)controllerContext.Request.GetDependencyScope().GetService(typeof(IHttpRequestSource))).Request = controllerContext.Request;
+
+
 			Task<object> result;
 			try
 			{

@@ -4,40 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Services.Media.StaticFiles
+namespace SF.Services.Media.Storages
 {
-	class FileMediaMeta : IMediaMeta
-	{
-		public string Path { get; set; }
-		public int Height{get;set;}
-		public string Id{get;set;}
-		public int Length{get;set;}
-		public string Mime{get;set;}
-		public string Name{get;set;}
-		public string Type{get;set;}
-		public int Width{get;set;}
-	}
 	
-	public class MediaStorage : IMediaStorage
+	public class StaticFileMediaStorage : IMediaStorage
 	{
-		public string RootPath { get; }
-		public string IDPrefix { get; }
 		public KB.Mime.IMimeResolver MimeResolver { get; }
-		public MediaStorage(string IDPrefix,string RootPath, KB.Mime.IMimeResolver MimeResolver)
+		public StaticFileMediaStorage(KB.Mime.IMimeResolver MimeResolver)
 		{
-			this.IDPrefix = IDPrefix;
-			if (RootPath[RootPath.Length - 1] == '\\' || RootPath[RootPath.Length - 1] == '/')
-				this.RootPath = RootPath.Substring(0, RootPath.Length - 1);
-			else
-				this.RootPath = RootPath;
-
 			this.MimeResolver = MimeResolver;
 		}
-		public Task<bool> RemoveAsync(string Id)
+		public Task<bool> RemoveAsync(string RootPath,string Id)
         {
             throw new NotSupportedException();
         }
-		public Task<IMediaMeta> ResolveAsync(string Id)
+		public Task<IMediaMeta> ResolveAsync(string RootPath, string IDPrefix,string Id)
 		{
 			if (Id[0]=='.' || Id[0]=='/' || Id[0]=='\\' || Id.Contains(':'))
 				throw new NotSupportedException();
@@ -71,7 +52,7 @@ namespace SF.Services.Media.StaticFiles
 				);
 		}
 
-		public Task<string> SaveAsync(IMediaMeta media, IContent Content)
+		public Task<string> SaveAsync(string RootPath,IMediaMeta media, IContent Content)
 		{
 			throw new NotSupportedException();
 		}

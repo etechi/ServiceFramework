@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ServiceProtocol.Biz.Media
+namespace SF.Services.Media
 {
 	public class MediaMetaCache : IMediaMetaCache
 	{
-		public Caching.ICache Cache { get; }
+		public SF.Core.Caching.ILocalCache Cache { get; }
 		public static readonly string CacheKeyPrefix="SP.Biz.Media.Meta.";
-		public MediaMetaCache(Caching.ICache cache)
+		public MediaMetaCache(SF.Core.Caching.ILocalCache cache)
 		{
 			Cache = cache;
 		}

@@ -136,19 +136,19 @@ namespace SF.Services.Media
                 }
                 var re = await Manager.SaveAsync(mm, mc);
 				if (returnJson)
-					return Http.Json(new
+					return HttpResponse.Json(new
 					{
 						url = "/r/" + re,
 						error = 0
 					});
 				else
-					return Http.Text(re);
+					return HttpResponse.Text(re);
             }
             catch
             {
                 if (!returnJson)
                     throw;
-				return Http.Json(new
+				return HttpResponse.Json(new
                 {
                     error = 1,
                     message = "上传失败"
@@ -214,18 +214,17 @@ namespace SF.Services.Media
 			}
 		}
 
-		async Task<KeyValuePair<string,byte[]>> LoadContent(string id,string format)
+		async Task<FileCacheContent> LoadContent(string id,string format)
 		{
 			var m = await Manager.ResolveAsync(id);
-			if (m == null) return new KeyValuePair<string, byte[]>(null, null);
+			if (m == null) return null;
 			var data = await Manager.GetContentAsync(m);
-			return new KeyValuePair<string, byte[]>(
-				MimeResolver.MimeToFileExtension(m.Mime),
-				FormatImage(await data.GetByteArrayAsync(),format)
-				);
-
+			return new FileCacheContent
+			{
+				FileExtension = MimeResolver.MimeToFileExtension(m.Mime),
+				Content = FormatImage(await data.GetByteArrayAsync(), format)
+			};
 		}
-		static System.Threading.SemaphoreSlim CatchLocker { get; } = new System.Threading.SemaphoreSlim(1);
 		async Task<HttpResponseMessage> GetStorageContent(string id)
 		{
 			var m = await Manager.ResolveAsync(id);
@@ -235,9 +234,8 @@ namespace SF.Services.Media
 			if (data == null)
 				return null;
 			if (data is IFileContent)
-				return Http.File(((IFileContent)data).Path, data.ContentType);
-
-			return Http.ByteArray(
+				return HttpResponse.File(((IFileContent)data).Path, data.ContentType);
+			return HttpResponse.ByteArray(
 				await data.GetByteArrayAsync(),
 				data.ContentType
 				);
@@ -249,13 +247,12 @@ namespace SF.Services.Media
 
 			var path = await FileCache.Value.Cache(
 				file_name,
-				CatchLocker,
 				() => LoadContent(id, format)
 				);
 			if (path == null)
 				return null;
 
-			return Http.File(path,MimeResolver.FileExtensionToMime(Path.GetExtension(path)));
+			return HttpResponse.File(path,MimeResolver.FileExtensionToMime(Path.GetExtension(path)));
 		}
 
 		public async Task<HttpResponseMessage> Get(string id, string format=null)

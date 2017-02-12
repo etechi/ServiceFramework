@@ -96,6 +96,7 @@
     <Compile Include="NetworkServices\ServiceApiControllerActivator.cs" />
     <Compile Include="NetworkServices\ServiceController.cs" />
     <Compile Include="NetworkServices\ServiceApiControllerTypeResolver.cs" />
+    <Compile Include="NetworkServices\HttpRequestSource.cs" />
     <Compile Include="NetworkServices\UploadedFileCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

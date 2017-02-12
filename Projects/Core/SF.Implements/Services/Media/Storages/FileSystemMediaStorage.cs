@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Services.Media.FileSystem
+namespace SF.Services.Media.Storages
 {
 	class FileMediaMeta : IMediaMeta
 	{
@@ -18,19 +18,11 @@ namespace SF.Services.Media.FileSystem
 		public int Width{get;set;}
 	}
 	
-	public class MediaStorage : IMediaStorage
+	public class FileSystemMediaStorage : IMediaStorage
 	{
-		public string RootPath { get; }
-		public string IDPrefix { get; }
 		public KB.Mime.IMimeResolver MimeResolver { get; }
-		public MediaStorage(string IDPrefix,string RootPath, KB.Mime.IMimeResolver MimeResolver)
+		public FileSystemMediaStorage(KB.Mime.IMimeResolver MimeResolver)
 		{
-			this.IDPrefix = IDPrefix;
-			if (RootPath[RootPath.Length - 1] == '\\' || RootPath[RootPath.Length - 1] == '/')
-				this.RootPath = RootPath.Substring(0, RootPath.Length - 1);
-			else
-				this.RootPath = RootPath;
-
 			this.MimeResolver = MimeResolver;
 		}
 		
@@ -40,7 +32,7 @@ namespace SF.Services.Media.FileSystem
 
 		}
 
-        string FindFile(string Id)
+        string FindFile(string RootPath,string Id)
         {
             Ensure.Equals(Id.Length, 8 + 32);
             var date = Id.Substring(0, 8);
@@ -57,18 +49,18 @@ namespace SF.Services.Media.FileSystem
                 return null;
             return fs[0];
         }
-        public Task<bool> RemoveAsync(string Id)
+        public Task<bool> RemoveAsync(string RootPath, string Id)
         {
-            var file = FindFile(Id);
+            var file = FindFile(RootPath,Id);
             if (file == null)
                 return Task.FromResult(false);
 
             System.IO.File.Delete(file);
             return Task.FromResult(true);
         }
-		public Task<IMediaMeta> ResolveAsync(string Id)
+		public Task<IMediaMeta> ResolveAsync(string RootPath, string IDPrefix, string Id)
 		{
-            var file = FindFile(Id);
+            var file = FindFile(RootPath,Id);
             if (file == null)
                 return Task.FromResult<IMediaMeta>(null);
 			
@@ -113,7 +105,7 @@ namespace SF.Services.Media.FileSystem
 				);
 		}
 
-		public async Task<string> SaveAsync(IMediaMeta media, IContent Content)
+		public async Task<string> SaveAsync(string RootPath,IMediaMeta media, IContent Content)
 		{
 			if (Content == null)
 				throw new ArgumentException();

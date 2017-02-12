@@ -56,6 +56,7 @@ namespace SF.Core.DI
 					sp.Resolve<IServiceBuildRuleProvider>()
 				));
 			sc.AddScoped<IUploadedFileCollection, UploadedFileCollection>();
+			sc.AddScoped<IHttpRequestSource>(sp => new HttpRequestSource());
 		}
 	}
 }

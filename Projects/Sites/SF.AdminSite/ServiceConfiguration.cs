@@ -11,6 +11,7 @@ using SF.AdminSite;
 using SF.Metadata;
 using SF.Core.ManagedServices;
 using SF.Services.Test;
+using SF.Core.TaskServices;
 
 [assembly: PreApplicationStartMethod(typeof(ServiceConfiguration), nameof(ServiceConfiguration.RegisterDIHttpModule))]
 
@@ -98,6 +99,7 @@ namespace SF.AdminSite
 		protected override IServiceProvider OnBuildServiceProvider(IDIServiceCollection Services, EnvironmentType EnvironmentType)
 		{
 			var sp= Services.BuildServiceProvider();
+			sp.Resolve<ITaskServiceManager>().StartAll();
 			return sp;
 		}
 		public static void Configure()
@@ -123,6 +125,7 @@ namespace SF.AdminSite
 			Services.UseLocalFileCache();
 			Services.UseSystemMemoryCache();
 			Services.UseSystemTimeService();
+			Services.UseTaskServiceManager();
 
 			Services.AddTransient<AppContext>(tsp => new AppContext(tsp));
 			Services.UseEF6DataEntity<AppContext>();

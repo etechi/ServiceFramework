@@ -65,6 +65,9 @@
     <Compile Include="Core\Serialization\Newtonsoft\FixedContractResolver.cs" />
     <Compile Include="Core\Serialization\Newtonsoft\JsonSerializer.cs" />
     <Compile Include="Core\Serialization\Newtonsoft\NewtonsoftJsonDICollectionExtension.cs" />
+    <Compile Include="Core\TaskServices\TaskServiceManager.cs" />
+    <Compile Include="Core\TaskServices\TaskService.cs" />
+    <Compile Include="Core\TaskServices\TaskServiceManagerDIServiceCollectionExtension.cs" />
     <Compile Include="Core\Times\TimesDIServiceCollectionExtension.cs" />
     <Compile Include="Core\Times\TimeService.cs" />
     <Compile Include="Data\Entity\DataEntity.cs" />
@@ -98,10 +101,13 @@
     <Compile Include="Core\ManagedServices\ImplementConfigTypeSource.cs" />
     <Compile Include="Core\ManagedServices\Storages\MemoryServiceSource.cs" />
     <Compile Include="Core\ManagedServices\ServicveManagementDIServiceCollectionExtension.cs" />
+    <Compile Include="Services\Media\Managers\MediaManager.cs" />
+    <Compile Include="Services\Media\Managers\MediaMetaCache.cs" />
+    <Compile Include="Services\Media\MediaDIServiceCollection.cs" />
     <Compile Include="Services\Test\TestService.cs" />
-    <Compile Include="Services\Media\FileSystem\MediaStorage.cs" />
+    <Compile Include="Services\Media\Storages\FileSystemMediaStorage.cs" />
     <Compile Include="Services\Media\MediaService.cs" />
-    <Compile Include="Services\Media\StaticFiles\MediaStorage.cs" />
+    <Compile Include="Services\Media\Storages\StaticFileMediaStorage.cs" />
     <Compile Include="Core\NetworkService\DefaultServiceBuildRuleProvider.cs" />
     <Compile Include="Core\NetworkService\DefaultServiceMetadataService.cs" />
     <Compile Include="Core\NetworkService\NetworkServiceDICollectionExtension.cs" />
@@ -123,7 +129,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Services\Media\Managers\" />
+    <Folder Include="Services\Media\StaticFiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

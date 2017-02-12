@@ -6,12 +6,17 @@ using System.Threading.Tasks;
 
 namespace SF.Core.Caching
 {
+	public class FileCacheContent
+	{
+		public string FileExtension { get; set; }
+		public byte[] Content { get; set; }
+	}
+	public delegate Task<FileCacheContent> FileContentGenerator();
 	public interface IFileCache
 	{
 		Task<string> Cache(
 		   string FileName,
-		   System.Threading.SemaphoreSlim Locker,
-		   Func<Task<KeyValuePair<string, byte[]>>> Loader,
+		   FileContentGenerator ContentGenerator,
 		   string FilePath = null
 		   );
 	}

@@ -51,9 +51,8 @@
     <Compile Include="Core\DI\ServiceConfiguration.cs" />
     <Compile Include="Core\Serialization\Json.cs" />
     <Compile Include="Core\Serialization\JsonSerializerExtension.cs" />
+    <Compile Include="Core\TaskServices\ITaskServiceManagerExtension.cs" />
     <Compile Include="Core\TaskServices\TaskServiceDIServiceCollectionExtension.cs" />
-    <Compile Include="Core\TaskServices\TaskServiceWithScope.cs" />
-    <Compile Include="Core\TaskServices\TaskService.cs" />
     <Compile Include="Data\Entity\EntityServiceDIServiceCollectionExtension.cs" />
     <Compile Include="Data\Storage\DataContextExtension.cs" />
     <Compile Include="Data\Storage\DataSetExtension.cs" />
@@ -69,7 +68,7 @@
     <Compile Include="Data\Entity\EntitySource.cs" />
     <Compile Include="Data\Entity\QuerableEntitySource.cs" />
     <Compile Include="Ensure.cs" />
-    <Compile Include="Http.cs" />
+    <Compile Include="Core\NetworkService\HttpResponse.cs" />
     <Compile Include="Hash.cs" />
     <Compile Include="Maths\Matrix2DDExtensions.cs" />
     <Compile Include="Maths\RectExtension.cs" />
@@ -90,6 +89,7 @@
     <Compile Include="System\Linq\IEnumerableExtension.cs" />
     <Compile Include="EnvironmentTypeDetector.cs" />
     <Compile Include="System\ExceptionExtension.cs" />
+    <Compile Include="System\Reflection\MethodInfoExtension.cs" />
     <Compile Include="System\Threading\FlowController.cs" />
     <Compile Include="System\Collections\Generic\IEnumerableExtension.cs" />
     <Compile Include="System\Text\SimpleTemplate.cs" />

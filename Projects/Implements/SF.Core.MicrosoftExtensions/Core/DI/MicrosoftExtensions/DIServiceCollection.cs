@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SF.Core.DI.MicrosoftExtensions
 {
@@ -71,29 +72,45 @@ namespace SF.Core.DI.MicrosoftExtensions
 		{
 			this.InnerCollection = InnerCollection;
 		}
+		static object NewLazy<T>(IServiceProvider sp, Type Type)
+		{
+			return new Lazy<T>(() => (T)sp.GetRequiredService(Type));
+		}
+		static object NewCreator<T>(IServiceProvider sp, Type Type)
+		{
+			return new Func<T>(() => (T)sp.GetRequiredService(Type));
+		}
+		static MethodInfo NewLazyMethodInfo = typeof(DIServiceCollection)
+				.GetMethodExt(nameof(NewLazy), typeof(IServiceProvider), typeof(Type));
+		static MethodInfo NewCreatorMethodInfo= typeof(DIServiceCollection)
+			.GetMethodExt(nameof(NewCreator), typeof(IServiceProvider), typeof(Type));
+
 		public void Add(ServiceDescriptor Descriptor)
 		{
 			var desc = MapDescriptor(Descriptor);
 			InnerCollection.Add(desc);
-			if (Descriptor.ServiceImplementType==ServiceImplementType.Type &&
-				(!Descriptor.ImplementType.IsGeneric() ||
-				Descriptor.ImplementType.GetGenericTypeDefinition()!=typeof(Lazy<>)
-				))
+			if (Descriptor.ServiceImplementType==ServiceImplementType.Type)
 			{
-				InnerCollection.Add(new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
-					typeof(Lazy<>).MakeGenericType(desc.ServiceType),
-					sp =>(object)new Lazy<object>(() =>
-							sp.GetRequiredService(desc.ServiceType)
-							),
-					desc.Lifetime
-					));
-				InnerCollection.Add(new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
-					typeof(Func<>).MakeGenericType(desc.ServiceType),
-					sp => (object)new Func<object>(() =>
-						sp.GetRequiredService(desc.ServiceType)
-						),
-					desc.Lifetime
-					));
+				var td = Descriptor.ImplementType.IsGeneric() ? Descriptor.ImplementType.GetGenericTypeDefinition() : null;
+				if (td == null || td == typeof(Lazy<>) || td == typeof(Func<>))
+				{
+					var newLazy = NewLazyMethodInfo
+						.MakeGenericMethod(Descriptor.ServiceType)
+						.CreateDelegate<Func<IServiceProvider, object>>();
+					InnerCollection.Add(new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
+						typeof(Lazy<>).MakeGenericType(desc.ServiceType),
+						newLazy,
+						desc.Lifetime
+						));
+					var newCreator = NewCreatorMethodInfo
+						.MakeGenericMethod(Descriptor.ServiceType)
+						.CreateDelegate<Func<IServiceProvider, object>>();
+					InnerCollection.Add(new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
+						typeof(Func<>).MakeGenericType(desc.ServiceType),
+						newCreator,
+						desc.Lifetime
+						));
+				}
 			}
 		}
 

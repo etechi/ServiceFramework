@@ -22,7 +22,7 @@ namespace SF.AdminSite.Api
 		}
 		public HttpResponseMessage Test()
 		{
-			return Http.Text("asasdas");
+			return HttpResponse.Text("asasdas");
 		}
 		
 

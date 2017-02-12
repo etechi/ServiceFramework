@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace SF
 {
-	public static class Http
+	public static class HttpResponse
 	{
 		public static HttpResponseMessage ByteArray(byte[] Bytes, string mediaType = "application/octet", System.Net.HttpStatusCode Status = System.Net.HttpStatusCode.OK)
 		{
