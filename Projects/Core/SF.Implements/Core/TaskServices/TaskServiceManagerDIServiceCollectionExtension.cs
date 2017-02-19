@@ -16,6 +16,16 @@ namespace SF.Core.DI
 			)
 		{
 			sc.AddSingleton<ITaskServiceManager, TaskServiceManager>();
+			sc.AddBootstrap(async sp =>
+			{
+				foreach (var tss in sp.Resolve<ITaskServiceManager>().Services)
+					if (tss.Defination.AutoStartup)
+						await tss.Start();
+				return Disposable.FromAction(() =>
+				{
+					sp.Resolve<ITaskServiceManager>().StopAll().Wait();
+				});
+			});
 			return sc;
 		}
 	}

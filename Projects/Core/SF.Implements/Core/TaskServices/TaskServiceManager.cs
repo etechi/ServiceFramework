@@ -15,7 +15,7 @@ namespace SF.Core.TaskServices
 		{
 			this.ServiceDict = Services.ToDictionary(
 				s => s.Name, 
-				s =>new TaskService(s.Name, ServiceProvider, s.Entry));
+				s =>new TaskService(s, ServiceProvider, s.Entry));
 		}
 		public IEnumerable<ITaskService> Services
 		{

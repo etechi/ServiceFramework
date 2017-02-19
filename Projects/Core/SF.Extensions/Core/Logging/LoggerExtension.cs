@@ -8,11 +8,11 @@ namespace SF.Core.Logging
 	{
 		public static void Write(this ILogger Logger, LogLevel Level, Exception exception, string Message)
 		{
-			Logger.Write(new LogRecord { Exception = exception, Level = Level, Message = Message });
+			Logger.Write(Level,0,exception,(s,e)=>Message);
 		}
 		public static void Write(this ILogger Logger, LogLevel Level, Exception exception, string Format, params object[] args)
 		{
-			Logger.Write(new LogRecord { Exception = exception, Level = Level, Message = Format, Arguments = args });
+			Logger.Write(Level, 0, exception, (s, e) => string.Format(Format, args));
 		}
 
 		public static void Debug(this ILogger Logger, string Message)

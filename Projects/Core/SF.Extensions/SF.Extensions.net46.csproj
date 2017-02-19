@@ -48,9 +48,14 @@
     <Compile Include="Core\Caching\CacheExtensions.cs" />
     <Compile Include="Core\CallGuarantors\CallableDIServoceCollectionExtension.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantorExtension.cs" />
-    <Compile Include="Core\DI\ServiceConfiguration.cs" />
+    <Compile Include="Core\Hosting\AppInstance.cs" />
+    <Compile Include="Core\ServiceFeatures\BootableServiceProviderExtension.cs" />
+    <Compile Include="Core\ServiceFeatures\InitializableServiceCollectionExtension.cs" />
+    <Compile Include="Core\ServiceFeatures\BootableServiceCollectionExtension.cs" />
+    <Compile Include="Core\Hosting\BaseAppInstanceBuilder.cs" />
     <Compile Include="Core\Serialization\Json.cs" />
     <Compile Include="Core\Serialization\JsonSerializerExtension.cs" />
+    <Compile Include="Core\ServiceFeatures\InitializableServiceProviderExtension.cs" />
     <Compile Include="Core\TaskServices\ITaskServiceManagerExtension.cs" />
     <Compile Include="Core\TaskServices\TaskServiceDIServiceCollectionExtension.cs" />
     <Compile Include="Data\Entity\EntityServiceDIServiceCollectionExtension.cs" />

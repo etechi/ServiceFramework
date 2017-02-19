@@ -11,6 +11,7 @@ namespace SF.Core.Caching
 		public string FileExtension { get; set; }
 		public byte[] Content { get; set; }
 	}
+	
 	public delegate Task<FileCacheContent> FileContentGenerator();
 	public interface IFileCache
 	{

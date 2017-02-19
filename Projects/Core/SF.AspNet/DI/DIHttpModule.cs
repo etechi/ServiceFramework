@@ -30,7 +30,7 @@ namespace SF.AspNet.DI
 
 			return re.ServiceProvider;
 		}
-		public void Init(HttpApplication context)
+		public void Init(System.Web.HttpApplication context)
 		{
 			context.EndRequest += new EventHandler(this.OnEndRequest);
 		}

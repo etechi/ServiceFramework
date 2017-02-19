@@ -160,7 +160,7 @@
       <DependentUpon>201702081334155_add-service-instance-title.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="ServiceConfiguration.cs" />
+    <Compile Include="AppInstanceBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

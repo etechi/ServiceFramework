@@ -10,7 +10,7 @@ namespace SF.Core.TaskServices
 {
 	public class TaskService : ITaskService
 	{
-		public string Name { get; }
+		public ITaskServiceDefination Defination { get; }
 		public TaskServiceState State { get; private set; } = TaskServiceState.Stopped;
 		SyncScope SyncScope { get; } = new SyncScope();
 		IServiceProvider ServiceProvider { get; }
@@ -20,9 +20,9 @@ namespace SF.Core.TaskServices
 		TaskCompletionSource<int> _StopTaskCompletionSource;
 		public Exception Exception { get; private set; }
 
-		public TaskService(string Name,IServiceProvider ServiceProvider, Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Entry)
+		public TaskService(ITaskServiceDefination Defination,IServiceProvider ServiceProvider, Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Entry)
 		{
-			this.Name = Name;
+			this.Defination= Defination;
 			this.ServiceProvider = ServiceProvider;
 			this.Entry = Entry;
 		}

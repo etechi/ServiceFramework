@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SF
+namespace SF.Core.Hosting
 {
 	public enum EnvironmentType
 	{

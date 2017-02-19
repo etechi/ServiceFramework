@@ -18,7 +18,7 @@ namespace SF.Core.TaskServices
 	}
 	public interface ITaskServiceState
 	{
-		string Name { get; }
+		ITaskServiceDefination Defination { get; }
 		TaskServiceState State { get; }
 		Exception Exception { get; }
 	}
@@ -31,6 +31,7 @@ namespace SF.Core.TaskServices
 	{
 		string Name { get; }
 		Func<IServiceProvider,ITaskServiceState,CancellationToken,Task> Entry { get; }
+		bool AutoStartup { get; }
 	}
 	public interface ITaskServiceManager
 	{

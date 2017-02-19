@@ -50,8 +50,18 @@
     <Compile Include="Core\Caching\IRemoteCache.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantor.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantorStorage.cs" />
+    <Compile Include="Core\Logging\NullScope.cs" />
+    <Compile Include="Core\Logging\ILogService.cs" />
+    <Compile Include="Core\Logging\ILoggerProvider.cs" />
+    <Compile Include="Core\Logging\LogLevel.cs" />
+    <Compile Include="Core\ServiceFeatures\IServiceFeatureControlService.cs" />
+    <Compile Include="Core\ServiceFeatures\IServiceInstance.cs" />
+    <Compile Include="Core\ServiceFeatures\IServiceInitializable.cs" />
+    <Compile Include="Core\ServiceFeatures\IServiceBootable.cs" />
     <Compile Include="Core\DI\IDIScopeFactory.cs" />
     <Compile Include="Core\DI\IDIServiceDescriptor.cs" />
+    <Compile Include="Core\Hosting\IAppSetting.cs" />
+    <Compile Include="Core\Hosting\IAppFileStructure.cs" />
     <Compile Include="Core\Serialization\IJsonSerializer.cs" />
     <Compile Include="Core\TaskServices\ITaskService.cs" />
     <Compile Include="Core\Times\ITimeService.cs" />
@@ -129,13 +139,17 @@
     <Compile Include="Data\Entity\IQueryArgument.cs" />
     <Compile Include="Core\DI\IDIScope.cs" />
     <Compile Include="Core\DI\IDIServiceCollection.cs" />
-    <Compile Include="EnvironmentType.cs" />
+    <Compile Include="Core\Hosting\EnvironmentType.cs" />
     <Compile Include="Metadata\IMetadataBuilder.cs" />
     <Compile Include="Core\Drawing\Color.cs" />
     <Compile Include="Core\Drawing\IDrawContext.cs" />
     <Compile Include="Core\Drawing\IImageBuffer.cs" />
     <Compile Include="Core\Drawing\IImage.cs" />
     <Compile Include="Core\Drawing\IImageProvider.cs" />
+    <Compile Include="Services\Files\IFileProvider.cs" />
+    <Compile Include="Services\Files\IDirectoryContents.cs" />
+    <Compile Include="Services\Files\IFileInfo.cs" />
+    <Compile Include="Core\Hosting\IAppInstance.cs" />
     <Compile Include="Services\KB\IMimeResolver.cs" />
     <Compile Include="Core\ManagedServices\Admin\IServiceImplementManager.cs" />
     <Compile Include="Core\ManagedServices\Admin\IServiceDeclarationManager.cs" />
@@ -158,7 +172,6 @@
     <Compile Include="System\Linq\IAsyncContextQueryable.cs" />
     <Compile Include="System\Linq\IContextQueryable.cs" />
     <Compile Include="Core\Logging\ILogger.cs" />
-    <Compile Include="Core\Logging\ILogService.cs" />
     <Compile Include="Metadata\Models\Models.cs" />
     <Compile Include="Option.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -180,6 +193,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Core\Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

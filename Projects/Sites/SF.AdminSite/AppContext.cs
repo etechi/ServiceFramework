@@ -1,10 +1,15 @@
-﻿using System;
+﻿using SF.Core.Hosting;
+using System;
 
 namespace SF.AdminSite
 {
 	public class AppContext : SF.Data.Storage.DbContext
 	{
-		public AppContext() : this(new ServiceConfiguration(EnvironmentType.Utils).ServiceProvider)
+		public AppContext() : this(
+			new AppInstanceBuilder(EnvironmentType.Utils)
+			.Build()
+			.ServiceProvider
+			)
 		{
 
 		}

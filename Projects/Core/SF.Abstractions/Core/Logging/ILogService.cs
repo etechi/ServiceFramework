@@ -4,8 +4,11 @@ using System.Text;
 
 namespace SF.Core.Logging
 {
-	public interface ILogService
+	public interface ILogService : IDisposable
 	{
-		ILogger GetLogger(string Name);
+		ILogger GetLogger(string categoryName);
+		void AddProvider(ILoggerProvider provider);
+		void RemoveProvider(ILoggerProvider provider);
 	}
+
 }

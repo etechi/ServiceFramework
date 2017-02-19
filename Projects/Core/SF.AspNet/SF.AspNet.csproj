@@ -83,6 +83,8 @@
   <ItemGroup>
     <Compile Include="DI\DIHttpModule.cs" />
     <Compile Include="DI\MvcDependenceResolver.cs" />
+    <Compile Include="Hosting\HttpApplication.cs" />
+    <Compile Include="Logging\ScopeLogger.cs" />
     <Compile Include="NetworkServices\NetworkServiceDIServiceCollectionExtensions.cs" />
     <Compile Include="DI\WebApiDependenceResolver.cs" />
     <Compile Include="DI\AspNetDIServiceCollectionExtension.cs" />
@@ -114,6 +116,7 @@
       <Name>SF.Extensions.net46</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

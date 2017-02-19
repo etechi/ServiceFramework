@@ -44,5 +44,27 @@ namespace System.Linq
 				Context = SimpleQueryableContext.Instance
 			};
 		}
+		public static int IndexOf<T>(this IEnumerable<T> enumerable,Func<T,bool> Predicate)
+		{
+			var idx = 0;
+			foreach (var i in enumerable)
+			{
+				if (Predicate(i))
+					return idx;
+				idx++;
+			}
+			return -1;
+		}
+		public static int IndexOf<T>(this IEnumerable<T> enumerable, T Item) where T:IEquatable<T>
+		{
+			var idx = 0;
+			foreach (var i in enumerable)
+			{
+				if (i.Equals(Item))
+					return idx;
+				idx++;
+			}
+			return -1;
+		}
 	}
 }

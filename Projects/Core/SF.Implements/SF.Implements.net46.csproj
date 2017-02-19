@@ -62,9 +62,13 @@
     <Compile Include="Core\CallGuarantors\Storage\CallGuarantorStorage.cs" />
     <Compile Include="Core\CallGuarantors\Storage\DataModels\CallExpired.cs" />
     <Compile Include="Core\CallGuarantors\Storage\DataModels\CallInstance.cs" />
+    <Compile Include="Core\Hosting\HostingDIServiceCollectionExtension.cs" />
+    <Compile Include="Core\Logging\LogService.cs" />
+    <Compile Include="Core\Logging\Logger.cs" />
     <Compile Include="Core\Serialization\Newtonsoft\FixedContractResolver.cs" />
     <Compile Include="Core\Serialization\Newtonsoft\JsonSerializer.cs" />
     <Compile Include="Core\Serialization\Newtonsoft\NewtonsoftJsonDICollectionExtension.cs" />
+    <Compile Include="Core\ServiceFeatures\ServiceFeatureService.cs" />
     <Compile Include="Core\TaskServices\TaskServiceManager.cs" />
     <Compile Include="Core\TaskServices\TaskService.cs" />
     <Compile Include="Core\TaskServices\TaskServiceManagerDIServiceCollectionExtension.cs" />
@@ -129,6 +133,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core\DI\" />
     <Folder Include="Services\Media\StaticFiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

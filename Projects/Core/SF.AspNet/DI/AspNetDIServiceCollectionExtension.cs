@@ -7,6 +7,7 @@ using System.Web.Http.Dependencies;
 using System.Web.Mvc;
 using System.Web.Http;
 using SF.AspNet.Formatting;
+using SF.Core.Logging;
 
 namespace SF.Core.DI
 {
@@ -69,5 +70,14 @@ namespace SF.Core.DI
 			AspNet.DI.DIHttpModule.ServiceProvider=ServiceProvider;
 		}
 
+		public static IDIServiceCollection UseAspNetDIScopeLogger(this IDIServiceCollection sc)
+		{
+			sc.Add(
+				typeof(SF.Core.Logging.IDIScopeLogger<>), 
+				typeof(SF.Core.Logging.AspNetDIScopeLogger<>), 
+				ServiceLifetime.Scoped
+				);
+			return sc;
+		}
 	}
 }

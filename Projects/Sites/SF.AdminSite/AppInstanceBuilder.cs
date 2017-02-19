@@ -12,8 +12,8 @@ using SF.Metadata;
 using SF.Core.ManagedServices;
 using SF.Services.Test;
 using SF.Core.TaskServices;
+using SF.Core.Hosting;
 
-[assembly: PreApplicationStartMethod(typeof(ServiceConfiguration), nameof(ServiceConfiguration.RegisterDIHttpModule))]
 
 namespace SF.AdminSite
 {
@@ -84,43 +84,25 @@ namespace SF.AdminSite
 			ss.Aggregate(Cfg.Add, (s, i) => GetOp().Eval(s, Cfg.Op.Eval(i, i)));
 	}
 
-	public class ServiceConfiguration : SF.Core.DI.ServiceConfiguration<ServiceConfiguration>
+	public class AppInstanceBuilder : SF.Core.Hosting.BaseAppInstanceBuilder
 	{
-		public ServiceConfiguration() : this(EnvironmentTypeDetector.Detect())
+		public AppInstanceBuilder() : this(EnvironmentTypeDetector.Detect())
 		{
 
 		}
-		public ServiceConfiguration(EnvironmentType EnvironmentType) : base(
-			DIServiceCollection.Create(),
-			EnvironmentType
-			)
+		public AppInstanceBuilder(EnvironmentType EnvironmentType) : base(EnvironmentType)
 		{
 		}
-		protected override IServiceProvider OnBuildServiceProvider(IDIServiceCollection Services, EnvironmentType EnvironmentType)
-		{
-			var sp= Services.BuildServiceProvider();
-			sp.Resolve<ITaskServiceManager>().StartAll();
-			return sp;
-		}
-		public static void Configure()
-		{
-			var cfg = GlobalConfiguration.Configuration;
+		protected override IDIServiceCollection OnBuildServiceCollection()
+			=> DIServiceCollection.Create();
+		protected override IServiceProvider OnBuildServiceProvider(IDIServiceCollection Services)
+			=>Services.BuildServiceProvider();
 
-			//初始化WebApi格式化器
-			DefaultServiceProvider.InitWebApiFormatter(cfg);
+		public static AppInstanceBuilder Default { get; } = new AppInstanceBuilder();
 
-			//初始化MVC参数提供者
-			DefaultServiceProvider.InitMvcValueProvider();
+		protected override void OnConfigServices(IDIServiceCollection Services)
+		{
 
-			//初始化WebApi,Mvc依赖注入
-			DefaultServiceProvider.ReplaceDependenceResolver(cfg);
-		}
-		public static void RegisterDIHttpModule()
-		{
-			DIHttpModule.Register();
-		}
-		protected override void OnConfigServices(IDIServiceCollection Services, EnvironmentType EnvType)
-		{
 			Services.UseNewtonsoftJson();
 			Services.UseLocalFileCache();
 			Services.UseSystemMemoryCache();

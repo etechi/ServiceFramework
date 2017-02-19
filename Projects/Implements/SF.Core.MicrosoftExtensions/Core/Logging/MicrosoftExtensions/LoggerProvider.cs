@@ -2,11 +2,16 @@
 
 namespace SF.Core.Logging.MicrosoftExtensions
 {
-	public class Logger : ILogger
+	public class Logger : IProviderLogger
 	{
 		Microsoft.Extensions.Logging.ILogger InnerLogger { get; }
-		public Logger(Microsoft.Extensions.Logging.ILogger InnerLogger)
+
+		public ILoggerProvider Provider { get; }
+		
+
+		public Logger(ILoggerProvider Provider ,Microsoft.Extensions.Logging.ILogger InnerLogger)
 		{
+			this.Provider = Provider;
 			this.InnerLogger = InnerLogger;
 		}
 		Microsoft.Extensions.Logging.LogLevel MapLevel(LogLevel level)
@@ -28,39 +33,40 @@ namespace SF.Core.Logging.MicrosoftExtensions
 		{
 			return InnerLogger.IsEnabled(MapLevel(level));
 		}
-		static string MessageFormatter(object state,Exception ex)
-		{
-			var r = (ILogRecord)state;
-			return r.Arguments == null ? r.Message : string.Format(r.Message, r.Arguments);
-		}
-		static readonly Func<object, Exception, string> _messageFormatter = new Func<object, Exception, string>(MessageFormatter);
 
-		public void Write(ILogRecord Record)
-		{
-			InnerLogger.Log(
-				MapLevel(Record.Level),
-				0,
-				Record,
-				Record.Exception,
-				_messageFormatter
-				);
-		}
 		public IDisposable BeginScope<T>(T State)
 		{
 			return InnerLogger.BeginScope(State);
 		}
+
+		public void Write<TState>(LogLevel logLevel, TState state, Exception exception, Func<TState, Exception, string> formatter)
+		{
+			InnerLogger.Log(
+				MapLevel(logLevel),
+				default(Microsoft.Extensions.Logging.EventId),
+				state,
+				exception,
+				formatter
+				);
+
+		}
 	}
-	public class LogService :
-		SF.Core.Logging.ILogService
+	public class LoggerProvider :
+		SF.Core.Logging.ILoggerProvider
 	{
 		Microsoft.Extensions.Logging.ILoggerFactory LoggerFactory { get; }
-		public LogService(Microsoft.Extensions.Logging.ILoggerFactory LoggerFactory)
+		public LoggerProvider(Microsoft.Extensions.Logging.ILoggerFactory LoggerFactory)
 		{
 			this.LoggerFactory = LoggerFactory;
 		}
-		public ILogger GetLogger(string Name)
+		public IProviderLogger CreateLogger(string Name)
 		{
-			return new Logger(LoggerFactory.CreateLogger(Name));
+			return new Logger(this,LoggerFactory.CreateLogger(Name));
+		}
+
+		public void Dispose()
+		{
+
 		}
 	}
 }

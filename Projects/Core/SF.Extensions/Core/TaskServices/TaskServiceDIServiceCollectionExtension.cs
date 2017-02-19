@@ -15,17 +15,20 @@ namespace SF.Core.DI
 		{
 			public Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Entry { get; set; }
 			public string Name { get; set; }
+			public bool AutoStartup { get; set; }
 		}
 		public static IDIServiceCollection AddTaskService(
 			this IDIServiceCollection sc,
 			string Name,
-			Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Entry
+			Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Entry,
+			bool AutoStartup = true
 			)
 		{
 			sc.AddSingleton<ITaskServiceDefination>(new TaskServiceDefination
 			{
 				Name = Name,
-				Entry = Entry
+				Entry = Entry,
+				AutoStartup=AutoStartup
 			});
 			return sc;
 		}
@@ -33,7 +36,8 @@ namespace SF.Core.DI
 			this IDIServiceCollection sc,
 			string Name,
 			Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Start,
-			Func<Task> Stop
+			Func<Task> Stop,
+			bool AutoStartup=true
 			)
 		{
 			sc.AddSingleton<ITaskServiceDefination>(new TaskServiceDefination
@@ -50,7 +54,8 @@ namespace SF.Core.DI
 						}
 					
 					await Stop();
-				}
+				},
+				AutoStartup=AutoStartup
 			});
 			return sc;
 		}
@@ -61,7 +66,8 @@ namespace SF.Core.DI
 			int Period,
 			Func<IServiceProvider, Task<int>> TimerCallback,
 			Func<IServiceProvider, Task> StartupCallback = null,
-			Func<IServiceProvider, Task> CleanupCallback = null
+			Func<IServiceProvider, Task> CleanupCallback = null,
+			bool AutoStartup=true
 			)
 		{
 			return sc.AddTaskService(
@@ -84,7 +90,8 @@ namespace SF.Core.DI
 								await CleanupCallback(sp);
 						},
 						ct
-						)
+						),
+				 AutoStartup
 				);
 		}
 	}
