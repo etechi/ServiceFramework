@@ -20,9 +20,9 @@ namespace SF.Core.CallGuarantors.Runtime
 		public ILogger Logger { get; }
 		public IDIScopeFactory ScopeFactory { get; }
 		public Times.ITimeService TimeService { get; set; }
-		public CallDispatcher(ILogService LogService, IDIScopeFactory ScopeFactory, Times.ITimeService TimeService)
+		public CallDispatcher(ILogger<CallDispatcher> Logger, IDIScopeFactory ScopeFactory, Times.ITimeService TimeService)
 		{
-			this.Logger = LogService.GetLogger("可靠调用调度器");
+			this.Logger = Logger;
 			this.TimeService = TimeService;
 			this.ScopeFactory = ScopeFactory;
 		}

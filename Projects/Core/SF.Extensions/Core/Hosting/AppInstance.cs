@@ -12,7 +12,7 @@ namespace SF.Core.Hosting
 		public string Name { get; }
 		public IServiceProvider ServiceProvider { get; }
 		IDisposable _Shutdown;
-		public AppInstance(string Name,EnvironmentType EnvType,IServiceProvider ServiveProvider,IDisposable Shutdown)
+		public AppInstance(string Name,EnvironmentType EnvType,IServiceProvider ServiceProvider,IDisposable Shutdown)
 		{
 			this.Name = Name;
 			this.EnvType = EnvType;

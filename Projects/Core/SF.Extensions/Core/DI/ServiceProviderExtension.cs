@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SF.Core.DI
 {
@@ -16,6 +17,26 @@ namespace SF.Core.DI
 			if (s == null)
 				throw new InvalidOperationException("找不到服务:" + typeof(T));
 			return s;
+		}
+		public static T WithScope<T>(this IServiceProvider sp, Func<IServiceProvider, T> action)
+		{
+			using (var s = sp.Resolve<IDIScopeFactory>().CreateScope())
+				return action(s.ServiceProvider);
+		}
+		public static async Task<T> WithScope<T>(this IServiceProvider sp, Func<IServiceProvider, Task<T>> action)
+		{
+			using (var s = sp.Resolve<IDIScopeFactory>().CreateScope())
+				return await action(s.ServiceProvider);
+		}
+		public static void WithScope(this IServiceProvider sp, Action<IServiceProvider> action)
+		{
+			using (var s = sp.Resolve<IDIScopeFactory>().CreateScope())
+				action(s.ServiceProvider);
+		}
+		public static async Task WithScope(this IServiceProvider sp, Func<IServiceProvider, Task> action)
+		{
+			using (var s = sp.Resolve<IDIScopeFactory>().CreateScope())
+				await action(s.ServiceProvider);
 		}
 		interface IServicesGetter
 		{

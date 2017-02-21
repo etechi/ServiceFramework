@@ -72,18 +72,18 @@ namespace SF.Core.DI.MicrosoftExtensions
 		{
 			this.InnerCollection = InnerCollection;
 		}
-		static object NewLazy<T>(IServiceProvider sp, Type Type)
+		static object NewLazy<T>(IServiceProvider sp)
 		{
-			return new Lazy<T>(() => (T)sp.GetRequiredService(Type));
+			return new Lazy<T>(() => (T)sp.GetRequiredService(typeof(T)));
 		}
-		static object NewCreator<T>(IServiceProvider sp, Type Type)
+		static object NewCreator<T>(IServiceProvider sp)
 		{
-			return new Func<T>(() => (T)sp.GetRequiredService(Type));
+			return new Func<T>(() => (T)sp.GetRequiredService(typeof(T)));
 		}
 		static MethodInfo NewLazyMethodInfo = typeof(DIServiceCollection)
-				.GetMethodExt(nameof(NewLazy), typeof(IServiceProvider), typeof(Type));
+				.GetMethodExt(nameof(NewLazy), typeof(IServiceProvider));
 		static MethodInfo NewCreatorMethodInfo= typeof(DIServiceCollection)
-			.GetMethodExt(nameof(NewCreator), typeof(IServiceProvider), typeof(Type));
+			.GetMethodExt(nameof(NewCreator), typeof(IServiceProvider));
 
 		public void Add(ServiceDescriptor Descriptor)
 		{
@@ -92,7 +92,7 @@ namespace SF.Core.DI.MicrosoftExtensions
 			if (Descriptor.ServiceImplementType==ServiceImplementType.Type)
 			{
 				var td = Descriptor.ImplementType.IsGeneric() ? Descriptor.ImplementType.GetGenericTypeDefinition() : null;
-				if (td == null || td == typeof(Lazy<>) || td == typeof(Func<>))
+				if (td == null || td != typeof(Lazy<>) && td != typeof(Func<>))
 				{
 					var newLazy = NewLazyMethodInfo
 						.MakeGenericMethod(Descriptor.ServiceType)

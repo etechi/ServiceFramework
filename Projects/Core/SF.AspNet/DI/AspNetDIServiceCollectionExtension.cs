@@ -72,11 +72,11 @@ namespace SF.Core.DI
 
 		public static IDIServiceCollection UseAspNetDIScopeLogger(this IDIServiceCollection sc)
 		{
-			sc.Add(
-				typeof(SF.Core.Logging.IDIScopeLogger<>), 
-				typeof(SF.Core.Logging.AspNetDIScopeLogger<>), 
-				ServiceLifetime.Scoped
-				);
+			//sc.Add(
+			//	typeof(SF.Core.Logging.IDIScopeLogger<>), 
+			//	typeof(SF.Core.Logging.AspNetDIScopeLogger<>), 
+			//	ServiceLifetime.Scoped
+			//	);
 			return sc;
 		}
 	}

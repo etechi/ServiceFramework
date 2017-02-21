@@ -9,32 +9,37 @@ using System.Threading.Tasks;
 using SF.Core.Logging;
 using SF.Core.DI;
 using Microsoft.Extensions.Logging;
+using SF.Core.Logging.MicrosoftExtensions;
 
-namespace SF.Core.Logging.MicrosoftExtensions
+namespace SF.Core.Logging
 {
-	public static class MSLoggerProviderExtensions
+	public static class MSLoggerLogServiceExtensions
 	{
-		public static IServiceProvider AddMSLogging(this IServiceProvider sp)
+		class FakeLoggerFactory : Microsoft.Extensions.Logging.ILoggerFactory
 		{
-			return sp.AddMSLogging(
-					sp.Resolve<Microsoft.Extensions.Logging.ILoggerFactory>()
+			public ILogService LogService { get; set; }
+			public void AddProvider(Microsoft.Extensions.Logging.ILoggerProvider provider)
+			{
+				LogService.AddProvider(
+					new MSLoggerProvider(provider)
 					);
+			}
+
+			public Microsoft.Extensions.Logging.ILogger CreateLogger(string categoryName)
+			{
+				throw new NotSupportedException();
+			}
+
+			public void Dispose()
+			{
+			}
 		}
-		public static IServiceProvider AddMSLogging(
-			this IServiceProvider sp,
-			Microsoft.Extensions.Logging.ILoggerFactory LoggingFactory
+
+		public static Microsoft.Extensions.Logging.ILoggerFactory AsMSLoggerFactory(
+			this ILogService ls
 			)
 		{
-			LoggingFactory.AddConsole();
-			LoggingFactory.AddDebug();
-
-			var logService = sp.Resolve<ILogService>();
-			logService.AddProvider(
-				new LoggerProvider(
-					LoggingFactory
-					)
-				);
-			return sp;
+			return new FakeLoggerFactory { LogService = ls };
 		}
 	}
 }

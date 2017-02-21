@@ -35,6 +35,48 @@ namespace SF.UT.DI
 			var re = sp.Resolve<IInterface<int>>();
 			Assert.Equal("123", re.ToString(123));
 		}
+		public interface IMultipleImplTest
+		{
+			string Text();
+		}
+		public class MultipleImplTestGlobal : IMultipleImplTest
+		{
+			public string Text()
+			{
+				return "Global Text";
+			}
+		}
+		public class MultipleImplTestScope : IMultipleImplTest
+		{
+			int idx = 0;
+			public string Text()
+			{
+				return "Scope Text "+(idx++);
+			}
+		}
+		[Fact]
+		public void ScopeWithMultipleImplements()
+		{
+			var sc = DIServiceCollection.Create();
+			sc.AddScoped<IMultipleImplTest,MultipleImplTestScope>();
+			//sc.AddSingleton<IMultipleImplTest,MultipleImplTestGlobal>();
+
+			var sp = sc.BuildServiceProvider();
+			var re = sp.Resolve<IMultipleImplTest>();
+			Assert.Equal("Scope Text 0", re.Text());
+			sp.WithScope((isp) =>
+			{
+				var re1 = isp.Resolve<IMultipleImplTest>();
+				Assert.Equal("Scope Text 0", re1.Text());
+			});
+			Assert.Equal("Scope Text 1", re.Text());
+			sp.WithScope((isp) =>
+			{
+				var re1 = isp.Resolve<IMultipleImplTest>();
+				Assert.Equal("Scope Text 0", re1.Text());
+			});
+			Assert.Equal("Scope Text 2", re.Text());
+		}
 		[Fact]
 		public void ByFunc()
 		{

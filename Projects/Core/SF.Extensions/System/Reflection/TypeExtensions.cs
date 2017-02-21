@@ -228,5 +228,17 @@ namespace System.Reflection
 
 			return false;
 		}
+		static System.Collections.Concurrent.ConcurrentDictionary<MemberInfo, SF.Metadata.CommentAttribute> CommentDict { get; } 
+			= new Collections.Concurrent.ConcurrentDictionary<MemberInfo, SF.Metadata.CommentAttribute>();
+		public static SF.Metadata.CommentAttribute Comment(this MemberInfo Info)
+		{
+			SF.Metadata.CommentAttribute attr;
+			if (CommentDict.TryGetValue(Info, out attr)) return attr;
+			return CommentDict.GetOrAdd(
+				Info,
+				Info.GetCustomAttribute<SF.Metadata.CommentAttribute>(true) ??
+				new SF.Metadata.CommentAttribute(Info.Name)
+				);
+		}
 	}
 }

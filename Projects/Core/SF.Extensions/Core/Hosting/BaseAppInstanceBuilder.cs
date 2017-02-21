@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SF.Core.ServiceFeatures;
+using SF.Core.Logging;
 
 namespace SF.Core.Hosting
 {
@@ -11,11 +12,12 @@ namespace SF.Core.Hosting
 	{
 		public EnvironmentType EnvType { get; }
 		public string Name { get; }
-		public BaseAppInstanceBuilder(EnvironmentType EnvType, string Name=null)
+		public ILogService LogService { get; }
+		public BaseAppInstanceBuilder(EnvironmentType EnvType, string Name=null, ILogService LogService = null)
 		{
 			this.Name = Name;
 			this.EnvType = EnvType;
-			
+			this.LogService = LogService?? OnCreateLogService();
 		}
 		protected virtual void OnInitServices(IServiceProvider sp)
 		{
@@ -27,7 +29,10 @@ namespace SF.Core.Hosting
 				return Disposable.Empty;
 			return sp.BootServices().Result;
 		}
-		
+		protected virtual ILogService OnCreateLogService()
+		{
+			return null;
+		}
 		protected abstract IDIServiceCollection OnBuildServiceCollection();
 		protected abstract void OnConfigServices(IDIServiceCollection Services);
 		protected abstract IServiceProvider OnBuildServiceProvider(IDIServiceCollection Services);

@@ -84,7 +84,9 @@
     <Compile Include="DI\DIHttpModule.cs" />
     <Compile Include="DI\MvcDependenceResolver.cs" />
     <Compile Include="Hosting\HttpApplication.cs" />
-    <Compile Include="Logging\ScopeLogger.cs" />
+    <Compile Include="Logging\AspNetHttpResponseLogProvider.cs" />
+    <Compile Include="Logging\LogServiceExtension.cs" />
+    <Compile Include="Logging\AspNetHttpContextTraceLogProvider.cs" />
     <Compile Include="NetworkServices\NetworkServiceDIServiceCollectionExtensions.cs" />
     <Compile Include="DI\WebApiDependenceResolver.cs" />
     <Compile Include="DI\AspNetDIServiceCollectionExtension.cs" />

@@ -51,22 +51,25 @@ namespace SF.Core.Logging.MicrosoftExtensions
 
 		}
 	}
-	public class LoggerProvider :
+	public class MSLoggerProvider :
 		SF.Core.Logging.ILoggerProvider
 	{
-		Microsoft.Extensions.Logging.ILoggerFactory LoggerFactory { get; }
-		public LoggerProvider(Microsoft.Extensions.Logging.ILoggerFactory LoggerFactory)
+		Microsoft.Extensions.Logging.ILoggerProvider MSProvider { get; }
+
+		public bool Scoped => false;
+
+		public MSLoggerProvider(Microsoft.Extensions.Logging.ILoggerProvider MSProvider)
 		{
-			this.LoggerFactory = LoggerFactory;
+			this.MSProvider = MSProvider;
 		}
 		public IProviderLogger CreateLogger(string Name)
 		{
-			return new Logger(this,LoggerFactory.CreateLogger(Name));
+			return new Logger(this, MSProvider.CreateLogger(Name));
 		}
 
 		public void Dispose()
 		{
-
+			MSProvider.Dispose();
 		}
 	}
 }

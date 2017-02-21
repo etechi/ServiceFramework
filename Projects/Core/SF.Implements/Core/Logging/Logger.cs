@@ -10,198 +10,57 @@ using SF.Core.ServiceFeatures;
 
 namespace SF.Core.Logging
 {
-	internal class Logger : ILogger
+	class Logger<T> : ILogger<T>, IDisposable
 	{
-		private class Scope : IDisposable
+		ILogger GlobalLogger { get; }
+		ILogger ScopedLogger { get; }
+		ILogService LogService { get; }
+		public Logger(ILogService LogService)
 		{
-			private bool _isDisposed;
-
-			private IDisposable _disposable0;
-
-			private IDisposable _disposable1;
-
-			private readonly IDisposable[] _disposable;
-
-			public Scope(int count)
-			{
-				if (count > 2)
-				{
-					this._disposable = new IDisposable[count - 2];
-				}
-			}
-
-			public void SetDisposable(int index, IDisposable disposable)
-			{
-				if (index == 0)
-				{
-					this._disposable0 = disposable;
-					return;
-				}
-				if (index == 1)
-				{
-					this._disposable1 = disposable;
-					return;
-				}
-				this._disposable[index - 2] = disposable;
-			}
-
-			public void Dispose()
-			{
-				if (!this._isDisposed)
-				{
-					if (this._disposable0 != null)
-					{
-						this._disposable0.Dispose();
-					}
-					if (this._disposable1 != null)
-					{
-						this._disposable1.Dispose();
-					}
-					if (this._disposable != null)
-					{
-						int num = this._disposable.Length;
-						for (int num2 = 0; num2 != num; num2++)
-						{
-							if (this._disposable[num2] != null)
-							{
-								this._disposable[num2].Dispose();
-							}
-						}
-					}
-					this._isDisposed = true;
-				}
-			}
-
-			internal void Add(IDisposable disposable)
-			{
-				throw new NotImplementedException();
-			}
+			var name = typeof(T).Comment().Name;
+			this.LogService = LogService;
+			GlobalLogger = LogService.GetLogger(name);
+			ScopedLogger = LogService.CreateScopedLogger(name);
 		}
 
-		private readonly LoggerService _loggerService;
-
-		private readonly string _name;
-
-		private IProviderLogger[] _loggers;
-
-		public Logger(LoggerService loggerService, string name)
+		public void Dispose()
 		{
-			this._loggerService = loggerService;
-			this._name = name;
-			ILoggerProvider[] providers = loggerService.GetProviders();
-			if (providers.Length != 0)
-			{
-				this._loggers = new IProviderLogger[providers.Length];
-				for (int i = 0; i < providers.Length; i++)
-				{
-					this._loggers[i] = providers[i].CreateLogger(name);
-				}
-			}
+			var d = ScopedLogger as IDisposable;
+			if (d != null)
+				d.Dispose();
 		}
-
+		static Func<object, Exception, string> _formatter { get; } = new Func<object, Exception, string>((o, e) => o.ToString());
+		public void Write(LogLevel logLevel, Exception exception, string message)
+		{
+			var re = LogService.LogMessageFactory.CreateLogMessage(logLevel, exception, message, null);
+			GlobalLogger.Write(logLevel, re, exception, _formatter);
+			ScopedLogger.Write(logLevel, re, exception, _formatter);
+		}
+		public void Write(LogLevel logLevel, Exception exception, string format, params object[] args)
+		{
+			var re = LogService.LogMessageFactory.CreateLogMessage(logLevel, exception, format, args);
+			GlobalLogger.Write(logLevel, re, exception, _formatter);
+			ScopedLogger.Write(logLevel, re, exception, _formatter);
+		}
 		public void Write<TState>(LogLevel logLevel, TState state, Exception exception, Func<TState, Exception, string> formatter)
 		{
-			if (this._loggers == null)
-				return;
-			List<Exception> list = null;
-			ILogger[] loggers = this._loggers;
-			for (int i = 0; i < loggers.Length; i++)
-			{
-				ILogger logger = loggers[i];
-				try
-				{
-					logger.Write<TState>(logLevel,  state, exception, formatter);
-				}
-				catch (Exception item)
-				{
-					if (list == null)
-					{
-						list = new List<Exception>();
-					}
-					list.Add(item);
-				}
-			}
-			if (list != null && list.Count > 0)
-			{
-				throw new AggregateException("An error occurred while writing to logger(s).", list);
-			}
+			GlobalLogger.Write(logLevel, state, exception, formatter);
+			ScopedLogger.Write(logLevel, state, exception, formatter);
 		}
 
-		public bool IsEnabled(LogLevel logLevel)
+		public bool IsEnabled(LogLevel level)
 		{
-			if (this._loggers == null)
-				return false;
-			List<Exception> list = null;
-			var loggers = this._loggers;
-			foreach(var logger in loggers)
-			{
-				try
-				{
-					if (logger.IsEnabled(logLevel))
-					{
-						return true;
-					}
-				}
-				catch (Exception item)
-				{
-					if (list == null)
-					{
-						list = new List<Exception>();
-					}
-					list.Add(item);
-				}
-			}
-			if (list != null && list.Count > 0)
-			{
-				throw new AggregateException("An error occurred while writing to logger(s).", list);
-			}
-			return false;
+			return GlobalLogger.IsEnabled(level) || ScopedLogger.IsEnabled(level);
 		}
 
-		public IDisposable BeginScope<TState>(TState state)
+		public IDisposable BeginScope<T1>(T1 State)
 		{
-			var loggers = _loggers;
-			if (loggers == null)
-				return NullScope.Instance;
-			
-			if (loggers.Length == 1)
-				return loggers[0].BeginScope<TState>(state);
-
-			var scope = new Scope(loggers.Length);
-			List<Exception> list = null;
-			for (int i = 0; i < loggers.Length; i++)
-			{
-				try
-				{
-					IDisposable disposable = loggers[i].BeginScope<TState>(state);
-					scope.SetDisposable(i, disposable);
-				}
-				catch (Exception item)
-				{
-					if (list == null)
-					{
-						list = new List<Exception>();
-					}
-					list.Add(item);
-				}
-			}
-			if (list != null && list.Count > 0)
-			{
-				throw new AggregateException("An error occurred while writing to logger(s).", list);
-			}
-			return scope;
+			return Disposable.Combine(
+				GlobalLogger.BeginScope(State),
+				ScopedLogger.BeginScope(State)
+				);
 		}
 
-		internal void AddProvider(ILoggerProvider provider)
-		{
-			var logger = provider.CreateLogger(this._name);
-			
-			_loggers = (_loggers?? Array.Empty<IProviderLogger>()).Concat(new[] { logger });
-		}
-		internal void RemoveProvider(ILoggerProvider provider)
-		{
-			_loggers = _loggers.Where(l => l.Provider != provider).ToArray();
-		}
 	}
 
 }

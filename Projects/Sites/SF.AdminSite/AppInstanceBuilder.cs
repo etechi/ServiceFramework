@@ -13,7 +13,8 @@ using SF.Core.ManagedServices;
 using SF.Services.Test;
 using SF.Core.TaskServices;
 using SF.Core.Hosting;
-
+using SF.Core.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace SF.AdminSite
 {
@@ -86,12 +87,22 @@ namespace SF.AdminSite
 
 	public class AppInstanceBuilder : SF.Core.Hosting.BaseAppInstanceBuilder
 	{
+
 		public AppInstanceBuilder() : this(EnvironmentTypeDetector.Detect())
 		{
 
 		}
 		public AppInstanceBuilder(EnvironmentType EnvironmentType) : base(EnvironmentType)
 		{
+		}
+		protected override ILogService OnCreateLogService()
+		{
+			var ls = new LogService(new Core.Logging.MicrosoftExtensions.MSLogMessageFactory());
+			ls.AddAspNetTrace();
+
+			ls.AsMSLoggerFactory()
+				.AddDebug();
+			return ls;
 		}
 		protected override IDIServiceCollection OnBuildServiceCollection()
 			=> DIServiceCollection.Create();
@@ -102,6 +113,7 @@ namespace SF.AdminSite
 
 		protected override void OnConfigServices(IDIServiceCollection Services)
 		{
+			Services.AddLogService(LogService);
 
 			Services.UseNewtonsoftJson();
 			Services.UseLocalFileCache();
@@ -140,8 +152,6 @@ namespace SF.AdminSite
 				Services.UseNetworkService();
 				Services.UseWebApiNetworkService(GlobalConfiguration.Configuration);
 			}
-
-
 		}
 	}
 }

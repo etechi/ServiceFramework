@@ -63,8 +63,11 @@
     <Compile Include="Core\CallGuarantors\Storage\DataModels\CallExpired.cs" />
     <Compile Include="Core\CallGuarantors\Storage\DataModels\CallInstance.cs" />
     <Compile Include="Core\Hosting\HostingDIServiceCollectionExtension.cs" />
-    <Compile Include="Core\Logging\LogService.cs" />
     <Compile Include="Core\Logging\Logger.cs" />
+    <Compile Include="Core\Logging\LoggerDIServiceCollectionExtension.cs" />
+    <Compile Include="Core\Logging\DefaultLogMessageFactory.cs" />
+    <Compile Include="Core\Logging\LogService.cs" />
+    <Compile Include="Core\Logging\LoggerCollection.cs" />
     <Compile Include="Core\Serialization\Newtonsoft\FixedContractResolver.cs" />
     <Compile Include="Core\Serialization\Newtonsoft\JsonSerializer.cs" />
     <Compile Include="Core\Serialization\Newtonsoft\NewtonsoftJsonDICollectionExtension.cs" />

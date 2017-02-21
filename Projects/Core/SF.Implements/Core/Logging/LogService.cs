@@ -10,31 +10,43 @@ using SF.Core.ServiceFeatures;
 
 namespace SF.Core.Logging
 {
-	public class LoggerService : ILogService, IDisposable
+	public class LogService : ILogService, IDisposable
 	{
-		private readonly Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>(StringComparer.Ordinal);
+		private readonly Dictionary<string, LoggerCollection> _loggers = new Dictionary<string, LoggerCollection>(StringComparer.Ordinal);
 
-		private readonly List<ILoggerProvider> _providers = new List<ILoggerProvider>();
+		private readonly List<ILoggerProvider> _globalProviders = new List<ILoggerProvider>();
+		private readonly List<ILoggerProvider> _scopedProviders = new List<ILoggerProvider>();
 
 		private readonly object _sync = new object();
 
 		private volatile bool _disposed;
 
+		public ILogMessageFactory LogMessageFactory { get; }
+		public LogService(ILogMessageFactory LogMessageFactory=null)
+		{
+			Ensure.NotNull(LogMessageFactory, nameof(LogMessageFactory));
+			this.LogMessageFactory = LogMessageFactory ?? DefaultLogMessageFactory.Instance;
+		}
 		public ILogger GetLogger(string categoryName)
 		{
 			if (this.CheckDisposed())
 				throw new ObjectDisposedException("LoggerFactory");
-			Logger logger;
+			LoggerCollection logger;
 			lock (_sync)
 			{
 				if (!this._loggers.TryGetValue(categoryName, out logger))
 				{
-					logger = new Logger(this, categoryName);
+					logger = new LoggerCollection(this, categoryName, false);
 					this._loggers[categoryName] = logger;
 				}
 			}
 			return logger;
 		}
+		public ILogger CreateScopedLogger(string categoryName)
+		{
+			return new LoggerCollection(this, categoryName, true);
+		}
+
 
 		public void AddProvider(ILoggerProvider provider)
 		{
@@ -43,17 +55,30 @@ namespace SF.Core.Logging
 			object sync = this._sync;
 			lock (sync)
 			{
-				_providers.Add(provider);
-				foreach (var p in _loggers)
+				if (provider.Scoped)
+					_scopedProviders.Add(provider);
+				else
 				{
-					p.Value.AddProvider(provider);
+					_globalProviders.Add(provider);
+					foreach (var p in _loggers)
+					{
+						p.Value.AddProvider(provider);
+					}
 				}
 			}
 		}
 
-		internal ILoggerProvider[] GetProviders()
+		internal IProviderLogger[] CreateLoggers(bool scoped,string Name)
 		{
-			return _providers.ToArray();
+			var providers = scoped ? _scopedProviders : _globalProviders;
+			if (providers.Count == 0)
+				return null;
+			var loggers = new IProviderLogger[providers.Count];
+			for (int i = 0; i < providers.Count; i++)
+			{
+				loggers[i] = providers[i].CreateLogger(Name);
+			}
+			return loggers;
 		}
 
 		/// <summary>
@@ -72,9 +97,14 @@ namespace SF.Core.Logging
 			object sync = this._sync;
 			lock (sync)
 			{
-				_providers.Remove(provider);
-				foreach (var p in _loggers)
-					p.Value.RemoveProvider(provider);
+				if (provider.Scoped)
+					_scopedProviders.Remove(provider);
+				else
+				{
+					_globalProviders.Remove(provider);
+					foreach (var p in _loggers)
+						p.Value.RemoveProvider(provider);
+				}
 			}
 		}
 		public void Dispose()
@@ -82,7 +112,15 @@ namespace SF.Core.Logging
 			if (!this._disposed)
 			{
 				this._disposed = true;
-				foreach (var p in _providers)
+				foreach (var p in _globalProviders)
+				{
+					try
+					{
+						p.Dispose();
+					}
+					catch { }
+				}
+				foreach (var p in _scopedProviders)
 				{
 					try
 					{
