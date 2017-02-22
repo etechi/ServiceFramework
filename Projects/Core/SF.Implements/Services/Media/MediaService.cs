@@ -45,24 +45,21 @@ namespace SF.Services.Media
 		[Comment(Name = "支持图片处理样式", Description = "支持图片处理样式")]
 		public string[] SupportedFormats { get; set; } = new string[0];
 
-		[Comment(Name = "图片缓存目录", Description = "图片缓存目录，以~开头的目录相对于网站根目录,默认为~/App_Data/temp/cache")]
-		[Required]
-		public string CacheRoot { get; set; } = "~/App_Data/tmp/cache";
-
 		[Comment(Name = "缓存的媒体资源类型", Description = "不进行缩放时需要缓存的媒体资源类型")]
 		public string[] MediaCacheTypes { get; set; }
 	}
 
 	[Comment(Name = "默认媒体附件服务", GroupName = "系统服务")]
-    public abstract class MediaService : IMediaService
+    public class MediaService : IMediaService
     {
 		public MediaServiceSetting Setting { get; }
 		public IMediaManager Manager { get; }
 		public KB.Mime.IMimeResolver MimeResolver { get; }
 		public Lazy<IUploadedFileCollection> FileCollection { get; }
-		public Lazy<IHttpRequestSource > HttpRequestSource { get; }
+		public IHttpRequestSource HttpRequestSource { get; }
 		public Lazy<IImageProvider> ImageProvider { get; }
 		public Lazy<IFileCache> FileCache { get; }
+
 		public MediaService(
 			[Comment("媒体管理器")]
 			IMediaManager Manager,
@@ -71,8 +68,9 @@ namespace SF.Services.Media
 			[Comment("MIME服务")]
 			KB.Mime.IMimeResolver MimeResolver,
 			Lazy<IUploadedFileCollection> FileCollection,
-			Lazy<IHttpRequestSource> HttpRequestSource,
+			IHttpRequestSource HttpRequestSource,
 			Lazy<IImageProvider> ImageProvider,
+			[Comment("文件缓存")]
 			Lazy<IFileCache> FileCache
 			)
 		{
@@ -263,7 +261,7 @@ namespace SF.Services.Media
 				!Setting.SupportedFormats.Contains(format))
 				return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
 			var etag = "\""+id + ":" + format+"\"";
-			var Request = HttpRequestSource.Value.Request;
+			var Request = HttpRequestSource.Request;
 			if (Request.Headers.IfNoneMatch?.FirstOrDefault()?.Tag == etag)
 				return new HttpResponseMessage(System.Net.HttpStatusCode.NotModified);
 

@@ -3,6 +3,9 @@ using Newtonsoft.Json;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel.DataAnnotations;
+using System.Linq.Expressions;
+
 namespace SF.Core.ManagedServices.Runtime
 {
 	class ServiceCreateParameterTemplate : IServiceCreateParameterTemplate,ManagedServices.IServiceInstanceIdent
@@ -26,6 +29,111 @@ namespace SF.Core.ManagedServices.Runtime
 			{
 				ServiceIdents.Add(reader.Path, (string)reader.Value);
 				return null;
+			}
+
+			public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+			{
+				throw new NotImplementedException();
+			}
+		}
+		class ArrayToDictionaryConverter : JsonConverter
+		{
+			abstract class DictDeserializer
+			{
+				public abstract object Deserialize(JsonReader reader, JsonSerializer serializer, out string[] Keys);
+			}
+			class DictDeserializer<K,T> : DictDeserializer
+			{
+				Func<T,K> GetIdentFunc { get; }
+				public DictDeserializer(PropertyInfo prop)
+				{
+					var arg = Expression.Parameter(typeof(T), "item");
+					GetIdentFunc = Expression.Lambda<Func<T, K>>(
+						Expression.Property(arg, prop),
+						arg
+						).Compile();
+				}
+				public override object Deserialize(JsonReader reader, JsonSerializer serializer,out string[] Keys)
+				{
+					var keyList = new List<string>();
+					var re=serializer.Deserialize<T[]>(reader).ToDictionary(i =>
+					{
+						var key = GetIdentFunc(i);
+						keyList.Add(key.ToString());
+						return key;
+					});
+					Keys = keyList.ToArray();
+					return re;
+				}
+			}
+			static System.Collections.Concurrent.ConcurrentDictionary<Type, DictDeserializer> DictDeserializers { get; } = new System.Collections.Concurrent.ConcurrentDictionary<Type, ArrayToDictionaryConverter.DictDeserializer>();
+			static DictDeserializer DictDeserializerCreator(Type itype)
+			{
+				if (!itype.IsGeneric())
+					return null;
+				if (itype.GetGenericTypeDefinition() != typeof(Dictionary<,>))
+					return null;
+				var gtypes = itype.GetGenericArguments();
+				var keyFields = gtypes[1]
+					.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy)
+					.Where(p => p.IsDefined(typeof(KeyAttribute)))
+					.ToArray();
+				if (keyFields.Length != 1)
+					return null;
+				if (keyFields[0].PropertyType != gtypes[0])
+					return null;
+				return (DictDeserializer)Activator.CreateInstance(typeof(DictDeserializer<,>).MakeGenericType(
+					gtypes[0],
+					gtypes[1]),
+					keyFields[0]
+					);
+			}
+			static Func<Type, DictDeserializer> DictDeserializerCreatorFunc { get; } = DictDeserializerCreator;
+			static DictDeserializer GetDictDeserializer(Type type)
+			{
+				return DictDeserializers.GetOrAdd(type, DictDeserializerCreatorFunc);
+			}
+			public Dictionary<string,string> ReplacePath(Dictionary<string, string> dict)
+			{
+				if (KeyMap == null)
+					return dict;
+				// a.b[1].c.d[3].e
+				return dict.ToDictionary(p => {
+					var key = p.Key;
+					var i = key.Length-1;
+					for (;;)
+					{
+						var bb = key.LastIndexOf('[', i);
+						if (bb == -1)
+							break;
+						var be = key.IndexOf(']', bb + 1);
+						if (be == -1)
+							break;
+						var prefix = key.Substring(0, bb);
+						var keys = KeyMap.Get(prefix);
+						if (keys != null)
+							key = key.Substring(0, bb) + "[" + keys[int.Parse(key.Substring(bb + 1, be - bb - 1))]+"]"+key.Substring(be+1);
+						i = bb - 1;
+					}
+					return key;
+				}, p => p.Value);
+			}
+			public override bool CanConvert(Type objectType)
+			{
+				return GetDictDeserializer(objectType) != null;
+			}
+			Dictionary<string, string[]> KeyMap;
+			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+			{
+				if (reader.TokenType != JsonToken.StartArray)
+					return serializer.Deserialize(reader, objectType);
+				//a.b[  1].c => a.b.key.c
+				string[] keys;
+				var path = reader.Path;
+				var re= GetDictDeserializer(objectType).Deserialize(reader, serializer,out keys);
+				if (KeyMap == null) KeyMap = new Dictionary<string, string[]>();
+				KeyMap.Add(path, keys);
+				return re;
 			}
 
 			public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -90,15 +198,17 @@ namespace SF.Core.ManagedServices.Runtime
 			}
 			else
 			{
+				var atod = new ArrayToDictionaryConverter();
 				var sc = new ServiceConverter()
 				{
-					ServiceDetector = ServiceDetector
+					ServiceDetector = ServiceDetector,
 				};
 				var setting = new JsonSerializerSettings
 				{
-					Converters = new[]
+					Converters = new JsonConverter[]
 					{
-						sc
+						sc,
+						atod
 					}
 				};
 				using (var jr = new JsonTextReader(new System.IO.StringReader(Config)))
@@ -115,8 +225,11 @@ namespace SF.Core.ManagedServices.Runtime
 						ParameterInfo p;
 						if (pdic.TryGetValue(prop, out p))
 						{
-							
-							var st = p.ParameterType.IsInterfaceType() ? ServiceDetector.GetServiceType(p.ParameterType) : ServiceType.Unknown;
+							var realType = p.ParameterType.GetGenericArgumentTypeAsLazy() ??
+								p.ParameterType.GetGenericArgumentTypeAsFunc() ??
+								p.ParameterType;
+
+							var st = realType.IsInterfaceType() ? ServiceDetector.GetServiceType(realType) : ServiceType.Unknown;
 							if (st == ServiceType.Normal)
 							{
 								Skip(jr);
@@ -142,7 +255,7 @@ namespace SF.Core.ManagedServices.Runtime
 						adic.TryGetValue(p.Name, out a);
 						return a;
 					}).ToArray();
-					sis = sc.ServiceIdents;
+					sis = atod.ReplacePath(sc.ServiceIdents);
 				}
 			}
 

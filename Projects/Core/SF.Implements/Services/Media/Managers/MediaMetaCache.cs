@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SF.Metadata;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace SF.Services.Media
 {
+	[Comment("媒体元信息缓存")]
+
 	public class MediaMetaCache : IMediaMetaCache
 	{
 		public SF.Core.Caching.ILocalCache Cache { get; }

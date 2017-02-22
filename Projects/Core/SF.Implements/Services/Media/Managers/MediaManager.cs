@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SF.Metadata;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,15 +11,19 @@ namespace SF.Services.Media
 	public class MediaStorageSetting
 	{
 		[Key]
+		[Comment("媒体标识类型")]
 		public string Type { get; set; }
-		public string RootPath { get; set; }
+		[Comment("媒体存储器")]
 		public IMediaStorage Storage { get; set; }
 	}
 	public class MediaManagerSetting
 	{
-		public Dictionary<string, MediaStorageSetting> Storages { get; set; }
+		[Comment("存储类型")]
+		[TableRows]
+		public Dictionary<string, MediaStorageSetting> Types { get; set; }
 		public IMediaMetaCache MetaCache { get; set; }
 	}
+	[Comment("媒体管理器")]
 	public class MediaManager : IMediaManager
 	{
 		public MediaManagerSetting Setting { get; }
@@ -28,7 +33,7 @@ namespace SF.Services.Media
 		}
 		MediaStorageSetting GetStorage(string Type,string Id)
 		{
-			var stg = Setting.Storages.Get(Type);
+			var stg = Setting.Types.Get(Type);
 			if (stg == null) throw new ArgumentException("不支持此媒体存储类型:" + Type + "," + Id);
 			return stg;
 		}
@@ -42,7 +47,7 @@ namespace SF.Services.Media
 			var type = Id.Substring(0, i);
 			var stg = GetStorage(type, Id);
 
-			m = await stg.Storage.ResolveAsync(stg.RootPath, stg.Type, Id.Substring(i+1));
+			m = await stg.Storage.ResolveAsync(stg.Type, Id.Substring(i+1));
 			if (m == null)
 				return null;
 			if (type + "-" + m.Id != Id)
@@ -58,7 +63,7 @@ namespace SF.Services.Media
                 return;
             var type = Id.Substring(0, i);
             var stg = GetStorage(type, Id);
-            await stg.Storage.RemoveAsync(stg.RootPath,Id.Substring(i + 1));
+            await stg.Storage.RemoveAsync(Id.Substring(i + 1));
         }
         public Task<IContent> GetContentAsync(IMediaMeta Meta)
 		{
@@ -72,7 +77,7 @@ namespace SF.Services.Media
 			Ensure.NotNull(Meta,nameof(Meta));
 			Ensure.NotNull(Content, nameof(Content));
 			var stg = GetStorage(Meta.Type, Meta.Id);
-			var re=await stg.Storage.SaveAsync(stg.RootPath, Meta, Content);
+			var re=await stg.Storage.SaveAsync( Meta, Content);
 			return Meta.Type + "-" + re;
 		}
 	}

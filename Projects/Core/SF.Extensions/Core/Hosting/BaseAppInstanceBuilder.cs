@@ -53,7 +53,7 @@ namespace SF.Core.Hosting
 			});
 			OnConfigServices(Services);
 			var sp = OnBuildServiceProvider(Services);
-			OnInitServices(sp);
+			//OnInitServices(sp);
 			var shutdown = OnBootServices(sp);
 
 			return ai= OnBuildAppInstance(sp,shutdown);

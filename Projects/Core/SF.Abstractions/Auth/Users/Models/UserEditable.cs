@@ -1,6 +1,8 @@
-﻿namespace SF.Auth.Users
+﻿using SF.Data;
+
+namespace SF.Auth.Users
 {
-	public class UserEditable
+	public class UserEditable : IObjectWithId<long>
     {
         public long Id { get; set; }
         public string NickName { get; set; }

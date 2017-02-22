@@ -20,6 +20,9 @@ namespace SF.Core.ManagedServices.Admin
 		[EntityIdent("系统服务实现")]
 		[Comment("服务实现")]
 		public string ImplementId { get; set; }
+
+		[Comment("是否为默认服务实例")]
+		public bool? IsDefaultService { get; set; }
 	}
 
 	[EntityManager("系统服务实例")]

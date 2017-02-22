@@ -32,12 +32,15 @@ namespace SF.Data.Entity
                 re.AddRange(await Resolver.Resolve(g.Key, g.ToArray()));
             return re.ToArray();
         }
-        
 
-        public static async Task<Dictionary<string, IDataEntity>> ResolveToDictionary(
-            this IDataEntityResolver Resolver,
-            IEnumerable<string> Idents)
-            => (await Resolver.Resolve(Idents)).ToDictionary(o => o.Ident);
+
+		public static async Task<Dictionary<string, IDataEntity>> ResolveToDictionary(
+			this IDataEntityResolver Resolver,
+			IEnumerable<string> Idents)
+		{
+			var re = await Resolver.Resolve(Idents);
+			return re.ToDictionary(o => o.Ident);
+		}
 
         public static Task<IDataEntity[]> ResolveWithOrder(this IDataEntityResolver Resolver, params string[] Idents)
             => ResolveWithOrder(Resolver, (IEnumerable<string>)Idents);

@@ -29,7 +29,12 @@ namespace SF.Core.DI
 		}
 		public static IDIServiceCollection AddSingleton(this IDIServiceCollection sc, Type ImplementType)
 		{
-			sc.Add(ImplementType, ImplementType,ServiceLifetime.Transient);
+			sc.Add(ImplementType, ImplementType,ServiceLifetime.Singleton);
+			return sc;
+		}
+		public static IDIServiceCollection AddTransient(this IDIServiceCollection sc, Type ImplementType)
+		{
+			sc.Add(ImplementType, ImplementType, ServiceLifetime.Transient);
 			return sc;
 		}
 		public static IDIServiceCollection Add(this IDIServiceCollection sc,Type ServiceType,Type ImplementType,ServiceLifetime Lifetime)

@@ -6,7 +6,7 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 namespace SF.Core.DI.MicrosoftExtensions
 {
 	public class DIServiceCollection :  IDIServiceCollection
@@ -71,6 +71,8 @@ namespace SF.Core.DI.MicrosoftExtensions
 		public DIServiceCollection(IServiceCollection InnerCollection)
 		{
 			this.InnerCollection = InnerCollection;
+			if(!this.GetServiceTypes().Any(t=>t==typeof(IDIScopeFactory)))
+				this.AddTransient<IDIScopeFactory, ScopeFactory>();
 		}
 		static object NewLazy<T>(IServiceProvider sp)
 		{
@@ -129,7 +131,6 @@ namespace SF.Core.DI.MicrosoftExtensions
 		public static IDIServiceCollection Create()
 		{
 			var sc= new DIServiceCollection(new ServiceCollection());
-			sc.InnerCollection.AddTransient<IDIScopeFactory, ScopeFactory>();
 			return sc;
 		}
 

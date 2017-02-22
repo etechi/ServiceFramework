@@ -22,7 +22,7 @@ namespace SF.Core.DI
 							   select type
 							   )
 			{
-				sc.AddSingleton(ct);
+				sc.AddTransient(ct);
 			}
 		}
 
@@ -77,6 +77,13 @@ namespace SF.Core.DI
 			//	typeof(SF.Core.Logging.AspNetDIScopeLogger<>), 
 			//	ServiceLifetime.Scoped
 			//	);
+			return sc;
+		}
+		public static IDIServiceCollection UseAspNetFilePathStructure(this IDIServiceCollection sc)
+		{
+			sc.AddSingleton<Hosting.IDefaultFilePathStructure>(sp =>
+				new AspNet.DefaultFilePathStructure()
+				);
 			return sc;
 		}
 	}

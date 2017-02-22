@@ -27,7 +27,13 @@ namespace SF.Core.ManagedServices.Runtime
 		static MethodInfo StringConcat = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 2 && m.GetParameters().All(pt=>pt.ParameterType== typeof(string)));
 		static MethodInfo StringConcat4 = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 4 && m.GetParameters().All(pt => pt.ParameterType == typeof(string)));
 		static MethodInfo Int32ToString = typeof(int).GetMethods().Single(m => m.Name == "ToString" && m.IsPublic && !m.IsStatic && m.GetParameters().Length == 0);
-		static Expression ServiceProviderResolveExpression(Type Type) =>
+		enum ResolveType
+		{
+			Instance,
+			Lazy,
+			Func
+		}
+		static Expression ServiceProviderResolveExpression(Type Type,ResolveType resolveType) =>
 			Expression.Convert(
 				Expression.Call(
 					ParamServiceProvider,
@@ -37,12 +43,54 @@ namespace SF.Core.ManagedServices.Runtime
 				Type
 				);
 
-		static Expression ManagedServiceResolveExpression(Type Type, Expression PropPathExpr) =>
+
+		static Lazy<T> CreateLazyedManagedServiceResolve<T>(
+			IManagedServiceScope scope,
+			IServiceCreateParameterTemplate CreateParameterTemplate,
+			string Path
+			)=>new Lazy<T>(() =>
+				(T)scope.Resolve(typeof(T), CreateParameterTemplate.GetServiceIdent(Path))
+			);
+
+		static MethodInfo CreateLazyedManagedServiceResolveMethodInfo = typeof(ServiceFactoryBuilder).GetMethodExt(
+			nameof(CreateLazyedManagedServiceResolve),
+			typeof(IManagedServiceScope),
+			typeof(IServiceCreateParameterTemplate),
+			typeof(string)
+			);
+		static Func<T> CreateFuncManagedServiceResolve<T>(
+			IManagedServiceScope scope,
+			IServiceCreateParameterTemplate CreateParameterTemplate,
+			string Path
+			) => () =>
+				  (T)scope.Resolve(typeof(T), CreateParameterTemplate.GetServiceIdent(Path))
+			;
+
+		static MethodInfo CreateFuncManagedServiceResolveMethodInfo = typeof(ServiceFactoryBuilder).GetMethodExt(
+			nameof(CreateFuncManagedServiceResolve),
+			typeof(IManagedServiceScope),
+			typeof(IServiceCreateParameterTemplate),
+			typeof(string)
+			);
+		static Expression ManagedServiceResolveExpression(Type Type, Expression PropPathExpr,ResolveType resolveType) =>
+			resolveType==ResolveType.Lazy?
+			(Expression)Expression.Call(
+				CreateLazyedManagedServiceResolveMethodInfo.MakeGenericMethod(Type.GetGenericArgumentTypeAsLazy()),
+				ParamManagedNamedServiceScope,
+				ParamServiceCreateParameterProvider,
+				PropPathExpr
+				):
+			resolveType==ResolveType.Func?
+			(Expression)Expression.Call(
+				CreateFuncManagedServiceResolveMethodInfo.MakeGenericMethod(Type.GetGenericArgumentTypeAsFunc()),
+				ParamManagedNamedServiceScope,
+				ParamServiceCreateParameterProvider,
+				PropPathExpr
+				) :
 			Expression.Convert(
 				Expression.Call(
 					ParamManagedNamedServiceScope,
 					ManagedNamedServiceScopeResolve,
-					ParamServiceProvider,
 					Expression.Constant(Type),
 					Expression.Call(
 						ParamServiceCreateParameterProvider,
@@ -97,22 +145,31 @@ namespace SF.Core.ManagedServices.Runtime
 
 			HashSet<Type> TypePath = new HashSet<Type>();
 			List<string> PathList = new List<string>();
-			void DetectCopyRequiredPath(Type t)
+			void DetectCopyRequiredPath(Type ot)
 			{
-				if (!TypePath.Add(t))
-					throw new NotSupportedException($"配置类型循环依赖:根类型{ImplementType} 当期类型:{t}");
+				if (!TypePath.Add(ot))
+					throw new NotSupportedException($"配置类型循环依赖:根类型{ImplementType} 当期类型:{ot}");
 				try
 				{
+					var t = ot;
 					if (t.IsArray)
 						t = t.GetElementType();
-					else if (t.IsGeneric() && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-						t = t.GetGenericArguments()[0];
+					else if (t.IsGeneric())
+					{
+						var gtd = t.GetGenericTypeDefinition();
+						if (gtd == typeof(IEnumerable<>))
+							t = t.GetGenericArguments()[0];
+						else if (gtd == typeof(Dictionary<,>))
+							t = t.GetGenericArguments()[1];
+					}
 					if (ServiceDetector.IsServiceType(t))
 					{
 						for (var i = 0; i < PathList.Count; i++)
 							CopyRequiredPaths.Add(string.Join(".", PathList.Take(i + 1)));
 						return;
 					}
+					if (t.IsPrimitive)
+						return;
 
 					foreach (var pi in t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty))
 					{
@@ -123,7 +180,7 @@ namespace SF.Core.ManagedServices.Runtime
 				}
 				finally
 				{
-					TypePath.Remove(t);
+					TypePath.Remove(ot);
 				}
 			}
 			public void InitCopyRequiredPaths()
@@ -144,53 +201,91 @@ namespace SF.Core.ManagedServices.Runtime
 			public IServiceDetector ServiceDetector;
 			public Type ImplementType;
 			public ConstructorInfo constructorInfo;
+
 			Expression EnumerableCopyExpression(Expression src, Type ElementType, Expression PropPathExpr, string PropPath)
 			{
-				var label = Expression.Label();
 				var listType = typeof(List<>).MakeGenericType(ElementType);
-				var enumeratorType = typeof(IEnumerator<>).MakeGenericType(ElementType);
-				var al = Expression.Parameter(listType);
-				var ae = Expression.Parameter(enumeratorType);
-				var idx = Expression.Parameter(typeof(int));
-				var path = Expression.Parameter(typeof(string));
+				var list = listType.AsVariable();
+				var idx = typeof(int).AsVariable();
+				var path = typeof(string).AsVariable();
 				return Expression.Block(
-					new[] { al, ae, idx },
-					Expression.Assign(al, Expression.New(listType)),
-					Expression.Assign(ae, Expression.Call(
-						src,
-						typeof(IEnumerable<>).MakeGenericType(ElementType).
-							GetMethod("GetEnumerator", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod))
-						),
-					Expression.Loop(
-						Expression.Block(
-							Expression.IfThen(
-								Expression.Not(
-									Expression.Call(ae, enumeratorType.GetMethod("MoveNext", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod))
-									),
-								Expression.Break(label)
-								),
-							Expression.Assign(
+					new  [] { list, idx,path }.Cast<ParameterExpression>(),
+					list.Assign(listType.Create()),
+					src.To(typeof(IEnumerable<>).MakeGenericType(ElementType))
+						.ForEach(ElementType, item =>
+						 Expression.Block(
+							 Expression.Assign(
 								path,
 								Expression.Call(
 									null,
 									StringConcat4,
 									PropPathExpr,
 									Expression.Constant("["),
-									Expression.Call(idx, Int32ToString),
+									idx.CallMethod(Int32ToString),
 									Expression.Constant("]")
 									)
 								),
-							Expression.Call(
-								al,
-								listType.GetMethod("Add", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod),
-								CopyExpression(ElementType, Expression.Property(ae, "Current"), path, PropPath)
+							list.CallMethod(
+								"Add",
+								CopyExpression(ElementType, item, path, PropPath)
 								),
 							Expression.AddAssign(idx, Expression.Constant(1))
-						),
-						label
-					),
-					al
+							)),
+					list
 				);
+			}
+			Expression DictionaryCopyExpression(Expression src,Type KeyType, Type ElementType, Expression PropPathExpr, string PropPath)
+			{
+				var dictType = typeof(Dictionary<,>).MakeGenericType(KeyType,ElementType);
+				var dict = dictType.AsVariable();
+				var path = typeof(string).AsVariable();
+				return Expression.Block(
+					new[] { dict,  path }.Cast<ParameterExpression>(),
+					dict.Assign(dictType.Create()),
+					src.To(typeof(IEnumerable<>).MakeGenericType(typeof(KeyValuePair<,>).MakeGenericType(KeyType,ElementType)))
+					.ForEach(typeof(KeyValuePair<,>).MakeGenericType(KeyType, ElementType), item =>
+						 Expression.Block(
+							 Expression.Assign(
+								path,
+								Expression.Call(
+									null,
+									StringConcat4,
+									PropPathExpr,
+									Expression.Constant("["),
+									item.GetMember("Key"),
+									Expression.Constant("]")
+									)
+								),
+							dict.CallMethod(
+								"Add",
+								item.GetMember("Key"),
+								CopyExpression(ElementType, item.GetMember("Value"), path, PropPath)
+								)
+							)),
+					dict
+				);
+			}
+			ServiceType GetServiceType(IServiceDetector ServiceDetector, Type Type, out ResolveType ResolveType)
+			{
+				var RealType = Type.GetGenericArgumentTypeAsLazy();
+				if (RealType != null)
+					ResolveType = ResolveType.Lazy;
+				else
+				{
+					RealType = Type.GetGenericArgumentTypeAsFunc();
+					if (RealType != null)
+						ResolveType = ResolveType.Func;
+					else
+					{
+						ResolveType = ResolveType.Instance;
+						RealType = Type;
+					}
+				}
+				return ServiceDetector.GetServiceType(RealType);
+			}
+			static Dictionary<K,T> CopyDirectionary<K,T>(Dictionary<K, T> dict)
+			{
+				return dict.ToDictionary(p => p.Key, p => p.Value);
 			}
 			Expression CopyExpression(Type Type, Expression src, Expression PropPathExpr, string PropPath)
 			{
@@ -201,13 +296,24 @@ namespace SF.Core.ManagedServices.Runtime
 				{
 					return Expression.Call(
 						EnumerableCopyExpression(
-							Expression.Convert(src, typeof(IEnumerable<>).MakeGenericType(Type.GetElementType())),
+							src,
 							Type.GetElementType(),
 							PropPathExpr,
 							PropPath
 						),
 						typeof(List<>).MakeGenericType(Type.GetElementType()).GetMethod("ToArray", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
 					);
+				}
+				else if(Type.IsGeneric() && Type.GetGenericTypeDefinition()==typeof(Dictionary<,>))
+				{
+					var gtype = Type.GetGenericArguments();
+					return DictionaryCopyExpression(
+							src,
+							gtype[0],
+							gtype[1],
+							PropPathExpr,
+							PropPath
+						);
 				}
 				else if (Type.IsGeneric() && Type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
 				{
@@ -218,11 +324,12 @@ namespace SF.Core.ManagedServices.Runtime
 				}
 				else
 				{
-					var svcType = ServiceDetector.GetServiceType(Type);
+					ResolveType rType;
+					var svcType = GetServiceType(ServiceDetector,Type,out rType);
 					if (svcType == Runtime.ServiceType.Managed)
-						return ManagedServiceResolveExpression(Type, PropPathExpr);
+						return ManagedServiceResolveExpression(Type, PropPathExpr, rType);
 					else if (svcType == Runtime.ServiceType.Normal)
-						return ServiceProviderResolveExpression(Type);
+						return ServiceProviderResolveExpression(Type, rType);
 					else if (Type == typeof(ManagedServices.IServiceInstanceIdent))
 						return GetServiceInstanceIdentExpression();
 				}
@@ -251,11 +358,12 @@ namespace SF.Core.ManagedServices.Runtime
 
 			Expression BuildParamExpression(ParameterInfo pi, int Index)
 			{
-				var svcType = ServiceDetector.GetServiceType(pi.ParameterType);
+				ResolveType resolveType;
+				var svcType = GetServiceType(ServiceDetector,pi.ParameterType,out resolveType);
 				if (svcType == Runtime.ServiceType.Normal)
-					return ServiceProviderResolveExpression(pi.ParameterType);
+					return ServiceProviderResolveExpression(pi.ParameterType, resolveType);
 				else if (svcType == Runtime.ServiceType.Managed)
-					return ManagedServiceResolveExpression(pi.ParameterType, Expression.Constant(pi.Name));
+					return ManagedServiceResolveExpression(pi.ParameterType, Expression.Constant(pi.Name), resolveType);
 				else if (pi.ParameterType == typeof(ManagedServices.IServiceInstanceIdent))
 					return GetServiceInstanceIdentExpression();
 				else

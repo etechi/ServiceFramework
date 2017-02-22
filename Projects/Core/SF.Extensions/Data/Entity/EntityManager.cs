@@ -154,7 +154,7 @@ namespace SF.Data.Entity
 
 		#region delete
 
-		public virtual async Task DeleteAsync(TKey Id)
+		public virtual async Task RemoveAsync(TKey Id)
 		{
             ModifyContext ctx = null;
             var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
@@ -163,13 +163,13 @@ namespace SF.Data.Entity
 				{
 					Id = Id
 				};
-				await OnDeleteAsync(ctx);
+				await OnRemoveAsync(ctx);
 
                 return await SaveChangesAsync();
             }, RetryForConcurrencyExceptionCount);
             await ctx.ExecutePostActionsAsync(saved);
 		}
-		protected virtual async Task OnDeleteAsync(ModifyContext ctx)
+		protected virtual async Task OnRemoveAsync(ModifyContext ctx)
 		{
 			ctx.Model = await OnLoadModelForUpdate(ctx);
 			await OnRemoveModel(ctx);

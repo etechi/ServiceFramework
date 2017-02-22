@@ -9,7 +9,6 @@ namespace SF.Core.DI.MicrosoftExtensions
 	{
 		public static IDIServiceCollection GetDIServiceCollection(this IServiceCollection sc)
 		{
-			sc.AddTransient<IDIScopeFactory, ScopeFactory>();
 			return new DIServiceCollection(sc);
 		}
 	

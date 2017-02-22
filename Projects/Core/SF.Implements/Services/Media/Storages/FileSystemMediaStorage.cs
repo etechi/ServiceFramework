@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SF.Core.Hosting;
+using SF.Metadata;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,13 +19,23 @@ namespace SF.Services.Media.Storages
 		public string Type{get;set;}
 		public int Width{get;set;}
 	}
-	
+	[Comment("本地媒体文件存储")]
 	public class FileSystemMediaStorage : IMediaStorage
 	{
 		public KB.Mime.IMimeResolver MimeResolver { get; }
-		public FileSystemMediaStorage(KB.Mime.IMimeResolver MimeResolver)
+		public string RootPath { get; }
+		public IFilePathResolver PathResolver { get; }
+		public FileSystemMediaStorage(
+			KB.Mime.IMimeResolver MimeResolver,
+			[Metadata.Comment("文件根目录")]
+			string RootPath,
+			[Metadata.Comment("路径解析器")]
+			IFilePathResolver PathResolver
+			)
 		{
 			this.MimeResolver = MimeResolver;
+			this.RootPath = RootPath;
+			this.PathResolver = PathResolver;
 		}
 		
 		string CalcGroup(Guid guid)
@@ -32,14 +44,14 @@ namespace SF.Services.Media.Storages
 
 		}
 
-        string FindFile(string RootPath,string Id)
+        string FindFile(string Id)
         {
             Ensure.Equals(Id.Length, 8 + 32);
             var date = Id.Substring(0, 8);
             var gid = Id.Substring(8);
             var guid = Guid.ParseExact(gid, "N");
             var group = CalcGroup(guid);
-            var path = System.IO.Path.Combine(RootPath, date, group);
+            var path = PathResolver.Resolve(RootPath, date, group);
             if (!System.IO.Directory.Exists(path))
                 return null;
 
@@ -49,18 +61,18 @@ namespace SF.Services.Media.Storages
                 return null;
             return fs[0];
         }
-        public Task<bool> RemoveAsync(string RootPath, string Id)
+        public Task<bool> RemoveAsync( string Id)
         {
-            var file = FindFile(RootPath,Id);
+            var file = FindFile(Id);
             if (file == null)
                 return Task.FromResult(false);
 
             System.IO.File.Delete(file);
             return Task.FromResult(true);
         }
-		public Task<IMediaMeta> ResolveAsync(string RootPath, string IDPrefix, string Id)
+		public Task<IMediaMeta> ResolveAsync(string IDPrefix, string Id)
 		{
-            var file = FindFile(RootPath,Id);
+            var file = FindFile(Id);
             if (file == null)
                 return Task.FromResult<IMediaMeta>(null);
 			
@@ -105,7 +117,7 @@ namespace SF.Services.Media.Storages
 				);
 		}
 
-		public async Task<string> SaveAsync(string RootPath,IMediaMeta media, IContent Content)
+		public async Task<string> SaveAsync(IMediaMeta media, IContent Content)
 		{
 			if (Content == null)
 				throw new ArgumentException();
@@ -121,7 +133,7 @@ namespace SF.Services.Media.Storages
 			var ext = MimeResolver.MimeToFileExtension(media.Mime);
 
 			var file_name = $"{id}{media.Width}-{media.Height}-{media.Length}-{media.Name.LetterOrDigits().Limit(50)}{ext}";
-			var basePath = System.IO.Path.Combine(RootPath, date, group);
+			var basePath = PathResolver.Resolve( RootPath, date, group);
 			System.IO.Directory.CreateDirectory(basePath);
 			var path = System.IO.Path.Combine(basePath, file_name);
 

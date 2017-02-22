@@ -24,9 +24,9 @@ namespace SF.Core.ManagedServices.Admin
 				select new ServiceImplement
 				{
 					Id = desc.Type.FullName+'@'+pair.Key.FullName,
-					Description = declComment?.Description,
-					Name = declComment?.Name ?? desc.Type.Name,
-					Group = declComment?.GroupName,
+					Description = implComment?.Description,
+					Name = implComment?.Name ?? desc.Type.Name,
+					Group = implComment?.GroupName,
 					DeclarationId=pair.Key.FullName,
 					DeclarationName=declComment?.Name ?? pair.Key.Name
 				}).ToDictionary(t => t.Id);

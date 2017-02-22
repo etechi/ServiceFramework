@@ -4,6 +4,7 @@ using SF.Core.ManagedServices.Storages;
 using System.Linq;
 using SF.Metadata;
 using System;
+using SF.Core.ManagedServices.Admin;
 
 namespace SF.Core.DI
 {
@@ -14,14 +15,29 @@ namespace SF.Core.DI
 			this IDIServiceCollection sc
 			)
 		{
-			sc.AddSingleton<Caching.ILocalCache, Caching.SystemMemoryCache>();
+			sc.AddSingleton<Caching.ILocalCache>(new Caching.SystemMemoryCache("DefaultCache"));
 			return sc;
 		}
 		public static IDIServiceCollection UseLocalFileCache(
 			this IDIServiceCollection sc
 			)
 		{
-			sc.AddSingleton<Caching.IFileCache, Caching.LocalFileCache>();
+			sc.AddScoped<Caching.IFileCache, Caching.LocalFileCache>();
+			sc.AddInitializer(
+				"初始化文件缓存服务",
+				async sp =>
+				{
+					var sim = sp.Resolve<IServiceInstanceManager>();
+					await sim.EnsureDefaultService<Caching.IFileCache, Caching.LocalFileCache>(
+						new
+						{
+							Setting = new
+							{
+								RootPath = "temp://cache",
+								PathResolver = await sim.ResolveDefaultService<Hosting.IFilePathResolver>()
+							}
+						});
+				});
 			return sc;
 		}
 	}

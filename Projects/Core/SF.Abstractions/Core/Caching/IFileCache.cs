@@ -13,6 +13,7 @@ namespace SF.Core.Caching
 	}
 	
 	public delegate Task<FileCacheContent> FileContentGenerator();
+	[Metadata.Comment("文件缓存")]
 	public interface IFileCache
 	{
 		Task<string> Cache(

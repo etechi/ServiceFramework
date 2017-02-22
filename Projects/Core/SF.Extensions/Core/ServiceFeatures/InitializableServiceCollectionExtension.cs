@@ -11,6 +11,7 @@ namespace SF.Core.DI
 		class InitHelper : IServiceInitializable
 		{
 			public Func<Task> Callback { get; set; }
+			public string Title { get; set; }
 			public Task Init()
 			{
 				return Callback();
@@ -18,11 +19,13 @@ namespace SF.Core.DI
 		}
 		public static IDIServiceCollection AddInitializer(
 			this IDIServiceCollection sc, 
+			string Title,
 			Func<IServiceProvider,Task> Callback)
 			{
 				sc.Normal().AddSingleton<IServiceInitializable>(sp =>
 					new InitHelper
 					{
+						Title=Title,
 						Callback = () => Callback(sp)
 					});
 				return sc;
@@ -30,9 +33,12 @@ namespace SF.Core.DI
 		
 		public static IDIServiceCollection AddInitializer(
 			this IDIServiceCollection sc,
+			string Title,
 			Action<IServiceProvider> Callback)
 		{
-			sc.AddInitializer(sp =>
+			sc.AddInitializer(
+				Title,
+				sp =>
 				{
 					Callback(sp);
 					return Task.CompletedTask;

@@ -49,6 +49,7 @@
     <Compile Include="Core\CallGuarantors\CallableDIServoceCollectionExtension.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantorExtension.cs" />
     <Compile Include="Core\Hosting\AppInstance.cs" />
+    <Compile Include="Core\ManagedServices\IServiceInstanceManagerExtension.cs" />
     <Compile Include="Core\ServiceFeatures\BootableServiceProviderExtension.cs" />
     <Compile Include="Core\ServiceFeatures\InitializableServiceCollectionExtension.cs" />
     <Compile Include="Core\ServiceFeatures\BootableServiceCollectionExtension.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="Core\ServiceFeatures\InitializableServiceProviderExtension.cs" />
     <Compile Include="Core\TaskServices\ITaskServiceManagerExtension.cs" />
     <Compile Include="Core\TaskServices\TaskServiceDIServiceCollectionExtension.cs" />
+    <Compile Include="Data\Entity\EntityManagerExtension.cs" />
     <Compile Include="Data\Entity\EntityServiceDIServiceCollectionExtension.cs" />
     <Compile Include="Data\Storage\DataContextExtension.cs" />
     <Compile Include="Data\Storage\DataSetExtension.cs" />
@@ -91,6 +93,7 @@
     <Compile Include="System\Collections\Generic\DictExtension.cs" />
     <Compile Include="System\Disposable.cs" />
     <Compile Include="System\IO\StreamExtension.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionExtension.cs" />
     <Compile Include="System\Linq\IEnumerableExtension.cs" />
     <Compile Include="EnvironmentTypeDetector.cs" />
     <Compile Include="System\ExceptionExtension.cs" />

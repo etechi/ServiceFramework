@@ -9,6 +9,7 @@ using SF.Metadata;
 using SF.Core.ManagedServices.Admin.DataModels;
 using SF.Core.ManagedServices.Models;
 using SF.Core.ManagedServices.Runtime;
+using SF.Core.DI;
 
 namespace SF.Core.ManagedServices.Admin
 {
@@ -20,15 +21,18 @@ namespace SF.Core.ManagedServices.Admin
 		IDefaultServiceLocator
 	{
 		IDataEntityResolver EntityResolver { get;}
+		IServiceProvider ServiceProvider { get; }
 		public IManagedServiceConfigChangedNotifier ConfigChangedNotifier { get; }
 
 		public ServiceInstanceManager(
 			IDataSet<DataModels.ServiceInstance> DataSet, 
 			IDataEntityResolver EntityResolver,
-			IManagedServiceConfigChangedNotifier ConfigChangedNotifier
+			IManagedServiceConfigChangedNotifier ConfigChangedNotifier,
+			IServiceProvider ServiceProvider
 			) : 
 			base(DataSet)
 		{
+			this.ServiceProvider = ServiceProvider;
 			this.EntityResolver = EntityResolver;
 			this.ConfigChangedNotifier = ConfigChangedNotifier;
 		}
@@ -87,6 +91,7 @@ namespace SF.Core.ManagedServices.Admin
 					.Filter(Arg.Name, i => i.Name)
 					.Filter(Arg.DeclarationId, i => i.DeclarationId)
 					.Filter(Arg.ImplementId, i => i.ImplementId)
+					.Filter(Arg.IsDefaultService,i=>i.IsDefaultService)
 				;
 		}
 
@@ -101,7 +106,29 @@ namespace SF.Core.ManagedServices.Admin
 				});
 			return Internals;
 		}
+		void TestConfig(string Id,string ImplementId,string CreateArguments)
+		{
+			var ServiceScope = ServiceProvider.Resolve<IManagedServiceScope>();
+			var ImplementTypeResolver = ServiceProvider.Resolve<IServiceImplementTypeResolver>();
+			var ServiceMetadata = ServiceProvider.Resolve<IServiceMetadata>();
+			var ImplementType = ImplementTypeResolver.Resolve(ImplementId.Split2('@').Item1);
+			var ci = Runtime.ServiceFactoryBuilder.FindBestConstructorInfo(ImplementType);
+			var tmpl = Runtime.ServiceCreateParameterTemplate.Load(
+					ci,
+					Id,
+					CreateArguments,
+					ServiceMetadata
+					);
 
+			var factory = Runtime.ServiceFactoryBuilder.Build(
+				ServiceMetadata,
+				ImplementType,
+				ci
+				);
+			var svr=factory(ServiceProvider, ServiceScope, tmpl);
+			if (svr == null)
+				throw new PublicArgumentException("配置错误,创建服务失败");
+		}
 		protected override async Task OnUpdateModel(ModifyContext ctx)
 		{
 			var e = ctx.Editable;
@@ -123,7 +150,9 @@ namespace SF.Core.ManagedServices.Admin
 			m.Remarks = e.Remarks;
 			m.Image = e.Image;
 
-			if(!m.IsDefaultService)
+			TestConfig(m.Id, m.ImplementId, m.CreateArguments);
+
+			if (!m.IsDefaultService)
 			{
 				var curDefaultEntity = await DataSet.FindAsync(si => si.DeclarationId == m.DeclarationId && si.Id != m.Id && si.IsDefaultService);
 				if (curDefaultEntity == null || e.IsDefaultService)
@@ -159,14 +188,16 @@ namespace SF.Core.ManagedServices.Admin
 		}
 		IServiceConfig IServiceConfigLoader.GetConfig(string Id)
 		{
-			return DataSet.QuerySingleAsync(
+			var re = DataSet.QuerySingleAsync(
 				si => si.Id == Id,
 				si => new Config
 				{
 					ServiceType = si.DeclarationId,
-					ImplementType = si.ImplementId.Split2('@').Item1,
+					ImplementType = si.ImplementId,
 					CreateArguments = si.CreateArguments
 				}).Result;
+			re.ImplementType = re.ImplementType.Split2('@').Item1;
+			return re;
 		}
 
 		string IDefaultServiceLocator.Locate(string Type)

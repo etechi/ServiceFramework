@@ -61,7 +61,7 @@
     <Compile Include="Core\DI\IDIScopeFactory.cs" />
     <Compile Include="Core\DI\IDIServiceDescriptor.cs" />
     <Compile Include="Core\Hosting\IAppSetting.cs" />
-    <Compile Include="Core\Hosting\IAppFileStructure.cs" />
+    <Compile Include="Core\Hosting\IFilePathResolver.cs" />
     <Compile Include="Core\Serialization\IJsonSerializer.cs" />
     <Compile Include="Core\TaskServices\ITaskService.cs" />
     <Compile Include="Core\Times\ITimeService.cs" />

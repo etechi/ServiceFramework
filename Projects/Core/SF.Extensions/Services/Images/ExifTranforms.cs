@@ -16,8 +16,9 @@ namespace SF.Core.Drawing
 				return transform;
 			return (img, ctx) =>
 			{
-				throw new NotSupportedException();
-				//img = ctx.Execute(transform, img);
+				
+				img = ctx.Execute(transform, img);
+				return img;
 				//var pi = img.Image.ExifProperties.FirstOrDefault(i => i.Id == 274);
 				//if (pi == null)
 				//	return img;

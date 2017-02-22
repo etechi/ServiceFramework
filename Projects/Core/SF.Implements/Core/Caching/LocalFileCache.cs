@@ -1,4 +1,5 @@
-﻿using SF.Metadata;
+﻿using SF.Core.Hosting;
+using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,7 +16,13 @@ namespace SF.Core.Caching
 		[Comment("缓存根目录")]
 		[Required]
 		public string RootPath { get; set; }
+
+		[Comment("路径解析器")]
+		[Required]
+		public IFilePathResolver PathResolver { get; set; }
+
 	}
+	[Comment("本地文件缓存")]
 	public class LocalFileCache : IFileCache
 	{
 		LocalFileCacheSetting Setting { get; }
@@ -34,7 +41,7 @@ namespace SF.Core.Caching
 			if (FilePath == null)
 				FilePath = (((uint)FileName.GetConsistencyHashCode()) % 1024).ToString();
 
-			var file_path = Path.Combine(Setting.RootPath, FilePath);
+			var file_path =Setting.PathResolver.Resolve(Setting.RootPath, FilePath);
 			var file = Directory.Exists(file_path) ? Directory.GetFiles(file_path, FileName + ".*").FirstOrDefault() : null;
 			if (file != null)
 				return file;

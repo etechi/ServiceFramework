@@ -19,6 +19,7 @@ namespace SF.Data.IdentGenerator
 		[Comment("预分配数量","每次预分配的数量")]
 		public int CountPerBatch { get; private set; } = 100;
 	}
+	[Comment("默认对象标识生成器")]
 	public class StorageIdentGenerator : IIdentGenerator
 	{
 		static ConcurrentDictionary<string, IdentBatch> Cache { get; } = new ConcurrentDictionary<string, IdentBatch>();

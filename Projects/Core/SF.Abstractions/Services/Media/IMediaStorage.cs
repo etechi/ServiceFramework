@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace SF.Services.Media
 {
-    public interface IMediaStorage
+	[Metadata.Comment("媒体数据存储")]
+	public interface IMediaStorage
 	{
-		Task<IMediaMeta> ResolveAsync(string RootPath, string IDPrefix, string Id);
-        Task<bool> RemoveAsync(string RootPath, string id);
+		Task<IMediaMeta> ResolveAsync(string IDPrefix, string Id);
+        Task<bool> RemoveAsync(string id);
 		Task<IContent> GetContentAsync(IMediaMeta Media);
-		Task<string> SaveAsync(string RootPath, IMediaMeta Meta, IContent Content);
+		Task<string> SaveAsync(IMediaMeta Meta, IContent Content);
 	}
 }

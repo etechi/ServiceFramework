@@ -34,29 +34,14 @@ namespace SF.Core.ManagedServices
 					!prop.PropertyType.IsInterfaceType() ||
 					ServiceDetector.GetServiceType(prop.PropertyType) == ServiceType.Managed
 					);
+
 			}
+			
 			public override Property GenerateTypeProperty(PropertyInfo prop, object DefaultValueObject)
 			{
-				if(prop.PropertyType.IsInterfaceType() && ServiceDetector.GetServiceType(prop.PropertyType)==ServiceType.Managed)
-				{
-					return LoadAttributes(
-						new Property
-						{
-							Name=prop.Name,
-							Type="string"
-						},
-						prop.GetCustomAttributes(true).Cast<System.Attribute>().Union(
-							new System.Attribute[]
-							{
-								new RequiredAttribute(),
-								new SF.Metadata.EntityIdentAttribute("系统服务实例") {
-									ScopeField =nameof(Models.ServiceInstance.DeclarationId),
-									ScopeValue=prop.PropertyType.FullName
-								}
-							})
-						);
-				}
-				return base.GenerateTypeProperty(prop, DefaultValueObject);
+				return TryGenerateManagedServiceProperty(this,ServiceDetector, prop.PropertyType, prop.Name,prop.GetCustomAttributes(true)) ??
+					TryGenerateDictionaryToArrayProperty(this,  prop.PropertyType, prop.Name, prop.GetCustomAttributes(true)) ??
+					base.GenerateTypeProperty(prop, DefaultValueObject);
 			}
 		}
 
@@ -65,36 +50,77 @@ namespace SF.Core.ManagedServices
 		{
 			this.Metadata = Metadata;
 		}
-		SF.Metadata.Models.Property GenerateArgsProperty(System.Type Type, ParameterInfo Arg, IMetadataBuilder Builder)
+		static Property TryGenerateManagedServiceProperty(
+			IMetadataBuilder Builder,
+			IServiceDetector ServiceDetector, 
+			System.Type Type,
+			string Name,
+			IEnumerable<object> Attributes
+			)
 		{
-			if (Arg.ParameterType.IsInterfaceType() && Metadata.GetServiceType(Arg.ParameterType) == ServiceType.Managed)
+			var realType = Type.GetGenericArgumentTypeAsLazy()
+				?? Type.GetGenericArgumentTypeAsFunc()
+				?? Type;
+			if (realType.IsInterfaceType() && ServiceDetector.GetServiceType(realType) == ServiceType.Managed)
 			{
 				return Builder.LoadAttributes(
 					new Property
 					{
-						Name = Arg.Name,
+						Name = Name,
 						Type = "string"
 					},
-					Arg.GetCustomAttributes(true).Cast<System.Attribute>().Union(
+					Attributes.Cast<System.Attribute>().Union(
 						new System.Attribute[]
 						{
-							new RequiredAttribute(),
-							new SF.Metadata.EntityIdentAttribute("系统服务实例") {
-								ScopeField =nameof(Models.ServiceInstance.DeclarationId),
-								ScopeValue=Arg.ParameterType.FullName
-							}
+								new RequiredAttribute(),
+								new SF.Metadata.EntityIdentAttribute("系统服务实例") {
+									ScopeField =nameof(Models.ServiceInstance.DeclarationId),
+									ScopeValue=realType.FullName
+								}
 						})
-				);
+					);
 			}
-
+			return null;
+		}
+		static Property TryGenerateDictionaryToArrayProperty(
+		   IMetadataBuilder Builder,
+		   System.Type Type,
+		   string Name,
+		   IEnumerable<object> Attributes
+		   )
+		{
+			if (!Type.IsGeneric())
+				return null;
+			if (Type.GetGenericTypeDefinition() != typeof(Dictionary<,>))
+				return null;
+			var gtypes = Type.GetGenericArguments();
+			var keyProps = gtypes[1].GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy)
+				.Where(p => p.IsDefined(typeof(KeyAttribute))).ToArray();
+			if (keyProps.Length != 1)
+				return null;
+			if (keyProps[0].PropertyType != gtypes[0])
+				return null;
 			return Builder.LoadAttributes(
 				new Property
 				{
-					Name=Arg.Name,
-					Type=Builder.TryGenerateAndAddType(Arg.ParameterType).Name
+					Name = Name,
+					Type = Builder.GenerateAndAddType(gtypes[1].MakeArrayType()).Name
 				},
-				Arg.GetCustomAttributes(true).Cast<System.Attribute>()
+				Attributes.Cast<System.Attribute>()
 				);
+		}
+		SF.Metadata.Models.Property GenerateArgsProperty(System.Type Type, ParameterInfo Arg, IMetadataBuilder Builder)
+		{
+			return TryGenerateManagedServiceProperty(Builder, Metadata, Arg.ParameterType,Arg.Name,Arg.GetCustomAttributes(true)) ??
+				TryGenerateDictionaryToArrayProperty(Builder, Arg.ParameterType, Arg.Name, Arg.GetCustomAttributes(true))??
+				Builder.LoadAttributes(
+					new Property
+					{
+						Name=Arg.Name,
+						Type=Builder.TryGenerateAndAddType(Arg.ParameterType).Name
+					},
+					Arg.GetCustomAttributes(true).Cast<System.Attribute>()
+					);
 		}
 		SF.Metadata.Models.Type GenerateArgsType(System.Type Type, ParameterInfo[] Args, IMetadataBuilder Builder)
 		{

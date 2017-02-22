@@ -40,16 +40,6 @@ namespace SF.Core.ManagedServices.Models
 		[Required]
 		public string Name { get; set; }
 
-		[Comment("服务实例标题","用于UI显示")]
-		[TableVisible]
-		[MaxLength(100)]
-		[Required]
-		public string Title { get; set; }
-
-		[Comment("服务实例说明","用于UI显示")]
-		[MaxLength(200)]
-		public string Description { get; set; }
-
 		[Comment("默认服务")]
 		[TableVisible]
 		public bool IsDefaultService { get; set; }
@@ -57,6 +47,20 @@ namespace SF.Core.ManagedServices.Models
 		[Comment("对象状态")]
 		[TableVisible]
 		public LogicObjectState LogicState { get; set; }
+
+
+
+
+		[Comment("服务实例标题", "用于UI显示")]
+		[TableVisible]
+		[MaxLength(100)]
+		[Required]
+		[Layout(100)]
+		public string Title { get; set; }
+
+		[Comment("服务实例说明", "用于UI显示")]
+		[MaxLength(200)]
+		public string Description { get; set; }
 
 		[Comment("服务实例图标")]
 		[Image]
@@ -78,6 +82,7 @@ namespace SF.Core.ManagedServices.Models
 
 		[Comment(Name = "服务设置", Description = "此项设置和具体的服务实现相关，更改服务实现以后需要保存后才会生效，原服务实现的设置会丢失。")]
 		[PropertyTypeAttribute(PropertyTypeSourceType.External, nameof(SettingType))]
+		[Layout(50)]
 		public string Setting { get; set; }
 
 		[Ignore]

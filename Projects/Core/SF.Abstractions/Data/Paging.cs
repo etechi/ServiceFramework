@@ -21,6 +21,11 @@ namespace SF.Data
 		public SortOrder SortOrder { get; set; }
 		public bool TotalRequired { get; set; }
         public bool SummaryRequired { get; set; }
+
+		public static Paging Default => new Paging
+		{
+			Count = 100
+		};
 		public static Paging Create(
 			IEnumerable<KeyValuePair<string,string>> attrs,
 			int defaultLimit,

@@ -23,11 +23,12 @@ namespace SF.Core.ServiceFeatures
 			this.Logger = Logger;
 			this.ServiceProvider = ServiceProvider;
 		}
-		public async Task Init()
+		public async Task<string> Init()
 		{
 			Logger.Info("服务初始化开始");
 			await ServiceProvider.InitServices();
 			Logger.Info("服务初始化结束");
+			return "OK";
 		}
 	}
 

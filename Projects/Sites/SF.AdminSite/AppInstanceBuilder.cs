@@ -116,11 +116,11 @@ namespace SF.AdminSite
 			Services.AddLogService(LogService);
 
 			Services.UseNewtonsoftJson();
-			Services.UseLocalFileCache();
 			Services.UseSystemMemoryCache();
 			Services.UseSystemTimeService();
 			Services.UseTaskServiceManager();
-
+			Services.UseDefaultMimeResolver();
+			Services.UseSystemDrawing();
 			Services.AddTransient<AppContext>(tsp => new AppContext(tsp));
 			Services.UseEF6DataEntity<AppContext>();
 
@@ -131,8 +131,10 @@ namespace SF.AdminSite
 			Services.AddTransient<ICalc, Calc>();
 
 			var msc = Services.UseManagedService();
-
-
+			msc.UseFilePathResolver();
+			msc.UseLocalFileCache();
+			msc.UseMediaService();
+			
 			msc.AddScoped<IOperator, Add>();
 			msc.AddScoped<IOperator, Substract>();
 			msc.AddScoped<IAgg, Agg>();
@@ -148,6 +150,8 @@ namespace SF.AdminSite
 
 			if (EnvType != EnvironmentType.Utils)
 			{
+				Services.UseAspNetFilePathStructure();
+
 				Services.RegisterMvcControllers(GetType().Assembly);
 				Services.RegisterWebApiControllers(GlobalConfiguration.Configuration);
 				Services.UseNetworkService();

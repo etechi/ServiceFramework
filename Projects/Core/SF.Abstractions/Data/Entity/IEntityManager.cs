@@ -11,11 +11,13 @@ namespace SF.Data.Entity
 		All=7
 	}
 	public interface IEntityManager<TKey, TEntity>
+		where TKey:IEquatable<TKey>
+		where TEntity:class,IObjectWithId<TKey>
 	{
 		EntityManagerCapability Capabilities { get; }
 		Task<TEntity> LoadForEdit(TKey Id);
 		Task<TKey> CreateAsync(TEntity Entity);
 		Task UpdateAsync(TEntity Entity);
-		Task DeleteAsync(TKey Key);
+		Task RemoveAsync(TKey Key);
 	}
 }

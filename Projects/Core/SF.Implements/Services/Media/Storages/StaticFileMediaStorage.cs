@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SF.Core.Hosting;
+using SF.Metadata;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,28 +8,38 @@ using System.Threading.Tasks;
 
 namespace SF.Services.Media.Storages
 {
-	
+	[Comment("本地只读媒体文件存储")]
 	public class StaticFileMediaStorage : IMediaStorage
 	{
 		public KB.Mime.IMimeResolver MimeResolver { get; }
-		public StaticFileMediaStorage(KB.Mime.IMimeResolver MimeResolver)
+		public string RootPath { get;  }
+		public IFilePathResolver PathResolver { get; }
+
+		public StaticFileMediaStorage(
+			KB.Mime.IMimeResolver MimeResolver,
+			[Comment("文件根目录")]
+			string RootPath,
+			[Metadata.Comment("路径解析器")]
+			IFilePathResolver PathResolver
+			)
 		{
+			this.RootPath = RootPath;
 			this.MimeResolver = MimeResolver;
 		}
-		public Task<bool> RemoveAsync(string RootPath,string Id)
+		public Task<bool> RemoveAsync(string Id)
         {
             throw new NotSupportedException();
         }
-		public Task<IMediaMeta> ResolveAsync(string RootPath, string IDPrefix,string Id)
+		public Task<IMediaMeta> ResolveAsync(string IDPrefix,string Id)
 		{
 			if (Id[0]=='.' || Id[0]=='/' || Id[0]=='\\' || Id.Contains(':'))
 				throw new NotSupportedException();
 			var lid = Id.LastIndexOf('-');
 			if (lid == -1)
 				return null;
-			var file= Id.Substring(0, lid).Replace('-', '\\') + "." + Id.Substring(lid + 1);
+			var file= Id.Substring(0, lid).Replace('-',System.IO.Path.DirectorySeparatorChar) + "." + Id.Substring(lid + 1);
 
-			var path = System.IO.Path.Combine(RootPath, file);
+			var path = PathResolver.Resolve(RootPath, file);
 			if (!System.IO.File.Exists(path))
 				return Task.FromResult((IMediaMeta)null);
 			var mime = MimeResolver.FileExtensionToMime(System.IO.Path.GetExtension(path));
@@ -48,11 +60,15 @@ namespace SF.Services.Media.Storages
 			if (fm == null)
 				throw new NotSupportedException();
 			return Task.FromResult(
-				(IContent)new FileContent { Path = fm.Path}
+				(IContent)new FileContent {
+					Path = fm.Path,
+					ContentType=Media.Mime,
+					FileName=Media.Name
+				}
 				);
 		}
 
-		public Task<string> SaveAsync(string RootPath,IMediaMeta media, IContent Content)
+		public Task<string> SaveAsync(IMediaMeta media, IContent Content)
 		{
 			throw new NotSupportedException();
 		}

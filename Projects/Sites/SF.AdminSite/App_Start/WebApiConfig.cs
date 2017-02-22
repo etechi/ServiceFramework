@@ -13,8 +13,13 @@ namespace SF.AdminSite
 
             // Web API routes
             config.MapHttpAttributeRoutes();
+			config.Routes.MapHttpRoute(
+				name: "Media",
+				routeTemplate: "r/{id}",
+				defaults: new { controller = "media", action = "get", id = RouteParameter.Optional }
+			);
 
-            config.Routes.MapHttpRoute(
+			config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{action}/{id}",
                 defaults: new { id = RouteParameter.Optional }
