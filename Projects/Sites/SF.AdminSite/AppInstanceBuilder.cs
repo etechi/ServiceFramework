@@ -126,6 +126,7 @@ namespace SF.AdminSite
 
 			Services.UseDataContext();
 			Services.UseDataEntity();
+			Services.UseServiceFeatureControl();
 
 			Services.AddTransient<ICalc, Calc>();
 

@@ -56,15 +56,18 @@ namespace SF.AspNet.NetworkService
 					);
 
 			ReturnType = DefaultActionDescriptor.ReturnType;
-			if (ReturnType == typeof(HttpResponseMessage))
+			if (ReturnType != null)
 			{
-				IsHttpResponseMessage = true;
-				ReturnType = typeof(System.Web.Http.Results.ResponseMessageResult);
-			}
-			else if (ReturnType.GetGenericArgumentTypeAsTask() == typeof(HttpResponseMessage))
-			{
-				ReturnType = typeof(Task<System.Web.Http.Results.ResponseMessageResult>);
-				IsHttpResponseMessage = true;
+				if (ReturnType == typeof(HttpResponseMessage))
+				{
+					IsHttpResponseMessage = true;
+					ReturnType = typeof(System.Web.Http.Results.ResponseMessageResult);
+				}
+				else if (ReturnType.GetGenericArgumentTypeAsTask() == typeof(HttpResponseMessage))
+				{
+					ReturnType = typeof(Task<System.Web.Http.Results.ResponseMessageResult>);
+					IsHttpResponseMessage = true;
+				}
 			}
 		}
 		//internal sealed class FilterInfoComparer : IComparer<FilterInfo>

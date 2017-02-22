@@ -71,7 +71,8 @@
     <Compile Include="Core\Serialization\Newtonsoft\FixedContractResolver.cs" />
     <Compile Include="Core\Serialization\Newtonsoft\JsonSerializer.cs" />
     <Compile Include="Core\Serialization\Newtonsoft\NewtonsoftJsonDICollectionExtension.cs" />
-    <Compile Include="Core\ServiceFeatures\ServiceFeatureService.cs" />
+    <Compile Include="Core\ServiceFeatures\ServiceFeatureControlDICollectionExtension.cs" />
+    <Compile Include="Core\ServiceFeatures\ServiceFeatureControlService.cs" />
     <Compile Include="Core\TaskServices\TaskServiceManager.cs" />
     <Compile Include="Core\TaskServices\TaskService.cs" />
     <Compile Include="Core\TaskServices\TaskServiceManagerDIServiceCollectionExtension.cs" />

@@ -160,18 +160,23 @@ namespace SF.Core.NetworkService
 				Type = ResolveType(param_type)
 			},attrs/*,a=>!(a is FromBodyAttribute)*/);
 		}
-	
-		public override SF.Metadata.Models.Type GenerateAndAddType(System.Type type)
+		public SF.Metadata.Models.Type GetUnknownType()
 		{
-			if (type == typeof(HttpResponseMessage))
+			var re = TypeCollection.FindType("unknown");
+			if (re == null)
 			{
-				var re = new SF.Metadata.Models.Type
+				re = new SF.Metadata.Models.Type
 				{
 					Name = "unknown"
 				};
-				TypeCollection.AddType( re);
-				return re;
+				TypeCollection.AddType(re);
 			}
+			return re;
+		}
+		public override SF.Metadata.Models.Type GenerateAndAddType(System.Type type)
+		{
+			if (type == typeof(HttpResponseMessage))
+				return GetUnknownType();
 			return base.GenerateAndAddType(type);
 		}
 		
