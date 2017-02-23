@@ -44,8 +44,8 @@ namespace SF.Core.Drawing
 						g.FillRect(new Rectangle(Point.Empty, re.DstSize).ToRectD(), Color.White);
 					g.DrawImage(
 						img,
-						re.DstPosition.ToRectD(),
-						re.SrcPosition.ToRectD()
+						re.SrcPosition.ToRectD(),
+						re.DstPosition.ToRectD()
 						);
 				}
 				return new ImageContext { Image = dst, Size = re.DstSize };

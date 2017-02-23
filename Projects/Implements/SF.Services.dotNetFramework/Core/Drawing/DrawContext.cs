@@ -52,7 +52,7 @@ namespace SF.Core.Drawing.dotNetFramework
 			}
 		}
 		System.Drawing.Rectangle FromRectD(RectD rc) =>
-				new System.Drawing.Rectangle((int)rc.Left, (int)rc.Right, (int)rc.Width, (int)rc.Height);
+				new System.Drawing.Rectangle((int)rc.Left, (int)rc.Top, (int)rc.Width, (int)rc.Height);
 
 		public void DrawImage(IImage Image, RectD SourceRect, RectD DestRect)
 		{

@@ -113,7 +113,11 @@ namespace SF.Services.Media.Storages
 			if (fm == null)
 				throw new NotSupportedException();
 			return Task.FromResult(
-				(IContent)new FileContent { Path = fm.Path }
+				(IContent)new FileContent {
+					Path = fm.Path ,
+					ContentType = Media.Mime,
+					FileName = Media.Name
+				}
 				);
 		}
 
