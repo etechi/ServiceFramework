@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SF.Data.Storage;
 using SF.Data.Entity;
-
+using System.Reflection;
 namespace SF.Core.DI
 {
 	public static class EntityServiceDIServiceCollectionExtension

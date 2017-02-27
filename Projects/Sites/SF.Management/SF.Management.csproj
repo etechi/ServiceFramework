@@ -20,10 +20,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
     <ProjectReference Include="..\..\Core\SF.AspNetCore\SF.AspNetCore.csproj" />
-    <ProjectReference Include="..\..\Core\SF.CoreServices.EFCore\SF.CoreServices.EFCore.csproj" />
-    <ProjectReference Include="..\..\Core\SF.CoreServices\SF.CoreServices.csproj" />
-    <ProjectReference Include="..\..\Core\SF.Core\SF.Core.csproj" />
     <ProjectReference Include="..\..\Core\SF.Data.Entity.EFCore\SF.Data.Entity.EFCore.csproj" />
-    <ProjectReference Include="..\..\Core\SF.DataService\SF.DataService.csproj" />
   </ItemGroup>
 </Project>

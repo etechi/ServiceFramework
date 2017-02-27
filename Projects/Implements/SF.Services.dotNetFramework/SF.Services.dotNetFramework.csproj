@@ -33,6 +33,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,6 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\Caching\SysMemCachingDIServiceCollectionExtension.cs" />
+    <Compile Include="Core\Caching\SystemMemoryCache.cs" />
     <Compile Include="Core\Drawing\Codecs.cs" />
     <Compile Include="Core\Drawing\DrawContext.cs" />
     <Compile Include="Core\Drawing\Image.cs" />

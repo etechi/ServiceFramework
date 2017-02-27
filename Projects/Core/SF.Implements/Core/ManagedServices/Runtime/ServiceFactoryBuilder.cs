@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
+
 namespace SF.Core.ManagedServices.Runtime
 {
 	delegate object ServiceFactory(
@@ -168,7 +169,7 @@ namespace SF.Core.ManagedServices.Runtime
 							CopyRequiredPaths.Add(string.Join(".", PathList.Take(i + 1)));
 						return;
 					}
-					if (t.IsPrimitive)
+					if (t.IsPrimitiveType())
 						return;
 
 					foreach (var pi in t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty))

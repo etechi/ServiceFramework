@@ -1,13 +1,14 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using System.Reflection;
 namespace SF.Core.Serialization.Newtonsoft
 {
 	class OptionConverter : JsonConverter
 	{
 		public override bool CanConvert(Type objectType)
 		{
-			return objectType.IsGenericType && objectType.GetGenericTypeDefinition() == typeof(Option<>);
+			return objectType.IsGeneric() && objectType.GetGenericTypeDefinition() == typeof(Option<>);
 		}
 
 		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, global::Newtonsoft.Json.JsonSerializer serializer)

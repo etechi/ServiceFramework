@@ -10,14 +10,6 @@ namespace SF.Core.DI
 {
 	public static class CachingDIServiceCollectionExtension
 	{
-		
-		public static IDIServiceCollection UseSystemMemoryCache(
-			this IDIServiceCollection sc
-			)
-		{
-			sc.AddSingleton<Caching.ILocalCache>(new Caching.SystemMemoryCache("DefaultCache"));
-			return sc;
-		}
 		public static IDIServiceCollection UseLocalFileCache(
 			this IDIServiceCollection sc
 			)

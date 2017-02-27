@@ -51,7 +51,6 @@
     <Compile Include="Auth\Users\UserServiceSetting.cs" />
     <Compile Include="Core\Caching\LocalFileCache.cs" />
     <Compile Include="Core\Caching\CachingDIServiceCollectionExtension.cs" />
-    <Compile Include="Core\Caching\SystemMemoryCache.cs" />
     <Compile Include="Core\CallGuarantors\CallGuarantorDIServoceCollectionExtension.cs" />
     <Compile Include="Core\CallGuarantors\Runtime\CallableFactory.cs" />
     <Compile Include="Core\CallGuarantors\Runtime\CallDispatcher.cs" />

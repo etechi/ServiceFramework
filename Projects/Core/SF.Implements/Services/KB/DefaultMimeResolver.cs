@@ -8,7 +8,7 @@ namespace SF.Services.KB.Mime.Providers
 {
 	public class DefaultMimeResolver : IMimeResolver
 	{
-		static IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase) {
+		static IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase) {
         #region Big freaking list of mime types
         // combination of values from Windows 7 Registry and 
         // from C:\Windows\System32\inetsrv\config\applicationHost.config

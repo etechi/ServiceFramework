@@ -10,8 +10,7 @@ namespace SF
 		public static byte[] MD5(this byte[] data){
 			Ensure.NotNull(data,nameof(data));
 			var md5 = System.Security.Cryptography.MD5.Create();
-			md5.TransformFinalBlock(data, 0, data.Length);
-			return md5.Hash;
+			return md5.ComputeHash(data);
 		}
         public static int HashCode(this byte[] data)
         {   
@@ -25,8 +24,7 @@ namespace SF
 		{
 			Ensure.NotNull(data,nameof(data));
 			var sha = System.Security.Cryptography.SHA1.Create();
-			sha.TransformFinalBlock(data, 0, data.Length);
-			return sha.Hash;
+			return sha.ComputeHash(data);
 		}
 		public static byte[] Sign(this byte[] data, byte[] Key,Func<byte[],byte[]> Hash)
 		{

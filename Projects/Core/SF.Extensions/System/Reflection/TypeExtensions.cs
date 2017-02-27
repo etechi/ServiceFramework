@@ -30,6 +30,7 @@ namespace System.Reflection
 		}
 
 #if NETCORE
+
 		public static T GetCustomAttribute<T>(this Type type)
 			where T:Attribute
 		{
@@ -37,17 +38,17 @@ namespace System.Reflection
 			return ti.GetCustomAttribute<T>();
 		}
 #endif
-		public static IEnumerable<Attribute> GetCustomAttributes(this Type type,bool inherit)
+		public static IEnumerable<Attribute> GetCustomAttributes(this Type type, bool inherit)
 		{
 			return type.GetTypeInfo().GetCustomAttributes(inherit).Cast<Attribute>();
 		}
 		public static IEnumerable<T> GetCustomAttributes<T>(this Type type, bool inherit)
 		{
-			return type.GetTypeInfo().GetCustomAttributes(inherit).Where(a=>a is T).Cast<T>();
+			return type.GetTypeInfo().GetCustomAttributes(inherit).Where(a => a is T).Cast<T>();
 		}
-		public static T GetCustomAttribute<T>(this Type type, bool inherit=true) where T:Attribute
+		public static T GetCustomAttribute<T>(this Type type, bool inherit = true) where T : Attribute
 		{
-			return (T)type.GetTypeInfo().GetCustomAttributes(inherit).FirstOrDefault(a=>a is T);
+			return (T)type.GetTypeInfo().GetCustomAttributes(inherit).FirstOrDefault(a => a is T);
 		}
 		public static bool IsEnumType(this Type type)
 		{
@@ -73,16 +74,20 @@ namespace System.Reflection
 		{
 			return type.GetTypeInfo().IsPublic;
 		}
+		public static bool IsPrimitiveType(this Type type)
+		{
+			return type.GetTypeInfo().IsPrimitive;
+		}
 
 		public static Assembly GetAssembly(this Type type)
 		{
 			return type.GetTypeInfo().Assembly;
 		}
-		public static Type GetInterface(this Type type,string Name)
+		public static Type GetInterface(this Type type, string Name)
 		{
 			return type.GetTypeInfo().GetInterface(Name);
 		}
-		public static Type GetTypedGenericArgument(this Type Type,Type GenericDefination)
+		public static Type GetTypedGenericArgument(this Type Type, Type GenericDefination)
 		{
 			if (Type.IsGeneric() && Type.GetGenericTypeDefinition() == GenericDefination)
 				return Type.GetGenericArguments()[0];
@@ -132,7 +137,7 @@ namespace System.Reflection
 			GetMethodExt(ref matchingMethod, thisType, name, bindingFlags, parameterTypes);
 
 			// If we're searching an interface, we have to manually search base interfaces
-			if (matchingMethod == null && thisType.IsInterface)
+			if (matchingMethod == null && thisType.IsInterfaceType())
 			{
 				foreach (Type interfaceType in thisType.GetInterfaces())
 					GetMethodExt(ref matchingMethod,
@@ -153,8 +158,7 @@ namespace System.Reflection
 		{
 			// Check all methods with the specified name, including in base classes
 			foreach (MethodInfo methodInfo in type.GetMember(name,
-															 MemberTypes.Method,
-															 bindingFlags))
+															 bindingFlags | BindingFlags.InvokeMethod))
 			{
 				// Check that the parameter counts and types match, 
 				// with 'loose' matching on generic parameters
@@ -211,7 +215,7 @@ namespace System.Reflection
 				return true;
 
 			// Handle any generic arguments
-			if (thisType.IsGenericType && type.IsGenericType)
+			if (thisType.IsGeneric() && type.IsGeneric())
 			{
 				Type[] thisArguments = thisType.GetGenericArguments();
 				Type[] arguments = type.GetGenericArguments();
@@ -228,7 +232,7 @@ namespace System.Reflection
 
 			return false;
 		}
-		static System.Collections.Concurrent.ConcurrentDictionary<MemberInfo, SF.Metadata.CommentAttribute> CommentDict { get; } 
+		static System.Collections.Concurrent.ConcurrentDictionary<MemberInfo, SF.Metadata.CommentAttribute> CommentDict { get; }
 			= new Collections.Concurrent.ConcurrentDictionary<MemberInfo, SF.Metadata.CommentAttribute>();
 		public static SF.Metadata.CommentAttribute Comment(this MemberInfo Info)
 		{
@@ -240,5 +244,9 @@ namespace System.Reflection
 				new SF.Metadata.CommentAttribute(Info.Name)
 				);
 		}
+#if NETCOREAPP1_1
+		public static SF.Metadata.CommentAttribute Comment(this Type Info)
+			=> Comment(Info.GetTypeInfo());
+#endif
 	}
 }
