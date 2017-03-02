@@ -30,22 +30,22 @@ namespace SF.Core.Logging
 				d.Dispose();
 		}
 		static Func<object, Exception, string> _formatter { get; } = new Func<object, Exception, string>((o, e) => o.ToString());
-		public void Write(LogLevel logLevel, Exception exception, string message)
+		public void Write(LogLevel logLevel, EventId eventId, Exception exception, string message)
 		{
 			var re = LogService.LogMessageFactory.CreateLogMessage(logLevel, exception, message, null);
-			GlobalLogger.Write(logLevel, re, exception, _formatter);
-			ScopedLogger.Write(logLevel, re, exception, _formatter);
+			GlobalLogger.Write(logLevel, eventId,re, exception, _formatter);
+			ScopedLogger.Write(logLevel, eventId, re, exception, _formatter);
 		}
-		public void Write(LogLevel logLevel, Exception exception, string format, params object[] args)
+		public void Write(LogLevel logLevel, EventId eventId, Exception exception, string format, params object[] args)
 		{
 			var re = LogService.LogMessageFactory.CreateLogMessage(logLevel, exception, format, args);
-			GlobalLogger.Write(logLevel, re, exception, _formatter);
-			ScopedLogger.Write(logLevel, re, exception, _formatter);
+			GlobalLogger.Write(logLevel, eventId, re, exception, _formatter);
+			ScopedLogger.Write(logLevel, eventId, re, exception, _formatter);
 		}
-		public void Write<TState>(LogLevel logLevel, TState state, Exception exception, Func<TState, Exception, string> formatter)
+		public void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
 		{
-			GlobalLogger.Write(logLevel, state, exception, formatter);
-			ScopedLogger.Write(logLevel, state, exception, formatter);
+			GlobalLogger.Write(logLevel, eventId, state, exception, formatter);
+			ScopedLogger.Write(logLevel, eventId, state, exception, formatter);
 		}
 
 		public bool IsEnabled(LogLevel level)

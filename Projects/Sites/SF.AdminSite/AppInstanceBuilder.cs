@@ -85,16 +85,11 @@ namespace SF.AdminSite
 			ss.Aggregate(Cfg.Add, (s, i) => GetOp().Eval(s, Cfg.Op.Eval(i, i)));
 	}
 
-	public class AppInstanceBuilder : SF.Core.Hosting.BaseAppInstanceBuilder
+	public class AppInstanceBuilder : SF.Core.Hosting.BaseAppInstanceBuilder<AppInstanceBuilder>
 	{
-
-		public AppInstanceBuilder() : this(EnvironmentTypeDetector.Detect())
-		{
-
-		}
-		public AppInstanceBuilder(EnvironmentType EnvironmentType) : base(EnvironmentType)
-		{
-		}
+		public static IAppInstance Build() =>
+			Build(EnvironmentTypeDetector.Detect());
+		 
 		protected override ILogService OnCreateLogService()
 		{
 			var ls = new LogService(new Core.Logging.MicrosoftExtensions.MSLogMessageFactory());

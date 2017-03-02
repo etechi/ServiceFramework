@@ -11,6 +11,11 @@ namespace SF
 {
 	public static class HttpResponse
 	{
+		public static HttpResponseMessage NotModified=>
+			new HttpResponseMessage(System.Net.HttpStatusCode.NotModified);
+		public static HttpResponseMessage NotFound=>
+			new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
+
 		public static HttpResponseMessage ByteArray(byte[] Bytes, string mediaType = "application/octet", System.Net.HttpStatusCode Status = System.Net.HttpStatusCode.OK)
 		{
 			var ctn = new System.Net.Http.ByteArrayContent(Bytes);

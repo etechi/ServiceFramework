@@ -96,17 +96,17 @@ namespace SF.Core.Logging
 		}
 
 		static Func<object, Exception, string> _formatter { get; } = new Func<object, Exception, string>((o, e) => o.ToString());
-		public void Write(LogLevel logLevel, Exception exception, string message)
+		public void Write(LogLevel logLevel, EventId eventId,Exception exception, string message)
 		{
 			var re = _loggerService.LogMessageFactory.CreateLogMessage(logLevel, exception, message, null);
-			Write(logLevel, re, exception, _formatter);
+			Write(logLevel, eventId, re, exception, _formatter);
 		}
-		public void Write(LogLevel logLevel, Exception exception, string format, params object[] args)
+		public void Write(LogLevel logLevel, EventId eventId, Exception exception, string format, params object[] args)
 		{
 			var re = _loggerService.LogMessageFactory.CreateLogMessage(logLevel, exception, format, args);
-			Write(logLevel, re, exception, _formatter);
+			Write(logLevel, eventId, re, exception, _formatter);
 		}
-		public void Write<TState>(LogLevel logLevel, TState state, Exception exception, Func<TState, Exception, string> formatter)
+		public void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
 		{
 			if (_loggers == null)
 				return;
@@ -117,7 +117,7 @@ namespace SF.Core.Logging
 				var logger = loggers[i];
 				try
 				{
-					logger.Write<TState>(logLevel,  state, exception, formatter);
+					logger.Write<TState>(logLevel, eventId, state, exception, formatter);
 				}
 				catch (Exception item)
 				{

@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "targets": {
+    ".NETFramework,Version=v4.6.1": {
+      "SF.Core.net46/1.0.0": {
+        "type": "project"
+      }
+    },
+    ".NETFramework,Version=v4.6.1/win": {
+      "SF.Core.net46/1.0.0": {
+        "type": "project"
+      }
+    }
+  },
+  "libraries": {
+    "SF.Core.net46/1.0.0": {
+      "type": "project",
+      "path": "../SF.Core/SF.Core.net46.csproj",
+      "msbuildProject": "../SF.Core/SF.Core.net46.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "": [],
+    ".NETFramework,Version=v4.6.1": []
+  },
+  "packageFolders": {
+    "C:\\Users\\cy200\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "restore": {
+      "projectUniqueName": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Core\\SF.Abstractions\\SF.Abstractions.net46.csproj",
+      "projectName": "SF.Abstractions.net46",
+      "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Core\\SF.Abstractions\\SF.Abstractions.net46.csproj",
+      "projectJsonPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Core\\SF.Abstractions\\project.json",
+      "projectStyle": "ProjectJson",
+      "frameworks": {
+        "net461": {
+          "projectReferences": {
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Core\\SF.Core\\SF.Core.net46.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Core\\SF.Core\\SF.Core.net46.csproj"
+            }
+          }
+        }
+      }
+    },
+    "frameworks": {
+      "net461": {}
+    },
+    "runtimes": {
+      "win": {
+        "#import": []
+      }
+    }
+  }
+}

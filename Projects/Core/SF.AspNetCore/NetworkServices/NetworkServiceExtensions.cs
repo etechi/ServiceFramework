@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SF.Core.DI;
-using SF.AspNetCore.Mvc;
+using SF.AspNetCore.NetworkServices;
 using SF.Metadata;
 using SF.Core.NetworkService;
 
@@ -19,11 +19,13 @@ namespace SF.Core.DI
 	}
 	public static class MvcNetworkServiceExtensions
 	{
-		public static void UseMvcServiceInterface(
+		public static void UseAspNetCoreServiceInterface(
 			this IDIServiceCollection sc,
 			NetworkServiceConfig cfg=null
 			)
 		{
+			sc.AddScoped<IInvokeContext, InvokeContext>();
+			sc.AddScoped<IUploadedFileCollection, UploadedFileCollection>();
 			sc.AddSingleton<IActionDescriptorProvider>(sp =>
 				new ServiceActionDescProvider(
 					cfg?.RouterPrefix ?? "api",
@@ -34,10 +36,11 @@ namespace SF.Core.DI
 
 			sc.Replace(new ServiceDescriptor(
 				typeof(IControllerActivator),
-				typeof(SF.AspNetCore.Mvc.ServiceBasedControllerActivator),
+				typeof(SF.AspNetCore.NetworkServices.ServiceBasedControllerActivator),
 				ServiceLifetime.Singleton
 				));
 
+			sc.AddSingleton<IResultFactory, ResultFactory>();
 		}
 	}
 }

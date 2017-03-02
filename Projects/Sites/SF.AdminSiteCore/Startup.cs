@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SF.Data.Storage.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace SF.AdminSiteCore
 {
@@ -25,10 +27,26 @@ namespace SF.AdminSiteCore
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            services.AddMvc();
+			var connection = @"Host=localhost;Database=sfadmin;Username=postgres;Password=system";
+			services.AddDbContext<AppContext>(
+				(isp, options) =>
+				options.LoadDataModels(isp).UseNpgsql(connection)
+				);
+
+			services.AddMvc().AddJsonOptions(opt =>
+			{
+				opt.SerializerSettings.ContractResolver = SF.Core.Serialization.Newtonsoft.FixedContractResolver.Instance;
+				opt.SerializerSettings.DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.IgnoreAndPopulate;
+			});
+			var app = AppInstanceBuilder.Build(
+				EnvironmentTypeDetector.Detect(services),
+				null, 
+				new SF.Core.DI.MicrosoftExtensions.DIServiceCollection(services)
+				);
+			services.AddSingleton(app);
+			return app.ServiceProvider;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,10 +69,37 @@ namespace SF.AdminSiteCore
 
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+				routes.MapRoute(
+					   name: "media",
+					   defaults: new
+					   {
+						   controller = "Media",
+						   action = "Get",
+						   scope="api"
+					   },
+					   template: "r/{id}");
+				routes.MapRoute(
+					   name: "api",
+					   defaults: new
+					   {
+						   scope = "api"
+					   },
+					   template: "api/{controller}/{action}"
+					   );
+			
+				routes.MapRoute(
+					name: "admin",
+					defaults: new
+					{
+						controller = "Home",
+						action = "Index"
+					},
+					template: "{*id}");
+
+				routes.MapRoute(
+					name: "default",
+					template: "{controller=Home}/{action=Index}/{id?}");
+			});
         }
     }
 }

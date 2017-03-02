@@ -9,12 +9,14 @@ using SF.Auth;
 using SF.Metadata;
 using System.IO;
 using System.Web;
+using System.Web.Http.Controllers;
+using System.Web.Http;
 
-namespace SF.Core.NetworkService
+namespace SF.AspNet.NetworkService
 {
-	public class HttpRequestSource : IHttpRequestSource
+	class ControllerSource
 	{
-		public HttpRequestMessage Request
+		public ServiceController Controller
 		{
 			get;set;
 		}

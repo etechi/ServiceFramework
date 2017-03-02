@@ -8,16 +8,22 @@ using SF.Core.Logging;
 
 namespace SF.Core.Hosting
 {
-	public abstract class BaseAppInstanceBuilder: IAppInstanceBuilder
+	public abstract class BaseAppInstanceBuilder<T>
+		where T: BaseAppInstanceBuilder<T>, new()
 	{
-		public EnvironmentType EnvType { get; }
-		public string Name { get; }
-		public ILogService LogService { get; }
-		public BaseAppInstanceBuilder(EnvironmentType EnvType, string Name=null, ILogService LogService = null)
+		public EnvironmentType EnvType { get; private set; }
+		public string Name { get; private set; }
+		public ILogService LogService { get; private set; }
+		IDIServiceCollection ServiceCollection { get; set; }
+
+		public static IAppInstance Build(EnvironmentType EnvType, string Name=null, IDIServiceCollection ServiceCollection=null, ILogService LogService = null)
 		{
-			this.Name = Name;
-			this.EnvType = EnvType;
-			this.LogService = LogService?? OnCreateLogService();
+			var builder = new T();
+			builder.Name = Name;
+			builder.EnvType = EnvType;
+			builder.LogService = LogService?? builder.OnCreateLogService();
+			builder.ServiceCollection = ServiceCollection;
+			return builder.OnBuild();
 		}
 		protected virtual void OnInitServices(IServiceProvider sp)
 		{
@@ -33,7 +39,12 @@ namespace SF.Core.Hosting
 		{
 			return null;
 		}
-		protected abstract IDIServiceCollection OnBuildServiceCollection();
+		protected virtual IDIServiceCollection OnBuildServiceCollection()
+		{
+			if (ServiceCollection == null)
+				throw new InvalidOperationException("Require ServiceCollection");
+			return ServiceCollection;
+		}
 		protected abstract void OnConfigServices(IDIServiceCollection Services);
 		protected abstract IServiceProvider OnBuildServiceProvider(IDIServiceCollection Services);
 
@@ -42,7 +53,7 @@ namespace SF.Core.Hosting
 			return new AppInstance(Name, EnvType, ServiceProvider, Shutdown);
 		}
 
-		public IAppInstance Build()
+		protected virtual IAppInstance OnBuild()
 		{
 			var Services = OnBuildServiceCollection();
 			IAppInstance ai= null;

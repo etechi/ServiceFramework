@@ -29,6 +29,7 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="microsoft.extensions.caching.memory" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.abstractions" Version="1.1.0" />
     <PackageReference Include="newtonsoft.json" Version="9.0.1" />

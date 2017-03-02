@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+      <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -12,8 +13,11 @@
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="1.1.0" />
+    <PackageReference Include="microsoft.entityframeworkcore.tools" Version="1.1.0-preview4-final" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0-msbuild3-final" />
@@ -25,6 +29,7 @@
     <ProjectReference Include="..\..\Core\SF.Implements\SF.Implements.csproj" />
     <ProjectReference Include="..\..\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj" />
     <ProjectReference Include="..\..\Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.csproj" />
+    <ProjectReference Include="..\..\Implements\SF.Drawing.ZKWeb\SF.Drawing.ZKWeb.csproj" />
   </ItemGroup>
 
 </Project>

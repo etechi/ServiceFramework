@@ -55,8 +55,10 @@ namespace SF.Core.DI
 					sp.Resolve<IServiceTypeCollection>().Types,
 					sp.Resolve<IServiceBuildRuleProvider>()
 				));
+			sc.AddScoped(sp => new ControllerSource());
 			sc.AddScoped<IUploadedFileCollection, UploadedFileCollection>();
-			sc.AddScoped<IHttpRequestSource, HttpRequestSource>();
+			sc.AddScoped<IInvokeContext, InvokeContext>();
+			sc.AddScoped<IResultFactory, ResultFactory>();
 		}
 	}
 }

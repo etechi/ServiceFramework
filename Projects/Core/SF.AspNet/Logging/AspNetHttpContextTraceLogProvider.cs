@@ -1,5 +1,6 @@
 ﻿using SF.Core.DI;
 using SF.Core.Hosting;
+using SF.Core.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,7 @@ namespace SF.Core.Logging
 				return Trace.IsEnabled && level>=Provider.Level;
 			}
 
-			public void Write<TState>(LogLevel logLevel, TState state, Exception exception, Func<TState, Exception, string> formatter)
+			public void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
 			{
 				if (IsEnabled(logLevel))
 				{

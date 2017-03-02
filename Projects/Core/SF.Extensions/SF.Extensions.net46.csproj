@@ -95,7 +95,6 @@
     <Compile Include="System\IO\StreamExtension.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionExtension.cs" />
     <Compile Include="System\Linq\IEnumerableExtension.cs" />
-    <Compile Include="EnvironmentTypeDetector.cs" />
     <Compile Include="System\ExceptionExtension.cs" />
     <Compile Include="System\Reflection\MethodInfoExtension.cs" />
     <Compile Include="System\Threading\FlowController.cs" />

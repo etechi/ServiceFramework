@@ -56,7 +56,7 @@ namespace SF.Services.Media
 		public IMediaManager Manager { get; }
 		public KB.Mime.IMimeResolver MimeResolver { get; }
 		public Lazy<IUploadedFileCollection> FileCollection { get; }
-		public IHttpRequestSource HttpRequestSource { get; }
+		public Lazy<IInvokeContext> InvokeContext { get; }
 		public Lazy<IImageProvider> ImageProvider { get; }
 		public Lazy<IFileCache> FileCache { get; }
 
@@ -68,7 +68,7 @@ namespace SF.Services.Media
 			[Comment("MIME服务")]
 			KB.Mime.IMimeResolver MimeResolver,
 			Lazy<IUploadedFileCollection> FileCollection,
-			IHttpRequestSource HttpRequestSource,
+			Lazy<IInvokeContext> InvokeContext,
 			Lazy<IImageProvider> ImageProvider,
 			[Comment("文件缓存")]
 			Lazy<IFileCache> FileCache
@@ -78,7 +78,7 @@ namespace SF.Services.Media
 			this.Setting = Setting;
 			this.MimeResolver = MimeResolver;
 			this.FileCollection = FileCollection;
-			this.HttpRequestSource = HttpRequestSource;
+			this.InvokeContext = InvokeContext;
 			this.ImageProvider = ImageProvider;
 			this.FileCache = FileCache;
 		}
@@ -99,14 +99,16 @@ namespace SF.Services.Media
 
                 IMediaMeta mm = null;
                 IContent mc = null;
-                if (file.ContentType.StartsWith("image/"))
-                {
-                    var data = Transforms.Source
-                        .ExifOrientationProcess()
-                        .WithLimit(Setting.MaxImageSize, Setting.MaxImageSize)
-                        .ToMemoryBuffer(Setting.ConvertToJpeg ? "image/jpg" : null)
-                        .ApplyTo(file.InputStream, ImageProvider.Value);
-                    mm = new MediaMeta
+				if (file.ContentType.StartsWith("image/"))
+				{
+					ImageMemoryBuffer data;
+					using (var s = file.OpenStream())
+						data = Transforms.Source
+						   .ExifOrientationProcess()
+						   .WithLimit(Setting.MaxImageSize, Setting.MaxImageSize)
+						   .ToMemoryBuffer(Setting.ConvertToJpeg ? "image/jpg" : null)
+						   .ApplyTo(s, ImageProvider.Value);
+					 mm = new MediaMeta
                     {
                         Height = data.Size.Height,
                         Width = data.Size.Width,
@@ -127,10 +129,11 @@ namespace SF.Services.Media
                         Name = System.IO.Path.GetFileNameWithoutExtension(file.FileName).LetterOrDigits(),
                         Type = Setting.UploadMediaType
                     };
-                    mc = new ByteArrayContent
-                    {
-                        Data = await file.InputStream.ReadToEndAsync()
-                    };
+					using(var s=file.OpenStream())
+						mc = new ByteArrayContent
+						{
+							Data = await s.ReadToEndAsync()
+						};
                 }
                 var re = await Manager.SaveAsync(mm, mc);
 				if (returnJson)
@@ -259,16 +262,17 @@ namespace SF.Services.Media
 				format = "";
 			else if (!Setting.SupportedAllFormats &&
 				!Setting.SupportedFormats.Contains(format))
-				return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
+				return HttpResponse.NotFound;
+
 			var etag = "\""+id + ":" + format+"\"";
-			var Request = HttpRequestSource.Request;
-			if (Request.Headers.IfNoneMatch?.FirstOrDefault()?.Tag == etag)
-				return new HttpResponseMessage(System.Net.HttpStatusCode.NotModified);
+			var Request = InvokeContext.Value.Request;
+			if (Request.Headers.Get("If-None-Match")?.SingleOrDefault()?.Contains(etag) ?? false)
+				return HttpResponse.NotModified;
 
 
 			var type_end = id.IndexOf('-');
 			if (type_end == -1)
-				return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
+				return HttpResponse.NotFound;
 			var type = id.Substring(0, type_end);
 			var msg =
 				string.IsNullOrEmpty(format) &&
@@ -276,7 +280,7 @@ namespace SF.Services.Media
 				await GetStorageContent(id) :
 				await GetCachedContent(id, format);
 			if (msg == null)
-				return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
+				return HttpResponse.NotFound;
 
 			msg.Headers.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue
 			{

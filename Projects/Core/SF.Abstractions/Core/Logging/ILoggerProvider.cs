@@ -8,7 +8,7 @@ namespace SF.Core.Logging
 	public interface IProviderLogger 
 	{
 		ILoggerProvider Provider { get; }
-		void Write<TState>(LogLevel logLevel, TState state, Exception exception, Func<TState, Exception, string> formatter);
+		void Write<TState>(LogLevel logLevel, EventId EventId, TState state, Exception exception, Func<TState, Exception, string> formatter);
 		IDisposable BeginScope<T>(T State);
 		bool IsEnabled(LogLevel level);
 	}

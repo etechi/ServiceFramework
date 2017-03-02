@@ -6,7 +6,13 @@ namespace SF.Core.Logging
 {
 	public static class LoggerExtension
 	{
-		
+
+		public static void Write(this ILogger logger, LogLevel logLevel, Exception exception, string message)
+			=> logger.Write(logLevel, EventId.None, exception, message);
+		public static void Write(this ILogger logger, LogLevel logLevel, Exception exception, string format, params object[] args)
+			=> logger.Write(logLevel, EventId.None, exception, format,args);
+		public static void Write<TState>(this ILogger logger, LogLevel logLevel, TState state, Exception exception, Func<TState, Exception, string> formatter)
+			=> logger.Write(logLevel, EventId.None, state, exception, formatter);
 
 		public static void Debug(this ILogger Logger, string Message)
 		{

@@ -2,6 +2,8 @@ using SF.Core.DI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+
 namespace SF.Core.ManagedServices.Runtime
 {
 	class ServiceMetadata : IServiceMetadata
@@ -14,7 +16,11 @@ namespace SF.Core.ManagedServices.Runtime
 		public ServiceType GetServiceType(Type type)
 		{
 			ServiceType st;
-			return ServiceTypes.TryGetValue(type, out st) ? st : ServiceType.Unknown;
+			if (ServiceTypes.TryGetValue(type, out st))
+				return st;
+			if(!type.IsGeneric())
+				return ServiceType.Unknown;
+			return ServiceTypes.TryGetValue(type.GetGenericTypeDefinition(), out st) ? st : ServiceType.Unknown;
 		}
 		class ManagedServiceDescriptor : IManagedServiceDescriptor
 		{

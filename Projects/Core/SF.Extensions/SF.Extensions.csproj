@@ -22,6 +22,7 @@
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core\NetworkService\" />
     <Folder Include="Properties\" />
     <Folder Include="Properties\" />
     <Folder Include="System\Security\Cryptography\" />

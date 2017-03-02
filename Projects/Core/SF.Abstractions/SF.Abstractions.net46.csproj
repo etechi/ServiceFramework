@@ -54,6 +54,8 @@
     <Compile Include="Core\Logging\ILogService.cs" />
     <Compile Include="Core\Logging\ILoggerProvider.cs" />
     <Compile Include="Core\Logging\LogLevel.cs" />
+    <Compile Include="Core\NetworkService\IInvokeContext.cs" />
+    <Compile Include="Core\NetworkService\IResultFactory.cs" />
     <Compile Include="Core\ServiceFeatures\IServiceFeatureControlService.cs" />
     <Compile Include="Core\ServiceFeatures\IServiceInstance.cs" />
     <Compile Include="Core\ServiceFeatures\IServiceInitializable.cs" />
@@ -164,7 +166,6 @@
     <Compile Include="Services\Media\IMediaMetaCache.cs" />
     <Compile Include="Services\Media\IMediaStorage.cs" />
     <Compile Include="Services\Media\IMediaService.cs" />
-    <Compile Include="Core\NetworkService\IHttpRequestSource.cs" />
     <Compile Include="Core\NetworkService\IUploadedFileCollection.cs" />
     <Compile Include="Core\NetworkService\IServiceTypeCollection.cs" />
     <Compile Include="Core\NetworkService\HeavyAttribute.cs" />

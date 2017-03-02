@@ -177,7 +177,7 @@ namespace SF.AspNet.NetworkService
 				return TaskHelpers.Canceled<object>();
 			}
 
-			((HttpRequestSource)controllerContext.Request.GetDependencyScope().GetService(typeof(IHttpRequestSource))).Request = controllerContext.Request;
+			((ControllerSource)controllerContext.Request.GetDependencyScope().GetService(typeof(ControllerSource))).Controller = ctrl;
 
 
 			Task<object> result;

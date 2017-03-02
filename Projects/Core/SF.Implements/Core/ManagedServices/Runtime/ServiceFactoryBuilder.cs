@@ -162,6 +162,12 @@ namespace SF.Core.ManagedServices.Runtime
 							t = t.GetGenericArguments()[0];
 						else if (gtd == typeof(Dictionary<,>))
 							t = t.GetGenericArguments()[1];
+						else if (ServiceDetector.IsServiceType(gtd))
+						{
+							for (var i = 0; i < PathList.Count; i++)
+								CopyRequiredPaths.Add(string.Join(".", PathList.Take(i + 1)));
+							return;
+						}
 					}
 					if (ServiceDetector.IsServiceType(t))
 					{
@@ -169,7 +175,7 @@ namespace SF.Core.ManagedServices.Runtime
 							CopyRequiredPaths.Add(string.Join(".", PathList.Take(i + 1)));
 						return;
 					}
-					if (t.IsPrimitiveType())
+					if (t.IsPrimitiveType() || Type.GetTypeCode(t)!=TypeCode.Object)
 						return;
 
 					foreach (var pi in t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty))

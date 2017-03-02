@@ -19,8 +19,11 @@ namespace SF.AdminSiteCore.Controllers
 
             return View();
         }
-
-        public IActionResult Contact()
+		public string Test(string id,string format=null)
+		{
+			return id + ":" + (format ?? "");
+		}
+		public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
 

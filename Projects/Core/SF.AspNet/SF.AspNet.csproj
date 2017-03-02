@@ -39,6 +39,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -83,16 +84,21 @@
   <ItemGroup>
     <Compile Include="DI\DIHttpModule.cs" />
     <Compile Include="DI\MvcDependenceResolver.cs" />
+    <Compile Include="EnvironmentTypeDetector.cs" />
     <Compile Include="Hosting\DefaultFilePathStructure.cs" />
     <Compile Include="Hosting\HttpApplication.cs" />
     <Compile Include="Logging\AspNetHttpResponseLogProvider.cs" />
     <Compile Include="Logging\LogServiceExtension.cs" />
     <Compile Include="Logging\AspNetHttpContextTraceLogProvider.cs" />
+    <Compile Include="NetworkServices\ControllerSource.cs" />
+    <Compile Include="NetworkServices\HttpResponse.cs" />
     <Compile Include="NetworkServices\NetworkServiceDIServiceCollectionExtensions.cs" />
     <Compile Include="DI\WebApiDependenceResolver.cs" />
     <Compile Include="DI\AspNetDIServiceCollectionExtension.cs" />
     <Compile Include="Formatting\TypeSerializerValueProviderFactory.cs" />
     <Compile Include="Formatting\TypeSerializerFormatter.cs" />
+    <Compile Include="NetworkServices\InvokeContext.cs" />
+    <Compile Include="NetworkServices\ResultFactory.cs" />
     <Compile Include="NetworkServices\ServiceActionDescriptorParameterDescriptor.cs" />
     <Compile Include="NetworkServices\ServiceApiControllerSelector.cs" />
     <Compile Include="NetworkServices\ServiceHttpActionSelector.cs" />
@@ -101,7 +107,6 @@
     <Compile Include="NetworkServices\ServiceApiControllerActivator.cs" />
     <Compile Include="NetworkServices\ServiceController.cs" />
     <Compile Include="NetworkServices\ServiceApiControllerTypeResolver.cs" />
-    <Compile Include="NetworkServices\HttpRequestSource.cs" />
     <Compile Include="NetworkServices\UploadedFileCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

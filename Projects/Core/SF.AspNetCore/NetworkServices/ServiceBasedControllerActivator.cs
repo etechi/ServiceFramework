@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Internal;
 using System;
+using SF.Core.DI;
+using SF.Core.NetworkService;
 
-namespace SF.AspNetCore.Mvc
+namespace SF.AspNetCore.NetworkServices
 {
 	public class ServiceBasedControllerActivator : DefaultControllerActivator
 	{
@@ -19,7 +21,8 @@ namespace SF.AspNetCore.Mvc
 				throw new ArgumentNullException("actionContext");
 			}
 			Type serviceType = actionContext.ActionDescriptor.ControllerTypeInfo.AsType();
-			var s = actionContext.HttpContext.RequestServices.GetService(serviceType);
+			var services = actionContext.HttpContext.RequestServices;
+			var s = services.GetService(serviceType);
 			if (s == null)
 			{
 				s = base.Create(actionContext);

@@ -39,11 +39,11 @@ namespace SF.Core.Logging.MicrosoftExtensions
 			return InnerLogger.BeginScope(State);
 		}
 
-		public void Write<TState>(LogLevel logLevel, TState state, Exception exception, Func<TState, Exception, string> formatter)
+		public void Write<TState>(LogLevel logLevel, SF.Core.Logging.EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
 		{
 			InnerLogger.Log(
 				MapLevel(logLevel),
-				default(Microsoft.Extensions.Logging.EventId),
+				new Microsoft.Extensions.Logging.EventId(eventId.Id,eventId.Name),
 				state,
 				exception,
 				formatter

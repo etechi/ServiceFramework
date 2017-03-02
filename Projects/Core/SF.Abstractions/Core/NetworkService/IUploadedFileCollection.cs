@@ -9,9 +9,9 @@ namespace SF.Core.NetworkService
 		string Key { get; }
 
 		string FileName { get; }
-		Stream InputStream { get; }
+		Stream OpenStream();
 		long ContentLength { get; }
-		string ContentType { get; set; }
+		string ContentType { get;  }
 	}
 	public interface IUploadedFileCollection
 	{

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace SF.AspNetCore.Mvc
+namespace SF.AspNetCore.NetworkServices
 {
 	class ServiceActionDescProvider : IActionDescriptorProvider
 	{
@@ -26,6 +26,14 @@ namespace SF.AspNetCore.Mvc
 		{
 			return ServiceBuildRule.FormatServiceName(Type);
 		}
+		static List<FilterDescriptor> filters { get; }=new List<FilterDescriptor>
+		{
+			new FilterDescriptor(
+				new NetworkServiceResultFilter(),
+				0
+				)
+
+		};
 		ControllerActionDescriptor BuildDescriptor(
 			Type type, 
 			string controllerName, 
@@ -35,17 +43,17 @@ namespace SF.AspNetCore.Mvc
 			MethodInfo method
 			)
 		{
-			var args = method.GetParameters();
+			var args = ServiceBuildRule.GetMethodParameters(method);
 			return new ControllerActionDescriptor
 			{
 				ActionName = ActionName,
 				ControllerName = controllerName,
 				ControllerTypeInfo = type.GetTypeInfo(),
 				MethodInfo = method,
-				AttributeRouteInfo = new Microsoft.AspNetCore.Mvc.Routing.AttributeRouteInfo
-				{
-					Template = $"{RoutePrefix}/{controllerName}/{ActionName}",
-				},
+				//AttributeRouteInfo = new Microsoft.AspNetCore.Mvc.Routing.AttributeRouteInfo
+				//{
+				//	Template = $"{RoutePrefix}/{controllerName}/{ActionName}",
+				//},
 				ActionConstraints = new List<IActionConstraintMetadata>
 						{
 							new Microsoft.AspNetCore.Mvc.Internal.HttpMethodActionConstraint(
@@ -57,7 +65,7 @@ namespace SF.AspNetCore.Mvc
 						},
 				BoundProperties = new List<ParameterDescriptor>(),
 				Properties = new Dictionary<object, object>(),
-				FilterDescriptors = new List<FilterDescriptor>(),
+				FilterDescriptors = filters,
 				Parameters = args.Select(
 					a => new ControllerParameterDescriptor
 					{
@@ -74,7 +82,8 @@ namespace SF.AspNetCore.Mvc
 				RouteValues = new Dictionary<string, string>
 							{
 								{"controller", controllerName},
-								{"action",ActionName}
+								{"action",ActionName},
+								{"scope","api" }
 							},
 			};
 		}
@@ -84,8 +93,8 @@ namespace SF.AspNetCore.Mvc
 			return BuildDescriptor(
 					type,
 					controllerName,
-					method.Name,
-					heavyParameter == null ? "GET" : "POST",
+					ServiceBuildRule.FormatMethodName(method),
+					!method.IsDefined(typeof(HeavyMethodAttribute)) && heavyParameter == null ? "GET" : "POST",
 					heavyParameter,
 					method
 					);
@@ -125,11 +134,11 @@ namespace SF.AspNetCore.Mvc
 			foreach (var type in ServiceTypes)
 			{
 				var controllerName = GetControllerName(type);
-				foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod))
+				foreach (var method in ServiceBuildRule.GetServiceMethods(type))
 				{
 					context.Results.Add(BuildDescriptorByMethod(type, controllerName, method));
 				}
-				foreach(var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty))
+				foreach(var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.FlattenHierarchy))
 				{
 					foreach (var desc in BuildDescriptorByProperty(type, controllerName, prop))
 						context.Results.Add(desc);

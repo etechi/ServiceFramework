@@ -16,13 +16,14 @@ namespace SF.Core.NetworkService
 	{
 		class UploadedFile : IUploadedFile
 		{
+			public HttpPostedFile file { get; set; }
 			public string Key { get; set; }
-			public long ContentLength { get; set; }
+			public long ContentLength => file.ContentLength;
 
-			public string ContentType { get; set; }
+			public string ContentType => file.ContentType;
 
-			public string FileName { get; set; }
-			public Stream InputStream { get; set; }
+			public string FileName => file.FileName;
+			public Stream OpenStream() => file.InputStream;
 		}
 		public IUploadedFile[] Files
 		{
@@ -40,10 +41,7 @@ namespace SF.Core.NetworkService
 					.Select(file => new UploadedFile
 					{
 						Key = file.key,
-						ContentLength = file.file.ContentLength,
-						ContentType = file.file.ContentType,
-						FileName = file.file.FileName,
-						InputStream = file.file.InputStream
+						file=file.file
 					}).ToArray();
 			}
 		}
