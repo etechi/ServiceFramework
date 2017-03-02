@@ -17,7 +17,11 @@ namespace SF.Core.DI
 		public static IDIServiceCollection UseEFCoreDataEntity<TDbContext>(this IDIServiceCollection sc)
 			where TDbContext : DbContext
 		{
-			sc.AddScoped<IDataContextProviderFactory>(x => new DataContextProviderFactory<TDbContext>(()=>x.GetRequiredService<TDbContext>()));
+			sc.AddScoped<IDataContextProviderFactory>(x => 
+				new DataContextProviderFactory<TDbContext>(
+					()=>x.GetRequiredService<TDbContext>()
+					)
+				);
 			return sc;
 		}
 	}

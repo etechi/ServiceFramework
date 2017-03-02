@@ -8,3 +8,6 @@ bin
 /Projects/Sites/SF.AdminSite/node_modules
 /Projects/Sites/SF.AdminSite/vender
 /Projects/Sites/browser/node_modules
+/Projects/Sites/SF.AdminSiteCore/client
+/Projects/Sites/SF.AdminSiteCore/node_modules
+/Projects/Sites/SF.AdminSiteCore/wwwroot/vender

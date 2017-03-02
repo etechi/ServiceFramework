@@ -29,10 +29,11 @@ namespace SF.AdminSiteCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-			var connection = @"Host=localhost;Database=sfadmin;Username=postgres;Password=system";
+			var connection =Program.ConnectionString?? @"Host=127.0.0.1;Port=5432;Database=sfadmin;Username=postgres;Password=system";
 			services.AddDbContext<AppContext>(
 				(isp, options) =>
-				options.LoadDataModels(isp).UseNpgsql(connection)
+				options.LoadDataModels(isp).UseNpgsql(connection),
+				ServiceLifetime.Transient
 				);
 
 			services.AddMvc().AddJsonOptions(opt =>

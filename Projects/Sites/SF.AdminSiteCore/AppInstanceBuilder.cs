@@ -99,6 +99,7 @@ namespace SF.AdminSiteCore
 			Services.Replace(new ServiceDescriptor(
 				typeof(ILoggerFactory), LogService.AsMSLoggerFactory()
 				));
+
 			Services.UseMicrosoftMemoryCacheAsLocalCache();
 			Services.UseNewtonsoftJson();
 			//Services.UseSystemMemoryCache();

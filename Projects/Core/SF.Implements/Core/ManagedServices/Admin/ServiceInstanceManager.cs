@@ -10,6 +10,7 @@ using SF.Core.ManagedServices.Admin.DataModels;
 using SF.Core.ManagedServices.Models;
 using SF.Core.ManagedServices.Runtime;
 using SF.Core.DI;
+using SF.Core.Logging;
 
 namespace SF.Core.ManagedServices.Admin
 {
@@ -23,18 +24,20 @@ namespace SF.Core.ManagedServices.Admin
 		IDataEntityResolver EntityResolver { get;}
 		IServiceProvider ServiceProvider { get; }
 		public IManagedServiceConfigChangedNotifier ConfigChangedNotifier { get; }
-
+		ILogger<ServiceInstanceManager> Logger { get; }
 		public ServiceInstanceManager(
 			IDataSet<DataModels.ServiceInstance> DataSet, 
 			IDataEntityResolver EntityResolver,
 			IManagedServiceConfigChangedNotifier ConfigChangedNotifier,
-			IServiceProvider ServiceProvider
+			IServiceProvider ServiceProvider,
+			ILogger<ServiceInstanceManager> Logger
 			) : 
 			base(DataSet)
 		{
 			this.ServiceProvider = ServiceProvider;
 			this.EntityResolver = EntityResolver;
 			this.ConfigChangedNotifier = ConfigChangedNotifier;
+			this.Logger = Logger;
 		}
 
 		protected override PagingQueryBuilder<DataModels.ServiceInstance> PagingQueryBuilder =>
@@ -62,6 +65,8 @@ namespace SF.Core.ManagedServices.Admin
 			}).SingleAsync();
 
 			re.SettingType = re.ImplementId.Split2('@').Item1 + "CreateArguments";
+
+			Logger.Info("Load ServiceInstance for Edit: {0}",Json.Stringify(re));
 			return re;
 		}
 
@@ -167,7 +172,12 @@ namespace SF.Core.ManagedServices.Admin
 					ctx.AddPostAction(() => ConfigChangedNotifier.NotifyDefaultChanged(m.DeclarationId));
 				}
 			}
-			ctx.AddPostAction(() => ConfigChangedNotifier.NotifyChanged(m.Id));
+			ctx.AddPostAction(() =>
+			{
+				ConfigChangedNotifier.NotifyChanged(m.Id);
+				Logger.Info("ServiceInstance Saved:{0}",Json.Stringify(m));
+
+			});
 		}
 		protected override Task OnNewModel(ModifyContext ctx)
 		{
