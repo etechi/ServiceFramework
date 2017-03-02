@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<PropertyGroup>
+  <!-- Makes the TypeScript compilation task a no-op -->
+  <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+</PropertyGroup>
 
   <PropertyGroup>
-      <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
      <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
 
