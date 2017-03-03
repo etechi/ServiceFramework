@@ -73,6 +73,7 @@
     <Compile Include="Data\EFBasic.cs" />
     <Compile Include="DI\FeatureTest.cs" />
     <Compile Include="DI\ServiceManagerTest.cs" />
+    <Compile Include="Interception\FeatureTest.cs" />
     <Compile Include="Migrations\201701311537099_init.cs" />
     <Compile Include="Migrations\201701311537099_init.Designer.cs">
       <DependentUpon>201701311537099_init.cs</DependentUpon>

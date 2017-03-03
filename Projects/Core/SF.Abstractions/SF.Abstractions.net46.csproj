@@ -50,6 +50,13 @@
     <Compile Include="Core\Caching\IRemoteCache.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantor.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantorStorage.cs" />
+    <Compile Include="Core\Interception\IProxyInvokerBuilder.cs" />
+    <Compile Include="Core\Interception\IInterceptingProxyTypeBuilder.cs" />
+    <Compile Include="Core\Interception\IInterceptingProxy.cs" />
+    <Compile Include="Core\Interception\IInterceptionBehavior.cs" />
+    <Compile Include="Core\Interception\IMethodInvocation.cs" />
+    <Compile Include="Core\Interception\IMethodReturn.cs" />
+    <Compile Include="Core\Interception\IParameterCollection.cs" />
     <Compile Include="Core\Logging\NullScope.cs" />
     <Compile Include="Core\Logging\ILogService.cs" />
     <Compile Include="Core\Logging\ILoggerProvider.cs" />
