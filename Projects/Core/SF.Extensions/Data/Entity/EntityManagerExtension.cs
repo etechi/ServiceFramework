@@ -24,6 +24,20 @@ namespace SF.Data.Entity
 				throw new InvalidOperationException("查询条件返回多条记录");
 			return res[0].Id;
 		}
+		public static async Task UpdateEntity<TKey, TEditable>(
+			this IEntityManager<TKey, TEditable> Manager,
+			TKey Id,
+			Action<TEditable> Updater
+			)
+			where TKey : IEquatable<TKey>
+			where TEditable : class, IObjectWithId<TKey>
+		{
+			var ins = await Manager.LoadForEdit(Id);
+			if (ins == null)
+				throw new ArgumentException($"找不到对象:{typeof(TEditable)}:{Id}");
+			Updater(ins);
+			await Manager.UpdateAsync(ins);
+		}
 		public static async Task<TEditable> EnsureEntity<TKey, TEditable>(
 			this IEntityManager<TKey,TEditable> Manager,
 			TKey Id,

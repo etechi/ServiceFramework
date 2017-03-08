@@ -191,6 +191,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.net46.csproj">

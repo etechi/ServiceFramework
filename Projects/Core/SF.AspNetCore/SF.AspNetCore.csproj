@@ -6,7 +6,7 @@
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="microsoft.aspnetcore.mvc" Version="1.1.1" />
+    <PackageReference Include="microsoft.aspnetcore.mvc" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />

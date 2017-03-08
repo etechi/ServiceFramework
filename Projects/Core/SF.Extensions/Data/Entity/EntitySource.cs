@@ -16,6 +16,10 @@ namespace SF.Data.Entity
 		public EntitySource(IDataSet<TModel> DataSet) : base(DataSet)
 		{
 		}
+		protected override Task<TPublic[]> OnPreparePublics(TPublic[] Internals)
+		{
+			return Task.FromResult(Internals);
+		}
 	}
 	public abstract class EntitySource<TKey, TPublic, TTemp, TModel> :
 		IEntityLoader<TKey, TPublic>,
@@ -29,12 +33,15 @@ namespace SF.Data.Entity
 		{
 			this.DataSet = DataSet;
 		}
-		protected abstract IContextQueryable<TTemp> MapModelToPublic(IContextQueryable<TModel> Query);
+		protected virtual IContextQueryable<TTemp> OnMapModelToPublic(IContextQueryable<TModel> Query)
+		{
+			return Query.Select(EntityMapper.Map<TModel, TTemp>());
+		}
 		protected abstract Task<TPublic[]> OnPreparePublics(TTemp[] Internals);
 
 		public async Task<TPublic[]> GetAsync(TKey[] Ids)
 		{
-			var re = await MapModelToPublic(
+			var re = await OnMapModelToPublic(
 				DataSet.AsQueryable(true).Where(s => Ids.Contains(s.Id))
 				).ToArrayAsync();
 
@@ -47,7 +54,7 @@ namespace SF.Data.Entity
 
 		public async Task<TPublic> GetAsync(TKey Id)
 		{
-			var re = await MapModelToPublic(
+			var re = await OnMapModelToPublic(
 				DataSet.AsQueryable(true).Where(s => s.Id.Equals(Id))
 				).SingleOrDefaultAsync();
 

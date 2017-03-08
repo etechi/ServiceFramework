@@ -43,7 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auth\Users\IUserAdminService.cs" />
+    <Compile Include="Auth\AuthorizeAttribute.cs" />
+    <Compile Include="Auth\RequirePermissionAttribute.cs" />
     <Compile Include="Clients\AccessInfo.cs" />
     <Compile Include="Clients\IAuthClientService.cs" />
     <Compile Include="Core\Caching\ILocalCache.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="Maths\RectD.cs" />
     <Compile Include="Maths\Matrix2DD.cs" />
     <Compile Include="Metadata\Annotations\ArrayLayoutAttribute.cs" />
-    <Compile Include="Auth\AuthorizeAttribute.cs" />
     <Compile Include="Metadata\Annotations\CopyableAttribute.cs" />
     <Compile Include="Metadata\Annotations\DateAttribute.cs" />
     <Compile Include="Metadata\Annotations\EntityActionAttribute.cs" />
@@ -103,23 +103,10 @@
     <Compile Include="Metadata\Annotations\OptionalAttribute.cs" />
     <Compile Include="Metadata\Annotations\PasswordAttribute.cs" />
     <Compile Include="Metadata\Annotations\PropertyTypeAttribute.cs" />
-    <Compile Include="Auth\RequirePermissionAttribute.cs" />
     <Compile Include="Metadata\Annotations\TableRowsAttribute.cs" />
     <Compile Include="Metadata\Annotations\TableVisibleAttribute.cs" />
     <Compile Include="Metadata\Annotations\TreeNodesAttribute.cs" />
     <Compile Include="Metadata\Annotations\CommentAttribute.cs" />
-    <Compile Include="Auth\ICaptchaService.cs" />
-    <Compile Include="Auth\Users\IAuthSessionProvider.cs" />
-    <Compile Include="Auth\Users\IPasswordHasher.cs" />
-    <Compile Include="Auth\Users\IUserIdentProvider.cs" />
-    <Compile Include="Auth\Users\IUserProvider.cs" />
-    <Compile Include="Auth\Users\IUserService.cs" />
-    <Compile Include="Auth\Users\Models\SexType.cs" />
-    <Compile Include="Auth\Users\Models\UserEditable.cs" />
-    <Compile Include="Auth\Users\Models\UserIdent.cs" />
-    <Compile Include="Auth\Users\Models\UserInfo.cs" />
-    <Compile Include="Auth\Users\Models\UserInternal.cs" />
-    <Compile Include="Auth\Users\Models\UserType.cs" />
     <Compile Include="Core\Caching\IFileCache.cs" />
     <Compile Include="Data\Storage\EntityModels.cs" />
     <Compile Include="Data\Storage\Exceptions.cs" />
@@ -196,8 +183,6 @@
     <Compile Include="Core\NetworkService\IMetadataService.cs" />
     <Compile Include="Core\NetworkService\IServiceBuildRuleProvider.cs" />
     <Compile Include="Core\NetworkService\Metadata.cs" />
-    <Compile Include="Services\TextMessages\ITextMessageService.cs" />
-    <Compile Include="Services\TextMessages\Message.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

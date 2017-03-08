@@ -58,6 +58,10 @@ namespace System.Reflection
 		{
 			return type.GetTypeInfo().IsGenericType;
 		}
+		public static bool IsClassType(this Type type)
+		{
+			return type.GetTypeInfo().IsClass;
+		}
 		public static bool IsGenericDefinition(this Type type)
 		{
 			return type.GetTypeInfo().IsGenericTypeDefinition;
@@ -86,6 +90,21 @@ namespace System.Reflection
 		public static Type GetInterface(this Type type, string Name)
 		{
 			return type.GetTypeInfo().GetInterface(Name);
+		}
+		public static Reflection.GenericParameterAttributes GetGenericParameterAttributes(this Type Type)
+		{
+			return Type.GetTypeInfo().GenericParameterAttributes;
+		}
+#if NETCORE
+		public static Type[] GetGenericParameterConstraints(this Type Type)
+		{
+			return Type.GetTypeInfo().GetGenericParameterConstraints();
+		}
+
+#endif
+		public static TypeAttributes GetTypeAttributes(this Type Type)
+		{
+			return Type.GetTypeInfo().Attributes;
 		}
 		public static Type GetTypedGenericArgument(this Type Type, Type GenericDefination)
 		{

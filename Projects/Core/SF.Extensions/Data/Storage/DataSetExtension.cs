@@ -54,9 +54,43 @@ namespace SF.Data.Storage
 			return EntityKeyGetter<T>.GetIdent(set, Entity);
 		}
 
+		public static async Task<T> Update<T,K>(
+			this IDataSet<T> set,
+			K id,
+			Action<T> updater,
+			bool Save=true
+			)
+			where T:class,IObjectWithId<K>
+			where K:IEquatable<K>
+		{
+			var e = await set.FindAsync(id);
+			if (e == null)
+				throw new ArgumentException($"找不到对象:{typeof(T)}:{id}");
+			updater(e);
+			set.Update(e);
+			if (Save)
+				await set.Context.SaveChangesAsync();
+			return e;
+		}
+		public static async Task<T> Update<T>(
+		   this IDataSet<T> set,
+		   Expression<Func<T, bool>> filter,
+		   Action<T> updater,
+		   bool Save = true
+		   )where T:class
+		{
+			var e = await set.AsQueryable(false).Where(filter).SingleOrDefaultAsync();
+			if(e==null)
+				throw new ArgumentException($"找不到对象:{typeof(T)}:{filter}");
+			updater(e);
+			set.Update(e);
+			if (Save)
+				await set.Context.SaveChangesAsync();
+			return e;
+		}
 		public static Task<T> FindAsync<T>(
 			this IDataSet<T> set, 
-			System.Linq.Expressions.Expression<Func<T, bool>> filter
+			Expression<Func<T, bool>> filter
 			)
 			where T:class
 		{
@@ -87,6 +121,23 @@ namespace SF.Data.Storage
 		   where T : class
 		{
 			return set.AsQueryable(false).Where(filter).OrderByDescending(order).ToArrayAsync();
+		}
+
+		public static async Task RemoveRangeAsync<T>(
+			this IDataSet<T> set,
+			System.Linq.Expressions.Expression<Func<T, bool>> filter,
+			bool Save=true
+		   )
+			where T:class
+		{
+
+			var items = await set.LoadListAsync(filter);
+			if (items.Length > 0)
+			{
+				set.RemoveRange(items);
+				if(Save)
+					await set.Context.SaveChangesAsync();
+			}
 		}
 		public static Task<M[]> QueryAsync<T,M>(
 		   this IDataSet<T> set,
@@ -429,16 +480,7 @@ namespace SF.Data.Storage
 		//	Context.Set<T>().RemoveRange(items);
 
 		//}
-		public static async Task<T[]> RemoveRangeAsync<T>(
-			this IDataSet<T> set,
-			System.Linq.Expressions.Expression<Func<T, bool>> filter
-			) where T : class
-		{
-			var items = await set.AsQueryable(false).Where(filter).ToArrayAsync();
-			if (items.Length > 0)
-				set.RemoveRange(items);
-			return items;
-		}
+		
 		public static async Task RetryForConcurrencyExceptionAsync<T>(
 			this IDataSet<T> set,
 			Func<Task> Action,

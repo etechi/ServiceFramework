@@ -1,0 +1,176 @@
+﻿using SF.Data.Storage;
+using SF.Data;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using SF.Clients;
+using SF.Data.Entity;
+using SF.Core.Times;
+using SF.Auth.Users.DataModels;
+
+namespace SF.Auth.Users
+{
+	public class EntityUserAdminService<TDataModel,TUserInternal,TUserEditable,TUserQueryArgument> :
+		SF.Data.Entity.EntityManager<long,TUserInternal, TUserQueryArgument,TUserEditable,TDataModel>,
+		IUserStorage
+		where TDataModel:DataModels.User,new()
+		where TUserInternal:UserInternal,new()
+		where TUserEditable:UserEditable,new()
+		where TUserQueryArgument:UserQueryArgument
+	{
+		protected override PagingQueryBuilder<TDataModel> PagingQueryBuilder => new PagingQueryBuilder<TDataModel>(
+				"time",
+				b => b.Add("time", i => i.CreatedTime, true));
+		public ITimeService TimeService { get; }
+
+		public EntityUserAdminService(
+			IDataSet<TDataModel> DataSet,
+			ITimeService TimeService
+			) :base(DataSet)
+		{
+			this.TimeService = TimeService;
+		}
+		protected virtual UserInfo OnBuildUserInfo(UserInternal u)
+		{
+			return new UserInfo
+			{
+				Id = u.Id,
+				Icon = u.Icon,
+				Image = u.Image,
+				NickName = u.NickName,
+				Sex = u.Sex,
+				Type = u.Type
+			};
+		}
+		async Task<UserInfo> IUserStorage.FindById(long UserId)
+		{
+			var u = await GetAsync(UserId);
+			return u == null ? null : OnBuildUserInfo(u);
+		}
+
+		async Task IUserStorage.UpdateAsync(UserInfo User)
+		{
+			await this.UpdateEntity(
+				User.Id,
+				e =>
+				{
+					e.Icon = User.Icon ?? e.Icon;
+					e.Image = User.Image ?? e.Image;
+					e.NickName = User.NickName ?? e.NickName;
+					e.Sex = User.Sex ?? e.Sex;
+				});
+		}
+
+		async Task<UserInfo> IUserStorage.Create(UserCreateArgument Arg)
+		{
+			var id=await CreateAsync(new TUserEditable
+			{
+				NickName =Arg.User.NickName,
+				Icon=Arg.User.Icon,
+				Image=Arg.User.Image,
+				Sex =Arg.User.Sex ??SexType.Unknown,
+				Type =Arg.User.Type
+			});
+			Arg.User.Id = id;
+			return Arg.User;
+		}
+
+		Task<string> IUserStorage.GetPasswordHash(long UserId, bool ForSignin)
+		{
+			if (ForSignin)
+			{
+				var now = TimeService.Now;
+				return DataSet.QuerySingleAsync(
+					e => 
+						e.Id == UserId && 
+						(e.LockoutEndDate==null || e.LockoutEndDate<now) &&
+						e.ObjectState==LogicObjectState.Enabled, 
+						e => e.PasswordHash
+						);
+			}
+			else
+				return DataSet.QuerySingleAsync(e => e.Id == UserId, e => e.PasswordHash);
+		}
+
+		Task IUserStorage.SetPasswordHash(long UserId, string PasswordHash, string SecurityStamp)
+		{
+			return DataSet.Update(
+				UserId,
+				e =>
+				{
+					e.PasswordHash = PasswordHash;
+					e.SecurityStamp = SecurityStamp;
+				});
+		}
+
+		protected override Task OnUpdateModel(ModifyContext ctx)
+		{
+			var e = ctx.Editable;
+			var m = ctx.Model;
+			m.NickName = e.NickName;
+			m.UserName = e.UserName;
+			m.Image = e.Image;
+			m.Icon = e.Icon;
+			m.UpdatedTime = TimeService.Now;
+			return Task.CompletedTask;		
+		}
+		protected override Task OnNewModel(ModifyContext ctx)
+		{
+			ctx.Model.CreatedTime = TimeService.Now;
+			return base.OnNewModel(ctx);
+		}
+
+
+		protected override IContextQueryable<TDataModel> OnBuildQuery(IContextQueryable<TDataModel> Query, TUserQueryArgument Arg, Paging paging)
+		{
+			return Query.Filter(Arg.NickName, e => e.NickName);
+		}
+
+	
+
+		async Task<UserInfo> IUserStorage.SigninSuccess(long UserId, AccessInfo AccessInfo)
+		{
+			var re = await DataSet.Update(
+				UserId,
+				e =>
+				{
+					e.AccessFailedCount = 0;
+					e.LockoutEndDate = null;
+					e.LastAddress = AccessInfo.ClientAddress;
+					//e.LastDeviceType=AccessInfo.
+					e.LastSigninTime = TimeService.Now;
+				}
+				);
+			return new UserInfo
+			{
+				Icon = re.Icon,
+				Id = re.Id,
+				Image = re.Image,
+				NickName = re.NickName,
+				Sex = re.Sex,
+				Type = re.UserType
+			};
+		}
+
+		async Task IUserStorage.SigninFailed(long UserId, int LockoutFailedCount, TimeSpan LockoutTime, AccessInfo AccessInfo)
+		{
+			await DataSet.Update(
+				UserId,
+				e =>
+				{
+					e.AccessFailedCount++;
+					if (e.AccessFailedCount > LockoutFailedCount)
+						e.LockoutEndDate = TimeService.Now.Add(LockoutTime);
+				}
+				);
+		}
+	}
+
+	public class EntityUserAdminService :
+		EntityUserAdminService<DataModels.User, UserInternal, UserEditable, UserQueryArgument>
+	{
+		public EntityUserAdminService(IDataSet<User> DataSet, ITimeService TimeService) : base(DataSet, TimeService)
+		{
+		}
+	}
+}

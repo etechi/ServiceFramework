@@ -102,10 +102,15 @@
       <Project>{dc7af484-4386-4cb8-ae4c-0f33b18c4add}</Project>
       <Name>SF.Implements.net46</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SF.Interception\SF.Interception.net46.csproj">
+      <Project>{899cd860-ff21-4cdd-907c-957435a862e5}</Project>
+      <Name>SF.Interception.net46</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

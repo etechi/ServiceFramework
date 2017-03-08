@@ -59,6 +59,7 @@
     <Compile Include="Core\ServiceFeatures\InitializableServiceProviderExtension.cs" />
     <Compile Include="Core\TaskServices\ITaskServiceManagerExtension.cs" />
     <Compile Include="Core\TaskServices\TaskServiceDIServiceCollectionExtension.cs" />
+    <Compile Include="Data\Entity\EntityMapper.cs" />
     <Compile Include="Data\Entity\EntityManagerExtension.cs" />
     <Compile Include="Data\Entity\EntityServiceDIServiceCollectionExtension.cs" />
     <Compile Include="Data\Storage\DataContextExtension.cs" />
@@ -82,11 +83,11 @@
     <Compile Include="Metadata\BaseMetadataBuilder.cs" />
     <Compile Include="Content.cs" />
     <Compile Include="Core\Timer.cs" />
-    <Compile Include="Services\Images\BasicTransforms.cs" />
-    <Compile Include="Services\Images\CoreTranforms.cs" />
-    <Compile Include="Services\Images\ExifTranforms.cs" />
-    <Compile Include="Services\Images\Interfaces.cs" />
-    <Compile Include="Services\Images\TransformContext.cs" />
+    <Compile Include="Core\Images\BasicTransforms.cs" />
+    <Compile Include="Core\Images\CoreTranforms.cs" />
+    <Compile Include="Core\Images\ExifTranforms.cs" />
+    <Compile Include="Core\Images\Interfaces.cs" />
+    <Compile Include="Core\Images\TransformContext.cs" />
     <Compile Include="Services\Media\MediaMeta.cs" />
     <Compile Include="System\ArrayExtension.cs" />
     <Compile Include="System\BytesExtension.cs" />
@@ -121,6 +122,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\Interception\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="project.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

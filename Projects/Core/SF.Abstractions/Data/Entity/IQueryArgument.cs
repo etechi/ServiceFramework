@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SF.Metadata;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,4 +11,12 @@ namespace SF.Data.Entity
 	{
 		Option<TKey> Id { get; }
 	}
+	public class QueryArgument<TKey> : 
+		IQueryArgument<TKey>
+	{
+		[Comment("ID")]
+		public Option<TKey> Id { get; set; }
+
+	}
+
 }

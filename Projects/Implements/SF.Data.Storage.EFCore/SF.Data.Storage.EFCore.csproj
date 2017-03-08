@@ -15,8 +15,8 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="microsoft.entityframeworkcore" Version="1.1.0" />
-    <PackageReference Include="microsoft.entityframeworkcore.relational" Version="1.1.0" />
+    <PackageReference Include="microsoft.entityframeworkcore" Version="1.1.1" />
+    <PackageReference Include="microsoft.entityframeworkcore.relational" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />

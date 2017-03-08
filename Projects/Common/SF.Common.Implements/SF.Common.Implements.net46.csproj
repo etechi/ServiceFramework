@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{089F553C-B608-4B76-BE81-39EE4D18CACC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SF.Common.Implements</RootNamespace>
+    <AssemblyName>SF.Common.Implements</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Auth\Users\DataModels\UserIdent.cs" />
+    <Compile Include="Auth\Users\DataModels\User.cs" />
+    <Compile Include="Auth\Users\EntityUserIdentStorage.cs" />
+    <Compile Include="Auth\Users\IdentProviders\BaseIdentProvider.cs" />
+    <Compile Include="Auth\Users\IdentProviders\PhoneNumberIdentProvider.cs" />
+    <Compile Include="Auth\Users\EntityUserAdminService.cs" />
+    <Compile Include="Auth\Users\UserService.cs" />
+    <Compile Include="Auth\Users\UserServiceSetting.cs" />
+    <Compile Include="Basic\TextMessages\DataModels\TextMessageRecord.cs" />
+    <Compile Include="Basic\TextMessages\NullPhoneMessageService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.net46.csproj">
+      <Project>{69691ef2-2eff-4e50-aa49-93e9fdc5c34b}</Project>
+      <Name>SF.Abstractions.net46</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.net46.csproj">
+      <Project>{ca3cceb7-ad9a-41b1-a06f-483c32b697b7}</Project>
+      <Name>SF.Extensions.net46</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SF.Common.Abstractions\SF.Common.Abstractions.net46.csproj">
+      <Project>{493a9630-cc6d-458e-b8f8-f5c0002d0522}</Project>
+      <Name>SF.Common.Abstractions.net46</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

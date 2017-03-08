@@ -47,8 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auth\Users\UserService.cs" />
-    <Compile Include="Auth\Users\UserServiceSetting.cs" />
     <Compile Include="Core\Caching\LocalFileCache.cs" />
     <Compile Include="Core\Caching\CachingDIServiceCollectionExtension.cs" />
     <Compile Include="Core\CallGuarantors\CallGuarantorDIServoceCollectionExtension.cs" />
@@ -63,18 +61,6 @@
     <Compile Include="Core\CallGuarantors\Storage\DataModels\CallInstance.cs" />
     <Compile Include="Core\Hosting\FilePathResolver.cs" />
     <Compile Include="Core\Hosting\HostingDIServiceCollectionExtension.cs" />
-    <Compile Include="Core\Interception\ProxyInvokerFactory.cs" />
-    <Compile Include="Core\Interception\Internals\GenericParameterMapper.cs" />
-    <Compile Include="Core\Interception\Internals\InterceptingClassGenerator.cs" />
-    <Compile Include="Core\Interception\Internals\InterceptionBehaviorPipeline.cs" />
-    <Compile Include="Core\Interception\Internals\InterfaceImplementation.cs" />
-    <Compile Include="Core\Interception\Internals\InterfaceMethodOverride.cs" />
-    <Compile Include="Core\Interception\InterceptionDIServiceCollectionExtension.cs" />
-    <Compile Include="Core\Interception\Internals\MethodOverrideParameterMapper.cs" />
-    <Compile Include="Core\Interception\Internals\ParameterCollection.cs" />
-    <Compile Include="Core\Interception\InterceptingProxyTypeBuilder.cs" />
-    <Compile Include="Core\Interception\Internals\StaticReflection.cs" />
-    <Compile Include="Core\Interception\Internals\VirtualMethodInvocation.cs" />
     <Compile Include="Core\Logging\Logger.cs" />
     <Compile Include="Core\Logging\LoggerDIServiceCollectionExtension.cs" />
     <Compile Include="Core\Logging\DefaultLogMessageFactory.cs" />
@@ -148,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Core\DI\" />

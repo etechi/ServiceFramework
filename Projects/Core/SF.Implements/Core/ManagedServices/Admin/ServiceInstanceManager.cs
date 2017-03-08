@@ -46,7 +46,7 @@ namespace SF.Core.ManagedServices.Admin
 				b => b.Add("name", i => i.Name));
 
 
-		protected override async Task<Models.ServiceInstanceEditable> MapModelToEditable(IContextQueryable<DataModels.ServiceInstance> Query)
+		protected override async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
 			var re= await Query.Select(i => new Models.ServiceInstanceEditable
 			{
@@ -70,7 +70,7 @@ namespace SF.Core.ManagedServices.Admin
 			return re;
 		}
 
-		protected override IContextQueryable<Models.ServiceInstance> MapModelToPublic(IContextQueryable<DataModels.ServiceInstance> Query)
+		protected override IContextQueryable<Models.ServiceInstance> OnMapModelToPublic(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
 			return  Query.Select(i => new Models.ServiceInstance
 			{

@@ -23,6 +23,10 @@ namespace SF.Data.Entity
 		public EntityManager(IDataSet<TModel> DataSet) : base(DataSet)
 		{
 		}
+		protected override Task<TPublic[]> OnPreparePublics(TPublic[] Items)
+		{
+			return Task.FromResult(Items);
+		}
 	}
 	public abstract class EntityManager<TKey, TPublic, TTemp, TQueryArgument, TEditable,TModel> :
 		QuerableEntitySource<TKey, TPublic, TTemp, TQueryArgument, TModel>,
@@ -222,11 +226,14 @@ namespace SF.Data.Entity
 				.SingleOrDefaultAsync();
 		}
 
-		protected abstract Task<TEditable> MapModelToEditable(IContextQueryable<TModel> Query);
+		protected virtual Task<TEditable> OnMapModelToEditable(IContextQueryable<TModel> Query)
+		{
+			return Query.Select(EntityMapper.Map<TModel, TEditable>()).SingleOrDefaultAsync();
+		}
 
 		public virtual Task<TEditable> LoadForEdit(TKey Id)
 		{
-			return MapModelToEditable(DataSet.AsQueryable(false).Where(m => m.Id.Equals(Id)));
+			return OnMapModelToEditable(DataSet.AsQueryable(false).Where(m => m.Id.Equals(Id)));
 		}
 	}
     

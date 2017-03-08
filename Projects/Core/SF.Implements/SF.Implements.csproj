@@ -25,14 +25,13 @@
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
-    <Folder Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="newtonsoft.json" Version="9.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
     <ProjectReference Include="..\SF.Extensions\SF.Extensions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

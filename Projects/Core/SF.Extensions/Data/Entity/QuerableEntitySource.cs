@@ -32,9 +32,15 @@ namespace SF.Data.Entity
 		abstract protected PagingQueryBuilder<TModel> PagingQueryBuilder { get; }
 		public async Task<QueryResult<TPublic>> QueryAsync(TQueryArgument Arg, Paging paging)
 		{
-			var q=OnBuildQuery(DataSet.AsQueryable(true), Arg, paging);
+			var q = DataSet.AsQueryable(true);
+			if (Arg.Id.HasValue)
+			{
+				var id = Arg.Id.Value;
+				q = q.Where(e => e.Id.Equals(id));
+			}
+			q=OnBuildQuery(q, Arg, paging);
 			var re=await q.ToQueryResultAsync(
-				MapModelToPublic,
+				OnMapModelToPublic,
 				OnPreparePublics,
 				PagingQueryBuilder,
 				paging
