@@ -45,7 +45,7 @@ namespace SF.Core.Interception
 		}
 		static void CollectMethods(Type InterfaceType, HashSet<MethodInfo> methods)
 		{
-			foreach (var m in InterfaceType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.FlattenHierarchy))
+			foreach (var m in InterfaceType.GetMethods(BindingFlags.Public | BindingFlags.Instance  | BindingFlags.FlattenHierarchy))
 				methods.Add(m);
 			foreach (var it in InterfaceType.GetInterfaces())
 				CollectMethods(it, methods);

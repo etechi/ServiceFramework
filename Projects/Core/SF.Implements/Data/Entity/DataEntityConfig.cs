@@ -79,7 +79,7 @@ namespace SF.Data.Entity
 				Expression.NewArrayInit(
 					typeof(object),
 					EntityType
-						.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty)
+						.GetProperties(BindingFlags.Public | BindingFlags.Instance)
 						.Where(p => p.GetCustomAttribute<KeyAttribute>(true) != null)
 						.OrderBy(p => p.GetCustomAttribute<ColumnAttribute>(true)?.Order ?? 0)
 						.Select(p =>
@@ -99,7 +99,7 @@ namespace SF.Data.Entity
 		{
 			var arg = Expression.Parameter(typeof(object), "o");
 			var props = EntityType
-						.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty)
+						.GetProperties(BindingFlags.Public | BindingFlags.Instance )
 						.ToArray();
 
 			var nameProp = props.FirstOrDefault(p => p.GetCustomAttribute<EntityTitleAttribute>(true)!=null);

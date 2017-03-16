@@ -8,6 +8,38 @@ namespace System.Reflection
 {
 	public static class TypeExtensions
 	{
+		static Dictionary<Type, TypeCode> codes { get; } = new Dictionary<Type, System.TypeCode>
+		{
+			{null,System.TypeCode.Empty},
+			{typeof(bool),System.TypeCode.Boolean },
+			{typeof(char),System.TypeCode.Char },
+			{typeof(sbyte),System.TypeCode.SByte },
+			{typeof(byte),System.TypeCode.Byte },
+			{typeof(short),System.TypeCode.Int16 },
+			{typeof(ushort),System.TypeCode.UInt16 },
+			{typeof(int),System.TypeCode.Int32 },
+			{typeof(uint),System.TypeCode.UInt32 },
+			{typeof(long),System.TypeCode.Int64 },
+			{typeof(ulong),System.TypeCode.UInt64 },
+			{typeof(float),System.TypeCode.Single },
+			{typeof(double),System.TypeCode.Double },
+			{typeof(decimal),System.TypeCode.Decimal },
+			{typeof(DateTime),System.TypeCode.DateTime },
+			{typeof(string),System.TypeCode.String }
+		};
+		public static TypeCode GetTypeCode(this Type type)
+		{
+#if NETCORE
+			TypeCode tc;
+			if (codes.TryGetValue(type, out tc))
+				return tc;
+			return System.TypeCode.Object;
+
+#else
+			return System.Type.GetTypeCode(type);
+#endif
+
+		}
 		public static bool IsInterfaceType(this Type Type)
 		{
 			return Type.GetTypeInfo().IsInterface;
@@ -89,7 +121,8 @@ namespace System.Reflection
 		}
 		public static Type GetInterface(this Type type, string Name)
 		{
-			return type.GetTypeInfo().GetInterface(Name);
+			return type.GetTypeInfo().ImplementedInterfaces.SingleOrDefault(t => t.Name == Name);
+			//.GetTypeInfo().GetInterface(Name);
 		}
 		public static Reflection.GenericParameterAttributes GetGenericParameterAttributes(this Type Type)
 		{
@@ -177,7 +210,7 @@ namespace System.Reflection
 		{
 			// Check all methods with the specified name, including in base classes
 			foreach (MethodInfo methodInfo in type.GetMember(name,
-															 bindingFlags | BindingFlags.InvokeMethod))
+															 bindingFlags ).Where(m=>m is MethodInfo))
 			{
 				// Check that the parameter counts and types match, 
 				// with 'loose' matching on generic parameters

@@ -15,15 +15,15 @@ namespace SF.Core.ManagedServices.Runtime
 	class ServiceFactoryBuilder
 	{
 		static ParameterExpression ParamServiceProvider = Expression.Parameter(typeof(IServiceProvider), "sp");
-		static MethodInfo ServiceProviderResolve = typeof(IServiceProvider).GetMethod("GetService", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod);
+		static MethodInfo ServiceProviderResolve = typeof(IServiceProvider).GetMethod("GetService", BindingFlags.Public | BindingFlags.Instance);
 
 		static ParameterExpression ParamManagedNamedServiceScope = Expression.Parameter(typeof(IManagedServiceScope), "mnss");
-		static MethodInfo ManagedNamedServiceScopeResolve = typeof(IManagedServiceScope).GetMethod("Resolve", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod);
+		static MethodInfo ManagedNamedServiceScopeResolve = typeof(IManagedServiceScope).GetMethod("Resolve", BindingFlags.Public | BindingFlags.Instance );
 
 		static ParameterExpression ParamServiceCreateParameterProvider = Expression.Parameter(typeof(IServiceCreateParameterTemplate), "ap");
-		static MethodInfo ServiceCreateParameterProviderGetParameter = typeof(IServiceCreateParameterTemplate).GetMethod("GetArgument", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod);
-		static MethodInfo ServiceCreateParameterProviderGetServiceIdent = typeof(IServiceCreateParameterTemplate).GetMethod("GetServiceIdent", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod);
-		static MethodInfo ServiceCreateParameterProviderGetServiceInstanceIdent = typeof(IServiceCreateParameterTemplate).GetMethod("GetServiceInstanceIdent", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod);
+		static MethodInfo ServiceCreateParameterProviderGetParameter = typeof(IServiceCreateParameterTemplate).GetMethod("GetArgument", BindingFlags.Public | BindingFlags.Instance);
+		static MethodInfo ServiceCreateParameterProviderGetServiceIdent = typeof(IServiceCreateParameterTemplate).GetMethod("GetServiceIdent", BindingFlags.Public | BindingFlags.Instance );
+		static MethodInfo ServiceCreateParameterProviderGetServiceInstanceIdent = typeof(IServiceCreateParameterTemplate).GetMethod("GetServiceInstanceIdent", BindingFlags.Public | BindingFlags.Instance );
 
 		static MethodInfo StringConcat = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 2 && m.GetParameters().All(pt=>pt.ParameterType== typeof(string)));
 		static MethodInfo StringConcat4 = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 4 && m.GetParameters().All(pt => pt.ParameterType == typeof(string)));
@@ -112,7 +112,7 @@ namespace SF.Core.ManagedServices.Runtime
 
 		public static ConstructorInfo FindBestConstructorInfo(Type Type)
 		{
-			var constructors = Type.GetConstructors(BindingFlags.Public | BindingFlags.Instance| BindingFlags.CreateInstance)
+			var constructors = Type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
 				.ToArray();
 
 
@@ -175,10 +175,10 @@ namespace SF.Core.ManagedServices.Runtime
 							CopyRequiredPaths.Add(string.Join(".", PathList.Take(i + 1)));
 						return;
 					}
-					if (t.IsPrimitiveType() || Type.GetTypeCode(t)!=TypeCode.Object)
+					if (t.IsPrimitiveType() || t.GetTypeCode()!=TypeCode.Object)
 						return;
 
-					foreach (var pi in t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty))
+					foreach (var pi in t.GetProperties(BindingFlags.Public | BindingFlags.Instance ))
 					{
 						PathList.Add(pi.Name);
 						DetectCopyRequiredPath(pi.PropertyType);
@@ -308,7 +308,7 @@ namespace SF.Core.ManagedServices.Runtime
 							PropPathExpr,
 							PropPath
 						),
-						typeof(List<>).MakeGenericType(Type.GetElementType()).GetMethod("ToArray", BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod)
+						typeof(List<>).MakeGenericType(Type.GetElementType()).GetMethod("ToArray", BindingFlags.Public | BindingFlags.Instance )
 					);
 				}
 				else if(Type.IsGeneric() && Type.GetGenericTypeDefinition()==typeof(Dictionary<,>))
@@ -355,7 +355,7 @@ namespace SF.Core.ManagedServices.Runtime
 			}
 			IEnumerable<MemberBinding> MemberInitExpressions(Type Type, Expression src, Expression PropPathExpr, string PropPath)
 			{
-				return Type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy)
+				return Type.GetProperties(BindingFlags.Public | BindingFlags.Instance| BindingFlags.FlattenHierarchy)
 					.Select(pi => Expression.Bind(pi, PropCopyExpression(Type, src, pi, PropPathExpr, PropPath)));
 			}
 			Expression ObjectCreateExpression(Type Type, Expression Src, Expression PropPathExpr, string PropPath)

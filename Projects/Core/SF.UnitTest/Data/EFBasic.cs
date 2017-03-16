@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using SF.Data.Entity.EntityFrameworkCore;
+using SF.Data.Storage.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 
@@ -19,8 +19,8 @@ using System.Linq;
 
 namespace SF.UT.Data
 {
-	
-	public class AppContext : SF.Data.Storage.DbContext
+#if !NETCORE
+	public class AppContext : DbContext
 	{
 		public AppContext():this(new EFStartup().ConfigureService())
 		{
@@ -31,10 +31,12 @@ namespace SF.UT.Data
 
 		}
 	}
+#endif
 	class EFStartup {
 		public IServiceProvider ConfigureService()
 		{
-			var isc = SF.Core.DI.MicrosoftExtensions.DIServiceCollection.Create();
+			var sc = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+			var isc = new SF.Core.DI.MicrosoftExtensions.DIServiceCollection(sc);
 
 
 			isc.UseDataModules<DataModels.User, DataModels.Post>();
@@ -79,8 +81,8 @@ namespace SF.UT.Data
 			using (var s = sf.CreateScope())
 			{
 				var isp = s.ServiceProvider;
-				var ac = isp.Resolve<AppContext>();
-				var re = ac.Set<DataModels.User>().ToArrayAsync().Result;
+				var ac = isp.Resolve<IDataContext>();
+				var re = ac.Set<DataModels.User>().AsQueryable().ToArrayAsync().Result;
 				Assert.Equal(1, re.Length);
 				Assert.Equal("c", re[0].FirstName);
 			}

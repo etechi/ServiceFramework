@@ -127,7 +127,7 @@ namespace SF.Metadata
 			if (type.IsEnumType())
 			{
 				re.Properties = type
-					.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.GetField)
+					.GetFields(BindingFlags.Public | BindingFlags.Static )
 					.Select(p =>
 					{
 						var da = p.GetCustomAttribute<CommentAttribute>();
@@ -252,7 +252,7 @@ namespace SF.Metadata
         }
         static MethodInfo MethodGetTypeDefaultValue = typeof(BaseMetadataBuilder).GetMethod(
 			"TypeDefaultValue",
-            BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.NonPublic
+            BindingFlags.Static | BindingFlags.NonPublic
             );
         static object GetTypeDefaultValue(Type type)
         {

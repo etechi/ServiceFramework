@@ -5,12 +5,12 @@ using Newtonsoft.Json.Serialization;
 using System.Reflection;
 using System.Linq.Expressions;
 using System.Collections.Generic;
-using SF.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Threading.Tasks;
 using SF.Data.Entity;
+using SF.Data.Storage;
 
 namespace SF.UT.Data
 {
@@ -128,7 +128,7 @@ namespace SF.UT.Data
 
 	public static class ServiceCollectionExtension
 	{
-		public static void UseUserManager(this SF.DI.IDIServiceCollection sc)
+		public static void UseUserManager(this SF.Core.DI.IDIServiceCollection sc)
 		{
 
 		}

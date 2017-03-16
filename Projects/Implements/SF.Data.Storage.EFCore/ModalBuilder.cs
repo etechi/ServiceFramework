@@ -39,7 +39,7 @@ namespace SF.Data.Storage.EntityFrameworkCore
 		void BuildIndex(EntityItem item,EntityTypeBuilder builder)
 		{
 			var indexs = (
-					from p in item.Type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy)
+					from p in item.Type.GetProperties(BindingFlags.Public | BindingFlags.Instance  | BindingFlags.FlattenHierarchy)
 					from idx in p.GetCustomAttributes().Where(a => a is IndexAttribute).Cast<IndexAttribute>()
 					let rec = new { name = idx.Name ?? p.Name, field = p.Name, unique = idx.IsUnique, clustered = idx.IsClustered, order = idx.Order }
 					group rec by rec.name into g
@@ -60,7 +60,7 @@ namespace SF.Data.Storage.EntityFrameworkCore
 		{
 			var keys = (from p in item.Type
 				.GetProperties(
-					BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy
+					BindingFlags.Public | BindingFlags.Instance| BindingFlags.FlattenHierarchy
 					)
 						where p.GetCustomAttribute<KeyAttribute>(true) != null
 						let col = p.GetCustomAttribute<ColumnAttribute>(true)

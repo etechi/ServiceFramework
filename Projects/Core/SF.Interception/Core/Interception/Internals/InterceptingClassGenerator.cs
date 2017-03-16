@@ -41,9 +41,14 @@ namespace SF.Core.Interception
 		{
 			// Declaring method builder
 			// Method attributes
-			const MethodAttributes MethodAttributes = MethodAttributes.Private | MethodAttributes.Virtual
-				| MethodAttributes.Final | MethodAttributes.HideBySig
-					| MethodAttributes.NewSlot;
+			const MethodAttributes MethodAttributes = default(MethodAttributes)
+				| (MethodAttributes)(
+				1 //| MethodAttributes.Private 
+				| 64 //MethodAttributes.Virtual
+				| 32 //MethodAttributes.Final 
+				| 128//MethodAttributes.HideBySig 
+				| 256) //MethodAttributes.NewSlot
+				;
 
 			MethodBuilder methodBuilder =
 				typeBuilder.DefineMethod(
@@ -96,19 +101,19 @@ namespace SF.Core.Interception
 
 		static InterceptingClassGenerator()
 		{
-#if NETCORE
-			AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(
-	new AssemblyName("Unity_ILEmit_DynamicClasses"),
 
-#else
-						AssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
-				new AssemblyName("Unity_ILEmit_DynamicClasses"),
-
-#endif
 #if DEBUG_SAVE_GENERATED_ASSEMBLY
-                AssemblyBuilderAccess.RunAndSave);
+            var aba =AssemblyBuilderAccess.RunAndSave;
 #else
-			AssemblyBuilderAccess.Run);
+			var aba = AssemblyBuilderAccess.Run;
+#endif
+#if NETCORE
+			AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("Unity_ILEmit_DynamicClasses"),aba);
+
+#else
+			AssemblyBuilder = AppDomain.CurrentDomain.DefineDynamicAssembly(
+				new AssemblyName("Unity_ILEmit_DynamicClasses"),aba);
+
 #endif
 		}
 

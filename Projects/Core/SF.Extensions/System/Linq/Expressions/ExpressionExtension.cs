@@ -90,10 +90,10 @@ namespace System.Linq.Expressions
 		public static MemberInfo Member(this Type type, string name)
 		{
 			return
-				type.Property(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty) ??
-				type.Property(name, BindingFlags.Public | BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.SetProperty) ??
-				type.Field(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.SetField) ??
-				type.Field(name, BindingFlags.Public | BindingFlags.Static | BindingFlags.GetField | BindingFlags.SetField);
+				type.Property(name, BindingFlags.Public | BindingFlags.Instance ) ??
+				type.Property(name, BindingFlags.Public | BindingFlags.Static) ??
+				type.Field(name, BindingFlags.Public | BindingFlags.Instance) ??
+				type.Field(name, BindingFlags.Public | BindingFlags.Static);
 				/*type.prop(name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty) ??
 				type.prop(name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.SetProperty) ??
 				type.field(name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.SetField) ??
@@ -280,8 +280,8 @@ namespace System.Linq.Expressions
 		public static Expression GetMember(this Expression left, string member)
 		{
 			return left.GetMember(
-				left.Type.Property(member, BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty) ??
-				left.Type.Field(member, BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField)
+				left.Type.Property(member, BindingFlags.Public | BindingFlags.Instance ) ??
+				left.Type.Field(member, BindingFlags.Public | BindingFlags.Instance)
 				);
 		}
 		public static Expression Get(this MemberInfo member)

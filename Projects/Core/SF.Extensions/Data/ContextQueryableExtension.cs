@@ -117,7 +117,7 @@ namespace SF.Data
                 ));
         }
 
-        readonly static MethodInfo StringContains = typeof(string).GetMethod("Contains", BindingFlags.Instance | BindingFlags.Public | BindingFlags.InvokeMethod);
+        readonly static MethodInfo StringContains = typeof(string).GetMethod("Contains", BindingFlags.Instance | BindingFlags.Public );
         public static IContextQueryable<O> FilterContains<O>(
             this IContextQueryable<O> q,
             string value,

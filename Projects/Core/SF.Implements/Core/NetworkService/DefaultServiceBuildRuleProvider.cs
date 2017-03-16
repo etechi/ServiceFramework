@@ -44,7 +44,6 @@ namespace SF.Core.NetworkService
 				GetMethods(
 				BindingFlags.Public |
 				BindingFlags.Instance |
-				BindingFlags.InvokeMethod |
 				BindingFlags.FlattenHierarchy
 				))
 			{
@@ -62,7 +61,7 @@ namespace SF.Core.NetworkService
 			var t = p.ParameterType;
 			if (t == typeof(Data.Paging))
 				return false;
-			switch (System.Type.GetTypeCode(t))
+			switch (t.GetTypeCode())
 			{
 				case TypeCode.Boolean:
 				case TypeCode.Char:

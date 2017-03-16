@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
-  </PropertyGroup>
+    <!--<TargetFramework>netcoreapp1.1</TargetFramework>-->
+		<TargetFramework>netstandard1.4</TargetFramework>
+
+	</PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG;NETCOREAPP1_1;NETCORE</DefineConstants>
   </PropertyGroup>
@@ -24,6 +26,9 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="system.ComponentModel" Version="4.3.0" />
+    <PackageReference Include="system.ComponentModel.Annotations" Version="4.3.0" />
     <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
+    <PackageReference Include="system.Linq.Queryable" Version="4.3.0" />
   </ItemGroup>
 </Project>

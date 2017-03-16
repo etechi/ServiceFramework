@@ -94,7 +94,7 @@ namespace SF.Core.ManagedServices
 			if (Type.GetGenericTypeDefinition() != typeof(Dictionary<,>))
 				return null;
 			var gtypes = Type.GetGenericArguments();
-			var keyProps = gtypes[1].GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy)
+			var keyProps = gtypes[1].GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
 				.Where(p => p.IsDefined(typeof(KeyAttribute))).ToArray();
 			if (keyProps.Length != 1)
 				return null;

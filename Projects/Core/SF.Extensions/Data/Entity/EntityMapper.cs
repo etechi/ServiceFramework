@@ -20,8 +20,8 @@ namespace SF.Data.Entity
 					return Expression.Lambda<Func<S, T>>(
 						Expression.MemberInit(
 						  Expression.New(typeof(T)),
-						  (from dp in dstType.GetProperties(System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.SetProperty | System.Reflection.BindingFlags.Instance)
-						   let sp = srcType.GetProperty(dp.Name, System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.GetProperty)
+						  (from dp in dstType.GetProperties(System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+						   let sp = srcType.GetProperty(dp.Name, System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
 						   where sp != null
 						   select Expression.Bind(
 							   dp,

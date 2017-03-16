@@ -75,7 +75,7 @@ namespace SF.Core.ManagedServices.Runtime
 					return null;
 				var gtypes = itype.GetGenericArguments();
 				var keyFields = gtypes[1]
-					.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy)
+					.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
 					.Where(p => p.IsDefined(typeof(KeyAttribute)))
 					.ToArray();
 				if (keyFields.Length != 1)
