@@ -10,7 +10,7 @@ namespace System.Reflection
 	{
 		static Dictionary<Type, TypeCode> codes { get; } = new Dictionary<Type, System.TypeCode>
 		{
-			{null,System.TypeCode.Empty},
+			{typeof(void),System.TypeCode.Empty},
 			{typeof(bool),System.TypeCode.Boolean },
 			{typeof(char),System.TypeCode.Char },
 			{typeof(sbyte),System.TypeCode.SByte },
@@ -31,7 +31,7 @@ namespace System.Reflection
 		{
 #if NETCORE
 			TypeCode tc;
-			if (codes.TryGetValue(type, out tc))
+			if (codes.TryGetValue(type??typeof(void), out tc))
 				return tc;
 			return System.TypeCode.Object;
 
