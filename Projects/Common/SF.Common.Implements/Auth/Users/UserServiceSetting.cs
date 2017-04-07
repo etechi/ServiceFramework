@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using SF.Metadata;
 using SF.Clients;
+using SF.Security;
+using SF.Core.Times;
 
 namespace SF.Auth.Users
 {
@@ -17,9 +19,13 @@ namespace SF.Auth.Users
 		public Lazy<IAuthSessionProvider> AuthSessionProvider { get; set; }
 		public Lazy<IIdentGenerator> IdentGenerator { get; set; }
 		public IUserStorage UserStorage { get; set; }
+		public Lazy<IUserSessionStorage> UserSessionStorage { get; set; }
 		public Lazy<IUserIdentProvider> SignupIdentProvider { get; set; }
 		public Lazy<IUserIdentProvider[]> SigninIdentProviders { get; set; }
 		public Lazy<IClientAccessInfo> AccessInfo { get; set; }
 		public Lazy<IPasswordHasher> PasswordHasher { get; set; }
+		public Lazy<IDataProtector> DataProtector { get; set; }
+		public Lazy<ITimeService> TimeService { get; set; }
 	}
+
 }

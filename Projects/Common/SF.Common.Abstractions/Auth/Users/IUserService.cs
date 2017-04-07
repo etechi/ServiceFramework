@@ -9,10 +9,11 @@ namespace SF.Auth.Users
 		public string Ident { get; set; }
 	}
 
-	public class UserSigninArgument
+	public class CreateAccessTokenArgument
 	{
 		public string Ident { get; set; }
 		public string Password { get; set; }
+		public int Expires { get; set; }
 	}
 
 	public class UserSignupArgument
@@ -43,26 +44,26 @@ namespace SF.Auth.Users
 		public string Code { get; set; }
 		public string NewPassword { get; set; }
 	}
-
-
+	
 	[NetworkService]
 	public interface IUserService
     {
-		Task<UserInfo> Signin(UserSigninArgument Arg);
+		Task<UserSession> Signin(string AccessToken);
 		Task Signout();
-
-		Task<UserInfo> Signup(UserSignupArgument Arg);
-		Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg);
-
-		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
-		Task ResetPasswordByRecoveryCode(ResePasswordByRecorveryCodeArgument Arg);
-
-
-		[Authorize]
-		Task SetPassword(SetPasswordArgument Arg);
 
 		[Authorize]
 		Task<UserInfo> GetCurUser();
+
+		Task<string> CreateAccessToken(CreateAccessTokenArgument Arg);
+
+		Task<string> Signup(UserSignupArgument Arg);
+		Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg);
+
+		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
+		Task<string> ResetPasswordByRecoveryCode(ResePasswordByRecorveryCodeArgument Arg);
+
+		[Authorize]
+		Task SetPassword(SetPasswordArgument Arg);
 
 		[Authorize]
 		Task Update(UserInfo User);

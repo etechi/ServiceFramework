@@ -2,6 +2,15 @@
 
 namespace SF.Clients
 {
+	public enum ClientDeviceType
+	{
+		PCDesktop,
+		PCBrowser,
+		WinXin,
+		Andriod,
+		iPhone,
+		WAP
+	}
 	public class Claim
 	{
 		public string Issuer { get; set; }
@@ -20,5 +29,6 @@ namespace SF.Clients
 		public Identity Identity { get; set; }
 		public string ClientAddress { get; set; }
 		public string ClientAgent { get; set; }
+		public ClientDeviceType DeviceType { get; set; }
 	}
 }

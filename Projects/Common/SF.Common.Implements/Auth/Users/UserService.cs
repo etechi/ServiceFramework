@@ -37,10 +37,8 @@ namespace SF.Auth.Users
 			if (User.NickName.Length > 20) throw new PublicArgumentException("昵称太长");
 			await Setting.UserStorage.UpdateAsync(User);
 		}
-
-
-
-		public async Task<UserInfo> Signin(UserSigninArgument Arg)
+		
+		public async Task<string> CreateAccessToken(CreateAccessTokenArgument Arg)
 		{
 			if (string.IsNullOrWhiteSpace(Arg.Ident))
 				throw new PublicArgumentException("请输入用户标识");
@@ -49,11 +47,15 @@ namespace SF.Auth.Users
 				throw new PublicArgumentException("请输入密码");
 
 			UserIdent ui = null;
+			IUserIdentProvider identProvider=null;
 			foreach(var ip in Setting.SigninIdentProviders.Value)
 			{
 				ui =await ip.Find(Arg.Ident,null);
-				if (ui!=null)
+				if (ui != null)
+				{
+					identProvider = ip;
 					break;
+				}
 			}
 			if (ui==null)
 				throw new PublicArgumentException("用户或密码错误！");
@@ -71,17 +73,58 @@ namespace SF.Auth.Users
 				throw new PublicArgumentException("用户或密码错误!");
 			}
 
-			var user =await Setting.UserStorage.SigninSuccess(
+			await Setting.UserStorage.SigninSuccess(
 				ui.UserId, 
 				Setting.AccessInfo.Value.Value
 				);
-			await Setting.AuthSessionProvider.Value.BindUser(user);
-			return user;
-		}
 
+			return await CreateAccessToken(ui.UserId,passwordHash);
+
+		}
+		async Task<string> CreateAccessToken(long UserId,string PasswordHash,int Expires=6*60)
+		{
+			return (await Setting.DataProtector.Value.Encrypt(
+				"用户访问令牌",
+				BitConverter.GetBytes(UserId),
+				Setting.TimeService.Value.Now.AddSeconds(Expires),
+				PasswordHash.UTF8Bytes()
+				)).Base64();
+		}
+		public async Task<UserSession> Signin(string AccessToken)
+		{
+			if (string.IsNullOrWhiteSpace(AccessToken))
+				throw new PublicArgumentException("请输入用户访问令牌");
+
+			var uid=BitConverter.ToInt64(await Setting.DataProtector.Value.Decrypt(
+				"用户访问令牌",
+				AccessToken.Base64(),
+				Setting.TimeService.Value.Now,
+				async (bytes)=>
+				{
+					var tuid = BitConverter.ToInt64(bytes, 0);
+					return (
+						await Setting.UserStorage.GetPasswordHash(tuid, false)
+					).UTF8Bytes();
+				}),0);
+
+			var user = await Setting.UserStorage.FindById(uid);
+			var sid = await Setting.UserSessionStorage.Value.Create(
+				user.Type,
+				uid,
+				Setting.AccessInfo.Value.Value
+				);
+			var sess = new UserSession
+			{
+				Id = sid,
+				User = user
+			};
+
+			await Setting.AuthSessionProvider.Value.BindSession(sess);
+			return sess;
+		}
 		public Task Signout()
 		{
-			return Setting.AuthSessionProvider.Value.UnbindUser();
+			return Setting.AuthSessionProvider.Value.UnbindSession();
 		}
 
 		public async Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg)
@@ -111,7 +154,7 @@ namespace SF.Auth.Users
 			if (Code != Ident)
 				throw new PublicArgumentException("验证码有误，请重新输入");
 		}
-		public async Task<UserInfo> Signup(UserSignupArgument Arg)
+		public async Task<string> Signup(UserSignupArgument Arg)
 		{
 			if(string.IsNullOrWhiteSpace(Arg.Ident))
 				throw new ArgumentException("请输入用户标识");
@@ -145,12 +188,12 @@ namespace SF.Auth.Users
 
 			if (string.IsNullOrWhiteSpace(Arg.Password))
 				throw new PublicArgumentException("请输入密码");
-
-			var user=await Setting.UserStorage.Create(
+			var passwordHash = Setting.PasswordHasher.Value.Hash(Arg.Password);
+			await Setting.UserStorage.Create(
 				new UserCreateArgument
 				{
 					AccessInfo = Setting.AccessInfo.Value.Value,
-					PasswordHash = Setting.PasswordHasher.Value.Hash(Arg.Password),
+					PasswordHash = passwordHash,
 					SecurityStamp=Guid.NewGuid().ToString("N"),
 					User = new UserInfo
 					{
@@ -161,8 +204,7 @@ namespace SF.Auth.Users
 						Sex = Arg.Sex
 					}
 				});
-			await Setting.AuthSessionProvider.Value.BindUser(user);
-			return user;
+			return await CreateAccessToken(uid, passwordHash);
 		}
 		
 		public Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg)
@@ -170,7 +212,7 @@ namespace SF.Auth.Users
 			throw new NotImplementedException();
 		}
 
-		public async Task ResetPasswordByRecoveryCode(ResePasswordByRecorveryCodeArgument Arg)
+		public async Task<string> ResetPasswordByRecoveryCode(ResePasswordByRecorveryCodeArgument Arg)
 		{
 			if (string.IsNullOrWhiteSpace(Arg.IdentProviderId))
 				throw new ArgumentException("缺少用户标识类型");
@@ -181,15 +223,14 @@ namespace SF.Auth.Users
 			var ui = await Setting.SignupIdentProvider.Value.Find(Arg.Ident,null);
 			if (ui == null)
 				throw new PublicArgumentException("找不到指定的用户");
-
+			var passwordHash = Setting.PasswordHasher.Value.Hash(Arg.NewPassword);
 			await Setting.UserStorage.SetPasswordHash(
 				ui.UserId, 
-				Setting.PasswordHasher.Value.Hash(Arg.NewPassword),
+				passwordHash,
 				Guid.NewGuid().ToString("N")
 				);
+			return await CreateAccessToken(ui.UserId, passwordHash);
 
-			var user = await Setting.UserStorage.FindById(ui.UserId);
-			await Setting.AuthSessionProvider.Value.BindUser(user);
 		}
 
 		public async Task SetPassword(SetPasswordArgument Arg)

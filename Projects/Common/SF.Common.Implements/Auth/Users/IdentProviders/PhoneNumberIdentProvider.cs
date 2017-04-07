@@ -16,12 +16,12 @@ namespace SF.Auth.Users.IdentProviders
 	
 		public override Task<string> SendMessage(string Ident, string Title, string Message, string TrackIdent)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 
 		public override Task<string> Verify(string Ident)
 		{
-			throw new NotImplementedException();
+			return null;
 		}
 	}
 }

@@ -61,9 +61,9 @@ namespace SF.Auth.Users
 				});
 		}
 
-		async Task<UserInfo> IUserStorage.Create(UserCreateArgument Arg)
+		async Task<long> IUserStorage.Create(UserCreateArgument Arg)
 		{
-			var id=await CreateAsync(new TUserEditable
+			return await CreateAsync(new TUserEditable
 			{
 				NickName =Arg.User.NickName,
 				Icon=Arg.User.Icon,
@@ -71,8 +71,6 @@ namespace SF.Auth.Users
 				Sex =Arg.User.Sex ??SexType.Unknown,
 				Type =Arg.User.Type
 			});
-			Arg.User.Id = id;
-			return Arg.User;
 		}
 
 		Task<string> IUserStorage.GetPasswordHash(long UserId, bool ForSignin)
@@ -128,7 +126,7 @@ namespace SF.Auth.Users
 
 	
 
-		async Task<UserInfo> IUserStorage.SigninSuccess(long UserId, AccessInfo AccessInfo)
+		async Task IUserStorage.SigninSuccess(long UserId, AccessInfo AccessInfo)
 		{
 			var re = await DataSet.Update(
 				UserId,
@@ -141,15 +139,6 @@ namespace SF.Auth.Users
 					e.LastSigninTime = TimeService.Now;
 				}
 				);
-			return new UserInfo
-			{
-				Icon = re.Icon,
-				Id = re.Id,
-				Image = re.Image,
-				NickName = re.NickName,
-				Sex = re.Sex,
-				Type = re.UserType
-			};
 		}
 
 		async Task IUserStorage.SigninFailed(long UserId, int LockoutFailedCount, TimeSpan LockoutTime, AccessInfo AccessInfo)

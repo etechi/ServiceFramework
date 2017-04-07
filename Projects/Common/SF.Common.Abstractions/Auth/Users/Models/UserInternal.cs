@@ -3,7 +3,7 @@ using System;
 
 namespace SF.Auth.Users
 {
-	public class UserInternal : UserInfo,IObjectWithId<long>
+	public class UserInternal : UserInfo
     {
 		public string UserName { get; set; }
 		public DateTime CreatedTime { get; set; }
