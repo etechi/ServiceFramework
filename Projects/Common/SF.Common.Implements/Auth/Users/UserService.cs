@@ -3,11 +3,16 @@ using SF.Data;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SF.Auth.Users.Models;
+using SF.Auth.Passport.Internals;
+using SF.Auth.Passport.Models;
+using SF.Auth.Users.Internals;
 
 namespace SF.Auth.Users
 {
 	public class UserService: 
-		IUserService
+		IUserService,
+		ISigninProvider
 	{
 		UserServiceSetting Setting { get; }
 		public UserService(UserServiceSetting Setting)
@@ -18,7 +23,7 @@ namespace SF.Auth.Users
 		
 		public async Task<UserInfo> GetCurUser()
 		{
-			var uid = await Setting.AuthSessionProvider.Value.GetCurrentUserId();
+			var uid = await Setting.AuthSessionProvider.Value.GetCurUserId();
 			if (uid == null)
 				throw new PublicInvalidOperationException("没有登录");
 			return await Setting.UserStorage.FindById(uid.Value);
@@ -26,7 +31,7 @@ namespace SF.Auth.Users
 
 		public async Task Update(UserInfo User)
 		{
-			var uid = await Setting.AuthSessionProvider.Value.GetCurrentUserId();
+			var uid = (await Setting.AuthSessionProvider.Value.GetUserSession())?.User?.Id;
 			if (uid == null)
 				throw new PublicInvalidOperationException("没有登录");
 			if (uid.Value != User.Id)
@@ -90,38 +95,7 @@ namespace SF.Auth.Users
 				PasswordHash.UTF8Bytes()
 				)).Base64();
 		}
-		public async Task<UserSession> Signin(string AccessToken)
-		{
-			if (string.IsNullOrWhiteSpace(AccessToken))
-				throw new PublicArgumentException("请输入用户访问令牌");
-
-			var uid=BitConverter.ToInt64(await Setting.DataProtector.Value.Decrypt(
-				"用户访问令牌",
-				AccessToken.Base64(),
-				Setting.TimeService.Value.Now,
-				async (bytes)=>
-				{
-					var tuid = BitConverter.ToInt64(bytes, 0);
-					return (
-						await Setting.UserStorage.GetPasswordHash(tuid, false)
-					).UTF8Bytes();
-				}),0);
-
-			var user = await Setting.UserStorage.FindById(uid);
-			var sid = await Setting.UserSessionStorage.Value.Create(
-				user.Type,
-				uid,
-				Setting.AccessInfo.Value.Value
-				);
-			var sess = new UserSession
-			{
-				Id = sid,
-				User = user
-			};
-
-			await Setting.AuthSessionProvider.Value.BindSession(sess);
-			return sess;
-		}
+		
 		public Task Signout()
 		{
 			return Setting.AuthSessionProvider.Value.UnbindSession();
@@ -182,7 +156,7 @@ namespace SF.Auth.Users
 			if(ui.UserId!=uid)
 				throw new PublicArgumentException($"您输入的{Setting.SignupIdentProvider.Value.Name}已被注册");
 
-			var nickName = Arg.NickName?.Trim();
+			var nickName = Arg.UserInfo?.NickName?.Trim();
 			if (nickName == null)
 				nickName = "U"+new Random().Next(1000000).ToString().PadLeft(6, '0');
 
@@ -198,10 +172,10 @@ namespace SF.Auth.Users
 					User = new UserInfo
 					{
 						Id=uid,
-						Icon = Arg.Icon,
-						Image = Arg.Image,
+						Icon = Arg.UserInfo?.Icon,
+						Image = Arg.UserInfo?.Image,
 						NickName = nickName,
-						Sex = Arg.Sex
+						Sex = Arg.UserInfo?.Sex
 					}
 				});
 			return await CreateAccessToken(uid, passwordHash);
@@ -240,7 +214,7 @@ namespace SF.Auth.Users
 			if(string.IsNullOrWhiteSpace(Arg.NewPassword))
 				throw new PublicArgumentException("需要输入新密码");
 
-			var uid = await Setting.AuthSessionProvider.Value.GetCurrentUserId();
+			var uid = await Setting.AuthSessionProvider.Value.GetCurUserId();
 			if (uid == null)
 				throw new PublicInvalidOperationException("没有登录");
 
@@ -256,5 +230,37 @@ namespace SF.Auth.Users
 				);
 		}
 
+		Task<string> ISigninProvider.CreateAccessToken(Passport.Internals.CreateAccessTokenArgument Argument)
+		{
+			return CreateAccessToken(new CreateAccessTokenArgument
+			{
+				Ident = Argument.Ident,
+				Password = Argument.Password,
+			});
+		}
+
+		async Task<long> ISigninProvider.ParseAccessToken(string AccessToken)
+		{
+			if (string.IsNullOrWhiteSpace(AccessToken))
+				throw new PublicArgumentException("请输入用户访问令牌");
+
+			var uid = BitConverter.ToInt64(await Setting.DataProtector.Value.Decrypt(
+				"用户访问令牌",
+				AccessToken.Base64(),
+				Setting.TimeService.Value.Now,
+				async (bytes) =>
+				{
+					var tuid = BitConverter.ToInt64(bytes, 0);
+					return (
+						await Setting.UserStorage.GetPasswordHash(tuid, false)
+					).UTF8Bytes();
+				}), 0);
+			return uid;
+		}
+
+		async Task<UserDesc> ISigninProvider.GetUserDesc(long UserId)
+		{
+			return await Setting.UserStorage.FindById(UserId);
+		}
 	}
 }

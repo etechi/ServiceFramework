@@ -8,13 +8,17 @@ using System.Linq.Expressions;
 
 namespace SF.Core.ManagedServices.Runtime
 {
-	class ServiceCreateParameterTemplate : IServiceCreateParameterTemplate,ManagedServices.IServiceInstanceIdent
+	class ServiceCreateParameterTemplate : IServiceCreateParameterTemplate,ManagedServices.IServiceInstanceMeta
 	{
 		public IReadOnlyList<object> Args { get; private set; }
 		public IReadOnlyDictionary<string, string> ServiceIdents { get; private set; }
 		public string ServiceInstanceIdent { get; private set; }
-		public ManagedServices.IServiceInstanceIdent GetServiceInstanceIdent() => this;
-		string ManagedServices.IServiceInstanceIdent.Value => ServiceInstanceIdent;
+		public ManagedServices.IServiceInstanceMeta GetServiceInstanceIdent() => this;
+		string ManagedServices.IServiceInstanceMeta.Ident => ServiceInstanceIdent;
+
+		long IServiceInstanceMeta.AppId => throw new NotImplementedException();
+
+		long IServiceInstanceMeta.FeatureId => throw new NotImplementedException();
 
 		class ServiceConverter : JsonConverter
 		{
@@ -177,9 +181,13 @@ namespace SF.Core.ManagedServices.Runtime
 			if (jr.TokenType == JsonToken.StartArray || jr.TokenType == JsonToken.StartConstructor || jr.TokenType == JsonToken.StartObject)
 				jr.Skip();
 		}
-		class ServiceIdent : ManagedServices.IServiceInstanceIdent
+		class ServiceIdent : ManagedServices.IServiceInstanceMeta
 		{
-			public string Value { get; set; }
+			public string Ident { get; set; }
+
+			public long AppId { get; set; }
+
+			public long FeatureId { get; set; }
 		}
 		public static ServiceCreateParameterTemplate Load(
 			ConstructorInfo ci,

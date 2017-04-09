@@ -33,6 +33,7 @@
     <ProjectReference Include="..\SF.Extensions\SF.Extensions.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Core\AppServices\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 </Project>

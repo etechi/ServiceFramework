@@ -9,15 +9,15 @@ namespace SF.Services.TextMessages
 	public class SimPhoneMessageService : IPhoneMessageService
 	{
 		ITextMessageLogger Logger { get; }
-		Option<IServiceInstanceIdent> InstanceIdent { get; }
-		public SimPhoneMessageService(ITextMessageLogger Logger, Option<IServiceInstanceIdent> InstanceIdent)
+		Option<IServiceInstanceMeta> InstanceIdent { get; }
+		public SimPhoneMessageService(ITextMessageLogger Logger, Option<IServiceInstanceMeta> InstanceIdent)
 		{
 			this.Logger = Logger;
 			this.InstanceIdent = InstanceIdent;
 		}
 		public async Task<long> Send(string target, Message message)
 		{
-			var mid=await Logger.BeginSend(InstanceIdent.ValueOrDefault()?.Value, target, message);
+			var mid=await Logger.BeginSend(InstanceIdent.ValueOrDefault()?.Ident, target, message);
 			var eid = Guid.NewGuid().ToString("N");
 			await Logger.EndSend(mid, eid, null);
 			return mid;

@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using SF.Auth.Users.Models;
+using System.Threading.Tasks;
 
-namespace SF.Auth.Users
+namespace SF.Auth.Users.Internals
 {
     public interface IUserIdentStorage
     {

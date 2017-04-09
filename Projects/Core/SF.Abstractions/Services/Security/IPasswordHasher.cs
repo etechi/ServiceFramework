@@ -1,4 +1,4 @@
-﻿namespace SF.Auth.Users
+﻿namespace SF.Security
 {
 	public interface IPasswordHasher
 	{

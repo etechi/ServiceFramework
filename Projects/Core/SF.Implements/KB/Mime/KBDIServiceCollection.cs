@@ -15,8 +15,8 @@ using SF.Services.Media;
 using SF.Core.ManagedServices;
 using SF.Core.ManagedServices.Admin;
 using SF.Core.Hosting;
-using SF.Services.KB.Mime;
-using SF.Services.KB.Mime.Providers;
+using SF.KB.Mime;
+using SF.KB.Mime.Providers;
 
 namespace SF.Core.DI
 {

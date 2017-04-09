@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
+using SF.KB;
+using SF.Auth.Users.Models;
 
 namespace SF.Auth.Users.DataModels
 {
@@ -16,6 +18,14 @@ namespace SF.Auth.Users.DataModels
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		[Comment("ID")]
 		public long Id { get; set; }
+
+		[Index]
+		[Comment("应用ID")]
+		public long AppId { get; set; }
+
+		[Index]
+		[Comment("功能ID")]
+		public long FeatureId { get; set; }
 
 		[MaxLength(100)]
 		[Comment("用户名")]

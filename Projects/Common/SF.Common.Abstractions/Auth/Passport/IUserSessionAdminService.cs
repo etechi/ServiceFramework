@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SF.Auth.Passport.Models;
 
-namespace SF.Auth.Users
+namespace SF.Auth.Passport
 {
 	public class UserSessionQueryArgument : Data.Entity.IQueryArgument<long>
 	{

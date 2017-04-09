@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using SF.Clients;
 using SF.Data.Entity;
 using SF.Core.Times;
-using SF.Auth.Users.DataModels;
+using SF.Auth.Users.Internals;
+using SF.Auth.Users.Models;
 
 namespace SF.Auth.Users
 {

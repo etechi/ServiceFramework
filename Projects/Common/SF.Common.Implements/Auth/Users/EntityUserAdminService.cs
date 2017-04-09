@@ -7,16 +7,17 @@ using SF.Clients;
 using SF.Data.Entity;
 using SF.Core.Times;
 using SF.Auth.Users.DataModels;
+using SF.Auth.Users.Models;
+using SF.Auth.Users.Internals;
+using SF.KB;
 
 namespace SF.Auth.Users
 {
-	public class EntityUserAdminService<TDataModel,TUserInternal,TUserEditable,TUserQueryArgument> :
-		SF.Data.Entity.EntityManager<long,TUserInternal, TUserQueryArgument,TUserEditable,TDataModel>,
+	public class EntityUserAdminService<TDataModel> :
+		SF.Data.Entity.EntityManager<long,UserInternal, UserQueryArgument,UserEditable, TDataModel>,
+		IUserAdminService,
 		IUserStorage
 		where TDataModel:DataModels.User,new()
-		where TUserInternal:UserInternal,new()
-		where TUserEditable:UserEditable,new()
-		where TUserQueryArgument:UserQueryArgument
 	{
 		protected override PagingQueryBuilder<TDataModel> PagingQueryBuilder => new PagingQueryBuilder<TDataModel>(
 				"time",
@@ -39,7 +40,7 @@ namespace SF.Auth.Users
 				Image = u.Image,
 				NickName = u.NickName,
 				Sex = u.Sex,
-				Type = u.Type
+				//Type = u.Type
 			};
 		}
 		async Task<UserInfo> IUserStorage.FindById(long UserId)
@@ -63,13 +64,13 @@ namespace SF.Auth.Users
 
 		async Task<long> IUserStorage.Create(UserCreateArgument Arg)
 		{
-			return await CreateAsync(new TUserEditable
+			return await CreateAsync(new UserEditable
 			{
 				NickName =Arg.User.NickName,
 				Icon=Arg.User.Icon,
 				Image=Arg.User.Image,
 				Sex =Arg.User.Sex ??SexType.Unknown,
-				Type =Arg.User.Type
+				//Type =Arg.User.Type
 			});
 		}
 
@@ -119,7 +120,7 @@ namespace SF.Auth.Users
 		}
 
 
-		protected override IContextQueryable<TDataModel> OnBuildQuery(IContextQueryable<TDataModel> Query, TUserQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TDataModel> OnBuildQuery(IContextQueryable<TDataModel> Query, UserQueryArgument Arg, Paging paging)
 		{
 			return Query.Filter(Arg.NickName, e => e.NickName);
 		}
@@ -156,7 +157,7 @@ namespace SF.Auth.Users
 	}
 
 	public class EntityUserAdminService :
-		EntityUserAdminService<DataModels.User, UserInternal, UserEditable, UserQueryArgument>
+		EntityUserAdminService<DataModels.User>
 	{
 		public EntityUserAdminService(IDataSet<User> DataSet, ITimeService TimeService) : base(DataSet, TimeService)
 		{

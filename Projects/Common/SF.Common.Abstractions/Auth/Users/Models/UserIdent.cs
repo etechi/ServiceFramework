@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SF.Auth.Users
+namespace SF.Auth.Users.Models
 {
 	public class UserIdent
 	{

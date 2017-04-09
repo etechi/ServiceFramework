@@ -16,6 +16,15 @@ namespace SF.Core.ManagedServices.Admin.DataModels
 		[Required]
 		public string Id { get; set; }
 
+		[Comment("应用ID")]
+		[Index]
+		public long AppId { get; set; }
+
+		[Comment("功能ID")]
+		[Index]
+		public long FeatureId { get; set; }
+
+
 		[Comment("服务实例名称")]
 		[MaxLength(100)]
 		[Required]

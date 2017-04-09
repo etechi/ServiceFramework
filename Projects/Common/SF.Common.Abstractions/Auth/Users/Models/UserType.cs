@@ -1,4 +1,4 @@
-﻿namespace SF.Auth.Users
+﻿namespace SF.Auth.Users.Models
 {
 	public enum UserType
     {

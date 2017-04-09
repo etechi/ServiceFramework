@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Services.KB.Mime
+namespace SF.KB.Mime
 {
     public interface IMimeResolver
     {

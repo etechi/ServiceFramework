@@ -8,6 +8,8 @@ using SF.Metadata;
 using SF.Clients;
 using SF.Security;
 using SF.Core.Times;
+using SF.Auth.Users.Internals;
+using SF.Auth.Passport.Internals;
 
 namespace SF.Auth.Users
 {
@@ -16,10 +18,9 @@ namespace SF.Auth.Users
 	{
 		[Comment(Name = "注册需要验证码")]
 		public bool SignupVerifyCodeRequired { get; set; } = true;
-		public Lazy<IAuthSessionProvider> AuthSessionProvider { get; set; }
 		public Lazy<IIdentGenerator> IdentGenerator { get; set; }
 		public IUserStorage UserStorage { get; set; }
-		public Lazy<IUserSessionStorage> UserSessionStorage { get; set; }
+		public Lazy<IAuthSessionProvider> AuthSessionProvider { get; set; }
 		public Lazy<IUserIdentProvider> SignupIdentProvider { get; set; }
 		public Lazy<IUserIdentProvider[]> SigninIdentProviders { get; set; }
 		public Lazy<IClientAccessInfo> AccessInfo { get; set; }

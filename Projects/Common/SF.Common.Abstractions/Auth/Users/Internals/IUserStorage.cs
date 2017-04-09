@@ -1,7 +1,9 @@
-﻿using System;
+﻿using SF.Auth.Passport;
+using SF.Auth.Users.Models;
+using System;
 using System.Threading.Tasks;
 
-namespace SF.Auth.Users
+namespace SF.Auth.Users.Internals
 {
 	public class UserCreateArgument
 	{

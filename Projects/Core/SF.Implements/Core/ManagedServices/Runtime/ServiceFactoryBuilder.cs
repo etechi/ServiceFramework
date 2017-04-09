@@ -337,7 +337,7 @@ namespace SF.Core.ManagedServices.Runtime
 						return ManagedServiceResolveExpression(Type, PropPathExpr, rType);
 					else if (svcType == Runtime.ServiceType.Normal)
 						return ServiceProviderResolveExpression(Type, rType);
-					else if (Type == typeof(ManagedServices.IServiceInstanceIdent))
+					else if (Type == typeof(ManagedServices.IServiceInstanceMeta))
 						return GetServiceInstanceIdentExpression();
 				}
 
@@ -371,7 +371,7 @@ namespace SF.Core.ManagedServices.Runtime
 					return ServiceProviderResolveExpression(pi.ParameterType, resolveType);
 				else if (svcType == Runtime.ServiceType.Managed)
 					return ManagedServiceResolveExpression(pi.ParameterType, Expression.Constant(pi.Name), resolveType);
-				else if (pi.ParameterType == typeof(ManagedServices.IServiceInstanceIdent))
+				else if (pi.ParameterType == typeof(ManagedServices.IServiceInstanceMeta))
 					return GetServiceInstanceIdentExpression();
 				else
 				{

@@ -5,6 +5,6 @@ namespace SF.Core.ManagedServices.Runtime
 	{
 		object GetArgument(int Index);
 		string GetServiceIdent(string Path);
-		ManagedServices.IServiceInstanceIdent GetServiceInstanceIdent();
+		ManagedServices.IServiceInstanceMeta GetServiceInstanceIdent();
 	}
 }

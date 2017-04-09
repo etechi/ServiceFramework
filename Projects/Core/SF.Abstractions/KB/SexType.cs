@@ -1,7 +1,7 @@
 ﻿
 using SF.Metadata;
 
-namespace SF.Auth.Users
+namespace SF.KB
 {
 	public enum SexType
     {

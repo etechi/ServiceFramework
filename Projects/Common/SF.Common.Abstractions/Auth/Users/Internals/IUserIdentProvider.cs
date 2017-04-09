@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-
-namespace SF.Auth.Users
+using SF.Auth.Users.Models;
+namespace SF.Auth.Users.Internals
 {
     public interface IUserIdentProvider
     {

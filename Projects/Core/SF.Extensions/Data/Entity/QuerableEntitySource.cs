@@ -15,6 +15,10 @@ namespace SF.Data.Entity
 		public QuerableEntitySource(IDataSet<TModel> DataSet) : base(DataSet)
 		{
 		}
+		protected override Task<TPublic[]> OnPreparePublics(TPublic[] Items)
+		{
+			return Task.FromResult(Items);
+		}
 	}
 	public abstract class QuerableEntitySource<TKey, TPublic, TTemp, TQueryArgument, TModel> :
 		EntitySource<TKey, TPublic, TTemp, TModel>,

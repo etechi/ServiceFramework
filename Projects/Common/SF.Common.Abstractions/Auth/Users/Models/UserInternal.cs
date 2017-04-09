@@ -1,7 +1,8 @@
 ﻿using SF.Data;
+using SF.KB;
 using System;
 
-namespace SF.Auth.Users
+namespace SF.Auth.Users.Models
 {
 	public class UserInternal : UserInfo
     {
@@ -9,6 +10,8 @@ namespace SF.Auth.Users
 		public DateTime CreatedTime { get; set; }
 		public DateTime? LastSigninTime { get; set; }
 		public int SigninCount { get; set; }
-    }
+		//public UserType Type { get; set; }
+
+	}
 }
 

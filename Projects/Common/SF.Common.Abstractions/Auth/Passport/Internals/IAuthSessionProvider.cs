@@ -1,11 +1,10 @@
 ﻿using System.Threading.Tasks;
-
-namespace SF.Auth.Users
+using SF.Auth.Passport.Models;
+namespace SF.Auth.Passport.Internals
 {
 	public interface IAuthSessionProvider
     {
-		Task<long?> GetCurrentUserId();
-		Task<long?> GetCurrentSessionId();
+		Task<UserSession> GetUserSession();
 		Task BindSession(UserSession Session);
 		Task UnbindSession();
 	}

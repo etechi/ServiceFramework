@@ -1,4 +1,6 @@
-﻿using SF.Metadata;
+﻿using SF.Auth.Users.Models;
+using SF.KB;
+using SF.Metadata;
 using System.Threading.Tasks;
 
 namespace SF.Auth.Users
@@ -15,17 +17,14 @@ namespace SF.Auth.Users
 		public string Password { get; set; }
 		public int Expires { get; set; }
 	}
-
+	
 	public class UserSignupArgument
 	{
-		public string Icon { get; set; }
-		public string Image { get; set; }
-		public SexType Sex { get; set; }
 		public string Ident { get; set; }
-		public string NickName { get; set; }
 		public string Password { get; set; }
 		public string VerifyCode { get; set; }
 		public string CaptchaCode { get; set; }
+		public UserInfo UserInfo { get; set; }
 	}
 	public class SetPasswordArgument
 	{
@@ -48,12 +47,6 @@ namespace SF.Auth.Users
 	[NetworkService]
 	public interface IUserService
     {
-		Task<UserSession> Signin(string AccessToken);
-		Task Signout();
-
-		[Authorize]
-		Task<UserInfo> GetCurUser();
-
 		Task<string> CreateAccessToken(CreateAccessTokenArgument Arg);
 
 		Task<string> Signup(UserSignupArgument Arg);
@@ -66,7 +59,7 @@ namespace SF.Auth.Users
 		Task SetPassword(SetPasswordArgument Arg);
 
 		[Authorize]
-		Task Update(UserInfo User);
+		Task Update(UserInfo Arg);
     }
 
 }

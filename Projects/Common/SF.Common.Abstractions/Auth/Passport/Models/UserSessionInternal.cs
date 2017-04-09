@@ -1,17 +1,14 @@
 ﻿using SF.Data;
+using SF.KB;
 using System;
 
-namespace SF.Auth.Users
+namespace SF.Auth.Passport.Models
 {
 	public class UserSessionInternal : IObjectWithId<long>
     {
         public long Id { get; set; }
 		public long UserId { get; set; }
         public string NickName { get; set; }
-        public string Icon { get; set; }
-        public string Image { get; set; }
-        public SexType? Sex { get; set; }
-        public UserType Type { get; set; }
 
 		public DateTime CreatedTime { get; set; }
 		public DateTime LastActiveCount { get; set; }

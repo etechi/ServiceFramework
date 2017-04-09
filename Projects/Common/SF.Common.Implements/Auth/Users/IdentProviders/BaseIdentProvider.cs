@@ -3,6 +3,8 @@ using SF.Data;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using SF.Auth.Users.Internals;
+using SF.Auth.Users.Models;
 
 namespace SF.Auth.Users.IdentProviders
 {

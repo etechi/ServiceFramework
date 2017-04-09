@@ -7,9 +7,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
 using SF.Clients;
-using SF.Auth.Users.Models;
 
-namespace SF.Auth.Users.DataModels
+namespace SF.Auth.Passport.DataModels
 {
 	[Table("SysUserSession")]
 	public class UserSession: IObjectWithId<long>
@@ -49,9 +48,11 @@ namespace SF.Auth.Users.DataModels
 		[Comment("客户端代理")]
 		public string ClientAgent { get; set; }
 
-		[Index]
-		[Comment("用户类型")]
-		public UserType UserType { get; set; }
+		//[Index]
+		//[Comment("用户类型")]
+		//public UserType UserType { get; set; }
+		[Comment("过期时间")]
+		public DateTime? Expires { get; set; }
 
 	}
 }
