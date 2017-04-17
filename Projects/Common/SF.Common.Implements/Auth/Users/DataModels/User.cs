@@ -7,9 +7,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
 using SF.KB;
-using SF.Auth.Users.Models;
+using SF.Auth.Identity.Models;
 
-namespace SF.Auth.Users.DataModels
+namespace SF.Auth.Identity.DataModels
 {
 	[Table("SysUser")]
 	public class User: IObjectWithId<long>
@@ -77,7 +77,6 @@ namespace SF.Auth.Users.DataModels
 		[Comment("最后登录时间")]
 		public virtual DateTime? LastSigninTime { get; set; }
 
-
 		[Comment("注册设备")]
 		public string SignupDeviceType { get; set; }
 
@@ -106,7 +105,8 @@ namespace SF.Auth.Users.DataModels
 
 		[Index(Order = 1)]
 		[Comment("注册标识类型")]
-		public int SignupIdentType { get; set; }
+		[MaxLength(50)]
+		public string SignupIdentProvider { get; set; }
 
 		[MaxLength(200)]
 		[Index(Order = 2)]

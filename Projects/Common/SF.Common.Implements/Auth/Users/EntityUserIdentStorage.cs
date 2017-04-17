@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using SF.Clients;
 using SF.Data.Entity;
 using SF.Core.Times;
-using SF.Auth.Users.Internals;
-using SF.Auth.Users.Models;
+using SF.Auth.Identity.Internals;
+using SF.Auth.Identity.Models;
 
-namespace SF.Auth.Users
+namespace SF.Auth.Identity
 {
 	public class EntityUserIdentStorage<TModel> :
-		IUserIdentStorage
+		IIdentBindStorage
 		where TModel : DataModels.UserIdent, new()
 	{
 		IDataSet<TModel> DataSet { get; }
@@ -26,7 +26,7 @@ namespace SF.Auth.Users
 			this.TimeService = TimeService;
 		}
 
-		public async Task<UserIdent> FindOrBind(string Provider, string Ident, string UnionIdent, bool Confirmed, long UserId)
+		public async Task<IdentBind> FindOrBind(string Provider, string Ident, string UnionIdent, bool Confirmed, long UserId)
 		{
 			TModel exist;
 			long? existUserId;
@@ -55,21 +55,21 @@ namespace SF.Auth.Users
 				});
 				await DataSet.Context.SaveChangesAsync();
 			}
-			return EntityMapper.Map<TModel, UserIdent>(exist);
+			return EntityMapper.Map<TModel, IdentBind>(exist);
 
 		}
 
-		public async Task<UserIdent> Find(string Provider, string Ident, string UnionIdent)
+		public async Task<IdentBind> Find(string Provider, string Ident, string UnionIdent)
 		{
 			if (UnionIdent != null)
 				return await DataSet.QuerySingleAsync(
 					i => i.Provider == Provider && i.UnionIdent == UnionIdent && i.Ident == Ident,
-					EntityMapper.Map<TModel, UserIdent>()
+					EntityMapper.Map<TModel, IdentBind>()
 					);
 			else
 				return await DataSet.QuerySingleAsync(
 					i => i.Provider == Provider && i.Ident == Ident,
-					EntityMapper.Map<TModel, UserIdent>()
+					EntityMapper.Map<TModel, IdentBind>()
 					);
 		}
 
@@ -102,11 +102,11 @@ namespace SF.Auth.Users
 				});
 		}
 
-		public async Task<UserIdent[]> GetIdents(string Provider, long UserId)
+		public async Task<IdentBind[]> GetIdents(string Provider, long UserId)
 		{
 			return await DataSet.QueryAsync(
 				i => i.Provider == Provider && i.UserId == UserId,
-				EntityMapper.Map<TModel, UserIdent>()
+				EntityMapper.Map<TModel, IdentBind>()
 				);
 		}
 	}

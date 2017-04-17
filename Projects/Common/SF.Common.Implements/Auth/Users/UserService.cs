@@ -3,12 +3,12 @@ using SF.Data;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Auth.Users.Models;
+using SF.Auth.Identity.Models;
 using SF.Auth.Passport.Internals;
 using SF.Auth.Passport.Models;
-using SF.Auth.Users.Internals;
+using SF.Auth.Identity.Internals;
 
-namespace SF.Auth.Users
+namespace SF.Auth.Identity
 {
 	public class UserService: 
 		IUserService,
@@ -51,8 +51,8 @@ namespace SF.Auth.Users
 			if (string.IsNullOrWhiteSpace(Arg.Password))
 				throw new PublicArgumentException("请输入密码");
 
-			UserIdent ui = null;
-			IUserIdentProvider identProvider=null;
+			IdentBind ui = null;
+			IIdentBindProvider identProvider=null;
 			foreach(var ip in Setting.SigninIdentProviders.Value)
 			{
 				ui =await ip.Find(Arg.Ident,null);
@@ -105,14 +105,14 @@ namespace SF.Auth.Users
 		{
 			if (string.IsNullOrWhiteSpace(Arg.Ident))
 				throw new ArgumentException($"需要提供{Setting.SignupIdentProvider.Value.Name}");
-			var msg = await Setting.SignupIdentProvider.Value.Verify(Arg.Ident);
+			var msg = await Setting.SignupIdentProvider.Value.VerifyFormat(Arg.Ident);
 			if (msg != null)
 				throw new ArgumentException(msg);
 
-			if (!await Setting.SignupIdentProvider.Value.CanSendMessage())
+			if (!await Setting.SignupIdentProvider.Value.Confirmable())
 				throw new NotSupportedException();
 
-			await Setting.SignupIdentProvider.Value.SendMessage(
+			await Setting.SignupIdentProvider.Value.SendConfirmCode(
 				Arg.Ident,
 				"注册",
 				"注册用户",
@@ -132,11 +132,11 @@ namespace SF.Auth.Users
 		{
 			if(string.IsNullOrWhiteSpace(Arg.Ident))
 				throw new ArgumentException("请输入用户标识");
-			var msg = await Setting.SignupIdentProvider.Value.Verify(Arg.Ident);
+			var msg = await Setting.SignupIdentProvider.Value.VerifyFormat(Arg.Ident);
 			if (msg != null)
 				throw new ArgumentException(msg);
 
-			var canSendMessage = await Setting.SignupIdentProvider.Value.CanSendMessage();
+			var canSendMessage = await Setting.SignupIdentProvider.Value.Confirmable();
 			if (canSendMessage)
 				CheckVerifyCode(Arg.Ident, Arg.VerifyCode, "User.Signup");
 
@@ -164,7 +164,7 @@ namespace SF.Auth.Users
 				throw new PublicArgumentException("请输入密码");
 			var passwordHash = Setting.PasswordHasher.Value.Hash(Arg.Password);
 			await Setting.UserStorage.Create(
-				new UserCreateArgument
+				new IdentCreateArgument
 				{
 					AccessInfo = Setting.AccessInfo.Value.Value,
 					PasswordHash = passwordHash,

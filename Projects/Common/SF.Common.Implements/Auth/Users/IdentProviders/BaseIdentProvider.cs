@@ -3,16 +3,16 @@ using SF.Data;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Auth.Users.Internals;
-using SF.Auth.Users.Models;
+using SF.Auth.Identity.Internals;
+using SF.Auth.Identity.Models;
 
-namespace SF.Auth.Users.IdentProviders
+namespace SF.Auth.Identity.IdentProviders
 {
 	public abstract class BaseIdentProvider :
-		IUserIdentProvider
+		IIdentBindProvider
 	{
-		protected IUserIdentStorage IdentStorage { get; }
-		public BaseIdentProvider(IUserIdentStorage IdentStorage)
+		protected IIdentBindStorage IdentStorage { get; }
+		public BaseIdentProvider(IIdentBindStorage IdentStorage)
 		{
 			this.IdentStorage = IdentStorage;
 		}
@@ -20,16 +20,16 @@ namespace SF.Auth.Users.IdentProviders
 		public virtual Task Bind(string Ident, string UnionIdent, bool Confirmed, long UserId)
 			=> IdentStorage.Bind(Name, Ident, UnionIdent, Confirmed, UserId);
 
-		public virtual Task<bool> CanSendMessage()
+		public virtual Task<bool> Confirmable()
 			=> Task.FromResult(true);
 
-		public virtual Task<UserIdent> Find(string Ident, string UnionIdent)
+		public virtual Task<IdentBind> Find(string Ident, string UnionIdent)
 			=> IdentStorage.Find(Name, Ident, UnionIdent);
 
-		public virtual Task<UserIdent> FindOrBind(string Ident, string UnionIdent, bool Confirmed, long UserId)
+		public virtual Task<IdentBind> FindOrBind(string Ident, string UnionIdent, bool Confirmed, long UserId)
 			=> IdentStorage.FindOrBind(Name, Ident, UnionIdent, Confirmed, UserId);
 
-		public virtual Task<UserIdent[]> GetIdents(long UserId)
+		public virtual Task<IdentBind[]> GetIdents(long UserId)
 			=> IdentStorage.GetIdents(Name, UserId);
 
 		public virtual Task SetConfirmed(string Ident, bool Confirmed)
@@ -39,7 +39,7 @@ namespace SF.Auth.Users.IdentProviders
 			=> IdentStorage.Unbind(Name, Ident, UserId);
 
 		public abstract string Name { get; }
-		public abstract Task<string> Verify(string Ident);
-		public abstract Task<string> SendMessage(string Ident, string Title, string Message, string TrackIdent);
+		public abstract Task<string> VerifyFormat(string Ident);
+		public abstract Task<string> SendConfirmCode(string Ident, string Title, string Message, string TrackIdent);
 	}
 }

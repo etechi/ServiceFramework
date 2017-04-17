@@ -14,7 +14,11 @@
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Bizness\Products\" />
+    <Folder Include="Management\Documents\" />
+    <Folder Include="Management\WorkOrders\" />
     <Folder Include="Properties\" />
+    <Folder Include="Accounting\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="system.ComponentModel" Version="4.3.0" />

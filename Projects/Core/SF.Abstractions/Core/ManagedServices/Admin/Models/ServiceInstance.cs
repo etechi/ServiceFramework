@@ -6,34 +6,13 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Core.ManagedServices.Models
 {
 	[EntityObject("系统服务实例")]
-	public class ServiceInstance :IObjectWithId<string>
+	public class ServiceInstance : IObjectWithId<string>
 	{
 		[Key]
 		[Comment("ID")]
 		[TableVisible]
 		[ReadOnly(true)]
 		public string Id { get; set; }
-
-		[Comment("服务定义")]
-		[EntityIdent("系统服务定义", nameof(DeclarationName))]
-		[Required]
-		public string DeclarationId { get; set; }
-
-		[Ignore]
-		[TableVisible]
-		[Comment("服务定义")]
-		public string DeclarationName { get; set; }
-
-		[Comment("服务实现")]
-		[EntityIdent("系统服务实现", nameof(ImplementName), ScopeField = nameof(DeclarationId))]
-		[Required]
-		public string ImplementId { get; set; }
-
-		[Ignore]
-		[TableVisible]
-		[Comment("服务实现")]
-		public string ImplementName { get; set; }
-
 		[Comment("服务实例名称")]
 		[TableVisible]
 		[MaxLength(100)]
@@ -47,8 +26,6 @@ namespace SF.Core.ManagedServices.Models
 		[Comment("对象状态")]
 		[TableVisible]
 		public LogicObjectState LogicState { get; set; }
-
-
 
 
 		[Comment("服务实例标题", "用于UI显示")]
@@ -69,10 +46,34 @@ namespace SF.Core.ManagedServices.Models
 		[Comment("服务实例图片")]
 		[Image]
 		public string Image { get; set; }
+	}
+	public class ServiceInstanceInternal : ServiceInstance
+	{
+		
+		[Comment("服务定义")]
+		[EntityIdent("系统服务定义", nameof(DeclarationName))]
+		[Required]
+		public string DeclarationId { get; set; }
+
+		[Ignore]
+		[TableVisible]
+		[Comment("服务定义")]
+		public string DeclarationName { get; set; }
+
+		[Comment("服务实现")]
+		[EntityIdent("系统服务实现", nameof(ImplementName), ScopeField = nameof(DeclarationId))]
+		[Required]
+		public string ImplementId { get; set; }
+
+		[Ignore]
+		[TableVisible]
+		[Comment("服务实现")]
+		public string ImplementName { get; set; }
+
 
 	}
 
-	public class ServiceInstanceEditable : ServiceInstance
+	public class ServiceInstanceEditable : ServiceInstanceInternal
 	{
 
 		[Comment("备注",Description="内部使用")]

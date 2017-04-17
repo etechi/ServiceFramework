@@ -3,24 +3,24 @@ using SF.Data;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Auth.Users.Internals;
+using SF.Auth.Identity.Internals;
 
-namespace SF.Auth.Users.IdentProviders
+namespace SF.Auth.Identity.IdentProviders
 {
 	public class PhoneNumberUserService :
 		BaseIdentProvider
 	{
-		public PhoneNumberUserService(IUserIdentStorage IdentStorage):base(IdentStorage)
+		public PhoneNumberUserService(IIdentBindStorage IdentStorage):base(IdentStorage)
 		{
 		}
 		public override string Name => "手机号";
 	
-		public override Task<string> SendMessage(string Ident, string Title, string Message, string TrackIdent)
+		public override Task<string> SendConfirmCode(string Ident, string Title, string Message, string TrackIdent)
 		{
 			return null;
 		}
 
-		public override Task<string> Verify(string Ident)
+		public override Task<string> VerifyFormat(string Ident)
 		{
 			return null;
 		}

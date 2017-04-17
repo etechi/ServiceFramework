@@ -1,14 +1,14 @@
 ﻿using SF.Core.DI;
 using SF.Core.ManagedServices.Admin;
 
-namespace SF.Auth.Users
+namespace SF.Auth.Identity
 {
 	public static class UsersDIExtension
 	{
 		public static IDIServiceCollection UseUsers(
 			this IDIServiceCollection sc,
 			string TablePrefix = null
-			) => UseUsers<DataModels.User, DataModels.UserIdent, Models.UserInternal,Models.UserEditable,UserQueryArgument>(
+			) => UseUsers<DataModels.User, DataModels.UserIdent, Models.MemberInternal,Models.UserEditable,UserQueryArgument>(
 				sc,
 				TablePrefix);
 
@@ -19,7 +19,7 @@ namespace SF.Auth.Users
 			)
 			where TUser : DataModels.User,new()
 			where TUserIdent : DataModels.UserIdent,new()
-			where TUserInternal : Models.UserInternal,new()
+			where TUserInternal : Models.MemberInternal,new()
 			where TUserEditable : Models.UserEditable,new()
 		{
 			sc.Normal().UseDataModules<
@@ -28,7 +28,7 @@ namespace SF.Auth.Users
 				>(TablePrefix);
 
 			sc.AddScoped<IUserService, UserService>();
-			sc.AddScoped<IUserAdminService, EntityUserAdminService<TUser>>();
+			sc.AddScoped<IMemberManagementService, EntityUserAdminService<TUser>>();
 
 			
 			return sc;

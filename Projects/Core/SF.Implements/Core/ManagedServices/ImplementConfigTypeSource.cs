@@ -74,7 +74,7 @@ namespace SF.Core.ManagedServices
 						{
 								new RequiredAttribute(),
 								new SF.Metadata.EntityIdentAttribute("系统服务实例") {
-									ScopeField =nameof(Models.ServiceInstance.DeclarationId),
+									ScopeField =nameof(Models.ServiceInstanceInternal.DeclarationId),
 									ScopeValue=realType.FullName
 								}
 						})

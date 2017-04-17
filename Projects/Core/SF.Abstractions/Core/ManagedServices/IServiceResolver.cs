@@ -4,7 +4,7 @@ namespace SF.Core.ManagedServices
 {
 	public interface INamedServiceResolver
 	{
-		Task<Models.ServiceInstance> GetInstance(string Id);
+		Task<Models.ServiceInstanceInternal> GetInstance(string Id);
 		object Resolve(string Id);
 	}
 }

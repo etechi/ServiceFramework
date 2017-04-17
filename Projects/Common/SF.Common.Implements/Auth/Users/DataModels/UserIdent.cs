@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
 
-namespace SF.Auth.Users.DataModels
+namespace SF.Auth.Identity.DataModels
 {
 	[Table("SysUserIdent")]
 	public class UserIdent

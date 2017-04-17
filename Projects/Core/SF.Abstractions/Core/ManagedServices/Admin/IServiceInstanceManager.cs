@@ -31,7 +31,7 @@ namespace SF.Core.ManagedServices.Admin
 	[Comment("系统服务实例", "系统内置服务实例", GroupName = "系统服务管理")]
 	public interface IServiceInstanceManager :
 		IEntityManager<string, Models.ServiceInstanceEditable>,
-		IEntitySource<string, Models.ServiceInstance, ServiceInstanceQueryArgument>
+		IEntitySource<string, Models.ServiceInstanceInternal, ServiceInstanceQueryArgument>
 	{
 
 	}

@@ -46,7 +46,7 @@ namespace SF.Core.ManagedServices
 
 			sc.AddEntityService<Admin.IServiceDeclarationManager, Admin.ServiceDeclarationManager,string,Models.ServiceDeclaration>();
 			sc.AddEntityService<Admin.IServiceImplementManager, Admin.ServiceImplementManager, string, Models.ServiceImplement>();
-			sc.AddEntityService<Admin.IServiceInstanceManager, Admin.ServiceInstanceManager, string, Models.ServiceInstance>();
+			sc.AddEntityService<Admin.IServiceInstanceManager, Admin.ServiceInstanceManager, string, Models.ServiceInstanceInternal>();
 
 			sc.AddScoped<IServiceConfigLoader, Admin.ServiceInstanceManager>();
 			sc.AddScoped<IDefaultServiceLocator, Admin.ServiceInstanceManager>();

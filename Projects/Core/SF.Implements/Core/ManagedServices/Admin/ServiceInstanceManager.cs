@@ -16,7 +16,7 @@ namespace SF.Core.ManagedServices.Admin
 {
 	[Comment("默认服务实例管理")]
 	public class ServiceInstanceManager :
-		EntityManager<string, Models.ServiceInstance, ServiceInstanceQueryArgument, Models.ServiceInstanceEditable, DataModels.ServiceInstance>,
+		EntityManager<string, Models.ServiceInstanceInternal, ServiceInstanceQueryArgument, Models.ServiceInstanceEditable, DataModels.ServiceInstance>,
 		IServiceInstanceManager,
 		 IServiceConfigLoader, 
 		IDefaultServiceLocator
@@ -70,9 +70,9 @@ namespace SF.Core.ManagedServices.Admin
 			return re;
 		}
 
-		protected override IContextQueryable<Models.ServiceInstance> OnMapModelToPublic(IContextQueryable<DataModels.ServiceInstance> Query)
+		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToPublic(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
-			return  Query.Select(i => new Models.ServiceInstance
+			return  Query.Select(i => new Models.ServiceInstanceInternal
 			{
 				Id = i.Id,
 				DeclarationId = i.DeclarationId,
@@ -100,7 +100,7 @@ namespace SF.Core.ManagedServices.Admin
 				;
 		}
 
-		protected override async Task<Models.ServiceInstance[]> OnPreparePublics(Models.ServiceInstance[] Internals)
+		protected override async Task<Models.ServiceInstanceInternal[]> OnPreparePublics(Models.ServiceInstanceInternal[] Internals)
 		{
 			await EntityResolver.Fill(
 				Internals,

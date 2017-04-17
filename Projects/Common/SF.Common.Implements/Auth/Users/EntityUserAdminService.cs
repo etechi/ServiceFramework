@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 using SF.Clients;
 using SF.Data.Entity;
 using SF.Core.Times;
-using SF.Auth.Users.DataModels;
-using SF.Auth.Users.Models;
-using SF.Auth.Users.Internals;
+using SF.Auth.Identity.DataModels;
+using SF.Auth.Identity.Models;
+using SF.Auth.Identity.Internals;
 using SF.KB;
 
-namespace SF.Auth.Users
+namespace SF.Auth.Identity
 {
 	public class EntityUserAdminService<TDataModel> :
-		SF.Data.Entity.EntityManager<long,UserInternal, UserQueryArgument,UserEditable, TDataModel>,
-		IUserAdminService,
+		SF.Data.Entity.EntityManager<long,MemberInternal, UserQueryArgument,UserEditable, TDataModel>,
+		IMemberManagementService,
 		IUserStorage
 		where TDataModel:DataModels.User,new()
 	{
@@ -31,7 +31,7 @@ namespace SF.Auth.Users
 		{
 			this.TimeService = TimeService;
 		}
-		protected virtual UserInfo OnBuildUserInfo(UserInternal u)
+		protected virtual UserInfo OnBuildUserInfo(MemberInternal u)
 		{
 			return new UserInfo
 			{
@@ -62,7 +62,7 @@ namespace SF.Auth.Users
 				});
 		}
 
-		async Task<long> IUserStorage.Create(UserCreateArgument Arg)
+		async Task<long> IUserStorage.Create(IdentCreateArgument Arg)
 		{
 			return await CreateAsync(new UserEditable
 			{
