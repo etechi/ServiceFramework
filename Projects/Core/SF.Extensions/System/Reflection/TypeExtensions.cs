@@ -296,6 +296,10 @@ namespace System.Reflection
 				new SF.Metadata.CommentAttribute(Info.Name)
 				);
 		}
+		public static string FriendlyName(this MemberInfo Info)
+		{
+			return Info.Comment()?.Name ?? Info.Name;
+		}
 #if NETCOREAPP1_1
 		public static SF.Metadata.CommentAttribute Comment(this Type Info)
 			=> Comment(Info.GetTypeInfo());

@@ -1,11 +1,9 @@
-﻿using SF.System.Auth.Identity.Models;
-using SF.System.Auth.Passport;
-using SF.System.Auth.Passport.Models;
+﻿using SF.System.Auth;
 using System;
 
 namespace SF.Users.Members.Models
 {
-	public class MemberDesc : IdentDesc
+	public class MemberDesc : UserDesc
 	{
 	}
 

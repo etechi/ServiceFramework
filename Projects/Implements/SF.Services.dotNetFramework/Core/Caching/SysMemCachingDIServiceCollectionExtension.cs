@@ -12,7 +12,7 @@ namespace SF.Core.DI
 			this IDIServiceCollection sc
 			)
 		{
-			sc.AddSingleton<Caching.ILocalCache>(new Caching.SystemMemoryCache("DefaultCache"));
+			sc.AddSingleton(typeof(Caching.ILocalCache<>),typeof(Caching.SystemMemoryCache<>));
 			return sc;
 		}
 	}

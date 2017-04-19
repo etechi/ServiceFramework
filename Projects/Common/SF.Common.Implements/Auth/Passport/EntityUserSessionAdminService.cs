@@ -31,7 +31,7 @@ namespace SF.Auth.Passport
 		{
 			this.TimeService = TimeService;
 		}
-		protected virtual Task OnInitSession(TDataModel Model,long UserId, DateTime? Expires, AccessInfo AccessInfo)
+		protected virtual Task OnInitSession(TDataModel Model,long UserId, DateTime? Expires, IAccessSource AccessInfo)
 		{
 			Model.ClientAddress = AccessInfo.ClientAddress;
 			Model.ClientAgent = AccessInfo.ClientAgent;
@@ -42,7 +42,7 @@ namespace SF.Auth.Passport
 			Model.UserId = UserId;
 			return Task.CompletedTask;
 		}
-		async Task<long> IUserSessionStorage.Create( long UserId,DateTime? Expires, AccessInfo AccessInfo)
+		async Task<long> IUserSessionStorage.Create( long UserId,DateTime? Expires, IAccessSource AccessInfo)
 		{
 			var model = new TDataModel();
 			await OnInitSession(model, UserId, Expires, AccessInfo);

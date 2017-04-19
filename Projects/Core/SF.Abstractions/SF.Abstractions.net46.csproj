@@ -45,8 +45,12 @@
   <ItemGroup>
     <Compile Include="Auth\AuthorizeAttribute.cs" />
     <Compile Include="Auth\RequirePermissionAttribute.cs" />
-    <Compile Include="Clients\AccessInfo.cs" />
-    <Compile Include="Clients\IAuthClientService.cs" />
+    <Compile Include="Clients\Claim.cs" />
+    <Compile Include="Clients\ClientDeviceType.cs" />
+    <Compile Include="Clients\IAccessSource.cs" />
+    <Compile Include="Clients\IClientService.cs" />
+    <Compile Include="Clients\IIdentity.cs" />
+    <Compile Include="Clients\ISession.cs" />
     <Compile Include="Core\Caching\ILocalCache.cs" />
     <Compile Include="Core\Caching\IRemoteCache.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantor.cs" />
@@ -62,6 +66,7 @@
     <Compile Include="Core\Logging\ILogService.cs" />
     <Compile Include="Core\Logging\ILoggerProvider.cs" />
     <Compile Include="Core\Logging\LogLevel.cs" />
+    <Compile Include="Core\ManagedServices\IServiceInstanceMeta.cs" />
     <Compile Include="Core\NetworkService\IInvokeContext.cs" />
     <Compile Include="Core\NetworkService\IResultFactory.cs" />
     <Compile Include="Core\ServiceFeatures\IServiceFeatureControlService.cs" />
@@ -77,6 +82,8 @@
     <Compile Include="Core\Times\ITimeService.cs" />
     <Compile Include="Data\Entity\EntityIdent.cs" />
     <Compile Include="Data\Storage\IDataSetProvider.cs" />
+    <Compile Include="KB\IMimeResolver.cs" />
+    <Compile Include="KB\SexType.cs" />
     <Compile Include="Maths\Matrix2DF.cs" />
     <Compile Include="Maths\Rectangle.cs" />
     <Compile Include="Maths\Point.cs" />
@@ -146,7 +153,6 @@
     <Compile Include="Services\Files\IDirectoryContents.cs" />
     <Compile Include="Services\Files\IFileInfo.cs" />
     <Compile Include="Core\Hosting\IAppInstance.cs" />
-    <Compile Include="Services\KB\IMimeResolver.cs" />
     <Compile Include="Core\ManagedServices\Admin\IServiceImplementManager.cs" />
     <Compile Include="Core\ManagedServices\Admin\IServiceDeclarationManager.cs" />
     <Compile Include="Core\ManagedServices\Admin\IServiceInstanceManager.cs" />
@@ -163,6 +169,8 @@
     <Compile Include="Core\NetworkService\IUploadedFileCollection.cs" />
     <Compile Include="Core\NetworkService\IServiceTypeCollection.cs" />
     <Compile Include="Core\NetworkService\HeavyAttribute.cs" />
+    <Compile Include="Services\Security\IDataProtector.cs" />
+    <Compile Include="Services\Security\IPasswordHasher.cs" />
     <Compile Include="Services\Test\ITestService.cs" />
     <Compile Include="System\Linq\IAsyncContextQueryable.cs" />
     <Compile Include="System\Linq\IContextQueryable.cs" />
@@ -171,8 +179,6 @@
     <Compile Include="Option.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicExceptions.cs" />
-    <Compile Include="Clients\IClientInfo.cs" />
-    <Compile Include="Core\ManagedServices\IServiceInstanceIdent.cs" />
     <Compile Include="Core\ManagedServices\Runtime\IDefaultServiceLocator.cs" />
     <Compile Include="Core\ManagedServices\IManagedServiceCollection.cs" />
     <Compile Include="Core\ManagedServices\Runtime\IManagedServiceConfigChangedNotifier.cs" />

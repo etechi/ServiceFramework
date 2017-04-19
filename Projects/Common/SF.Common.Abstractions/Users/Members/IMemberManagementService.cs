@@ -1,4 +1,5 @@
-﻿using SF.System.Auth.Identity.Models;
+﻿using SF.System.Auth.Identity;
+using SF.System.Auth.Identity.Models;
 using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,11 @@ namespace SF.Users.Members
 		Data.Entity.IEntitySource<long,MemberInternal,MemberQueryArgument>,
 		Data.Entity.IEntityManager<long,MemberEditable>
     {
-    }
+		Task<string> CreateMemberAsync(
+			CreateIdentArgument Arg,
+			bool VerifyCode
+			);
+	}
 
 }
 

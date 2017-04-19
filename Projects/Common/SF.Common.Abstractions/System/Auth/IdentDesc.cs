@@ -1,10 +1,10 @@
 ﻿using SF.Data;
-using SF.KB;
 
-namespace SF.System.Auth.Identity.Models
+namespace SF.System.Auth
 {
-	public class IdentDesc : IObjectWithId<long>
+	public class UserDesc : IObjectWithId<long>
     {
+		public int ScopeId { get; set; }
 		public long Id { get; set; }
 		public string NickName { get; set; }
 		public string Icon { get; set; }

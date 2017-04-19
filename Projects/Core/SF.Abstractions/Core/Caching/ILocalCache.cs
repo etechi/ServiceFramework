@@ -7,15 +7,16 @@ using System.Threading.Tasks;
 namespace SF.Core.Caching
 {
    
-	public interface ILocalCache
+	public interface ILocalCache<T>
+		where T:class
 	{
-		object Get(string key);
-		void Set(string key, object value, TimeSpan keepalive);
-		void Set(string key, object value, DateTime expires);
+		T Get(string key);
+		void Set(string key, T value, TimeSpan keepalive);
+		void Set(string key, T value, DateTime expires);
 		//如果缓存已存在，返回缓存对象，否则返回null;
-		object AddOrGetExisting(string key, object value, TimeSpan keepalive);
+		T AddOrGetExisting(string key, T value, TimeSpan keepalive);
 		//如果缓存已存在，返回缓存对象，否则返回null;
-		object AddOrGetExisting(string key, object value, DateTime expires);
+		T AddOrGetExisting(string key, T value, DateTime expires);
 		bool Remove(string key);
 		bool Contains(string key);
 	}

@@ -20,7 +20,7 @@ using System.Linq;
 namespace SF.UT.Data
 {
 #if !NETCORE
-	public class AppContext : DbContext
+	public class AppContext : SF.Data.Storage.DbContext
 	{
 		public AppContext():this(new EFStartup().ConfigureService())
 		{

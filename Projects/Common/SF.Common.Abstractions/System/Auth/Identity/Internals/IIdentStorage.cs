@@ -1,5 +1,4 @@
-﻿using SF.System.Auth.Passport;
-using SF.System.Auth.Identity.Models;
+﻿using SF.System.Auth.Identity.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -8,15 +7,15 @@ namespace SF.System.Auth.Identity.Internals
 	public class IdentCreateArgument
 	{
 		public int ScopeId { get; set; }
-		public IdentDesc Desc { get; set; }
+		public UserDesc Desc { get; set; }
 		public string PasswordHash { get; set; }
 		public string SecurityStamp { get; set; }
-		public Clients.AccessInfo AccessInfo { get; set; }
+		public Clients.IAccessSource AccessInfo { get; set; }
 	}
 	public interface IIdentStorage
 	{
-		Task<IdentDesc> FindById(long Id);
-		Task UpdateAsync(IdentDesc Desc);
+		Task<UserDesc> FindById(long Id);
+		Task UpdateAsync(UserDesc Desc);
 
 		Task<long> Create(IdentCreateArgument Arg);
 

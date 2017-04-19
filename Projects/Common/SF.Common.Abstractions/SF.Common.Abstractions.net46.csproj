@@ -41,34 +41,47 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auth\ICaptchaService.cs" />
-    <Compile Include="Auth\Users\IAuthSessionProvider.cs" />
-    <Compile Include="Auth\Users\IPasswordHasher.cs" />
-    <Compile Include="Auth\Users\IUserAdminService.cs" />
-    <Compile Include="Auth\Users\IUserIdentStorage.cs" />
-    <Compile Include="Auth\Users\IUserIdentProvider.cs" />
-    <Compile Include="Auth\Users\IUserStorage.cs" />
-    <Compile Include="Auth\Users\IUserService.cs" />
-    <Compile Include="Auth\Users\Models\SexType.cs" />
-    <Compile Include="Auth\Users\Models\UserEditable.cs" />
-    <Compile Include="Auth\Users\Models\UserIdent.cs" />
-    <Compile Include="Auth\Users\Models\UserInfo.cs" />
-    <Compile Include="Auth\Users\Models\UserInternal.cs" />
-    <Compile Include="Auth\Users\Models\UserType.cs" />
-    <Compile Include="Basic\TextMessages\Admin\IMsgRecordManager.cs" />
-    <Compile Include="Basic\TextMessages\Admin\MsgRecord.cs" />
-    <Compile Include="Basic\TextMessages\Admin\MsgRecordQueryArgument.cs" />
-    <Compile Include="Basic\TextMessages\Admin\SendStatus.cs" />
-    <Compile Include="Basic\TextMessages\IPhoneMessageService.cs" />
-    <Compile Include="Basic\TextMessages\Admin\ITextMessageLogger.cs" />
+    <Compile Include="Management\SysAdmins\ISysAdminManagementService.cs" />
+    <Compile Include="Management\SysAdmins\ISysAdminService.cs" />
+    <Compile Include="Management\SysAdmins\Models\SysAdminDesc.cs" />
+    <Compile Include="Management\SysAdmins\Models\SysAdminEditable.cs" />
+    <Compile Include="Management\SysAdmins\Models\SysAdminInternal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Basic\TextMessages\ITextMessageService.cs" />
-    <Compile Include="Basic\TextMessages\Message.cs" />
+    <Compile Include="System\Auth\ICaptchaService.cs" />
+    <Compile Include="System\Auth\Identity\IIdentBindProvider.cs" />
+    <Compile Include="System\Auth\Identity\IIdentAdminService.cs" />
+    <Compile Include="System\Auth\Identity\IIdentService.cs" />
+    <Compile Include="System\Auth\Identity\Internals\IIdentBindStorage.cs" />
+    <Compile Include="System\Auth\Identity\Internals\IIdentStorage.cs" />
+    <Compile Include="System\Auth\Identity\Models\IdentBind.cs" />
+    <Compile Include="System\Auth\IdentDesc.cs" />
+    <Compile Include="System\Auth\IUserService.cs" />
+    <Compile Include="System\Auth\Sessions\ISessionService.cs" />
+    <Compile Include="System\Auth\Sessions\Models\UserSession.cs" />
+    <Compile Include="System\Auth\Sessions\Models\UserSessionInternal.cs" />
+    <Compile Include="System\TextMessages\Admin\IMsgRecordManager.cs" />
+    <Compile Include="System\TextMessages\Admin\ITextMessageLogger.cs" />
+    <Compile Include="System\TextMessages\Admin\MsgRecord.cs" />
+    <Compile Include="System\TextMessages\Admin\MsgRecordQueryArgument.cs" />
+    <Compile Include="System\TextMessages\Admin\SendStatus.cs" />
+    <Compile Include="System\TextMessages\IPhoneMessageService.cs" />
+    <Compile Include="System\TextMessages\ITextMessageService.cs" />
+    <Compile Include="System\TextMessages\Message.cs" />
+    <Compile Include="Users\Members\IMemberManagementService.cs" />
+    <Compile Include="Users\Members\IMemberService.cs" />
+    <Compile Include="Users\Members\Models\MemberDesc.cs" />
+    <Compile Include="Users\Members\Models\MemberEditable.cs" />
+    <Compile Include="Users\Members\Models\MemberInternal.cs" />
+    <Compile Include="Users\Members\Models\MemberType.cs" />
+    <Compile Include="Users\UserSources\IUserSourceService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Basic\FrontEndServices\" />
     <Folder Include="Basic\Notifications\" />
     <Folder Include="Basic\PhoneShortMessage\" />
+    <Folder Include="Bizness\Products\" />
+    <Folder Include="Management\Documents\" />
+    <Folder Include="Management\WorkOrders\" />
     <Folder Include="Sites\Comment\" />
     <Folder Include="Sites\Documents\" />
     <Folder Include="Sites\WorkOrders\" />
@@ -78,6 +91,9 @@
       <Project>{69691ef2-2eff-4e50-aa49-93e9fdc5c34b}</Project>
       <Name>SF.Abstractions.net46</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="project.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

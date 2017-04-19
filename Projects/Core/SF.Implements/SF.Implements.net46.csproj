@@ -86,8 +86,9 @@
     <Compile Include="Data\Storage\DataSet.cs" />
     <Compile Include="Data\Storage\DataContext.cs" />
     <Compile Include="Data\Storage\DataContextDICollectionExtension.cs" />
+    <Compile Include="KB\Mime\DefaultMimeResolver.cs" />
+    <Compile Include="KB\Mime\KBDIServiceCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\KB\DefaultMimeResolver.cs" />
     <Compile Include="Core\ManagedServices\Admin\DataModels\ServiceInstance.cs" />
     <Compile Include="Core\ManagedServices\Admin\ServiceDeclarationManager.cs" />
     <Compile Include="Core\ManagedServices\Admin\ServiceImplementManager.cs" />
@@ -107,7 +108,6 @@
     <Compile Include="Core\ManagedServices\ImplementConfigTypeSource.cs" />
     <Compile Include="Core\ManagedServices\Storages\MemoryServiceSource.cs" />
     <Compile Include="Core\ManagedServices\ServicveManagementDIServiceCollectionExtension.cs" />
-    <Compile Include="Services\KB\KBDIServiceCollection.cs" />
     <Compile Include="Services\Media\Managers\MediaManager.cs" />
     <Compile Include="Services\Media\Managers\MediaMetaCache.cs" />
     <Compile Include="Services\Media\MediaDIServiceCollection.cs" />

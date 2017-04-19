@@ -21,7 +21,11 @@ namespace SF.Core.DI
 			sc.Add(new ServiceDescriptor(ServiceType, Implement));
 			return sc;
 		}
-
+		public static IDIServiceCollection AddSingleton(this IDIServiceCollection sc, Type ServiceType, Type ImplementType)
+		{
+			sc.Add(new ServiceDescriptor(ServiceType, ImplementType,ServiceLifetime.Singleton));
+			return sc;
+		}
 		public static IDIServiceCollection AddSingleton<T>(this IDIServiceCollection sc,T implement)
 		{
 			sc.AddSingleton(typeof(T), implement);

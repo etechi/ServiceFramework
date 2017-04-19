@@ -127,7 +127,7 @@ namespace SF.Auth.Identity
 
 	
 
-		async Task IUserStorage.SigninSuccess(long UserId, AccessInfo AccessInfo)
+		async Task IUserStorage.SigninSuccess(long UserId, IAccessSource AccessInfo)
 		{
 			var re = await DataSet.Update(
 				UserId,
@@ -142,7 +142,7 @@ namespace SF.Auth.Identity
 				);
 		}
 
-		async Task IUserStorage.SigninFailed(long UserId, int LockoutFailedCount, TimeSpan LockoutTime, AccessInfo AccessInfo)
+		async Task IUserStorage.SigninFailed(long UserId, int LockoutFailedCount, TimeSpan LockoutTime, IAccessSource AccessInfo)
 		{
 			await DataSet.Update(
 				UserId,

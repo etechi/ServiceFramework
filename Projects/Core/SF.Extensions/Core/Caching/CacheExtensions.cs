@@ -8,25 +8,28 @@ namespace SF.Core.Caching
 {
 	public static class CacheExtensions
 	{
-		public static async Task<object> GetOrCreateAsync(this IRemoteCache cache, string key, Func<Task<object>> creator, TimeSpan keepalive)
+		public static async Task<object> GetOrCreateAsync<T>(this IRemoteCache<T> cache, string key, Func<Task<T>> creator, TimeSpan keepalive)
+			where T:class
 		{
 			var re = await cache.GetAsync(key);
 			if (re != null)
 				return re;
-			re = creator();
+			re =await creator();
 			var nre = await cache.AddOrGetExistingAsync(key, re, keepalive);
 			return nre ?? re;
 		}
-		public static async Task<object> GetOrCreateAsync(this IRemoteCache cache, string key, Func<Task<object>> creator, DateTime expires)
+		public static async Task<T> GetOrCreateAsync<T>(this IRemoteCache<T> cache, string key, Func<Task<T>> creator, DateTime expires)
+			where T:class
 		{
 			var re = await cache.GetAsync(key);
 			if (re != null)
 				return re;
-			re = creator();
+			re = await creator();
 			var nre = await cache.AddOrGetExistingAsync(key, re, expires);
 			return nre ?? re;
 		}
-		public static object GetOrCreate(this ILocalCache cache, string key, Func<object> creator, TimeSpan keepalive)
+		public static object GetOrCreate<T>(this ILocalCache<T> cache, string key, Func<T> creator, TimeSpan keepalive)
+			where T:class
 		{
 			var re = cache.Get(key);
 			if (re != null)
@@ -35,7 +38,8 @@ namespace SF.Core.Caching
 			var nre =  cache.AddOrGetExisting(key, re, keepalive);
 			return nre ?? re;
 		}
-		public static object GetOrCreate(this ILocalCache cache, string key, Func<object> creator, DateTime expires)
+		public static object GetOrCreate<T>(this ILocalCache<T> cache, string key, Func<T> creator, DateTime expires)
+			where T:class
 		{
 			var re = cache.Get(key);
 			if (re != null)

@@ -3,24 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Reflection;
 namespace SF.Core.Caching
 {
-	public class SystemMemoryCache : ILocalCache
+	public class SystemMemoryCache<T> : ILocalCache<T>
+		where T:class
 	{
 		readonly System.Runtime.Caching.MemoryCache cache;
-		public SystemMemoryCache(string name)
+		public SystemMemoryCache()
 		{
-			cache = new System.Runtime.Caching.MemoryCache(name);
+			cache = new System.Runtime.Caching.MemoryCache(typeof(T).FullName);
 		}
-		public object AddOrGetExisting(string key, object value, DateTime expires)
+		public T AddOrGetExisting(string key, T value, DateTime expires)
 		{
-			return cache.AddOrGetExisting(key, value, expires);
+			return (T)cache.AddOrGetExisting(key, value, expires);
 		}
 
-		public object AddOrGetExisting(string key, object value, TimeSpan keepalive)
+		public T AddOrGetExisting(string key, T value, TimeSpan keepalive)
 		{
-			return cache.AddOrGetExisting(
+			return (T)cache.AddOrGetExisting(
 				key, 
 				value, 
 				new System.Runtime.Caching.CacheItemPolicy { SlidingExpiration = keepalive }
@@ -34,9 +35,9 @@ namespace SF.Core.Caching
 		}
 
 
-		public object Get(string key)
+		public T Get(string key)
 		{
-			return cache.Get(key);
+			return (T)cache.Get(key);
 		}
 
 		public bool Remove(string key)
@@ -45,12 +46,12 @@ namespace SF.Core.Caching
 		}
 
 
-		public void Set(string key, object value, DateTime expires)
+		public void Set(string key, T value, DateTime expires)
 		{
 			cache.Set(key, value, expires);
 		}
 
-		public void Set(string key, object value, TimeSpan keepalive)
+		public void Set(string key, T value, TimeSpan keepalive)
 		{
 			cache.Set(key, value, new System.Runtime.Caching.CacheItemPolicy { SlidingExpiration = keepalive });
 		}

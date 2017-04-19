@@ -9,6 +9,7 @@ using SF.Data.Storage;
 
 namespace SF.UT.Data.DataModels
 {
+	using IndexAttribute = SF.Data.Storage.IndexAttribute;
 	[Table("User")]
 	public class User
 	{

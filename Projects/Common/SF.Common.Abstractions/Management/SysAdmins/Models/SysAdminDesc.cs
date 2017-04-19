@@ -1,9 +1,9 @@
-﻿using SF.System.Auth.Identity.Models;
+﻿using SF.System.Auth;
 using System;
 
 namespace SF.Management.SysAdmins.Models
 {
-	public class SysAdminDesc : IdentDesc
+	public class SysAdminDesc : UserDesc
 	{
 	}
 
