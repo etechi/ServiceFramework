@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.System.Auth.Sessions.Models;
+using SF.Auth.Sessions.Models;
 using SF.Metadata;
 
-namespace SF.System.Auth.Sessions
+namespace SF.Auth.Sessions
 {
 	public class UserSessionQueryArgument : Data.Entity.IQueryArgument<long>
 	{

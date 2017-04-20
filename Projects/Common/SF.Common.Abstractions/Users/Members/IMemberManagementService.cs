@@ -1,5 +1,5 @@
-﻿using SF.System.Auth.Identity;
-using SF.System.Auth.Identity.Models;
+﻿using SF.Auth.Identity;
+using SF.Auth.Identity.Models;
 using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;

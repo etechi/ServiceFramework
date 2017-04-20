@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.4
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{66A4F4E4-6A67-479D-8650-013BD4A3913B}"
 EndProject
@@ -44,6 +44,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Common.Implements.net46", "Common\SF.Common.Implements\SF.Common.Implements.net46.csproj", "{089F553C-B608-4B76-BE81-39EE4D18CACC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Interception.net46", "Core\SF.Interception\SF.Interception.net46.csproj", "{899CD860-FF21-4CDD-907C-957435A862E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Common.Extensions.net46", "Common\SF.Common.Extensions\SF.Common.Extensions.net46.csproj", "{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +109,10 @@ Global
 		{899CD860-FF21-4CDD-907C-957435A862E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{899CD860-FF21-4CDD-907C-957435A862E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{899CD860-FF21-4CDD-907C-957435A862E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -126,5 +132,6 @@ Global
 		{493A9630-CC6D-458E-B8F8-F5C0002D0522} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
 		{089F553C-B608-4B76-BE81-39EE4D18CACC} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
 		{899CD860-FF21-4CDD-907C-957435A862E5} = {66A4F4E4-6A67-479D-8650-013BD4A3913B}
+		{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
 	EndGlobalSection
 EndGlobal

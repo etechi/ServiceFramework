@@ -2,7 +2,6 @@
 
 namespace SF.Clients
 {
-	
 	public interface ISession
 	{
 		string Id { get; }

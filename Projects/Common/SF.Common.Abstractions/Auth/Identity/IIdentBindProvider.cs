@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using SF.System.Auth.Identity.Models;
-namespace SF.System.Auth.Identity
+using SF.Auth.Identity.Models;
+namespace SF.Auth.Identity
 {
 	public enum ConfirmMessageType
 	{
@@ -11,11 +11,13 @@ namespace SF.System.Auth.Identity
 	}
     public interface IIdentBindProvider
     {
+		string Name { get; }
+
 		Task<string> VerifyFormat(string Ident);
 
 		Task<bool> IsConfirmable();
 
-		Task<string> SendConfirmCode(int ScopeId,string Ident, string Code, string TrackIdent);
+		Task<string> SendConfirmCode(int ScopeId,string Ident, string Code, ConfirmMessageType Type, string TrackIdent);
 		Task SetConfirmed(int ScopeId, string Ident, bool Confirmed);
 
 		Task<IdentBind> FindOrBind(int ScopeId, string Ident, string UnionIdent,bool Confirmed,long UserId);

@@ -10,9 +10,10 @@ namespace SF.Clients
 	{
 		IAccessSource AccessSource { get; }
 
-		ISession GetSession(int ScopeId);
-		Task BindSession(int ScopeId,ISession Session,DateTime? Expires);
-		Task ClearSession(int ScopeId);
+		long CurrentApplicationId { get; }
+		int CurrentScopeId { get; }
+		string GetAccessToken();
+		Task SetAccessToken(string AccessToken);
 
 		//Task<string> Ensure(AccessInfo ClientInfo,Dictionary<string,string> Items);
 

@@ -1,7 +1,7 @@
-﻿using SF.System.Auth.Identity.Models;
+﻿using SF.Auth.Identity.Models;
 using System;
 
-namespace SF.System.Auth.Sessions.Models
+namespace SF.Auth.Sessions.Models
 {
 	public class UserSession
     {

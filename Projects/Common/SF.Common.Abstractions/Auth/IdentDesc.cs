@@ -1,10 +1,9 @@
 ﻿using SF.Data;
 
-namespace SF.System.Auth
+namespace SF.Auth
 {
 	public class UserDesc : IObjectWithId<long>
     {
-		public int ScopeId { get; set; }
 		public long Id { get; set; }
 		public string NickName { get; set; }
 		public string Icon { get; set; }

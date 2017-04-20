@@ -2,7 +2,7 @@
 using SF.KB;
 using System;
 
-namespace SF.System.Auth.Sessions.Models
+namespace SF.Auth.Sessions.Models
 {
 	public class UserSessionInternal : IObjectWithId<long>
     {

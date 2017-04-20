@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{089F553C-B608-4B76-BE81-39EE4D18CACC}</ProjectGuid>
+    <ProjectGuid>{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SF.Common.Implements</RootNamespace>
@@ -41,13 +41,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auth\Identity\VerifyCode.cs" />
-    <Compile Include="Auth\Identity\AccessTokenPassword.cs" />
-    <Compile Include="Auth\Identity\IdentServiceSetting.cs" />
-    <Compile Include="Auth\Identity\IdentService.cs" />
+    <Compile Include="Auth\UserService.cs" />
+    <Compile Include="Auth\UserServiceSetting.cs" />
+    <Compile Include="Clients\IIdentityExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Users\Members\MemberService.cs" />
-    <Compile Include="Users\Members\MemberServiceSetting.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.net46.csproj">
@@ -62,16 +59,12 @@
       <Project>{493a9630-cc6d-458e-b8f8-f5c0002d0522}</Project>
       <Name>SF.Common.Abstractions.net46</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SF.Common.Extensions\SF.Common.Extensions.net46.csproj">
-      <Project>{b78373f2-f7f8-4461-ab16-a7b49f3dcb8d}</Project>
-      <Name>SF.Common.Extensions.net46</Name>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Auth\Users\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Basic\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

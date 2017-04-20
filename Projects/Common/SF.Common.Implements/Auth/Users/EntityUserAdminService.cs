@@ -14,7 +14,7 @@ using SF.KB;
 namespace SF.Auth.Identity
 {
 	public class EntityUserAdminService<TDataModel> :
-		SF.Data.Entity.EntityManager<long,MemberInternal, UserQueryArgument,UserEditable, TDataModel>,
+		SF.Data.Entity.EntityManager<long, MemberInternal, UserQueryArgument,UserEditable, TDataModel>,
 		IMemberManagementService,
 		IUserStorage
 		where TDataModel:DataModels.User,new()

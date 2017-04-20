@@ -1,4 +1,4 @@
-﻿using SF.System.Auth.Identity.Models;
+﻿using SF.Auth.Identity.Models;
 using SF.Management.SysAdmins.Models;
 using System;
 using System.Collections.Generic;

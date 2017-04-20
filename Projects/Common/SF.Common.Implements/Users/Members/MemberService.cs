@@ -1,13 +1,13 @@
 ﻿using SF.Metadata;
-using SF.System.Auth;
-using SF.System.Auth.Identity;
+using SF.Auth;
+using SF.Auth.Identity;
 using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.System.Auth.Identity.Models;
+using SF.Auth.Identity.Models;
 using SF.Data.Entity;
 
 namespace SF.Users.Members
@@ -27,31 +27,20 @@ namespace SF.Users.Members
 
 		public Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg)
 		{
-			throw new NotImplementedException();
+			return Setting.IdentService.SendCreateIdentVerifyCode(Arg);
 		}
 
-		public async Task<MemberDesc> Signup(MemberSignupArgument Arg)
+		public async Task<SignupResult> Signup(MemberSignupArgument Arg)
 		{
-			return await BindSession(
-				Arg.ScopeId,
-				null,
-				null,
-				GetExpires(Arg.Expires),
-				async () =>
-				{
-					var re=await Setting.ManagementService.Value.CreateMemberAsync(
-						new CreateIdentArgument
-						{
-							ScopeId = Arg.ScopeId,
-							Password = Arg.Password,
-							Ident = Arg.Ident,
-							Desc = Arg.Desc
-						},
-						true
-						);
-					return re;
-				});
-
+			var re = await Setting.ManagementService.Value.CreateMemberAsync(
+				Arg,
+				true
+				);
+			return new SignupResult
+			{
+				Desc = Arg.Desc,
+				Token = re
+			};
 			//if (string.IsNullOrWhiteSpace(Arg.Ident))
 			//	throw new ArgumentException("请输入用户标识");
 			//var msg = await Setting.SignupIdentProvider.Value.VerifyFormat(Arg.Ident);
@@ -103,10 +92,10 @@ namespace SF.Users.Members
 			//return await CreateAccessToken(uid, passwordHash);
 		}
 
-		public override async Task Update(IdentDesc Desc)
+		public override async Task Update(UserDesc Desc)
 		{
-			var uid = EnsureUserIdent(Desc.ScopeId);
-			if (uid != Desc.Id)
+			var uid = await EnsureUserId();
+			if (Desc.Id!=0 && uid != Desc.Id)
 				throw new ArgumentException();
 			await Setting.ManagementService.Value.UpdateEntity(
 				uid,

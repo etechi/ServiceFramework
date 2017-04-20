@@ -28,7 +28,7 @@ namespace SF.Core.Caching
 			var nre = await cache.AddOrGetExistingAsync(key, re, expires);
 			return nre ?? re;
 		}
-		public static object GetOrCreate<T>(this ILocalCache<T> cache, string key, Func<T> creator, TimeSpan keepalive)
+		public static T GetOrCreate<T>(this ILocalCache<T> cache, string key, Func<T> creator, TimeSpan keepalive)
 			where T:class
 		{
 			var re = cache.Get(key);
@@ -38,13 +38,33 @@ namespace SF.Core.Caching
 			var nre =  cache.AddOrGetExisting(key, re, keepalive);
 			return nre ?? re;
 		}
-		public static object GetOrCreate<T>(this ILocalCache<T> cache, string key, Func<T> creator, DateTime expires)
+		public static T GetOrCreate<T>(this ILocalCache<T> cache, string key, Func<T> creator, DateTime expires)
 			where T:class
 		{
 			var re = cache.Get(key);
 			if (re != null)
 				return re;
 			re = creator();
+			var nre = cache.AddOrGetExisting(key, re, expires);
+			return nre ?? re;
+		}
+		public static async Task<T> GetOrCreateAsync<T>(this ILocalCache<T> cache, string key, Func<Task<T>> creator, TimeSpan keepalive)
+		   where T : class
+		{
+			var re = cache.Get(key);
+			if (re != null)
+				return re;
+			re = await creator();
+			var nre = cache.AddOrGetExisting(key, re, keepalive);
+			return nre ?? re;
+		}
+		public static async Task<T> GetOrCreateAsync<T>(this ILocalCache<T> cache, string key, Func<Task<T>> creator, DateTime expires)
+			where T : class
+		{
+			var re = cache.Get(key);
+			if (re != null)
+				return re;
+			re = await creator();
 			var nre = cache.AddOrGetExisting(key, re, expires);
 			return nre ?? re;
 		}

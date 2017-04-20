@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SF.System.Auth.Identity.Models
+namespace SF.Auth.Identity.Models
 {
 	public class IdentBind
 	{

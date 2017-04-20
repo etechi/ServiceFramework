@@ -1,6 +1,6 @@
 ﻿using SF.Metadata;
-using SF.System.Auth;
-using SF.System.Auth.Identity;
+using SF.Auth;
+using SF.Auth.Identity;
 using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;

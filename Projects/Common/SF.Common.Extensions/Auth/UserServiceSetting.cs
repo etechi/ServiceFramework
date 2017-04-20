@@ -1,20 +1,18 @@
-﻿using SF.System.Auth.Identity.Models;
-using SF.System.Auth.Sessions;
+﻿using SF.Auth.Identity.Models;
+using SF.Auth.Sessions;
 using SF.Metadata;
 using System.Threading.Tasks;
 using SF.Auth;
 using System;
 using SF.Clients;
-using SF.System.Auth.Identity;
+using SF.Auth.Identity;
 using SF.Core.Times;
 
-namespace SF.System.Auth
+namespace SF.Auth
 {
 	public class UserServiceSetting
 	{
-		public IClientService ClientService { get; set; }
-		public Lazy<IIdentService> IdentService { get; set; }
-		public Lazy<ISessionService> SessionService { get; set; }
+		public IIdentService IdentService { get; set; }
 		public Lazy<ITimeService> TimeService { get; set; }
 	}
 

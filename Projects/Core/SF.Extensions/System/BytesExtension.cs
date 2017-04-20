@@ -6,6 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 namespace System
 {
+	public static class Bytes
+	{
+		static Random random { get; } = new System.Random();
+		public static byte[] Random(int Length)
+		{
+			var re = new byte[Length];
+			lock (random)
+			{
+				random.NextBytes(re);
+			}
+			return re;
+		}
+	}
 	public static class BytesExtension
 	{
 		static readonly char[] hex_chars = {

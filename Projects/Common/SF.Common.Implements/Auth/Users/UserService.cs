@@ -43,7 +43,7 @@ namespace SF.Auth.Identity
 			await Setting.UserStorage.UpdateAsync(User);
 		}
 		
-		public async Task<string> CreateAccessToken(CreateAccessTokenArgument Arg)
+		public async Task<string> CreateAccessToken(SigninArgument Arg)
 		{
 			if (string.IsNullOrWhiteSpace(Arg.Ident))
 				throw new PublicArgumentException("请输入用户标识");
@@ -232,7 +232,7 @@ namespace SF.Auth.Identity
 
 		Task<string> ISigninProvider.CreateAccessToken(Passport.Internals.CreateAccessTokenArgument Argument)
 		{
-			return CreateAccessToken(new CreateAccessTokenArgument
+			return CreateAccessToken(new SigninArgument
 			{
 				Ident = Argument.Ident,
 				Password = Argument.Password,

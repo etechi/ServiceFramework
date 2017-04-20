@@ -1,4 +1,4 @@
-﻿using SF.System.Auth;
+﻿using SF.Auth;
 using System;
 
 namespace SF.Users.Members.Models

@@ -1,26 +1,23 @@
-﻿using SF.System.Auth.Identity.Models;
+﻿using SF.Auth.Identity.Models;
 using System;
 using System.Threading.Tasks;
 
-namespace SF.System.Auth.Identity.Internals
+namespace SF.Auth.Identity.Internals
 {
 	public class IdentCreateArgument
 	{
 		public int ScopeId { get; set; }
-		public UserDesc Desc { get; set; }
+		public long Id { get; set; }
 		public string PasswordHash { get; set; }
-		public string SecurityStamp { get; set; }
+		public byte[] SecurityStamp { get; set; }
 		public Clients.IAccessSource AccessInfo { get; set; }
 	}
 	public interface IIdentStorage
 	{
-		Task<UserDesc> FindById(long Id);
-		Task UpdateAsync(UserDesc Desc);
-
 		Task<long> Create(IdentCreateArgument Arg);
-
+		Task<byte[]> GetSecurityStamp(long Id);
 		Task<string> GetPasswordHash(long Id);
-		Task SetPasswordHash(long Id, string PasswordHash,string SecurityStamp);
+		Task SetPasswordHash(long Id, string PasswordHash,byte[] SecurityStamp);
 
 	}
 

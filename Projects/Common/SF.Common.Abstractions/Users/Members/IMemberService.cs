@@ -1,6 +1,6 @@
 ﻿using SF.Metadata;
-using SF.System.Auth;
-using SF.System.Auth.Identity;
+using SF.Auth;
+using SF.Auth.Identity;
 using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
@@ -19,11 +19,16 @@ namespace SF.Users.Members
 		SendCreateIdentVerifyCodeArgument
 	{
 	}
+	public class SignupResult
+	{
+		public MemberDesc Desc { get; set; }
+		public string Token { get; set; }
+	}
 	[NetworkService]
 	public interface IMemberService : IUserService
 	{
 		Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg);
-		Task<MemberDesc> Signup(MemberSignupArgument Arg);
+		Task<SignupResult> Signup(MemberSignupArgument Arg);
 	}
 
 }

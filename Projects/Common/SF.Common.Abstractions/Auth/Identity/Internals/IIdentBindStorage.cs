@@ -1,7 +1,7 @@
-﻿using SF.System.Auth.Identity.Models;
+﻿using SF.Auth.Identity.Models;
 using System.Threading.Tasks;
 
-namespace SF.System.Auth.Identity.Internals
+namespace SF.Auth.Identity.Internals
 {
 	public interface IIdentBindStorage
 	{
