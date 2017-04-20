@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SF.Auth.Identity.Models;
 using SF.Data.Entity;
+using SF.Data.Storage;
 
 namespace SF.Users.Members
 {
@@ -32,15 +33,23 @@ namespace SF.Users.Members
 
 		public async Task<SignupResult> Signup(MemberSignupArgument Arg)
 		{
-			var re = await Setting.ManagementService.Value.CreateMemberAsync(
-				Arg,
-				true
+			var re=await Setting.TransactionScopeManager.Value.UseTransaction(
+				"用户注册",
+				async scope =>
+				{
+					var token = await Setting.ManagementService.Value.CreateMemberAsync(
+						Arg,
+						true
+						);
+					await scope.Commit();
+					return new SignupResult
+					{
+						Desc = Arg.Desc,
+						Token = token
+					};
+				}
 				);
-			return new SignupResult
-			{
-				Desc = Arg.Desc,
-				Token = re
-			};
+			return re;
 			//if (string.IsNullOrWhiteSpace(Arg.Ident))
 			//	throw new ArgumentException("请输入用户标识");
 			//var msg = await Setting.SignupIdentProvider.Value.VerifyFormat(Arg.Ident);

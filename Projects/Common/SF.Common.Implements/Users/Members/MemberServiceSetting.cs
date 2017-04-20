@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SF.Data.Storage;
 
 namespace SF.Users.Members
 {
@@ -14,6 +15,7 @@ namespace SF.Users.Members
 		UserServiceSetting
 	{
 		public Lazy<IMemberManagementService> ManagementService { get; set; }
+		public Lazy<ITransactionScopeManager> TransactionScopeManager { get; set; }
 	}
 
 }

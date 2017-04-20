@@ -86,6 +86,7 @@
     <Compile Include="Data\Storage\DataSet.cs" />
     <Compile Include="Data\Storage\DataContext.cs" />
     <Compile Include="Data\Storage\DataContextDICollectionExtension.cs" />
+    <Compile Include="Data\Storage\TransactionScopeManager.cs" />
     <Compile Include="KB\Mime\DefaultMimeResolver.cs" />
     <Compile Include="KB\Mime\KBDIServiceCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
