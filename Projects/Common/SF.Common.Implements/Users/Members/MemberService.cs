@@ -31,25 +31,19 @@ namespace SF.Users.Members
 			return Setting.IdentService.SendCreateIdentVerifyCode(Arg);
 		}
 
+		[TransactionScope("用户注册")]
 		public async Task<SignupResult> Signup(MemberSignupArgument Arg)
 		{
-			var re=await Setting.TransactionScopeManager.Value.UseTransaction(
-				"用户注册",
-				async scope =>
-				{
-					var token = await Setting.ManagementService.Value.CreateMemberAsync(
-						Arg,
-						true
-						);
-					await scope.Commit();
-					return new SignupResult
-					{
-						Desc = Arg.Desc,
-						Token = token
-					};
-				}
+			var token = await Setting.ManagementService.Value.CreateMemberAsync(
+				Arg,
+				true
 				);
-			return re;
+			return new SignupResult
+			{
+				Desc = Arg.Desc,
+				Token = token
+			};
+				
 			//if (string.IsNullOrWhiteSpace(Arg.Ident))
 			//	throw new ArgumentException("请输入用户标识");
 			//var msg = await Setting.SignupIdentProvider.Value.VerifyFormat(Arg.Ident);

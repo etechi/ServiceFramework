@@ -43,14 +43,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Accounting\" />
-    <Folder Include="Comment\" />
-    <Folder Include="Delivery\" />
-    <Folder Include="Payments\" />
-    <Folder Include="Products\" />
-    <Folder Include="Promotions\" />
-    <Folder Include="ShoppingCarts\" />
-    <Folder Include="Trades\" />
+    <Folder Include="Bizness\Carts\" />
+    <Folder Include="Bizness\Delivery\" />
+    <Folder Include="Bizness\Products\" />
+    <Folder Include="Bizness\Trades\" />
+    <Folder Include="Users\Accounting\" />
+    <Folder Include="Users\Payments\" />
+    <Folder Include="Users\Promotions\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />

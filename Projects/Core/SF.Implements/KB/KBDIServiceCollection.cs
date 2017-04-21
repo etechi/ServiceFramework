@@ -17,6 +17,8 @@ using SF.Core.ManagedServices.Admin;
 using SF.Core.Hosting;
 using SF.KB.Mime;
 using SF.KB.Mime.Providers;
+using SF.KB.PhoneNumbers;
+using SF.KB.PhoneNumbers.Providers;
 
 namespace SF.Core.DI
 {
@@ -27,7 +29,13 @@ namespace SF.Core.DI
 			)
 		{
 			sc.AddSingleton<IMimeResolver, DefaultMimeResolver>();
-			
+			return sc;
+		}
+		public static IDIServiceCollection UseDefaultPhoneNumberValidator(
+		   this IDIServiceCollection sc
+		   )
+		{
+			sc.AddSingleton<IPhoneNumberValidator, DefaultPhoneNumberValidator>();
 			return sc;
 		}
 	}

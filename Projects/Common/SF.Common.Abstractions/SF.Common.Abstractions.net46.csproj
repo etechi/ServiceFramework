@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth\Identity\Models\IdentInternal.cs" />
     <Compile Include="Management\SysAdmins\ISysAdminManagementService.cs" />
     <Compile Include="Management\SysAdmins\ISysAdminService.cs" />
     <Compile Include="Management\SysAdmins\Models\SysAdminDesc.cs" />
@@ -49,24 +50,24 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Auth\ICaptchaService.cs" />
     <Compile Include="Auth\Identity\IIdentBindProvider.cs" />
-    <Compile Include="Auth\Identity\IIdentAdminService.cs" />
+    <Compile Include="Auth\Identity\IIdentManagementService.cs" />
     <Compile Include="Auth\Identity\IIdentService.cs" />
     <Compile Include="Auth\Identity\Internals\IIdentBindStorage.cs" />
     <Compile Include="Auth\Identity\Internals\IIdentStorage.cs" />
     <Compile Include="Auth\Identity\Models\IdentBind.cs" />
-    <Compile Include="Auth\IdentDesc.cs" />
+    <Compile Include="Auth\UserDesc.cs" />
     <Compile Include="Auth\IUserService.cs" />
     <Compile Include="Auth\Sessions\ISessionService.cs" />
     <Compile Include="Auth\Sessions\Models\UserSession.cs" />
     <Compile Include="Auth\Sessions\Models\UserSessionInternal.cs" />
-    <Compile Include="System\TextMessages\Admin\IMsgRecordManager.cs" />
-    <Compile Include="System\TextMessages\Admin\ITextMessageLogger.cs" />
-    <Compile Include="System\TextMessages\Admin\MsgRecord.cs" />
-    <Compile Include="System\TextMessages\Admin\MsgRecordQueryArgument.cs" />
-    <Compile Include="System\TextMessages\Admin\SendStatus.cs" />
-    <Compile Include="System\TextMessages\IPhoneMessageService.cs" />
-    <Compile Include="System\TextMessages\ITextMessageService.cs" />
-    <Compile Include="System\TextMessages\Message.cs" />
+    <Compile Include="Common\TextMessages\Admin\IMsgRecordManager.cs" />
+    <Compile Include="Common\TextMessages\Admin\ITextMessageLogger.cs" />
+    <Compile Include="Common\TextMessages\Admin\MsgRecord.cs" />
+    <Compile Include="Common\TextMessages\Admin\MsgRecordQueryArgument.cs" />
+    <Compile Include="Common\TextMessages\Admin\SendStatus.cs" />
+    <Compile Include="Common\TextMessages\IPhoneMessageService.cs" />
+    <Compile Include="Common\TextMessages\ITextMessageService.cs" />
+    <Compile Include="Common\TextMessages\Message.cs" />
     <Compile Include="Users\Members\IMemberManagementService.cs" />
     <Compile Include="Users\Members\IMemberService.cs" />
     <Compile Include="Users\Members\Models\MemberDesc.cs" />
@@ -76,15 +77,15 @@
     <Compile Include="Users\UserSources\IUserSourceService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Basic\FrontEndServices\" />
-    <Folder Include="Basic\Notifications\" />
-    <Folder Include="Basic\PhoneShortMessage\" />
+    <Folder Include="Bizness\Carts\" />
     <Folder Include="Bizness\Products\" />
-    <Folder Include="Management\Documents\" />
+    <Folder Include="Bizness\Trades\" />
+    <Folder Include="Common\Comments\" />
+    <Folder Include="Common\Documents\" />
+    <Folder Include="Common\Notifications\" />
     <Folder Include="Management\WorkOrders\" />
-    <Folder Include="Sites\Comment\" />
-    <Folder Include="Sites\Documents\" />
-    <Folder Include="Sites\WorkOrders\" />
+    <Folder Include="Users\Accounting\" />
+    <Folder Include="Users\FrontEndServices\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.net46.csproj">

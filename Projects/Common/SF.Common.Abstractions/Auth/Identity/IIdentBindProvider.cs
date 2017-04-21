@@ -12,12 +12,10 @@ namespace SF.Auth.Identity
     public interface IIdentBindProvider
     {
 		string Name { get; }
-
+		bool IsConfirmable();
 		Task<string> VerifyFormat(string Ident);
 
-		Task<bool> IsConfirmable();
-
-		Task<string> SendConfirmCode(int ScopeId,string Ident, string Code, ConfirmMessageType Type, string TrackIdent);
+		Task<long> SendConfirmCode(int ScopeId,string Ident, string Code, ConfirmMessageType Type, string TrackIdent);
 		Task SetConfirmed(int ScopeId, string Ident, bool Confirmed);
 
 		Task<IdentBind> FindOrBind(int ScopeId, string Ident, string UnionIdent,bool Confirmed,long UserId);

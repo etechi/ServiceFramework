@@ -41,6 +41,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auth\Identity\Entity\DataModels\Ident.cs" />
+    <Compile Include="Auth\Identity\Entity\DataModels\IdentBind.cs" />
+    <Compile Include="Auth\Identity\Entity\EntityIdentBindStorage.cs" />
+    <Compile Include="Auth\Identity\Entity\EntityIdentityDIExtension.cs" />
+    <Compile Include="Auth\Identity\Entity\EntityIdentManagementService.cs" />
+    <Compile Include="Auth\Identity\IdentityDIExtension.cs" />
+    <Compile Include="Auth\Identity\IdentProviders\ConfirmMessageSetting.cs" />
+    <Compile Include="Auth\Identity\IdentProviders\BaseIdentProvider.cs" />
+    <Compile Include="Auth\Identity\IdentProviders\PhoneNumberIdentProvider.cs" />
     <Compile Include="Auth\Identity\VerifyCode.cs" />
     <Compile Include="Auth\Identity\AccessTokenPassword.cs" />
     <Compile Include="Auth\Identity\IdentServiceSetting.cs" />

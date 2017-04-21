@@ -96,6 +96,16 @@ namespace SF.Data.Storage
 		{
 			return set.AsQueryable(false).SingleOrDefaultAsync(filter);
 		}
+		public static Task<V> FieldAsync<T,V>(
+			this IDataSet<T> set,
+			Expression<Func<T, bool>> filter,
+			Expression<Func<T,V>> map
+			)
+			where T : class
+		{
+			return set.AsQueryable().Where(filter).Select(map).SingleOrDefaultAsync();
+		}
+		
 		public static Task<T[]> LoadListAsync<T>(
 			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter

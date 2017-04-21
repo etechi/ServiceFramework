@@ -46,6 +46,14 @@ namespace SF
 			if (value <= 0)
 				throw new ArgumentOutOfRangeException(varName ?? "value", "必须为正");
 		}
+		public static void Positive(
+		  long value,
+		  string varName
+		  )
+		{
+			if (value <= 0)
+				throw new ArgumentOutOfRangeException(varName ?? "value", "必须为正");
+		}
 		public static void ZeroOrPositive(
 		  int value,
 		  string varName

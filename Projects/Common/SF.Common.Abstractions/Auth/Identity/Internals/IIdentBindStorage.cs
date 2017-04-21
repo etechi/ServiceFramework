@@ -6,6 +6,7 @@ namespace SF.Auth.Identity.Internals
 	public interface IIdentBindStorage
 	{
 		Task<IdentBind> FindOrBind(
+			int ScopeId,
 			string ProviderId,
 			string Ident,
 			string UnionIdent,
@@ -13,12 +14,14 @@ namespace SF.Auth.Identity.Internals
 			long UserId
 			);
 		Task<IdentBind> Find(
+			int ScopeId,
 			string ProviderId,
 			string Ident,
 			string UnionIdent
 			);
 
 		Task Bind(
+			int ScopeId,
 			string ProviderId,
 			string Ident,
 			string UnionIdent,
@@ -26,12 +29,14 @@ namespace SF.Auth.Identity.Internals
 			long UserId
 			);
 		Task Unbind(
+			int ScopeId,
 			string ProviderId,
 			string Ident,
 			long UserId
 			);
 
 		Task SetConfirmed(
+			int ScopeId,
 			string ProviderId,
 			string Ident,
 			bool Confirmed

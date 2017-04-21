@@ -75,6 +75,7 @@
     <Compile Include="Data\Entity\EntityManager.cs" />
     <Compile Include="Data\Entity\EntitySource.cs" />
     <Compile Include="Data\Entity\QuerableEntitySource.cs" />
+    <Compile Include="Data\Storage\TransactionScopeManagerExtensions.cs" />
     <Compile Include="Ensure.cs" />
     <Compile Include="Core\NetworkService\HttpResponse.cs" />
     <Compile Include="Hash.cs" />

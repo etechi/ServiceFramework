@@ -184,13 +184,14 @@ namespace SF.Auth.Identity
 				throw new PublicArgumentException("用户或密码错误!");
 			}
 
+			if (!await Setting.IdentStorage.Value.IsEnabled(ui.UserId))
+				throw new PublicDeniedException("用户已被禁止登录");
+
 			//await Setting.UserStorage.SigninSuccess(
 			//	ui.UserId,
 			//	Setting.AccessInfo.Value.Value
 			//	);
 			return await SetOrReturnAccessToken(ui.UserId, Arg.Expires, Arg.ReturnToken);
-
-
 		}
 
 		async Task<string> SetOrReturnAccessToken(long UserId,int? Expires,bool ReturnToken)
@@ -242,7 +243,7 @@ namespace SF.Auth.Identity
 			if (msg != null)
 				throw new ArgumentException(msg);
 			
-			var canSendMessage = await Setting.SignupIdentProvider.Value.IsConfirmable();
+			var canSendMessage = Setting.SignupIdentProvider.Value.IsConfirmable();
 			if (canSendMessage)
 				CheckVerifyCode(
 					ConfirmMessageType.Signup, 
