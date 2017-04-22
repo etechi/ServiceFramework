@@ -24,6 +24,11 @@ namespace SF
 		public PublicDeniedException(string message) : base(message) { }
 		public PublicDeniedException(string message, System.Exception innerException) : base(message, innerException) { }
 	}
+	public class PublicNotSigninException : PublicDeniedException
+	{
+		public PublicNotSigninException(string message="未登录") : base(message) { }
+		public PublicNotSigninException(string message, System.Exception innerException) : base(message, innerException) { }
+	}
 	public class UserInputException: PublicException
 	{
 		public UserInputException(string message) : base(message) { }

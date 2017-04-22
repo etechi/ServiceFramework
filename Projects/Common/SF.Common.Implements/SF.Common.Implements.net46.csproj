@@ -41,20 +41,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auth\Identity\Entity\DataModels\Ident.cs" />
-    <Compile Include="Auth\Identity\Entity\DataModels\IdentBind.cs" />
-    <Compile Include="Auth\Identity\Entity\EntityIdentBindStorage.cs" />
-    <Compile Include="Auth\Identity\Entity\EntityIdentityDIExtension.cs" />
-    <Compile Include="Auth\Identity\Entity\EntityIdentManagementService.cs" />
-    <Compile Include="Auth\Identity\IdentityDIExtension.cs" />
-    <Compile Include="Auth\Identity\IdentProviders\ConfirmMessageSetting.cs" />
-    <Compile Include="Auth\Identity\IdentProviders\BaseIdentProvider.cs" />
-    <Compile Include="Auth\Identity\IdentProviders\PhoneNumberIdentProvider.cs" />
-    <Compile Include="Auth\Identity\VerifyCode.cs" />
-    <Compile Include="Auth\Identity\AccessTokenPassword.cs" />
-    <Compile Include="Auth\Identity\IdentServiceSetting.cs" />
-    <Compile Include="Auth\Identity\IdentService.cs" />
+    <Compile Include="Auth\Identities\Entity\DataModels\Identity.cs" />
+    <Compile Include="Auth\Identities\Entity\DataModels\IdentityCredential.cs" />
+    <Compile Include="Auth\Identities\Entity\EntityIdentityCredentialStorage.cs" />
+    <Compile Include="Auth\Identities\Entity\EntityIdentityDIExtension.cs" />
+    <Compile Include="Auth\Identities\Entity\EntityIdentityManagementService.cs" />
+    <Compile Include="Auth\Identities\IdentityDIExtension.cs" />
+    <Compile Include="Auth\Identities\IdentityCredentialProviders\ConfirmMessageSetting.cs" />
+    <Compile Include="Auth\Identities\IdentityCredentialProviders\BaseIdentityCredentialProvider.cs" />
+    <Compile Include="Auth\Identities\IdentityCredentialProviders\PhoneNumberIdentityCredentialProvider.cs" />
+    <Compile Include="Auth\Identities\VerifyCode.cs" />
+    <Compile Include="Auth\Identities\IdentServiceSetting.cs" />
+    <Compile Include="Auth\Identities\IdentityService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Users\Members\Entity\DataModels\MemberSource.cs" />
+    <Compile Include="Users\Members\Entity\DataModels\Member.cs" />
+    <Compile Include="Users\Members\Entity\EntityMemberManagementService.cs" />
     <Compile Include="Users\Members\MemberService.cs" />
     <Compile Include="Users\Members\MemberServiceSetting.cs" />
   </ItemGroup>

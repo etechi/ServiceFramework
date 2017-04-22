@@ -41,8 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Auth\UserService.cs" />
-    <Compile Include="Auth\UserServiceSetting.cs" />
+    <Compile Include="Auth\Identities\IIdentityServiceExtension.cs" />
     <Compile Include="Clients\IIdentityExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

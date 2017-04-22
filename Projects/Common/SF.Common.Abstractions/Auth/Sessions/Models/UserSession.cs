@@ -1,4 +1,4 @@
-﻿using SF.Auth.Identity.Models;
+﻿using SF.Auth.Identities.Models;
 using System;
 
 namespace SF.Auth.Sessions.Models
@@ -7,7 +7,7 @@ namespace SF.Auth.Sessions.Models
     {
         public long Id { get; set; }
 		public DateTime? Expires { get; set; }
-		public UserDesc User { get; set; }
+		public Identity Identity { get; set; }
     }
 }
 

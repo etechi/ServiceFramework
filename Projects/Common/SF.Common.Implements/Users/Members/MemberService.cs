@@ -1,49 +1,38 @@
 ﻿using SF.Metadata;
 using SF.Auth;
-using SF.Auth.Identity;
+using SF.Auth.Identities;
 using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Auth.Identity.Models;
+using SF.Auth.Identities.Models;
 using SF.Data.Entity;
 using SF.Data.Storage;
 
 namespace SF.Users.Members
 {
 	public class MemberService :
-		UserService<MemberServiceSetting, MemberDesc>,
 		IMemberService
 	{
-		public MemberService(MemberServiceSetting Setting) : base(Setting)
+		MemberServiceSetting Setting { get; }
+		public MemberService(MemberServiceSetting Setting) 
 		{
-		}
-
-		public override async Task<MemberDesc> GetUserDesc(long Id)
-		{
-			return await Setting.ManagementService.Value.GetAsync(Id);
+			this.Setting = Setting;
 		}
 
 		public Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg)
 		{
-			return Setting.IdentService.SendCreateIdentVerifyCode(Arg);
+			return Setting.IdentityService.Value.SendCreateIdentityVerifyCode(Arg);
 		}
 
 		[TransactionScope("用户注册")]
-		public async Task<SignupResult> Signup(MemberSignupArgument Arg)
+		public async Task<string> Signup(MemberSignupArgument Arg)
 		{
-			var token = await Setting.ManagementService.Value.CreateMemberAsync(
-				Arg,
-				true
-				);
-			return new SignupResult
-			{
-				Desc = Arg.Desc,
-				Token = token
-			};
-				
+			var token = await Setting.ManagementService.Value.CreateMemberAsync(Arg);
+			return token;
+			
 			//if (string.IsNullOrWhiteSpace(Arg.Ident))
 			//	throw new ArgumentException("请输入用户标识");
 			//var msg = await Setting.SignupIdentProvider.Value.VerifyFormat(Arg.Ident);
@@ -95,25 +84,25 @@ namespace SF.Users.Members
 			//return await CreateAccessToken(uid, passwordHash);
 		}
 
-		public override async Task Update(UserDesc Desc)
-		{
-			var uid = await EnsureUserId();
-			if (Desc.Id!=0 && uid != Desc.Id)
-				throw new ArgumentException();
-			await Setting.ManagementService.Value.UpdateEntity(
-				uid,
-				me =>
-				{
-					if (Desc.NickName != null)
-						me.NickName = Desc.NickName;
-					if (Desc.Image != null)
-						me.Image = Desc.Image;
-					if (Desc.Icon != null)
-						me.Icon = Desc.Icon;
+		//public override async Task Update(UserDesc Desc)
+		//{
+		//	var uid = await EnsureUserId();
+		//	if (Desc.Id!=0 && uid != Desc.Id)
+		//		throw new ArgumentException();
+		//	await Setting.ManagementService.Value.UpdateEntity(
+		//		uid,
+		//		me =>
+		//		{
+		//			if (Desc.NickName != null)
+		//				me.NickName = Desc.NickName;
+		//			if (Desc.Image != null)
+		//				me.Image = Desc.Image;
+		//			if (Desc.Icon != null)
+		//				me.Icon = Desc.Icon;
 
-				}
-				);
-		}
+		//		}
+		//		);
+		//}
 	}
 
 }

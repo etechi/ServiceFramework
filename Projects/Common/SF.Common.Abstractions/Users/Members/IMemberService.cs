@@ -1,6 +1,6 @@
 ﻿using SF.Metadata;
 using SF.Auth;
-using SF.Auth.Identity;
+using SF.Auth.Identities;
 using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
@@ -10,25 +10,19 @@ using System.Threading.Tasks;
 
 namespace SF.Users.Members
 {
-	public class MemberSignupArgument:CreateIdentArgument
+	public class MemberSignupArgument:CreateIdentityArgument
 	{
-		public MemberDesc Desc { get; set; }
-		public int? Expires { get; set; }
 	}
 	public class SendSignupVerifyCodeArgument: 
-		SendCreateIdentVerifyCodeArgument
+		SendCreateIdentityVerifyCodeArgument
 	{
 	}
-	public class SignupResult
-	{
-		public MemberDesc Desc { get; set; }
-		public string Token { get; set; }
-	}
+	
 	[NetworkService]
-	public interface IMemberService : IUserService
+	public interface IMemberService
 	{
 		Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg);
-		Task<SignupResult> Signup(MemberSignupArgument Arg);
+		Task<string> Signup(MemberSignupArgument Arg);
 	}
 
 }

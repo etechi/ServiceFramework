@@ -59,6 +59,7 @@
     <Compile Include="Core\ServiceFeatures\InitializableServiceProviderExtension.cs" />
     <Compile Include="Core\TaskServices\ITaskServiceManagerExtension.cs" />
     <Compile Include="Core\TaskServices\TaskServiceDIServiceCollectionExtension.cs" />
+    <Compile Include="Data\DataModels\EntityBase.cs" />
     <Compile Include="Data\Entity\EntityMapper.cs" />
     <Compile Include="Data\Entity\EntityManagerExtension.cs" />
     <Compile Include="Data\Entity\EntityServiceDIServiceCollectionExtension.cs" />

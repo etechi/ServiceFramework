@@ -54,7 +54,7 @@ namespace SF.Data.Entity
 			public TModel Model { get; set; }
 			public object OwnerId { get; set; }
 			public IDataSet<TModel> ModelSet { get; }
-
+			public object UserData { get; set; }
 			
 			public void AddPostAction(
 				Action action,
@@ -134,44 +134,54 @@ namespace SF.Data.Entity
 			DataSet.Add(ctx.Model);
 		}
 
-        
+        [TransactionScope("创建对象")]
 		public virtual async Task<TKey> CreateAsync(TEditable obj)
 		{
-            ModifyContext ctx = null;
-            var saved=await DataSet.RetryForConcurrencyExceptionAsync(async () =>
-            {
+			var ctx = await InternalCreateAsync(obj);
+            return ctx.Model.Id;
+		}
+		protected virtual async Task<ModifyContext> InternalCreateAsync(TEditable obj)
+		{
+			ModifyContext ctx = null;
+			var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
+			{
 				ctx = new ModifyContext(this, DataSet, ModifyAction.Create)
 				{
 					Editable = obj
 				};
 				await OnCreateAsync(ctx);
-                return await SaveChangesAsync();
-            }, RetryForConcurrencyExceptionCount);
+				return await SaveChangesAsync();
+			}, RetryForConcurrencyExceptionCount);
 
-            ctx.Id = ctx.Model.Id;
-            await ctx.ExecutePostActionsAsync(saved);
-
-            return ctx.Model.Id;
+			ctx.Id = ctx.Model.Id;
+			await ctx.ExecutePostActionsAsync(saved);
+			return ctx;
 		}
 		#endregion
 
 
 		#region delete
 
+		[TransactionScope("删除对象")]
 		public virtual async Task RemoveAsync(TKey Id)
 		{
-            ModifyContext ctx = null;
-            var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
-            {
+			await InternalRemoveAsync(Id);
+		}
+		protected virtual async Task<ModifyContext> InternalRemoveAsync(TKey Id)
+		{
+			ModifyContext ctx = null;
+			var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
+			{
 				ctx = new ModifyContext(this, DataSet, ModifyAction.Delete)
 				{
 					Id = Id
 				};
 				await OnRemoveAsync(ctx);
 
-                return await SaveChangesAsync();
-            }, RetryForConcurrencyExceptionCount);
-            await ctx.ExecutePostActionsAsync(saved);
+				return await SaveChangesAsync();
+			}, RetryForConcurrencyExceptionCount);
+			await ctx.ExecutePostActionsAsync(saved);
+			return ctx;
 		}
 		protected virtual async Task OnRemoveAsync(ModifyContext ctx)
 		{
@@ -196,22 +206,27 @@ namespace SF.Data.Entity
 			await OnUpdateModel(ctx);
 			DataSet.Update(ctx.Model);
 		}
+		[TransactionScope("更新对象")]
 		public virtual async Task UpdateAsync(TEditable obj)
 		{
-            ModifyContext ctx = null;
-            var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
-            {
+			await InternalUpdateAsync(obj);                
+        }
+		protected virtual async Task<ModifyContext> InternalUpdateAsync(TEditable obj)
+		{
+			ModifyContext ctx = null;
+			var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
+			{
 				ctx = new ModifyContext(this, DataSet, ModifyAction.Update)
 				{
 					Editable = obj,
 					Id = obj.Id
 				};
 				await OnUpdateAsync(ctx);
-                return await SaveChangesAsync();
-            }, RetryForConcurrencyExceptionCount);
-            await ctx.ExecutePostActionsAsync(saved);
-                
-        }
+				return await SaveChangesAsync();
+			}, RetryForConcurrencyExceptionCount);
+			await ctx.ExecutePostActionsAsync(saved);
+			return ctx;
+		}
 
         #endregion
 

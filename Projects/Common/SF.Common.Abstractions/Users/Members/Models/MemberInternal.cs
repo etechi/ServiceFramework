@@ -1,17 +1,23 @@
 ﻿using SF.Data;
+using SF.Data.Models;
 using SF.KB;
+using SF.Metadata;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SF.Users.Members.Models
 {
-	public class MemberInternal : MemberDesc
+	[EntityObject("会员")]
+	public class MemberInternal : EntityBase
 	{
-		public string UserName { get; set; }
-		public DateTime CreatedTime { get; set; }
-		public DateTime? LastSigninTime { get; set; }
-		public int SigninCount { get; set; }
-		//public UserType Type { get; set; }
+		[MaxLength(20)]
+		[Comment("电话号码")]
+		[TableVisible]
+		[Required]
+		public string PhoneNumber { get; set; }
 
+		[Comment("修改时间")]
+		public DateTime UpdatedTime { get; set; }
 	}
 }
 
