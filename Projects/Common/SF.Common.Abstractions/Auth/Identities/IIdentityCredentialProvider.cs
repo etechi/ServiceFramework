@@ -15,14 +15,14 @@ namespace SF.Auth.Identities
 		bool IsConfirmable();
 		Task<string> VerifyFormat(string Ident);
 
-		Task<long> SendConfirmCode(int ScopeId,string Credential, string Code, ConfirmMessageType Type, string TrackIdent);
-		Task SetConfirmed(int ScopeId, string Credential, bool Confirmed);
+		Task<long> SendConfirmCode(string Credential, string Code, ConfirmMessageType Type, string TrackIdent);
+		Task SetConfirmed(string Credential, bool Confirmed);
 
-		Task<IdentityCredential> FindOrBind(int ScopeId, string Credential, string UnionIdent,bool Confirmed,long UserId);
-		Task<IdentityCredential> Find(int ScopeId, string Credential, string UnionIdent);
+		Task<IdentityCredential> FindOrBind(string Credential, string UnionIdent,bool Confirmed,long UserId);
+		Task<IdentityCredential> Find(string Credential, string UnionIdent);
 
-		Task Bind(int ScopeId, string Credential, string UnionIdent, bool Confirmed, long UserId);
-		Task Unbind(int ScopeId, string Credential, long UserId);
+		Task Bind(string Credential, string UnionIdent, bool Confirmed, long UserId);
+		Task Unbind(string Credential, long UserId);
 
 		Task<IdentityCredential[]> GetIdents(long UserId);
 	}

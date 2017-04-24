@@ -43,8 +43,8 @@
   <ItemGroup>
     <Compile Include="Auth\Identities\Models\IdentityInternal.cs" />
     <Compile Include="Auth\Identities\Models\Identity.cs" />
-    <Compile Include="Management\SysAdmins\ISysAdminManagementService.cs" />
     <Compile Include="Management\SysAdmins\ISysAdminService.cs" />
+    <Compile Include="Management\SysAdmins\ISysAdminManagementService.cs" />
     <Compile Include="Management\SysAdmins\Models\SysAdminDesc.cs" />
     <Compile Include="Management\SysAdmins\Models\SysAdminEditable.cs" />
     <Compile Include="Management\SysAdmins\Models\SysAdminInternal.cs" />

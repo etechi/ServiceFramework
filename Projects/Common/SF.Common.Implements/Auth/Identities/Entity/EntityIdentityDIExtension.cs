@@ -18,7 +18,7 @@ namespace SF.Auth.Identities.Entity
 
 			sc.AddScoped<IIdentityManagementService, EntityIdentityManagementService>();
 			sc.Normal().AddTransient<IIdentStorage>(sp => (IIdentStorage)sp.Resolve<IIdentityManagementService>());
-			sc.AddScoped<IIdentBindStorage, EntityIdentityCredentialStorage<DataModels.IdentityCredential>>();
+			sc.AddScoped<IIdentityCredentialStorage, EntityIdentityCredentialStorage<DataModels.IdentityCredential>>();
 			return sc;
 		}
 	}

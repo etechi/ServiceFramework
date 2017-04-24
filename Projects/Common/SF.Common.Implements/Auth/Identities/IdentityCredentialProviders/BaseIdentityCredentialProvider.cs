@@ -11,35 +11,40 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 	public abstract class BaseIdentityCredentialProvider :
 		IIdentityCredentialProvider
 	{
-		protected IIdentBindStorage IdentStorage { get; }
+		protected IIdentityCredentialStorage CredentialStorage { get; }
+		public SF.Core.ManagedServices.IServiceInstanceMeta ServiceInstance { get; }
 		public abstract string Name { get; }
 
-		public BaseIdentityCredentialProvider(IIdentBindStorage IdentStorage)
+		public BaseIdentityCredentialProvider(
+			IIdentityCredentialStorage CredentialStorage,
+			SF.Core.ManagedServices.IServiceInstanceMeta ServiceInstance
+			)
 		{
-			this.IdentStorage = IdentStorage;
+			this.CredentialStorage = CredentialStorage;
+			this.ServiceInstance = ServiceInstance;
 		}
 
-		public virtual Task Bind(int ScopeId,string Ident, string UnionIdent, bool Confirmed, long UserId)
-			=> IdentStorage.Bind(ScopeId, Name, Ident, UnionIdent, Confirmed, UserId);
+		public virtual Task Bind(string Ident, string UnionIdent, bool Confirmed, long UserId)
+			=> CredentialStorage.Bind(ServiceInstance.Ident, Ident, UnionIdent, Confirmed, UserId);
 
 
-		public virtual Task<IdentityCredential> Find(int ScopeId, string Ident, string UnionIdent)
-			=> IdentStorage.Find(ScopeId,Name, Ident, UnionIdent);
+		public virtual Task<IdentityCredential> Find(string Ident, string UnionIdent)
+			=> CredentialStorage.Find(ServiceInstance.Ident, Ident, UnionIdent);
 
-		public virtual Task<IdentityCredential> FindOrBind(int ScopeId, string Ident, string UnionIdent, bool Confirmed, long UserId)
-			=> IdentStorage.FindOrBind(ScopeId,Name, Ident, UnionIdent, Confirmed, UserId);
+		public virtual Task<IdentityCredential> FindOrBind(string Ident, string UnionIdent, bool Confirmed, long UserId)
+			=> CredentialStorage.FindOrBind(ServiceInstance.Ident, Ident, UnionIdent, Confirmed, UserId);
 
 		public virtual Task<IdentityCredential[]> GetIdents(long UserId)
-			=> IdentStorage.GetIdents(Name, UserId);
+			=> CredentialStorage.GetIdents(ServiceInstance.Ident, UserId);
 
-		public virtual Task SetConfirmed(int ScopeId, string Ident, bool Confirmed)
-			=> IdentStorage.SetConfirmed(ScopeId,Name, Ident, Confirmed);
+		public virtual Task SetConfirmed(string Ident, bool Confirmed)
+			=> CredentialStorage.SetConfirmed(ServiceInstance.Ident, Ident, Confirmed);
 
-		public virtual Task Unbind(int ScopeId, string Ident, long UserId)
-			=> IdentStorage.Unbind(ScopeId,Name, Ident, UserId);
+		public virtual Task Unbind(string Ident, long UserId)
+			=> CredentialStorage.Unbind(ServiceInstance.Ident, Ident, UserId);
 
 		public abstract Task<string> VerifyFormat(string Ident);
 		public abstract bool IsConfirmable();
-		public abstract Task<long> SendConfirmCode(int ScopeId, string Ident, string Code, ConfirmMessageType Type, string TrackIdent);
+		public abstract Task<long> SendConfirmCode(string Ident, string Code, ConfirmMessageType Type, string TrackIdent);
 	}
 }

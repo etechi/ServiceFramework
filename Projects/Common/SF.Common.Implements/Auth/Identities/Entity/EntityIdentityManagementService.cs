@@ -36,43 +36,50 @@ namespace SF.Auth.Identities.Entity
 				
 		}
 
-		async Task<long> IIdentStorage.Create(IdentCreateArgument Arg)
+		async Task<long> IIdentStorage.Create(IdentityCreateArgument Arg)
 		{
-			Ensure.Positive(Arg.Id, "未指定Id");
+			Ensure.NotNull(Arg.Identity, "身份标识");
+			Ensure.HasContent(Arg.Identity.Name, "身份标识名称");
+			Ensure.Positive(Arg.Identity.Id, "身份标识ID");
+			Ensure.HasContent(Arg.Identity.Entity, "身份类型");
 			Ensure.HasContent(Arg.IdentProvider, "未制定标识提供者");
-			Ensure.HasContent(Arg.IdentValue, "未指定标识");
+			Ensure.HasContent(Arg.CredentialValue, "未指定标识");
 			Ensure.NotNull(Arg.SecurityStamp, "未制定安全戳");
+			
 
 			var time = TimeService.Value.Now;
 			DataSet.Add(new DataModels.Identity
 			{
-				AppId =Arg.AppId,
-				ScopeId=Arg.ScopeId,
+				//AppId =Arg.AppId,
+				//ScopeId=Arg.ScopeId,
 				CreatedTime= time,
-				Id=Arg.Id,
+				Id=Arg.Identity.Id,
+				Name=Arg.Identity.Name,
+				Icon=Arg.Identity.Icon,
 				ObjectState=LogicObjectState.Enabled,
 				PasswordHash=Arg.PasswordHash,
 				SecurityStamp=Arg.SecurityStamp.Base64(),
 				SignupIdentProvider=Arg.IdentProvider,
-				SignupIdentValue=Arg.IdentValue,
+				SignupIdentValue=Arg.CredentialValue,
 				UpdatedTime= time,
-				IdentBinds=new[]
+				Credentials=new[]
 				{
 					new DataModels.IdentityCredential
 					{
-						AppId=Arg.AppId,
-						CreatedTime=time,
+						//AppId=Arg.AppId,
+						//ScopeId=Arg.ScopeId,
+						CreatedTime =time,
 						ConfirmedTime=time,
-						IdentityId=Arg.Id,
-						Credential=Arg.IdentValue,
+						IdentityId=Arg.Identity.Id,
+						Credential=Arg.CredentialValue,
 						Provider=Arg.IdentProvider,
-						ScopeId=Arg.ScopeId,
+						
 					}
 				}
 			});
 
 			await DataSet.Context.SaveChangesAsync();
-			return Arg.Id;
+			return Arg.Identity.Id;
 		}
 
 

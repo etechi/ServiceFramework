@@ -44,45 +44,55 @@ namespace SF.Auth.Identities
 		public string VerifyCode { get; set; }
 		public bool ReturnToken { get; set; }
 		public int? Expires { get; set; }
+		public IIdentityCredentialProvider CredentialProvider { get; set; }
 	}
 
 	public class SendCreateIdentityVerifyCodeArgument
 	{
-		public string Ident { get; set; }
+		public string Credetial { get; set; }
 		public string CaptchaCode { get; set; }
 	}
 
-	[NetworkService]
-	public interface IIdentityService
-    {
-		[Authorize]
-		Task<long?> GetCurIdentityId();
-
-		[Authorize]
-		Task<Identity> GetCurIdentity();
-
-		[Public]
+	public interface IPassportService
+	{
 		Task<string> Signin(SigninArgument Arg);
 
-		[Public]
 		Task Signout();
 
-		[Public]
 		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
 
-		[Public]
 		Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg);
 
 		[Authorize]
 		Task<string> SetPassword(SetPasswordArgument Arg);
+	}
+	public interface IIdentityService
+    {
+		Task<long?> GetCurIdentityId();
+
+		Task<Identity> GetCurIdentity();
+
+
+
+		Task<string> Signin(SigninArgument Arg, IIdentityCredentialProvider[] CredentialProvider);
+
+		Task Signout();
+
+		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg, IIdentityCredentialProvider CredentialProvider);
+
+		Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg);
+
+		Task<string> SetPassword(SetPasswordArgument Arg);
+
+
 
 		Task UpdateIdentity(Identity Identity);
 
 		Task<long?> ParseAccessToken(string AccessToken);
 
-		Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg);
+		Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg, IIdentityCredentialProvider CredentialProvider);
 
-		Task<string> CreateIdentity(CreateIdentityArgument Arg, bool VerifyCode);
+		Task<string> CreateIdentity(CreateIdentityArgument Arg, bool VerifyCode, IIdentityCredentialProvider CredentialProvider);
 
 		Task<Identity> GetIdentity(long Id);
 	}

@@ -55,7 +55,7 @@ namespace SF.Data.Entity
 			public object OwnerId { get; set; }
 			public IDataSet<TModel> ModelSet { get; }
 			public object UserData { get; set; }
-			
+			public object ExtraArgument { get; set; }
 			public void AddPostAction(
 				Action action,
 				bool CallOnSaved = true
@@ -137,17 +137,18 @@ namespace SF.Data.Entity
         [TransactionScope("创建对象")]
 		public virtual async Task<TKey> CreateAsync(TEditable obj)
 		{
-			var ctx = await InternalCreateAsync(obj);
+			var ctx = await InternalCreateAsync(obj,null);
             return ctx.Model.Id;
 		}
-		protected virtual async Task<ModifyContext> InternalCreateAsync(TEditable obj)
+		protected virtual async Task<ModifyContext> InternalCreateAsync(TEditable obj,object ExtraArgument)
 		{
 			ModifyContext ctx = null;
 			var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
 			{
 				ctx = new ModifyContext(this, DataSet, ModifyAction.Create)
 				{
-					Editable = obj
+					Editable = obj,
+					ExtraArgument= ExtraArgument
 				};
 				await OnCreateAsync(ctx);
 				return await SaveChangesAsync();

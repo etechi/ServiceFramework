@@ -53,6 +53,10 @@
     <Compile Include="Auth\Identities\VerifyCode.cs" />
     <Compile Include="Auth\Identities\IdentServiceSetting.cs" />
     <Compile Include="Auth\Identities\IdentityService.cs" />
+    <Compile Include="Management\SysAdmins\Entity\DataModels\SysAdmin.cs" />
+    <Compile Include="Management\SysAdmins\Entity\EntitySysAdminManagementService.cs" />
+    <Compile Include="Management\SysAdmins\SysAdminServiceSetting.cs" />
+    <Compile Include="Management\SysAdmins\SysAdminService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Users\Members\Entity\DataModels\MemberSource.cs" />
     <Compile Include="Users\Members\Entity\DataModels\Member.cs" />

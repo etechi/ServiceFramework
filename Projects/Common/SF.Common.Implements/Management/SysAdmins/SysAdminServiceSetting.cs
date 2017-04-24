@@ -9,16 +9,13 @@ using System.Text;
 using System.Threading.Tasks;
 using SF.Data.Storage;
 
-namespace SF.Users.Members
+namespace SF.Management.SysAdmins
 {
-	public class MemberServiceSetting 
+	public class SysAdminServiceSetting 
 	{
 		public Lazy<IIdentityService> IdentityService { get; set; }
-		public Lazy<IMemberManagementService> ManagementService { get; set; }
-		public Lazy<ITransactionScopeManager> TransactionScopeManager { get; set; }
 		public Lazy<IIdentityCredentialProvider[]> SigninCredentialProviders { get; set; }
 		public Lazy<IIdentityCredentialProvider> SignupCredentialProvider { get; set; }
-
 	}
 
 }

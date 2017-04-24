@@ -35,7 +35,8 @@ namespace SF.Users.Members
 		Data.Entity.IEntityManager<long,MemberEditable>
     {
 		Task<string> CreateMemberAsync(
-			CreateIdentityArgument Arg
+			CreateIdentityArgument Arg,
+			IIdentityCredentialProvider CredentialProvider
 			);
 	}
 

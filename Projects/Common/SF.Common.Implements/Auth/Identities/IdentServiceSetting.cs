@@ -13,7 +13,7 @@ using SF.Core.Caching;
 namespace SF.Auth.Identities
 {
 
-	public class IdentServiceSetting
+	public class IdentityServiceSetting
 	{
 		public bool VerifyCodeVisible { get; set; }
 
@@ -25,12 +25,6 @@ namespace SF.Auth.Identities
 
 		public Lazy<ITimeService> TimeService { get; set; }
 		public Lazy<ILocalCache<IdentityData>> IdentityDataCache { get; set; }
-
-		public Lazy<IIdentityCredentialProvider> SignupIdentProvider { get; set; }
-		public Lazy<IIdentityCredentialProvider[]> SigninIdentProviders { get; set; }
-
-	
-		public Lazy<IIdentGenerator> IdentGenerator { get; set; }
 	}
 
 }

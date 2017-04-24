@@ -16,15 +16,6 @@ namespace SF.Users.Members.Models
 		[MaxLength(100)]
 		public virtual string Password { get; set; }
 
-
-		[Ignore]
-		public virtual bool ReturnToken { get; set; }
-
-		[Ignore]
-		public string CaptchaCode { get; set; }
-
-		[Ignore]
-		public string VerifyCode { get; set; }
 	}
 }
 

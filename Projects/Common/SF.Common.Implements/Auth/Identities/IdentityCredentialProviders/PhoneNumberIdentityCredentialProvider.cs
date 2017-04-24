@@ -8,6 +8,7 @@ using SF.KB.PhoneNumbers;
 using SF.System.TextMessages;
 using System.Text;
 using System.Collections.Generic;
+using SF.Core.ManagedServices;
 
 namespace SF.Auth.Identities.IdentityCredentialProviders
 {
@@ -18,12 +19,13 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 		public Lazy<ITextMessageService> TextMessageService { get; }
 		public ConfirmMessageTemplateSetting ConfirmMessageSetting { get; }
 		public PhoneNumberIdentityCredentialProvider(
-			IIdentBindStorage IdentStorage,
+			IIdentityCredentialStorage IdentStorage,
 			Lazy<IPhoneNumberValidator> PhoneNumberValidator,
 			Lazy<ITextMessageService> TextMessageService,
-			ConfirmMessageTemplateSetting ConfirmMessageSetting
+			ConfirmMessageTemplateSetting ConfirmMessageSetting,
+			IServiceInstanceMeta ServiceInstanceMeta
 			) :
-			base(IdentStorage)
+			base(IdentStorage,ServiceInstanceMeta)
 		{
 			this.PhoneNumberValidator = PhoneNumberValidator;
 			this.ConfirmMessageSetting = ConfirmMessageSetting;
@@ -37,7 +39,7 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 		}
 		
 		public override async Task<long> SendConfirmCode(
-			int ScopeId, string Ident, string Code, ConfirmMessageType Type, string TrackIdent)
+			string Ident, string Code, ConfirmMessageType Type, string TrackIdent)
 		{
 
 			var args = new Dictionary<string, string> {

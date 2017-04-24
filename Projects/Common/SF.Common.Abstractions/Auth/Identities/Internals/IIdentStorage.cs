@@ -1,19 +1,37 @@
 ﻿using SF.Auth.Identities.Models;
 using SF.Metadata;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace SF.Auth.Identities.Internals
 {
-	public class IdentCreateArgument
+	public class IdentityCreateArgument
 	{
-		public long AppId { get; set; }
-		public int ScopeId { get; set; }
-		public long Id { get; set; }
+		[Comment("身份表示")]
+		[Required]
+		public Identity Identity { get; set; }
+
+		[Required]
+		[Comment("密码哈希")]
 		public string PasswordHash { get; set; }
+
+		[Required]
+		[Comment("安全戳")]
 		public byte[] SecurityStamp { get; set; }
-		public Clients.IAccessSource AccessInfo { get; set; }
-		public string IdentValue { get; set; }
+
+		[Required]
+		[Comment("访问源")]
+		public Clients.IAccessSource AccessSource { get; set; }
+
+		[Required]
+		[Comment("登录凭证")]
+		[MaxLength(100)]
+		public string CredentialValue { get; set; }
+
+		[Required]
+		[Comment("登录凭证提供者")]
+		[MaxLength(100)]
 		public string IdentProvider { get; set; }
 	}
 
@@ -30,7 +48,7 @@ namespace SF.Auth.Identities.Internals
 	
 	public interface IIdentStorage
 	{
-		Task<long> Create(IdentCreateArgument Arg);
+		Task<long> Create(IdentityCreateArgument Arg);
 		Task<IdentityData> Load(long Id);
 		Task UpdateDescription(Identity Identity);
 		Task UpdateSecurity(long Id, string PasswordHash,byte[] SecurityStamp);

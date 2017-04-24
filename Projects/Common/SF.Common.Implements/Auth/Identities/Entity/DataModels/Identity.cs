@@ -30,6 +30,7 @@ namespace SF.Auth.Identities.DataModels
 
 		[MaxLength(100)]
 		[Comment("名称")]
+		[Required]
 		public virtual string Name { get; set; }
 
 		[MaxLength(100)]
@@ -37,7 +38,14 @@ namespace SF.Auth.Identities.DataModels
 		public virtual string Icon { get; set; }
 
 		[MaxLength(100)]
+		[Comment("身份类别")]
+		[Required]
+		[Index]
+		public virtual string Entity { get; set; }
+
+		[MaxLength(100)]
 		[Comment("密码哈希")]
+		[Required]
 		public virtual string PasswordHash { get; set; }
 
 		[Comment("逻辑状态")]
@@ -57,16 +65,18 @@ namespace SF.Auth.Identities.DataModels
 		[Index(Order = 1)]
 		[Comment("注册标识类型")]
 		[MaxLength(50)]
+		[Required]
 		public string SignupIdentProvider { get; set; }
 
 		[MaxLength(200)]
 		[Index(Order = 2)]
 		[Comment("注册标识值")]
+		[Required]
 		public string SignupIdentValue { get; set; }
 
 
 
 		[InverseProperty(nameof(IdentityCredential.Identity))]
-		public ICollection<IdentityCredential> IdentBinds { get; set; }
+		public ICollection<IdentityCredential> Credentials { get; set; }
 	}
 }

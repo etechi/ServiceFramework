@@ -12,7 +12,7 @@ using SF.Auth.Identities.Models;
 namespace SF.Auth.Identities.Entity
 {
 	public class EntityIdentityCredentialStorage<TModel> :
-		IIdentBindStorage
+		IIdentityCredentialStorage
 		where TModel : DataModels.IdentityCredential, new()
 	{
 		IDataSet<TModel> DataSet { get; }
@@ -26,13 +26,13 @@ namespace SF.Auth.Identities.Entity
 			this.TimeService = TimeService;
 		}
 
-		public async Task<IdentityCredential> FindOrBind(int ScopeId, string Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
+		public async Task<IdentityCredential> FindOrBind(string Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
 		{
 			TModel exist;
 			long? existUserId;
 			if (UnionIdent != null)
 			{
-				var es = await DataSet.QueryAsync(i => i.ScopeId==ScopeId && i.Provider == Provider && i.UnionIdent == UnionIdent);
+				var es = await DataSet.QueryAsync(i => i.Provider == Provider && i.UnionIdent == UnionIdent);
 				exist = es.First(i => i.Credential == Credential);
 				existUserId = exist?.IdentityId ?? es.FirstOrDefault()?.IdentityId;
 			}
@@ -59,25 +59,24 @@ namespace SF.Auth.Identities.Entity
 
 		}
 
-		public async Task<IdentityCredential> Find(int ScopeId, string Provider, string Credential, string UnionIdent)
+		public async Task<IdentityCredential> Find( string Provider, string Credential, string UnionIdent)
 		{
 			if (UnionIdent != null)
 				return await DataSet.QuerySingleAsync(
-					i =>i.ScopeId== ScopeId && i.Provider == Provider && i.UnionIdent == UnionIdent && i.Credential == Credential,
+					i => i.Provider == Provider && i.UnionIdent == UnionIdent && i.Credential == Credential,
 					EntityMapper.Map<TModel, IdentityCredential>()
 					);
 			else
 				return await DataSet.QuerySingleAsync(
-					i =>i.ScopeId==ScopeId && i.Provider == Provider && i.Credential == Credential,
+					i => i.Provider == Provider && i.Credential == Credential,
 					EntityMapper.Map<TModel, IdentityCredential>()
 					);
 		}
 
-		public async Task Bind(int ScopeId,string Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
+		public async Task Bind(string Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
 		{
 			DataSet.Add(new TModel
 			{
-				ScopeId=ScopeId,
 				Provider = Provider,
 				Credential = Credential,
 				IdentityId = UserId,
@@ -88,15 +87,15 @@ namespace SF.Auth.Identities.Entity
 			await DataSet.Context.SaveChangesAsync();
 		}
 
-		public async Task Unbind(int ScopeId,string Provider, string Credential, long UserId)
+		public async Task Unbind(string Provider, string Credential, long UserId)
 		{
-			await DataSet.RemoveRangeAsync(i => i.ScopeId==ScopeId && i.Provider == Provider && i.Credential == Credential && i.IdentityId == UserId);
+			await DataSet.RemoveRangeAsync(i => i.Provider == Provider && i.Credential == Credential && i.IdentityId == UserId);
 		}
 
-		public async Task SetConfirmed(int ScopeId,string Provider, string Credential, bool Confirmed)
+		public async Task SetConfirmed(string Provider, string Credential, bool Confirmed)
 		{
 			await DataSet.Update(
-				i =>i.ScopeId==ScopeId && i.Provider == Provider && i.Credential == Credential,
+				i =>i.Provider == Provider && i.Credential == Credential,
 				e =>
 				{
 					e.ConfirmedTime = Confirmed ? (DateTime?)TimeService.Now : null;

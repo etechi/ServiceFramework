@@ -56,19 +56,21 @@ namespace SF.Users.Members.Entity
 			}
 			return q;
 		}
-
-		public async Task<string> CreateMemberAsync(CreateIdentityArgument Arg)
+		public async Task<string> CreateMemberAsync(
+			CreateIdentityArgument Arg,
+			IIdentityCredentialProvider CredentialProvider
+			)
 		{
-			var ctx = await InternalCreateAsync(new MemberEditable
-			{
-				CaptchaCode = Arg.CaptchaCode,
-				Name=Arg.Identity?.Name,
-				Icon=Arg.Identity?.Icon,
-				Password=Arg.Password,
-				PhoneNumber=Arg.Credential,
-				ReturnToken=Arg.ReturnToken,
-				VerifyCode=Arg.VerifyCode			
-			});
+			var ctx = await InternalCreateAsync(
+				new MemberEditable
+				{
+					Name=Arg.Identity?.Name,
+					Icon=Arg.Identity?.Icon,
+					Password=Arg.Password,
+					PhoneNumber=Arg.Credential,
+				},
+				Tuple.Create(Arg, CredentialProvider)
+				);
 			return (string)ctx.UserData;
 		}
 		protected override async Task OnNewModel(ModifyContext ctx)
@@ -87,6 +89,7 @@ namespace SF.Users.Members.Entity
 			UIEnsure.HasContent(e.Name,"请输入姓名");
 			UIEnsure.HasContent(e.PhoneNumber, "请输入电话");
 
+
 			m.Icon = e.Icon;
 			m.Name = e.Name.Trim();
 			m.PhoneNumber = e.PhoneNumber.Trim();
@@ -96,21 +99,28 @@ namespace SF.Users.Members.Entity
 
 			if (ctx.Action == ModifyAction.Create)
 			{
+				var ExtraArg = (Tuple<CreateIdentityArgument,IIdentityCredentialProvider>)ctx.ExtraArgument;
 				UIEnsure.HasContent(e.Password, "需要提供密码");
 				ctx.UserData=await IdentityService.Value.CreateIdentity(
 					new CreateIdentityArgument
 					{
+						
 						Credential = m.PhoneNumber,
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity
 						{
+							Entity="会员",
 							Icon = e.Icon,
 							Id = m.Id,
 							Name=m.Name
 						},
-						ReturnToken=e.ReturnToken
+						ReturnToken= ExtraArg.Item1.ReturnToken,
+						CaptchaCode= ExtraArg.Item1.CaptchaCode,
+						VerifyCode= ExtraArg.Item1.VerifyCode,
+						Expires= ExtraArg.Item1.Expires
 					}, 
-					false
+					false,
+					ExtraArg.Item2
 					);
 			}
 			else

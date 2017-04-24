@@ -14,13 +14,13 @@ namespace System.Collections.Generic
                 return v;
             return defaultValue;
         }
-        public static V Get<K,V>(this IDictionary<K,V> dict,K key,V defaultValue=default(V))
-		{
-			V v;
-			if (dict.TryGetValue(key, out v))
-				return v;
-			return defaultValue;
-		}
+  //      public static V Get<K,V>(this IDictionary<K,V> dict,K key,V defaultValue=default(V))
+		//{
+		//	V v;
+		//	if (dict.TryGetValue(key, out v))
+		//		return v;
+		//	return defaultValue;
+		//}
         public static V Get<K, V>(this IReadOnlyDictionary<K, V> dict, K key, V defaultValue = default(V))
         {
             V v;

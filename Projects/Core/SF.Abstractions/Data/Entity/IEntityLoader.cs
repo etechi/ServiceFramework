@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using SF.Auth;
+using System.Threading.Tasks;
 
 namespace SF.Data.Entity
 {

@@ -76,6 +76,12 @@
     <Compile Include="Core\TaskServices\TaskServiceManagerDIServiceCollectionExtension.cs" />
     <Compile Include="Core\Times\TimesDIServiceCollectionExtension.cs" />
     <Compile Include="Core\Times\TimeService.cs" />
+    <Compile Include="Data\AttributeValidators\ValidatorDICollectionExtension.cs" />
+    <Compile Include="Data\AttributeValidators\ObjectAttributeValidator.cs" />
+    <Compile Include="Data\AttributeValidators\Validators\RangeValidator.cs" />
+    <Compile Include="Data\AttributeValidators\Validators\RequiredValidator.cs" />
+    <Compile Include="Data\AttributeValidators\Validators\MinLengthValidator.cs" />
+    <Compile Include="Data\AttributeValidators\Validators\MaxLengthValidator.cs" />
     <Compile Include="Data\Entity\DataEntity.cs" />
     <Compile Include="Data\Entity\DataEntityConfig.cs" />
     <Compile Include="Data\Entity\DataEntityResolverDICollectionExtension.cs" />

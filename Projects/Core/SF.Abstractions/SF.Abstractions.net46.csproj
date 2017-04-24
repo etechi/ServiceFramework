@@ -82,6 +82,7 @@
     <Compile Include="Core\TaskServices\ITaskService.cs" />
     <Compile Include="Core\Times\ITimeService.cs" />
     <Compile Include="Data\Entity\EntityIdent.cs" />
+    <Compile Include="Data\AttributeValidators\IObjectAttributeValidator.cs" />
     <Compile Include="Data\Models\EntityBase.cs" />
     <Compile Include="Data\Storage\IDataSetProvider.cs" />
     <Compile Include="Data\Storage\TransactionScope.cs" />

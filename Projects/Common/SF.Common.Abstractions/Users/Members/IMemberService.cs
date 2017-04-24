@@ -19,7 +19,7 @@ namespace SF.Users.Members
 	}
 	
 	[NetworkService]
-	public interface IMemberService
+	public interface IMemberService : IPassportService
 	{
 		Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg);
 		Task<string> Signup(MemberSignupArgument Arg);

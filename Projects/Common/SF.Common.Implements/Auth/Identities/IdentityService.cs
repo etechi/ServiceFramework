@@ -11,8 +11,8 @@ namespace SF.Auth.Identities
 	public class IdentityService :
 		IIdentityService
 	{
-		IdentServiceSetting Setting { get; }
-		public IdentityService(IdentServiceSetting Setting)
+		IdentityServiceSetting Setting { get; }
+		public IdentityService(IdentityServiceSetting Setting)
 		{
 			this.Setting = Setting;
 		}
@@ -68,7 +68,7 @@ namespace SF.Auth.Identities
 		}
 
 
-		async Task<string> SendVerifyCode(ConfirmMessageType Type, string Ident, long UserId, string BizIdent)
+		async Task<string> SendVerifyCode(IIdentityCredentialProvider CredentialProvider,ConfirmMessageType Type, string Ident, long UserId, string BizIdent)
 		{
 			var code = Strings.Numbers.Random(6);
 
@@ -82,16 +82,17 @@ namespace SF.Auth.Identities
 				},
 				Setting.TimeService.Value.Now.AddMinutes(15)
 				);
+			if (Setting.VerifyCodeVisible)
+				return code;
 
-			await Setting.SignupIdentProvider.Value.SendConfirmCode(
-				Setting.ClientService.Value.CurrentScopeId,
+			await CredentialProvider.SendConfirmCode(
 				Ident,
 				code,
 				Type,
 				BizIdent
 				);
 
-			return Setting.VerifyCodeVisible ? code : null;
+			return null;
 		}
 		VerifyCode CheckVerifyCode(ConfirmMessageType Type,string Ident,long UserId,string Code)
 		{
@@ -120,16 +121,17 @@ namespace SF.Auth.Identities
 				);
 		}
 
-		public async Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg)
+		public async Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg,IIdentityCredentialProvider CredentialProvider)
 		{
-			var err = await Setting.SignupIdentProvider.Value.VerifyFormat(Arg.Credential);
+			var err = await CredentialProvider.VerifyFormat(Arg.Credential);
 			if (err != null)
 				throw new PublicArgumentException(err);
 
-			var bind = await Setting.SignupIdentProvider.Value.Find(Setting.ClientService.Value.CurrentScopeId, Arg.Credential, null);
+			var bind = await CredentialProvider.Find(Arg.Credential, null);
 			if (bind == null)
 				throw new PublicArgumentException("找不到账号");
 			return await SendVerifyCode(
+				CredentialProvider,
 				ConfirmMessageType.PasswordRecorvery, 
 				Arg.Credential, 
 				bind.UserId, 
@@ -156,7 +158,7 @@ namespace SF.Auth.Identities
 		protected DateTime? GetExpires(int? Expires) =>
 			Expires.HasValue ? (DateTime?)Setting.TimeService.Value.Now.AddSeconds(Expires.Value) : null;
 
-		public async Task<string> Signin(SigninArgument Arg)
+		public async Task<string> Signin(SigninArgument Arg,IIdentityCredentialProvider[] CredentialProviders)
 		{
 			if (string.IsNullOrWhiteSpace(Arg.Credential))
 				throw new PublicArgumentException("请输入用户标识");
@@ -165,14 +167,13 @@ namespace SF.Auth.Identities
 				throw new PublicArgumentException("请输入密码");
 
 
-			var scopeId = Setting.ClientService.Value.CurrentScopeId;
 			IdentityCredential ui = null;
 			IIdentityCredentialProvider identProvider = null;
-			foreach (var ip in Setting.SigninIdentProviders.Value)
+			foreach (var ip in CredentialProviders)
 			{
 				if (ip.VerifyFormat(Arg.Credential) != null)
 					continue;
-				ui = await ip.Find(scopeId,Arg.Credential, null);
+				ui = await ip.Find(Arg.Credential, null);
 				if (ui != null)
 				{
 					identProvider = ip;
@@ -232,29 +233,30 @@ namespace SF.Auth.Identities
 			return Setting.ClientService.Value.SetAccessToken(null);
 		}
 
-		public async Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg)
+		public async Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg,IIdentityCredentialProvider CredentialProvider)
 		{
-			var err=await Setting.SignupIdentProvider.Value.VerifyFormat(Arg.Ident);
+			var err=await CredentialProvider.VerifyFormat(Arg.Credetial);
 			if (err != null)
 				throw new PublicArgumentException(err);
 
 			return await SendVerifyCode(
+				CredentialProvider,
 				ConfirmMessageType.Signup,
-				Arg.Ident,
+				Arg.Credetial,
 				0,
 				null
 				);
 		}
 
-		public async Task<string> CreateIdentity(CreateIdentityArgument Arg, bool VerifyCode)
+		public async Task<string> CreateIdentity(CreateIdentityArgument Arg, bool VerifyCode,IIdentityCredentialProvider CredentialProvider)
 		{
 			if (string.IsNullOrWhiteSpace(Arg.Credential))
 				throw new PublicArgumentException("请输入用户标识");
-			var msg = await Setting.SignupIdentProvider.Value.VerifyFormat(Arg.Credential);
+			var msg = await CredentialProvider.VerifyFormat(Arg.Credential);
 			if (msg != null)
 				throw new ArgumentException(msg);
 			
-			var canSendMessage = Setting.SignupIdentProvider.Value.IsConfirmable();
+			var canSendMessage = CredentialProvider.IsConfirmable();
 			if (canSendMessage)
 				CheckVerifyCode(
 					ConfirmMessageType.Signup, 
@@ -263,34 +265,38 @@ namespace SF.Auth.Identities
 					Arg.VerifyCode
 					);
 
-			var scopeId = Setting.ClientService.Value.CurrentScopeId;
 
-			var ui = await Setting.SignupIdentProvider.Value.Find(scopeId, Arg.Credential, null);
+			var ui = await CredentialProvider.Find(Arg.Credential, null);
 			if (ui != null)
-				throw new PublicArgumentException($"您输入的{Setting.SignupIdentProvider.Value.Name}已被注册");
+				throw new PublicArgumentException($"您输入的{CredentialProvider.Name}已被注册");
 
-			var uid = await Setting.IdentGenerator.Value.GenerateAsync("Sys.User");
+			var uid = Arg.Identity.Id;
 
-			ui = await Setting.SignupIdentProvider.Value.FindOrBind(
-				scopeId,
+			ui = await CredentialProvider.FindOrBind(
 				Arg.Credential,
 				null,
 				canSendMessage,
 				uid
 				);
 			if (ui.UserId != uid)
-				throw new PublicArgumentException($"您输入的{Setting.SignupIdentProvider.Value.Name}已被注册");
+				throw new PublicArgumentException($"您输入的{CredentialProvider.Name}已被注册");
 
 			if (string.IsNullOrWhiteSpace(Arg.Password))
 				throw new PublicArgumentException("请输入密码");
 			var passwordHash = Setting.PasswordHasher.Value.Hash(Arg.Password);
 			await Setting.IdentStorage.Value.Create(
-				new IdentCreateArgument
+				new IdentityCreateArgument
 				{
-					AccessInfo = Setting.ClientService.Value.AccessSource,
+					AccessSource = Setting.ClientService.Value.AccessSource,
 					PasswordHash = passwordHash,
 					SecurityStamp = Bytes.Random(16),
-					Id=uid
+					Identity=new Identity
+					{
+						Id = uid,
+						Entity = Arg.Identity.Entity,
+						Icon = Arg.Identity.Icon,
+						Name = Arg.Identity.Name
+					}
 				});
 			return await SetOrReturnAccessToken(uid, Arg.Expires, Arg.ReturnToken);
 		}
