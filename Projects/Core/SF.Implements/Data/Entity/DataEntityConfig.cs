@@ -10,7 +10,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
 using SF.Metadata;
-
+using SF.Core.ServiceManagement;
 namespace SF.Data.Entity
 {
 	abstract class DataEntityConfigItem

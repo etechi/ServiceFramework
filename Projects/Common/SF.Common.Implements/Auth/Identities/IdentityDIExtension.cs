@@ -1,13 +1,12 @@
 ﻿using SF.Auth.Identities.Internals;
-using SF.Core.DI;
-using SF.Core.ManagedServices.Admin;
+using SF.Core.ServiceManagement;
 
 namespace SF.Auth.Identities
 {
 	public static class IdentityDIExtension
 	{
-		public static IDIServiceCollection UseIdentity(
-			this IDIServiceCollection sc
+		public static IServiceCollection UseIdentity(
+			this IServiceCollection sc
 			)
 		{
 			sc.AddScoped<IIdentityService, IdentityService>();

@@ -6,39 +6,39 @@ namespace SF.Auth.Identities.Internals
 	public interface IIdentityCredentialStorage
 	{
 		Task<IdentityCredential> FindOrBind(
-			string ProviderId,
+			long ProviderId,
 			string Ident,
 			string UnionIdent,
 			bool Confirmed,
 			long UserId
 			);
 		Task<IdentityCredential> Find(
-			string ProviderId,
+			long ProviderId,
 			string Ident,
 			string UnionIdent
 			);
 
 		Task Bind(
-			string ProviderId,
+			long ProviderId,
 			string Ident,
 			string UnionIdent,
 			bool Confirmed,
 			long UserId
 			);
 		Task Unbind(
-			string ProviderId,
+			long ProviderId,
 			string Ident,
 			long UserId
 			);
 
 		Task SetConfirmed(
-			string ProviderId,
+			long ProviderId,
 			string Ident,
 			bool Confirmed
 			);
 
 		Task<IdentityCredential[]> GetIdents(
-			string ProviderId,
+			long ProviderId,
 			long UserId
 			);
 	}

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http.Dependencies;
 using System.Web;
-using SF.Core.DI;
+using SF.Core.ServiceManagement;
 
 namespace SF.AspNet.DI
 {
@@ -20,15 +20,15 @@ namespace SF.AspNet.DI
 		static object DIScopeKey { get; } = new object();
 		internal static IServiceProvider GetServiceProvider()
 		{
-			var re = (IDIScope)HttpContext.Current.Items[DIScopeKey];
+			var re = (IServiceScope)HttpContext.Current.Items[DIScopeKey];
 			if (re == null)
 			{
 				if (ServiceProvider == null)
 					throw new NotSupportedException();
-				HttpContext.Current.Items[DIScopeKey] = re = ServiceProvider.Resolve<IDIScopeFactory>().CreateScope();
+				HttpContext.Current.Items[DIScopeKey] = re = ServiceProvider.Resolve<IServiceScopeFactory>().CreateServiceScope();
 			}
 
-			return re.ServiceProvider;
+			return re.ServiceResolver;
 		}
 		public void Init(System.Web.HttpApplication context)
 		{
@@ -37,7 +37,7 @@ namespace SF.AspNet.DI
 
 		protected virtual void OnEndRequest(object sender, EventArgs e)
 		{
-			var sm = HttpContext.Current.Items[DIScopeKey] as IDIScope;
+			var sm = HttpContext.Current.Items[DIScopeKey] as IServiceScope;
 			if (sm != null)
 				sm.Dispose();
 		}

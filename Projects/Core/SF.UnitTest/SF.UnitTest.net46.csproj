@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="Data\DBModels.cs" />
     <Compile Include="Data\EFBasic.cs" />
+    <Compile Include="Infrastructure.cs" />
     <Compile Include="DI\FeatureTest.cs" />
     <Compile Include="DI\ServiceManagerTest.cs" />
     <Compile Include="Interception\FeatureTest.cs" />
@@ -87,7 +88,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-   </Target>
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

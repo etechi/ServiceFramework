@@ -6,34 +6,34 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-namespace SF.Core.DI.MicrosoftExtensions
+namespace SF.Core.ServiceManagement.MicrosoftExtensions
 {
 	public class DIServiceCollection :  IDIServiceCollection
 	{
-		static global::Microsoft.Extensions.DependencyInjection.ServiceLifetime MapLifeTime(ServiceLifetime lifetime)
+		static global::Microsoft.Extensions.DependencyInjection.ServiceLifetime MapLifeTime(ServiceInterfaceImplementLifetime lifetime)
 		{
 			switch (lifetime)
 			{
-				case ServiceLifetime.Scoped:
+				case ServiceInterfaceImplementLifetime.Scoped:
 					return global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped;
-				case ServiceLifetime.Singleton:
+				case ServiceInterfaceImplementLifetime.Singleton:
 					return global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton;
-				case ServiceLifetime.Transient:
+				case ServiceInterfaceImplementLifetime.Transient:
 					return global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient;
 				default:
 					throw new NotSupportedException();
 			}
 		}
-		static ServiceLifetime UnmapLifeTime(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime)
+		static ServiceInterfaceImplementLifetime UnmapLifeTime(global::Microsoft.Extensions.DependencyInjection.ServiceLifetime lifetime)
 		{
 			switch (lifetime)
 			{
 				case global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped:
-					return ServiceLifetime.Scoped;
+					return ServiceInterfaceImplementLifetime.Scoped;
 				case global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Singleton:
-					return ServiceLifetime.Singleton;
+					return ServiceInterfaceImplementLifetime.Singleton;
 				case global::Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient:
-					return ServiceLifetime.Transient;
+					return ServiceInterfaceImplementLifetime.Transient;
 				default:
 					throw new NotSupportedException();
 			}
@@ -42,18 +42,18 @@ namespace SF.Core.DI.MicrosoftExtensions
 		{
 			switch (Descriptor.ServiceImplementType)
 			{
-				case ServiceImplementType.Creator:
+				case ServiceInterfaceImplementType.Creator:
 					return new global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
 						Descriptor.ServiceType,
 						Descriptor.ImplementCreator,
 						MapLifeTime(Descriptor.Lifetime)
 						);
-				case ServiceImplementType.Instance:
+				case ServiceInterfaceImplementType.Instance:
 					return new global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
 						Descriptor.ServiceType,
 						Descriptor.ImplementInstance
 						);
-				case ServiceImplementType.Type:
+				case ServiceInterfaceImplementType.Type:
 					return new global::Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
 						Descriptor.ServiceType,
 						Descriptor.ImplementType,
@@ -90,7 +90,7 @@ namespace SF.Core.DI.MicrosoftExtensions
 		{
 			var desc = MapDescriptor(Descriptor);
 			InnerCollection.Add(desc);
-			if (Descriptor.ServiceImplementType==ServiceImplementType.Type)
+			if (Descriptor.ServiceImplementType==ServiceInterfaceImplementType.Type)
 			{
 				var td = Descriptor.ImplementType.IsGeneric() ? Descriptor.ImplementType.GetGenericTypeDefinition() : null;
 				if (td == null || td != typeof(Lazy<>) && td != typeof(Func<>))

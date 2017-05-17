@@ -9,12 +9,12 @@ using System.Web.Http;
 using SF.AspNet.Formatting;
 using SF.Core.Logging;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 
 	public static class IDIRegisterExtension
 	{
-		public static void RegisterMvcControllers(this IDIServiceCollection sc, params System.Reflection.Assembly[] Assemblies)
+		public static void RegisterMvcControllers(this IServiceCollection sc, params System.Reflection.Assembly[] Assemblies)
 		{
 			foreach (var ct in from ass in Assemblies
 							   from type in ass.GetTypes()
@@ -50,7 +50,7 @@ namespace SF.Core.DI
 				);
 		}
 
-		public static void RegisterWebApiControllers(this IDIServiceCollection sc, HttpConfiguration cfg)
+		public static void RegisterWebApiControllers(this IServiceCollection sc, HttpConfiguration cfg)
 		{
 			var ass_resolver = cfg.Services.GetAssembliesResolver();
 			var type_resolver = cfg.Services.GetHttpControllerTypeResolver();
@@ -70,7 +70,7 @@ namespace SF.Core.DI
 			AspNet.DI.DIHttpModule.ServiceProvider=ServiceProvider;
 		}
 
-		public static IDIServiceCollection UseAspNetDIScopeLogger(this IDIServiceCollection sc)
+		public static IServiceCollection UseAspNetDIScopeLogger(this IServiceCollection sc)
 		{
 			//sc.Add(
 			//	typeof(SF.Core.Logging.IDIScopeLogger<>), 
@@ -79,7 +79,7 @@ namespace SF.Core.DI
 			//	);
 			return sc;
 		}
-		public static IDIServiceCollection UseAspNetFilePathStructure(this IDIServiceCollection sc)
+		public static IServiceCollection UseAspNetFilePathStructure(this IServiceCollection sc)
 		{
 			sc.AddSingleton<Hosting.IDefaultFilePathStructure>(sp =>
 				new AspNet.DefaultFilePathStructure()

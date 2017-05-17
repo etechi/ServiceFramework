@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-namespace SF.Core.DI
+using SF.Core.ServiceManagement;
+namespace SF.Core.ServiceManagement
 {
 	
 	public static class CallGuarantorDIServiceCollectionExtension
@@ -16,7 +16,7 @@ namespace SF.Core.DI
 			public Type Type { get; set; }
 		}
 
-		public static void AddCallable<T>(this IDIServiceCollection sc)
+		public static void AddCallable<T>(this IServiceCollection sc)
 			where T: class,ICallable
 		{
 			sc.AddScoped<T, T>();

@@ -1,9 +1,5 @@
 ﻿using SF.Auth.Identities.Models;
-using SF.Core.ManagedServices.Models;
-using SF.KB;
-using SF.Metadata;
 using System.Threading.Tasks;
-using SF.Auth;
 
 namespace SF.Auth.Identities
 {

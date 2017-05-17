@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http.Dependencies;
 using System.Web;
-using SF.Core.DI;
+using SF.Core.ServiceManagement;
 namespace SF.AspNet.DI
 {
 	public class DependencyScope : System.Web.Http.Dependencies.IDependencyScope

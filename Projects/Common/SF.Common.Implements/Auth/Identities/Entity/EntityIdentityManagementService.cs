@@ -42,7 +42,7 @@ namespace SF.Auth.Identities.Entity
 			Ensure.HasContent(Arg.Identity.Name, "身份标识名称");
 			Ensure.Positive(Arg.Identity.Id, "身份标识ID");
 			Ensure.HasContent(Arg.Identity.Entity, "身份类型");
-			Ensure.HasContent(Arg.IdentProvider, "未制定标识提供者");
+			Ensure.Positive(Arg.IdentProvider, "未制定标识提供者");
 			Ensure.HasContent(Arg.CredentialValue, "未指定标识");
 			Ensure.NotNull(Arg.SecurityStamp, "未制定安全戳");
 			

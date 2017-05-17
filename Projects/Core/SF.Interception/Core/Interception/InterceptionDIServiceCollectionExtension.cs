@@ -9,16 +9,16 @@ using System.Reflection.Emit;
 using System.Linq.Expressions;
 using SF.Core.Interception;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class InterceptionDIServiceCollectionExtension
 	{
-		public static IDIServiceCollection UseInterceptingProxyTypeBuilder(this IDIServiceCollection sc)
+		public static IServiceCollection UseInterceptingProxyTypeBuilder(this IServiceCollection sc)
 		{
 			sc.AddSingleton<IInterceptingProxyTypeBuilder, InterceptingProxyTypeBuilder>();
 			return sc;
 		}
-		public static IDIServiceCollection UseProxyInvokerFactory(this IDIServiceCollection sc)
+		public static IServiceCollection UseProxyInvokerFactory(this IServiceCollection sc)
 		{
 			sc.AddSingleton<IProxyInvokerFactory, ProxyInvokerFactory>();
 			return sc;

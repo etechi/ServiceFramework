@@ -12,10 +12,11 @@ using SF.Data.Storage.EntityFrameworkCore;
 using System.Data.Entity;
 
 #endif
-using SF.Core.DI.MicrosoftExtensions;
+
 using SF.Core.DI;
 using SF.Data.Storage;
 using System.Linq;
+using SF.Core.ServiceManagement;
 
 namespace SF.UT.Data
 {
@@ -35,8 +36,7 @@ namespace SF.UT.Data
 	class EFStartup {
 		public IServiceProvider ConfigureService()
 		{
-			var sc = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
-			var isc = new SF.Core.DI.MicrosoftExtensions.DIServiceCollection(sc);
+			var isc = new ServiceCollection();
 
 
 			isc.UseDataModules<DataModels.User, DataModels.Post>();
@@ -56,7 +56,7 @@ namespace SF.UT.Data
 			isc.UseEF6DataEntity<AppContext>();
 #endif
 			isc.UseDataContext();
-			return isc.BuildServiceProvider();
+			return isc.BuildServiceResolver();
 		}
 	}
 
@@ -66,10 +66,10 @@ namespace SF.UT.Data
 		public void Test()
 		{
 			var sp = new EFStartup().ConfigureService();
-			var sf = sp.Resolve<IDIScopeFactory>();
-			using(var s = sf.CreateScope())
+			var sf = sp.Resolve<IServiceScopeFactory>();
+			using(var s = sf.CreateServiceScope())
 			{
-				var isp = s.ServiceProvider;
+				var isp = s.ServiceResolver;
 				var ac = isp.Resolve<IDataSet<DataModels.User>>();
 				ac.Add(new DataModels.User { Id = "aa", FirstName = "c", LastName = "y" });
 				ac.Context.SaveChanges();
@@ -78,9 +78,9 @@ namespace SF.UT.Data
 				Assert.Equal(1, re.Length);
 				Assert.Equal("c", re[0].FirstName);
 			}
-			using (var s = sf.CreateScope())
+			using (var s = sf.CreateServiceScope())
 			{
-				var isp = s.ServiceProvider;
+				var isp = s.ServiceResolver;
 				var ac = isp.Resolve<IDataContext>();
 				var re = ac.Set<DataModels.User>().AsQueryable().ToArrayAsync().Result;
 				Assert.Equal(1, re.Length);

@@ -8,12 +8,12 @@ using SF.Core.Serialization;
 using SF.Core.NetworkService;
 using SF.Core.ServiceFeatures;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class ServiceFeatureDICollectionExtension
 	{
 		public static void UseServiceFeatureControl(
-					this IDIServiceCollection sc
+					this IServiceCollection sc
 					)
 		{
 			sc.AddScoped<IServiceFeatureControlService, ServiceFeatureControlService>();

@@ -1,5 +1,4 @@
-﻿using SF.Core.DI;
-using SF.Metadata;
+﻿using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;

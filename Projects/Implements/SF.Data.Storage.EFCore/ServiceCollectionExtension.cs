@@ -14,7 +14,7 @@ namespace SF.Core.DI
 	public static class EFCoreServiceCollectioExtension
 	{
 		
-		public static IDIServiceCollection UseEFCoreDataEntity<TDbContext>(this IDIServiceCollection sc)
+		public static IServiceCollection UseEFCoreDataEntity<TDbContext>(this IServiceCollection sc)
 			where TDbContext : DbContext
 		{
 			sc.AddScoped<IDataContextProviderFactory>(x => 

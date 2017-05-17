@@ -12,27 +12,25 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Services.Media;
-using SF.Core.ManagedServices;
-using SF.Core.ManagedServices.Admin;
 using SF.Core.Hosting;
 using SF.KB.Mime;
 using SF.KB.Mime.Providers;
 using SF.KB.PhoneNumbers;
 using SF.KB.PhoneNumbers.Providers;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class KBDIServiceCollectionExtension
 	{
-		public static IDIServiceCollection UseDefaultMimeResolver(
-			this IDIServiceCollection sc
+		public static IServiceCollection UseDefaultMimeResolver(
+			this IServiceCollection sc
 			)
 		{
 			sc.AddSingleton<IMimeResolver, DefaultMimeResolver>();
 			return sc;
 		}
-		public static IDIServiceCollection UseDefaultPhoneNumberValidator(
-		   this IDIServiceCollection sc
+		public static IServiceCollection UseDefaultPhoneNumberValidator(
+		   this IServiceCollection sc
 		   )
 		{
 			sc.AddSingleton<IPhoneNumberValidator, DefaultPhoneNumberValidator>();

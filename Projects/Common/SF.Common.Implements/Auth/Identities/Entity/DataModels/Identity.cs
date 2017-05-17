@@ -66,7 +66,7 @@ namespace SF.Auth.Identities.DataModels
 		[Comment("注册标识类型")]
 		[MaxLength(50)]
 		[Required]
-		public string SignupIdentProvider { get; set; }
+		public long SignupIdentProvider { get; set; }
 
 		[MaxLength(200)]
 		[Index(Order = 2)]

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class BootableDIServiceCollectionExtension
 	{
@@ -16,33 +16,33 @@ namespace SF.Core.DI
 				return Callback();
 			}
 		}
-		public static IDIServiceCollection AddBootstrap(
-			this IDIServiceCollection sc, 
+		public static IServiceCollection AddBootstrap(
+			this IServiceCollection sc, 
 			Func<IServiceProvider,Task<IDisposable>> Callback)
 			{
-				sc.Normal().AddSingleton<IServiceBootable>(sp =>
+				sc.AddSingleton<IServiceBootable>(sp =>
 					new BootableHelper
 					{
 						Callback = () => Callback(sp)
 					});
 				return sc;
 			}
-		public static IDIServiceCollection AddBootstrap(this IDIServiceCollection sc, Func<IServiceProvider,Task> Callback)
+		public static IServiceCollection AddBootstrap(this IServiceCollection sc, Func<IServiceProvider,Task> Callback)
 			=> sc.AddBootstrap(
 				async sp => {
 					await Callback(sp);
 					return Disposable.Empty;
 				}
 				);
-		public static IDIServiceCollection AddBootstrap(
-			this IDIServiceCollection sc,
+		public static IServiceCollection AddBootstrap(
+			this IServiceCollection sc,
 			Func<IServiceProvider, IDisposable> Callback)
 			=> sc.AddBootstrap(
 				sp =>
 				Task.FromResult(Callback(sp))
 				);
 		
-		public static IDIServiceCollection AddBootstrap(this IDIServiceCollection sc, Action<IServiceProvider> Callback)
+		public static IServiceCollection AddBootstrap(this IServiceCollection sc, Action<IServiceProvider> Callback)
 			=> sc.AddBootstrap(
 				sp => {
 					Callback(sp);

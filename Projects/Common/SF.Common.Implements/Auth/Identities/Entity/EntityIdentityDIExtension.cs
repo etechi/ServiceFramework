@@ -1,23 +1,23 @@
 ﻿using SF.Auth.Identities.Internals;
-using SF.Core.DI;
-using SF.Core.ManagedServices.Admin;
+using SF.Core.ServiceManagement;
+using SF.Core.ServiceManagement.Management;
 
 namespace SF.Auth.Identities.Entity
 {
 	public static class EntityIdentityDIExtension
 	{
-		public static IDIServiceCollection UseIdentityEntityStorage(
-			this IDIServiceCollection sc,
+		public static IServiceCollection UseIdentityEntityStorage(
+			this IServiceCollection sc,
 			string TablePrefix = null
 			)
 		{
-			sc.Normal().UseDataModules<
+			sc.UseDataModules<
 				DataModels.Identity,
 				DataModels.IdentityCredential
 				> (TablePrefix);
 
 			sc.AddScoped<IIdentityManagementService, EntityIdentityManagementService>();
-			sc.Normal().AddTransient<IIdentStorage>(sp => (IIdentStorage)sp.Resolve<IIdentityManagementService>());
+			sc.AddTransient<IIdentStorage>(sp => (IIdentStorage)sp.Resolve<IIdentityManagementService>());
 			sc.AddScoped<IIdentityCredentialStorage, EntityIdentityCredentialStorage<DataModels.IdentityCredential>>();
 			return sc;
 		}

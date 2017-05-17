@@ -32,7 +32,7 @@ namespace SF.Auth.Identities.Internals
 		[Required]
 		[Comment("登录凭证提供者")]
 		[MaxLength(100)]
-		public string IdentProvider { get; set; }
+		public long IdentProvider { get; set; }
 	}
 
 	[Comment("用户身份数据")]

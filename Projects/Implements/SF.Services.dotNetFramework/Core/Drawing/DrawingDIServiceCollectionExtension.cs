@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using SF.Maths;
 using SF.Core.Drawing;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class DrawingDIServiceCollectionExtension
 	{
-		public static IDIServiceCollection UseSystemDrawing(this IDIServiceCollection sc)
+		public static IServiceCollection UseSystemDrawing(this IServiceCollection sc)
 		{
 			sc.AddSingleton<IImageProvider, Drawing.dotNetFramework.ImageProcessor>();
 			return sc;

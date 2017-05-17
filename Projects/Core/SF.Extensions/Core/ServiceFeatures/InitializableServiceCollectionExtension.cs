@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class InitializableDIServiceCollectionExtension
 	{
@@ -17,12 +17,12 @@ namespace SF.Core.DI
 				return Callback();
 			}
 		}
-		public static IDIServiceCollection AddInitializer(
-			this IDIServiceCollection sc, 
+		public static IServiceCollection AddInitializer(
+			this IServiceCollection sc, 
 			string Title,
 			Func<IServiceProvider,Task> Callback)
 			{
-				sc.Normal().AddSingleton<IServiceInitializable>(sp =>
+				sc.AddSingleton<IServiceInitializable>(sp =>
 					new InitHelper
 					{
 						Title=Title,
@@ -31,8 +31,8 @@ namespace SF.Core.DI
 				return sc;
 			}
 		
-		public static IDIServiceCollection AddInitializer(
-			this IDIServiceCollection sc,
+		public static IServiceCollection AddInitializer(
+			this IServiceCollection sc,
 			string Title,
 			Action<IServiceProvider> Callback)
 		{

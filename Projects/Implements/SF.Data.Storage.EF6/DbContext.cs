@@ -1,4 +1,4 @@
-﻿using SF.Core.DI;
+﻿using SF.Core.ServiceManagement;
 using SF.Data.Storage;
 using SF.Data.Storage.EF6;
 using System;

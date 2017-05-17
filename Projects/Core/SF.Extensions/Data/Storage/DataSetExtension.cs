@@ -326,6 +326,41 @@ namespace SF.Data.Storage
 				}).ToList();
 		}
 
+		public static async Task<bool> TrySetDefaultItem<M>(
+			this IDataSet<M> DataSet,
+			M Model,
+			bool NewDefaultMode,
+			Func<M,bool> IsModelDefaultItem,
+			Action<M,bool> SetDefault,
+			Expression<Func<M,bool>> ScopeLimit,
+			Expression<Func<M,bool>> IsCurRecord,
+			Expression<Func<M,bool>> IsDefaultRecord
+			)
+			where M:class
+		{
+			if (IsModelDefaultItem(Model))
+				return false;
+			var curDefaultEntity = await DataSet.AsQueryable(false)
+				.Where(ScopeLimit)
+				.Where(Expression.Lambda<Func<M,bool>>(
+					IsCurRecord.Body.Not(),
+					IsCurRecord.Parameters
+					))
+				.Where(IsDefaultRecord)
+				.SingleOrDefaultAsync();
+			if (curDefaultEntity == null || NewDefaultMode)
+			{
+				SetDefault(Model,true);
+				DataSet.Update(Model);
+				if (curDefaultEntity != null)
+				{
+					SetDefault(curDefaultEntity,false);
+					DataSet.Update(curDefaultEntity);
+				}
+				return true;
+			}
+			return false;
+		}
 
 		static void TreeCollect<T,D>(D cur, IEnumerable<T> items, Func<T, IEnumerable<T>> get_children,Func<T,D,D> converter,  List<D> all_items)
 		{

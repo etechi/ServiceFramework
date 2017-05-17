@@ -7,12 +7,12 @@ using System.Reflection;
 using SF.Core.Serialization;
 using SF.Core.NetworkService;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class NetworkServiceDICollectionExtension
 	{
 		public static void UseNetworkService(
-					this IDIServiceCollection sc,
+					this IServiceCollection sc,
 					IEnumerable<Type> Services=null
 					)
 		{

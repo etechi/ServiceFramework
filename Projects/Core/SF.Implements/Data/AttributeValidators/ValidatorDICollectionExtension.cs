@@ -7,17 +7,17 @@ using System.Reflection;
 using SF.Metadata;
 using SF.Data.Entity;
 using SF.Data.AttributeValidators;
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class ValidatorDICollectionExtension
 	{
-		public static IDIServiceCollection UseDataAttributeValidator(this IDIServiceCollection sc)
+		public static IServiceCollection UseDataAttributeValidator(this IServiceCollection sc)
 		{
-			sc.Normal().AddSingleton<IObjectAttributeValidator, ObjectAttributeValidator>();
-			sc.Normal().AddSingleton<IValueValidator, MaxLengthValidator> ();
-			sc.Normal().AddSingleton<IValueValidator, MinLengthValidator>();
-			sc.Normal().AddSingleton<IValueValidator, RangeValidator>();
-			sc.Normal().AddSingleton<IValueValidator, RequiredValidator>();
+			sc.AddSingleton<IObjectAttributeValidator, ObjectAttributeValidator>();
+			sc.AddSingleton<IValueValidator, MaxLengthValidator> ();
+			sc.AddSingleton<IValueValidator, MinLengthValidator>();
+			sc.AddSingleton<IValueValidator, RangeValidator>();
+			sc.AddSingleton<IValueValidator, RequiredValidator>();
 
 			return sc;
 		}

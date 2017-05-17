@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using SF.Core.Logging;
-using SF.Core.DI;
 using Microsoft.Extensions.Logging;
 using SF.Core.Logging.MicrosoftExtensions;
 

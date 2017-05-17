@@ -67,8 +67,8 @@
     <Compile Include="Data\Storage\DataSetExtension.cs" />
     <Compile Include="Data\Storage\DIServiceCollectionExtension.cs" />
     <Compile Include="Data\Storage\IContextQueryableExtensions.cs" />
-    <Compile Include="Core\DI\ServiceCollectionExtension.cs" />
-    <Compile Include="Core\DI\ServiceProviderExtension.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceCollectionExtension.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceResolverExtension.cs" />
     <Compile Include="Data\Entity\EntityResolver.cs" />
     <Compile Include="Data\PagingQueryBuilder.cs" />
     <Compile Include="Data\ContextQueryableExtension.cs" />
@@ -112,7 +112,7 @@
     <Compile Include="Core\Logging\LoggerExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\Reflection\TypeExtensions.cs" />
-    <Compile Include="Core\ManagedServices\ManagedServiceCollectionExtension.cs" />
+    <Compile Include="Core\ManagedServices\ServiceCollectionExtension.cs" />
     <Compile Include="System\Threading\ObjectSyncQueue.cs" />
     <Compile Include="System\Threading\SyncScope.cs" />
     <Compile Include="UIEnsure.cs" />

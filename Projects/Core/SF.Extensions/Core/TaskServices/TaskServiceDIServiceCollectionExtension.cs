@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class TaskServiceDIServiceCollectionExtension
 	{
@@ -17,8 +17,8 @@ namespace SF.Core.DI
 			public string Name { get; set; }
 			public bool AutoStartup { get; set; }
 		}
-		public static IDIServiceCollection AddTaskService(
-			this IDIServiceCollection sc,
+		public static IServiceCollection AddTaskService(
+			this IServiceCollection sc,
 			string Name,
 			Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Entry,
 			bool AutoStartup = true
@@ -32,8 +32,8 @@ namespace SF.Core.DI
 			});
 			return sc;
 		}
-		public static IDIServiceCollection AddTaskService(
-			this IDIServiceCollection sc,
+		public static IServiceCollection AddTaskService(
+			this IServiceCollection sc,
 			string Name,
 			Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Start,
 			Func<Task> Stop,
@@ -60,8 +60,8 @@ namespace SF.Core.DI
 			return sc;
 		}
 
-		public static IDIServiceCollection AddTimerService(
-			this IDIServiceCollection sc,
+		public static IServiceCollection AddTimerService(
+			this IServiceCollection sc,
 			string Name,
 			int Period,
 			Func<IServiceProvider, Task<int>> TimerCallback,

@@ -4,11 +4,10 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
-using SF.Core.ManagedServices;
 using SF.Core.DI;
-using SF.Core.DI.MicrosoftExtensions;
-using SF.Core.ManagedServices.Storages;
-using SF.Core.ManagedServices.Runtime;
+using SF.Core.ServiceManagement.Storages;
+using SF.Core.ServiceManagement.Internals;
+using SF.Core.ServiceManagement;
 
 namespace SF.UT
 {
@@ -65,7 +64,7 @@ namespace SF.UT
         [Fact]
         public void Test1()
         {
-			var isc = SF.Core.DI.MicrosoftExtensions.DIServiceCollection.Create();
+			var isc = new ServiceCollection();
 
 
 			//var isc = sc.GetDIServiceCollection();
@@ -76,40 +75,40 @@ namespace SF.UT
 			msc.AddScoped<IOperator, Substract>();
 			msc.AddScoped<IAgg, Agg>();
 
-			var rsp = isc.BuildServiceProvider();
-			var sf = rsp.Resolve<IDIScopeFactory>();
-			using (var s = sf.CreateScope())
+			var rsp = isc.BuildServiceResolver();
+			var sf = rsp.Resolve<IServiceScopeFactory>();
+			using (var s = sf.CreateServiceScope())
 			{
-				var sp = s.ServiceProvider;
+				var sp = s.ServiceResolver;
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
-				ts.SetConfig<IOperator, Add>("add", null);
-				ts.SetConfig<IOperator, Substract>("substract", null);
-				ts.SetConfig<IAgg, Agg>("agg1", new { op = "add", cfg = new { Op = "add", Add = 10000 } });
-				ts.SetConfig<IAgg, Agg>("agg2", new { op = "add", cfg = new { Op = "add", Add = 20000 } });
-				ts.SetDefaultService<IAgg>("agg1");
+				ts.SetConfig<IOperator, Add>(1, null);
+				ts.SetConfig<IOperator, Substract>(1, null);
+				ts.SetConfig<IAgg, Agg>(1, new { op = "add", cfg = new { Op = "add", Add = 10000 } });
+				ts.SetConfig<IAgg, Agg>(2, new { op = "add", cfg = new { Op = "add", Add = 20000 } });
+				ts.SetDefaultService<IAgg>(1);
 
 				var agg = sp.TryResolve<IAgg>();
 				var re = agg.Sum(new[] { 1, 2, 3, 4 });
 				Assert.Equal(10020, re);
 			}
-			using (var s = sf.CreateScope())
+			using (var s = sf.CreateServiceScope())
 			{
-				var sp = s.ServiceProvider;
+				var sp = s.ServiceResolver;
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
-				ts.SetDefaultService<IAgg>("agg2");
+				ts.SetDefaultService<IAgg>(2);
 
 				var agg = sp.TryResolve<IAgg>();
 				var re = agg.Sum(new[] { 1, 2, 3, 4 });
 				Assert.Equal(20020, re);
 			}
-			using (var s = sf.CreateScope())
+			using (var s = sf.CreateServiceScope())
 			{
-				var sp = s.ServiceProvider;
+				var sp = s.ServiceResolver;
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
-				ts.SetConfig<IAgg, Agg>("agg2", new { op = "add", cfg = new { Op = "substract", Add = 20000 } });
+				ts.SetConfig<IAgg, Agg>(2, new { op = "add", cfg = new { Op = "substract", Add = 20000 } });
 
 				var agg = sp.TryResolve<IAgg>();
 				var re = agg.Sum(new[] { 1, 2, 3, 4 });

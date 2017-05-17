@@ -12,31 +12,29 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Services.Media;
-using SF.Core.ManagedServices;
-using SF.Core.ManagedServices.Admin;
 using SF.Core.Hosting;
+using SF.Core.ServiceManagement.Management;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class MediaDIServiceCollectionExtension
 	{
-		public static IDIServiceCollection UseMediaService(
-			this IDIServiceCollection sc
+		public static IServiceCollection UseMediaService(
+			this IServiceCollection sc
 			)
 		{
-			sc.Normal().AddSingleton<IMediaMetaCache, MediaMetaCache>();
+			sc.AddSingleton<IMediaMetaCache, MediaMetaCache>();
 			sc.AddScoped<IMediaManager, MediaManager>();
 			sc.AddScoped<IMediaService, MediaService>();
 
 			sc.AddScoped<IMediaStorage, SF.Services.Media.Storages.FileSystemMediaStorage>();
 			sc.AddScoped<IMediaStorage, SF.Services.Media.Storages.StaticFileMediaStorage>();
 
-			if(sc.IsManagedServiceCollection())
 			sc.AddInitializer(
 				"初始化媒体服务组",
 				async sp =>
 				{
-					var sim = sp.Resolve<ManagedServices.Admin.IServiceInstanceManager>();
+					var sim = sp.Resolve<IServiceInstanceManager>();
 
 					var fpr = await sim.ResolveDefaultService<IFilePathResolver>();
 					var fc = await sim.ResolveDefaultService<IFileCache>();

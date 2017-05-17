@@ -1,11 +1,11 @@
 using SF.Core.Serialization;
 using SF.Core.Serialization.Newtonsoft;
 using System.Linq;
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class NewtonsoftJsonDICollectionExtension
 	{
-		public static void UseNewtonsoftJson(this IDIServiceCollection sc)
+		public static void UseNewtonsoftJson(this IServiceCollection sc)
 		{
 			var s = new JsonSerializer();
 			sc.AddSingleton<IJsonSerializer>(s);

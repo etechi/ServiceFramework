@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using SF.Core.DI;
-using SF.Core.DI.MicrosoftExtensions;
+using SF.Core.ServiceManagement;
 using SF.AspNet.DI;
 using System.Web.Http;
 using SF.AdminSite;
 using SF.Metadata;
-using SF.Core.ManagedServices;
 using SF.Services.Test;
 using SF.Core.TaskServices;
 using SF.Core.Hosting;
@@ -99,14 +97,14 @@ namespace SF.AdminSite
 				.AddDebug();
 			return ls;
 		}
-		protected override IDIServiceCollection OnBuildServiceCollection()
-			=> DIServiceCollection.Create();
-		protected override IServiceProvider OnBuildServiceProvider(IDIServiceCollection Services)
-			=>Services.BuildServiceProvider();
+		protected override IServiceCollection OnBuildServiceCollection()
+			=> new SF.Core.ServiceManagement.ServiceCollection();
+		protected override IServiceProvider OnBuildServiceProvider(IServiceCollection Services)
+			=>Services.BuildServiceResolver();
 
 		public static AppInstanceBuilder Default { get; } = new AppInstanceBuilder();
 
-		protected override void OnConfigServices(IDIServiceCollection Services)
+		protected override void OnConfigServices(IServiceCollection Services)
 		{
 			Services.AddLogService(LogService);
 

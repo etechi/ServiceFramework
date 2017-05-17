@@ -67,6 +67,25 @@ namespace SF
 			if (value==null)
 				throw new ArgumentNullException(name);
 		}
+		
+		public static T Assert<T>(this T value, Func<T,bool> Test, Func<T,string> Message) 
+		{
+			if (!Test(value))
+				throw new InvalidOperationException(Message(value));
+			return value;
+		}
+		public static T Error<T>(this T value, Func<T, bool> Test, Func<T, string> Message)
+		{
+			if (Test(value))
+				throw new InvalidOperationException(Message(value));
+			return value;
+		}
+		public static T AssertNotNull<T>(this T value, Func< string> Message) where T : class
+		{
+			if (value==null)
+				throw new InvalidOperationException(Message());
+			return value;
+		}
 		public static void NotEqual<T>(T value, T unexcept, string name)
 			where T:IEquatable<T>
 		{

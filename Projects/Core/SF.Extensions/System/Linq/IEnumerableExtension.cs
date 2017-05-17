@@ -66,5 +66,16 @@ namespace System.Linq
 			}
 			return -1;
 		}
+		public static void ForEach<T>(this IEnumerable<T> enumerable,Action<T> Action)
+		{
+			foreach (var it in enumerable)
+				Action(it);
+		}
+		public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T,int> Action)
+		{
+			var idx = 0;
+			foreach (var it in enumerable)
+				Action(it,idx++);
+		}
 	}
 }

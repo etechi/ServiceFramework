@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Core.DI;
+using SF.Core.ServiceManagement;
 using SF.Core.Logging;
 
 namespace SF.Core.ServiceFeatures

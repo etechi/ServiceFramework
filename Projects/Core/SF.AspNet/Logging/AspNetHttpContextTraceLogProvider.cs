@@ -1,5 +1,4 @@
-﻿using SF.Core.DI;
-using SF.Core.Hosting;
+﻿using SF.Core.Hosting;
 using SF.Core.Logging;
 using System;
 using System.Collections.Generic;

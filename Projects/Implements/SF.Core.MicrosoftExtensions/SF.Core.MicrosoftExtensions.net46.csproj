@@ -108,9 +108,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Core\DI\MicrosoftExtensions\DIServiceCollection.cs" />
-    <Compile Include="Core\DI\MicrosoftExtensions\MSDIExtensions.cs" />
-    <Compile Include="Core\DI\MicrosoftExtensions\ScopeFactory.cs" />
+    <Compile Include="Core\DI\MicrosoftExtensions\ServiceResolverBuilder.cs" />
     <Compile Include="Core\Logging\MicrosoftExtensions\LoggerDIServiceCollectionExtension.cs" />
     <Compile Include="Core\Logging\MicrosoftExtensions\MSLogMessageFactory.cs" />
     <Compile Include="Core\Logging\MicrosoftExtensions\MSLoggerProvider.cs" />

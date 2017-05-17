@@ -1,5 +1,4 @@
-﻿using SF.Core.DI;
-using SF.Metadata;
+﻿using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +15,9 @@ using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
 using SF.Core.NetworkService;
 using SF.AspNet.NetworkService;
+using SF.Core.ServiceManagement;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public class NetworkServiceConfig
 	{
@@ -27,7 +27,7 @@ namespace SF.Core.DI
 	public static class NetworkServiceDIServiceCollectionExtensions
 	{
 		public static void UseWebApiNetworkService(
-			this IDIServiceCollection sc,
+			this IServiceCollection sc,
 			HttpConfiguration HttpConfiguration,
 			NetworkServiceConfig ServiceConfig=null
 			)

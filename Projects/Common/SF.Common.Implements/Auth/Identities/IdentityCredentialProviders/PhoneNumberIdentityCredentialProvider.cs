@@ -8,7 +8,7 @@ using SF.KB.PhoneNumbers;
 using SF.System.TextMessages;
 using System.Text;
 using System.Collections.Generic;
-using SF.Core.ManagedServices;
+using SF.Core.ServiceManagement;
 
 namespace SF.Auth.Identities.IdentityCredentialProviders
 {

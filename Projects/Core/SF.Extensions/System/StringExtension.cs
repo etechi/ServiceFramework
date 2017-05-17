@@ -121,5 +121,32 @@ namespace System
                 return Enumerable.Empty<string>();
             return s.Split(c).Select(i => i.Trim()).Where(i => i.Length > 0).Distinct();
         }
+
+		public static sbyte ToInt8(this string str) => sbyte.Parse(str);
+		public static short ToInt16(this string str) => short.Parse(str);
+		public static int ToInt32(this string str) => int.Parse(str);
+		public static long ToInt64(this string str) => long.Parse(str);
+		public static byte ToUInt8(this string str) => byte.Parse(str);
+		public static ushort ToUInt16(this string str) => ushort.Parse(str);
+		public static uint ToUInt32(this string str) => uint.Parse(str);
+		public static ulong ToUInt64(this string str) => ulong.Parse(str);
+		public static bool ToBoolean(this string str) => bool.Parse(str);
+		public static double ToDouble(this string str) => double.Parse(str);
+		public static float ToFloat(this string str) => float.Parse(str);
+		public static decimal ToDecimal(this string str) => decimal.Parse(str);
+
+		public static sbyte? TryToInt8(this string str) => sbyte.TryParse(str,out var re)?(sbyte?)re:null;
+		public static short? TryToInt16(this string str) => short.TryParse(str, out var re) ? (short?)re : null;
+		public static int? TryToInt32(this string str) => int.TryParse(str, out var re) ? (int?)re : null;
+		public static long? TryToInt64(this string str) => long.TryParse(str, out var re) ? (long?)re : null;
+		public static byte? TryToUInt8(this string str) => byte.TryParse(str, out var re) ? (byte?)re : null;
+		public static ushort? TryToUInt16(this string str) => ushort.TryParse(str, out var re) ? (ushort?)re : null;
+		public static uint? TryToUInt32(this string str) => uint.TryParse(str, out var re) ? (uint?)re : null;
+		public static ulong? TryToUInt64(this string str) => ulong.TryParse(str, out var re) ? (ulong?)re : null;
+		public static bool? TryToBoolean(this string str) => bool.TryParse(str, out var re) ? (bool?)re : null;
+		public static double? TryToDouble(this string str) => double.TryParse(str, out var re) ? (double?)re : null;
+		public static float? TryToFloat(this string str) => float.TryParse(str, out var re) ? (float?)re : null;
+		public static decimal? TryToDecimal(this string str) => decimal.TryParse(str, out var re) ? (decimal?)re : null;
+
 	}
 }

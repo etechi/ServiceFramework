@@ -7,11 +7,11 @@ using System.Reflection;
 using SF.Metadata;
 using SF.Data.Entity;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class DataEntityResolverDICollectionExtension
 	{
-		public static IDIServiceCollection UseDataEntity(this IDIServiceCollection sc)
+		public static IServiceCollection UseDataEntity(this IServiceCollection sc)
 		{
 			sc.AddSingleton(sp =>
 				new DataEntityConfigCache(

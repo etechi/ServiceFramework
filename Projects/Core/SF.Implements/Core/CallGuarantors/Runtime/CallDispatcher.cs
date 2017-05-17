@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Core.Logging;
-using SF.Core.DI;
+using SF.Core.ServiceManagement;
 using System.Threading;
 
 namespace SF.Core.CallGuarantors.Runtime
@@ -18,9 +18,9 @@ namespace SF.Core.CallGuarantors.Runtime
 		ICallDispatcher
 	{
 		public ILogger Logger { get; }
-		public IDIScopeFactory ScopeFactory { get; }
+		public IServiceScopeFactory ScopeFactory { get; }
 		public Times.ITimeService TimeService { get; set; }
-		public CallDispatcher(ILogger<CallDispatcher> Logger, IDIScopeFactory ScopeFactory, Times.ITimeService TimeService)
+		public CallDispatcher(ILogger<CallDispatcher> Logger, IServiceScopeFactory ScopeFactory, Times.ITimeService TimeService)
 		{
 			this.Logger = Logger;
 			this.TimeService = TimeService;
@@ -30,9 +30,9 @@ namespace SF.Core.CallGuarantors.Runtime
 		public async Task<int> SystemStartupCleanup()
 		{
 			var now = TimeService.Now;
-			using (var scope = ScopeFactory.CreateScope())
+			using (var scope = ScopeFactory.CreateServiceScope())
 			{
-				var storage = scope.ServiceProvider.Resolve<ICallGuarantorStorage>();
+				var storage = scope.ServiceResolver.Resolve<ICallGuarantorStorage>();
 				var timers = await storage.GetInstancesForCleanup(ConstantTimes.ExecutingStartTime);
 				var error_unexcepted = new Exception("系统异常终止");
 				var actions = new List<ICallStorageAction>();
@@ -48,9 +48,9 @@ namespace SF.Core.CallGuarantors.Runtime
 		{
 			var now = TimeService.Now;
 			string[] ids;
-			using (var scope = ScopeFactory.CreateScope())
+			using (var scope = ScopeFactory.CreateServiceScope())
 			{
-				var storage = scope.ServiceProvider.Resolve<ICallGuarantorStorage>();
+				var storage = scope.ServiceResolver.Resolve<ICallGuarantorStorage>();
 				ids = await storage.GetOnTimeInstances(
 					count,
 					now,
@@ -89,9 +89,9 @@ namespace SF.Core.CallGuarantors.Runtime
              //同一个调用不能进入多次
              return execQueue.Queue(id, async () =>
              {
-                 using (var scope = ScopeFactory.CreateScope())
+                 using (var scope = ScopeFactory.CreateServiceScope())
                  {
-					 var sp = scope.ServiceProvider;
+					 var sp = scope.ServiceResolver;
 					 var storage = sp.Resolve<ICallGuarantorStorage>();
                      var instance = await storage.GetInstance(id);
                      var i = id.IndexOf(':');

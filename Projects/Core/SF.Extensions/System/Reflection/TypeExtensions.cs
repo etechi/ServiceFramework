@@ -151,6 +151,17 @@ namespace System.Reflection
 			GetTypedGenericArgument(type, typeof(Lazy<>));
 		public static Type GetGenericArgumentTypeAsFunc(this Type type) =>
 			GetTypedGenericArgument(type, typeof(Func<>));
+		public static Type GetGenericArgumentTypeAsOption(this Type type) =>
+			GetTypedGenericArgument(type, typeof(Option<>));
+		public static (Type,Type) GetGenericArgumentTypeAsFunc2(this Type type)
+		{
+			if (type.IsGeneric() && type.GetGenericTypeDefinition() == typeof(Func<,>))
+			{
+				var args = type.GetGenericArguments();
+				return (args[0], args[1]);
+			}
+			return (null,null);
+		}
 
 		/// <summary>
 		/// Search for a method by name and parameter types.  

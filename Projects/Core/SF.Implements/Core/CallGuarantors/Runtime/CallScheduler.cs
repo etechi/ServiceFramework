@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using SF.Core.Logging;
-using SF.Core.DI;
+using SF.Core.ServiceManagement;
 
 namespace SF.Core.CallGuarantors.Runtime
 {

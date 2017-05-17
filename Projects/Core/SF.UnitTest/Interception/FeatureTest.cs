@@ -4,9 +4,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
-using SF.Core.ManagedServices;
+using SF.Core.ServiceManagement;
 using SF.Core.DI;
-using SF.Core.DI.MicrosoftExtensions;
+
 using SF.Core.Interception;
 namespace SF.UT.Interception
 {

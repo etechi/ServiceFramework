@@ -1,4 +1,4 @@
-﻿using SF.Core.DI;
+﻿using SF.Core.ServiceManagement;
 using SF.Core.Hosting;
 using System;
 using System.Collections.Generic;
@@ -14,9 +14,9 @@ namespace SF.Core.Hosting
 		public EnvironmentType EnvType { get; private set; }
 		public string Name { get; private set; }
 		public ILogService LogService { get; private set; }
-		IDIServiceCollection ServiceCollection { get; set; }
+		IServiceCollection ServiceCollection { get; set; }
 
-		public static IAppInstance Build(EnvironmentType EnvType, string Name=null, IDIServiceCollection ServiceCollection=null, ILogService LogService = null)
+		public static IAppInstance Build(EnvironmentType EnvType, string Name=null, IServiceCollection ServiceCollection=null, ILogService LogService = null)
 		{
 			var builder = new T();
 			builder.Name = Name;
@@ -39,14 +39,14 @@ namespace SF.Core.Hosting
 		{
 			return null;
 		}
-		protected virtual IDIServiceCollection OnBuildServiceCollection()
+		protected virtual IServiceCollection OnBuildServiceCollection()
 		{
 			if (ServiceCollection == null)
 				throw new InvalidOperationException("Require ServiceCollection");
 			return ServiceCollection;
 		}
-		protected abstract void OnConfigServices(IDIServiceCollection Services);
-		protected abstract IServiceProvider OnBuildServiceProvider(IDIServiceCollection Services);
+		protected abstract void OnConfigServices(IServiceCollection Services);
+		protected abstract IServiceProvider OnBuildServiceProvider(IServiceCollection Services);
 
 		protected virtual IAppInstance OnBuildAppInstance(IServiceProvider ServiceProvider,IDisposable Shutdown)
 		{

@@ -26,7 +26,7 @@ namespace SF.Auth.Identities.Entity
 			this.TimeService = TimeService;
 		}
 
-		public async Task<IdentityCredential> FindOrBind(string Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
+		public async Task<IdentityCredential> FindOrBind(long Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
 		{
 			TModel exist;
 			long? existUserId;
@@ -59,7 +59,7 @@ namespace SF.Auth.Identities.Entity
 
 		}
 
-		public async Task<IdentityCredential> Find( string Provider, string Credential, string UnionIdent)
+		public async Task<IdentityCredential> Find(long Provider, string Credential, string UnionIdent)
 		{
 			if (UnionIdent != null)
 				return await DataSet.QuerySingleAsync(
@@ -73,7 +73,7 @@ namespace SF.Auth.Identities.Entity
 					);
 		}
 
-		public async Task Bind(string Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
+		public async Task Bind(long Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
 		{
 			DataSet.Add(new TModel
 			{
@@ -87,12 +87,12 @@ namespace SF.Auth.Identities.Entity
 			await DataSet.Context.SaveChangesAsync();
 		}
 
-		public async Task Unbind(string Provider, string Credential, long UserId)
+		public async Task Unbind(long Provider, string Credential, long UserId)
 		{
 			await DataSet.RemoveRangeAsync(i => i.Provider == Provider && i.Credential == Credential && i.IdentityId == UserId);
 		}
 
-		public async Task SetConfirmed(string Provider, string Credential, bool Confirmed)
+		public async Task SetConfirmed(long Provider, string Credential, bool Confirmed)
 		{
 			await DataSet.Update(
 				i =>i.Provider == Provider && i.Credential == Credential,
@@ -102,7 +102,7 @@ namespace SF.Auth.Identities.Entity
 				});
 		}
 
-		public async Task<IdentityCredential[]> GetIdents(string Provider, long UserId)
+		public async Task<IdentityCredential[]> GetIdents(long Provider, long UserId)
 		{
 			return await DataSet.QueryAsync(
 				i => i.Provider == Provider && i.IdentityId == UserId,

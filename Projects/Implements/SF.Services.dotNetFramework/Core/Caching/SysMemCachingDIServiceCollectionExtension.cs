@@ -1,15 +1,13 @@
-using SF.Core.DI;
 using System.Linq;
 using SF.Metadata;
 using System;
-using SF.Core.ManagedServices.Admin;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class SysMemCachingDIServiceCollectionExtension
 	{
-		public static IDIServiceCollection UseSystemMemoryCache(
-			this IDIServiceCollection sc
+		public static IServiceCollection UseSystemMemoryCache(
+			this IServiceCollection sc
 			)
 		{
 			sc.AddSingleton(typeof(Caching.ILocalCache<>),typeof(Caching.SystemMemoryCache<>));

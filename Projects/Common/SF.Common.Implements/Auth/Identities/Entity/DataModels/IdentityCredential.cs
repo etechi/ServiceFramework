@@ -23,7 +23,7 @@ namespace SF.Auth.Identities.DataModels
 		[Column(Order =2)]
 		[Index("union",Order=2)]
 		[MaxLength(50)]
-		public string Provider { get; set; }
+		public long Provider { get; set; }
 
 		[Key]
 		[Column(Order = 3)]

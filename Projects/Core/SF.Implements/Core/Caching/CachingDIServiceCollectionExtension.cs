@@ -1,17 +1,16 @@
 using SF.Core.DI;
-using SF.Core.ManagedServices.Runtime;
-using SF.Core.ManagedServices.Storages;
 using System.Linq;
 using SF.Metadata;
 using System;
-using SF.Core.ManagedServices.Admin;
+using SF.Core.ServiceManagement;
+using SF.Core.ServiceManagement.Management;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class CachingDIServiceCollectionExtension
 	{
-		public static IDIServiceCollection UseLocalFileCache(
-			this IDIServiceCollection sc
+		public static IServiceCollection UseLocalFileCache(
+			this IServiceCollection sc
 			)
 		{
 			sc.AddScoped<Caching.IFileCache, Caching.LocalFileCache>();

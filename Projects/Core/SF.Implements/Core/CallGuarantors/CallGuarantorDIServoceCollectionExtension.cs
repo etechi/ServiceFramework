@@ -7,12 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Data;
+using SF.Core.ServiceManagement;
+
 namespace SF.Core.DI
 {
 	public static class CallGuarantorDIServiceCollectionExtension
 	{
 
-		public static IDIServiceCollection UseCallGuarantors(this IDIServiceCollection sc)
+		public static IServiceCollection UseCallGuarantors(this IServiceCollection sc)
 		{
 			sc.AddSingleton(sp =>
 				new CallableFactory(sp.Resolve<IEnumerable<ICallableDefination>>())
@@ -23,7 +25,7 @@ namespace SF.Core.DI
 			return sc;
 		}
 
-		public static IDIServiceCollection UseCallGuarantorStorage(this IDIServiceCollection sc,string TablePrefix=null)
+		public static IServiceCollection UseCallGuarantorStorage(this IServiceCollection sc,string TablePrefix=null)
 		{
 			sc.UseDataModules<SF.Core.CallGuarantors.Storage.DataModels.CallExpired, SF.Core.CallGuarantors.Storage.DataModels.CallInstance>(TablePrefix);
 			sc.AddScoped<ICallGuarantorStorage, CallGuarantorStorage>();

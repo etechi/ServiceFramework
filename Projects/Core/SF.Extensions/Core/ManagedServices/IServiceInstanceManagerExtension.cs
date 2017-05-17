@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Reflection;
 using SF.Data.Entity;
-namespace SF.Core.ManagedServices.Admin
+namespace SF.Core.ServiceManagement.Management
 {
 	public static class IServiceInstanceManagerExtension
 	{
@@ -41,11 +41,11 @@ namespace SF.Core.ManagedServices.Admin
 					e.DeclarationId = typeof(I).FullName;
 					e.IsDefaultService = true;
 					e.LogicState = Data.LogicObjectState.Enabled;
-					e.SettingType = typeof(T).FullName + "CreateArguments";
+					//e.SettingType = typeof(T).FullName + "CreateArguments";
 					e.Name = Name ?? comment.Name;
 					e.Title = Title ?? comment.Name;
 					e.Description = Description ?? comment.Description;
-					e.Setting = Json.Stringify(Setting);
+					//e.Setting = Json.Stringify(Setting);
 				});
 	
 		}
@@ -61,7 +61,7 @@ namespace SF.Core.ManagedServices.Admin
 				new ServiceInstanceQueryArgument
 				{
 					DeclarationId = typeof(I).FullName,
-					ImplementId = typeof(T).FullName + "@" + typeof(I).FullName
+					//ImplementId = typeof(T).FullName + "@" + typeof(I).FullName
 				}, Data.Paging.Default
 				);
 			var items = re.Items.ToArray();
@@ -76,11 +76,11 @@ namespace SF.Core.ManagedServices.Admin
 					e.ImplementId = typeof(T).FullName + "@" + typeof(I).FullName;
 					e.DeclarationId = typeof(I).FullName;
 					e.LogicState = Data.LogicObjectState.Enabled;
-					e.SettingType = typeof(T).FullName + "CreateArguments";
+					//e.SettingType = typeof(T).FullName + "CreateArguments";
 					e.Name = Name ?? comment.Name;
 					e.Title = Title ?? comment.Name;
 					e.Description = Description ?? comment.Description;
-					e.Setting = Json.Stringify(Setting);
+					//e.Setting = Json.Stringify(Setting);
 				});
 
 		}
