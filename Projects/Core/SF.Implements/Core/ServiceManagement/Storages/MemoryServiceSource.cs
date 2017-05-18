@@ -51,7 +51,7 @@ namespace SF.Core.ServiceManagement.Storages
 				JsonConvert.SerializeObject(config),
 				Id
 				);
-			ConfigChangedNotifier.NotifyChanged(typeof(T).FullName, Id);
+			ConfigChangedNotifier.NotifyChanged(typeof(I).FullName, Id);
 		}
 		public IServiceConfig GetConfig(string Type,long Id)
 		{

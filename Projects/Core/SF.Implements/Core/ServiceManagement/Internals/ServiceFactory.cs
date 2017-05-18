@@ -36,7 +36,7 @@ namespace SF.Core.ServiceManagement.Internals
 			var cfg = CfgLoader
 				.GetConfig(ServiceType.FullName, Id)
 				.Assert(
-					v => v?.ServiceType != ServiceType.FullName,
+					v => v?.ServiceType == ServiceType.FullName,
 					v => $"服务配置({Id})返回类型({v?.ServiceType})与实际所需类型({v?.ServiceType})不符"
 					);
 			var setting = cfg.Settings;

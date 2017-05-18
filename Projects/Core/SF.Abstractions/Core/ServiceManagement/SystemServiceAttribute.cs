@@ -4,9 +4,8 @@ using System.Text;
 
 namespace SF.Core.ServiceManagement
 {
-	[UnmanagedService]
-	public interface IServiceScopeFactory
+	[AttributeUsage(AttributeTargets.Interface)]
+	public class UnmanagedServiceAttribute : Attribute 
 	{
-		IServiceScope CreateServiceScope();
 	}
 }

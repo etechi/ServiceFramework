@@ -60,6 +60,7 @@
     <Compile Include="Core\ServiceManagement\IServiceInstanceMeta.cs" />
     <Compile Include="Core\ServiceManagement\IServiceMetadata.cs" />
     <Compile Include="Core\ServiceManagement\IServiceResolverBuilder.cs" />
+    <Compile Include="Core\ServiceManagement\SystemServiceAttribute.cs" />
     <Compile Include="Core\ServiceManagement\Management\IServiceDeclarationManager.cs" />
     <Compile Include="Core\ServiceManagement\Management\IServiceImplementManager.cs" />
     <Compile Include="Core\ServiceManagement\Management\IServiceInstanceManager.cs" />

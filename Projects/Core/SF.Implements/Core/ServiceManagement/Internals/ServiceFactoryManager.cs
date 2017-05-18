@@ -60,8 +60,7 @@ namespace SF.Core.ServiceManagement.Internals
 				if (Id + svc.Implements.Count < 0)
 					throw new InvalidOperationException($"服务索引错误，必须大于等于{-svc.Implements.Count}");
 			}
-			else if (ServiceType == typeof(IDefaultServiceLocator) ||
-				ServiceType==typeof(IServiceConfigLoader))
+			else if (ServiceType.IsDefined(typeof(UnmanagedServiceAttribute),true))
 				Id=0;
 			else
 			{ 
@@ -106,24 +105,24 @@ namespace SF.Core.ServiceManagement.Internals
 
 			Lazy<ServiceFactory> entry;
 
+			var RealServiceInstanceId = ResolveDefaultService(ServiceResolver, ServiceType, ServiceInstanceId);
 			var key = new ServiceKey
 			{
 				Type = ServiceType.FullName,
-				Id = ServiceInstanceId,
+				Id = RealServiceInstanceId,
 			};
 			if (FactoryMap.TryGetValue(key, out entry))
 				return entry.Value;
 			var ServiceDeclare = ServiceMetadata.Services.Get(ServiceType);
 			if (ServiceDeclare != null)
 			{
-				ServiceInstanceId = ResolveDefaultService(ServiceResolver, ServiceType, ServiceInstanceId);
 				return FactoryMap.GetOrAdd(
 				   key,
 				   new Lazy<ServiceFactory>(
 					   () => new ServiceFactory(
 						   ServiceType,
 						   ServiceDeclare,
-						   ServiceInstanceId,
+						   RealServiceInstanceId,
 						   ServiceResolver,
 						   ServiceMetadata
 						   )
@@ -141,12 +140,7 @@ namespace SF.Core.ServiceManagement.Internals
 			ServiceDeclare = ServiceMetadata.Services.Get(ServiceTypeDef);
 			if (ServiceDeclare == null)
 				return null;
-
-			key = new ServiceKey
-			{
-				Type = ServiceType.FullName,
-				Id = ServiceInstanceId
-			};
+			
 			if (!FactoryMap.TryGetValue(key, out entry))
 				entry = FactoryMap.GetOrAdd(
 					key, 
@@ -193,8 +187,9 @@ namespace SF.Core.ServiceManagement.Internals
 
 		void IServiceInstanceConfigChangedNotifier.NotifyDefaultChanged(string Type)
 		{
-			long v;
-			DefaultServiceImplementMap.TryRemove(Type, out v);
+			long id;
+			if (DefaultServiceImplementMap.TryRemove(Type, out id))
+				((IServiceInstanceConfigChangedNotifier)this).NotifyChanged(Type,id);
 		}
 
 		

@@ -83,9 +83,9 @@ namespace SF.UT
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
 				ts.SetConfig<IOperator, Add>(1, null);
-				ts.SetConfig<IOperator, Substract>(1, null);
-				ts.SetConfig<IAgg, Agg>(1, new { op = "add", cfg = new { Op = "add", Add = 10000 } });
-				ts.SetConfig<IAgg, Agg>(2, new { op = "add", cfg = new { Op = "add", Add = 20000 } });
+				ts.SetConfig<IOperator, Substract>(2, null);
+				ts.SetConfig<IAgg, Agg>(1, new { op = "SF.UT.IOperator-1", cfg = new { Op = "SF.UT.IOperator-1", Add = 10000 } });
+				ts.SetConfig<IAgg, Agg>(2, new { op = "SF.UT.IOperator-1", cfg = new { Op = "SF.UT.IOperator-1", Add = 20000 } });
 				ts.SetDefaultService<IAgg>(1);
 
 				var agg = sp.TryResolve<IAgg>();
@@ -108,7 +108,7 @@ namespace SF.UT
 				var sp = s.ServiceResolver;
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
-				ts.SetConfig<IAgg, Agg>(2, new { op = "add", cfg = new { Op = "substract", Add = 20000 } });
+				ts.SetConfig<IAgg, Agg>(2, new { op = "SF.UT.IOperator-1", cfg = new { Op = "SF.UT.IOperator-2", Add = 20000 } });
 
 				var agg = sp.TryResolve<IAgg>();
 				var re = agg.Sum(new[] { 1, 2, 3, 4 });
