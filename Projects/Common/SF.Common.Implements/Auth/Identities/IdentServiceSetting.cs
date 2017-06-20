@@ -25,6 +25,7 @@ namespace SF.Auth.Identities
 
 		public Lazy<ITimeService> TimeService { get; set; }
 		public Lazy<ILocalCache<IdentityData>> IdentityDataCache { get; set; }
+		public Func<long,IIdentityCredentialProvider> CredentialProviderResolver { get; set; }
 	}
 
 }

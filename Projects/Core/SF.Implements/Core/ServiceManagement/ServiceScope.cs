@@ -12,15 +12,15 @@ namespace SF.Core.ServiceManagement
 		}
 		static Type TypeServiceProvider = typeof(IServiceProvider);
 		static Type TypeServiceResolver = typeof(IServiceResolver);
-		public override object Resolve(Type ServiceType, long ServiceInstanceId)
+		public override object Resolve(int AppId, Type ServiceType, string ServiceInstanceId,Type InterfaceType)
 		{
-			if (ServiceType == TypeServiceProvider || ServiceType == TypeServiceResolver)
+			if (InterfaceType == TypeServiceProvider || InterfaceType == TypeServiceResolver)
 				return ServiceResolver;
-			return base.Resolve(ServiceType, ServiceInstanceId);
+			return base.Resolve(AppId, ServiceType, ServiceInstanceId, InterfaceType);
 		}
-		protected override CacheType GetCacheType(IServiceFactory Factory)
+		protected override CacheType GetCacheType(IServiceInterfaceFactory Factory)
 		{
-			switch (Factory.ServiceImplement.LifeTime)
+			switch (Factory.ServiceInterface.LifeTime)
 			{
 				case ServiceImplementLifetime.Scoped:
 					return CacheType.CacheScoped;

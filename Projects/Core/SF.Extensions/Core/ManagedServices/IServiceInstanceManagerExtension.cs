@@ -37,14 +37,14 @@ namespace SF.Core.ServiceManagement.Management
 				e=>
 				{
 					var comment = typeof(T).Comment();
-					e.ImplementId = typeof(T).FullName + "@" + typeof(I).FullName;
-					e.DeclarationId = typeof(I).FullName;
+					e.ImplementType = typeof(T).FullName + "@" + typeof(I).FullName;
+					e.ServiceType = typeof(I).FullName;
 					e.IsDefaultService = true;
-					e.LogicState = Data.LogicObjectState.Enabled;
+					e.ObjectState = Data.LogicObjectState.Enabled;
 					//e.SettingType = typeof(T).FullName + "CreateArguments";
 					e.Name = Name ?? comment.Name;
 					e.Title = Title ?? comment.Name;
-					e.Description = Description ?? comment.Description;
+					e.DisplayData.Description = Description ?? comment.Description;
 					//e.Setting = Json.Stringify(Setting);
 				});
 	
@@ -73,13 +73,16 @@ namespace SF.Core.ServiceManagement.Management
 				e =>
 				{
 					var comment = typeof(T).Comment();
-					e.ImplementId = typeof(T).FullName + "@" + typeof(I).FullName;
-					e.DeclarationId = typeof(I).FullName;
-					e.LogicState = Data.LogicObjectState.Enabled;
+					e.ImplementType = typeof(T).FullName + "@" + typeof(I).FullName;
+					e.ServiceType = typeof(I).FullName;
+					e.ObjectState = Data.LogicObjectState.Enabled;
 					//e.SettingType = typeof(T).FullName + "CreateArguments";
 					e.Name = Name ?? comment.Name;
 					e.Title = Title ?? comment.Name;
-					e.Description = Description ?? comment.Description;
+					e.DisplayData = new Data.Models.UIDisplayData
+					{
+						Description = Description ?? comment.Description
+					};
 					//e.Setting = Json.Stringify(Setting);
 				});
 

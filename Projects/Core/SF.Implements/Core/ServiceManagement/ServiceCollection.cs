@@ -15,7 +15,7 @@ namespace SF.Core.ServiceManagement
 		public void Remove(Type Service)
 		{
 			for (var i = 0; i < Descriptors.Count; i++)
-				if (Descriptors[i].InterfaceType == Service)
+				if (Descriptors[i].ServiceType == Service)
 				{
 					Descriptors.RemoveAt(i);
 					i--;

@@ -5,9 +5,11 @@ namespace SF.Core.ServiceManagement
 	public interface IServiceInstanceMeta
 	{
 		[Comment("应用ID")]
-		long AppId { get; }
+		int AppId { get; }
 
-		long Id { get; }
+		long DataScopeId { get; }
+
+		string Id { get; }
 	}
 
 }

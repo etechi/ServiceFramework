@@ -9,26 +9,30 @@ namespace SF.Core.ServiceManagement.Storages
 {
 	public class MemoryServiceSource : IServiceConfigLoader, IDefaultServiceLocator
 	{
+		public class InterfaceConfig : IServiceInterfaceConfig
+		{
+			public string ImplementType { get; set; }
+
+			public string Setting { get; set; }
+		}
 		public class Config : IServiceConfig
 		{
+			public string ServiceType { get; set; }
 
-			public string ImplementType { get; }
-
-			public string ServiceType { get; }
-
-			public long Id { get; }
-
-			public string Settings { get; }
-
-			public Config(string ServiceType, string ImplementType, string Settings,long Id)
+			public string Id { get; set; }
+			public int AppId { get; set; }
+			public IReadOnlyDictionary<string, IServiceInterfaceConfig> Settings { get; set; } = new Dictionary<string, IServiceInterfaceConfig>();
+			public Config Interface<I,T>(object Setting)
 			{
-				this.ServiceType = ServiceType;
-				this.ImplementType = ImplementType;
-				this.Settings = Settings;
-				this.Id = Id;
+				((Dictionary < string, IServiceInterfaceConfig > )Settings)[typeof(I).FullName] = new InterfaceConfig
+				{
+					ImplementType = typeof(T).FullName,
+					Setting = JsonConvert.SerializeObject(Settings)
+				};
+				return this;
 			}
 		}
-		static Dictionary<string, long?> ServiceMap { get; } = new Dictionary<string, long?>();
+		static Dictionary<string, string> ServiceMap { get; } = new Dictionary<string, string>();
 		static Dictionary<string, Config> Configs { get; } = new Dictionary<string, Config>();
 
 		public IServiceInstanceConfigChangedNotifier ConfigChangedNotifier { get; }
@@ -37,29 +41,32 @@ namespace SF.Core.ServiceManagement.Storages
 		{
 			this.ConfigChangedNotifier = ConfigChangedNotifier;
 		}
-		public void SetDefaultService<I>(long Id)
+		public void SetDefaultService<I>(string Id,int AppId=1)
 		{
-			ServiceMap[typeof(I).FullName] = Id;
-			ConfigChangedNotifier.NotifyDefaultChanged(typeof(I).FullName);
+			ServiceMap[typeof(I).FullName+"-"+AppId] = Id;
+			ConfigChangedNotifier.NotifyDefaultChanged(typeof(I).FullName,AppId);
 		}
-		public void SetConfig<I, T>(long Id, object config)
+		public Config SetConfig<I>(string Id,Func<Config,Config> Init,int AppId=1)
 		{
-			var key = typeof(I).FullName + "-" + Id;
-			Configs[key] = new Config(
-				typeof(I).FullName, 
-				typeof(T).FullName + "," + typeof(T).GetAssembly().GetName().Name, 
-				JsonConvert.SerializeObject(config),
-				Id
-				);
-			ConfigChangedNotifier.NotifyChanged(typeof(I).FullName, Id);
+			var key = typeof(I).FullName + "-" + Id+"-"+AppId;
+			var cfg= new Config
+			{
+				ServiceType = typeof(I).FullName,
+				Id = Id,
+				AppId=AppId
+			};
+			
+			Configs[key] = Init(cfg);
+			ConfigChangedNotifier.NotifyChanged(typeof(I).FullName,AppId, Id);
+			return cfg;
 		}
-		public IServiceConfig GetConfig(string Type,long Id)
+		public IServiceConfig GetConfig(string Type, int AppId,string Id)
 		{
-			return Configs[Type+"-"+Id];
+			return Configs[Type+"-"+Id+"-"+AppId];
 		}
-		public long? Locate(string Type)
+		public string Locate(string Type,int AppId)
 		{
-			return ServiceMap.Get(Type);
+			return ServiceMap.Get(Type+"-"+AppId);
 		}
 	}
 

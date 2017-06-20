@@ -124,6 +124,23 @@ namespace System.Reflection
 			return type.GetTypeInfo().ImplementedInterfaces.SingleOrDefault(t => t.Name == Name);
 			//.GetTypeInfo().GetInterface(Name);
 		}
+
+		static System.Collections.Concurrent.ConcurrentDictionary<Type, object> defaultValues { get; } = new Collections.Concurrent.ConcurrentDictionary<Type, object>();
+		static object GetDefaultValue<T>()
+		{
+			return default(T);
+		}
+		static MethodInfo GetDefaultValueMethod { get; } = typeof(TypeExtensions).GetMethodExt(
+			nameof(GetDefaultValue)
+			);
+		public static object GetDefaultValue(this Type type)
+		{
+			return defaultValues.GetOrAdd(type, t =>
+				GetDefaultValueMethod.
+					MakeGenericMethod(t).
+					Invoke(null, Array.Empty<object>())
+			);
+		}
 		public static Reflection.GenericParameterAttributes GetGenericParameterAttributes(this Type Type)
 		{
 			return Type.GetTypeInfo().GenericParameterAttributes;

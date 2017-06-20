@@ -19,8 +19,8 @@ namespace SF.Core.ServiceManagement.Management
 			this.Items = (
 				from svc in ServiceMetadata.Services
 				from impl in svc.Value.Implements
-				let svcType = impl.ServiceType
-				let implType= impl.ImplementType
+				let svcType=svc.Value.ServiceType
+				let implType= impl.Interfaces.FirstOrDefault(i=>i.Type==svc.Value.ServiceType)?.ImplementType
 				let declComment= svcType.GetCustomAttribute<CommentAttribute>()
 				let implComment = implType.GetCustomAttribute<CommentAttribute>()
 				select new ServiceImplement

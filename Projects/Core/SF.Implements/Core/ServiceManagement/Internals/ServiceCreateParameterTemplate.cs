@@ -11,14 +11,21 @@ namespace SF.Core.ServiceManagement.Internals
 	class ServiceCreateParameterTemplate : IServiceCreateParameterTemplate,IServiceInstanceMeta
 	{
 		public IReadOnlyList<object> Args { get; private set; }
-		public IReadOnlyDictionary<string, KeyValuePair<string,long>> ServiceIdents { get; private set; }
-		public long ServiceInstanceIdent { get; private set; }
+		public IReadOnlyDictionary<string, IServiceInstanceSetting> ServiceIdents { get; private set; }
+		public string ServiceInstanceIdent { get; private set; }
 		public ServiceManagement.IServiceInstanceMeta GetServiceInstanceIdent() => this;
-		long ServiceManagement.IServiceInstanceMeta.Id => ServiceInstanceIdent;
+		string ServiceManagement.IServiceInstanceMeta.Id => ServiceInstanceIdent;
 
-		long IServiceInstanceMeta.AppId => throw new NotImplementedException();
+		public int AppId { get; private set; }
 
+		long IServiceInstanceMeta.DataScopeId => throw new NotImplementedException();
+		class ServiceInstanceSetting : IServiceInstanceSetting
+		{
+			public string InstanceId { get; set; }
+			public int AppId { get; set; }
+			public string ServiceType { get; set; }
 
+		}
 		class ServiceConverter : JsonConverter
 		{
 			public IServiceDetector ServiceDetector { get; set; }
@@ -96,7 +103,9 @@ namespace SF.Core.ServiceManagement.Internals
 			{
 				return DictDeserializers.GetOrAdd(type, DictDeserializerCreatorFunc);
 			}
-			public Dictionary<string,KeyValuePair<string,long>> ReplacePath(Dictionary<string, string> dict)
+			public Dictionary<string, IServiceInstanceSetting> ReplacePath(
+				Dictionary<string, string> dict
+				)
 			{
 				// a.b[1].c.d[3].e
 				return dict.ToDictionary(p => {
@@ -120,8 +129,12 @@ namespace SF.Core.ServiceManagement.Internals
 					}
 					return key;
 				}, p => {
-					var pair = p.Value.Split2('-');
-					return new KeyValuePair<string, long>(pair.Item1, pair.Item2.ToInt64());
+					var pair = p.Value.Split('-');
+					return (IServiceInstanceSetting) new ServiceInstanceSetting{
+						AppId= pair[0].ToInt32(),
+						InstanceId= pair[2],
+						ServiceType=pair[1]
+						};
 					}
 				);
 			}
@@ -184,27 +197,28 @@ namespace SF.Core.ServiceManagement.Internals
 			if (jr.TokenType == JsonToken.StartArray || jr.TokenType == JsonToken.StartConstructor || jr.TokenType == JsonToken.StartObject)
 				jr.Skip();
 		}
-		class ServiceIdent : ServiceManagement.IServiceInstanceMeta
-		{
-			public long Id { get; set; }
+		//class ServiceIdent : ServiceManagement.IServiceInstanceSetting
+		//{
+		//	public long Id { get; set; }
 
-			public long AppId { get; set; }
+		//	public long AppId { get; set; }
 
-		}
+		//}
 		public static ServiceCreateParameterTemplate Load(
 			ConstructorInfo ci,
-			long ServiceInstanceId,
+			int AppId,
+			string ServiceInstanceId,
 			string Config,
 			IServiceDetector ServiceDetector
 			)
 		{
 			object[] args;
 			var parameters = ci.GetParameters();
-			IReadOnlyDictionary<string, KeyValuePair<string, long>> sis;
+			IReadOnlyDictionary<string, IServiceInstanceSetting> sis;
 			if (string.IsNullOrWhiteSpace(Config) || Config.Trim()=="null")
 			{
-				sis = new Dictionary<string, KeyValuePair<string,long>>();
-				args = new object[parameters.Length];
+				sis = new Dictionary<string, IServiceInstanceSetting>();
+				args = parameters.Select(p => p.ParameterType.GetDefaultValue()).ToArray();
 			}
 			else
 			{
@@ -271,6 +285,7 @@ namespace SF.Core.ServiceManagement.Internals
 
 			return new ServiceCreateParameterTemplate
 			{
+				AppId=AppId,
 				Args = args,
 				ServiceIdents = sis,
 				ServiceInstanceIdent= ServiceInstanceId
@@ -282,7 +297,7 @@ namespace SF.Core.ServiceManagement.Internals
 			return Args[Index];
 		}
 
-		public KeyValuePair<string,long> GetServiceIdent(string Path)
+		public IServiceInstanceSetting GetServiceIdent(string Path)
 		{
 			return ServiceIdents.Get(Path);
 		}

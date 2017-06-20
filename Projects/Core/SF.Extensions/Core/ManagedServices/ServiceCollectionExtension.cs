@@ -5,7 +5,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class ServiceCollectionExtension
 	{
-		public static bool IsManagedServiceImplement(this ServiceDescriptor sd)
+		public static bool IsManagedServiceImplement(this ServiceInterfaceDescriptor sd)
 		{
 			if (sd.ServiceImplementType != ServiceImplementType.Type)
 				return false;

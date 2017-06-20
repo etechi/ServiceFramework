@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SF.Metadata
+namespace SF.Core.ServiceManagement
 {
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
-	public class OptionalAttribute : Attribute
+	public class LocalAttribute : Attribute
 	{
+
 	}
 }

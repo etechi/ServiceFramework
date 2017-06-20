@@ -27,6 +27,7 @@ namespace SF.Data.Models
 		[Index]
 		[EntityTitle]
 		[TableVisible]
+		[Required]
 		public virtual string Name { get; set; }
 		
 		[Comment("对象状态")]
@@ -37,6 +38,10 @@ namespace SF.Data.Models
 		[Comment("创建时间")]
 		[TableVisible]
 		public virtual DateTime CreatedTime { get; set; }
+
+		[Comment("修改时间")]
+		[TableVisible]
+		public virtual DateTime UpdatedTime { get; set; }
 	}
 
 	public class EntityBase : EntityBase<long>

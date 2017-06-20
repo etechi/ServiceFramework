@@ -18,6 +18,16 @@ namespace SF.Core.ServiceManagement
 				throw new InvalidOperationException("找不到服务:" + typeof(T));
 			return s;
 		}
+		public static I Resolve<S,I>(this IServiceProvider Resolver, string Id =null,int AppId=0)
+			where S : class
+			where I : class
+		{
+			var s = (I)((IServiceResolver)Resolver).Resolve(AppId,typeof(S),Id,typeof(I));
+			if (s == null)
+				throw new InvalidOperationException($"服务{typeof(S)}中找不到接口{typeof(I)}");
+			return s;
+
+		}
 		public static T WithScope<T>(this IServiceProvider sp, Func<IServiceResolver, T> action)
 		{
 			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())

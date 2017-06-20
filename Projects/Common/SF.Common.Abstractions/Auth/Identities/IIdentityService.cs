@@ -10,22 +10,19 @@ namespace SF.Auth.Identities
 		public int? Expires { get; set; }
 		public string CaptchaCode { get; set; }
 		public bool ReturnToken { get; set; }
+		
 	}
 	
-	public class SetPasswordArgument
-	{
-		public string OldPassword { get; set; }
-		public string NewPassword { get; set; }
-		public bool ReturnToken { get; set; }
-	}
 
 	public class SendPasswordRecorveryCodeArgument
 	{
+		public long? CredentialProviderId { get; set; }
 		public string CaptchaCode { get; set; }
 		public string Credential { get; set; }
 	}
 	public class ResetPasswordByRecorveryCodeArgument
 	{
+		public long? CredentialProviderId { get; set; }
 		public string Credential { get; set; }
 		public string VerifyCode { get; set; }
 		public string NewPassword { get; set; }
@@ -33,6 +30,7 @@ namespace SF.Auth.Identities
 	}
 	public class CreateIdentityArgument
 	{
+		public long? CredentialProviderId { get; set; }
 		public Identity Identity { get; set; }
 		public string Credential { get; set; }
 		public string Password { get; set; }
@@ -40,15 +38,21 @@ namespace SF.Auth.Identities
 		public string VerifyCode { get; set; }
 		public bool ReturnToken { get; set; }
 		public int? Expires { get; set; }
-		public IIdentityCredentialProvider CredentialProvider { get; set; }
 	}
 
 	public class SendCreateIdentityVerifyCodeArgument
 	{
+		public long? CredentialProviderId { get; set; }
 		public string Credetial { get; set; }
 		public string CaptchaCode { get; set; }
 	}
 
+	public class SetPasswordArgument
+	{
+		public string OldPassword { get; set; }
+		public string NewPassword { get; set; }
+		public bool ReturnToken { get; set; }
+	}
 	public interface IPassportService
 	{
 		Task<string> Signin(SigninArgument Arg);
@@ -62,6 +66,13 @@ namespace SF.Auth.Identities
 		[Authorize]
 		Task<string> SetPassword(SetPasswordArgument Arg);
 	}
+
+	public class CredentialProvider
+	{
+		public long ProviderId { get; set; }
+		public bool SignupEnabled { get; set; }
+	}
+
 	public interface IIdentityService
     {
 		Task<long?> GetCurIdentityId();
@@ -69,26 +80,24 @@ namespace SF.Auth.Identities
 		Task<Identity> GetCurIdentity();
 
 
-
-		Task<string> Signin(SigninArgument Arg, IIdentityCredentialProvider[] CredentialProvider);
+		Task<string> Signin(SigninArgument Arg, long[] SigninProviderIds);
 
 		Task Signout();
 
-		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg, IIdentityCredentialProvider CredentialProvider);
+		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg, long DefaultCredentialProviderId);
 
 		Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg);
 
 		Task<string> SetPassword(SetPasswordArgument Arg);
 
 
-
 		Task UpdateIdentity(Identity Identity);
 
 		Task<long?> ParseAccessToken(string AccessToken);
 
-		Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg, IIdentityCredentialProvider CredentialProvider);
+		Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg, long DefaultCredentialProviderId, long[] SignupCredentialProviderIds);
 
-		Task<string> CreateIdentity(CreateIdentityArgument Arg, bool VerifyCode, IIdentityCredentialProvider CredentialProvider);
+		Task<string> CreateIdentity(CreateIdentityArgument Arg, bool VerifyCode, long DefaultCredentialProviderId, long[] SignupCredentialProviderIds);
 
 		Task<Identity> GetIdentity(long Id);
 	}

@@ -67,6 +67,11 @@ namespace SF
 			if (value.Equals(default(T)))
 				Error(message);
 		}
+		public static void Equal<T>(T v1, T v2, string message) where T:IEquatable<T>
+		{
+			if (!v1.Equals(v2))
+				Error(message);
+		}
 		public static void HasContent(string str,string name)
 		{
 			if (string.IsNullOrWhiteSpace(str))

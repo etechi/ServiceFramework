@@ -21,6 +21,11 @@ namespace SF.Data.DataModels
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public K Id { get; set; }
 
+		[Index]
+		[Comment("应用ID")]
+		public int AppId { get; set; }
+
+
 		[Comment("名称")]
 		[MaxLength(100)]
 		[Index]
@@ -47,9 +52,11 @@ namespace SF.Data.DataModels
 		[Comment("修改时间")]
 		public DateTime UpdatedTime { get; set; }
 
-		[Index]
-		[Comment("应用ID")]
-		public long ApplicationId { get; set; }
+	
+		[ConcurrencyCheck]
+		[Timestamp]
+		[Comment(Name = "乐观锁时间戳")]
+		public byte[] TimeStamp { get; set; }
 
 	}
 

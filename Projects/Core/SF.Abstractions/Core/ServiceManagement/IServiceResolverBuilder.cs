@@ -6,6 +6,6 @@ namespace SF.Core.ServiceManagement
 {
 	public interface IServiceResolverBuilder 
 	{	
-		IServiceResolver Build(IServiceCollection Services);
+		IServiceResolver Build(IServiceCollection Services,Caching.ILocalCache<object> AppServiceCache);
 	}
 }

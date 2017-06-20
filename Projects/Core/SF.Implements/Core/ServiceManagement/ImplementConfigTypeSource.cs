@@ -74,7 +74,7 @@ namespace SF.Core.ServiceManagement
 						{
 								new RequiredAttribute(),
 								new SF.Metadata.EntityIdentAttribute("系统服务实例") {
-									ScopeField =nameof(Models.ServiceInstanceInternal.DeclarationId),
+									ScopeField =nameof(Models.ServiceInstanceInternal.ServiceType),
 									ScopeValue=realType.FullName
 								}
 						})
@@ -157,7 +157,8 @@ namespace SF.Core.ServiceManagement
 			foreach(var type in (
 				from svcs in Metadata.Services
 				from impl in svcs.Value.Implements
-				select impl.ImplementType
+				from sif in impl.Interfaces
+				select sif.ImplementType
 				).Distinct())
 			{
 				GenerateImplConfig(type, argTypeBuilder);

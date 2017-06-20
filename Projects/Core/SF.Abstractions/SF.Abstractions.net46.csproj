@@ -51,6 +51,7 @@
     <Compile Include="Clients\IClientService.cs" />
     <Compile Include="Clients\IIdentity.cs" />
     <Compile Include="Clients\ISession.cs" />
+    <Compile Include="Core\Architecture\IDataScope.cs" />
     <Compile Include="Core\Caching\ILocalCache.cs" />
     <Compile Include="Core\Caching\IRemoteCache.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantor.cs" />
@@ -60,6 +61,8 @@
     <Compile Include="Core\ServiceManagement\IServiceInstanceMeta.cs" />
     <Compile Include="Core\ServiceManagement\IServiceMetadata.cs" />
     <Compile Include="Core\ServiceManagement\IServiceResolverBuilder.cs" />
+    <Compile Include="Core\ServiceManagement\FromServiceAttribute.cs" />
+    <Compile Include="Core\ServiceManagement\Local.cs" />
     <Compile Include="Core\ServiceManagement\SystemServiceAttribute.cs" />
     <Compile Include="Core\ServiceManagement\Management\IServiceDeclarationManager.cs" />
     <Compile Include="Core\ServiceManagement\Management\IServiceImplementManager.cs" />
@@ -103,6 +106,7 @@
     <Compile Include="Core\Times\ITimeService.cs" />
     <Compile Include="Data\Entity\EntityIdent.cs" />
     <Compile Include="Data\AttributeValidators\IObjectAttributeValidator.cs" />
+    <Compile Include="Data\Models\UIEntityBase.cs" />
     <Compile Include="Data\Models\EntityBase.cs" />
     <Compile Include="Data\Storage\IDataSetProvider.cs" />
     <Compile Include="Data\Storage\TransactionScope.cs" />

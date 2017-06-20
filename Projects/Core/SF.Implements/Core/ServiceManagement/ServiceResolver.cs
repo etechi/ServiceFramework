@@ -13,9 +13,9 @@ namespace SF.Core.ServiceManagement
 			base(FactoryManager)
 		{
 		}
-		protected override CacheType GetCacheType(IServiceFactory Factory)
+		protected override CacheType GetCacheType(IServiceInterfaceFactory Factory)
 		{
-			switch (Factory.ServiceImplement.LifeTime)
+			switch (Factory.ServiceInterface.LifeTime)
 			{
 				case ServiceImplementLifetime.Singleton:
 				case ServiceImplementLifetime.Scoped:

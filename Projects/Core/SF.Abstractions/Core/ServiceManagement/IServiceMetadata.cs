@@ -4,9 +4,10 @@ using System.Collections.Generic;
 
 namespace SF.Core.ServiceManagement
 {
-	public interface IServiceImplement
+	public interface IServiceInterface
 	{
-		Type ServiceType { get; }
+		Type Type { get; }
+		Type ServiceType{ get; }
 
 		Type ImplementType { get; }
 		object ImplementInstance { get; }
@@ -16,6 +17,12 @@ namespace SF.Core.ServiceManagement
 		ServiceImplementLifetime LifeTime { get; }
 		bool IsManagedService { get; }
 	}
+	public interface IServiceImplement
+	{
+		Type ServiceType { get; }
+		Type ImplementType { get; }
+		IReadOnlyList<IServiceInterface> Interfaces { get; }
+	}
 	public interface IServiceDeclaration
 	{
 		Type ServiceType { get; }
@@ -23,6 +30,7 @@ namespace SF.Core.ServiceManagement
 	}
 	public interface IServiceMetadata : IServiceDetector
 	{
+		IReadOnlyDictionary<string, IServiceDeclaration> ServicesByTypeName { get; }
 		IReadOnlyDictionary<Type, IServiceDeclaration> Services { get; }
 	}
 
