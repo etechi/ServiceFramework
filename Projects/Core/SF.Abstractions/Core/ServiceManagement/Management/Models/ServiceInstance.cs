@@ -8,11 +8,12 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Core.ServiceManagement.Models
 {
 	[EntityObject("系统服务实例")]
-	public class ServiceInstance : SF.Data.Models.UIEntityBase<string>
+	public class ServiceInstance : SF.Data.Models.UIEntityBase<long>
 	{
 		[Comment("默认服务")]
 		[TableVisible]
 		public bool IsDefaultService { get; set; }
+
 	}
 	public class ServiceInstanceInternal : ServiceInstance
 	{
@@ -35,6 +36,11 @@ namespace SF.Core.ServiceManagement.Models
 		[TableVisible]
 		[Comment("服务实现")]
 		public string ImplementName { get; set; }
+
+		[Comment("父服务实例ID")]
+		public long? ParentInstanceId { get; set; }
+
+		public string ParentInstanceName { get; set; }
 	}
 
 	public class ServiceInstanceInterface

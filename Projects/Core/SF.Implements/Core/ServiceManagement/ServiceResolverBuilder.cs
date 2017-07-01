@@ -91,12 +91,12 @@ namespace SF.Core.ServiceManagement
 
 		static object NewInstanceCreator<S,I>(IServiceProvider sp) where S : class where I : class
 		{
-			return new Func<string, I>(id => sp.Resolve<S, I>(id));
+			return new Func<long, I>(id => sp.Resolve<S, I>(id));
 		}
 		static object NewInstances<T>(IServiceProvider sp,int count) where T : class
 		{
 			return Enumerable.Range(0, count).Select(i =>
-				(T)((IServiceResolver)sp).Resolve(0,typeof(T), $"[{i}]", typeof(T))
+				(T)((IServiceResolver)sp).Resolve(0,typeof(T), -1-i, typeof(T))
 				);
 		}
 

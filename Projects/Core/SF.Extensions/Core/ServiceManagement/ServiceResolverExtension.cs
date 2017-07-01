@@ -18,7 +18,7 @@ namespace SF.Core.ServiceManagement
 				throw new InvalidOperationException("找不到服务:" + typeof(T));
 			return s;
 		}
-		public static I Resolve<S,I>(this IServiceProvider Resolver, string Id =null,int AppId=0)
+		public static I Resolve<S,I>(this IServiceProvider Resolver, long Id =0,int AppId=0)
 			where S : class
 			where I : class
 		{

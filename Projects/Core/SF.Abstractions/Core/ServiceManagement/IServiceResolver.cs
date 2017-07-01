@@ -18,7 +18,7 @@ namespace SF.Core.ServiceManagement
 		object Resolve(
 			int AppId,
 			Type ServiceType,
-			string ServiceInstanceId,
+			long ServiceInstanceId,
 			Type InterfaceType
 			);
 	}

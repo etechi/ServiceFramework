@@ -1,12 +1,13 @@
 
+using System;
 using System.Collections.Generic;
 
 namespace SF.Core.ServiceManagement.Internals
 {
 	interface IServiceInstanceSetting
 	{
-		string InstanceId { get; }
-		string ServiceType { get; }
+		long InstanceId { get; }
+		Type ServiceType { get; }
 	}
 	interface IServiceCreateParameterTemplate
 	{

@@ -16,8 +16,6 @@ namespace SF.Users.Members.Models
 		[Required]
 		public string PhoneNumber { get; set; }
 
-		[Comment("修改时间")]
-		public DateTime UpdatedTime { get; set; }
 	}
 }
 

@@ -63,7 +63,7 @@ namespace SF.Core.ServiceManagement.Internals
 			//	throw new NotImplementedException($"找不到服务{InterfaceType}，配置路径:{Path}");
 			var ServiceType= MemberAttribute.ServiceType??InterfaceType;
 
-			if (si.ServiceType != null && si.ServiceType != ServiceType.FullName)
+			if (si.ServiceType != null && si.ServiceType != ServiceType)
 				throw new NotSupportedException($"{ServiceType}的配置路径:{Path}返回的服务类型为{si.ServiceType}不是{ServiceType}");
 			var re= Resolver.Resolve(CreateParameterTemplate.AppId, ServiceType, si.InstanceId, InterfaceType);
 			if (re == null && !MemberAttribute.Optional)

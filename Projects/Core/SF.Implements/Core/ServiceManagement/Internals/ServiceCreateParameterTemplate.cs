@@ -12,32 +12,38 @@ namespace SF.Core.ServiceManagement.Internals
 	{
 		public IReadOnlyList<object> Args { get; private set; }
 		public IReadOnlyDictionary<string, IServiceInstanceSetting> ServiceIdents { get; private set; }
-		public string ServiceInstanceIdent { get; private set; }
+		public long ServiceInstanceIdent { get; private set; }
 		public ServiceManagement.IServiceInstanceMeta GetServiceInstanceIdent() => this;
-		string ServiceManagement.IServiceInstanceMeta.Id => ServiceInstanceIdent;
+		long ServiceManagement.IServiceInstanceMeta.Id => ServiceInstanceIdent;
 
 		public int AppId { get; private set; }
 
 		long IServiceInstanceMeta.DataScopeId => throw new NotImplementedException();
 		class ServiceInstanceSetting : IServiceInstanceSetting
 		{
-			public string InstanceId { get; set; }
+			public long InstanceId { get; set; }
 			public int AppId { get; set; }
-			public string ServiceType { get; set; }
+			public Type ServiceType { get; set; }
 
 		}
 		class ServiceConverter : JsonConverter
 		{
 			public IServiceDetector ServiceDetector { get; set; }
-			public Dictionary<string, string> ServiceIdents { get; } = new Dictionary<string, string>();
+			public Dictionary<string, (Type,long)> ServiceIdents { get; } = new Dictionary<string, (Type,long)>();
 			public override bool CanConvert(Type objectType)
 			{
-				return ServiceDetector.IsService(objectType);
+				var realType = objectType.GetGenericArgumentTypeAsLazy() ??
+								objectType.GetGenericArgumentTypeAsFunc() ??
+								objectType;
+
+				var isService = realType.IsInterfaceType() && ServiceDetector.IsService(realType);
+
+				return isService;
 			}
 
 			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 			{
-				ServiceIdents.Add(reader.Path, (string)reader.Value);
+				ServiceIdents.Add(reader.Path,(objectType, Convert.ToInt64(reader.Value)));
 				return null;
 			}
 
@@ -104,7 +110,7 @@ namespace SF.Core.ServiceManagement.Internals
 				return DictDeserializers.GetOrAdd(type, DictDeserializerCreatorFunc);
 			}
 			public Dictionary<string, IServiceInstanceSetting> ReplacePath(
-				Dictionary<string, string> dict
+				Dictionary<string, (Type,long)> dict
 				)
 			{
 				// a.b[1].c.d[3].e
@@ -129,11 +135,11 @@ namespace SF.Core.ServiceManagement.Internals
 					}
 					return key;
 				}, p => {
-					var pair = p.Value.Split('-');
-					return (IServiceInstanceSetting) new ServiceInstanceSetting{
-						AppId= pair[0].ToInt32(),
-						InstanceId= pair[2],
-						ServiceType=pair[1]
+					//var pair = p.Value.Split('-');
+					return (IServiceInstanceSetting)new ServiceInstanceSetting {
+						//AppId= pair[0].ToInt32(),
+						InstanceId = p.Value.Item2,// pair[2],
+						ServiceType=p.Value.Item1
 						};
 					}
 				);
@@ -207,7 +213,7 @@ namespace SF.Core.ServiceManagement.Internals
 		public static ServiceCreateParameterTemplate Load(
 			ConstructorInfo ci,
 			int AppId,
-			string ServiceInstanceId,
+			long ServiceInstanceId,
 			string Config,
 			IServiceDetector ServiceDetector
 			)
@@ -262,7 +268,7 @@ namespace SF.Core.ServiceManagement.Internals
 							if (isService)
 							{
 								SkipComment(jr);
-								sc.ServiceIdents.Add(prop, (string)jr.Value);
+								sc.ServiceIdents.Add(prop,(realType, Convert.ToInt64(jr.Value)));
 								continue;
 							}
 							SkipComment(jr);

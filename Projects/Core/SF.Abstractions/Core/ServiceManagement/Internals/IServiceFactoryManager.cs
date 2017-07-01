@@ -8,7 +8,7 @@ namespace SF.Core.ServiceManagement.Internals
 			IServiceResolver ServiceResolver, 
 			int AppId,
 			Type ServiceType,
-			string ServiceInstanceId,
+			long ServiceInstanceId,
 			Type InterfaceType
 			);
 	}

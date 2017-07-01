@@ -4,10 +4,10 @@ using SF.Metadata;
 using System;
 namespace SF.Core.ServiceManagement.Management
 {
-	public class ServiceInstanceQueryArgument : IQueryArgument<string>
+	public class ServiceInstanceQueryArgument : IQueryArgument<long>
 	{
 		[Comment("ID")]
-		public Option<string> Id { get; set; }
+		public Option<long> Id { get; set; }
 
 		[Comment("服务实例名称")]
 		public string Name { get; set; }
@@ -30,8 +30,8 @@ namespace SF.Core.ServiceManagement.Management
 	[NetworkService]
 	[Comment("系统服务实例", "系统内置服务实例", GroupName = "系统服务管理")]
 	public interface IServiceInstanceManager :
-		IEntityManager<string, Models.ServiceInstanceEditable>,
-		IEntitySource<string, Models.ServiceInstanceInternal, ServiceInstanceQueryArgument>
+		IEntityManager<long, Models.ServiceInstanceEditable>,
+		IEntitySource<long, Models.ServiceInstanceInternal, ServiceInstanceQueryArgument>
 	{
 
 	}

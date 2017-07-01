@@ -9,7 +9,7 @@ namespace SF.Core.ServiceManagement
 	{
 		IServiceFactoryManager FactoryManager { get; }
 		public IServiceResolver ServiceResolver => this;
-		Dictionary<(Type, int, string, Type), object> _Services;
+		Dictionary<(Type, int, long, Type), object> _Services;
 
 		class CachedServices : HashSet<object>
 		{
@@ -28,7 +28,7 @@ namespace SF.Core.ServiceManagement
 		}
 		protected abstract CacheType GetCacheType(IServiceInterfaceFactory Factory);
 
-		void TryAddCache((Type, int, string, Type) key,object CurEntry,object Service)
+		void TryAddCache((Type, int, long, Type) key,object CurEntry,object Service)
 		{
 			if (Service == null)
 				return;
@@ -51,7 +51,7 @@ namespace SF.Core.ServiceManagement
 		}
 
 
-		public virtual object Resolve(int AppId,Type ServiceType, string ServiceInstanceId,Type InterfaceType)
+		public virtual object Resolve(int AppId,Type ServiceType, long ServiceInstanceId,Type InterfaceType)
 		{
 			var factory = FactoryManager.GetServiceFactory(
 				ServiceResolver,
@@ -72,7 +72,7 @@ namespace SF.Core.ServiceManagement
 
 			object curEntiy=null;
 			if (_Services == null)
-				_Services = new Dictionary<(Type, int, string, Type), object>();
+				_Services = new Dictionary<(Type, int, long, Type), object>();
 			else if (_Services.TryGetValue(key, out curEntiy))
 			{
 				if (cacheType == CacheType.CacheScoped)
@@ -110,7 +110,7 @@ namespace SF.Core.ServiceManagement
 
 		public object GetService(Type serviceType)
 		{
-			return Resolve(0, serviceType, null, serviceType);
+			return Resolve(0, serviceType, 0, serviceType);
 		}
 	}
 

@@ -12,7 +12,7 @@ namespace SF.Core.ServiceManagement
 		}
 		static Type TypeServiceProvider = typeof(IServiceProvider);
 		static Type TypeServiceResolver = typeof(IServiceResolver);
-		public override object Resolve(int AppId, Type ServiceType, string ServiceInstanceId,Type InterfaceType)
+		public override object Resolve(int AppId, Type ServiceType, long ServiceInstanceId,Type InterfaceType)
 		{
 			if (InterfaceType == TypeServiceProvider || InterfaceType == TypeServiceResolver)
 				return ServiceResolver;

@@ -15,14 +15,14 @@ namespace SF.Core.ServiceManagement.Internals
 	public interface IServiceConfig
 	{
 		string ServiceType { get; }
-		string Id { get; }
+		long Id { get; }
 		int AppId { get; }
 		IReadOnlyDictionary<string, IServiceInterfaceConfig> Settings { get; }
 	}
 	[UnmanagedService]
 	public interface IServiceConfigLoader
 	{
-		IServiceConfig GetConfig(string ServiceType,int AppId,string Id);
+		IServiceConfig GetConfig(string ServiceType,int AppId, long Id);
 	}
 	
 }

@@ -3,7 +3,7 @@
 	[UnmanagedService]
 	public interface IDefaultServiceLocator
 	{
-		string Locate(string Type,int AppId);
+		long Locate(string Type,int AppId);
 	}
 
 }

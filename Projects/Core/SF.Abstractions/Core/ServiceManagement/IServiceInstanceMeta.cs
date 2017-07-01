@@ -9,7 +9,7 @@ namespace SF.Core.ServiceManagement
 
 		long DataScopeId { get; }
 
-		string Id { get; }
+		long Id { get; }
 	}
 
 }

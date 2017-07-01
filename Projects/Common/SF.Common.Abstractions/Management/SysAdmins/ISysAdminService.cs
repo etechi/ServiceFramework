@@ -12,7 +12,7 @@ namespace SF.Management.SysAdmins
 {
 	
 	[NetworkService]
-	public interface ISysAdminService : IPassportService
+	public interface ISysAdminService 
 	{
 	}
 

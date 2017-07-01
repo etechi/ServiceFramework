@@ -11,8 +11,19 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 {
 	[Table("SysServiceInstance")]
 	[Comment("服务实例")]
-	public class ServiceInstance : SF.Data.DataModels.UIDataEntityBase<string>
+	public class ServiceInstance : SF.Data.DataModels.UIDataEntityBase<long>
 	{
+
+		[Comment("父服务实例Id")]
+		[Index]
+		public long? ParentInstanceId { get; set; }
+
+		[ForeignKey(nameof(ParentInstanceId))]
+		public ServiceInstance ParentInstance { get; set; }
+
+		[InverseProperty(nameof(ParentInstance))]
+		public ICollection<ServiceInstance> ChildInstances { get; set; }
+
 		[Comment("服务定义")]
 		[MaxLength(100)]
 		[Required]

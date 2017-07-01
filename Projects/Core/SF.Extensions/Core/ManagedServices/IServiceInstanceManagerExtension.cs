@@ -7,7 +7,7 @@ namespace SF.Core.ServiceManagement.Management
 {
 	public static class IServiceInstanceManagerExtension
 	{
-		public static async Task<string> ResolveDefaultService<I>(
+		public static async Task<long> ResolveDefaultService<I>(
 			this IServiceInstanceManager Manager
 			)
 		{
@@ -68,7 +68,7 @@ namespace SF.Core.ServiceManagement.Management
 			if (items.Length > 1)
 				return null;
 			return await Manager.EnsureEntity(
-				items.Length==0?null:items[0].Id,
+				items.Length==0?0:items[0].Id,
 				() => new Models.ServiceInstanceEditable { },
 				e =>
 				{

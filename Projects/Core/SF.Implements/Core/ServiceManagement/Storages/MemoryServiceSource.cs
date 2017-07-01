@@ -19,7 +19,7 @@ namespace SF.Core.ServiceManagement.Storages
 		{
 			public string ServiceType { get; set; }
 
-			public string Id { get; set; }
+			public long Id { get; set; }
 			public int AppId { get; set; }
 			public IReadOnlyDictionary<string, IServiceInterfaceConfig> Settings { get; set; } = new Dictionary<string, IServiceInterfaceConfig>();
 			public Config Interface<I,T>(object Setting)
@@ -32,8 +32,8 @@ namespace SF.Core.ServiceManagement.Storages
 				return this;
 			}
 		}
-		static Dictionary<string, string> ServiceMap { get; } = new Dictionary<string, string>();
-		static Dictionary<string, Config> Configs { get; } = new Dictionary<string, Config>();
+		static Dictionary<string, long> ServiceMap { get; } = new Dictionary<string, long>();
+		static Dictionary<long, Config> Configs { get; } = new Dictionary<long, Config>();
 
 		public IServiceInstanceConfigChangedNotifier ConfigChangedNotifier { get; }
 
@@ -41,14 +41,13 @@ namespace SF.Core.ServiceManagement.Storages
 		{
 			this.ConfigChangedNotifier = ConfigChangedNotifier;
 		}
-		public void SetDefaultService<I>(string Id,int AppId=1)
+		public void SetDefaultService<I>(long Id,int AppId=1)
 		{
 			ServiceMap[typeof(I).FullName+"-"+AppId] = Id;
 			ConfigChangedNotifier.NotifyDefaultChanged(typeof(I).FullName,AppId);
 		}
-		public Config SetConfig<I>(string Id,Func<Config,Config> Init,int AppId=1)
+		public Config SetConfig<I>(long Id,Func<Config,Config> Init,int AppId=1)
 		{
-			var key = typeof(I).FullName + "-" + Id+"-"+AppId;
 			var cfg= new Config
 			{
 				ServiceType = typeof(I).FullName,
@@ -56,15 +55,15 @@ namespace SF.Core.ServiceManagement.Storages
 				AppId=AppId
 			};
 			
-			Configs[key] = Init(cfg);
+			Configs[Id] = Init(cfg);
 			ConfigChangedNotifier.NotifyChanged(typeof(I).FullName,AppId, Id);
 			return cfg;
 		}
-		public IServiceConfig GetConfig(string Type, int AppId,string Id)
+		public IServiceConfig GetConfig(string Type, int AppId,long Id)
 		{
-			return Configs[Type+"-"+Id+"-"+AppId];
+			return Configs[Id];
 		}
-		public string Locate(string Type,int AppId)
+		public long Locate(string Type,int AppId)
 		{
 			return ServiceMap.Get(Type+"-"+AppId);
 		}

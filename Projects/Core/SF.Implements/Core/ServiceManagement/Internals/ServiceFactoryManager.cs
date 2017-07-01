@@ -6,28 +6,28 @@ using System.Linq;
 
 namespace SF.Core.ServiceManagement.Internals
 {
-	struct ServiceKey
-	{
-		public string ServiceType;
-		public string Id;
-	}
-	class ServiceKeyComparer : IEqualityComparer<ServiceKey>
-	{
-		public static ServiceKeyComparer Instance { get; } = new ServiceKeyComparer();
+	//struct ServiceKey
+	//{
+	//	public string ServiceType;
+	//	public string Id;
+	//}
+	//class ServiceKeyComparer : IEqualityComparer<ServiceKey>
+	//{
+	//	public static ServiceKeyComparer Instance { get; } = new ServiceKeyComparer();
 
-		public bool Equals(ServiceKey x, ServiceKey y)
-		{
-			return x.ServiceType == y.ServiceType &&
-				x.Id == y.Id;
-		}
+	//	public bool Equals(ServiceKey x, ServiceKey y)
+	//	{
+	//		return x.ServiceType == y.ServiceType &&
+	//			x.Id == y.Id;
+	//	}
 
-		public int GetHashCode(ServiceKey obj)
-		{
-			var c = obj.Id.GetHashCode() ^
-				obj.ServiceType.GetHashCode();
-			return c;
-		}
-	}
+	//	public int GetHashCode(ServiceKey obj)
+	//	{
+	//		var c = obj.Id.GetHashCode() ^
+	//			obj.ServiceType.GetHashCode();
+	//		return c;
+	//	}
+	//}
 	class ServiceInterfaceFactorySet
 	{
 		static System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), (ServiceCreator, System.Reflection.ConstructorInfo)> CreaterDict = new ConcurrentDictionary<(Type, Type), (ServiceCreator, System.Reflection.ConstructorInfo)>();
@@ -58,14 +58,14 @@ namespace SF.Core.ServiceManagement.Internals
 		public int AppId => AppServiceSet.AppId;
 		public IServiceMetadata ServiceMetadata => AppServiceSet.ServiceMetadata;
 
-		public string Id { get; }
+		public long Id { get; }
 		public IServiceImplement Implement { get; }
 		public Lazy<IServiceInterfaceFactory>[] Factories { get; }
 		public IServiceCreateParameterTemplate Template { get; }
 		
 		public IServiceConfig Config { get; }
 		public ServiceInterfaceFactorySet(
-			string Id,
+			long Id,
 			IServiceImplement Implement,
 			IServiceConfig Config,
 			AppServiceSet AppServiceSet
@@ -133,8 +133,8 @@ namespace SF.Core.ServiceManagement.Internals
 		public int AppId { get; }
 		public IServiceMetadata ServiceMetadata { get; }
 		public ConcurrentDictionary<string, HashSet<string>> GenericTypes { get; } = new ConcurrentDictionary<string, HashSet<string>>();
-		public ConcurrentDictionary<string, string> DefaultServiceImplementMap { get; } = new ConcurrentDictionary<string, string>();
-		public ConcurrentDictionary<ServiceKey, ServiceInterfaceFactorySet> FactoryMap { get; } = new ConcurrentDictionary<ServiceKey, ServiceInterfaceFactorySet>(ServiceKeyComparer.Instance);
+		public ConcurrentDictionary<string, long> DefaultServiceImplementMap { get; } = new ConcurrentDictionary<string, long>();
+		public ConcurrentDictionary<long, ServiceInterfaceFactorySet> FactoryMap { get; } = new ConcurrentDictionary<long, ServiceInterfaceFactorySet>();
 		public AppServiceSet(int AppId, IServiceMetadata ServiceMetadata)
 		{
 			this.AppId = AppId;
@@ -143,7 +143,7 @@ namespace SF.Core.ServiceManagement.Internals
 		(IServiceImplement, IServiceConfig) LoadImplementById(
 			IServiceResolver ServiceResolver,
 			Type ServiceType,
-			string Id
+			long Id
 		)
 		{
 			var (ImplementType, cfg) =
@@ -179,19 +179,19 @@ namespace SF.Core.ServiceManagement.Internals
 			IServiceResolver ServiceResolver,
 			Type ServiceType,
 			IServiceDeclaration ServiceDeclaration,
-			string Id
+			long Id
 			)
 		{
 			IServiceImplement ServiceImplement;
 			IServiceConfig cfg = null;
-			if (Id == null)
+			if (Id == 0)
 				ServiceImplement = ServiceDeclaration.Implements.Last();
-			else if (Id.Length > 2 && Id[0] == '[' && Id[Id.Length - 1] == ']')
+			else if (Id<0)
 			{
-				var idx = Id.Substring(1, Id.Length - 2).ToInt32();
-				if (idx >= ServiceDeclaration.Implements.Count)
+				var idx = ServiceDeclaration.Implements.Count + Id;
+				if (idx<0 || idx >= ServiceDeclaration.Implements.Count)
 					throw new IndexOutOfRangeException($"超出服务索引限制{ServiceType}");
-				ServiceImplement = ServiceDeclaration.Implements[idx];
+				ServiceImplement = ServiceDeclaration.Implements[(int)idx];
 			}
 			else
 				(ServiceImplement, cfg) = LoadImplementById(ServiceResolver,ServiceType, Id);
@@ -204,22 +204,22 @@ namespace SF.Core.ServiceManagement.Internals
 				);
 		}
 
-		string ResolveDefaultService(IServiceProvider ServiceProvider, Type ServiceType, string Id)
+		long ResolveDefaultService(IServiceProvider ServiceProvider, Type ServiceType, long Id)
 		{
-			if (Id != null)
+			if (Id != 0)
 				return Id;
 
 			if (DefaultServiceImplementMap.TryGetValue(ServiceType.FullName, out Id))
 				return Id;
 
 			if (ServiceType.IsDefined(typeof(UnmanagedServiceAttribute), true))
-				Id = null;
+				Id = 0;
 			else
 			{
 				var DefaultServiceLocator = ServiceProvider
 					.TryResolve<IDefaultServiceLocator>();
 				if (DefaultServiceLocator == null)
-					Id = null;
+					Id = 0;
 				else
 				{
 					//.AssertNotNull(
@@ -227,7 +227,7 @@ namespace SF.Core.ServiceManagement.Internals
 					//	);
 
 					var LocateResult = DefaultServiceLocator.Locate(ServiceType.FullName, AppId);
-					if (LocateResult == null)
+					if (LocateResult != 0)
 						Id = LocateResult;
 					else
 					{
@@ -241,7 +241,7 @@ namespace SF.Core.ServiceManagement.Internals
 						//		v => v.Count > 1,
 						//		v => $"找不到默认服务"
 						//		);
-						Id = null;
+						Id = 0;
 					}
 				}
 			}
@@ -252,7 +252,7 @@ namespace SF.Core.ServiceManagement.Internals
 		public IServiceInterfaceFactory GetServiceFactory(
 			IServiceResolver ServiceResolver,
 			Type ServiceType,
-			string ServiceInstanceId,
+			long ServiceInstanceId,
 			Type InterfaceType
 			)
 		{
@@ -267,19 +267,15 @@ namespace SF.Core.ServiceManagement.Internals
 				ServiceType,
 				ServiceInstanceId
 				);
-			var key = new ServiceKey
-			{
-				ServiceType = ServiceType.FullName,
-				Id = RealServiceInstanceId,
-			};
+			
 			ServiceInterfaceFactorySet factorySet;
-			if (FactoryMap.TryGetValue(key, out factorySet))
+			if (FactoryMap.TryGetValue(RealServiceInstanceId, out factorySet))
 				return factorySet.GetFactory(InterfaceType);
 			var ServiceDeclare = ServiceMetadata.Services.Get(ServiceType);
 			if (ServiceDeclare != null)
 			{
 				return FactoryMap.GetOrAdd(
-					key,
+					RealServiceInstanceId,
 					(k) => CreateServiceFactorySet(
 						ServiceResolver,
 						ServiceType,
@@ -300,9 +296,9 @@ namespace SF.Core.ServiceManagement.Internals
 			if (ServiceDeclare == null)
 				return null;
 
-			if (!FactoryMap.TryGetValue(key, out factorySet))
+			if (!FactoryMap.TryGetValue(RealServiceInstanceId, out factorySet))
 				factorySet = FactoryMap.GetOrAdd(
-					key,
+					RealServiceInstanceId,
 					(k) => {
 						var types = GenericTypes.GetOrAdd(ServiceTypeDef.FullName, kk => new HashSet<string>());
 						lock (types)
@@ -318,15 +314,11 @@ namespace SF.Core.ServiceManagement.Internals
 			return factorySet.GetFactory(InterfaceType);
 		}
 
-		public void NotifyChanged(string ServiceType, string Id)
+		public void NotifyChanged(string ServiceType, long Id)
 		{
 			ServiceInterfaceFactorySet v;
-			var key = new ServiceKey
-			{
-				ServiceType = ServiceType,
-				Id = Id
-			};
-			FactoryMap.TryRemove(key, out v);
+			
+			FactoryMap.TryRemove(Id, out v);
 
 			//清理泛型实例类的服务
 			var types = GenericTypes.Get(ServiceType);
@@ -334,7 +326,7 @@ namespace SF.Core.ServiceManagement.Internals
 				lock (types)
 				{
 					types.ForEach(type =>
-						FactoryMap.TryRemove(key, out v)
+						FactoryMap.TryRemove(Id, out v)
 						);
 					types.Clear();
 				}
@@ -343,7 +335,7 @@ namespace SF.Core.ServiceManagement.Internals
 
 		public void NotifyDefaultChanged(string Type)
 		{
-			string id;
+			long id;
 			if (DefaultServiceImplementMap.TryRemove(Type,out id))
 				NotifyChanged(Type, id);
 		}
@@ -380,7 +372,7 @@ namespace SF.Core.ServiceManagement.Internals
 			IServiceResolver ServiceResolver,
 			int AppId,
 			Type ServiceType, 
-			string ServiceInstanceId,
+			long ServiceInstanceId,
 			Type InterfaceType
 			)
 		{
@@ -397,7 +389,7 @@ namespace SF.Core.ServiceManagement.Internals
 		}
 
 
-		void IServiceInstanceConfigChangedNotifier.NotifyChanged(string ServiceType,int AppId, string Id)
+		void IServiceInstanceConfigChangedNotifier.NotifyChanged(string ServiceType,int AppId, long Id)
 		{
 			GetAppServiceSet(AppId).NotifyChanged(ServiceType, Id);
 		}

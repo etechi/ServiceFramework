@@ -18,7 +18,7 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 		[Column(Order =1)]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		[ForeignKey(nameof(ServiceInstance))]
-		public string ServiceInstanceId { get; set; }
+		public long ServiceInstanceId { get; set; }
 
 		[Comment("接口")]
 		[MaxLength(100)]

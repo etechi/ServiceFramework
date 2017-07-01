@@ -10,19 +10,10 @@ using System.Threading.Tasks;
 
 namespace SF.Users.Members
 {
-	public class MemberSignupArgument:CreateIdentityArgument
-	{
-	}
-	public class SendSignupVerifyCodeArgument: 
-		SendCreateIdentityVerifyCodeArgument
-	{
-	}
 	
 	[NetworkService]
-	public interface IMemberService : IPassportService
+	public interface IMemberService 
 	{
-		Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg);
-		Task<string> Signup(MemberSignupArgument Arg);
 	}
 
 }

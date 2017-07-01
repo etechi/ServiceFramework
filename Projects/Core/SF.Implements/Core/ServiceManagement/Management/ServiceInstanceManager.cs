@@ -18,7 +18,7 @@ namespace SF.Core.ServiceManagement.Management
 	[Comment("默认服务实例管理")]
 	public class ServiceInstanceManager :
 		EntityManager<
-			string, 
+			long, 
 			Models.ServiceInstanceInternal, 
 			ServiceInstanceQueryArgument, 
 			Models.ServiceInstanceEditable, 
@@ -275,16 +275,15 @@ namespace SF.Core.ServiceManagement.Management
 		class Config : IServiceConfig
 		{
 			public string ServiceType { get; set; }
-			public string Id { get; set; }
+			public long Id { get; set; }
 			public string ImplementType { get; set; }
 			public int AppId { get; set; }
 			public IReadOnlyDictionary<string,IServiceInterfaceConfig> Settings { get; set; }
 		}
-		IServiceConfig IServiceConfigLoader.GetConfig(string ServiceType,int AppId,string Id)
+		IServiceConfig IServiceConfigLoader.GetConfig(string ServiceType,int AppId, long Id)
 		{
-			var key = $"{AppId}-{ServiceType}-{Id}";
 			var re = DataSet.QuerySingleAsync(
-				si => si.Id == key,
+				si => si.Id == Id,
 				si => new
 				{
 					cfg = new Config
@@ -327,7 +326,7 @@ namespace SF.Core.ServiceManagement.Management
 			return re.cfg;
 		}
 
-		string IDefaultServiceLocator.Locate(string Type,int AppId)
+		long IDefaultServiceLocator.Locate(string Type,int AppId)
 		{
 			return DataSet.QuerySingleAsync(
 				si => si.ServiceType == Type && si.AppId==AppId && si.IsDefaultService,

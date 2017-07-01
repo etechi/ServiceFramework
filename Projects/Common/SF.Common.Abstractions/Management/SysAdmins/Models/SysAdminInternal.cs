@@ -14,8 +14,6 @@ namespace SF.Management.SysAdmins.Models
 		[MaxLength(100)]
 		public string Account { get; set; }
 
-		[Comment("修改时间")]
-		public DateTime UpdatedTime { get; set; }
 	}
 }
 

@@ -53,25 +53,7 @@ namespace SF.Auth.Identities
 		public string NewPassword { get; set; }
 		public bool ReturnToken { get; set; }
 	}
-	public interface IPassportService
-	{
-		Task<string> Signin(SigninArgument Arg);
 
-		Task Signout();
-
-		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
-
-		Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg);
-
-		[Authorize]
-		Task<string> SetPassword(SetPasswordArgument Arg);
-	}
-
-	public class CredentialProvider
-	{
-		public long ProviderId { get; set; }
-		public bool SignupEnabled { get; set; }
-	}
 
 	public interface IIdentityService
     {
@@ -80,11 +62,11 @@ namespace SF.Auth.Identities
 		Task<Identity> GetCurIdentity();
 
 
-		Task<string> Signin(SigninArgument Arg, long[] SigninProviderIds);
+		Task<string> Signin(SigninArgument Arg);
 
 		Task Signout();
 
-		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg, long DefaultCredentialProviderId);
+		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
 
 		Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg);
 
@@ -95,9 +77,9 @@ namespace SF.Auth.Identities
 
 		Task<long?> ParseAccessToken(string AccessToken);
 
-		Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg, long DefaultCredentialProviderId, long[] SignupCredentialProviderIds);
+		Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg);
 
-		Task<string> CreateIdentity(CreateIdentityArgument Arg, bool VerifyCode, long DefaultCredentialProviderId, long[] SignupCredentialProviderIds);
+		Task<string> CreateIdentity(CreateIdentityArgument Arg, bool VerifyCode);
 
 		Task<Identity> GetIdentity(long Id);
 	}
