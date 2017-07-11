@@ -4,7 +4,7 @@ using System.Text;
 
 namespace SF.Metadata
 {
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Enum)]
 	public class CommentAttribute : Attribute
 	{
 		public string Description { get; set; }

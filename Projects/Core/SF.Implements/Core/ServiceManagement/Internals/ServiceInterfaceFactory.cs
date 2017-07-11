@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SF.Core.ServiceManagement.Internals
 {
-	class ServiceInterfaceFactory : IServiceInterfaceFactory
+	class ServiceInterfaceFactory : IServiceFactory
 	{
 		public long Id { get; }
 		public IServiceDeclaration ServiceDeclaration { get; }

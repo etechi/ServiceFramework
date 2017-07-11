@@ -10,9 +10,9 @@ namespace SF.Core.ServiceManagement
 		{
 			this.ServiceFactoryManager = ServiceFactoryManager;
 		}
-		public IServiceScope CreateServiceScope()
+		public IServiceScope CreateServiceScope(long ScopeId)
 		{
-			return new ServiceScope(ServiceFactoryManager);
+			return new ServiceScope(ServiceFactoryManager, ScopeId);
 		}
 	}
 

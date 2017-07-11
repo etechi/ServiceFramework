@@ -1,12 +1,12 @@
 using System;
 namespace SF.Core.ServiceManagement.Internals
 {
-	public interface IServiceInterfaceFactory
+	public interface IServiceFactory
 	{
+		long ServiceInstanceId { get; }
 		IServiceDeclaration ServiceDeclaration { get;}
 		IServiceImplement ServiceImplement { get; }
-		IServiceInterface ServiceInterface { get; }
-		object Create(IServiceResolver ServiceResolver);
+		object Create(IServiceProvider ServiceProvider);
 	}
 
 }

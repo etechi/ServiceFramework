@@ -12,6 +12,7 @@ using SF.Core.DI;
 using SF.Core.Logging;
 using System.Collections.Generic;
 using SF.Core.Times;
+using System.Reflection;
 
 namespace SF.Core.ServiceManagement.Management
 {
@@ -68,6 +69,50 @@ namespace SF.Core.ServiceManagement.Management
 			var re= await Query.Select(i => new Models.ServiceInstanceEditable
 			{
 				Id = i.Id,
+				//ImplementId = i.ImplementId,
+				ObjectState = i.ObjectState,
+				IsDefaultService = i.IsDefaultService,
+				Name = i.Name,
+				Title = i.Title,
+				CreatedTime = i.CreatedTime,
+				ParentId=i.ParentId,
+				ParentName=i.ParentId.HasValue?i.Parent.Name:null,
+				DisplayData=new Data.Models.UIDisplayData
+				{
+					Description=i.Description,
+					Icon=i.Icon,
+					Image=i.Image,
+					Remarks=i.Remarks,
+					SubTitle=i.SubTitle
+				},
+				UpdatedTime = i.UpdatedTime,
+				ServiceType = i.ServiceType,
+				ImplementType = i.ImplementType,
+				
+				Setting= i.Setting
+			}).SingleAsync();
+
+			var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
+			if (svcDef == null)
+				throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
+			re.ServiceName = svcDef.ServiceType.Comment().Name;
+			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == re.ImplementType);
+			if (svcImpl == null)
+				throw new InvalidOperationException($"找不到服务实现{re.ImplementType}");
+			re.ImplementName = svcImpl.ImplementType.Comment().Name;
+
+
+			re.SettingType = re.ImplementType + "SettingType";
+
+			Logger.Info("Load ServiceInstance for Edit: {0}",Json.Stringify(re));
+			return re;
+		}
+
+		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToPublic(IContextQueryable<DataModels.ServiceInstance> Query)
+		{
+			return Query.Select(i => new Models.ServiceInstanceInternal
+			{
+				Id = i.Id,
 				ServiceType = i.ServiceType,
 				//ImplementId = i.ImplementId,
 				ObjectState = i.ObjectState,
@@ -79,65 +124,8 @@ namespace SF.Core.ServiceManagement.Management
 				ImplementType = i.ImplementType,
 				ImplementName = i.ImplementType,
 				UpdatedTime = i.UpdatedTime,
-				DisplayData=new Data.Models.UIDisplayData
-				{
-					Description=i.Description,
-					Icon=i.Icon,
-					Image=i.Image,
-					Remarks=i.Remarks,
-					SubTitle=i.SubTitle
-				},
-				Interfaces=from ii in i.Interfaces
-						   select new ServiceInstanceInterface
-						   {
-							   ImplementType=ii.ImplementType,
-							   InterfaceType=ii.InterfaceType,
-							   Setting=ii.Setting
-						   }
-			}).SingleAsync();
-
-			var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
-			if (svcDef == null)
-				throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
-
-			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == re.ImplementType);
-			if (svcImpl == null)
-				throw new InvalidOperationException($"找不到服务实现{re.ImplementType}");
-			var curSettings = re.Interfaces.ToDictionary(i => i.InterfaceName + "/" + i.ImplementType);
-
-			re.Interfaces = (
-				from i in svcImpl.Interfaces
-				let  s = curSettings.Get(i.ServiceType.FullName+"/"+i.ImplementType.FullName)
-				select new ServiceInstanceInterface
-				{
-					ImplementName = i.ImplementType.FullName,
-					ImplementType = i.ImplementType.FullName,
-					InterfaceName = i.ServiceType.FullName,
-					InterfaceType = i.ServiceType.FullName,
-					Setting = s?.Setting ?? null,
-					SettingType = i.ImplementType + "SettingType"
-				});
-
-			Logger.Info("Load ServiceInstance for Edit: {0}",Json.Stringify(re));
-			return re;
-		}
-
-		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToPublic(IContextQueryable<DataModels.ServiceInstance> Query)
-		{
-			return  Query.Select(i => new Models.ServiceInstanceInternal
-			{
-				Id = i.Id,
-				ServiceType = i.ServiceType,
-				//ImplementId = i.ImplementId,
-				ObjectState = i.ObjectState,
-				IsDefaultService=i.IsDefaultService,
-				Name = i.Name,
-				Title=i.Title,
-				CreatedTime=i.CreatedTime,
-				ServiceName=i.ServiceType,
-				ImplementType=i.ImplementType,
-				ImplementName=i.ImplementType,
-				UpdatedTime=i.UpdatedTime,
+				ParentId=i.ParentId,
+				ParentName = i.ParentId.HasValue?i.Parent.Name:null
 			});
 		}
 
@@ -201,6 +189,7 @@ namespace SF.Core.ServiceManagement.Management
 			{
 				m.ServiceType = e.ServiceType;
 				m.ImplementType = e.ImplementType;
+				m.ParentId = e.ParentId;
 			}
 			else
 			{
@@ -211,29 +200,30 @@ namespace SF.Core.ServiceManagement.Management
 			m.Name = e.Name;
 			m.Title = e.Title;
 
-			m.Description = e?.DisplayData?.Description;
-			m.Icon = e?.DisplayData?.Icon;
-			m.Remarks = e?.DisplayData?.Remarks;
-			m.Image = e?.DisplayData?.Image;
+			m.Description = e.DisplayData?.Description;
+			m.Icon = e.DisplayData?.Icon;
+			m.Remarks = e.DisplayData?.Remarks;
+			m.Image = e.DisplayData?.Image;
 
 			m.UpdatedTime= TimeService.Now;
+			m.Setting = e.Setting;
 			//TestConfig(m.Id, m.ImplementId, m.CreateArguments);
-			var siis = DataSet.Context
-					.Set<DataModels.ServiceInstanceInterface>();
-			var orgs = await siis.LoadListAsync(sii => sii.ServiceInstanceId == m.Id);
-			siis.Merge<DataModels.ServiceInstanceInterface,Models.ServiceInstanceInterface>(
-				orgs,
-				e?.Interfaces,
-				(mi, ei) => mi.InterfaceType == ei.InterfaceType,
-				ei => new DataModels.ServiceInstanceInterface
-				{
-					ServiceInstanceId=m.Id,
-					InterfaceType=ei.InterfaceType,
-					ImplementType=ei.ImplementType,
-					Setting=ei.Setting
-				},
-				(mi, ei) => mi.Setting = ei.Setting
-				);
+			//var siis = DataSet.Context
+			//		.Set<DataModels.ServiceInstanceInterface>();
+			//var orgs = await siis.LoadListAsync(sii => sii.ServiceInstanceId == m.Id);
+			//siis.Merge<DataModels.ServiceInstanceInterface,Models.ServiceInstanceInterface>(
+			//	orgs,
+			//	e?.Interfaces,
+			//	(mi, ei) => mi.InterfaceType == ei.InterfaceType,
+			//	ei => new DataModels.ServiceInstanceInterface
+			//	{
+			//		ServiceInstanceId=m.Id,
+			//		InterfaceType=ei.InterfaceType,
+			//		ImplementType=ei.ImplementType,
+			//		Setting=ei.Setting
+			//	},
+			//	(mi, ei) => mi.Setting = ei.Setting
+			//	);
 
 			if (await DataSet.TrySetDefaultItem(
 				m,
@@ -244,11 +234,11 @@ namespace SF.Core.ServiceManagement.Management
 				i => i.Id == m.Id,
 				i=>i.IsDefaultService
 				))
-				ctx.AddPostAction(() => ConfigChangedNotifier.NotifyDefaultChanged(m.ServiceType,m.AppId));
+				ctx.AddPostAction(() => ConfigChangedNotifier.NotifyDefaultChanged(m.ParentId,m.ServiceType));
 
 			ctx.AddPostAction(() =>
 			{
-				ConfigChangedNotifier.NotifyChanged(m.ServiceType,m.AppId, m.Id);
+				ConfigChangedNotifier.NotifyChanged( m.Id);
 				Logger.Info("ServiceInstance Saved:{0}",Json.Stringify(m));
 			});
 		}
@@ -266,72 +256,51 @@ namespace SF.Core.ServiceManagement.Management
 			await base.OnRemoveModel(ctx);
 		}
 
-		class InterfaceConfig : IServiceInterfaceConfig
+		class Config : IServiceConfig
 		{
+			public long Id { get; set; }
+
+			public long? ParentId { get; set; }
+
+			public string ServiceType { get; set; }
+
 			public string ImplementType { get; set; }
 
 			public string Setting { get; set; }
-		}
-		class Config : IServiceConfig
-		{
-			public string ServiceType { get; set; }
-			public long Id { get; set; }
-			public string ImplementType { get; set; }
-			public int AppId { get; set; }
-			public IReadOnlyDictionary<string,IServiceInterfaceConfig> Settings { get; set; }
 		}
 		IServiceConfig IServiceConfigLoader.GetConfig(string ServiceType,int AppId, long Id)
 		{
 			var re = DataSet.QuerySingleAsync(
 				si => si.Id == Id,
-				si => new
+				si => new Config
 				{
-					cfg = new Config
-					{
-						Id = Id,
-						ServiceType = si.ServiceType,
-						ImplementType = si.ImplementType,
-						Settings = null,
-						AppId=si.AppId
-					},
-					ifs=from i in si.Interfaces
-						select new InterfaceConfig
-						{
-							ImplementType=i.ImplementType,
-							Setting=i.Setting,
-							
-						}
+					
+					Id = Id,
+					ServiceType = si.ServiceType,
+					ImplementType = si.ImplementType,
+					Setting= si.Setting,
+					ParentId=si.ParentId
 				}
 				).Result;
 
-			var svcDef = Metadata.ServicesByTypeName.Get(re.cfg.ServiceType);
+			var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
 			if (svcDef == null)
-				throw new InvalidOperationException($"找不到定义的服务{re.cfg.ServiceType}");
+				throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
 
-			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == re.cfg.ImplementType);
+			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == re.ImplementType);
 			if(svcImpl==null)
-				throw new InvalidOperationException($"找不到服务实现{re.cfg.ImplementType}");
+				throw new InvalidOperationException($"找不到服务实现{re.ImplementType}");
 
-			var settings = re.ifs.ToDictionary(i => i.ImplementType);
-
-			re.cfg.Settings = (
-				from ii in svcImpl.Interfaces
-				let di = settings.Get(ii.ImplementType.FullName)
-				select di ?? new InterfaceConfig
-				{
-					ImplementType = ii.ImplementType.FullName
-				}
-				).Cast<IServiceInterfaceConfig>().ToDictionary(i => i.ImplementType);
-
-			return re.cfg;
+			return re;
 		}
 
-		long IDefaultServiceLocator.Locate(string Type,int AppId)
+		long? IDefaultServiceLocator.Locate(long? ScopeId,string ServiceType)
 		{
-			return DataSet.QuerySingleAsync(
-				si => si.ServiceType == Type && si.AppId==AppId && si.IsDefaultService,
+			var re= DataSet.QuerySingleAsync(
+				si => si.ParentId == ScopeId && si.ServiceType==ServiceType && si.IsDefaultService,
 				si => si.Id
 				).Result;
+			return re == 0 ? null : (long?)re;
 		}
 	}
 

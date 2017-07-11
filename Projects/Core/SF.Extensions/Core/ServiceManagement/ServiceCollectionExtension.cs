@@ -8,15 +8,15 @@ namespace SF.Core.ServiceManagement
 	{
 		public static IEnumerable<Type> GetServiceTypes(this IServiceCollection sc)
 		{
-			return sc.Select(d => d.ServiceType).Distinct();
+			return sc.Select(d => d.InterfaceType).Distinct();
 		}
 		public static IEnumerable<Type> GetServiceInterfaceTypes(this IServiceCollection sc)
 		{
-			return sc.SelectMany(d => d.Interfaces.Select(i=>i.InterfaceType)).Distinct();
+			return sc.Select(i=>i.InterfaceType).Distinct();
 		}
 		public static IServiceCollection Replace(this IServiceCollection sc,ServiceDescriptor service)
 		{
-			sc.Remove(service.ServiceType);
+			sc.Remove(service.InterfaceType);
 			sc.Add(service);
 			return sc;
 		}

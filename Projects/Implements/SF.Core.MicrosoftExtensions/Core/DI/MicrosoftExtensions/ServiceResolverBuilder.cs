@@ -71,11 +71,11 @@ namespace SF.Core.ServiceManagement
 				MSServices.Select(s =>
 				{
 					if (s.ImplementationFactory != null)
-						return new ServiceDescriptor(s.ServiceType, s.ImplementationFactory, MapLifetime(s.Lifetime));
+						return new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(s.ServiceType, s.ImplementationFactory, MapLifetime(s.Lifetime));
 					else if (s.ImplementationInstance != null)
-						return new ServiceDescriptor(s.ServiceType, s.ImplementationInstance);
+						return new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(s.ServiceType, s.ImplementationInstance);
 					else if (s.ImplementationType != null)
-						return new ServiceDescriptor(s.ServiceType, s.ImplementationType, MapLifetime(s.Lifetime));
+						return new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(s.ServiceType, s.ImplementationType, MapLifetime(s.Lifetime));
 					else
 						throw new NotSupportedException();
 				}));

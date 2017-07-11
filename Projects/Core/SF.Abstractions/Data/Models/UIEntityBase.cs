@@ -24,7 +24,7 @@ namespace SF.Data.Models
 		public virtual string Remarks { get; set; }
 
 		[Comment("说明", "用于UI显示")]
-		[MaxLength(200)]
+		[MaxLength(2000)]
 		[MultipleLines]
 		public virtual string Description { get; set; }
 

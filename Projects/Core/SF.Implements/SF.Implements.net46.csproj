@@ -71,13 +71,12 @@
     <Compile Include="Core\Serialization\Newtonsoft\NewtonsoftJsonDICollectionExtension.cs" />
     <Compile Include="Core\ServiceFeatures\ServiceFeatureControlDICollectionExtension.cs" />
     <Compile Include="Core\ServiceFeatures\ServiceFeatureControlService.cs" />
-    <Compile Include="Core\ServiceManagement\Management\DataModels\ServiceInstanceInteface.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScopeFactory.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScopeBase.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScope.cs" />
     <Compile Include="Core\ServiceManagement\Internals\ServiceInterfaceFactory.cs" />
-    <Compile Include="Core\ServiceManagement\ServiceResolver.cs" />
-    <Compile Include="Core\ServiceManagement\ServiceResolverBuilder.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceProvider.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceProviderBuilder.cs" />
     <Compile Include="Core\TaskServices\TaskServiceManager.cs" />
     <Compile Include="Core\TaskServices\TaskService.cs" />
     <Compile Include="Core\TaskServices\TaskServiceManagerDIServiceCollectionExtension.cs" />

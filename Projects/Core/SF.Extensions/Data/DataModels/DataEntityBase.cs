@@ -19,22 +19,17 @@ namespace SF.Data.DataModels
 		[Comment("Id")]
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
-		public K Id { get; set; }
-
-		[Index]
-		[Comment("应用ID")]
-		public int AppId { get; set; }
-
+		public virtual K Id { get; set; }
 
 		[Comment("名称")]
 		[MaxLength(100)]
 		[Index]
 		[Required]
-		public string Name { get; set; }
+		public virtual string Name { get; set; }
 
 		
 		[Comment("对象状态")]
-		public LogicObjectState ObjectState { get; set; }
+		public virtual LogicObjectState ObjectState { get; set; }
 
 		[Comment("所有人")]
 		[Index]
@@ -42,7 +37,7 @@ namespace SF.Data.DataModels
 
 		[Comment("创建时间")]
 		[Index]
-		public DateTime CreatedTime { get; set; }
+		public virtual DateTime CreatedTime { get; set; }
 
 		
 		[Comment("修改人")]
@@ -50,13 +45,13 @@ namespace SF.Data.DataModels
 		public virtual long UpdatorId { get; set; }
 
 		[Comment("修改时间")]
-		public DateTime UpdatedTime { get; set; }
+		public virtual DateTime UpdatedTime { get; set; }
 
 	
 		[ConcurrencyCheck]
 		[Timestamp]
 		[Comment(Name = "乐观锁时间戳")]
-		public byte[] TimeStamp { get; set; }
+		public virtual byte[] TimeStamp { get; set; }
 
 	}
 

@@ -4,12 +4,14 @@ namespace SF.Core.ServiceManagement.Internals
 	[UnmanagedService]
 	public interface IServiceFactoryManager
 	{
-		IServiceInterfaceFactory GetServiceFactory(
-			IServiceResolver ServiceResolver, 
-			int AppId,
-			Type ServiceType,
-			long ServiceInstanceId,
+		IServiceFactory GetServiceFactory(
+			IServiceProvider ServiceProvider, 
+			long ServiceScopeId,
 			Type InterfaceType
+			);
+		IServiceFactory GetServiceFactory(
+			IServiceProvider ServiceProvider,
+			long ServiceId
 			);
 	}
 

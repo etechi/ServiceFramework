@@ -36,9 +36,9 @@ namespace SF.Core.ServiceManagement
 			sc.AddScoped<IServiceConfigLoader, Management.ServiceInstanceManager>();
 			sc.AddScoped<IDefaultServiceLocator, Management.ServiceInstanceManager>();
 		}
-		public static IServiceResolver BuildServiceResolver(this IServiceCollection sc,Caching.ILocalCache<object> AppServiceCache)
+		public static IServiceProvider BuildServiceResolver(this IServiceCollection sc,Caching.ILocalCache<object> AppServiceCache)
 		{
-			return new ServiceResolverBuilder().Build(sc, AppServiceCache);
+			return new ServiceProviderBuilder().Build(sc, AppServiceCache);
 		}
 	}
 

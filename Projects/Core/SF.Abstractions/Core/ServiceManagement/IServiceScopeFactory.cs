@@ -7,6 +7,6 @@ namespace SF.Core.ServiceManagement
 	[UnmanagedService]
 	public interface IServiceScopeFactory
 	{
-		IServiceScope CreateServiceScope();
+		IServiceScope CreateServiceScope(long ScopeId);
 	}
 }

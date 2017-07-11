@@ -4,11 +4,9 @@ using System.Collections.Generic;
 
 namespace SF.Core.ServiceManagement
 {
-	public interface IServiceInterface
+	public interface IServiceImplement
 	{
-		Type Type { get; }
-		Type ServiceType{ get; }
-
+		Type ServiceType { get; }
 		Type ImplementType { get; }
 		object ImplementInstance { get; }
 		Func<IServiceResolver, object> ImplementCreator { get; }
@@ -16,12 +14,6 @@ namespace SF.Core.ServiceManagement
 		ServiceImplementType ServiceImplementType { get; }
 		ServiceImplementLifetime LifeTime { get; }
 		bool IsManagedService { get; }
-	}
-	public interface IServiceImplement
-	{
-		Type ServiceType { get; }
-		Type ImplementType { get; }
-		IReadOnlyList<IServiceInterface> Interfaces { get; }
 	}
 	public interface IServiceDeclaration
 	{

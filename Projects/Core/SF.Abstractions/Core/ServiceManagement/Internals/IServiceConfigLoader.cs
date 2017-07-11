@@ -7,17 +7,13 @@ namespace SF.Core.ServiceManagement.Internals
 		void Startup();
 	}
 
-	public interface IServiceInterfaceConfig
-	{
-		string ImplementType { get; }
-		string Setting { get; }
-	}
 	public interface IServiceConfig
 	{
-		string ServiceType { get; }
 		long Id { get; }
-		int AppId { get; }
-		IReadOnlyDictionary<string, IServiceInterfaceConfig> Settings { get; }
+		long? ParentId { get; }
+		string ServiceType { get; }
+		string ImplementType { get; }
+		string Setting { get; }
 	}
 	[UnmanagedService]
 	public interface IServiceConfigLoader

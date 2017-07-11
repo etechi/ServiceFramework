@@ -13,13 +13,10 @@ namespace SF.Core.ServiceManagement
 	//}
 
 	[UnmanagedService]
-	public interface IServiceResolver : IServiceProvider
+	public interface IServiceResolver 
 	{
-		object Resolve(
-			int AppId,
-			Type ServiceType,
-			long ServiceInstanceId,
-			Type InterfaceType
-			);
+		long? Resolve(long? ParentServiceId, Type ServiceType);
+		object Resolve(long ServiceId);
+		IServiceProvider CreateInternalServiceProvider(long ServiceId);
 	}
 }

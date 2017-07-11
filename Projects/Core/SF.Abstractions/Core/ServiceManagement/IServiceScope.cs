@@ -7,6 +7,6 @@ namespace SF.Core.ServiceManagement
 	public interface IServiceScope : 
 		IDisposable
 	{
-		IServiceResolver ServiceResolver { get; }
+		IServiceProvider ServiceProvider { get; }
 	}
 }

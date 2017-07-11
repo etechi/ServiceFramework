@@ -18,34 +18,39 @@ namespace SF.Core.ServiceManagement
 				throw new InvalidOperationException("找不到服务:" + typeof(T));
 			return s;
 		}
-		public static I Resolve<S,I>(this IServiceProvider Resolver, long Id =0,int AppId=0)
-			where S : class
-			where I : class
+		public static T Resolve<T>(this IServiceResolver ServiceResolver, long ServiceId)
+			where T : class
 		{
-			var s = (I)((IServiceResolver)Resolver).Resolve(AppId,typeof(S),Id,typeof(I));
+			var s = ServiceResolver.Resolve(ServiceId);
 			if (s == null)
-				throw new InvalidOperationException($"服务{typeof(S)}中找不到接口{typeof(I)}");
-			return s;
-
+				throw new InvalidOperationException("找不到服务:" + typeof(T));
+			var re = s as T;
+			if(re==null)
+				throw new InvalidOperationException($"服务:{ServiceId}不是类型:{typeof(T)}");
+			return re;
 		}
-		public static T WithScope<T>(this IServiceProvider sp, Func<IServiceResolver, T> action)
+		public static T Resolve<T>(this IServiceProvider ServiceProvider, long ServiceId)
+		   where T : class
+			=> ServiceProvider.Resolve<IServiceResolver>().Resolve<T>(ServiceId);
+
+		public static T WithScope<T>(this IServiceProvider sp, Func<IServiceResolver, T> action,long ScopeId=0)
 		{
-			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
+			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope(ScopeId))
 				return action(s.ServiceResolver);
 		}
-		public static async Task<T> WithScope<T>(this IServiceProvider sp, Func<IServiceResolver, Task<T>> action)
+		public static async Task<T> WithScope<T>(this IServiceProvider sp, Func<IServiceResolver, Task<T>> action, long ScopeId = 0)
 		{
-			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
+			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope(ScopeId))
 				return await action(s.ServiceResolver);
 		}
-		public static void WithScope(this IServiceProvider sp, Action<IServiceResolver> action)
+		public static void WithScope(this IServiceProvider sp, Action<IServiceResolver> action, long ScopeId = 0)
 		{
-			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
+			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope(ScopeId))
 				action(s.ServiceResolver);
 		}
-		public static async Task WithScope(this IServiceProvider sp, Func<IServiceResolver, Task> action)
+		public static async Task WithScope(this IServiceProvider sp, Func<IServiceResolver, Task> action, long ScopeId = 0)
 		{
-			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
+			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope(ScopeId))
 				await action(s.ServiceResolver);
 		}
 		interface IServicesGetter

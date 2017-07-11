@@ -7,15 +7,15 @@ using SF.Core.ServiceManagement.Internals;
 
 namespace SF.Core.ServiceManagement
 {
-	public class ServiceResolver : ServiceScopeBase
+	public class ServiceProvider : ServiceScopeBase
 	{
-		public ServiceResolver(IServiceFactoryManager FactoryManager):
-			base(FactoryManager)
+		public ServiceProvider(IServiceFactoryManager FactoryManager):
+			base(FactoryManager,0)
 		{
 		}
-		protected override CacheType GetCacheType(IServiceInterfaceFactory Factory)
+		protected override CacheType GetCacheType(IServiceFactory Factory)
 		{
-			switch (Factory.ServiceInterface.LifeTime)
+			switch (Factory.ServiceImplement.LifeTime)
 			{
 				case ServiceImplementLifetime.Singleton:
 				case ServiceImplementLifetime.Scoped:

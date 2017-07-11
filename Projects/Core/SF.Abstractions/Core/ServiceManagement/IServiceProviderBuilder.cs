@@ -6,6 +6,9 @@ namespace SF.Core.ServiceManagement
 {
 	public interface IServiceProviderBuilder 
 	{	
-		IServiceProvider Build(IServiceCollection Services);
+		IServiceProvider Build(
+			IServiceCollection Services,
+			Caching.ILocalCache<object> AppServiceCache
+			);
 	}
 }

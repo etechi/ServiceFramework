@@ -60,7 +60,7 @@ namespace SF.Core.ServiceManagement.Internals
 
 		public long Id { get; }
 		public IServiceImplement Implement { get; }
-		public Lazy<IServiceInterfaceFactory>[] Factories { get; }
+		public Lazy<IServiceFactory>[] Factories { get; }
 		public IServiceCreateParameterTemplate Template { get; }
 		
 		public IServiceConfig Config { get; }
@@ -76,10 +76,10 @@ namespace SF.Core.ServiceManagement.Internals
 			this.Implement = Implement;
 			this.Config = Config;
 			Factories = Implement.Interfaces.Select(i =>
-				new Lazy<IServiceInterfaceFactory>(() => CreateInterfaceFactory(i))
+				new Lazy<IServiceFactory>(() => CreateInterfaceFactory(i))
 				).ToArray();
 		}
-		IServiceInterfaceFactory CreateInterfaceFactory(IServiceInterface ServiceInterface)
+		IServiceFactory CreateInterfaceFactory(IServiceInterface ServiceInterface)
 		{
 			ServiceCreator Creator;
 			IServiceCreateParameterTemplate CreateParameterTemplate = null;
@@ -114,7 +114,7 @@ namespace SF.Core.ServiceManagement.Internals
 			}
 			return null;
 		}
-		public IServiceInterfaceFactory GetFactory(Type InterfaceType)
+		public IServiceFactory GetFactory(Type InterfaceType)
 		{
 			var count = Factories.Length;
 			var iis = Implement.Interfaces;
@@ -249,7 +249,7 @@ namespace SF.Core.ServiceManagement.Internals
 			return Id;
 		}
 
-		public IServiceInterfaceFactory GetServiceFactory(
+		public IServiceFactory GetServiceFactory(
 			IServiceResolver ServiceResolver,
 			Type ServiceType,
 			long ServiceInstanceId,
@@ -368,7 +368,7 @@ namespace SF.Core.ServiceManagement.Internals
 		}
 
 		
-		public IServiceInterfaceFactory GetServiceFactory(
+		public IServiceFactory GetServiceFactory(
 			IServiceResolver ServiceResolver,
 			int AppId,
 			Type ServiceType, 

@@ -14,20 +14,26 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 	public class ServiceInstance : SF.Data.DataModels.UIDataEntityBase<long>
 	{
 
-		[Comment("父服务实例Id")]
-		[Index]
-		public long? ParentInstanceId { get; set; }
+		//[ForeignKey(nameof(ServiceCategoryItem))]
+		//public override long Id { get => base.Id; set => base.Id = value; }
 
-		[ForeignKey(nameof(ParentInstanceId))]
-		public ServiceInstance ParentInstance { get; set; }
+		//public ServiceCategoryItem ServiceCategoryItem { get; set; }
 
-		[InverseProperty(nameof(ParentInstance))]
-		public ICollection<ServiceInstance> ChildInstances { get; set; }
+		
+		[Index("Parent",1)]
+		public long? ParentId { get; set; }
+
+		[ForeignKey(nameof(ParentId))]
+		public ServiceInstance Parent { get; set; }
+
+		[InverseProperty(nameof(Parent))]
+		public ICollection<ServiceInstance> Children { get; set; }
 
 		[Comment("服务定义")]
 		[MaxLength(100)]
 		[Required]
 		[Index("service",1)]
+		[Index("Parent", 2)]
 		public string ServiceType { get; set; }
 
 		[Comment("主接口实现")]
@@ -40,7 +46,8 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 		[Index("service", 2)]
 		public bool IsDefaultService { get; set; }
 
-		[InverseProperty(nameof(ServiceInstanceInterface.ServiceInstance))]
-		public ICollection<ServiceInstanceInterface> Interfaces { get; set; }
+		[Comment("服务设置")]
+
+		public string Setting { get; set; }
 	}
 }

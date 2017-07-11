@@ -56,7 +56,7 @@
     <Compile Include="Core\Caching\IRemoteCache.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantor.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantorStorage.cs" />
-    <Compile Include="Core\ServiceManagement\Internals\IServiceFactory.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\IServiceInterfaceFactory.cs" />
     <Compile Include="Core\ServiceManagement\IServiceDetector.cs" />
     <Compile Include="Core\ServiceManagement\IServiceInstanceMeta.cs" />
     <Compile Include="Core\ServiceManagement\IServiceMetadata.cs" />
