@@ -8,21 +8,14 @@ using System.Linq.Expressions;
 
 namespace SF.Core.ServiceManagement.Internals
 {
-	class ServiceCreateParameterTemplate : IServiceCreateParameterTemplate,IServiceInstanceMeta
+	class ServiceCreateParameterTemplate : IServiceCreateParameterTemplate
 	{
 		public IReadOnlyList<object> Args { get; private set; }
 		public IReadOnlyDictionary<string, IServiceInstanceSetting> ServiceIdents { get; private set; }
-		public long ServiceInstanceIdent { get; private set; }
-		public ServiceManagement.IServiceInstanceMeta GetServiceInstanceIdent() => this;
-		long ServiceManagement.IServiceInstanceMeta.Id => ServiceInstanceIdent;
 
-		public int AppId { get; private set; }
-
-		long IServiceInstanceMeta.DataScopeId => throw new NotImplementedException();
 		class ServiceInstanceSetting : IServiceInstanceSetting
 		{
-			public long InstanceId { get; set; }
-			public int AppId { get; set; }
+			public long? InstanceId { get; set; }
 			public Type ServiceType { get; set; }
 
 		}
@@ -212,8 +205,6 @@ namespace SF.Core.ServiceManagement.Internals
 		//}
 		public static ServiceCreateParameterTemplate Load(
 			ConstructorInfo ci,
-			int AppId,
-			long ServiceInstanceId,
 			string Config,
 			IServiceDetector ServiceDetector
 			)
@@ -291,10 +282,8 @@ namespace SF.Core.ServiceManagement.Internals
 
 			return new ServiceCreateParameterTemplate
 			{
-				AppId=AppId,
 				Args = args,
-				ServiceIdents = sis,
-				ServiceInstanceIdent= ServiceInstanceId
+				ServiceIdents = sis
 			};
 		}
 

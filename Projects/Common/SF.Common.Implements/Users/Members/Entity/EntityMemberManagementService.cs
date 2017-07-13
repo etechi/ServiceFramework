@@ -104,7 +104,7 @@ namespace SF.Users.Members.Entity
 				ctx.UserData=await IdentityService.Value.CreateIdentity(
 					new CreateIdentityArgument
 					{
-						
+						CredentialProviderId=ExtraArg.Item1.CredentialProviderId,
 						Credential = m.PhoneNumber,
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity
@@ -119,8 +119,7 @@ namespace SF.Users.Members.Entity
 						VerifyCode= ExtraArg.Item1.VerifyCode,
 						Expires= ExtraArg.Item1.Expires
 					}, 
-					false,
-					ExtraArg.Item2
+					false
 					);
 			}
 			else

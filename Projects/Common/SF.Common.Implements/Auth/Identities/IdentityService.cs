@@ -121,9 +121,10 @@ namespace SF.Auth.Identities
 				);
 		}
 
-		public async Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg, long DefaultCredentialProviderId)
+		public async Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg)
 		{
-			var provider = Setting.CredentialProviderResolver(Arg.CredentialProviderId ?? DefaultCredentialProviderId);
+			var provider = GetCredentialProvider(Arg.CredentialProviderId);
+
 			var err = await provider.VerifyFormat(Arg.Credential);
 			if (err != null)
 				throw new PublicArgumentException(err);
@@ -159,7 +160,7 @@ namespace SF.Auth.Identities
 		protected DateTime? GetExpires(int? Expires) =>
 			Expires.HasValue ? (DateTime?)Setting.TimeService.Value.Now.AddSeconds(Expires.Value) : null;
 
-		public async Task<string> Signin(SigninArgument Arg,long[] SigninCredentialProviderIds)
+		public async Task<string> Signin(SigninArgument Arg)
 		{
 			if (string.IsNullOrWhiteSpace(Arg.Credential))
 				throw new PublicArgumentException("请输入用户标识");
@@ -170,9 +171,8 @@ namespace SF.Auth.Identities
 
 			IdentityCredential ui = null;
 			IIdentityCredentialProvider identProvider = null;
-			foreach (var pid in SigninCredentialProviderIds)
+			foreach (var ip in Setting.IdentityCredentialProviders)
 			{
-				var ip = Setting.CredentialProviderResolver(pid);
 				if (ip.VerifyFormat(Arg.Credential) != null)
 					continue;
 				ui = await ip.Find(Arg.Credential, null);
@@ -235,10 +235,15 @@ namespace SF.Auth.Identities
 			return Setting.ClientService.Value.SetAccessToken(null);
 		}
 
-		public async Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg,long DefaultCredentialProviderId)
+		IIdentityCredentialProvider GetCredentialProvider(long? ProviderId)=>
+			ProviderId.HasValue ?
+			Setting.CredentialProviderResolver(ProviderId.Value) :
+			Setting.DefaultIdentityCredentialProvider.Value;
+
+
+		public async Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg)
 		{
-			var cpid = Arg.CredentialProviderId ?? DefaultCredentialProviderId;
-			var CredentialProvider = Setting.CredentialProviderResolver(cpid);
+			var CredentialProvider = GetCredentialProvider(Arg.CredentialProviderId);
 
 			var err=await CredentialProvider.VerifyFormat(Arg.Credetial);
 			if (err != null)
@@ -253,10 +258,13 @@ namespace SF.Auth.Identities
 				);
 		}
 
-		public async Task<string> CreateIdentity(CreateIdentityArgument Arg, bool VerifyCode, long DefaultCredentialProviderId)
+		public async Task<string> CreateIdentity(CreateIdentityArgument Arg, bool VerifyCode)
 		{
 			if (string.IsNullOrWhiteSpace(Arg.Credential))
 				throw new PublicArgumentException("请输入用户标识");
+
+			var CredentialProvider = GetCredentialProvider(Arg.CredentialProviderId);
+
 			var msg = await CredentialProvider.VerifyFormat(Arg.Credential);
 			if (msg != null)
 				throw new ArgumentException(msg);

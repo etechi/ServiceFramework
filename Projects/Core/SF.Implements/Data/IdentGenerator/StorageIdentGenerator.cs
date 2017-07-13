@@ -15,7 +15,7 @@ namespace SF.Data.IdentGenerator
 	public class IdentGeneratorSetting
 	{
 		public IDataSet<DataModels.IdentSeed> IdentSeedSet { get;private set; }
-		public SF.Core.ServiceManagement.IServiceInstanceMeta Ident { get; private set; }
+		public SF.Core.ServiceManagement.IServiceInstanceDescriptor ServiceDescriptor { get; private set; }
 		[Comment("预分配数量","每次预分配的数量")]
 		public int CountPerBatch { get; private set; } = 100;
 	}
@@ -42,7 +42,7 @@ namespace SF.Data.IdentGenerator
 		}
 		public async Task<long> GenerateAsync(string Type)
 		{
-			var cacheKey = Setting.Ident.Id+ "/" + Type;
+			var cacheKey = Setting.ServiceDescriptor.InstanceId+ "/" + Type;
 			IdentBatch v;
 			if (!Cache.TryGetValue(cacheKey,out v))
 				v = Cache.GetOrAdd(cacheKey, new IdentBatch());

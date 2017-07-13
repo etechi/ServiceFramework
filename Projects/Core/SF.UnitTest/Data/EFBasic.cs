@@ -69,7 +69,7 @@ namespace SF.UT.Data
 			var sf = sp.Resolve<IServiceScopeFactory>();
 			using(var s = sf.CreateServiceScope())
 			{
-				var isp = s.ServiceResolver;
+				var isp = s.ServiceProvider;
 				var ac = isp.Resolve<IDataSet<DataModels.User>>();
 				ac.Add(new DataModels.User { Id = "aa", FirstName = "c", LastName = "y" });
 				ac.Context.SaveChanges();
@@ -80,7 +80,7 @@ namespace SF.UT.Data
 			}
 			using (var s = sf.CreateServiceScope())
 			{
-				var isp = s.ServiceResolver;
+				var isp = s.ServiceProvider;
 				var ac = isp.Resolve<IDataContext>();
 				var re = ac.Set<DataModels.User>().AsQueryable().ToArrayAsync().Result;
 				Assert.Equal(1, re.Length);

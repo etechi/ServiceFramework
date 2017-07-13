@@ -8,24 +8,18 @@ namespace SF.Core.ServiceManagement.Internals
 {
 	class ServiceMetadata : IServiceMetadata
 	{
-		class ServiceInteface: IServiceInterface
-		{
-			public Type ServiceType { get; set; }
-			public Type Type { get; set; }
-			public Type ImplementType { get; set; }
-			public ServiceImplementLifetime LifeTime { get; set; }
-			public object ImplementInstance { get; set; }
-			public Func<IServiceResolver, object> ImplementCreator { get; set; }
 
-			public ServiceImplementType ServiceImplementType { get; set; }
-
-			public bool IsManagedService { get; set; }
-		}
 		class ServiceImplement : IServiceImplement
 		{
 			public Type ServiceType { get; set; }
 			public Type ImplementType { get; set; }
-			public IReadOnlyList<IServiceInterface> Interfaces { get; set; }
+			public ServiceImplementLifetime LifeTime { get; set; }
+			public object ImplementInstance { get; set; }
+			public Func<IServiceProvider, object> ImplementCreator { get; set; }
+
+			public ServiceImplementType ServiceImplementType { get; set; }
+
+			public bool IsManagedService { get; set; }
 		}
 		class Service : IServiceDeclaration
 		{
@@ -54,25 +48,15 @@ namespace SF.Core.ServiceManagement.Internals
 				from svc in ServiceDescriptors
 				select new ServiceImplement
 				{
-					ServiceType = svc.ServiceType,
-					ImplementType= svc.Interfaces
-						.Single(i=>i.InterfaceType==svc.ServiceType)
-						.ImplementType,
-					Interfaces =
-						svc.Interfaces.Select(impl =>
-						new ServiceInteface
-						{
-							Type = impl.InterfaceType,
-							ImplementType = impl.ImplementType,
-							LifeTime = impl.Lifetime,
-							IsManagedService = impl.ImplementType != null &&
-									   impl.Lifetime != ServiceImplementLifetime.Singleton &&
-									   impl.IsManagedServiceImplement(),
-							ImplementCreator = impl.ImplementCreator,
-							ImplementInstance = impl.ImplementInstance,
-							ServiceImplementType = impl.ServiceImplementType
-						}
-					).Cast<IServiceInterface>().ToArray()
+					ServiceType = svc.InterfaceType,
+						ImplementType = svc.ImplementType,
+						LifeTime = svc.Lifetime,
+						IsManagedService = svc.ImplementType != null &&
+									svc.Lifetime != ServiceImplementLifetime.Singleton &&
+									svc.IsManagedServiceImplement(),
+						ImplementCreator = svc.ImplementCreator,
+						ImplementInstance = svc.ImplementInstance,
+						ServiceImplementType = svc.ServiceImplementType
 				}
 				).ToArray();
 

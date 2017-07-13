@@ -23,7 +23,7 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 			Lazy<IPhoneNumberValidator> PhoneNumberValidator,
 			Lazy<ITextMessageService> TextMessageService,
 			ConfirmMessageTemplateSetting ConfirmMessageSetting,
-			IServiceInstanceMeta ServiceInstanceMeta
+			IServiceInstanceDescriptor ServiceInstanceMeta
 			) :
 			base(IdentStorage,ServiceInstanceMeta)
 		{

@@ -1,7 +1,7 @@
 using System.Linq;
 using SF.Metadata;
 using System;
-
+using SF.Core.ServiceManagement;
 namespace SF.Core.ServiceManagement
 {
 	public static class SysMemCachingDIServiceCollectionExtension

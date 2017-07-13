@@ -9,7 +9,7 @@ namespace SF.Core.ServiceManagement
 		Type ServiceType { get; }
 		Type ImplementType { get; }
 		object ImplementInstance { get; }
-		Func<IServiceResolver, object> ImplementCreator { get; }
+		Func<IServiceProvider, object> ImplementCreator { get; }
 
 		ServiceImplementType ServiceImplementType { get; }
 		ServiceImplementLifetime LifeTime { get; }

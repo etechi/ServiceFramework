@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SF.Core.ServiceManagement.Internals;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,7 +9,9 @@ namespace SF.Core.ServiceManagement
 	{	
 		IServiceProvider Build(
 			IServiceCollection Services,
-			Caching.ILocalCache<object> AppServiceCache
+			Caching.ILocalCache<IServiceEntry> AppServiceCache,
+			IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver=null,
+			IServiceImplementTypeResolver ServiceImplementTypeResolver=null
 			);
 	}
 }

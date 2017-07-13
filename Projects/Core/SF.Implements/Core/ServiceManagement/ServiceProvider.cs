@@ -10,7 +10,7 @@ namespace SF.Core.ServiceManagement
 	public class ServiceProvider : ServiceScopeBase
 	{
 		public ServiceProvider(IServiceFactoryManager FactoryManager):
-			base(FactoryManager,0)
+			base(FactoryManager)
 		{
 		}
 		protected override CacheType GetCacheType(IServiceFactory Factory)

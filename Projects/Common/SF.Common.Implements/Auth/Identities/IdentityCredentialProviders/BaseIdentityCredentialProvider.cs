@@ -13,12 +13,12 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 		IIdentityCredentialProvider
 	{
 		protected IIdentityCredentialStorage CredentialStorage { get; }
-		public IServiceInstanceMeta ServiceInstance { get; }
+		public IServiceInstanceDescriptor ServiceInstance { get; }
 		public abstract string Name { get; }
 
 		public BaseIdentityCredentialProvider(
 			IIdentityCredentialStorage CredentialStorage,
-			IServiceInstanceMeta ServiceInstance
+			IServiceInstanceDescriptor ServiceInstance
 			)
 		{
 			this.CredentialStorage = CredentialStorage;
@@ -26,23 +26,23 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 		}
 
 		public virtual Task Bind(string Ident, string UnionIdent, bool Confirmed, long UserId)
-			=> CredentialStorage.Bind(ServiceInstance.Id, Ident, UnionIdent, Confirmed, UserId);
+			=> CredentialStorage.Bind(ServiceInstance.InstanceId.Value, Ident, UnionIdent, Confirmed, UserId);
 
 
 		public virtual Task<IdentityCredential> Find(string Ident, string UnionIdent)
-			=> CredentialStorage.Find(ServiceInstance.Id, Ident, UnionIdent);
+			=> CredentialStorage.Find(ServiceInstance.InstanceId.Value, Ident, UnionIdent);
 
 		public virtual Task<IdentityCredential> FindOrBind(string Ident, string UnionIdent, bool Confirmed, long UserId)
-			=> CredentialStorage.FindOrBind(ServiceInstance.Id, Ident, UnionIdent, Confirmed, UserId);
+			=> CredentialStorage.FindOrBind(ServiceInstance.InstanceId.Value, Ident, UnionIdent, Confirmed, UserId);
 
 		public virtual Task<IdentityCredential[]> GetIdents(long UserId)
-			=> CredentialStorage.GetIdents(ServiceInstance.Id, UserId);
+			=> CredentialStorage.GetIdents(ServiceInstance.InstanceId.Value, UserId);
 
 		public virtual Task SetConfirmed(string Ident, bool Confirmed)
-			=> CredentialStorage.SetConfirmed(ServiceInstance.Id, Ident, Confirmed);
+			=> CredentialStorage.SetConfirmed(ServiceInstance.InstanceId.Value, Ident, Confirmed);
 
 		public virtual Task Unbind(string Ident, long UserId)
-			=> CredentialStorage.Unbind(ServiceInstance.Id, Ident, UserId);
+			=> CredentialStorage.Unbind(ServiceInstance.InstanceId.Value, Ident, UserId);
 
 		public abstract Task<string> VerifyFormat(string Ident);
 		public abstract bool IsConfirmable();

@@ -6,38 +6,38 @@ using System.Linq;
 
 namespace SF.Core.ServiceManagement.Internals
 {
-	class ServiceInterfaceFactory : IServiceFactory
+	class ServiceFactory : IServiceFactory
 	{
-		public long Id { get; }
+		public long? InstanceId { get; }
+		public long? ParentInstanceId { get; }
 		public IServiceDeclaration ServiceDeclaration { get; }
 		public IServiceImplement ServiceImplement { get; }
-		public IServiceInterface ServiceInterface { get; }
 
 		public IServiceCreateParameterTemplate CreateParameterTemplate { get; }
 		public ServiceCreator Creator { get; }
 
-		public ServiceInterfaceFactory(
-			long Id,
+		public ServiceFactory(
+			long? Id,
+			long? ParentServiceId,
 			IServiceDeclaration ServiceDeclaration,
 			IServiceImplement ServiceImplement,
-			IServiceInterface ServiceInterface ,
 			IServiceCreateParameterTemplate CreateParameterTemplate,
 			ServiceCreator Creator
 			)
 		{
-			this.Id = Id;
+			this.InstanceId = Id;
+			this.ParentInstanceId = ParentServiceId;
 			this.ServiceDeclaration = ServiceDeclaration;
 			this.ServiceImplement = ServiceImplement;
-			this.ServiceInterface = ServiceInterface;
 			this.CreateParameterTemplate = CreateParameterTemplate;
 			this.Creator = Creator;
 		}
 
 		public object Create(
-			IServiceResolver ServiceResolver
+			IServiceProvider ServiceProvider
 			)
 		{
-			return Creator(ServiceResolver, CreateParameterTemplate);
+			return Creator(ServiceProvider, this, CreateParameterTemplate);
 		}
 	}
 

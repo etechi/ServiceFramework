@@ -18,7 +18,7 @@ namespace SF.Core.ServiceManagement.Internals
 	[UnmanagedService]
 	public interface IServiceConfigLoader
 	{
-		IServiceConfig GetConfig(string ServiceType,int AppId, long Id);
+		IServiceConfig GetConfig(long Id);
 	}
 	
 }

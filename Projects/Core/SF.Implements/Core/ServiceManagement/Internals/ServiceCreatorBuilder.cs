@@ -9,20 +9,21 @@ using SF.Metadata;
 namespace SF.Core.ServiceManagement.Internals
 {
 	delegate object ServiceCreator(
-		IServiceResolver ServiceProvider,
+		IServiceProvider ServiceProvider,
+		IServiceInstanceDescriptor ServiceInstanceDescriptor,
 		IServiceCreateParameterTemplate ParameterTemplate
 		);
 
 	class ServiceCreatorBuilder
 	{
-		static ParameterExpression ParamServiceResolver = Expression.Parameter(typeof(IServiceResolver), "sr");
-		static MethodInfo ServiceResolve = typeof(IServiceResolver).GetMethod("Resolve", BindingFlags.Public | BindingFlags.Instance);
-
+		static ParameterExpression ParamServiceProvider = Expression.Parameter(typeof(IServiceProvider), "sr");
 
 		static ParameterExpression ParamServiceCreateParameterProvider = Expression.Parameter(typeof(IServiceCreateParameterTemplate), "ap");
 		static MethodInfo ServiceCreateParameterProviderGetParameter = typeof(IServiceCreateParameterTemplate).GetMethod("GetArgument", BindingFlags.Public | BindingFlags.Instance);
 		static MethodInfo ServiceCreateParameterProviderGetServiceIdent = typeof(IServiceCreateParameterTemplate).GetMethod("GetServiceIdent", BindingFlags.Public | BindingFlags.Instance );
-		static MethodInfo ServiceCreateParameterProviderGetServiceInstanceIdent = typeof(IServiceCreateParameterTemplate).GetMethod("GetServiceInstanceIdent", BindingFlags.Public | BindingFlags.Instance );
+
+		static ParameterExpression ParamServiceInstanceDescriptor = Expression.Parameter(typeof(IServiceInstanceDescriptor), "dsp");
+
 
 		static MethodInfo StringConcat = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 2 && m.GetParameters().All(pt=>pt.ParameterType== typeof(string)));
 		static MethodInfo StringConcat4 = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 4 && m.GetParameters().All(pt => pt.ParameterType == typeof(string)));
@@ -33,24 +34,15 @@ namespace SF.Core.ServiceManagement.Internals
 			Lazy,
 			Func
 		}
-		static Expression ServiceProviderResolveExpression(Type Type,ResolveType resolveType) =>
-			Expression.Convert(
-				Expression.Call(
-					ParamServiceResolver,
-					ServiceResolve,
-					Expression.Constant(Type),
-					Expression.Constant(0L)
-					),
-				Type
-				);
+		
 		public class MemberAttribute
 		{
-			public Type ServiceType { get; set; }
 			public bool Optional { get; set; }
 		}
 		static object ResolveManagedService(
-			IServiceResolver Resolver,
+			IServiceProvider Provider,
 			IServiceCreateParameterTemplate CreateParameterTemplate,
+			IServiceInstanceDescriptor ServiceInstanceDescriptor,
 			string Path,
 			Type InterfaceType,
 			MemberAttribute MemberAttribute
@@ -61,51 +53,104 @@ namespace SF.Core.ServiceManagement.Internals
 
 			//if (pair.Key == null)
 			//	throw new NotImplementedException($"找不到服务{InterfaceType}，配置路径:{Path}");
-			var ServiceType= MemberAttribute.ServiceType??InterfaceType;
+			//var ServiceType= MemberAttribute.ServiceType??InterfaceType;
+			if (si.ServiceType != null && si.ServiceType != InterfaceType)
+				throw new NotSupportedException($"{InterfaceType}的配置路径:{Path}返回的服务类型为{si.ServiceType}不是{InterfaceType}");
 
-			if (si.ServiceType != null && si.ServiceType != ServiceType)
-				throw new NotSupportedException($"{ServiceType}的配置路径:{Path}返回的服务类型为{si.ServiceType}不是{ServiceType}");
-			var re= Resolver.Resolve(CreateParameterTemplate.AppId, ServiceType, si.InstanceId, InterfaceType);
-			if (re == null && !MemberAttribute.Optional)
-				throw new NotSupportedException($"找不到服务类型为{InterfaceType},ID为{si.InstanceId}的服务");
-			return re;
+			object instance = null;
+			if (si.InstanceId.HasValue)
+			{
+				if (si.InstanceId.Value > 0)
+					instance = Provider.Resolve<IServiceResolver>().ResolveServiceByIdent(
+						si.InstanceId.Value,
+						InterfaceType
+						);
+			}
+			else
+			{
+				instance = Provider.Resolve<IServiceResolver>().ResolveServiceByType(
+					ServiceInstanceDescriptor.InstanceId,
+					si.ServiceType
+					);
+			}
+
+			if (instance == null && !MemberAttribute.Optional)
+				throw new NotSupportedException($"找不到服务类型为{InterfaceType},ID为{si.InstanceId}的服务, 当前服务:{ServiceInstanceDescriptor.InstanceId}");
+			return instance;
 		}
+
+		static object CreateServiceProvider(
+			IServiceProvider Provider,
+			IServiceInstanceDescriptor ServiceInstanceDescriptor
+			)
+		{
+			return
+				ServiceInstanceDescriptor.InstanceId.HasValue?
+				Provider.Resolve<IServiceResolver>().CreateInternalServiceProvider(
+				ServiceInstanceDescriptor.InstanceId.Value
+				):Provider;
+		}
+		static MethodInfo CreateServiceProviderMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
+			nameof(CreateServiceProvider),
+			typeof(IServiceProvider),
+			typeof(IServiceInstanceDescriptor)
+			);
+
 		static MethodInfo ResolveManagedServiceMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
 			nameof(ResolveManagedService),
-			typeof(IServiceResolver),
+			typeof(IServiceProvider),
 			typeof(IServiceCreateParameterTemplate),
+			typeof(IServiceInstanceDescriptor),
 			typeof(string),
 			typeof(Type),
 			typeof(MemberAttribute)
 			);
 		static Lazy<T> CreateLazyedManagedServiceResolve<T>(
-			IServiceResolver Resolver,
+			IServiceProvider ServiceProvider,
 			IServiceCreateParameterTemplate CreateParameterTemplate,
+			IServiceInstanceDescriptor ServiceInstanceDescriptor,
 			string Path,
 			MemberAttribute MemberAttribute
-			) =>new Lazy<T>(() => (T)ResolveManagedService(Resolver, CreateParameterTemplate,Path,typeof(T), MemberAttribute));
+			) =>new Lazy<T>(() => (T)ResolveManagedService(
+				ServiceProvider, 
+				CreateParameterTemplate, 
+				ServiceInstanceDescriptor,
+				Path, 
+				typeof(T), 
+				MemberAttribute
+				));
 
 		static MethodInfo CreateLazyedManagedServiceResolveMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
 			nameof(CreateLazyedManagedServiceResolve),
-			typeof(IServiceResolver),
+			typeof(IServiceProvider),
 			typeof(IServiceCreateParameterTemplate),
+			typeof(IServiceInstanceDescriptor),
 			typeof(string),
 			typeof(MemberAttribute)
 			);
 
 		static Func<T> CreateFuncManagedServiceResolve<T>(
-			IServiceResolver resolver,
+			IServiceProvider resolver,
 			IServiceCreateParameterTemplate CreateParameterTemplate,
+			IServiceInstanceDescriptor ServiceInstanceDescriptor,
 			string Path,
 			MemberAttribute MemberAttribute
 			) => () =>
-				(T)ResolveManagedService(resolver,CreateParameterTemplate,Path,typeof(T), MemberAttribute)
+				(T)ResolveManagedService(
+					resolver,
+					CreateParameterTemplate, 
+					ServiceInstanceDescriptor,
+					Path, 
+					typeof(T), 
+					MemberAttribute
+					)
 			;
 		
 		static MethodInfo CreateFuncManagedServiceResolveMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
 			nameof(CreateFuncManagedServiceResolve),
-			typeof(IServiceResolver),
+			typeof(IServiceProvider),
 			typeof(IServiceCreateParameterTemplate),
+			typeof(IServiceInstanceDescriptor),
 			typeof(string),
 			typeof(MemberAttribute)
 			);
@@ -124,8 +169,9 @@ namespace SF.Core.ServiceManagement.Internals
 						var type = Type.GetGenericArgumentTypeAsLazy();
 						return Expression.Call(
 							CreateLazyedManagedServiceResolveMethodInfo.MakeGenericMethod(type),
-							ParamServiceResolver,
+							ParamServiceProvider,
 							ParamServiceCreateParameterProvider,
+							ParamServiceInstanceDescriptor,
 							PropPathExpr,
 							Expression.Constant(MemberAttribute)
 							);
@@ -135,8 +181,9 @@ namespace SF.Core.ServiceManagement.Internals
 						var type = Type.GetGenericArgumentTypeAsFunc();
 						return Expression.Call(
 							CreateFuncManagedServiceResolveMethodInfo.MakeGenericMethod(type),
-							ParamServiceResolver,
+							ParamServiceProvider,
 							ParamServiceCreateParameterProvider,
+							ParamServiceInstanceDescriptor,
 							PropPathExpr,
 							Expression.Constant(MemberAttribute)
 							);
@@ -145,8 +192,9 @@ namespace SF.Core.ServiceManagement.Internals
 					return Expression.Convert(
 						Expression.Call(
 							ResolveManagedServiceMethodInfo,
-							ParamServiceResolver,
+							ParamServiceProvider,
 							ParamServiceCreateParameterProvider,
+							ParamServiceInstanceDescriptor,
 							PropPathExpr,
 							Expression.Constant(Type),
 							Expression.Constant(MemberAttribute)
@@ -155,11 +203,16 @@ namespace SF.Core.ServiceManagement.Internals
 					);
 			}
 		}
-		static Expression GetServiceInstanceIdentExpression() =>
+		static Expression GetServiceProviderExpression() =>
 			Expression.Call(
-				ParamServiceCreateParameterProvider,
-				ServiceCreateParameterProviderGetServiceInstanceIdent
-			);
+				null,
+				CreateServiceProviderMethodInfo,
+				ParamServiceProvider,
+				ParamServiceInstanceDescriptor
+				);			
+			
+		static Expression GetServiceInstanceDescriptorExpression() =>
+			ParamServiceInstanceDescriptor;
 
 		static Expression StrConcat(Expression e1, Expression e2) =>
 			Expression.Call(null, StringConcat, e1, e2);
@@ -407,8 +460,10 @@ namespace SF.Core.ServiceManagement.Internals
 							);
 					//else if (isSvcType == Internals.ServiceType.Normal)
 					//	return ServiceProviderResolveExpression(Type, rType);
-					else if (Type == typeof(ServiceManagement.IServiceInstanceMeta))
-						return GetServiceInstanceIdentExpression();
+					else if (Type == typeof(ServiceManagement.IServiceInstanceDescriptor))
+						return GetServiceInstanceDescriptorExpression();
+					else if (Type == typeof(IServiceProvider))
+						return GetServiceProviderExpression();
 				}
 
 				return ObjectCreateExpression(
@@ -428,8 +483,8 @@ namespace SF.Core.ServiceManagement.Internals
 			{
 				return new MemberAttribute
 				{
-					ServiceType = pi.GetCustomAttribute<FromServiceAttribute>(true)?.ServiceType ??
-								 (pi.IsDefined(typeof(LocalAttribute),true)?ServiceType:null),
+					//ServiceType = pi.GetCustomAttribute<FromServiceAttribute>(true)?.ServiceType ??
+					//			 (pi.IsDefined(typeof(LocalAttribute),true)?ServiceType:null),
 					Optional=pi.IsDefined(typeof(OptionalAttribute),true),
 				};
 			}
@@ -437,8 +492,8 @@ namespace SF.Core.ServiceManagement.Internals
 			{
 				return new MemberAttribute
 				{
-					ServiceType = pi.GetCustomAttribute<FromServiceAttribute>(true)?.ServiceType ??
-								 (pi.IsDefined(typeof(LocalAttribute), true) ? ServiceType : null),
+					//ServiceType = pi.GetCustomAttribute<FromServiceAttribute>(true)?.ServiceType ??
+					//			 (pi.IsDefined(typeof(LocalAttribute), true) ? ServiceType : null),
 					Optional = pi.IsDefined(typeof(OptionalAttribute), true),
 				};
 			}
@@ -466,8 +521,10 @@ namespace SF.Core.ServiceManagement.Internals
 						ServiceMetadata,
 						TryGetAttributes(pi)
 						);
-				else if (pi.ParameterType == typeof(ServiceManagement.IServiceInstanceMeta))
-					return GetServiceInstanceIdentExpression();
+				else if (pi.ParameterType == typeof(ServiceManagement.IServiceInstanceDescriptor))
+					return GetServiceInstanceDescriptorExpression();
+				else if (pi.ParameterType == typeof(IServiceProvider))
+					return GetServiceProviderExpression();
 				else
 				{
 					if (!CopyRequiredPaths.Contains(pi.Name))
@@ -511,7 +568,7 @@ namespace SF.Core.ServiceManagement.Internals
 				var args = constructorInfo.GetParameters().Select((pi, i) => BuildParamExpression(pi, i)).ToArray();
 				return Expression.Lambda<ServiceCreator>(
 					Expression.New(constructorInfo, args),
-					ParamServiceResolver,
+					ParamServiceProvider,
 					ParamServiceCreateParameterProvider
 					).Compile();
 			}

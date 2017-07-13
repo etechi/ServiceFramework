@@ -74,7 +74,7 @@
     <Compile Include="Core\ServiceManagement\ServiceScopeFactory.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScopeBase.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScope.cs" />
-    <Compile Include="Core\ServiceManagement\Internals\ServiceInterfaceFactory.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ServiceFactory.cs" />
     <Compile Include="Core\ServiceManagement\ServiceProvider.cs" />
     <Compile Include="Core\ServiceManagement\ServiceProviderBuilder.cs" />
     <Compile Include="Core\TaskServices\TaskServiceManager.cs" />
@@ -111,7 +111,7 @@
     <Compile Include="Core\ServiceManagement\Internals\IServiceCreateParameterTemplate.cs" />
     <Compile Include="Core\ServiceManagement\Internals\ServiceFactoryManager.cs" />
     <Compile Include="Core\ServiceManagement\Internals\ServiceCreateParameterTemplate.cs" />
-    <Compile Include="Core\ServiceManagement\Internals\ServiceFactoryBuilder.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ServiceCreatorBuilder.cs" />
     <Compile Include="Core\ServiceManagement\Internals\ServiceMetadata.cs" />
     <Compile Include="Core\ServiceManagement\Internals\TypeExtension.cs" />
     <Compile Include="Core\ServiceManagement\ServiceCollection.cs" />

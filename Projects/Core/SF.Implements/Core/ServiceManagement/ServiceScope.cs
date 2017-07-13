@@ -7,7 +7,7 @@ namespace SF.Core.ServiceManagement
 		IServiceScope
 	{
 
-		public ServiceScope(IServiceFactoryManager FactoryManager,long ScopeId):base(FactoryManager, ScopeId)
+		public ServiceScope(IServiceFactoryManager FactoryManager):base(FactoryManager)
 		{
 		}
 		static Type TypeServiceProvider = typeof(IServiceProvider);

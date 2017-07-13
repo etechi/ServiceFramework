@@ -31,12 +31,12 @@ namespace SF.Core.ServiceManagement.Storages
 		{
 			this.ConfigChangedNotifier = ConfigChangedNotifier;
 		}
-		public void SetDefaultService<I>(long? ScopeId,long ServiceInstanceId)
+		public void SetDefaultService<I>(long ServiceInstanceId, long? ScopeId=null)
 		{
 			ServiceMap[typeof(I).FullName+"-"+ ScopeId] = ServiceInstanceId;
 			ConfigChangedNotifier.NotifyDefaultChanged(ScopeId, typeof(I).FullName);
 		}
-		public Config SetConfig<I,T>(long? ParentId,long Id, object Settings)
+		public Config SetConfig<I,T>(long Id, object Settings,long? ParentId=null)
 			where T:I
 		{
 			var cfg= new Config
@@ -52,7 +52,7 @@ namespace SF.Core.ServiceManagement.Storages
 			ConfigChangedNotifier.NotifyChanged( Id);
 			return cfg;
 		}
-		public IServiceConfig GetConfig(string Type, int AppId,long Id)
+		public IServiceConfig GetConfig(long Id)
 		{
 			return Configs[Id];
 		}

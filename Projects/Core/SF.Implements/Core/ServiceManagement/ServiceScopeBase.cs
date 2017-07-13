@@ -3,25 +3,23 @@ using System;
 using System.Collections.Generic;
 namespace SF.Core.ServiceManagement
 {
-	public abstract class ServiceScopeBase : 
+	public abstract class ServiceScopeBase :
 		IDisposable,
 		IServiceProvider,
 		IServiceResolver
 	{
-		public long ScopeId { get; }
 		IServiceFactoryManager FactoryManager { get; }
 		public IServiceProvider ServiceProvider => this;
-		Dictionary<(Type,long), object> _Services;
+		Dictionary<(Type, long), object> _Services;
 
 		class CachedServices : HashSet<object>
 		{
 
 		}
 
-		public ServiceScopeBase(IServiceFactoryManager FactoryManager, long ScopeId)
+		public ServiceScopeBase(IServiceFactoryManager FactoryManager)
 		{
 			this.FactoryManager = FactoryManager;
-			this.ScopeId = ScopeId;
 		}
 		protected enum CacheType
 		{
@@ -31,7 +29,7 @@ namespace SF.Core.ServiceManagement
 		}
 		protected abstract CacheType GetCacheType(IServiceFactory Factory);
 
-		void TryAddCache((Type,long) key,object CurEntry,object Service)
+		void TryAddCache((Type, long) key, object CurEntry, object Service)
 		{
 			if (Service == null)
 				return;
@@ -55,13 +53,13 @@ namespace SF.Core.ServiceManagement
 
 		public virtual void Dispose()
 		{
-			if(_Services != null)
+			if (_Services != null)
 				foreach (var v in _Services.Values)
 				{
 					var p = v as IDisposable;
 					if (p != null)
 					{
-						try{
+						try {
 							p.Dispose();
 						}
 						catch
@@ -81,7 +79,7 @@ namespace SF.Core.ServiceManagement
 				return factory.Create(this);
 
 
-			var key = (factory.ServiceImplement.ServiceType, factory.ServiceInstanceId);
+			var key = (factory.ServiceImplement.ServiceType, factory.InstanceId??0);
 			object curEntiy = null;
 			if (_Services == null)
 				_Services = new Dictionary<(Type, long), object>();
@@ -93,32 +91,71 @@ namespace SF.Core.ServiceManagement
 
 			var service = factory.Create(this);
 
-
 			if (cacheType == CacheType.CacheScoped)
 				TryAddCache(key, curEntiy, service);
 			else
 				TryAddCache(key, curEntiy, service as IDisposable);
 			return service;
 		}
-		public virtual object Resolve(long ServiceId)
+		
+		public virtual object GetService(Type serviceType)
+		{
+			return ResolveServiceByType(null, serviceType);
+		}
+
+		public IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId, Type ServiceType)
+		{
+			return FactoryManager.GetServiceFactoryByIdent(
+				this,
+				ServiceId,
+				ServiceType
+				);
+		}
+		public IServiceInstanceDescriptor ResolveDescriptorByType(long? ScopeServiceId, Type ServiceType)
+		{
+			return FactoryManager.GetServiceFactoryByType(
+				this,
+				ScopeServiceId,
+				ServiceType
+				);
+		}
+		public object ResolveServiceByType(long? ScopeServiceId, Type ServiceType)
 		{
 			return GetService(
-				FactoryManager.GetServiceFactory(
+				FactoryManager.GetServiceFactoryByType(
 					this,
-					ServiceId
+					ScopeServiceId,
+					ServiceType
 					)
 				);
 		}
-		public virtual object GetService(Type serviceType)
+		public object ResolveServiceByIdent(long ServiceId, Type ServiceType)
 		{
 			return GetService(
-				FactoryManager.GetServiceFactory(
+				FactoryManager.GetServiceFactoryByIdent(
 					this,
-					ScopeId,
-					serviceType
+					ServiceId,
+					ServiceType
 					)
 				);
+		}
 
+		class ScopedServiceProvider : IServiceProvider
+		{
+			public long ScopeServiceId { get; set; }
+			public ServiceScopeBase ScopeBase { get; set; }
+			public object GetService(Type serviceType)
+			{
+				return ScopeBase.ResolveServiceByType(ScopeServiceId, serviceType);
+			}
+		}
+		public IServiceProvider CreateInternalServiceProvider(long ServiceId)
+		{
+			return new ScopedServiceProvider
+			{
+				ScopeBase = this,
+				ScopeServiceId = ServiceId
+			};
 		}
 	}
 

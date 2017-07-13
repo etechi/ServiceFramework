@@ -28,7 +28,7 @@ namespace SF.AspNet.DI
 				HttpContext.Current.Items[DIScopeKey] = re = ServiceProvider.Resolve<IServiceScopeFactory>().CreateServiceScope();
 			}
 
-			return re.ServiceResolver;
+			return re.ServiceProvider;
 		}
 		public void Init(System.Web.HttpApplication context)
 		{

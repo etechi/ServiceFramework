@@ -9,6 +9,7 @@ using SF.Clients;
 using SF.Security;
 using SF.Core.Times;
 using SF.Core.Caching;
+using System.Collections.Generic;
 
 namespace SF.Auth.Identities
 {
@@ -26,6 +27,8 @@ namespace SF.Auth.Identities
 		public Lazy<ITimeService> TimeService { get; set; }
 		public Lazy<ILocalCache<IdentityData>> IdentityDataCache { get; set; }
 		public Func<long,IIdentityCredentialProvider> CredentialProviderResolver { get; set; }
+		public Lazy<IIdentityCredentialProvider> DefaultIdentityCredentialProvider { get; set; }
+		public IEnumerable<IIdentityCredentialProvider> IdentityCredentialProviders { get; set; }
 	}
 
 }

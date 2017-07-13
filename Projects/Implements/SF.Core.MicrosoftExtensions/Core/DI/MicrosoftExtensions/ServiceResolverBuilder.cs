@@ -15,7 +15,7 @@ namespace SF.Core.ServiceManagement
 			{
 				this.ServiceScope = ServiceScope;
 			}
-			public IServiceProvider ServiceProvider => ServiceScope.ServiceResolver;
+			public IServiceProvider ServiceProvider => ServiceScope.ServiceProvider;
 
 			public void Dispose()
 			{
@@ -71,11 +71,11 @@ namespace SF.Core.ServiceManagement
 				MSServices.Select(s =>
 				{
 					if (s.ImplementationFactory != null)
-						return new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(s.ServiceType, s.ImplementationFactory, MapLifetime(s.Lifetime));
+						return new ServiceDescriptor(s.ServiceType, s.ImplementationFactory, MapLifetime(s.Lifetime));
 					else if (s.ImplementationInstance != null)
-						return new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(s.ServiceType, s.ImplementationInstance);
+						return new ServiceDescriptor(s.ServiceType, s.ImplementationInstance);
 					else if (s.ImplementationType != null)
-						return new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(s.ServiceType, s.ImplementationType, MapLifetime(s.Lifetime));
+						return new ServiceDescriptor(s.ServiceType, s.ImplementationType, MapLifetime(s.Lifetime));
 					else
 						throw new NotSupportedException();
 				}));

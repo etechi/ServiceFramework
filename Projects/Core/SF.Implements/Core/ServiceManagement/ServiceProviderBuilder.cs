@@ -15,9 +15,27 @@ namespace SF.Core.ServiceManagement
 		{
 			return new Internals.ServiceMetadata(Services);
 		}
-		public virtual Internals.IServiceFactoryManager OnCreateServcieFactoryManager(IServiceMetadata meta, Caching.ILocalCache<object> AppServiceCache)
+		public virtual IServiceDeclarationTypeResolver OnCreateServiceDeclarationTypeResolver()
 		{
-			return new Internals.ServiceFactoryManager(AppServiceCache, meta);
+			return new DefaultServiceDeclarationTypeResolver();
+		}
+		public virtual IServiceImplementTypeResolver OnCreateImplementDeclarationTypeResolver()
+		{
+			return new DefaultServiceImplementTypeResolver();
+		}
+		public virtual Internals.IServiceFactoryManager OnCreateServcieFactoryManager(
+			IServiceMetadata meta, 
+			Caching.ILocalCache<IServiceEntry> AppServiceCache,
+			IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver,
+			IServiceImplementTypeResolver ServiceImplementTypeResolver
+			)
+		{
+			return new Internals.ServiceFactoryManager(
+				AppServiceCache, 
+				meta,
+				ServiceDeclarationTypeResolver?? OnCreateServiceDeclarationTypeResolver(),
+				ServiceImplementTypeResolver?? OnCreateImplementDeclarationTypeResolver()
+				);
 		}
 		public virtual IServiceProvider OnCreateServiceProvider(Internals.IServiceFactoryManager Manager)
 		{
@@ -33,21 +51,21 @@ namespace SF.Core.ServiceManagement
 					type;
 		}
 		void validate(
-			IServiceInterface Interface,
-			IServiceInterface CallInterface,
+			IServiceImplement Implement,
+			IServiceImplement CallImplement,
 			IServiceMetadata Meta, 
-			HashSet<Type> ValidatedInterfaces,
-			HashSet<Type> UsedServiceInterfaces
+			HashSet<Type> ValidatedImplements,
+			HashSet<Type> UsedServiceImplements
 			)
 		{
-			if (!UsedServiceInterfaces.Add(Interface.Type))
+			if (!UsedServiceImplements.Add(Implement.ImplementType))
 				throw new InvalidOperationException(
-					$"服务{Interface.Type}存在循环引用，来自{CallInterface?.ImplementType}"
+					$"服务{Implement.ImplementType}存在循环引用，来自{CallImplement?.ImplementType}"
 					);
 
-			if (!ValidatedInterfaces.Contains(Interface.Type) && Interface.ServiceImplementType==ServiceImplementType.Type)
+			if (!ValidatedImplements.Contains(Implement.ImplementType) && Implement.ServiceImplementType==ServiceImplementType.Type)
 			{
-				(from arg in Internals.ServiceCreatorBuilder.FindBestConstructorInfo(Interface.ImplementType).GetParameters()
+				(from arg in Internals.ServiceCreatorBuilder.FindBestConstructorInfo(Implement.ImplementType).GetParameters()
 				 let type = GetRealServiceType(arg.ParameterType)
 				 where type.IsInterface
 				 let svcs = Meta.Services.Get(type)
@@ -55,17 +73,16 @@ namespace SF.Core.ServiceManagement
 				).ForEach(tuple => {
 					if (tuple.svcs == null )
 						throw new InvalidOperationException(
-							$"找不到{Interface.ImplementType}的构造函数参数 {tuple.arg.Name}引用的服务{tuple.type}"
+							$"找不到{Implement.ImplementType}的构造函数参数 {tuple.arg.Name}引用的服务{tuple.type}"
 							);
 					foreach(var svc in tuple.svcs.Implements)
-						foreach(var isf in svc.Interfaces)
-							validate(isf,Interface, Meta, ValidatedInterfaces, UsedServiceInterfaces);
+							validate(svc, Implement, Meta, ValidatedImplements, UsedServiceImplements);
 				}
 				);
 
-				ValidatedInterfaces.Add(Interface.Type);
+				ValidatedImplements.Add(Implement.ImplementType);
 			}
-			UsedServiceInterfaces.Remove(Interface.Type);
+			UsedServiceImplements.Remove(Implement.ImplementType);
 		}
 		public virtual void OnValidate(IServiceMetadata Meta)
 		{
@@ -73,9 +90,7 @@ namespace SF.Core.ServiceManagement
 			var used = new HashSet<Type>();
 			foreach(var sif in (from svc in Meta.Services.Values
 			 from impl in svc.Implements
-			 from sif in impl.Interfaces
-				select sif
-
+				select impl
 			 ))
 			validate(sif,null, Meta, validated, used);
 		}
@@ -169,7 +184,12 @@ namespace SF.Core.ServiceManagement
 						);
 				});
 		}
-		public IServiceProvider Build(IServiceCollection Services,Caching.ILocalCache<object> AppServiceCache)
+		public IServiceProvider Build(
+			IServiceCollection Services,
+			Caching.ILocalCache<IServiceEntry> AppServiceCache=null,
+			IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver=null,
+			IServiceImplementTypeResolver ServiceImplementTypeResolver=null
+			)
 		{
 
 			PrepareServices(Services);
@@ -188,7 +208,12 @@ namespace SF.Core.ServiceManagement
 
 			meta = OnCreateServcieMetadata(Services);
 			OnValidate(meta);
-			manager = OnCreateServcieFactoryManager(meta, AppServiceCache);
+			manager = OnCreateServcieFactoryManager(
+				meta, 
+				AppServiceCache,
+				ServiceDeclarationTypeResolver,
+				ServiceImplementTypeResolver
+				);
 			scopeFactory = new ServiceScopeFactory(manager);
 			provider = OnCreateServiceProvider(manager);
 			return provider;

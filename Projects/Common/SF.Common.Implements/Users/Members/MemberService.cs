@@ -21,38 +21,10 @@ namespace SF.Users.Members
 		{
 			this.Setting = Setting;
 		}
-		public Task<string> Signin(SigninArgument Arg)
-		{
-			return Setting.IdentityService.Value.Signin(Arg, Setting.SigninCredentialProviders.Value);
-		}
-
-		public Task Signout()
-		{
-			return Setting.IdentityService.Value.Signout();
-		}
-
-		public Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg)
-		{
-			return Setting.IdentityService.Value.SendPasswordRecorveryCode(Arg, Setting.SignupCredentialProvider.Value);
-		}
-
-		public Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg)
-		{
-			return Setting.IdentityService.Value.ResetPasswordByRecoveryCode(Arg);
-		}
-
-		public Task<string> SetPassword(SetPasswordArgument Arg)
-		{
-			return Setting.IdentityService.Value.SetPassword(Arg);
-		}
-
-		public Task<string> SendSignupVerifyCode(SendSignupVerifyCodeArgument Arg)
-		{
-			return Setting.IdentityService.Value.SendCreateIdentityVerifyCode(Arg,Setting.SignupCredentialProvider.Value);
-		}
+		
 
 		[TransactionScope("用户注册")]
-		public async Task<string> Signup(MemberSignupArgument Arg)
+		public async Task<string> Signup(CreateIdentityArgument Arg)
 		{
 			var token = await Setting.ManagementService.Value.CreateMemberAsync(Arg,Setting.SignupCredentialProvider.Value);
 			return token;

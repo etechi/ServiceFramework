@@ -157,8 +157,7 @@ namespace SF.Core.ServiceManagement
 			foreach(var type in (
 				from svcs in Metadata.Services
 				from impl in svcs.Value.Implements
-				from sif in impl.Interfaces
-				select sif.ImplementType
+				select impl.ImplementType
 				).Distinct())
 			{
 				GenerateImplConfig(type, argTypeBuilder);

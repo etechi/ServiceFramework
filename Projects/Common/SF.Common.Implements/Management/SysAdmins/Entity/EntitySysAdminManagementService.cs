@@ -76,7 +76,7 @@ namespace SF.Management.SysAdmins.Entity
 					new CreateIdentityArgument
 					{
 						Credential = m.Account,
-						CredentialProvider= SignupCredentialProvider.Value,
+						//CredentialProviderId=
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity
 						{
@@ -86,8 +86,7 @@ namespace SF.Management.SysAdmins.Entity
 							Name=m.Name
 						}
 					}, 
-					false,
-					SignupCredentialProvider.Value
+					false
 					);
 			}
 			else

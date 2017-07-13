@@ -79,7 +79,7 @@ namespace SF.UT
 			var sf = rsp.Resolve<IServiceScopeFactory>();
 			using (var s = sf.CreateServiceScope())
 			{
-				var sp = s.ServiceResolver;
+				var sp = s.ServiceProvider;
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
 				ts.SetConfig<IOperator, Add>(1, null);
@@ -94,7 +94,7 @@ namespace SF.UT
 			}
 			using (var s = sf.CreateServiceScope())
 			{
-				var sp = s.ServiceResolver;
+				var sp = s.ServiceProvider;
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
 				ts.SetDefaultService<IAgg>(2);
@@ -105,7 +105,7 @@ namespace SF.UT
 			}
 			using (var s = sf.CreateServiceScope())
 			{
-				var sp = s.ServiceResolver;
+				var sp = s.ServiceProvider;
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
 				ts.SetConfig<IAgg, Agg>(2, new { op = "SF.UT.IOperator-1", cfg = new { Op = "SF.UT.IOperator-2", Add = 20000 } });

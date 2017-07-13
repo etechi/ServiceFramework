@@ -1,17 +1,20 @@
 using System;
 namespace SF.Core.ServiceManagement.Internals
 {
+	public interface IServiceEntry { }
+
 	[UnmanagedService]
 	public interface IServiceFactoryManager
 	{
-		IServiceFactory GetServiceFactory(
+		IServiceFactory GetServiceFactoryByIdent(
 			IServiceProvider ServiceProvider, 
-			long ServiceScopeId,
-			Type InterfaceType
+			long ServiceId,
+			Type ServiceType
 			);
-		IServiceFactory GetServiceFactory(
+		IServiceFactory GetServiceFactoryByType(
 			IServiceProvider ServiceProvider,
-			long ServiceId
+			long? ScopeServiceId,
+			Type ServiceType
 			);
 	}
 

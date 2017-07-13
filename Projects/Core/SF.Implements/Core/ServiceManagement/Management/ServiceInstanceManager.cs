@@ -268,7 +268,7 @@ namespace SF.Core.ServiceManagement.Management
 
 			public string Setting { get; set; }
 		}
-		IServiceConfig IServiceConfigLoader.GetConfig(string ServiceType,int AppId, long Id)
+		IServiceConfig IServiceConfigLoader.GetConfig(long Id)
 		{
 			var re = DataSet.QuerySingleAsync(
 				si => si.Id == Id,

@@ -32,7 +32,7 @@ namespace SF.Core.CallGuarantors.Runtime
 			var now = TimeService.Now;
 			using (var scope = ScopeFactory.CreateServiceScope())
 			{
-				var storage = scope.ServiceResolver.Resolve<ICallGuarantorStorage>();
+				var storage = scope.ServiceProvider.Resolve<ICallGuarantorStorage>();
 				var timers = await storage.GetInstancesForCleanup(ConstantTimes.ExecutingStartTime);
 				var error_unexcepted = new Exception("系统异常终止");
 				var actions = new List<ICallStorageAction>();
@@ -50,7 +50,7 @@ namespace SF.Core.CallGuarantors.Runtime
 			string[] ids;
 			using (var scope = ScopeFactory.CreateServiceScope())
 			{
-				var storage = scope.ServiceResolver.Resolve<ICallGuarantorStorage>();
+				var storage = scope.ServiceProvider.Resolve<ICallGuarantorStorage>();
 				ids = await storage.GetOnTimeInstances(
 					count,
 					now,
@@ -91,7 +91,7 @@ namespace SF.Core.CallGuarantors.Runtime
              {
                  using (var scope = ScopeFactory.CreateServiceScope())
                  {
-					 var sp = scope.ServiceResolver;
+					 var sp = scope.ServiceProvider;
 					 var storage = sp.Resolve<ICallGuarantorStorage>();
                      var instance = await storage.GetInstance(id);
                      var i = id.IndexOf(':');

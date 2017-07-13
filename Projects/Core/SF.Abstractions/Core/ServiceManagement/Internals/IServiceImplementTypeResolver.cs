@@ -9,4 +9,11 @@ namespace SF.Core.ServiceManagement.Internals
 		Type Resolve(string Name);
 	}
 
+
+	[UnmanagedService]
+	public interface IServiceDeclarationTypeResolver
+	{
+		string GetTypeIdent(Type type);
+		Type Resolve(string Name);
+	}
 }

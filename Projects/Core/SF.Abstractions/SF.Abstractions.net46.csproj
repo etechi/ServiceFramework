@@ -56,13 +56,11 @@
     <Compile Include="Core\Caching\IRemoteCache.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantor.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantorStorage.cs" />
-    <Compile Include="Core\ServiceManagement\Internals\IServiceInterfaceFactory.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\IServiceFactory.cs" />
     <Compile Include="Core\ServiceManagement\IServiceDetector.cs" />
-    <Compile Include="Core\ServiceManagement\IServiceInstanceMeta.cs" />
+    <Compile Include="Core\ServiceManagement\IServiceInstanceDescriptor.cs" />
     <Compile Include="Core\ServiceManagement\IServiceMetadata.cs" />
     <Compile Include="Core\ServiceManagement\IServiceResolverBuilder.cs" />
-    <Compile Include="Core\ServiceManagement\FromServiceAttribute.cs" />
-    <Compile Include="Core\ServiceManagement\Local.cs" />
     <Compile Include="Core\ServiceManagement\SystemServiceAttribute.cs" />
     <Compile Include="Core\ServiceManagement\Management\IServiceDeclarationManager.cs" />
     <Compile Include="Core\ServiceManagement\Management\IServiceImplementManager.cs" />

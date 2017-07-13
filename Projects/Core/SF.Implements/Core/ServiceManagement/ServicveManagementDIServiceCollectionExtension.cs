@@ -13,8 +13,6 @@ namespace SF.Core.ServiceManagement
 			this IServiceCollection sc
 			)
 		{
-			if (!sc.GetServiceTypes().Any(t=>t== typeof(IServiceImplementTypeResolver)))
-				sc.AddSingleton<IServiceImplementTypeResolver, DefaultServiceImplementTypeResolver>();
 			//sc.AddSingleton<IServiceFactoryManager, ServiceFactoryManager>();
 			//sc.AddScoped<IServiceInstanceScope,ServiceInstanceScope>();
 			sc.AddSingleton<NetworkService.IExtraServiceTypeSource, ImplementConfigTypeSource>();
@@ -36,9 +34,19 @@ namespace SF.Core.ServiceManagement
 			sc.AddScoped<IServiceConfigLoader, Management.ServiceInstanceManager>();
 			sc.AddScoped<IDefaultServiceLocator, Management.ServiceInstanceManager>();
 		}
-		public static IServiceProvider BuildServiceResolver(this IServiceCollection sc,Caching.ILocalCache<object> AppServiceCache)
+		public static IServiceProvider BuildServiceResolver(
+			this IServiceCollection sc,
+			Caching.ILocalCache<IServiceEntry> AppServiceCache=null,
+			IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver=null,
+			IServiceImplementTypeResolver ServiceImplementTypeResolver = null
+			)
 		{
-			return new ServiceProviderBuilder().Build(sc, AppServiceCache);
+			return new ServiceProviderBuilder().Build(
+				sc, 
+				AppServiceCache, 
+				ServiceDeclarationTypeResolver, 
+				ServiceImplementTypeResolver
+				);
 		}
 	}
 

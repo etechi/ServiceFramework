@@ -14,5 +14,16 @@ namespace SF.Core.ServiceManagement.Internals
 			return Type.GetType(Name);
 		}
 	}
+	public class DefaultServiceDeclarationTypeResolver : IServiceDeclarationTypeResolver
+	{
+		public string GetTypeIdent(Type type)
+		{
+			return type.FullName;
+		}
 
+		public Type Resolve(string Name)
+		{
+			return Type.GetType(Name);
+		}
+	}
 }
