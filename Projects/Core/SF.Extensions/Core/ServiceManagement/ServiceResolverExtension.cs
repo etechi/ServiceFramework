@@ -21,7 +21,7 @@ namespace SF.Core.ServiceManagement
 		public static T Resolve<T>(this IServiceProvider ServiceProvider, long ServiceId)
 			where T : class
 		{
-			var s = ServiceProvider.Resolve<IServiceResolver>().ResolveDescriptorByIdent(ServiceId,typeof(T));
+			var s = ServiceProvider.Resolve<IServiceResolver>().ResolveServiceByIdent(ServiceId,typeof(T));
 			if (s == null)
 				throw new InvalidOperationException("找不到服务:" + typeof(T));
 			var re = s as T;

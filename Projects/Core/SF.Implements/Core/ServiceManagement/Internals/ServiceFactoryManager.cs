@@ -429,7 +429,7 @@ namespace SF.Core.ServiceManagement.Internals
 					type
 					);
 				var cache = (Caching.ILocalCache<IServiceEntry>)factory.Create(ServiceProvider);
-				cache.Set(type.FullName, entry, TimeSpan.MaxValue);
+				cache.Set(type.FullName, entry, TimeSpan.FromDays(100));
 				return _ServiceCache = cache;
 			}
 		}
@@ -508,7 +508,7 @@ namespace SF.Core.ServiceManagement.Internals
 							ImplementType.MakeGenericType(ServiceType.GetGenericArguments()) :
 							ImplementType;
 			
-			var (Creator,ConstructorInfo) = GetServiceCreator(ServiceType, ImplementType);
+			var (Creator,ConstructorInfo) = GetServiceCreator(ServiceType, realImplType);
 			var CreateParameterTemplate = ServiceCreateParameterTemplate.Load(
 				ConstructorInfo,
 				Setting,
@@ -662,7 +662,9 @@ namespace SF.Core.ServiceManagement.Internals
 				for (;;)
 				{
 					var dss = EnsureDefaultServiceDict(curEntry);
-					if (!dss.TryGetValue(ServiceType.FullName, out var cid))
+					if (!dss.TryGetValue(ServiceType.FullName, out var cid) && 
+						!ServiceType.IsDefined(typeof(UnmanagedServiceAttribute))
+						)
 					{
 						if (defaultServiceLocator == null)
 						{

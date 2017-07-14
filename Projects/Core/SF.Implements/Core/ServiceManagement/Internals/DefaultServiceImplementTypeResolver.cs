@@ -4,6 +4,11 @@ namespace SF.Core.ServiceManagement.Internals
 
 	public class DefaultServiceImplementTypeResolver : IServiceImplementTypeResolver
 	{
+		IServiceMetadata Metadata { get; }
+		public DefaultServiceImplementTypeResolver(IServiceMetadata meta)
+		{
+			Metadata = meta;
+		}
 		public string GetTypeIdent(Type type)
 		{
 			return type.FullName;
@@ -11,11 +16,16 @@ namespace SF.Core.ServiceManagement.Internals
 
 		public Type Resolve(string Name)
 		{
-			return Type.GetType(Name);
+			return Metadata.ImplementsByTypeName.TryGetValue(Name, out var impl) ? impl.ImplementType : null;
 		}
 	}
 	public class DefaultServiceDeclarationTypeResolver : IServiceDeclarationTypeResolver
 	{
+		IServiceMetadata Metadata { get; }
+		public DefaultServiceDeclarationTypeResolver(IServiceMetadata meta)
+		{
+			Metadata = meta;
+		}
 		public string GetTypeIdent(Type type)
 		{
 			return type.FullName;
@@ -23,7 +33,7 @@ namespace SF.Core.ServiceManagement.Internals
 
 		public Type Resolve(string Name)
 		{
-			return Type.GetType(Name);
+			return Metadata.ServicesByTypeName.TryGetValue(Name, out var impl) ? impl.ServiceType: null;
 		}
 	}
 }

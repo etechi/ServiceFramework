@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace SF.Core.ServiceManagement
@@ -14,7 +15,8 @@ namespace SF.Core.ServiceManagement
 	{
 		Type,
 		Instance,
-		Creator
+		Creator,
+		Method
 	}
 	
 	public class ServiceDescriptor
@@ -25,8 +27,25 @@ namespace SF.Core.ServiceManagement
 		public Func<IServiceProvider, object> ImplementCreator { get; }
 		public ServiceImplementLifetime Lifetime { get; }
 		public ServiceImplementType ServiceImplementType { get; }
+		public System.Reflection.MethodInfo ImplementMethod { get; }
 		public ServiceDescriptor(Type InterfaceType, Type ImplementType, ServiceImplementLifetime Lifetime)
 		{
+			if(ImplementType==null)
+				throw new ArgumentNullException();
+			if(InterfaceType==null)
+				throw new ArgumentNullException();
+			if (InterfaceType.IsGenericTypeDefinition != ImplementType.IsGenericTypeDefinition)
+				throw new ArgumentException($"{ImplementType}是{(ImplementType.IsGenericTypeDefinition?"泛型定义":"普通类")}，而{InterfaceType}是{(InterfaceType.IsGenericTypeDefinition ? "泛型定义" : "普通类")}");
+			if(InterfaceType.IsGenericTypeDefinition)
+			{
+				var ifgpc = InterfaceType.GenericTypeArguments.Length;
+				var impgpc = ImplementType.GenericTypeArguments.Length;
+				if (ifgpc!=impgpc)
+					throw new ArgumentException($"{ImplementType}需要{impgpc}个泛型参数，而{InterfaceType}需要{ifgpc}个泛型参数");
+			}
+			else if (!InterfaceType.IsAssignableFrom(ImplementType))
+				throw new ArgumentException($"{ImplementType}没有实现接口{InterfaceType}");
+
 			this.ServiceImplementType = ServiceImplementType.Type;
 			this.InterfaceType = InterfaceType;
 			this.ImplementType = ImplementType;
@@ -34,6 +53,11 @@ namespace SF.Core.ServiceManagement
 		}
 		public ServiceDescriptor(Type InterfaceType, object Implement)
 		{
+			if (Implement == null )
+				throw new ArgumentNullException();
+			if (!InterfaceType.IsAssignableFrom(Implement.GetType()))
+				throw new ArgumentException($"给定对象和接口类型不符合{InterfaceType}");
+
 			this.ServiceImplementType = ServiceImplementType.Instance;
 			this.InterfaceType = InterfaceType;
 			this.ImplementInstance = Implement;
@@ -44,6 +68,13 @@ namespace SF.Core.ServiceManagement
 			this.ServiceImplementType = ServiceImplementType.Creator;
 			this.InterfaceType = InterfaceType;
 			this.ImplementCreator = ImplementCreator;
+			this.Lifetime = Lifetime;
+		}
+		public ServiceDescriptor(Type InterfaceType, MethodInfo ImplementMethod, ServiceImplementLifetime Lifetime)
+		{
+			this.ServiceImplementType = ServiceImplementType.Method;
+			this.InterfaceType = InterfaceType;
+			this.ImplementMethod = ImplementMethod;
 			this.Lifetime = Lifetime;
 		}
 	}

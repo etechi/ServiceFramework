@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Linq.Expressions;
 using SF.Core.ServiceManagement;
 using SF.Core.DI;
+using SF.Core.ServiceManagement.Storages;
 
 namespace SF.UT.DI
 {
@@ -30,6 +31,8 @@ namespace SF.UT.DI
         public void Generic()
         {
 			var sc = new ServiceCollection();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
 			sc.AddTransient(typeof(IInterface<>), typeof(Implement<>));
 			var sp = sc.BuildServiceResolver();
 			var re = sp.Resolve<IInterface<int>>();
@@ -82,6 +85,8 @@ namespace SF.UT.DI
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
 			var sp = sc.BuildServiceResolver();
 			var re = sp.Resolve<Func<IInterface<int>>>();
 			var r = re();
@@ -93,9 +98,15 @@ namespace SF.UT.DI
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
+			sc.UseNewtonsoftJson();
+
 			var sp = sc.BuildServiceResolver();
+			var cfgs = sp.Resolve<MemoryServiceSource>();
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(1,new { });
 			var re = sp.Resolve<Func<long, IInterface<int>>>();
-			var r = re(0);
+			var r = re(1);
 			Assert.Equal("123", r.ToString(123));
 
 		}
@@ -104,6 +115,8 @@ namespace SF.UT.DI
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
 			var sp = sc.BuildServiceResolver();
 			var re = sp.Resolve<Lazy<IInterface<int>>>();
 			var r = re.Value;

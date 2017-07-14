@@ -27,6 +27,16 @@ namespace System.Reflection
 			{typeof(DateTime),System.TypeCode.DateTime },
 			{typeof(string),System.TypeCode.String }
 		};
+
+		public static string GetFullName(this Type type)
+		{
+			var ft = type.FullName;
+			if (ft != null) return ft;
+			if (!type.IsGenericType) return null;
+			return type.GetGenericTypeDefinition().FullName + "[" +
+				type.GetGenericArguments().Select(t=>t.GetFullName()).Join(",")+
+				"]";
+		}
 		public static TypeCode GetTypeCode(this Type type)
 		{
 #if NETCORE

@@ -20,8 +20,9 @@ namespace SF.Core.ServiceManagement
 		}
 		public static void UseMemoryManagedServiceSource(this IServiceCollection sc)
 		{
-			sc.AddScoped<IServiceConfigLoader, MemoryServiceSource>();
-			sc.AddScoped<IDefaultServiceLocator>(isp => (IDefaultServiceLocator)isp.Resolve<IServiceConfigLoader>());
+			sc.AddSingleton<MemoryServiceSource, MemoryServiceSource>();
+			sc.AddScoped(sp => (IServiceConfigLoader)sp.Resolve<MemoryServiceSource>());
+			sc.AddScoped(sp => (IDefaultServiceLocator)sp.Resolve<MemoryServiceSource>());
 		}
 		public static void UseManagedServiceAdminServices(this IServiceCollection sc, string TablePrefix = null)
 		{

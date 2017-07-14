@@ -119,8 +119,12 @@ namespace SF.Core.ServiceManagement
 				ServiceType
 				);
 		}
+		static Type ServiceProviderType { get; } = typeof(IServiceProvider);
+		static Type ServiceResolverType { get; } = typeof(IServiceResolver);
 		public object ResolveServiceByType(long? ScopeServiceId, Type ServiceType)
 		{
+			if (ServiceType == ServiceResolverType || ServiceType==ServiceProviderType)
+				return this;
 			return GetService(
 				FactoryManager.GetServiceFactoryByType(
 					this,
@@ -146,6 +150,8 @@ namespace SF.Core.ServiceManagement
 			public ServiceScopeBase ScopeBase { get; set; }
 			public object GetService(Type serviceType)
 			{
+				if(serviceType== ServiceProviderType || serviceType == ServiceResolverType)
+					return ScopeBase;
 				return ScopeBase.ResolveServiceByType(ScopeServiceId, serviceType);
 			}
 		}

@@ -54,11 +54,11 @@ namespace SF.Core.ServiceManagement.Internals
 			//if (pair.Key == null)
 			//	throw new NotImplementedException($"找不到服务{InterfaceType}，配置路径:{Path}");
 			//var ServiceType= MemberAttribute.ServiceType??InterfaceType;
-			if (si.ServiceType != null && si.ServiceType != InterfaceType)
+			if (si!=null && si.ServiceType != null && si.ServiceType != InterfaceType)
 				throw new NotSupportedException($"{InterfaceType}的配置路径:{Path}返回的服务类型为{si.ServiceType}不是{InterfaceType}");
 
 			object instance = null;
-			if (si.InstanceId.HasValue)
+			if (si?.InstanceId.HasValue ?? false)
 			{
 				if (si.InstanceId.Value > 0)
 					instance = Provider.Resolve<IServiceResolver>().ResolveServiceByIdent(
@@ -70,7 +70,7 @@ namespace SF.Core.ServiceManagement.Internals
 			{
 				instance = Provider.Resolve<IServiceResolver>().ResolveServiceByType(
 					ServiceInstanceDescriptor.InstanceId,
-					si.ServiceType
+					InterfaceType
 					);
 			}
 
@@ -569,6 +569,7 @@ namespace SF.Core.ServiceManagement.Internals
 				return Expression.Lambda<ServiceCreator>(
 					Expression.New(constructorInfo, args),
 					ParamServiceProvider,
+					ParamServiceInstanceDescriptor,
 					ParamServiceCreateParameterProvider
 					).Compile();
 			}

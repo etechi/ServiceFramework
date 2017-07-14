@@ -56,6 +56,10 @@
       <Project>{0bacd331-8e70-451b-b290-06dcc35324bf}</Project>
       <Name>SF.Data.Storage.EF6</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Implements\SF.Services.dotNetFramework\SF.Services.dotNetFramework.csproj">
+      <Project>{1111e437-2d49-4773-83df-ba42f6ca20f8}</Project>
+      <Name>SF.Services.dotNetFramework</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.net46.csproj">
       <Project>{69691ef2-2eff-4e50-aa49-93e9fdc5c34b}</Project>
       <Name>SF.Abstractions.net46</Name>

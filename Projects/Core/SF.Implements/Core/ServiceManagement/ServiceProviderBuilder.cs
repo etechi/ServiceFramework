@@ -15,13 +15,13 @@ namespace SF.Core.ServiceManagement
 		{
 			return new Internals.ServiceMetadata(Services);
 		}
-		public virtual IServiceDeclarationTypeResolver OnCreateServiceDeclarationTypeResolver()
+		public virtual IServiceDeclarationTypeResolver OnCreateServiceDeclarationTypeResolver(IServiceMetadata meta)
 		{
-			return new DefaultServiceDeclarationTypeResolver();
+			return new DefaultServiceDeclarationTypeResolver(meta);
 		}
-		public virtual IServiceImplementTypeResolver OnCreateImplementDeclarationTypeResolver()
+		public virtual IServiceImplementTypeResolver OnCreateImplementDeclarationTypeResolver(IServiceMetadata meta)
 		{
-			return new DefaultServiceImplementTypeResolver();
+			return new DefaultServiceImplementTypeResolver(meta);
 		}
 		public virtual Internals.IServiceFactoryManager OnCreateServcieFactoryManager(
 			IServiceMetadata meta, 
@@ -33,8 +33,8 @@ namespace SF.Core.ServiceManagement
 			return new Internals.ServiceFactoryManager(
 				AppServiceCache, 
 				meta,
-				ServiceDeclarationTypeResolver?? OnCreateServiceDeclarationTypeResolver(),
-				ServiceImplementTypeResolver?? OnCreateImplementDeclarationTypeResolver()
+				ServiceDeclarationTypeResolver?? OnCreateServiceDeclarationTypeResolver(meta),
+				ServiceImplementTypeResolver?? OnCreateImplementDeclarationTypeResolver(meta)
 				);
 		}
 		public virtual IServiceProvider OnCreateServiceProvider(Internals.IServiceFactoryManager Manager)
@@ -199,7 +199,7 @@ namespace SF.Core.ServiceManagement
 			Internals.IServiceFactoryManager manager = null;
 			IServiceScopeFactory scopeFactory = null;
 
-			Services.AddSingleton(sp => provider.Resolve<IServiceResolver>());
+			//Services.AddSingleton(sp => provider.Resolve<IServiceResolver>());
 			Services.AddSingleton(sp => provider);
 			Services.AddSingleton(sp => meta);
 			Services.AddSingleton(sp => manager);

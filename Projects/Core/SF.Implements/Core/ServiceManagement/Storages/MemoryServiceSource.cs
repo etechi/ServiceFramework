@@ -7,6 +7,7 @@ using System;
 
 namespace SF.Core.ServiceManagement.Storages
 {
+	[UnmanagedService]
 	public class MemoryServiceSource : IServiceConfigLoader, IDefaultServiceLocator
 	{
 
@@ -54,7 +55,9 @@ namespace SF.Core.ServiceManagement.Storages
 		}
 		public IServiceConfig GetConfig(long Id)
 		{
-			return Configs[Id];
+			if (!Configs.TryGetValue(Id, out var cfg))
+				throw new ArgumentException("找不到服务配置:" + Id);
+			return cfg;
 		}
 		public long? Locate(long? ScopeId,string Type)
 		{
