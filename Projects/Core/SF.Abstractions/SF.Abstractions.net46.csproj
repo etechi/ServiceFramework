@@ -56,6 +56,7 @@
     <Compile Include="Core\Caching\IRemoteCache.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantor.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantorStorage.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\IServiceInstanceLister.cs" />
     <Compile Include="Core\ServiceManagement\Internals\IServiceFactory.cs" />
     <Compile Include="Core\ServiceManagement\IServiceDetector.cs" />
     <Compile Include="Core\ServiceManagement\IServiceInstanceDescriptor.cs" />
@@ -69,10 +70,8 @@
     <Compile Include="Core\ServiceManagement\Management\Models\ServiceImplement.cs" />
     <Compile Include="Core\ServiceManagement\Management\Models\ServiceInstance.cs" />
     <Compile Include="Core\ServiceManagement\IServiceProviderBuilder.cs" />
-    <Compile Include="Core\ServiceManagement\Internals\IDefaultServiceLocator.cs" />
     <Compile Include="Core\ServiceManagement\Internals\IServiceInstanceChangedNotifier.cs" />
     <Compile Include="Core\ServiceManagement\Internals\IServiceFactoryManager.cs" />
-    <Compile Include="Core\ServiceManagement\Internals\IServiceInstanceScope.cs" />
     <Compile Include="Core\ServiceManagement\Internals\IServiceConfigLoader.cs" />
     <Compile Include="Core\ServiceManagement\Internals\IServiceImplementTypeResolver.cs" />
     <Compile Include="Core\ServiceManagement\SharedSettingAttribute.cs" />

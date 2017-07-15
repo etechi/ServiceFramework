@@ -255,6 +255,8 @@ namespace SF.Core.ServiceManagement.Internals
 			List<string> PathList = new List<string>();
 			void DetectCopyRequiredPath(Type ot)
 			{
+				if (ot.IsDefined(typeof(AutoBindAttribute)))
+					return;
 				if (!TypePath.Add(ot))
 					throw new NotSupportedException($"配置类型循环依赖:根类型{ImplementType} 当期类型:{ot}");
 				try
@@ -415,6 +417,12 @@ namespace SF.Core.ServiceManagement.Internals
 				if (!CopyRequiredPaths.Contains(PropPath))
 					return src;
 
+				if (Type == typeof(IServiceInstanceDescriptor))
+					return GetServiceInstanceDescriptorExpression();
+
+				if (Type == typeof(IServiceProvider))
+					return GetServiceProviderExpression();
+
 				if (Type.IsArray)
 				{
 					return Expression.Call(
@@ -460,10 +468,7 @@ namespace SF.Core.ServiceManagement.Internals
 							);
 					//else if (isSvcType == Internals.ServiceType.Normal)
 					//	return ServiceProviderResolveExpression(Type, rType);
-					else if (Type == typeof(ServiceManagement.IServiceInstanceDescriptor))
-						return GetServiceInstanceDescriptorExpression();
-					else if (Type == typeof(IServiceProvider))
-						return GetServiceProviderExpression();
+					
 				}
 
 				return ObjectCreateExpression(
@@ -513,7 +518,11 @@ namespace SF.Core.ServiceManagement.Internals
 				var isSvcType = IsServiceType(ServiceMetadata,pi.ParameterType,out resolveType);
 				//if (isSvcType == Internals.ServiceType.Normal)
 				//	return ServiceProviderResolveExpression(pi.ParameterType, resolveType);
-				if (isSvcType)
+				if (pi.ParameterType == typeof(IServiceInstanceDescriptor))
+					return GetServiceInstanceDescriptorExpression();
+				else if (pi.ParameterType == typeof(IServiceProvider))
+					return GetServiceProviderExpression();
+				else if (isSvcType)
 					return ManagedServiceResolveExpression(
 						pi.ParameterType, 
 						Expression.Constant(pi.Name), 
@@ -521,10 +530,6 @@ namespace SF.Core.ServiceManagement.Internals
 						ServiceMetadata,
 						TryGetAttributes(pi)
 						);
-				else if (pi.ParameterType == typeof(ServiceManagement.IServiceInstanceDescriptor))
-					return GetServiceInstanceDescriptorExpression();
-				else if (pi.ParameterType == typeof(IServiceProvider))
-					return GetServiceProviderExpression();
 				else
 				{
 					if (!CopyRequiredPaths.Contains(pi.Name))
@@ -565,7 +570,10 @@ namespace SF.Core.ServiceManagement.Internals
 			}
 			public ServiceCreator Build()
 			{ 
-				var args = constructorInfo.GetParameters().Select((pi, i) => BuildParamExpression(pi, i)).ToArray();
+				var args = constructorInfo
+					.GetParameters()
+					.Select((pi, i) => BuildParamExpression(pi, i))
+					.ToArray();
 				return Expression.Lambda<ServiceCreator>(
 					Expression.New(constructorInfo, args),
 					ParamServiceProvider,

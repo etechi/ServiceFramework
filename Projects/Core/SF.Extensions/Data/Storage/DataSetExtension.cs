@@ -7,6 +7,14 @@ using System.Threading.Tasks;
 
 namespace SF.Data.Storage
 {
+	public enum MovePositionMode
+	{
+		First,
+		Previous,
+		Next,
+		Last,
+		Insert
+	}
 	public static class DataSetExtension
 	{
 		public static void AddRange<T>(this IDataSet<T> set, IEnumerable<T> items, Action<T> init = null) where T : class
@@ -360,6 +368,88 @@ namespace SF.Data.Storage
 				return true;
 			}
 			return false;
+		}
+
+		
+		public static async Task<bool> MovePosition<M>(
+			this IDataSet<M> DataSet,
+			M Model,
+			MovePositionMode Mode,
+			Expression<Func<M, bool>> ScopeLimit,
+			Predicate<M> IsCurRecord,
+			Func<M,int> GetPosition,
+			Action<M,int> SetPosition
+			)
+			where M : class
+		{
+			var items = await DataSet.AsQueryable(false)
+				.Where(ScopeLimit)
+				.ToListAsync();
+			items=items.OrderBy(GetPosition).ToList();
+			var curIndex = items.FindIndex(IsCurRecord);
+			switch (Mode)
+			{
+				case MovePositionMode.Insert:
+					if (curIndex == GetPosition(Model))
+						return false;
+					if (curIndex != -1)
+						items.RemoveAt(curIndex);
+					var newPos = GetPosition(Model);
+					if (newPos < items.Count - 1)
+						items.Insert(newPos, Model);
+					else
+						items.Add(Model);
+					break;
+				case MovePositionMode.First:
+					if (curIndex != -1)
+					{
+						if (curIndex == 0)
+							return false;
+						items.RemoveAt(curIndex);
+					}
+					items.Insert(0, Model);
+					break;
+				case MovePositionMode.Last:
+					if (curIndex != -1)
+					{
+						if (curIndex == items.Count-1)
+							return false;
+						items.RemoveAt(curIndex);
+					}
+					items.Add(Model);
+					break;
+				case MovePositionMode.Next:
+					if (curIndex != -1)
+					{
+						if (curIndex == items.Count - 1)
+							return false;
+						items.RemoveAt(curIndex);
+					}
+					if (curIndex == -1 || curIndex>=items.Count-1)
+						items.Add(Model);
+					else
+						items.Insert(curIndex + 1, Model);
+					break;
+				case MovePositionMode.Previous:
+					if (curIndex != -1)
+					{
+						if (curIndex == 0)
+							return false;
+						items.RemoveAt(curIndex);
+					}
+					if (curIndex == -1)
+						items.Insert(0, Model);
+					else
+						items.Insert(curIndex - 1, Model);
+					break;
+			}
+			for(var i=0;i<items.Count;i++)
+				if(GetPosition(items[i])!=i)
+				{
+					SetPosition(items[i], i);
+					DataSet.Update(items[i]);
+				}
+			return true;
 		}
 
 		static void TreeCollect<T,D>(D cur, IEnumerable<T> items, Func<T, IEnumerable<T>> get_children,Func<T,D,D> converter,  List<D> all_items)

@@ -26,8 +26,8 @@ namespace SF.Core.ServiceManagement.Management
 			DataModels.ServiceInstance
 			>,
 		IServiceInstanceManager,
-		 IServiceConfigLoader, 
-		IDefaultServiceLocator
+		 IServiceConfigLoader,
+		IServiceInstanceLister
 	{
 		IDataEntityResolver EntityResolver { get;}
 		IServiceProvider ServiceProvider { get; }
@@ -71,7 +71,7 @@ namespace SF.Core.ServiceManagement.Management
 				Id = i.Id,
 				//ImplementId = i.ImplementId,
 				ObjectState = i.ObjectState,
-				IsDefaultService = i.IsDefaultService,
+				Priority = i.Priority,
 				Name = i.Name,
 				Title = i.Title,
 				CreatedTime = i.CreatedTime,
@@ -116,7 +116,7 @@ namespace SF.Core.ServiceManagement.Management
 				ServiceType = i.ServiceType,
 				//ImplementId = i.ImplementId,
 				ObjectState = i.ObjectState,
-				IsDefaultService = i.IsDefaultService,
+				Priority = i.Priority,
 				Name = i.Name,
 				Title = i.Title,
 				CreatedTime = i.CreatedTime,
@@ -138,7 +138,7 @@ namespace SF.Core.ServiceManagement.Management
 					.Filter(Arg.Name, i => i.Name)
 					.Filter(Arg.DeclarationId, i => i.ServiceType)
 					//.Filter(Arg.ImplementId, i => i.ImplementId)
-					.Filter(Arg.IsDefaultService,i=>i.IsDefaultService)
+					.Filter(Arg.IsDefaultService.HasValue? (Arg.IsDefaultService.Value?(int?)0:(int?)-1):null,i=>i.Priority)
 				;
 		}
 
@@ -225,14 +225,13 @@ namespace SF.Core.ServiceManagement.Management
 			//	(mi, ei) => mi.Setting = ei.Setting
 			//	);
 
-			if (await DataSet.TrySetDefaultItem(
+			if (await DataSet.MovePosition(
 				m,
-				e.IsDefaultService,
-				i => i.IsDefaultService,
-				(i, d) => i.IsDefaultService = d,
-				i => i.ServiceType == m.ServiceType,
+				MovePositionMode.Insert,
+				i => i.ParentId == m.ParentId,
 				i => i.Id == m.Id,
-				i=>i.IsDefaultService
+				i => i.Priority,
+				(i, p) => i.Priority = p
 				))
 				ctx.AddPostAction(() => ConfigChangedNotifier.NotifyDefaultChanged(m.ParentId,m.ServiceType));
 
@@ -250,8 +249,8 @@ namespace SF.Core.ServiceManagement.Management
 		}
 		protected override async Task OnRemoveModel(ModifyContext ctx)
 		{
-			if (ctx.Model.IsDefaultService)
-				throw new PublicInvalidOperationException("不能删除默认服务");
+			//if (ctx.Model.IsDefaultService)
+				//throw new PublicInvalidOperationException("不能删除默认服务");
 
 			await base.OnRemoveModel(ctx);
 		}
@@ -294,13 +293,15 @@ namespace SF.Core.ServiceManagement.Management
 			return re;
 		}
 
-		long? IDefaultServiceLocator.Locate(long? ScopeId,string ServiceType)
+		long[] IServiceInstanceLister.List(long? ScopeId,string ServiceType,int Limit)
 		{
-			var re= DataSet.QuerySingleAsync(
-				si => si.ParentId == ScopeId && si.ServiceType==ServiceType && si.IsDefaultService,
-				si => si.Id
-				).Result;
-			return re == 0 ? null : (long?)re;
+			var re = DataSet.AsQueryable()
+				.Where(si => si.ParentId == ScopeId && si.ServiceType == ServiceType)
+				.OrderBy(si => si.Priority)
+				.Select(si => si.Id)
+				.Take(Limit)
+				.ToArray();
+			return re;
 		}
 	}
 

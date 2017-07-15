@@ -382,19 +382,30 @@ namespace SF.Core.ServiceManagement.Internals
 	
 	class ServiceFactoryManager : IServiceFactoryManager,IServiceInstanceConfigChangedNotifier
 	{
-		class ServiceEntry : IServiceEntry
-		{ 
-			public IServiceConfig Config;
-			public IServiceFactory Factory;
-			public ConcurrentDictionary<string, long> DefaultServices;
-
-			public IServiceProvider InternalServiceProvider => throw new NotImplementedException();
+		abstract class ServiceEntry
+		{
+			public abstract IServiceFactory DefaultFactory { get; }
 		}
+		class ManagedServiceEntry : ServiceEntry,IServiceEntry
+		{
+			public IServiceFactory Factory;
+			public IServiceConfig Config;
+			public override IServiceFactory DefaultFactory => Factory;
+			public ConcurrentDictionary<string, long[]> InternalServices;
+		}
+		class UnmanagedServiceEntry : ServiceEntry
+		{
+			public Lazy<IServiceFactory> Factory;
+			public override IServiceFactory DefaultFactory => Factory.Value;
+		}
+		ConcurrentDictionary<(Type, Type), (ServiceCreator, ConstructorInfo)> ServiceCreatorDict { get; }
+			= new ConcurrentDictionary<(Type, Type), (ServiceCreator, ConstructorInfo)>();
 
-		Caching.ILocalCache<IServiceEntry> _ServiceCache;
-		ConcurrentDictionary<(Type, Type), (ServiceCreator,ConstructorInfo) > ServiceCreatorDict { get; } 
-			= new ConcurrentDictionary<(Type, Type), (ServiceCreator,ConstructorInfo) >();
 
+		Caching.ILocalCache<IServiceEntry> _ManagedServiceCache;
+		ConcurrentDictionary<string, long[]> TopScopeServices = new ConcurrentDictionary<string, long[]>();
+
+		ConcurrentDictionary<Type, UnmanagedServiceEntry[]> UnmanagedServiceCache { get; } = new ConcurrentDictionary<Type, UnmanagedServiceEntry[]>();
 
 		public IServiceMetadata ServiceMetadata { get; }
 		public IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver { get; }
@@ -407,69 +418,122 @@ namespace SF.Core.ServiceManagement.Internals
 			 IServiceImplementTypeResolver ServiceImplementTypeResolver
 			)
 		{
-			_ServiceCache = ServiceCache;
+			_ManagedServiceCache = ServiceCache;
 			this.ServiceMetadata = ServiceMetadata;
 			this.ServiceDeclarationTypeResolver = ServiceDeclarationTypeResolver;
 			this.ServiceImplementTypeResolver = ServiceImplementTypeResolver;
 		}
 
-		Caching.ILocalCache<IServiceEntry> ServiceCache(IServiceProvider ServiceProvider)
+		Caching.ILocalCache<IServiceEntry> ManagedServiceCache(IServiceProvider ServiceProvider)
 		{
-			if (_ServiceCache != null)
-				return _ServiceCache;
+			if (_ManagedServiceCache != null)
+				return _ManagedServiceCache;
 			lock (this)
 			{
-				if (_ServiceCache != null)
-					return _ServiceCache;
-				var entry = new ServiceEntry();
-				var type = typeof(Caching.ILocalCache<IServiceEntry>);
-				var factory = GetServiceFactoryByType(
-					ServiceProvider,
-					entry,
-					type
-					);
+				if (_ManagedServiceCache != null)
+					return _ManagedServiceCache;
+
+				var cacheType = typeof(Caching.ILocalCache<IServiceEntry>);
+				var entry = GetUnmanagedServiceEntry(cacheType, true);
+				var factory = entry.DefaultFactory;
 				var cache = (Caching.ILocalCache<IServiceEntry>)factory.Create(ServiceProvider);
-				cache.Set(type.FullName, entry, TimeSpan.FromDays(100));
-				return _ServiceCache = cache;
+				return _ManagedServiceCache = cache;
 			}
 		}
-
-		ServiceEntry GetServiceEntry(IServiceProvider ServiceProvider, Type ServiceType, long? ServiceId,bool CreateIfNotExists)
+		ManagedServiceEntry GetManagedServiceEntry(IServiceProvider ServiceProvider, long ServiceId, bool CreateIfNotExists)
 		{
-			string key;
-			int timeout;
-			if (ServiceId.HasValue)
-			{
-				key = ServiceId.ToString();
-				timeout = 2;
-			}
-			else if (ServiceType == null)
-				throw new InvalidOperationException("需要为没有实例ID的服务指定类型");
-			else
-			{
-				key = ServiceType.FullName;
-				timeout = 24;
-			}
-
-			var sc = ServiceCache(ServiceProvider);
-
-			var se = (ServiceEntry)sc.Get(key);
+			var key = ServiceId.ToString();
+			var sc = ManagedServiceCache(ServiceProvider);
+			var se = sc?.Get(key);
 			if (se != null || !CreateIfNotExists)
-				return se;
-			se = new ServiceEntry();
-			return (ServiceEntry)(sc.AddOrGetExisting(key, se, TimeSpan.FromHours(timeout)) ?? se);
+				return (ManagedServiceEntry)se;
+			se = new ManagedServiceEntry();
+			return (ManagedServiceEntry)(sc.AddOrGetExisting(key, se, TimeSpan.FromHours(2)) ?? se);
+			
 		}
-		ConcurrentDictionary<string, long> EnsureDefaultServiceDict(ServiceEntry se)
+
+		IServiceFactory CreateUnmanagedServiceFactory(
+			IServiceDeclaration decl,
+			IServiceImplement impl,
+			Type ServiceType
+			)
 		{
-			var dss = se.DefaultServices;
+			ServiceCreator Creator;
+			IServiceCreateParameterTemplate CreateParameterTemplate = null;
+			switch (impl.ServiceImplementType)
+			{
+				case ServiceImplementType.Creator:
+					var func = impl.ImplementCreator;
+					Creator = (sp, si, ctr) => func(sp);
+					break;
+				case ServiceImplementType.Instance:
+					var ins = impl.ImplementInstance;
+					Creator = (sp, si, ctr) => ins;
+					break;
+				case ServiceImplementType.Type:
+					{
+						(Creator, CreateParameterTemplate) = CreateServiceInstanceCreator(
+							ServiceType,
+							impl.ImplementType,
+							null
+							);
+						break;
+					}
+				default:
+					throw new NotSupportedException();
+			}
+
+			return new ServiceFactory(
+				null,
+				null,
+				decl,
+				impl,
+				CreateParameterTemplate,
+				Creator
+				);
+		}
+		UnmanagedServiceEntry[] GetUnmanagedServiceEntries(Type ServiceType, bool CreateIfNotExists)
+		{
+			if (UnmanagedServiceCache.TryGetValue(
+				ServiceType,
+				out var se
+				) || !CreateIfNotExists)
+				return se;
+			var decl = GetServiceDeclaration(ServiceType);
+
+			return UnmanagedServiceCache.GetOrAdd(
+				ServiceType,
+				decl.Implements.Reverse().Select(impl => new UnmanagedServiceEntry()
+				{
+					Factory = new Lazy<IServiceFactory>(() => CreateUnmanagedServiceFactory(decl,impl,ServiceType))
+				}).ToArray()
+				);
+		}
+		UnmanagedServiceEntry GetUnmanagedServiceEntry(Type ServiceType, bool CreateIfNotExists)
+		{
+			var re = GetUnmanagedServiceEntries(ServiceType, CreateIfNotExists);
+			if(re==null || re.Length==0) return null;
+			return re[0];
+		}
+		//ServiceEntry GetServiceEntry(IServiceProvider ServiceProvider, Type ServiceType, long ServiceId,bool CreateIfNotExists)
+		//{
+		//	if (ServiceType == null && ServiceId > 0)
+		//		return GetManagedServiceEntry(ServiceProvider, ServiceId, CreateIfNotExists);
+		//	else
+		//		return GetUnmanagedServiceEntry(ServiceProvider, ServiceType, (int)ServiceId, CreateIfNotExists);
+		//}
+
+		ConcurrentDictionary<string, long[]> EnsureDefaultServiceDict(ManagedServiceEntry se)
+		{
+			var dss = se.InternalServices;
 			if (dss == null)
-				dss = se.DefaultServices = new ConcurrentDictionary<string, long>();
+				dss = se.InternalServices = new ConcurrentDictionary<string, long[]>();
 			return dss;
 		}
 
-		IServiceConfig EnsureConfig(
+		IServiceConfig EnsureManagedConfig(
 			IServiceConfigLoader ConfigLoader,
-			ServiceEntry se,
+			ManagedServiceEntry se,
 			long Id
 			)
 		{
@@ -517,66 +581,22 @@ namespace SF.Core.ServiceManagement.Internals
 			return (Creator, CreateParameterTemplate);
 		}
 
-		IServiceFactory GetServiceFactoryByType(
-			IServiceProvider ServiceProvider,
-			ServiceEntry Entry,
-			Type ServiceType
-			)
+		IServiceDeclaration GetServiceDeclaration(Type ServiceType)
 		{
-			if (Entry.Factory != null)
-				return Entry.Factory;
-
-			var decl = (ServiceMetadata.Services
+			return (ServiceMetadata.Services
 				.Get(ServiceType) ??
-				(ServiceType.IsGenericType?
+				(ServiceType.IsGenericType ?
 				ServiceMetadata.Services
-				.Get(ServiceType.GetGenericTypeDefinition()):null))
+				.Get(ServiceType.GetGenericTypeDefinition()) : null))
 				.AssertNotNull(
 					() => $"找不到服务描述({ServiceType})"
-					);
-
-			var impl = decl.Implements.Last()
-				.AssertNotNull(
-					() => $"找不到服务({ServiceType})实现类型"
-					);
-
-			ServiceCreator Creator;
-			IServiceCreateParameterTemplate CreateParameterTemplate = null;
-			switch (impl.ServiceImplementType)
-			{
-				case ServiceImplementType.Creator:
-					var func = impl.ImplementCreator;
-					Creator = (sp, si, ctr) => func(sp);
-					break;
-				case ServiceImplementType.Instance:
-					var ins = impl.ImplementInstance;
-					Creator = (sp, si, ctr) => ins;
-					break;
-				case ServiceImplementType.Type:
-					{
-						(Creator, CreateParameterTemplate) = CreateServiceInstanceCreator(
-							ServiceType,
-							impl.ImplementType,
-							null
-							);
-						break;
-					}
-				default:
-					throw new NotSupportedException();
-			}
-
-			return Entry.Factory = new ServiceFactory(
-				null,
-				null,
-				decl,
-				impl,
-				CreateParameterTemplate,
-				Creator
-				);
+					); ;
 		}
-		IServiceFactory GetServiceFactoryByIdent(
+
+		
+		IServiceFactory GetManagedServiceFactoryByIdent(
 			IServiceProvider ServiceProvider, 
-			ServiceEntry Entry,
+			ManagedServiceEntry Entry,
 			long ServiceId,
 			Type ServiceType
 			)
@@ -585,7 +605,7 @@ namespace SF.Core.ServiceManagement.Internals
 				return Entry.Factory;
 
 			var cfg = (Entry.Config ?? ServiceProvider.WithScope(sp =>
-				   EnsureConfig(sp.Resolve<IServiceConfigLoader>(), Entry, ServiceId)
+				   EnsureManagedConfig(sp.Resolve<IServiceConfigLoader>(), Entry, ServiceId)
 				   ))
 				   .AssertNotNull(
 					() => $"找不到服务实例({ServiceId})的配置数据，服务类型:{ServiceType}"
@@ -642,71 +662,80 @@ namespace SF.Core.ServiceManagement.Internals
 			Type ServiceType
 			)
 		{
-			var curEntry = GetServiceEntry(ServiceProvider, null,ServiceId, true);
-			return GetServiceFactoryByIdent(ServiceProvider,curEntry, ServiceId, ServiceType);
+			var curEntry = GetManagedServiceEntry(ServiceProvider, ServiceId, true);
+			return GetManagedServiceFactoryByIdent(ServiceProvider,curEntry, ServiceId, ServiceType);
 		}
-		
-		public IServiceFactory GetServiceFactoryByType(
+
+		long[] TryGetManagedScopedServiceIdents(
+			IServiceProvider ServiceProvider,
+			ConcurrentDictionary<string,long[]> dss,
+			long? ScopeServiceId,
+			string ServiceType,
+			ref IServiceScope scope,
+			ref IServiceInstanceLister serviceInstanceLister
+			)
+		{
+			if (dss.TryGetValue(ServiceType, out var cids))
+				return cids;
+			
+			if (serviceInstanceLister == null)
+			{
+				if (scope == null)
+					scope = ServiceProvider.Resolve<IServiceScopeFactory>().CreateServiceScope();
+				serviceInstanceLister = scope.ServiceProvider.Resolve<IServiceInstanceLister>();
+			}
+			cids = serviceInstanceLister.List(ScopeServiceId, ServiceType, 100);
+			return dss.GetOrAdd(ServiceType, cids);
+		}
+
+		long[] GetManagedScopedServiceIdents(
 			IServiceProvider ServiceProvider,
 			long? ScopeServiceId,
 			Type ServiceType
 			)
 		{
 			IServiceScope scope = null;
-			IDefaultServiceLocator defaultServiceLocator = null;
+			IServiceInstanceLister serviceInstanceLister = null;
 			IServiceConfigLoader configLoader = null;
 
 			try
 			{
-				var curEntry = GetServiceEntry(ServiceProvider, null, ScopeServiceId ?? 0, true);
-				for (;;)
+				while(ScopeServiceId.HasValue)
 				{
+					var curEntry = GetManagedServiceEntry(ServiceProvider, ScopeServiceId.Value, true);
 					var dss = EnsureDefaultServiceDict(curEntry);
-					if (!dss.TryGetValue(ServiceType.FullName, out var cid) && 
-						!ServiceType.IsDefined(typeof(UnmanagedServiceAttribute))
-						)
-					{
-						if (defaultServiceLocator == null)
-						{
-							if (scope == null)
-								scope = ServiceProvider.Resolve<IServiceScopeFactory>().CreateServiceScope();
-							defaultServiceLocator = scope.ServiceProvider.Resolve<IDefaultServiceLocator>();
-						}
-						var re = defaultServiceLocator.Locate(ScopeServiceId, ServiceType.FullName);
-						cid = dss.GetOrAdd(ServiceType.FullName, re ?? 0);
-					}
+					var cids = TryGetManagedScopedServiceIdents(
+						ServiceProvider,
+						dss,
+						ScopeServiceId.Value,
+						ServiceType.FullName,
+						ref scope,
+						ref serviceInstanceLister
+						);
 
 					//找到服务
-					if (cid != 0)
-						return GetServiceFactoryByIdent(
-							ServiceProvider,
-							GetServiceEntry(ServiceProvider, null, cid, true),
-							cid,
-							ServiceType
-							);
+					if (cids.Length > 0)
+						return cids;
 
 					//当前区域不是顶级区域，继续向上层搜索
-					if (ScopeServiceId.HasValue)
+						
+					if (configLoader == null)
 					{
-						if (configLoader == null)
-						{
-							if (scope == null)
-								scope = ServiceProvider.Resolve<IServiceScopeFactory>().CreateServiceScope();
-							configLoader = scope.ServiceProvider.Resolve<IServiceConfigLoader>();
-						}
-						var cfg = EnsureConfig(configLoader, curEntry, ScopeServiceId.Value);
-						ScopeServiceId = cfg.ParentId;
-						curEntry = GetServiceEntry(ServiceProvider, null, ScopeServiceId ?? 0, true);
-						continue;
+						if (scope == null)
+							scope = ServiceProvider.Resolve<IServiceScopeFactory>().CreateServiceScope();
+						configLoader = scope.ServiceProvider.Resolve<IServiceConfigLoader>();
 					}
-
-					//已经是顶级区域， 直接尝试查找服务
-					return GetServiceFactoryByType(
-						ServiceProvider,
-						GetServiceEntry(ServiceProvider,ServiceType, null, true),
-						ServiceType
-						);
+					var cfg = EnsureManagedConfig(configLoader, curEntry, ScopeServiceId.Value);
+					ScopeServiceId = cfg.ParentId;
 				}
+				return TryGetManagedScopedServiceIdents(
+					ServiceProvider,
+					TopScopeServices,
+					null,
+					ServiceType.FullName,
+					ref scope,
+					ref serviceInstanceLister
+					);
 			}
 			finally
 			{
@@ -716,20 +745,73 @@ namespace SF.Core.ServiceManagement.Internals
 
 		}
 
+		static Type UnmanagedServiceAttributeType { get; } = typeof(UnmanagedServiceAttribute);
+		public IServiceFactory GetServiceFactoryByType(
+			IServiceProvider ServiceProvider,
+			long? ScopeServiceId,
+			Type ServiceType
+			)
+		{
+			if (!ServiceType.IsDefined(UnmanagedServiceAttributeType))
+			{
+				var cids = GetManagedScopedServiceIdents(ServiceProvider, ScopeServiceId, ServiceType);
+				if ((cids?.Length ?? 0)>0)
+					return GetManagedServiceFactoryByIdent(
+						ServiceProvider,
+						GetManagedServiceEntry(ServiceProvider, cids[0], true),
+						cids[0],
+						ServiceType
+						);
+			}
+			//已经是顶级区域， 直接尝试查找服务
+			return GetUnmanagedServiceEntry(ServiceType,true)?.DefaultFactory;
+		}
+		public IEnumerable<IServiceFactory> GetServiceFactoriesByType(
+			IServiceProvider ServiceProvider,
+			long? ScopeServiceId,
+			Type ServiceType
+			)
+		{
+			if (!ServiceType.IsDefined(UnmanagedServiceAttributeType))
+			{
+				var cids = GetManagedScopedServiceIdents(ServiceProvider, ScopeServiceId, ServiceType);
+				if (cids != null)
+				{
+					foreach (var id in cids)
+						yield return GetManagedServiceFactoryByIdent(
+							ServiceProvider,
+							GetManagedServiceEntry(ServiceProvider, cids[0], true),
+							cids[0],
+							ServiceType
+							);
+				}
+			}
+			
+			//已经是顶级区域， 直接尝试查找服务
+			var es = GetUnmanagedServiceEntries(ServiceType, true);
+			if (es != null)
+				foreach (var e in es)
+					yield return e.DefaultFactory;
+			
+
+		}
 
 		void IServiceInstanceConfigChangedNotifier.NotifyChanged( long Id)
 		{
-			var se = GetServiceEntry(null,null, Id, false);
+			var se = GetManagedServiceEntry(null, Id, false);
 			if (se == null)
 				return;
-			_ServiceCache?.Remove(Id.ToString());
+			_ManagedServiceCache?.Remove(Id.ToString());
 		}
 
 		void IServiceInstanceConfigChangedNotifier.NotifyDefaultChanged(long? ScopeId, string ServiceType)
 		{
-			GetServiceEntry(null, null, ScopeId ?? 0, false)
-				?.DefaultServices
-				?.TryRemove(ServiceType,out var id);
+			if (ScopeId == null)
+				TopScopeServices.TryRemove(ServiceType, out var ids);
+			else
+				GetManagedServiceEntry(null, ScopeId.Value, false)
+					?.InternalServices
+					?.TryRemove(ServiceType,out var id);
 		}
 
 	}

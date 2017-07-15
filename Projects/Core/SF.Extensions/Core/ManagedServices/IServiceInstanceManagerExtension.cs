@@ -39,7 +39,7 @@ namespace SF.Core.ServiceManagement.Management
 					var comment = typeof(T).Comment();
 					e.ImplementType = typeof(T).FullName + "@" + typeof(I).FullName;
 					e.ServiceType = typeof(I).FullName;
-					e.IsDefaultService = true;
+					e.Priority= 0;
 					e.ObjectState = Data.LogicObjectState.Enabled;
 					//e.SettingType = typeof(T).FullName + "CreateArguments";
 					e.Name = Name ?? comment.Name;

@@ -63,6 +63,8 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddScoped<IMultipleImplTest,MultipleImplTestScope>();
 			//sc.AddSingleton<IMultipleImplTest,MultipleImplTestGlobal>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
 
 			var sp = sc.BuildServiceResolver();
 			var re = sp.Resolve<IMultipleImplTest>();
@@ -129,10 +131,14 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddTransient<IInterface<int>>((s)=>new Implement<int>());
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
 			var sp = sc.BuildServiceResolver();
 			var re = sp.Resolve<IEnumerable<IInterface<int>>>();
-			
+
 			Assert.Equal(2,re.Count());
+			foreach (var i in re)
+				Assert.Equal("123", i.ToString(123));
 
 		}
 	}

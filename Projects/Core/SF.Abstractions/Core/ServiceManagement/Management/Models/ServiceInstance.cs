@@ -10,9 +10,9 @@ namespace SF.Core.ServiceManagement.Models
 	[EntityObject("系统服务实例")]
 	public class ServiceInstance : SF.Data.Models.UIEntityBase<long>
 	{
-		[Comment("默认服务")]
+		[Comment("优先级")]
 		[TableVisible]
-		public bool IsDefaultService { get; set; }
+		public int Priority { get; set; }
 
 	}
 	public class ServiceInstanceInternal : ServiceInstance

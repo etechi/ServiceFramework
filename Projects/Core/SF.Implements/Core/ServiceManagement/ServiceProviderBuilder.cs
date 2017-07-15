@@ -67,10 +67,11 @@ namespace SF.Core.ServiceManagement
 			{
 				(from arg in Internals.ServiceCreatorBuilder.FindBestConstructorInfo(Implement.ImplementType).GetParameters()
 				 let type = GetRealServiceType(arg.ParameterType)
-				 where type.IsInterface
-				 let svcs = Meta.Services.Get(type)
+				 where type.IsInterface && !type.IsDefined(typeof(AutoBindAttribute))
+				 let svcs = Meta.Services.Get(type) ?? (type.IsGenericType?Meta.Services.Get(type.GetGenericTypeDefinition()):null)
 				select new { arg, svcs, type }
 				).ForEach(tuple => {
+					
 					if (tuple.svcs == null )
 						throw new InvalidOperationException(
 							$"找不到{Implement.ImplementType}的构造函数参数 {tuple.arg.Name}引用的服务{tuple.type}"
@@ -166,23 +167,7 @@ namespace SF.Core.ServiceManagement
 
 				});
 
-			Services
-				.GroupBy(s => s.InterfaceType)
-				.Select(g=>new { Key = g.Key, Count = g.Count() })
-				.ToArray()
-				.ForEach(g =>
-				{
-					var newInstances = NewInstancesMethodInfo
-							.MakeGenericMethod(g.Key)
-							.CreateDelegate<Func<IServiceProvider, int, object>>();
-					Services.Add(
-						new ServiceDescriptor(
-							typeof(IEnumerable<>).MakeGenericType(g.Key),
-							sp=>newInstances(sp,g.Count),
-							ServiceImplementLifetime.Transient
-							)
-						);
-				});
+			
 		}
 		public IServiceProvider Build(
 			IServiceCollection Services,
@@ -195,17 +180,19 @@ namespace SF.Core.ServiceManagement
 			PrepareServices(Services);
 
 			IServiceProvider provider = null;
+			IServiceResolver resolver = null;
 			IServiceMetadata meta = null;
 			Internals.IServiceFactoryManager manager = null;
 			IServiceScopeFactory scopeFactory = null;
 
 			//Services.AddSingleton(sp => provider.Resolve<IServiceResolver>());
 			Services.AddSingleton(sp => provider);
+			Services.AddSingleton(sp => resolver);
 			Services.AddSingleton(sp => meta);
 			Services.AddSingleton(sp => manager);
 			Services.AddSingleton(sp => scopeFactory );
 			Services.AddSingleton(sp => (IServiceInstanceConfigChangedNotifier)manager);
-
+			Services.AddTransient(typeof(IEnumerable<>), typeof(ManagedServices.Runtime.EnumerableService<>));
 			meta = OnCreateServcieMetadata(Services);
 			OnValidate(meta);
 			manager = OnCreateServcieFactoryManager(
@@ -216,6 +203,7 @@ namespace SF.Core.ServiceManagement
 				);
 			scopeFactory = new ServiceScopeFactory(manager);
 			provider = OnCreateServiceProvider(manager);
+			resolver = (IServiceResolver)provider;
 			return provider;
 		}
 	}

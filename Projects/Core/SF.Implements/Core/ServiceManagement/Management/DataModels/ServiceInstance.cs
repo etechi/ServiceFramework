@@ -42,9 +42,9 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 		[Index("impl", 1)]
 		public string ImplementType { get; set; }
 
-		[Comment("默认服务")]
+		[Comment("服务优先级")]
 		[Index("service", 2)]
-		public bool IsDefaultService { get; set; }
+		public int Priority { get; set; }
 
 		[Comment("服务设置")]
 

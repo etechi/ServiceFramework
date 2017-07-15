@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 namespace SF.Core.ServiceManagement.Internals
 {
 	public interface IServiceEntry { }
@@ -15,6 +16,11 @@ namespace SF.Core.ServiceManagement.Internals
 			IServiceProvider ServiceProvider,
 			long? ScopeServiceId,
 			Type ServiceType
+			);
+		IEnumerable<IServiceFactory> GetServiceFactoriesByType(
+			IServiceProvider ServiceProvider,
+			long? ScopeServiceId,
+			Type ChildServiceType
 			);
 	}
 

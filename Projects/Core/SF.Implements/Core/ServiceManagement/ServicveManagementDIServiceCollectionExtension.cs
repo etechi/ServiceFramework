@@ -22,7 +22,7 @@ namespace SF.Core.ServiceManagement
 		{
 			sc.AddSingleton<MemoryServiceSource, MemoryServiceSource>();
 			sc.AddScoped(sp => (IServiceConfigLoader)sp.Resolve<MemoryServiceSource>());
-			sc.AddScoped(sp => (IDefaultServiceLocator)sp.Resolve<MemoryServiceSource>());
+			sc.AddScoped(sp => (IServiceInstanceLister)sp.Resolve<MemoryServiceSource>());
 		}
 		public static void UseManagedServiceAdminServices(this IServiceCollection sc, string TablePrefix = null)
 		{
@@ -33,7 +33,7 @@ namespace SF.Core.ServiceManagement
 			sc.AddEntityService<Management.IServiceInstanceManager, Management.ServiceInstanceManager, string, Models.ServiceInstanceInternal>();
 
 			sc.AddScoped<IServiceConfigLoader, Management.ServiceInstanceManager>();
-			sc.AddScoped<IDefaultServiceLocator, Management.ServiceInstanceManager>();
+			sc.AddScoped<IServiceInstanceLister, Management.ServiceInstanceManager>();
 		}
 		public static IServiceProvider BuildServiceResolver(
 			this IServiceCollection sc,

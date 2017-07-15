@@ -163,6 +163,27 @@ namespace SF.Core.ServiceManagement
 				ScopeServiceId = ServiceId
 			};
 		}
+
+		public IEnumerable<IServiceInstanceDescriptor> ResolveServiceDescriptors(long? ScopeServiceId, Type ChildServiceType)
+		{
+			return FactoryManager.GetServiceFactoriesByType(
+					this,
+					ScopeServiceId,
+					ChildServiceType
+					);
+		}
+
+		public IEnumerable<object> ResolveServices(long? ScopeServiceId, Type ChildServiceType)
+		{
+			foreach(var factory in FactoryManager.GetServiceFactoriesByType(
+					this,
+					ScopeServiceId,
+					ChildServiceType
+					))
+			{
+				yield return GetService(factory);
+			}
+		}
 	}
 
 }
