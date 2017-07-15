@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using System.Linq;
 namespace SF.Core.ServiceManagement
 {
 	public static class ServiceResolverExtension
@@ -29,10 +29,10 @@ namespace SF.Core.ServiceManagement
 				throw new InvalidOperationException($"服务:{ServiceId}不是类型:{typeof(T)}");
 			return re;
 		}
-		public static T ResolveInternal<T>(this IServiceProvider ServiceProvider, long ScopeServiceId)
+		public static T ResolveInternal<T>(this IServiceProvider ServiceProvider, long ScopeServiceId,string Name=null)
 			where T : class
 		{
-			var s = ServiceProvider.Resolve<IServiceResolver>().ResolveServiceByType(ScopeServiceId, typeof(T));
+			var s = ServiceProvider.Resolve<IServiceResolver>().ResolveServiceByType(ScopeServiceId, typeof(T),Name);
 			if (s == null)
 				throw new InvalidOperationException("找不到服务:" + typeof(T));
 			return (T)s;
@@ -58,33 +58,21 @@ namespace SF.Core.ServiceManagement
 			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
 				await action(s.ServiceProvider);
 		}
-		interface IServicesGetter
+		public static IEnumerable<T> GetServices<T>(this IServiceProvider ServiceProvider, long? ScopeServiceId = null, string Name = null)
 		{
-			IEnumerable<object> GetServices(IServiceProvider ServiceProvider);
+			return ServiceProvider.Resolve<IServiceResolver>().ResolveServices(
+				ScopeServiceId,
+				typeof(T),
+				Name
+				).Cast<T>();
 		}
-		class ServicesGetter<T>: IServicesGetter
+		public static IEnumerable<object> GetServices(this IServiceProvider ServiceProvider,Type ServiceType,long? ScopeServiceId=null,string Name=null)
 		{
-			public IEnumerable<object> GetServices(IServiceProvider ServiceProvider)
-			{
-				foreach (var v in ((IEnumerable<T>)ServiceProvider.GetService(typeof(IEnumerable<T>))))
-					yield return v;
-			}
-		}
-		public static IEnumerable<object> GetServices<T>(this IServiceProvider ServiceProvider)
-		{
-			return new ServicesGetter<T>().GetServices(ServiceProvider);
-		}
-		static System.Collections.Concurrent.ConcurrentDictionary<Type, IServicesGetter> ServicesGetters { get; } = new System.Collections.Concurrent.ConcurrentDictionary<Type, IServicesGetter>();
-		public static IEnumerable<object> GetServices(this IServiceProvider ServiceProvider,Type Type)
-		{
-			IServicesGetter sc;
-			if (!ServicesGetters.TryGetValue(Type, out sc))
-				sc = ServicesGetters.GetOrAdd(
-					Type,
-					(IServicesGetter)Activator.CreateInstance(
-					typeof(ServicesGetter<>).MakeGenericType(Type))
-					);
-			return sc.GetServices(ServiceProvider);
+			return ServiceProvider.Resolve<IServiceResolver>().ResolveServices(
+				ScopeServiceId,
+				ServiceType,
+				Name
+				);
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace SF.Core.ManagedServices.Runtime
 
 		public IEnumerator<T> GetEnumerator()
 		{
-			foreach (var i in Resolver.ResolveServices(Descriptor.ParentInstanceId, typeof(T)))
+			foreach (var i in Resolver.ResolveServices(Descriptor.ParentInstanceId, typeof(T),null))
 				yield return (T)i;
 		}
 

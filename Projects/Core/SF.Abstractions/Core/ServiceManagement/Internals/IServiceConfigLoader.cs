@@ -10,6 +10,7 @@ namespace SF.Core.ServiceManagement.Internals
 	public interface IServiceConfig
 	{
 		long Id { get; }
+		string Name { get; }
 		long? ParentId { get; }
 		string ServiceType { get; }
 		string ImplementType { get; }

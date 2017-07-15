@@ -15,13 +15,16 @@ namespace SF.Core.ServiceManagement.Internals
 		IServiceFactory GetServiceFactoryByType(
 			IServiceProvider ServiceProvider,
 			long? ScopeServiceId,
-			Type ServiceType
+			Type ServiceType,
+			string Name
 			);
 		IEnumerable<IServiceFactory> GetServiceFactoriesByType(
 			IServiceProvider ServiceProvider,
 			long? ScopeServiceId,
-			Type ChildServiceType
+			Type ChildServiceType,
+			string Name
 			);
+
 	}
 
 }

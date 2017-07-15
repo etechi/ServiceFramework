@@ -20,7 +20,7 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 		//public ServiceCategoryItem ServiceCategoryItem { get; set; }
 
 		
-		[Index("Parent",1)]
+		[Index("TypedService",1)]
 		public long? ParentId { get; set; }
 
 		[ForeignKey(nameof(ParentId))]
@@ -32,8 +32,7 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 		[Comment("服务定义")]
 		[MaxLength(100)]
 		[Required]
-		[Index("service",1)]
-		[Index("Parent", 2)]
+		[Index("TypedService", 2)]
 		public string ServiceType { get; set; }
 
 		[Comment("主接口实现")]
@@ -43,11 +42,14 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 		public string ImplementType { get; set; }
 
 		[Comment("服务优先级")]
-		[Index("service", 2)]
 		public int Priority { get; set; }
 
-		[Comment("服务设置")]
+		[Comment("服务标识")]
+		[Index]
+		[MaxLength(100)]
+		public string ServiceIdent { get; set; }
 
+		[Comment("服务设置")]
 		public string Setting { get; set; }
 	}
 }

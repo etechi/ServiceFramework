@@ -2,6 +2,8 @@ using SF.Auth;
 using SF.Data.Entity;
 using SF.Metadata;
 using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace SF.Core.ServiceManagement.Management
 {
 	public class ServiceInstanceQueryArgument : IQueryArgument<long>
@@ -20,6 +22,10 @@ namespace SF.Core.ServiceManagement.Management
 		[EntityIdent("系统服务实现")]
 		[Comment("服务实现")]
 		public string ImplementId { get; set; }
+
+		[Comment("服务标识")]
+		[MaxLength(100)]
+		public string ServiceIdent { get; set; }
 
 		[Comment("是否为默认服务实例")]
 		public bool? IsDefaultService { get; set; }

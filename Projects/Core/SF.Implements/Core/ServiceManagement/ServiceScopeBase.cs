@@ -100,7 +100,7 @@ namespace SF.Core.ServiceManagement
 		
 		public virtual object GetService(Type serviceType)
 		{
-			return ResolveServiceByType(null, serviceType);
+			return ResolveServiceByType(null, serviceType,null);
 		}
 
 		public IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId, Type ServiceType)
@@ -111,17 +111,18 @@ namespace SF.Core.ServiceManagement
 				ServiceType
 				);
 		}
-		public IServiceInstanceDescriptor ResolveDescriptorByType(long? ScopeServiceId, Type ServiceType)
+		public IServiceInstanceDescriptor ResolveDescriptorByType(long? ScopeServiceId, Type ServiceType,string Name)
 		{
 			return FactoryManager.GetServiceFactoryByType(
 				this,
 				ScopeServiceId,
-				ServiceType
+				ServiceType,
+				Name
 				);
 		}
 		static Type ServiceProviderType { get; } = typeof(IServiceProvider);
 		static Type ServiceResolverType { get; } = typeof(IServiceResolver);
-		public object ResolveServiceByType(long? ScopeServiceId, Type ServiceType)
+		public object ResolveServiceByType(long? ScopeServiceId, Type ServiceType,string Name)
 		{
 			if (ServiceType == ServiceResolverType || ServiceType==ServiceProviderType)
 				return this;
@@ -129,7 +130,8 @@ namespace SF.Core.ServiceManagement
 				FactoryManager.GetServiceFactoryByType(
 					this,
 					ScopeServiceId,
-					ServiceType
+					ServiceType,
+					Name
 					)
 				);
 		}
@@ -152,7 +154,7 @@ namespace SF.Core.ServiceManagement
 			{
 				if(serviceType== ServiceProviderType || serviceType == ServiceResolverType)
 					return ScopeBase;
-				return ScopeBase.ResolveServiceByType(ScopeServiceId, serviceType);
+				return ScopeBase.ResolveServiceByType(ScopeServiceId, serviceType,null);
 			}
 		}
 		public IServiceProvider CreateInternalServiceProvider(long ServiceId)
@@ -164,21 +166,27 @@ namespace SF.Core.ServiceManagement
 			};
 		}
 
-		public IEnumerable<IServiceInstanceDescriptor> ResolveServiceDescriptors(long? ScopeServiceId, Type ChildServiceType)
+		public IEnumerable<IServiceInstanceDescriptor> ResolveServiceDescriptors(
+			long? ScopeServiceId, 
+			Type ChildServiceType,
+			string Name
+			)
 		{
 			return FactoryManager.GetServiceFactoriesByType(
 					this,
 					ScopeServiceId,
-					ChildServiceType
+					ChildServiceType,
+					Name
 					);
 		}
 
-		public IEnumerable<object> ResolveServices(long? ScopeServiceId, Type ChildServiceType)
+		public IEnumerable<object> ResolveServices(long? ScopeServiceId, Type ChildServiceType,string Name)
 		{
 			foreach(var factory in FactoryManager.GetServiceFactoriesByType(
 					this,
 					ScopeServiceId,
-					ChildServiceType
+					ChildServiceType,
+					Name
 					))
 			{
 				yield return GetService(factory);

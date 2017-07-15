@@ -23,7 +23,8 @@ namespace SF.Core.ServiceManagement.Management
 			object Setting,
 			string Name=null,
 			string Title=null,
-			string Description=null
+			string Description=null,
+			string ServiceIdent=null
 			)
 		{
 			return await Manager.EnsureEntity(
@@ -41,6 +42,7 @@ namespace SF.Core.ServiceManagement.Management
 					e.ServiceType = typeof(I).FullName;
 					e.Priority= 0;
 					e.ObjectState = Data.LogicObjectState.Enabled;
+					e.ServiceIdent = ServiceIdent;
 					//e.SettingType = typeof(T).FullName + "CreateArguments";
 					e.Name = Name ?? comment.Name;
 					e.Title = Title ?? comment.Name;

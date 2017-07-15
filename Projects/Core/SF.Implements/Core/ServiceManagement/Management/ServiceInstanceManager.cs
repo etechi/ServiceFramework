@@ -72,6 +72,7 @@ namespace SF.Core.ServiceManagement.Management
 				//ImplementId = i.ImplementId,
 				ObjectState = i.ObjectState,
 				Priority = i.Priority,
+				ServiceIdent=i.ServiceIdent,
 				Name = i.Name,
 				Title = i.Title,
 				CreatedTime = i.CreatedTime,
@@ -117,6 +118,7 @@ namespace SF.Core.ServiceManagement.Management
 				//ImplementId = i.ImplementId,
 				ObjectState = i.ObjectState,
 				Priority = i.Priority,
+				ServiceIdent=i.ServiceIdent,
 				Name = i.Name,
 				Title = i.Title,
 				CreatedTime = i.CreatedTime,
@@ -137,6 +139,7 @@ namespace SF.Core.ServiceManagement.Management
 				return Query
 					.Filter(Arg.Name, i => i.Name)
 					.Filter(Arg.DeclarationId, i => i.ServiceType)
+					.Filter(Arg.ServiceIdent,i=>i.ServiceIdent)
 					//.Filter(Arg.ImplementId, i => i.ImplementId)
 					.Filter(Arg.IsDefaultService.HasValue? (Arg.IsDefaultService.Value?(int?)0:(int?)-1):null,i=>i.Priority)
 				;
@@ -204,7 +207,6 @@ namespace SF.Core.ServiceManagement.Management
 			m.Icon = e.DisplayData?.Icon;
 			m.Remarks = e.DisplayData?.Remarks;
 			m.Image = e.DisplayData?.Image;
-
 			m.UpdatedTime= TimeService.Now;
 			m.Setting = e.Setting;
 			//TestConfig(m.Id, m.ImplementId, m.CreateArguments);
@@ -225,6 +227,8 @@ namespace SF.Core.ServiceManagement.Management
 			//	(mi, ei) => mi.Setting = ei.Setting
 			//	);
 
+		
+
 			if (await DataSet.MovePosition(
 				m,
 				MovePositionMode.Insert,
@@ -232,8 +236,14 @@ namespace SF.Core.ServiceManagement.Management
 				i => i.Id == m.Id,
 				i => i.Priority,
 				(i, p) => i.Priority = p
-				))
-				ctx.AddPostAction(() => ConfigChangedNotifier.NotifyDefaultChanged(m.ParentId,m.ServiceType));
+				) || m.ServiceIdent != e.ServiceIdent)
+				ctx.AddPostAction(() => 
+					ConfigChangedNotifier.NotifyInternalServiceChanged(
+						m.ParentId,
+						m.ServiceType
+						)
+					);
+			m.ServiceIdent = e.ServiceIdent;
 
 			ctx.AddPostAction(() =>
 			{
@@ -266,6 +276,7 @@ namespace SF.Core.ServiceManagement.Management
 			public string ImplementType { get; set; }
 
 			public string Setting { get; set; }
+			public string Name { get; set; }
 		}
 		IServiceConfig IServiceConfigLoader.GetConfig(long Id)
 		{
@@ -292,13 +303,17 @@ namespace SF.Core.ServiceManagement.Management
 
 			return re;
 		}
-
-		long[] IServiceInstanceLister.List(long? ScopeId,string ServiceType,int Limit)
+		
+		ServiceReference[] IServiceInstanceLister.List(long? ScopeId,string ServiceType,int Limit)
 		{
 			var re = DataSet.AsQueryable()
 				.Where(si => si.ParentId == ScopeId && si.ServiceType == ServiceType)
 				.OrderBy(si => si.Priority)
-				.Select(si => si.Id)
+				.Select(si => new ServiceReference
+				{
+					Id = si.Id,
+					Name = si.ServiceIdent
+				})
 				.Take(Limit)
 				.ToArray();
 			return re;

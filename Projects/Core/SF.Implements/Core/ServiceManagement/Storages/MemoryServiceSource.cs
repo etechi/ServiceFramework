@@ -24,6 +24,7 @@ namespace SF.Core.ServiceManagement.Storages
 
 			public string Setting { get; set; }
 			public int Priority { get; set; }
+			public string Name { get; set; }
 		}
 		Dictionary<string, SortedList<int,Config> > ServiceList { get; } = new Dictionary<string, SortedList<int, Config>>();
 		Dictionary<long, Config> Configs { get; } = new Dictionary<long, Config>();
@@ -46,7 +47,7 @@ namespace SF.Core.ServiceManagement.Storages
 		public void SetDefaultService<I>(long Id)
 		{
 			var cfg = GetConfig(Id);
-			SetConfig(cfg.ServiceType, cfg.ImplementType, cfg.Id, cfg.Setting, 0, cfg.ParentId);
+			SetConfig(cfg.ServiceType, cfg.ImplementType, cfg.Id, cfg.Setting, 0, cfg.ParentId,cfg.Name);
 		}
 		Config SetConfig(
 			string ServiceType,
@@ -54,7 +55,8 @@ namespace SF.Core.ServiceManagement.Storages
 			long Id, 
 			object Settings, 
 			int Priority = -1, 
-			long? ParentId = null
+			long? ParentId = null,
+			string Name=null
 			)
 		{
 			var svcs = GetServices(ServiceType, ParentId);
@@ -71,20 +73,21 @@ namespace SF.Core.ServiceManagement.Storages
 			cfg.Priority = Priority;
 			cfg.Setting = Json.Stringify(Settings);
 			cfg.Id = Id;
+			cfg.Name = Name;
 			Configs[Id] = cfg;
 
 			var idx = svcs.IndexOfValue(cfg);
 			if (idx != -1)
 				svcs.RemoveAt(idx);
 			svcs.Add(cfg.Priority, cfg);
-			ConfigChangedNotifier.NotifyDefaultChanged(ParentId, ServiceType);
+			ConfigChangedNotifier.NotifyInternalServiceChanged(ParentId, ServiceType);
 			ConfigChangedNotifier.NotifyChanged(Id);
 			return cfg;
 		}
-		public Config SetConfig<I,T>(long Id, object Settings,int Priority=-1,long? ParentId=null)
+		public Config SetConfig<I,T>(long Id, object Settings,int Priority=-1,long? ParentId=null,string Name=null)
 			where T:I
 		{
-			return SetConfig(typeof(I).FullName, typeof(T).FullName, Id, Settings, Priority, ParentId);
+			return SetConfig(typeof(I).FullName, typeof(T).FullName, Id, Settings, Priority, ParentId,Name);
 		}
 		public IServiceConfig GetConfig(long Id)
 		{
@@ -92,10 +95,13 @@ namespace SF.Core.ServiceManagement.Storages
 				throw new ArgumentException("找不到服务配置:" + Id);
 			return cfg;
 		}
-		public long[] List(long? ScopeId,string Type,int Limit)
+		public ServiceReference[] List(long? ScopeId,string Type,int Limit)
 		{
 			var svcs = GetServices(Type, ScopeId);
-			return svcs.Values.Take(Limit).Select(c => c.Id).ToArray();
+			return svcs.Values
+				.Take(Limit)
+				.Select(c =>new ServiceReference { Id = c.Id, Name = c.Name })
+				.ToArray();
 		}
 	}
 

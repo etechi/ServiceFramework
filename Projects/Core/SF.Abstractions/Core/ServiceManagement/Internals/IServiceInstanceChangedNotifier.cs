@@ -4,7 +4,7 @@ namespace SF.Core.ServiceManagement.Internals
 	public interface IServiceInstanceConfigChangedNotifier
 	{
 		void NotifyChanged(long Id);
-		void NotifyDefaultChanged( long? ScopeId,string ServiceType);
+		void NotifyInternalServiceChanged( long? ScopeId,string ServiceType);
 	}
 
 }

@@ -70,7 +70,8 @@ namespace SF.Core.ServiceManagement.Internals
 			{
 				instance = Provider.Resolve<IServiceResolver>().ResolveServiceByType(
 					ServiceInstanceDescriptor.InstanceId,
-					InterfaceType
+					InterfaceType,
+					null
 					);
 			}
 

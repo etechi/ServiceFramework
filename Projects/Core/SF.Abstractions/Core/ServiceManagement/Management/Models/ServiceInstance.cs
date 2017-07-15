@@ -10,6 +10,11 @@ namespace SF.Core.ServiceManagement.Models
 	[EntityObject("系统服务实例")]
 	public class ServiceInstance : SF.Data.Models.UIEntityBase<long>
 	{
+		[Comment("服务标识")]
+		[TableVisible]
+		[MaxLength(100)]
+		public string ServiceIdent { get; set; }
+
 		[Comment("优先级")]
 		[TableVisible]
 		public int Priority { get; set; }

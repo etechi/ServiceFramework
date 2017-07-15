@@ -169,15 +169,66 @@ namespace SF.UT.DI
 			var cfgs = sp.Resolve<MemoryServiceSource>();
 
 			cfgs.SetConfig<IInterface<int>, Implement<int>>(1, new { },3);
-			cfgs.SetConfig<IInterface<int>, Implement<int>>(2, new { },2);
-			cfgs.SetConfig<IInterface<int>, Implement<int>>(3, new { },1);
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(2, new { },2,1);
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(3, new { },1,1);
 
 
-			var re = sp.Resolve<IEnumerable<IInterface<int>>>();
+			var re = sp.GetServices<IInterface<int>>(1);
+			Assert.Equal(2, re.Count());
+			foreach (var i in re)
+				Assert.Equal("123", i.ToString(123));
+
+		}
+		[Fact]
+		public void ManagedNamedEnumerable()
+		{
+			var sc = new ServiceCollection();
+			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
+			sc.UseNewtonsoftJson();
+
+			var sp = sc.BuildServiceResolver();
+
+			var cfgs = sp.Resolve<MemoryServiceSource>();
+
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(1, new { }, 3);
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(2, new { }, 2, 1,"svc1");
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(3, new { }, 1, 1,"svc2");
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(4, new { }, 0, 1, "svc2");
+
+			var re = sp.GetServices<IInterface<int>>(1);
 			Assert.Equal(3, re.Count());
 			foreach (var i in re)
 				Assert.Equal("123", i.ToString(123));
 
+			re = sp.GetServices<IInterface<int>>(1,"svc2");
+			Assert.Equal(2, re.Count());
+			foreach (var i in re)
+				Assert.Equal("123", i.ToString(123));
+
+		}
+		[Fact]
+		public void ManagedNamedService()
+		{
+			var sc = new ServiceCollection();
+			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
+			sc.UseNewtonsoftJson();
+
+			var sp = sc.BuildServiceResolver();
+
+			var cfgs = sp.Resolve<MemoryServiceSource>();
+
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(1, new { }, 3);
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(2, new { }, 2, 1, "svc1");
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(3, new { }, 1, 1, "svc2");
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(4, new {Prefix="svc4" }, 0, 1, "svc2");
+
+			var re = sp.ResolveInternal<IInterface<int>>(1,"svc2");
+			Assert.Equal("svc4123", re.ToString(123));
 		}
 		[Fact]
 		public void InternalServiceExists()

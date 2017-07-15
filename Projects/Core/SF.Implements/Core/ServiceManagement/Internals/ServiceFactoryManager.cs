@@ -391,19 +391,29 @@ namespace SF.Core.ServiceManagement.Internals
 			public IServiceFactory Factory;
 			public IServiceConfig Config;
 			public override IServiceFactory DefaultFactory => Factory;
-			public ConcurrentDictionary<string, long[]> InternalServices;
+			public ConcurrentDictionary<string, InternalServiceData> InternalServices;
 		}
 		class UnmanagedServiceEntry : ServiceEntry
 		{
 			public Lazy<IServiceFactory> Factory;
 			public override IServiceFactory DefaultFactory => Factory.Value;
 		}
+		class InternalServiceData : Dictionary<string,long[]>
+		{
+			public long[] InternalServiceIds { get; }
+			public InternalServiceData(ServiceReference[] srs)
+			{
+				InternalServiceIds = srs.Select(i => i.Id).ToArray();
+				foreach (var g in srs.Where(i => i.Name != null).GroupBy(s => s.Name))
+					Add(g.Key, g.Select(i => i.Id).ToArray());
+			}
+		}
 		ConcurrentDictionary<(Type, Type), (ServiceCreator, ConstructorInfo)> ServiceCreatorDict { get; }
 			= new ConcurrentDictionary<(Type, Type), (ServiceCreator, ConstructorInfo)>();
 
 
 		Caching.ILocalCache<IServiceEntry> _ManagedServiceCache;
-		ConcurrentDictionary<string, long[]> TopScopeServices = new ConcurrentDictionary<string, long[]>();
+		ConcurrentDictionary<string, InternalServiceData> TopScopeServices = new ConcurrentDictionary<string, InternalServiceData>();
 
 		ConcurrentDictionary<Type, UnmanagedServiceEntry[]> UnmanagedServiceCache { get; } = new ConcurrentDictionary<Type, UnmanagedServiceEntry[]>();
 
@@ -523,11 +533,11 @@ namespace SF.Core.ServiceManagement.Internals
 		//		return GetUnmanagedServiceEntry(ServiceProvider, ServiceType, (int)ServiceId, CreateIfNotExists);
 		//}
 
-		ConcurrentDictionary<string, long[]> EnsureDefaultServiceDict(ManagedServiceEntry se)
+		ConcurrentDictionary<string, InternalServiceData> EnsureDefaultServiceDict(ManagedServiceEntry se)
 		{
 			var dss = se.InternalServices;
 			if (dss == null)
-				dss = se.InternalServices = new ConcurrentDictionary<string, long[]>();
+				dss = se.InternalServices = new ConcurrentDictionary<string, InternalServiceData>();
 			return dss;
 		}
 
@@ -666,9 +676,10 @@ namespace SF.Core.ServiceManagement.Internals
 			return GetManagedServiceFactoryByIdent(ServiceProvider,curEntry, ServiceId, ServiceType);
 		}
 
-		long[] TryGetManagedScopedServiceIdents(
+
+		InternalServiceData TryGetManagedScopedInternalServiceData(
 			IServiceProvider ServiceProvider,
-			ConcurrentDictionary<string,long[]> dss,
+			ConcurrentDictionary<string, InternalServiceData> dss,
 			long? ScopeServiceId,
 			string ServiceType,
 			ref IServiceScope scope,
@@ -677,18 +688,38 @@ namespace SF.Core.ServiceManagement.Internals
 		{
 			if (dss.TryGetValue(ServiceType, out var cids))
 				return cids;
-			
+
 			if (serviceInstanceLister == null)
 			{
 				if (scope == null)
 					scope = ServiceProvider.Resolve<IServiceScopeFactory>().CreateServiceScope();
 				serviceInstanceLister = scope.ServiceProvider.Resolve<IServiceInstanceLister>();
 			}
-			cids = serviceInstanceLister.List(ScopeServiceId, ServiceType, 100);
+			var re = serviceInstanceLister.List(ScopeServiceId, ServiceType, 100);
+			cids = new InternalServiceData(re);
 			return dss.GetOrAdd(ServiceType, cids);
 		}
 
-		long[] GetManagedScopedServiceIdents(
+		//long[] TryGetManagedScopedServiceIdents(
+		//	IServiceProvider ServiceProvider,
+		//	ConcurrentDictionary<string,InternalServiceData> dss,
+		//	long? ScopeServiceId,
+		//	string ServiceType,
+		//	ref IServiceScope scope,
+		//	ref IServiceInstanceLister serviceInstanceLister
+		//	)
+		//{
+		//	return TryGetManagedScopedInternalServiceData(
+		//		ServiceProvider,
+		//		dss,
+		//		ScopeServiceId,
+		//		ServiceType,
+		//		ref scope,
+		//		ref serviceInstanceLister
+		//		)?.InternalServiceIds;
+		//}
+
+		InternalServiceData GetManagedScopedServiceData(
 			IServiceProvider ServiceProvider,
 			long? ScopeServiceId,
 			Type ServiceType
@@ -704,7 +735,7 @@ namespace SF.Core.ServiceManagement.Internals
 				{
 					var curEntry = GetManagedServiceEntry(ServiceProvider, ScopeServiceId.Value, true);
 					var dss = EnsureDefaultServiceDict(curEntry);
-					var cids = TryGetManagedScopedServiceIdents(
+					var cids = TryGetManagedScopedInternalServiceData(
 						ServiceProvider,
 						dss,
 						ScopeServiceId.Value,
@@ -714,7 +745,7 @@ namespace SF.Core.ServiceManagement.Internals
 						);
 
 					//找到服务
-					if (cids.Length > 0)
+					if (cids.InternalServiceIds.Length > 0)
 						return cids;
 
 					//当前区域不是顶级区域，继续向上层搜索
@@ -728,7 +759,7 @@ namespace SF.Core.ServiceManagement.Internals
 					var cfg = EnsureManagedConfig(configLoader, curEntry, ScopeServiceId.Value);
 					ScopeServiceId = cfg.ParentId;
 				}
-				return TryGetManagedScopedServiceIdents(
+				return TryGetManagedScopedInternalServiceData(
 					ServiceProvider,
 					TopScopeServices,
 					null,
@@ -749,17 +780,29 @@ namespace SF.Core.ServiceManagement.Internals
 		public IServiceFactory GetServiceFactoryByType(
 			IServiceProvider ServiceProvider,
 			long? ScopeServiceId,
-			Type ServiceType
+			Type ServiceType,
+			string Name
 			)
 		{
 			if (!ServiceType.IsDefined(UnmanagedServiceAttributeType))
 			{
-				var cids = GetManagedScopedServiceIdents(ServiceProvider, ScopeServiceId, ServiceType);
-				if ((cids?.Length ?? 0)>0)
+				var isd = GetManagedScopedServiceData(ServiceProvider, ScopeServiceId, ServiceType);
+				if(Name!=null)
+				{
+					if (!isd.TryGetValue(Name, out var ids) || ids.Length==0)
+						return null;
 					return GetManagedServiceFactoryByIdent(
 						ServiceProvider,
-						GetManagedServiceEntry(ServiceProvider, cids[0], true),
-						cids[0],
+						GetManagedServiceEntry(ServiceProvider, ids[0], true),
+						ids[0],
+						ServiceType
+						);
+				}
+				else if ((isd?.InternalServiceIds?.Length ?? 0)>0)
+					return GetManagedServiceFactoryByIdent(
+						ServiceProvider,
+						GetManagedServiceEntry(ServiceProvider, isd.InternalServiceIds[0], true),
+						isd.InternalServiceIds[0],
 						ServiceType
 						);
 			}
@@ -769,19 +812,33 @@ namespace SF.Core.ServiceManagement.Internals
 		public IEnumerable<IServiceFactory> GetServiceFactoriesByType(
 			IServiceProvider ServiceProvider,
 			long? ScopeServiceId,
-			Type ServiceType
+			Type ServiceType,
+			string Name
 			)
 		{
 			if (!ServiceType.IsDefined(UnmanagedServiceAttributeType))
 			{
-				var cids = GetManagedScopedServiceIdents(ServiceProvider, ScopeServiceId, ServiceType);
-				if ((cids?.Length??0)>0)
+				var isd = GetManagedScopedServiceData(ServiceProvider, ScopeServiceId, ServiceType);
+				if(Name!=null)
 				{
-					foreach (var id in cids)
+					if (!isd.TryGetValue(Name, out var ids) || ids.Length == 0)
+						yield break;
+					foreach (var id in ids)
 						yield return GetManagedServiceFactoryByIdent(
 							ServiceProvider,
-							GetManagedServiceEntry(ServiceProvider, cids[0], true),
-							cids[0],
+							GetManagedServiceEntry(ServiceProvider, id, true),
+							id,
+							ServiceType
+							);
+					yield break;
+				}
+				else if ((isd?.InternalServiceIds?.Length ?? 0) > 0)
+				{
+					foreach (var id in isd.InternalServiceIds)
+						yield return GetManagedServiceFactoryByIdent(
+							ServiceProvider,
+							GetManagedServiceEntry(ServiceProvider, id, true),
+							id,
 							ServiceType
 							);
 					yield break;
@@ -805,7 +862,7 @@ namespace SF.Core.ServiceManagement.Internals
 			_ManagedServiceCache?.Remove(Id.ToString());
 		}
 
-		void IServiceInstanceConfigChangedNotifier.NotifyDefaultChanged(long? ScopeId, string ServiceType)
+		void IServiceInstanceConfigChangedNotifier.NotifyInternalServiceChanged(long? ScopeId, string ServiceType)
 		{
 			if (ScopeId == null)
 				TopScopeServices.TryRemove(ServiceType, out var ids);
