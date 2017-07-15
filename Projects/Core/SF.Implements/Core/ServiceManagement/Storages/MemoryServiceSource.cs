@@ -25,8 +25,8 @@ namespace SF.Core.ServiceManagement.Storages
 			public string Setting { get; set; }
 			public int Priority { get; set; }
 		}
-		static Dictionary<string, SortedList<int,Config> > ServiceList { get; } = new Dictionary<string, SortedList<int, Config>>();
-		static Dictionary<long, Config> Configs { get; } = new Dictionary<long, Config>();
+		Dictionary<string, SortedList<int,Config> > ServiceList { get; } = new Dictionary<string, SortedList<int, Config>>();
+		Dictionary<long, Config> Configs { get; } = new Dictionary<long, Config>();
 
 		public IServiceInstanceConfigChangedNotifier ConfigChangedNotifier { get; }
 

@@ -775,7 +775,7 @@ namespace SF.Core.ServiceManagement.Internals
 			if (!ServiceType.IsDefined(UnmanagedServiceAttributeType))
 			{
 				var cids = GetManagedScopedServiceIdents(ServiceProvider, ScopeServiceId, ServiceType);
-				if (cids != null)
+				if ((cids?.Length??0)>0)
 				{
 					foreach (var id in cids)
 						yield return GetManagedServiceFactoryByIdent(
@@ -784,6 +784,7 @@ namespace SF.Core.ServiceManagement.Internals
 							cids[0],
 							ServiceType
 							);
+					yield break;
 				}
 			}
 			

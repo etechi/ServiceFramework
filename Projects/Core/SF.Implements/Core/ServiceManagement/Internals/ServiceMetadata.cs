@@ -40,7 +40,7 @@ namespace SF.Core.ServiceManagement.Internals
 		//public Dictionary<Type,object> ServiceTypeForInterface { get; }
 		public IReadOnlyDictionary<Type, IServiceDeclaration> Services { get; }
 		public IReadOnlyDictionary<string, IServiceDeclaration> ServicesByTypeName { get; }
-		public IReadOnlyDictionary<string, IServiceImplement> ImplementsByTypeName { get; }
+		public IReadOnlyDictionary<string, IServiceImplement[]> ImplementsByTypeName { get; }
 
 
 		public ServiceMetadata(IEnumerable<ServiceDescriptor> ServiceDescriptors)
@@ -74,7 +74,9 @@ namespace SF.Core.ServiceManagement.Internals
 
 			ImplementsByTypeName = lists
 				.Where(i => i.ImplementType != null)
-				.ToDictionary(i => i.ImplementType.GetFullName(), i =>(IServiceImplement) i);
+				.GroupBy(i => i.ImplementType)
+				.ToDictionary(g => g.Key.GetFullName(), g => g.Cast<IServiceImplement>().ToArray());
+
 
 			//ServiceTypeForInterface =
 			//	(from svc in Services.Values

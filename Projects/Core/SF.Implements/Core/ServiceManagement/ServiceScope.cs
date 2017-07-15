@@ -7,18 +7,19 @@ namespace SF.Core.ServiceManagement
 		IServiceScope
 	{
 
-		public ServiceScope(IServiceFactoryManager FactoryManager):base(FactoryManager)
+		IServiceProvider RootServiceProvider { get; }
+		public ServiceScope(IServiceProvider ServiceProvider, IServiceFactoryManager ServiceFactoryManager) :
+			base(ServiceFactoryManager)
 		{
+			this.RootServiceProvider = ServiceProvider;
 		}
-		static Type TypeServiceProvider = typeof(IServiceProvider);
-		static Type TypeServiceResolver = typeof(IServiceResolver);
-		public override object GetService(Type serviceType)
+		protected override object GetService(IServiceFactory factory)
 		{
-			if (serviceType == TypeServiceProvider || serviceType == TypeServiceResolver)
-				return this;
-			return base.GetService(serviceType);
+			if (factory.ServiceImplement.LifeTime == ServiceImplementLifetime.Singleton)
+				return RootServiceProvider.GetService(factory.ServiceDeclaration.ServiceType);
+			return base.GetService(factory);
 		}
-		
+
 		protected override CacheType GetCacheType(IServiceFactory Factory)
 		{
 			switch (Factory.ServiceImplement.LifeTime)

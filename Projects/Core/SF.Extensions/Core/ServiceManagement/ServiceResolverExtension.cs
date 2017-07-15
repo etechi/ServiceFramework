@@ -29,7 +29,14 @@ namespace SF.Core.ServiceManagement
 				throw new InvalidOperationException($"服务:{ServiceId}不是类型:{typeof(T)}");
 			return re;
 		}
-		
+		public static T ResolveInternal<T>(this IServiceProvider ServiceProvider, long ScopeServiceId)
+			where T : class
+		{
+			var s = ServiceProvider.Resolve<IServiceResolver>().ResolveServiceByType(ScopeServiceId, typeof(T));
+			if (s == null)
+				throw new InvalidOperationException("找不到服务:" + typeof(T));
+			return (T)s;
+		}
 
 		public static T WithScope<T>(this IServiceProvider sp, Func<IServiceProvider, T> action)
 		{

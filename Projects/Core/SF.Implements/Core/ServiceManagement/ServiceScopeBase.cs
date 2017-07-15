@@ -69,7 +69,7 @@ namespace SF.Core.ServiceManagement
 					}
 				}
 		}
-		object GetService(IServiceFactory factory)
+		protected virtual object GetService(IServiceFactory factory)
 		{
 			if (factory == null)
 				return null;

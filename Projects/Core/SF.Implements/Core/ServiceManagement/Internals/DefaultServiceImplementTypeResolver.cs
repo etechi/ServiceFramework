@@ -16,7 +16,7 @@ namespace SF.Core.ServiceManagement.Internals
 
 		public Type Resolve(string Name)
 		{
-			return Metadata.ImplementsByTypeName.TryGetValue(Name, out var impl) ? impl.ImplementType : null;
+			return Metadata.ImplementsByTypeName.TryGetValue(Name, out var impls) ? impls[0].ImplementType : null;
 		}
 	}
 	public class DefaultServiceDeclarationTypeResolver : IServiceDeclarationTypeResolver

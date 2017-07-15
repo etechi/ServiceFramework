@@ -18,16 +18,32 @@ namespace SF.UT.DI
 		{
 			string ToString(T obj);
 		}
-		class Implement<T> : IInterface<T>
+		interface IInterface2<T>
+		{
+			string ToString(T obj);
+		}
+		class Implement<T> : IInterface<T>, IInterface2<T>
 		{
 			public string ToString(T obj)
 			{
 				return obj.ToString();
 			}
 		}
-		
-		
-        [Fact]
+
+		class ImplementWithArg<T> : IInterface<T>, IInterface2<T>
+		{
+			string Prefix { get; }
+			public ImplementWithArg(string Prefix)
+			{
+				this.Prefix = Prefix??"null";
+			}
+			public string ToString(T obj)
+			{
+				return Prefix+obj.ToString();
+			}
+		}
+
+		[Fact]
         public void Generic()
         {
 			var sc = new ServiceCollection();
@@ -93,7 +109,6 @@ namespace SF.UT.DI
 			var re = sp.Resolve<Func<IInterface<int>>>();
 			var r = re();
 			Assert.Equal("123", r.ToString(123));
-
 		}
 		[Fact]
 		public void ByFuncWithId()
@@ -110,7 +125,6 @@ namespace SF.UT.DI
 			var re = sp.Resolve<Func<long, IInterface<int>>>();
 			var r = re(1);
 			Assert.Equal("123", r.ToString(123));
-
 		}
 		[Fact]
 		public void ByLazy()
@@ -126,7 +140,7 @@ namespace SF.UT.DI
 
 		}
 		[Fact]
-		public void Enumerable()
+		public void UnmanagedEnumerable()
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
@@ -140,6 +154,138 @@ namespace SF.UT.DI
 			foreach (var i in re)
 				Assert.Equal("123", i.ToString(123));
 
+		}
+		[Fact]
+		public void ManagedEnumerable()
+		{
+			var sc = new ServiceCollection();
+			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
+			sc.UseNewtonsoftJson();
+
+			var sp = sc.BuildServiceResolver();
+
+			var cfgs = sp.Resolve<MemoryServiceSource>();
+
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(1, new { },3);
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(2, new { },2);
+			cfgs.SetConfig<IInterface<int>, Implement<int>>(3, new { },1);
+
+
+			var re = sp.Resolve<IEnumerable<IInterface<int>>>();
+			Assert.Equal(3, re.Count());
+			foreach (var i in re)
+				Assert.Equal("123", i.ToString(123));
+
+		}
+		[Fact]
+		public void InternalServiceExists()
+		{
+			var sc = new ServiceCollection();
+			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
+			sc.UseNewtonsoftJson();
+
+			var sp = sc.BuildServiceResolver();
+
+			var cfgs = sp.Resolve<MemoryServiceSource>();
+
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(1, new { Prefix = "s1" }, 3);
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(2, new { Prefix="s2" }, 2, 1);
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(3, new { Prefix = "s3" }, 1, 1);
+
+			var re = sp.ResolveInternal<IInterface<int>>(1);
+			Assert.Equal("s3123", re.ToString(123));
+		}
+		[Fact]
+		public void InternalServiceNotExists()
+		{
+			var sc = new ServiceCollection();
+			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
+			sc.AddTransient<IInterface2<int>, ImplementWithArg<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
+			sc.UseNewtonsoftJson();
+
+			var sp = sc.BuildServiceResolver();
+
+			var cfgs = sp.Resolve<MemoryServiceSource>();
+
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(1, new { Prefix = "s1" }, 3);
+			cfgs.SetConfig<IInterface2<int>, ImplementWithArg<int>>(2, new { Prefix = "s2" }, 2, 1);
+			cfgs.SetConfig<IInterface2<int>, ImplementWithArg<int>>(3, new { Prefix = "s3" }, 1, 1);
+
+			var re = sp.ResolveInternal<IInterface<int>>(1);
+			Assert.Equal("s1123", re.ToString(123));
+		}
+		[Fact]
+		public void InternalServiceNotExists2()
+		{
+			var sc = new ServiceCollection();
+			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
+			sc.AddTransient<IInterface2<int>, ImplementWithArg<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
+			sc.UseNewtonsoftJson();
+
+			var sp = sc.BuildServiceResolver();
+
+			var cfgs = sp.Resolve<MemoryServiceSource>();
+
+			cfgs.SetConfig<IInterface2<int>, ImplementWithArg<int>>(1, new { Prefix = "s1" }, 3);
+			cfgs.SetConfig<IInterface2<int>, ImplementWithArg<int>>(2, new { Prefix = "s2" }, 2, 1);
+			cfgs.SetConfig<IInterface2<int>, ImplementWithArg<int>>(3, new { Prefix = "s3" }, 1, 1);
+
+			var re = sp.ResolveInternal<IInterface<int>>(1);
+			Assert.Equal("null123", re.ToString(123));
+		}
+		[Fact]
+		public void ServiceConfigChanged()
+		{
+			var sc = new ServiceCollection();
+			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
+			sc.UseNewtonsoftJson();
+
+			var sp = sc.BuildServiceResolver();
+
+			var cfgs = sp.Resolve<MemoryServiceSource>();
+
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(1, new { Prefix = "s1" });
+			var re = sp.ResolveInternal<IInterface<int>>(1);
+			Assert.Equal("s1123", re.ToString(123));
+
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(1, new { Prefix = "s2" });
+			re = sp.ResolveInternal<IInterface<int>>(1);
+			Assert.Equal("s2123", re.ToString(123));
+		}
+		[Fact]
+		public void ServicePriorityChanged()
+		{
+			var sc = new ServiceCollection();
+			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
+			sc.UseSystemMemoryCache();
+			sc.UseMemoryManagedServiceSource();
+			sc.UseNewtonsoftJson();
+
+			var sp = sc.BuildServiceResolver();
+
+			var cfgs = sp.Resolve<MemoryServiceSource>();
+
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(1, new { Prefix = "s1" },1);
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(2, new { Prefix = "s2" },2);
+			var re = sp.Resolve<IInterface<int>>();
+			Assert.Equal("s1123", re.ToString(123));
+
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(2, new { Prefix = "s2" }, 0);
+			re = sp.Resolve<IInterface<int>>();
+			Assert.Equal("s2123", re.ToString(123));
 		}
 	}
 }

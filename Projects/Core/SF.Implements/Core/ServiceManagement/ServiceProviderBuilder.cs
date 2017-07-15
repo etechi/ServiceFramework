@@ -201,8 +201,8 @@ namespace SF.Core.ServiceManagement
 				ServiceDeclarationTypeResolver,
 				ServiceImplementTypeResolver
 				);
-			scopeFactory = new ServiceScopeFactory(manager);
 			provider = OnCreateServiceProvider(manager);
+			scopeFactory = new ServiceScopeFactory(provider, manager);
 			resolver = (IServiceResolver)provider;
 			return provider;
 		}

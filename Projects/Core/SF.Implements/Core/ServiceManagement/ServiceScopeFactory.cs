@@ -5,14 +5,16 @@ namespace SF.Core.ServiceManagement
 {
 	public class ServiceScopeFactory : IServiceScopeFactory
 	{
+		IServiceProvider ServiceProvider { get; }
 		IServiceFactoryManager ServiceFactoryManager { get; }
-		public ServiceScopeFactory(IServiceFactoryManager ServiceFactoryManager)
+		public ServiceScopeFactory(IServiceProvider ServiceProvider, IServiceFactoryManager ServiceFactoryManager)
 		{
+			this.ServiceProvider = ServiceProvider;
 			this.ServiceFactoryManager = ServiceFactoryManager;
 		}
 		public IServiceScope CreateServiceScope()
 		{
-			return new ServiceScope(ServiceFactoryManager);
+			return new ServiceScope(ServiceProvider, ServiceFactoryManager);
 		}
 	}
 
