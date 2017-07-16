@@ -246,7 +246,7 @@ namespace SF.UT.DI
 
 			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(1, new { Prefix = "s1" }, 3);
 			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(2, new { Prefix="s2" }, 2, 1);
-			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(3, new { Prefix = "s3" }, 1, 1);
+			cfgs.SetConfig<IInterface<int>, ImplementWithArg<int>>(3, new { Prefix = "s3" }, 0, 1);
 
 			var re = sp.ResolveInternal<IInterface<int>>(1);
 			Assert.Equal("s3123", re.ToString(123));

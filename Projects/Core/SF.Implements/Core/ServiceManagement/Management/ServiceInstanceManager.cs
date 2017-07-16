@@ -229,9 +229,9 @@ namespace SF.Core.ServiceManagement.Management
 
 		
 
-			if (await DataSet.MovePosition(
+			if (await DataSet.ModifyPosition(
 				m,
-				MovePositionMode.Insert,
+				PositionModifyAction.Insert,
 				i => i.ParentId == m.ParentId,
 				i => i.Id == m.Id,
 				i => i.Priority,

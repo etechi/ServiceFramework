@@ -95,6 +95,7 @@
     <Compile Include="System\ArrayExtension.cs" />
     <Compile Include="System\BytesExtension.cs" />
     <Compile Include="System\Collections\Generic\DictExtension.cs" />
+    <Compile Include="System\Collections\Generic\IListExtension.cs" />
     <Compile Include="System\Disposable.cs" />
     <Compile Include="System\IO\StreamExtension.cs" />
     <Compile Include="System\Linq\Expressions\ObjectTransform.cs" />

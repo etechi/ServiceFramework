@@ -23,7 +23,7 @@ namespace SF.Core.ServiceManagement.Storages
 			public string ImplementType { get; set; }
 
 			public string Setting { get; set; }
-			public int Priority { get; set; }
+			public int Priority { get; set; } = -1;
 			public string Name { get; set; }
 		}
 		Dictionary<string, SortedList<int,Config> > ServiceList { get; } = new Dictionary<string, SortedList<int, Config>>();
@@ -70,8 +70,9 @@ namespace SF.Core.ServiceManagement.Storages
 			cfg.ParentId = ParentId;
 			cfg.ImplementType = ImplementType;
 			cfg.ServiceType = ServiceType;
-			cfg.Priority = Priority;
-			cfg.Setting = Json.Stringify(Settings);
+			if(Priority!=-1)
+				cfg.Priority = Priority;
+			cfg.Setting = Settings is string ? (string)Settings : Json.Stringify(Settings);
 			cfg.Id = Id;
 			cfg.Name = Name;
 			Configs[Id] = cfg;
@@ -79,7 +80,18 @@ namespace SF.Core.ServiceManagement.Storages
 			var idx = svcs.IndexOfValue(cfg);
 			if (idx != -1)
 				svcs.RemoveAt(idx);
-			svcs.Add(cfg.Priority, cfg);
+			if (cfg.Priority == -1)
+				cfg.Priority = svcs.Count == 0 ? 1 : svcs.Keys.Max() + 1;
+			var re = svcs.Values.ToList().OrderBy(i => i.Priority).ToList();
+			re.ModifyPosition(
+				cfg,
+				PositionModifyAction.Insert,
+				c => c == cfg,
+				c => c.Priority,
+				(c, i) => c.Priority = i
+				);
+			svcs.Clear();
+			re.ForEach(i => svcs.Add(i.Priority, i));
 			ConfigChangedNotifier.NotifyInternalServiceChanged(ParentId, ServiceType);
 			ConfigChangedNotifier.NotifyChanged(Id);
 			return cfg;

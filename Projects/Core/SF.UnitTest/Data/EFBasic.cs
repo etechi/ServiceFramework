@@ -37,8 +37,8 @@ namespace SF.UT.Data
 		public IServiceProvider ConfigureService()
 		{
 			var isc = new ServiceCollection();
-
-
+			isc.UseSystemMemoryCache();
+			isc.UseMemoryManagedServiceSource();
 			isc.UseDataModules<DataModels.User, DataModels.Post>();
 #if NETCORE
 			sc.AddEntityFrameworkInMemoryDatabase();
@@ -66,26 +66,29 @@ namespace SF.UT.Data
 		public void Test()
 		{
 			var sp = new EFStartup().ConfigureService();
-			var sf = sp.Resolve<IServiceScopeFactory>();
-			using(var s = sf.CreateServiceScope())
+			sp.WithScope(isp =>
 			{
-				var isp = s.ServiceProvider;
+				var ac = isp.Resolve<IDataSet<DataModels.User>>();
+				ac.RemoveRange(ac.AsQueryable(false).ToArray());
+				ac.Context.SaveChanges();
+			});
+			sp.WithScope(isp =>
+			{
 				var ac = isp.Resolve<IDataSet<DataModels.User>>();
 				ac.Add(new DataModels.User { Id = "aa", FirstName = "c", LastName = "y" });
 				ac.Context.SaveChanges();
 
-				var re=ac.AsQueryable(true) .ToArrayAsync().Result;
+				var re = ac.AsQueryable(true).ToArrayAsync().Result;
 				Assert.Equal(1, re.Length);
 				Assert.Equal("c", re[0].FirstName);
-			}
-			using (var s = sf.CreateServiceScope())
+			});
+			sp.WithScope(isp =>
 			{
-				var isp = s.ServiceProvider;
 				var ac = isp.Resolve<IDataContext>();
 				var re = ac.Set<DataModels.User>().AsQueryable().ToArrayAsync().Result;
 				Assert.Equal(1, re.Length);
 				Assert.Equal("c", re[0].FirstName);
-			}
+			});
 		}
 	}
 }

@@ -69,7 +69,8 @@ namespace SF.UT
 
 			//var isc = sc.GetDIServiceCollection();
 			isc.UseMemoryManagedServiceSource();
-
+			isc.UseSystemMemoryCache();
+			isc.UseNewtonsoftJson();
 			var msc = isc.UseManagedService();
 			msc.AddScoped<IOperator, Add>();
 			msc.AddScoped<IOperator, Substract>();
@@ -84,9 +85,9 @@ namespace SF.UT
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
 				ts.SetConfig<IOperator, Add>(1, null);
 				ts.SetConfig<IOperator, Substract>(2, null);
-				ts.SetConfig<IAgg, Agg>(1, new { op = "SF.UT.IOperator-1", cfg = new { Op = "SF.UT.IOperator-1", Add = 10000 } });
-				ts.SetConfig<IAgg, Agg>(2, new { op = "SF.UT.IOperator-1", cfg = new { Op = "SF.UT.IOperator-1", Add = 20000 } });
-				ts.SetDefaultService<IAgg>(1);
+				ts.SetConfig<IAgg, Agg>(3, new { op = 1, cfg = new { Op = 1, Add = 10000 } });
+				ts.SetConfig<IAgg, Agg>(4, new { op = 1, cfg = new { Op = 1, Add = 20000 } });
+				ts.SetDefaultService<IAgg>(3);
 
 				var agg = sp.TryResolve<IAgg>();
 				var re = agg.Sum(new[] { 1, 2, 3, 4 });
@@ -97,7 +98,7 @@ namespace SF.UT
 				var sp = s.ServiceProvider;
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
-				ts.SetDefaultService<IAgg>(2);
+				ts.SetDefaultService<IAgg>(4);
 
 				var agg = sp.TryResolve<IAgg>();
 				var re = agg.Sum(new[] { 1, 2, 3, 4 });
@@ -108,7 +109,7 @@ namespace SF.UT
 				var sp = s.ServiceProvider;
 
 				var ts = (MemoryServiceSource)sp.Resolve<IServiceConfigLoader>();
-				ts.SetConfig<IAgg, Agg>(2, new { op = "SF.UT.IOperator-1", cfg = new { Op = "SF.UT.IOperator-2", Add = 20000 } });
+				ts.SetConfig<IAgg, Agg>(4, new { op = 1, cfg = new { Op = 2, Add = 20000 } });
 
 				var agg = sp.TryResolve<IAgg>();
 				var re = agg.Sum(new[] { 1, 2, 3, 4 });
