@@ -20,12 +20,14 @@ namespace SF.Core.ServiceManagement
 	public static class MediaDIServiceCollectionExtension
 	{
 		public static IServiceCollection UseMediaService(
-			this IServiceCollection sc
+			this IServiceCollection sc,
+			EnvironmentType EnvType
 			)
 		{
 			sc.AddSingleton<IMediaMetaCache, MediaMetaCache>();
 			sc.AddScoped<IMediaManager, MediaManager>();
-			sc.AddScoped<IMediaService, MediaService>();
+			if(EnvType!=EnvironmentType.Utils)
+				sc.AddScoped<IMediaService, MediaService>();
 
 			sc.AddScoped<IMediaStorage, SF.Services.Media.Storages.FileSystemMediaStorage>();
 			sc.AddScoped<IMediaStorage, SF.Services.Media.Storages.StaticFileMediaStorage>();

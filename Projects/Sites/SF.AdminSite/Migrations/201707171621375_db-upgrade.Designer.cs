@@ -7,13 +7,13 @@ namespace SF.AdminSite.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class init : IMigrationMetadata
+    public sealed partial class dbupgrade : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(init));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(dbupgrade));
         
         string IMigrationMetadata.Id
         {
-            get { return "201702061411513_init"; }
+            get { return "201707171621375_db-upgrade"; }
         }
         
         string IMigrationMetadata.Source

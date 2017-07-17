@@ -1,10 +1,12 @@
-﻿using System;
+﻿using SF.Core.ServiceManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace SF.Data.Storage
 {
+	[UnmanagedService]
 	public interface IDataSet<T>
 		where T : class
 	{

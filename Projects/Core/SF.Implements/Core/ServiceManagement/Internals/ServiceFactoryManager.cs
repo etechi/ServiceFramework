@@ -465,7 +465,8 @@ namespace SF.Core.ServiceManagement.Internals
 		IServiceFactory CreateUnmanagedServiceFactory(
 			IServiceDeclaration decl,
 			IServiceImplement impl,
-			Type ServiceType
+			Type ServiceType,
+			int Index
 			)
 		{
 			ServiceCreator Creator;
@@ -494,7 +495,7 @@ namespace SF.Core.ServiceManagement.Internals
 			}
 
 			return new ServiceFactory(
-				null,
+				-1- Index,
 				null,
 				decl,
 				impl,
@@ -513,9 +514,9 @@ namespace SF.Core.ServiceManagement.Internals
 
 			return UnmanagedServiceCache.GetOrAdd(
 				ServiceType,
-				decl.Implements.Reverse().Select(impl => new UnmanagedServiceEntry()
+				decl.Implements.Reverse().Select((impl,idx) => new UnmanagedServiceEntry()
 				{
-					Factory = new Lazy<IServiceFactory>(() => CreateUnmanagedServiceFactory(decl,impl,ServiceType))
+					Factory = new Lazy<IServiceFactory>(() => CreateUnmanagedServiceFactory(decl,impl,ServiceType,idx))
 				}).ToArray()
 				);
 		}
@@ -777,6 +778,9 @@ namespace SF.Core.ServiceManagement.Internals
 		}
 
 		static Type UnmanagedServiceAttributeType { get; } = typeof(UnmanagedServiceAttribute);
+		[ThreadStatic]
+		static bool IsUnmanagedServiceScope;
+
 		public IServiceFactory GetServiceFactoryByType(
 			IServiceProvider ServiceProvider,
 			long? ScopeServiceId,
@@ -784,30 +788,47 @@ namespace SF.Core.ServiceManagement.Internals
 			string Name
 			)
 		{
-			if (!ServiceType.IsDefined(UnmanagedServiceAttributeType))
+			var IsUnmanagedServiceScopeRoot=false;
+			try
 			{
-				var isd = GetManagedScopedServiceData(ServiceProvider, ScopeServiceId, ServiceType);
-				if(Name!=null)
+				if (!IsUnmanagedServiceScope && ServiceType.IsDefined(UnmanagedServiceAttributeType))
 				{
-					if (!isd.TryGetValue(Name, out var ids) || ids.Length==0)
-						return null;
-					return GetManagedServiceFactoryByIdent(
-						ServiceProvider,
-						GetManagedServiceEntry(ServiceProvider, ids[0], true),
-						ids[0],
-						ServiceType
-						);
+					IsUnmanagedServiceScopeRoot = true;
+					IsUnmanagedServiceScope = true;
 				}
-				else if ((isd?.InternalServiceIds?.Length ?? 0)>0)
-					return GetManagedServiceFactoryByIdent(
-						ServiceProvider,
-						GetManagedServiceEntry(ServiceProvider, isd.InternalServiceIds[0], true),
-						isd.InternalServiceIds[0],
-						ServiceType
-						);
+
+				if (!IsUnmanagedServiceScope && 
+					(!ServiceType.IsGenericType || ServiceType.GetGenericTypeDefinition() != typeof(IEnumerable<>))
+					)
+				{
+					var isd = GetManagedScopedServiceData(ServiceProvider, ScopeServiceId, ServiceType);
+					if (Name != null)
+					{
+						if (!isd.TryGetValue(Name, out var ids) || ids.Length == 0)
+							return null;
+						return GetManagedServiceFactoryByIdent(
+							ServiceProvider,
+							GetManagedServiceEntry(ServiceProvider, ids[0], true),
+							ids[0],
+							ServiceType
+							);
+					}
+					else if ((isd?.InternalServiceIds?.Length ?? 0) > 0)
+						return GetManagedServiceFactoryByIdent(
+							ServiceProvider,
+							GetManagedServiceEntry(ServiceProvider, isd.InternalServiceIds[0], true),
+							isd.InternalServiceIds[0],
+							ServiceType
+							);
+				}
+				//已经是顶级区域， 直接尝试查找服务
+				return GetUnmanagedServiceEntry(ServiceType, true)?.DefaultFactory;
 			}
-			//已经是顶级区域， 直接尝试查找服务
-			return GetUnmanagedServiceEntry(ServiceType,true)?.DefaultFactory;
+			finally
+			{
+				if (IsUnmanagedServiceScopeRoot)
+					IsUnmanagedServiceScope = false;
+			}
 		}
 		public IEnumerable<IServiceFactory> GetServiceFactoriesByType(
 			IServiceProvider ServiceProvider,

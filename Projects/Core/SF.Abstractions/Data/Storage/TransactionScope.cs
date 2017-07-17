@@ -1,4 +1,5 @@
 ﻿using SF.Core.Interception;
+using SF.Core.ServiceManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +27,8 @@ namespace SF.Data.Storage
         Task Commit();
         bool IsRollbacking { get; }
     }
-    public interface ITransactionScopeManager : IDisposable
+	[UnmanagedService]
+	public interface ITransactionScopeManager : IDisposable
     {
         Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode, IsolationLevel IsolationLevel=IsolationLevel.ReadCommitted);
     }

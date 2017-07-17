@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SF.Core.ServiceManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,8 @@ namespace SF.Data.Storage
 {
 
 
-    public interface IDataContextProvider :IDisposable, IQueryableContext,IAsyncQueryableContext
+	[UnmanagedService]
+	public interface IDataContextProvider :IDisposable, IQueryableContext,IAsyncQueryableContext
 	{
 		IDataSetProvider<T> SetProvider<T>() where T : class;
 
@@ -20,7 +22,8 @@ namespace SF.Data.Storage
 
 		IDataStorageEngine Engine { get; }
     }
-    public interface IDataContextProviderExtension
+	[UnmanagedService]
+	public interface IDataContextProviderExtension
 	{
 		void UpdateFields<T>(T item, Func<IFieldUpdater<T>, IFieldUpdater<T>> updater) where T : class;
 		object GetEntityOriginalValue(object Entity, string Field);

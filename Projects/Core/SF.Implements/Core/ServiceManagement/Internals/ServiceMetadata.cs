@@ -11,6 +11,7 @@ namespace SF.Core.ServiceManagement.Internals
 
 		class ServiceImplement : IServiceImplement
 		{
+			public string ImplementName { get; set; }
 			public Type ServiceType { get; set; }
 			public Type ImplementType { get; set; }
 			public ServiceImplementLifetime LifeTime { get; set; }
@@ -23,6 +24,7 @@ namespace SF.Core.ServiceManagement.Internals
 		}
 		class Service : IServiceDeclaration
 		{
+			public string ServiceName { get; set; }
 			public Type ServiceType { get; set; }
 			public IReadOnlyList<IServiceImplement> Implements{ get; set; }
 		}
@@ -51,6 +53,7 @@ namespace SF.Core.ServiceManagement.Internals
 				{
 					ServiceType = svc.InterfaceType,
 						ImplementType = svc.ImplementType,
+						ImplementName=svc.ImplementType?.FullName,
 						LifeTime = svc.Lifetime,
 						IsManagedService = svc.ImplementType != null &&
 									svc.Lifetime != ServiceImplementLifetime.Singleton &&
@@ -68,6 +71,7 @@ namespace SF.Core.ServiceManagement.Internals
 					g => (IServiceDeclaration)new Service
 					{
 						ServiceType = g.Key,
+						ServiceName = g.Key.FullName,
 						Implements = g.ToArray()
 					});
 			ServicesByTypeName = Services.ToDictionary(p => p.Key.GetFullName(), p => p.Value);

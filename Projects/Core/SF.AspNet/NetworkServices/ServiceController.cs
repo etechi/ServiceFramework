@@ -19,11 +19,11 @@ namespace SF.AspNet.NetworkService
 	class ServiceController : ApiController
 	{
 		public Type ControllerType { get; }
-		public object ControllerInstance { get; }
-		public ServiceController(Type ControllerType, object ControllerInstance)
+		//public object ControllerInstance { get; }
+		public ServiceController(Type ControllerType/*, object ControllerInstance*/)
 		{
 			this.ControllerType = ControllerType;
-			this.ControllerInstance = ControllerInstance;
+			//this.ControllerInstance = ControllerInstance;
 		}
 		public override Task<HttpResponseMessage> ExecuteAsync(HttpControllerContext controllerContext, CancellationToken cancellationToken)
 		{

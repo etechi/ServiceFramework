@@ -126,7 +126,7 @@ namespace SF.AdminSite
 			var msc = Services.UseManagedService();
 			msc.UseFilePathResolver();
 			msc.UseLocalFileCache();
-			msc.UseMediaService();
+			msc.UseMediaService(EnvType);
 			
 			msc.AddScoped<IOperator, Add>();
 			msc.AddScoped<IOperator, Substract>();
@@ -136,20 +136,20 @@ namespace SF.AdminSite
 			//msc.AddScoped<IOperator, Substract>();
 			//msc.AddScoped<IAgg, Agg>();
 			msc.AddScoped<ITestService, TestService>();
-
 			msc.UseManagedServiceAdminServices();
 			msc.UseIdentGenerator();
 
 
+			Services.UseAspNetFilePathStructure();
 			if (EnvType != EnvironmentType.Utils)
 			{
-				Services.UseAspNetFilePathStructure();
 
 				Services.RegisterMvcControllers(GetType().Assembly);
 				Services.RegisterWebApiControllers(GlobalConfiguration.Configuration);
 				Services.UseNetworkService();
 				Services.UseWebApiNetworkService(GlobalConfiguration.Configuration);
 			}
+
 		}
 	}
 }

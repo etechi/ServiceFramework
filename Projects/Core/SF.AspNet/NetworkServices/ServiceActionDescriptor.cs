@@ -16,6 +16,7 @@ using System.Linq.Expressions;
 using System.Web.Http.Filters;
 using System.Web.Http.Results;
 using SF.Core.NetworkService;
+using SF.Core.ServiceManagement;
 
 namespace SF.AspNet.NetworkService
 {	
@@ -182,7 +183,22 @@ namespace SF.AspNet.NetworkService
 			try
 			{
 				var arguments2 = this.PrepareParameters(arguments, controllerContext);
-				result = ActionExecutorInstance.Value.Execute(ctrl.ControllerInstance, arguments2);
+				var resolver= (IServiceResolver)controllerContext.Request.GetDependencyScope().GetService(typeof(IServiceResolver));
+				arguments.TryGetValue("service", out var service);
+				object inst;
+				if (service == null || !(service is string))
+					inst = resolver.ResolveServiceByType(null, ctrl.ControllerType, null);
+				else if (long.TryParse((string)service, out var sid))
+					inst = resolver.ResolveServiceByIdent(
+						sid,
+						ctrl.ControllerType
+						);
+				else
+					inst = resolver.ResolveServiceByType(null, ctrl.ControllerType, (string)service);
+				if (inst == null)
+					result = Task.FromResult((object)new NotFoundResult(ctrl));
+				else
+					result = ActionExecutorInstance.Value.Execute(inst, arguments2);
 			}
 			catch (Exception exception)
 			{

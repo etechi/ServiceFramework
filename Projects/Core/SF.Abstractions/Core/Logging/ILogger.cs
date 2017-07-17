@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SF.Core.ServiceManagement;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -25,6 +26,7 @@ namespace SF.Core.Logging
 			return new EventId(Id);
 		}
 	}
+	[UnmanagedService]
 	public interface ILogger
 	{
 		void Write(LogLevel logLevel, EventId EventId, Exception exception, string message);
@@ -33,6 +35,7 @@ namespace SF.Core.Logging
 		bool IsEnabled(LogLevel level);
 		IDisposable BeginScope<T>(T State);
 	}
+	[UnmanagedService]
 	public interface ILogger<T> : ILogger
 	{
 

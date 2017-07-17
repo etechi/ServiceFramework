@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using SF.Data.Storage;
+using SF.Core.ServiceManagement;
+
 namespace SF.Data.Entity
 {
 	public enum DataActionType
@@ -24,7 +26,7 @@ namespace SF.Data.Entity
 		Other
 	}
 	
-
+	[UnmanagedService]
 	public interface IDataActionInvocation
 	{
 		DataActionType ActionType { get; }

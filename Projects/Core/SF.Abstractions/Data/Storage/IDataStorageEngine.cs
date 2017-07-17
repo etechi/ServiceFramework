@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SF.Core.ServiceManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,12 +39,14 @@ namespace SF.Data.Storage
 		//     通过在一个应用程序正在修改数据时存储另一个应用程序可以读取的相同数据版本来减少阻止。表示您无法从一个事务中看到在其他事务中进行的更改，即便重新查询也是如此。
 		Snapshot = 16777216
 	}
+	[UnmanagedService]
 	public interface IDataTransaction:IDisposable
 	{
 		object UnderlyingTransaction { get; }
 		void Commit();
 		void Rollback();
 	}
+	[UnmanagedService]
 	public interface IDataStorageEngine
 	{
         Task<object> ExecuteCommandAsync(string Sql, CancellationToken CancellationToken,params object[] Args);

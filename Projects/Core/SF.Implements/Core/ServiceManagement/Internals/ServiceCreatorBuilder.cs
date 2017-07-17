@@ -80,7 +80,7 @@ namespace SF.Core.ServiceManagement.Internals
 			return instance;
 		}
 
-		static object CreateServiceProvider(
+		static IServiceProvider CreateServiceProvider(
 			IServiceProvider Provider,
 			IServiceInstanceDescriptor ServiceInstanceDescriptor
 			)
@@ -407,7 +407,9 @@ namespace SF.Core.ServiceManagement.Internals
 					RealType = Type;
 
 				} while (false);
-				return ServiceDetector.IsService(RealType);
+				var re= ServiceDetector.IsService(RealType);
+				if (re || !RealType.IsGenericType) return re;
+				return ServiceDetector.IsService(RealType.GetGenericTypeDefinition());
 			}
 			static Dictionary<K,T> CopyDirectionary<K,T>(Dictionary<K, T> dict)
 			{
@@ -463,7 +465,8 @@ namespace SF.Core.ServiceManagement.Internals
 					if (isSvcType)
 						return ManagedServiceResolveExpression(
 							Type, 
-							PropPathExpr,rType, 
+							PropPathExpr,
+							rType, 
 							ServiceMetadata,
 							MemberAttribute
 							);

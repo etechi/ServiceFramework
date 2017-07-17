@@ -25,6 +25,7 @@ namespace SF.Core.ServiceManagement.Management
 	[Authorize("sysadmin")]
 	[NetworkService]
 	[Comment("系统服务实现", "系统内置服务实现", GroupName = "系统服务管理")]
+	[UnmanagedService]
 	public interface IServiceImplementManager :
 		IEntitySource<string, Models.ServiceImplement, ServiceImplementQueryArgument>
 	{

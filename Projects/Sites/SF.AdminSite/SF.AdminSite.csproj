@@ -218,17 +218,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="AppContext.cs" />
-    <Compile Include="Migrations\201702061411513_init.cs" />
-    <Compile Include="Migrations\201702061411513_init.Designer.cs">
-      <DependentUpon>201702061411513_init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201702081225393_add-service-instance-fields.cs" />
-    <Compile Include="Migrations\201702081225393_add-service-instance-fields.Designer.cs">
-      <DependentUpon>201702081225393_add-service-instance-fields.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201702081334155_add-service-instance-title.cs" />
-    <Compile Include="Migrations\201702081334155_add-service-instance-title.Designer.cs">
-      <DependentUpon>201702081334155_add-service-instance-title.cs</DependentUpon>
+    <Compile Include="Migrations\201707171621375_db-upgrade.cs" />
+    <Compile Include="Migrations\201707171621375_db-upgrade.Designer.cs">
+      <DependentUpon>201707171621375_db-upgrade.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="AppInstanceBuilder.cs" />
@@ -328,14 +320,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201702061411513_init.resx">
-      <DependentUpon>201702061411513_init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702081225393_add-service-instance-fields.resx">
-      <DependentUpon>201702081225393_add-service-instance-fields.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201702081334155_add-service-instance-title.resx">
-      <DependentUpon>201702081334155_add-service-instance-title.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201707171621375_db-upgrade.resx">
+      <DependentUpon>201707171621375_db-upgrade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

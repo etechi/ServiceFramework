@@ -56,6 +56,7 @@ namespace SF.Data.Storage
 		{
 		}
 	}
+	[UnmanagedService]
 	public class DbContext : System.Data.Entity.DbContext
 	{
 		public IServiceProvider ServiceProvider { get; }
@@ -78,11 +79,12 @@ namespace SF.Data.Storage
 		}
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
+			
 			base.OnModelCreating(modelBuilder);
 			modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
 
 			modelBuilder.Conventions.Add<IndexAttributeConvention>();
-			//System.Diagnostics.Debugger.Launch();
+			System.Diagnostics.Debugger.Launch();
 			var types = from ems in ServiceProvider.Resolve<IEnumerable<SF.Data.Storage.EntityModels>>()
 						from et in ems.Types
 						select et;

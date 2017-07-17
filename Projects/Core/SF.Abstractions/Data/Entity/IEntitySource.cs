@@ -1,6 +1,9 @@
-﻿using System;
+﻿using SF.Core.ServiceManagement;
+using System;
 namespace SF.Data.Entity
 {
+	[UnmanagedService]
+
 	public interface IEntitySource<TKey, TEntity, TQueryArgument> :
 		IEntityLoader<TKey, TEntity>,
 		IEntityBatchLoader<TKey, TEntity>,

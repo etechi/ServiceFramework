@@ -35,7 +35,7 @@ namespace SF.AspNet.NetworkService
 			)
 		{
 			if (ServiceTypes.Contains(controllerType))
-				return new ServiceController(controllerType, request.GetDependencyScope().GetService(controllerType));
+				return new ServiceController(controllerType/*, request.GetDependencyScope().GetService(controllerType)*/);
 			return DefaultActivator.Create(request, controllerDescriptor, controllerType);
 		}
 	}

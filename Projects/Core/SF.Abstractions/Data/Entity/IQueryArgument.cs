@@ -1,4 +1,5 @@
-﻿using SF.Metadata;
+﻿using SF.Core.ServiceManagement;
+using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace SF.Data.Entity
 {
-
+	[UnmanagedService]
 	public interface IQueryArgument<TKey>
 	{
 		Option<TKey> Id { get; }

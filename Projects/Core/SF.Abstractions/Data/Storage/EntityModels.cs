@@ -3,9 +3,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using SF.Core.ServiceManagement;
 
 namespace SF.Data.Storage
 {
+	[UnmanagedService]
 	public class EntityModels
 	{
 		public string Prefix { get; }

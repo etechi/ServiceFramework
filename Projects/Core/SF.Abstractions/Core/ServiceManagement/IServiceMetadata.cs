@@ -6,6 +6,7 @@ namespace SF.Core.ServiceManagement
 {
 	public interface IServiceImplement
 	{
+		string ImplementName { get; }
 		Type ServiceType { get; }
 		Type ImplementType { get; }
 		object ImplementInstance { get; }
@@ -17,9 +18,11 @@ namespace SF.Core.ServiceManagement
 	}
 	public interface IServiceDeclaration
 	{
+		string ServiceName { get; }
 		Type ServiceType { get; }
 		IReadOnlyList<IServiceImplement> Implements { get; }
 	}
+	[UnmanagedService]
 	public interface IServiceMetadata : IServiceDetector
 	{
 		IReadOnlyDictionary<string, IServiceDeclaration> ServicesByTypeName { get; }

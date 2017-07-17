@@ -1,13 +1,18 @@
-﻿using System;
+﻿using SF.Core.ServiceManagement;
+using System;
 using System.Threading.Tasks;
 namespace SF.Data.Entity
 {
-    public interface IDataActionFilterContext : IDisposable
+	[UnmanagedService]
+
+	public interface IDataActionFilterContext : IDisposable
     {
         Task OnModelLoaded();
         Task Completed(Exception Exception);
     }
-    public interface IDataActionFilter
+	[UnmanagedService]
+
+	public interface IDataActionFilter
     {
         Task Evaluate(IDataActionInvocation Invocation);
     }
