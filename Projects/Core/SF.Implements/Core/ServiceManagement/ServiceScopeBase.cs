@@ -69,7 +69,7 @@ namespace SF.Core.ServiceManagement
 					}
 				}
 		}
-		protected virtual object GetService(IServiceFactory factory)
+		internal virtual object GetService(IServiceFactory factory)
 		{
 			if (factory == null)
 				return null;
@@ -126,24 +126,22 @@ namespace SF.Core.ServiceManagement
 		{
 			if (ServiceType == ServiceResolverType || ServiceType==ServiceProviderType)
 				return this;
-			return GetService(
-				FactoryManager.GetServiceFactoryByType(
+			var f = FactoryManager.GetServiceFactoryByType(
 					this,
 					ScopeServiceId,
 					ServiceType,
 					Name
-					)
-				);
+					);
+			return f==null?null:GetService(f);
 		}
 		public object ResolveServiceByIdent(long ServiceId, Type ServiceType)
 		{
-			return GetService(
-				FactoryManager.GetServiceFactoryByIdent(
+			var f = FactoryManager.GetServiceFactoryByIdent(
 					this,
 					ServiceId,
 					ServiceType
-					)
-				);
+					);
+			return f==null?null:GetService(f);
 		}
 
 		class ScopedServiceProvider : IServiceProvider

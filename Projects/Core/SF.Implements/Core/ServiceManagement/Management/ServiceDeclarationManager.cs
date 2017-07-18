@@ -24,7 +24,7 @@ namespace SF.Core.ServiceManagement.Management
 						  let comment = type.GetCustomAttribute<CommentAttribute>()
 						  select new ServiceDeclaration
 						  {
-							  Id = type.FullName,
+							  Id = type.GetFullName(),
 							  Description = comment?.Description,
 							  Name = comment?.Name ?? type.Name,
 							  Group = comment?.GroupName

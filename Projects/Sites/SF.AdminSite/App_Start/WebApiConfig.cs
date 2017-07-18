@@ -25,7 +25,7 @@ namespace SF.AdminSite
                 defaults: new { id = RouteParameter.Optional }
             );
 			config.Routes.MapHttpRoute(
-				name: "DefaultApi",
+				name: "ServiceApi",
 				routeTemplate: "sapi/{controller}/{service}/{action}/{id}",
 				defaults: new { id = RouteParameter.Optional }
 			);

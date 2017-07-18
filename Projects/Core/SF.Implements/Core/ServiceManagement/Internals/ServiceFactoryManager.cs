@@ -510,8 +510,9 @@ namespace SF.Core.ServiceManagement.Internals
 				out var se
 				) || !CreateIfNotExists)
 				return se;
-			var decl = GetServiceDeclaration(ServiceType);
-
+			var decl = GetServiceDeclaration(ServiceType,false);
+			if (decl == null)
+				return Array.Empty<UnmanagedServiceEntry>();
 			return UnmanagedServiceCache.GetOrAdd(
 				ServiceType,
 				decl.Implements.Reverse().Select((impl,idx) => new UnmanagedServiceEntry()
@@ -592,16 +593,17 @@ namespace SF.Core.ServiceManagement.Internals
 			return (Creator, CreateParameterTemplate);
 		}
 
-		IServiceDeclaration GetServiceDeclaration(Type ServiceType)
+		IServiceDeclaration GetServiceDeclaration(Type ServiceType,bool Ensure=true)
 		{
 			return (ServiceMetadata.Services
 				.Get(ServiceType) ??
 				(ServiceType.IsGenericType ?
 				ServiceMetadata.Services
 				.Get(ServiceType.GetGenericTypeDefinition()) : null))
-				.AssertNotNull(
-					() => $"找不到服务描述({ServiceType})"
-					); ;
+				.Assert(
+					s=>s!=null || !Ensure,
+					s => $"找不到服务描述({ServiceType})"
+					); 
 		}
 
 		

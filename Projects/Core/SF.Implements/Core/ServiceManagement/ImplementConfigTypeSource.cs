@@ -147,6 +147,54 @@ namespace SF.Core.ServiceManagement
 			Builder.TypeCollection.AddType(type);
 
 		}
+		static bool? IsArgTypeSupporttedInternal(System.Type type,Dictionary<System.Type,bool?> types)
+		{
+			if (types.TryGetValue(type, out var supported))
+				return supported;
+			types[type] = null;
+
+			switch (type.GetTypeCode())
+			{
+				case TypeCode.Boolean:
+				case TypeCode.Byte:
+				case TypeCode.Char:
+				case TypeCode.DateTime:
+				case TypeCode.DBNull:
+				case TypeCode.Decimal:
+				case TypeCode.Double:
+				case TypeCode.Int16:
+				case TypeCode.Int32:
+				case TypeCode.Int64:
+				case TypeCode.SByte:
+				case TypeCode.Single:
+				case TypeCode.String:
+				case TypeCode.UInt16:
+				case TypeCode.UInt32:
+				case TypeCode.UInt64:
+					supported=true;
+					break;
+				case TypeCode.Object:
+					supported = type.GetProperties(
+						BindingFlags.Public |
+						BindingFlags.Instance |
+						BindingFlags.GetProperty |
+						BindingFlags.SetProperty |
+						BindingFlags.FlattenHierarchy
+						)
+					.Aggregate(true,(s,p) =>s && (IsArgTypeSupporttedInternal(p.PropertyType, types)??s));
+					break;
+				default:
+					supported= false;
+					break;
+			}
+			types[type] = supported;
+			return supported;
+		}
+		static bool IsArgTypeSupportted(System.Type type)
+		{
+			return IsArgTypeSupporttedInternal(type, new Dictionary<System.Type, bool?>()) ?? true;
+			
+		}
 		public void AddExtraServiceType(IMetadataBuilder Builder)
 		{
 			var argTypeBuilder = new CreateArgumentMetadataBuilder(
@@ -155,9 +203,12 @@ namespace SF.Core.ServiceManagement
 				Builder.TypeCollection
 				);
 			foreach(var type in (
-				from svcs in Metadata.Services
-				from impl in svcs.Value.Implements
-				select impl.ImplementType
+				from svc in Metadata.Services
+				where !svc.Value.ServiceType.IsDefined(typeof(UnmanagedServiceAttribute))
+				from impl in svc.Value.Implements
+				let t= impl.ImplementType
+				where t!=null// && IsArgTypeSupportted(t)
+				select t
 				).Distinct())
 			{
 				GenerateImplConfig(type, argTypeBuilder);

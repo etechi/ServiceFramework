@@ -13,10 +13,11 @@ namespace SF.Core.ServiceManagement
 		{
 			this.RootServiceProvider = ServiceProvider;
 		}
-		protected override object GetService(IServiceFactory factory)
+		internal override object GetService(IServiceFactory factory)
 		{
 			if (factory.ServiceImplement.LifeTime == ServiceImplementLifetime.Singleton)
-				return RootServiceProvider.GetService(factory.ServiceDeclaration.ServiceType);
+				return ((ServiceScopeBase)RootServiceProvider).GetService(factory);
+			//.GetService(factory.ServiceDeclaration.ServiceType);
 			return base.GetService(factory);
 		}
 

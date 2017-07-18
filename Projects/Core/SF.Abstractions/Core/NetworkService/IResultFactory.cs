@@ -3,9 +3,11 @@ using SF.Metadata.Models;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+using SF.Core.ServiceManagement;
+
 namespace SF.Core.NetworkService
 {
-	
+	[UnmanagedService]
 	public interface IResultFactory
 	{
 		object Json<T>(T obj);

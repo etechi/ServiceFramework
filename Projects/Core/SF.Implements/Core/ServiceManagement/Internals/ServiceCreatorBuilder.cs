@@ -69,7 +69,7 @@ namespace SF.Core.ServiceManagement.Internals
 			else
 			{
 				instance = Provider.Resolve<IServiceResolver>().ResolveServiceByType(
-					ServiceInstanceDescriptor.InstanceId,
+					(ServiceInstanceDescriptor.InstanceId??-1)<0?null: ServiceInstanceDescriptor.InstanceId,
 					InterfaceType,
 					null
 					);
@@ -285,7 +285,7 @@ namespace SF.Core.ServiceManagement.Internals
 							CopyRequiredPaths.Add(string.Join(".", PathList.Take(i + 1)));
 						return;
 					}
-					if (t.IsPrimitiveType() || t.GetTypeCode()!=TypeCode.Object)
+					if (t.IsPrimitiveType() || t.GetTypeCode()!=TypeCode.Object || t.IsInterfaceType())
 						return;
 
 					foreach (var pi in t.GetProperties(BindingFlags.Public | BindingFlags.Instance ))
