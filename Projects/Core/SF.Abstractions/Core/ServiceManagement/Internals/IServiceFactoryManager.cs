@@ -8,18 +8,18 @@ namespace SF.Core.ServiceManagement.Internals
 	public interface IServiceFactoryManager
 	{
 		IServiceFactory GetServiceFactoryByIdent(
-			IServiceProvider ServiceProvider, 
+			IServiceResolver ServiceResolver, 
 			long ServiceId,
 			Type ServiceType
 			);
 		IServiceFactory GetServiceFactoryByType(
-			IServiceProvider ServiceProvider,
+			IServiceResolver ServiceResolver,
 			long? ScopeServiceId,
 			Type ServiceType,
 			string Name
 			);
 		IEnumerable<IServiceFactory> GetServiceFactoriesByType(
-			IServiceProvider ServiceProvider,
+			IServiceResolver ServiceResolver,
 			long? ScopeServiceId,
 			Type ChildServiceType,
 			string Name

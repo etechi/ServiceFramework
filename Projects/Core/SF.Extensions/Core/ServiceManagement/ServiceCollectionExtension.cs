@@ -65,6 +65,11 @@ namespace SF.Core.ServiceManagement
 			sc.Add(new ServiceDescriptor(ServiceType,ImplementType, Lifetime));
 			return sc;
 		}
+		public static IServiceCollection Add(this IServiceCollection sc, Type ServiceType, System.Reflection.MethodInfo Method, ServiceImplementLifetime Lifetime)
+		{
+			sc.Add(new ServiceDescriptor(ServiceType, Method, Lifetime));
+			return sc;
+		}
 		public static IServiceCollection Add(this IServiceCollection sc, Type ServiceType, Func<IServiceProvider,object> ImplementCreator, ServiceImplementLifetime Lifetime)
 		{
 			sc.Add(new ServiceDescriptor(ServiceType,ImplementCreator, Lifetime));
@@ -87,6 +92,11 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection AddTransient(this IServiceCollection sc,Type Service,Type Implement)
 		{
 			sc.Add(Service, Implement, ServiceImplementLifetime.Transient);
+			return sc;
+		}
+		public static IServiceCollection AddTransient(this IServiceCollection sc, Type Service, System.Reflection.MethodInfo Method)
+		{
+			sc.Add(Service, Method, ServiceImplementLifetime.Transient);
 			return sc;
 		}
 		public static IServiceCollection AddTransient<TService, TImplement>(this IServiceCollection sc)

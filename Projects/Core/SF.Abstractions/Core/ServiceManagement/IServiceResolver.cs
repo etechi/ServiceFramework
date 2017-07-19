@@ -12,9 +12,12 @@ namespace SF.Core.ServiceManagement
 	//	object ServiceInstance { get; }
 	//}
 
+	
 	[UnmanagedService]
 	public interface IServiceResolver 
 	{
+		IServiceProvider Provider { get; }
+
 		object ResolveServiceByIdent(long ServiceId, Type ServiceType);
 		IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId, Type ServiceType);
 

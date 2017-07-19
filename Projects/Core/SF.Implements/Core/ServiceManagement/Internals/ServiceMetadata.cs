@@ -9,7 +9,7 @@ namespace SF.Core.ServiceManagement.Internals
 	class ServiceMetadata : IServiceMetadata
 	{
 
-		class ServiceImplement : IServiceImplement
+		public class ServiceImplement : IServiceImplement
 		{
 			public string ImplementName { get; set; }
 			public Type ServiceType { get; set; }
@@ -17,12 +17,13 @@ namespace SF.Core.ServiceManagement.Internals
 			public ServiceImplementLifetime LifeTime { get; set; }
 			public object ImplementInstance { get; set; }
 			public Func<IServiceProvider, object> ImplementCreator { get; set; }
+			public MethodInfo ImplementMethod { get; set; }
 
 			public ServiceImplementType ServiceImplementType { get; set; }
 
 			public bool IsManagedService { get; set; }
 		}
-		class Service : IServiceDeclaration
+		public class Service : IServiceDeclaration
 		{
 			public string ServiceName { get; set; }
 			public Type ServiceType { get; set; }
@@ -59,6 +60,7 @@ namespace SF.Core.ServiceManagement.Internals
 									svc.Lifetime != ServiceImplementLifetime.Singleton &&
 									svc.IsManagedServiceImplement(),
 						ImplementCreator = svc.ImplementCreator,
+						ImplementMethod=svc.ImplementMethod,
 						ImplementInstance = svc.ImplementInstance,
 						ServiceImplementType = svc.ServiceImplementType
 				}

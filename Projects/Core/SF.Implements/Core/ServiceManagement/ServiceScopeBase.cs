@@ -3,14 +3,178 @@ using System;
 using System.Collections.Generic;
 namespace SF.Core.ServiceManagement
 {
+	
 	public abstract class ServiceScopeBase :
 		IDisposable,
-		IServiceProvider,
-		IServiceResolver
-	{
+		IServiceProvider
+	{ 
 		IServiceFactoryManager FactoryManager { get; }
 		public IServiceProvider ServiceProvider => this;
+
 		Dictionary<(Type, long), object> _Services;
+		static Type ServiceProviderType { get; } = typeof(IServiceProvider);
+		static Type ServiceResolverType { get; } = typeof(IServiceResolver);
+
+		class ServiceResolver : HashSet<Type>, IServiceResolver,IServiceProvider
+		{
+			IServiceFactoryManager FactoryManager { get; }
+			ServiceScopeBase ScopeBase { get; }
+
+			public IServiceProvider Provider => this;
+
+			public ServiceResolver(
+				ServiceScopeBase ScopeBase,
+				IServiceFactoryManager FactoryManager
+				)
+			{
+				this.ScopeBase = ScopeBase;
+				this.FactoryManager = FactoryManager;
+			}
+			void AddType(Type ServiceType)
+			{
+				if (!Add(ServiceType))
+					throw new InvalidOperationException($"服务{ServiceType}已经在获取中");
+			}
+			public IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId, Type ServiceType)
+			{
+				AddType(ServiceType);
+				try
+				{
+					return FactoryManager.GetServiceFactoryByIdent(
+						this,
+						ServiceId,
+						ServiceType
+						);
+				}
+				finally
+				{
+					Remove(ServiceType);
+				}
+			}
+			public IServiceInstanceDescriptor ResolveDescriptorByType(long? ScopeServiceId, Type ServiceType, string Name)
+			{
+				AddType(ServiceType);
+				try
+				{
+					return FactoryManager.GetServiceFactoryByType(
+						this,
+						ScopeServiceId,
+						ServiceType,
+						Name
+						);
+				}
+				finally
+				{
+					Remove(ServiceType);
+				}
+			}
+			public object ResolveServiceByType(long? ScopeServiceId, Type ServiceType, string Name)
+			{
+				AddType(ServiceType);
+				try
+				{
+					var f = FactoryManager.GetServiceFactoryByType(
+						this,
+						ScopeServiceId,
+						ServiceType,
+						Name
+						);
+					return f == null ? null : GetService(f, ServiceType);
+				}
+				finally
+				{
+					Remove(ServiceType);
+				}
+			}
+			public object ResolveServiceByIdent(long ServiceId, Type ServiceType)
+			{
+				AddType(ServiceType);
+				try
+				{
+					var f = ScopeBase.FactoryManager.GetServiceFactoryByIdent(
+						this,
+						ServiceId,
+						ServiceType
+						);
+					return f == null ? null : GetService(f, ServiceType);
+				}
+				finally
+				{
+					Remove(ServiceType);
+				}
+			}
+			class ScopedServiceProvider : IServiceProvider
+			{
+				public long ScopeServiceId { get; set; }
+				public ServiceResolver ServiceResolver { get; set; }
+				public object GetService(Type serviceType)
+				{
+					if (serviceType == ServiceResolverType)
+						return ServiceResolver;
+					return ServiceResolver.ResolveServiceByType(ScopeServiceId, serviceType, null);
+				}
+			}
+			public IServiceProvider CreateInternalServiceProvider(long ServiceId)
+			{
+				return new ScopedServiceProvider
+				{
+					ServiceResolver = this,
+					ScopeServiceId = ServiceId
+				};
+			}
+
+			public IEnumerable<IServiceInstanceDescriptor> ResolveServiceDescriptors(
+				long? ScopeServiceId,
+				Type ChildServiceType,
+				string Name
+				)
+			{
+				AddType(ChildServiceType);
+				try
+				{
+					return FactoryManager.GetServiceFactoriesByType(
+						this,
+						ScopeServiceId,
+						ChildServiceType,
+						Name
+						);
+				}
+				finally
+				{
+					Remove(ChildServiceType);
+				}
+			}
+
+			public IEnumerable<object> ResolveServices(long? ScopeServiceId, Type ChildServiceType, string Name)
+			{
+				AddType(ChildServiceType);
+				try
+				{
+					foreach (var factory in FactoryManager.GetServiceFactoriesByType(
+						this,
+						ScopeServiceId,
+						ChildServiceType,
+						Name
+						))
+					{
+						yield return GetService(factory, ChildServiceType);
+					}
+				}
+				finally
+				{
+					Remove(ChildServiceType);
+				}
+			}
+			object GetService(IServiceFactory factory, Type ServiceType)=>
+				ScopeBase.GetService(factory, ServiceType,this);
+
+			public object GetService(Type serviceType)
+			{
+				if (serviceType == ServiceResolverType)
+					return this;
+				return ResolveServiceByType(null, serviceType, null);
+			}
+		}
 
 		class CachedServices : HashSet<object>
 		{
@@ -69,15 +233,14 @@ namespace SF.Core.ServiceManagement
 					}
 				}
 		}
-		internal virtual object GetService(IServiceFactory factory,Type ServiceType)
+		internal virtual object GetService(IServiceFactory factory,Type ServiceType,IServiceResolver ServiceResolver)
 		{
 			if (factory == null)
 				return null;
 			var cacheType = GetCacheType(factory);
 
 			if (cacheType == CacheType.NoCache)
-				return factory.Create(this);
-
+				return factory.Create(ServiceResolver);
 
 			var key = (ServiceType, factory.InstanceId??0);
 			object curEntiy = null;
@@ -89,7 +252,7 @@ namespace SF.Core.ServiceManagement
 					return curEntiy;
 			}
 
-			var service = factory.Create(this);
+			var service = factory.Create(ServiceResolver);
 
 			if (cacheType == CacheType.CacheScoped)
 				TryAddCache(key, curEntiy, service);
@@ -100,96 +263,16 @@ namespace SF.Core.ServiceManagement
 		
 		public virtual object GetService(Type serviceType)
 		{
-			return ResolveServiceByType(null, serviceType,null);
+			var resolver= new ServiceResolver(this, FactoryManager);
+			
+			return serviceType == ServiceResolverType?
+				resolver:
+				resolver.ResolveServiceByType(null, serviceType,null);
 		}
 
-		public IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId, Type ServiceType)
-		{
-			return FactoryManager.GetServiceFactoryByIdent(
-				this,
-				ServiceId,
-				ServiceType
-				);
-		}
-		public IServiceInstanceDescriptor ResolveDescriptorByType(long? ScopeServiceId, Type ServiceType,string Name)
-		{
-			return FactoryManager.GetServiceFactoryByType(
-				this,
-				ScopeServiceId,
-				ServiceType,
-				Name
-				);
-		}
-		static Type ServiceProviderType { get; } = typeof(IServiceProvider);
-		static Type ServiceResolverType { get; } = typeof(IServiceResolver);
-		public object ResolveServiceByType(long? ScopeServiceId, Type ServiceType,string Name)
-		{
-			if (ServiceType == ServiceResolverType || ServiceType==ServiceProviderType)
-				return this;
-			var f = FactoryManager.GetServiceFactoryByType(
-					this,
-					ScopeServiceId,
-					ServiceType,
-					Name
-					);
-			return f==null?null:GetService(f,ServiceType);
-		}
-		public object ResolveServiceByIdent(long ServiceId, Type ServiceType)
-		{
-			var f = FactoryManager.GetServiceFactoryByIdent(
-					this,
-					ServiceId,
-					ServiceType
-					);
-			return f==null?null:GetService(f, ServiceType);
-		}
+		
 
-		class ScopedServiceProvider : IServiceProvider
-		{
-			public long ScopeServiceId { get; set; }
-			public ServiceScopeBase ScopeBase { get; set; }
-			public object GetService(Type serviceType)
-			{
-				if(serviceType== ServiceProviderType || serviceType == ServiceResolverType)
-					return ScopeBase;
-				return ScopeBase.ResolveServiceByType(ScopeServiceId, serviceType,null);
-			}
-		}
-		public IServiceProvider CreateInternalServiceProvider(long ServiceId)
-		{
-			return new ScopedServiceProvider
-			{
-				ScopeBase = this,
-				ScopeServiceId = ServiceId
-			};
-		}
-
-		public IEnumerable<IServiceInstanceDescriptor> ResolveServiceDescriptors(
-			long? ScopeServiceId, 
-			Type ChildServiceType,
-			string Name
-			)
-		{
-			return FactoryManager.GetServiceFactoriesByType(
-					this,
-					ScopeServiceId,
-					ChildServiceType,
-					Name
-					);
-		}
-
-		public IEnumerable<object> ResolveServices(long? ScopeServiceId, Type ChildServiceType,string Name)
-		{
-			foreach(var factory in FactoryManager.GetServiceFactoriesByType(
-					this,
-					ScopeServiceId,
-					ChildServiceType,
-					Name
-					))
-			{
-				yield return GetService(factory, ChildServiceType);
-			}
-		}
+		
 	}
 
 }

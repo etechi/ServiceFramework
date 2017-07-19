@@ -71,7 +71,6 @@
     <Compile Include="Core\Serialization\Newtonsoft\NewtonsoftJsonDICollectionExtension.cs" />
     <Compile Include="Core\ServiceFeatures\ServiceFeatureControlDICollectionExtension.cs" />
     <Compile Include="Core\ServiceFeatures\ServiceFeatureControlService.cs" />
-    <Compile Include="Core\ServiceManagement\Internals\EnumerableService.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScopeFactory.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScopeBase.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScope.cs" />

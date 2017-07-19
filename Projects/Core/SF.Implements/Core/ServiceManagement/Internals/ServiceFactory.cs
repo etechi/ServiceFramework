@@ -34,10 +34,10 @@ namespace SF.Core.ServiceManagement.Internals
 		}
 
 		public object Create(
-			IServiceProvider ServiceProvider
+			IServiceResolver ServiceResolver
 			)
 		{
-			return Creator(ServiceProvider, this, CreateParameterTemplate);
+			return Creator(ServiceResolver, this, CreateParameterTemplate);
 		}
 	}
 

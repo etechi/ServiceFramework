@@ -122,7 +122,7 @@ namespace SF.UT.DI
 			var sp = sc.BuildServiceResolver();
 			var cfgs = sp.Resolve<MemoryServiceSource>();
 			cfgs.SetConfig<IInterface<int>, Implement<int>>(1,new { });
-			var re = sp.Resolve<Func<long, IInterface<int>>>();
+			var re = sp.Resolve<TypedInstanceResolver<IInterface<int>>>();
 			var r = re(1);
 			Assert.Equal("123", r.ToString(123));
 		}

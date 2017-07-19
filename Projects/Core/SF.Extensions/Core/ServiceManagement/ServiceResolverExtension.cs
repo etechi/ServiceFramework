@@ -18,21 +18,24 @@ namespace SF.Core.ServiceManagement
 				throw new InvalidOperationException("找不到服务:" + typeof(T));
 			return s;
 		}
+		public static IServiceResolver NewResolver(this IServiceProvider ServiceProvider)
+			=> ServiceProvider.Resolve<IServiceResolver>();
+
 		public static T Resolve<T>(this IServiceProvider ServiceProvider, long ServiceId)
 			where T : class
 		{
-			var s = ServiceProvider.Resolve<IServiceResolver>().ResolveServiceByIdent(ServiceId,typeof(T));
+			var s = ServiceProvider.NewResolver().ResolveServiceByIdent(ServiceId, typeof(T));
 			if (s == null)
 				throw new InvalidOperationException("找不到服务:" + typeof(T));
 			var re = s as T;
-			if(re==null)
+			if (re == null)
 				throw new InvalidOperationException($"服务:{ServiceId}不是类型:{typeof(T)}");
 			return re;
 		}
 		public static T ResolveInternal<T>(this IServiceProvider ServiceProvider, long ScopeServiceId,string Name=null)
 			where T : class
 		{
-			var s = ServiceProvider.Resolve<IServiceResolver>().ResolveServiceByType(ScopeServiceId, typeof(T),Name);
+			var s = ServiceProvider.NewResolver().ResolveServiceByType(ScopeServiceId, typeof(T), Name);
 			if (s == null)
 				throw new InvalidOperationException("找不到服务:" + typeof(T));
 			return (T)s;
@@ -60,7 +63,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IEnumerable<T> GetServices<T>(this IServiceProvider ServiceProvider, long? ScopeServiceId = null, string Name = null)
 		{
-			return ServiceProvider.Resolve<IServiceResolver>().ResolveServices(
+			return ServiceProvider.NewResolver().ResolveServices(
 				ScopeServiceId,
 				typeof(T),
 				Name
@@ -68,7 +71,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IEnumerable<object> GetServices(this IServiceProvider ServiceProvider,Type ServiceType,long? ScopeServiceId=null,string Name=null)
 		{
-			return ServiceProvider.Resolve<IServiceResolver>().ResolveServices(
+			return ServiceProvider.NewResolver().ResolveServices(
 				ScopeServiceId,
 				ServiceType,
 				Name

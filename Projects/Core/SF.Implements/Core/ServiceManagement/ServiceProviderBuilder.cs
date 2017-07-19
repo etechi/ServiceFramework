@@ -9,6 +9,8 @@ using SF.Core.ServiceManagement;
 
 namespace SF.Core.ServiceManagement
 {
+	public delegate T TypedInstanceResolver<T>(long Id);
+
 	public class ServiceProviderBuilder : IServiceProviderBuilder
 	{
 		public virtual IServiceMetadata OnCreateServcieMetadata(IServiceCollection Services)
@@ -95,79 +97,29 @@ namespace SF.Core.ServiceManagement
 			 ))
 			validate(sif,null, Meta, validated, used);
 		}
-		static object NewLazy<I>(IServiceProvider sp)  where I : class
-		{
-			return new Lazy<I>(() => sp.Resolve<I>());
-		}
-		static object NewCreator<I>(IServiceProvider sp)  where I : class
-		{
-			return new Func<I>(() => sp.Resolve<I>());
-		}
-
-		static object NewInstanceCreator<I>(IServiceProvider sp) where I : class
-		{
-			return new Func<long, I>(id => sp.Resolve<I>(id));
-		}
-		static object NewInstances<T>(IServiceProvider sp,int count) where T : class
-		{
-			return Enumerable.Range(0, count).Select(i =>
-				(T)sp.Resolve<T>(-1-i)
-				);
-		}
-
-
-		static MethodInfo NewLazyMethodInfo = typeof(ServiceProviderBuilder)
-				.GetMethodExt(nameof(NewLazy), typeof(IServiceProvider));
-		static MethodInfo NewCreatorMethodInfo = typeof(ServiceProviderBuilder)
-			.GetMethodExt(nameof(NewCreator), typeof(IServiceProvider));
-
-
-		static MethodInfo NewInstanceCreatorMethodInfo = typeof(ServiceProviderBuilder)
-			.GetMethodExt(nameof(NewInstanceCreator), typeof(IServiceProvider));
-
-		static MethodInfo NewInstancesMethodInfo = typeof(ServiceProviderBuilder)
-			.GetMethodExt(nameof(NewInstances), typeof(IServiceProvider),typeof(int));
-
 		public virtual void PrepareServices(IServiceCollection Services)
 		{
-			Services
-				.Where(svc => svc.ServiceImplementType == ServiceImplementType.Type)
-				.Distinct()
-				.ToArray()
-				.ForEach(svc =>
-				{
-					var newLazy = NewLazyMethodInfo
-						.MakeGenericMethod(svc.InterfaceType)
-						.CreateDelegate<Func<IServiceProvider, object>>();
-					Services.Add(new ServiceDescriptor(
-						typeof(Lazy<>).MakeGenericType(svc.InterfaceType),
-						newLazy,
-						svc.Lifetime
-						));
-
-
-					var newCreator = NewCreatorMethodInfo
-						.MakeGenericMethod(svc.InterfaceType)
-						.CreateDelegate<Func<IServiceProvider, object>>();
-					Services.Add(new ServiceDescriptor(
-						typeof(Func<>).MakeGenericType( svc.InterfaceType),
-						newCreator,
-						svc.Lifetime
-						));
-
-
-					var newInstanceCreatorSimple = NewInstanceCreatorMethodInfo
-						.MakeGenericMethod(svc.InterfaceType)
-						.CreateDelegate<Func<IServiceProvider, object>>();
-					Services.Add(new ServiceDescriptor(
-						typeof(Func<,>).MakeGenericType(typeof(long), svc.InterfaceType),
-						newInstanceCreatorSimple,
-						svc.Lifetime
-						));
-
-				});
-
 			
+			
+		}
+
+		static object NewCreator<I>(IServiceProvider sp) where I : class
+			=> new Func<I>(() => sp.Resolve<I>());
+		static object NewLazy<I>(IServiceProvider sp) where I : class
+			=> new Lazy<I>(() => sp.Resolve<I>());
+		static object NewTypedInstanceResolver<I>(IServiceProvider sp) where I : class
+			=> new TypedInstanceResolver<I>((id) => sp.ResolveInternal<I>(id));
+
+		static IEnumerable<I> NewEnumerableReal<I>(IServiceProvider sp) where I : class
+		{
+			var resolver = sp.NewResolver();
+			var desc = (IServiceInstanceDescriptor)resolver.ResolveServiceByType(null,typeof(IServiceInstanceDescriptor),null);
+			foreach (var i in resolver.ResolveServices(desc?.ParentInstanceId, typeof(I), null))
+				yield return (I)i;
+		}
+		static object NewEnumerable<I>(IServiceProvider sp) where I : class
+		{
+			return NewEnumerableReal<I>(sp);
 		}
 		public IServiceProvider Build(
 			IServiceCollection Services,
@@ -187,12 +139,17 @@ namespace SF.Core.ServiceManagement
 
 			//Services.AddSingleton(sp => provider.Resolve<IServiceResolver>());
 			Services.AddSingleton(sp => provider);
-			Services.AddSingleton(sp => resolver);
+			Services.AddTransient(sp => resolver);
 			Services.AddSingleton(sp => meta);
 			Services.AddSingleton(sp => manager);
 			Services.AddSingleton(sp => scopeFactory );
 			Services.AddSingleton(sp => (IServiceInstanceConfigChangedNotifier)manager);
-			Services.AddTransient(typeof(IEnumerable<>), typeof(ManagedServices.Runtime.EnumerableService<>));
+			//Services.AddTransient(typeof(IEnumerable<>), typeof(ManagedServices.Runtime.EnumerableService<>));
+			Services.AddTransient(typeof(IEnumerable<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewEnumerable), typeof(IServiceProvider)));
+			Services.AddTransient(typeof(Func<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewCreator), typeof(IServiceProvider)));
+			Services.AddTransient(typeof(Lazy<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewLazy), typeof(IServiceProvider)));
+			Services.AddTransient(typeof(TypedInstanceResolver<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewTypedInstanceResolver), typeof(IServiceProvider)));
+
 			meta = OnCreateServcieMetadata(Services);
 			OnValidate(meta);
 			manager = OnCreateServcieFactoryManager(
@@ -203,7 +160,6 @@ namespace SF.Core.ServiceManagement
 				);
 			provider = OnCreateServiceProvider(manager);
 			scopeFactory = new ServiceScopeFactory(provider, manager);
-			resolver = (IServiceResolver)provider;
 			return provider;
 		}
 	}

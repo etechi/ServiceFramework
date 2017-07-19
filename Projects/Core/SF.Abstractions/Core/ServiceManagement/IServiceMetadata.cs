@@ -11,7 +11,7 @@ namespace SF.Core.ServiceManagement
 		Type ImplementType { get; }
 		object ImplementInstance { get; }
 		Func<IServiceProvider, object> ImplementCreator { get; }
-
+		System.Reflection.MethodInfo ImplementMethod { get; }
 		ServiceImplementType ServiceImplementType { get; }
 		ServiceImplementLifetime LifeTime { get; }
 		bool IsManagedService { get; }
