@@ -69,7 +69,7 @@ namespace SF.Core.ServiceManagement
 					}
 				}
 		}
-		internal virtual object GetService(IServiceFactory factory)
+		internal virtual object GetService(IServiceFactory factory,Type ServiceType)
 		{
 			if (factory == null)
 				return null;
@@ -79,7 +79,7 @@ namespace SF.Core.ServiceManagement
 				return factory.Create(this);
 
 
-			var key = (factory.ServiceImplement.ServiceType, factory.InstanceId??0);
+			var key = (ServiceType, factory.InstanceId??0);
 			object curEntiy = null;
 			if (_Services == null)
 				_Services = new Dictionary<(Type, long), object>();
@@ -132,7 +132,7 @@ namespace SF.Core.ServiceManagement
 					ServiceType,
 					Name
 					);
-			return f==null?null:GetService(f);
+			return f==null?null:GetService(f,ServiceType);
 		}
 		public object ResolveServiceByIdent(long ServiceId, Type ServiceType)
 		{
@@ -141,7 +141,7 @@ namespace SF.Core.ServiceManagement
 					ServiceId,
 					ServiceType
 					);
-			return f==null?null:GetService(f);
+			return f==null?null:GetService(f, ServiceType);
 		}
 
 		class ScopedServiceProvider : IServiceProvider
@@ -187,7 +187,7 @@ namespace SF.Core.ServiceManagement
 					Name
 					))
 			{
-				yield return GetService(factory);
+				yield return GetService(factory, ChildServiceType);
 			}
 		}
 	}

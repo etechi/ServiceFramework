@@ -13,12 +13,12 @@ namespace SF.Core.ServiceManagement
 		{
 			this.RootServiceProvider = ServiceProvider;
 		}
-		internal override object GetService(IServiceFactory factory)
+		internal override object GetService(IServiceFactory factory,Type ServiceType)
 		{
 			if (factory.ServiceImplement.LifeTime == ServiceImplementLifetime.Singleton)
-				return ((ServiceScopeBase)RootServiceProvider).GetService(factory);
+				return ((ServiceScopeBase)RootServiceProvider).GetService(factory, ServiceType);
 			//.GetService(factory.ServiceDeclaration.ServiceType);
-			return base.GetService(factory);
+			return base.GetService(factory, ServiceType);
 		}
 
 		protected override CacheType GetCacheType(IServiceFactory Factory)
