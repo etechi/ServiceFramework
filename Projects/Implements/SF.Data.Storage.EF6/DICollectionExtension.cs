@@ -19,8 +19,13 @@ namespace SF.Core.ServiceManagement
 			where TDbContext : SF.Data.Storage.DbContext
 		{
 			sc.AddScoped<IDataContextProviderFactory>(x =>
-				new DataContextProviderFactory<TDbContext>(()=>x.Resolve<TDbContext>())
+				new DataContextProviderFactory<TDbContext>(() => x.Resolve<TDbContext>())
 				);
+			return sc;
+		}
+		public static IServiceCollection UseEF6DataEntity(this IServiceCollection sc)
+		{
+			sc.AddScoped<IDataContextProviderFactory, DataContextProviderFactory>();
 			return sc;
 		}
 	}

@@ -42,7 +42,6 @@ namespace SF.Data.Storage.EF6
 	}
 	public class EntityDbContextProvider :
         IDataContextProvider,
-        IDataStorageEngine,
         IDataContextExtension
     {
 		public DbContext DbContext { get; }
@@ -73,14 +72,7 @@ namespace SF.Data.Storage.EF6
 			}
 		}
 
-		public IDataStorageEngine Engine
-		{
-			get
-			{
-				return this;
-			}
-		}
-
+	
 	
 		//protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		//{
@@ -201,68 +193,7 @@ namespace SF.Data.Storage.EF6
 		}
 
 
-		class DataTransaction : IDataTransaction
-		{
-			DbContextTransaction Transaction { get; }
-			public DataTransaction(DbContextTransaction Transaction)
-			{
-				this.Transaction = Transaction;
-			}
-
-			public object UnderlyingTransaction
-			{
-				get
-				{
-					return Transaction;
-				}
-			}
-
-			public void Commit()
-			{
-				Transaction.Commit();
-			}
-
-			public void Dispose()
-			{
-				Transaction.Dispose();
-			}
-
-			public void Rollback()
-			{
-				Transaction.Rollback();
-			}
-			public override string ToString()
-			{
-				return Transaction.ToString();
-			}
-			public override bool Equals(object obj)
-			{
-				var t = obj as DataTransaction;
-				if (t == null) return false;
-				return Transaction.Equals(t.Transaction);
-			}
-			public override int GetHashCode()
-			{
-				return Transaction.GetHashCode();
-			}
-		}
-        async Task<object> IDataStorageEngine.ExecuteCommandAsync(string Sql, CancellationToken CancellationToken, params object[] Args)
-        {
-			return await DbContext.Database.ExecuteSqlCommandAsync(Sql, CancellationToken, Args);
-			//throw new NotSupportedException();
-            //return Database..ExecuteSqlCommandAsync(Sql, Args);
-        }
-
-        IDataTransaction IDataStorageEngine.BeginTransaction()
-		{
-			return new DataTransaction(DbContext.Database.BeginTransaction());
-		}
-
-		IDataTransaction IDataStorageEngine.BeginTransaction(IsolationLevel isolationLevel)
-		{
-			return new DataTransaction(DbContext.Database.BeginTransaction());
-		}
-
+	
         public object GetEntityOriginalValue(object Entity,string Field) 
         {
 			throw new NotSupportedException();

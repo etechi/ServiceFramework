@@ -25,9 +25,9 @@ namespace SF.Core.ServiceManagement.Management
 			Models.ServiceInstanceEditable, 
 			DataModels.ServiceInstance
 			>,
-		IServiceInstanceManager,
-		 IServiceConfigLoader,
-		IServiceInstanceLister
+		IServiceInstanceManager
+		// IServiceConfigLoader,
+		//IServiceInstanceLister
 	{
 		IDataEntityResolver EntityResolver { get;}
 		IServiceProvider ServiceProvider { get; }
@@ -265,59 +265,59 @@ namespace SF.Core.ServiceManagement.Management
 			await base.OnRemoveModel(ctx);
 		}
 
-		class Config : IServiceConfig
-		{
-			public long Id { get; set; }
+		//class Config : IServiceConfig
+		//{
+		//	public long Id { get; set; }
 
-			public long? ParentId { get; set; }
+		//	public long? ParentId { get; set; }
 
-			public string ServiceType { get; set; }
+		//	public string ServiceType { get; set; }
 
-			public string ImplementType { get; set; }
+		//	public string ImplementType { get; set; }
 
-			public string Setting { get; set; }
-			public string Name { get; set; }
-		}
-		IServiceConfig IServiceConfigLoader.GetConfig(long Id)
-		{
-			var re = DataSet.QuerySingleAsync(
-				si => si.Id == Id,
-				si => new Config
-				{
+		//	public string Setting { get; set; }
+		//	public string Name { get; set; }
+		//}
+		//IServiceConfig IServiceConfigLoader.GetConfig(long Id)
+		//{
+		//	var re = DataSet.QuerySingleAsync(
+		//		si => si.Id == Id,
+		//		si => new Config
+		//		{
 					
-					Id = Id,
-					ServiceType = si.ServiceType,
-					ImplementType = si.ImplementType,
-					Setting= si.Setting,
-					ParentId=si.ParentId
-				}
-				).Result;
+		//			Id = Id,
+		//			ServiceType = si.ServiceType,
+		//			ImplementType = si.ImplementType,
+		//			Setting= si.Setting,
+		//			ParentId=si.ParentId
+		//		}
+		//		).Result;
 
-			var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
-			if (svcDef == null)
-				throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
+		//	var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
+		//	if (svcDef == null)
+		//		throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
 
-			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == re.ImplementType);
-			if(svcImpl==null)
-				throw new InvalidOperationException($"找不到服务实现{re.ImplementType}");
+		//	var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == re.ImplementType);
+		//	if(svcImpl==null)
+		//		throw new InvalidOperationException($"找不到服务实现{re.ImplementType}");
 
-			return re;
-		}
+		//	return re;
+		//}
 		
-		ServiceReference[] IServiceInstanceLister.List(long? ScopeId,string ServiceType,int Limit)
-		{
-			var re = DataSet.AsQueryable()
-				.Where(si => si.ParentId == ScopeId && si.ServiceType == ServiceType)
-				.OrderBy(si => si.Priority)
-				.Select(si => new ServiceReference
-				{
-					Id = si.Id,
-					Name = si.ServiceIdent
-				})
-				.Take(Limit)
-				.ToArray();
-			return re;
-		}
+		//ServiceReference[] IServiceInstanceLister.List(long? ScopeId,string ServiceType,int Limit)
+		//{
+		//	var re = DataSet.AsQueryable()
+		//		.Where(si => si.ParentId == ScopeId && si.ServiceType == ServiceType)
+		//		.OrderBy(si => si.Priority)
+		//		.Select(si => new ServiceReference
+		//		{
+		//			Id = si.Id,
+		//			Name = si.ServiceIdent
+		//		})
+		//		.Take(Limit)
+		//		.ToArray();
+		//	return re;
+		//}
 	}
 
 }

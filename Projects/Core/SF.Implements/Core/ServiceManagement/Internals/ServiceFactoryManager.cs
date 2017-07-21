@@ -809,7 +809,7 @@ namespace SF.Core.ServiceManagement.Internals
 			var IsUnmanagedServiceScopeRoot=false;
 			try
 			{
-				if (!IsUnmanagedServiceScope && ServiceType.IsDefined(UnmanagedServiceAttributeType))
+				if (!IsUnmanagedServiceScope && (ServiceType.IsDefined(UnmanagedServiceAttributeType) || !ServiceType.IsInterfaceType()))
 				{
 					IsUnmanagedServiceScopeRoot = true;
 					IsUnmanagedServiceScope = true;

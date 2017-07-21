@@ -32,8 +32,8 @@ namespace SF.Core.ServiceManagement
 			sc.AddEntityService<Management.IServiceImplementManager, Management.ServiceImplementManager, string, Models.ServiceImplement>();
 			sc.AddEntityService<Management.IServiceInstanceManager, Management.ServiceInstanceManager, string, Models.ServiceInstanceInternal>();
 
-			sc.AddScoped<IServiceConfigLoader, Management.ServiceInstanceManager>();
-			sc.AddScoped<IServiceInstanceLister, Management.ServiceInstanceManager>();
+			sc.AddScoped<IServiceConfigLoader, Storages.DBServiceSource>();
+			sc.AddScoped<IServiceInstanceLister, Storages.DBServiceSource>();
 		}
 		public static IServiceProvider BuildServiceResolver(
 			this IServiceCollection sc,

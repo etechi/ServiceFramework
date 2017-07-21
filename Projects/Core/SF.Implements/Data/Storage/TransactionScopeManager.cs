@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,10 +10,10 @@ namespace SF.Data.Storage
 	
     public class TransactionScopeManager : ITransactionScopeManager
     {
-        IDataContext Context { get; }
-        public TransactionScopeManager(IDataContext Context)
+		DbConnection Connection { get; }
+        public TransactionScopeManager(DbConnection Connection)
         {
-            this.Context = Context;
+            this.Connection = Connection;
         }
         class Scope : ITransactionScope
         {
@@ -79,16 +80,16 @@ namespace SF.Data.Storage
             }
         }
 
-        IDataTransaction _Transaction;
+        DbTransaction _Transaction;
         Scope _TopScope;
         bool _IsRollbacking;
 
-        public Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode,IsolationLevel IsolationLevel)
+        public Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode,System.Data.IsolationLevel IsolationLevel)
         {
             if (Mode == TransactionScopeMode.RequireNewTransaction && _Transaction != null)
                 throw new InvalidOperationException("事务已存在");
             if (_Transaction == null)
-                _Transaction = Context.Engine.BeginTransaction(IsolationLevel);
+                _Transaction = Connection.BeginTransaction(IsolationLevel);
             _TopScope = new Scope(this, _TopScope, Message);
             return Task.FromResult((ITransactionScope) _TopScope);
         }

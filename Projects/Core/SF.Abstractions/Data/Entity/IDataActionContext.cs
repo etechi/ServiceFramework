@@ -26,7 +26,6 @@ namespace SF.Data.Entity
 		Other
 	}
 	
-	[UnmanagedService]
 	public interface IDataActionInvocation
 	{
 		DataActionType ActionType { get; }

@@ -1,13 +1,16 @@
 ﻿using SF.Core.ServiceManagement;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Core.ServiceFeatures
-{	
-	public interface IServiceBootable 
+namespace SF.Data
+{ 
+	[UnmanagedService]
+	public interface IDataSource
 	{
-		Task<IDisposable> Boot();
+		DbConnection Connect();
 	}
 }

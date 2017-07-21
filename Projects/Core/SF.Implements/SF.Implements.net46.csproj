@@ -37,6 +37,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Xml.Linq" />
@@ -77,6 +78,7 @@
     <Compile Include="Core\ServiceManagement\Internals\ServiceFactory.cs" />
     <Compile Include="Core\ServiceManagement\ServiceProvider.cs" />
     <Compile Include="Core\ServiceManagement\ServiceProviderBuilder.cs" />
+    <Compile Include="Core\ServiceManagement\Storages\DBServiceSource.cs" />
     <Compile Include="Core\TaskServices\TaskServiceManager.cs" />
     <Compile Include="Core\TaskServices\TaskService.cs" />
     <Compile Include="Core\TaskServices\TaskServiceManagerDIServiceCollectionExtension.cs" />
@@ -88,6 +90,7 @@
     <Compile Include="Data\AttributeValidators\Validators\RequiredValidator.cs" />
     <Compile Include="Data\AttributeValidators\Validators\MinLengthValidator.cs" />
     <Compile Include="Data\AttributeValidators\Validators\MaxLengthValidator.cs" />
+    <Compile Include="Data\DefaultDataSource.cs" />
     <Compile Include="Data\Entity\DataEntity.cs" />
     <Compile Include="Data\Entity\DataEntityConfig.cs" />
     <Compile Include="Data\Entity\DataEntityResolverDICollectionExtension.cs" />

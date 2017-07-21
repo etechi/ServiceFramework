@@ -9,7 +9,6 @@ namespace SF.Data.Storage
 {
 
 
-	[UnmanagedService]
 	public interface IDataContextProvider :IDisposable, IQueryableContext,IAsyncQueryableContext
 	{
 		IDataSetProvider<T> SetProvider<T>() where T : class;
@@ -20,9 +19,8 @@ namespace SF.Data.Storage
 
 		Task<int> SaveChangesAsync();
 
-		IDataStorageEngine Engine { get; }
-    }
-	[UnmanagedService]
+
+	}
 	public interface IDataContextProviderExtension
 	{
 		void UpdateFields<T>(T item, Func<IFieldUpdater<T>, IFieldUpdater<T>> updater) where T : class;

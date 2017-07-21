@@ -3,8 +3,6 @@ using System.Threading.Tasks;
 
 namespace SF.Data.Entity
 {
-	[UnmanagedService]
-
 	public interface IEntityQueryable<TKey, TEntity, TQueryArgument>
 		where TQueryArgument:IQueryArgument<TKey>
 	{

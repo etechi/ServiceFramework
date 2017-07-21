@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace SF.Data.Storage
 {
-	[UnmanagedService]
 	public interface IDataSet<T>
 		where T : class
 	{

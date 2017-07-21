@@ -102,8 +102,10 @@
     <Compile Include="Core\Times\ITimeService.cs" />
     <Compile Include="Data\Entity\EntityIdent.cs" />
     <Compile Include="Data\AttributeValidators\IObjectAttributeValidator.cs" />
+    <Compile Include="Data\IDataSource.cs" />
     <Compile Include="Data\Models\UIEntityBase.cs" />
     <Compile Include="Data\Models\EntityBase.cs" />
+    <Compile Include="Data\Storage\IDataConnection.cs" />
     <Compile Include="Data\Storage\IDataSetProvider.cs" />
     <Compile Include="Data\Storage\TransactionScope.cs" />
     <Compile Include="KB\IPhoneNumberValidator.cs" />
@@ -147,7 +149,6 @@
     <Compile Include="Data\Storage\IDataContextProviderFactory.cs" />
     <Compile Include="Data\Storage\IDataSetMetadata.cs" />
     <Compile Include="Data\Storage\IDataSet.cs" />
-    <Compile Include="Data\Storage\IDataStorageEngine.cs" />
     <Compile Include="Data\Storage\IEntityQueryableProvider.cs" />
     <Compile Include="Data\Storage\IndexAttribute.cs" />
     <Compile Include="Data\IIdentGenerator.cs" />

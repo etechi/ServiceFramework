@@ -4,6 +4,7 @@ using SF.Data.Storage.EF6;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.ModelConfiguration.Conventions;
@@ -60,8 +61,13 @@ namespace SF.Data.Storage
 	public class DbContext : System.Data.Entity.DbContext
 	{
 		public IServiceProvider ServiceProvider { get; }
-		public DbContext(IServiceProvider ServiceProvider,string ConnectionString):
+		public DbContext(IServiceProvider ServiceProvider, string ConnectionString) :
 			base(ConnectionString)
+		{
+			this.ServiceProvider = ServiceProvider;
+		}
+		public DbContext(IServiceProvider ServiceProvider,DbConnection Connection) :
+			base(Connection,false)
 		{
 			this.ServiceProvider = ServiceProvider;
 		}

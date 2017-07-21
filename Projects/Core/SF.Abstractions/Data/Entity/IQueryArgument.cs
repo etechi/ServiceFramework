@@ -7,7 +7,6 @@ using System.Text;
 
 namespace SF.Data.Entity
 {
-	[UnmanagedService]
 	public interface IQueryArgument<TKey>
 	{
 		Option<TKey> Id { get; }

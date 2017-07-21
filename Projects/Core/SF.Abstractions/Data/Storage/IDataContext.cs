@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 namespace SF.Data.Storage
 {
 
-	[UnmanagedService]
 	public interface IFieldUpdater<T>
     {
         IFieldUpdater<T> Update<P>(Expression<Func<T, P>> field);
     }
 
-	[UnmanagedService]
 	public interface IDataContext :IDisposable
 	{
 		IDataSet<T> Set<T>() where T : class;
@@ -25,12 +23,9 @@ namespace SF.Data.Storage
 
 		Task<int> SaveChangesAsync();
 
-		IDataStorageEngine Engine { get; }
-		
 		IDataContextProvider Provider { get; }
 
 	}
-	[UnmanagedService]
 	public interface IDataContextExtension
     {
 		void UpdateFields<T>(T item, Func<IFieldUpdater<T>, IFieldUpdater<T>> updater) where T : class;

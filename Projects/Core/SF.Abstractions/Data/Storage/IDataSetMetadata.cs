@@ -7,13 +7,11 @@ using System.Threading.Tasks;
 
 namespace SF.Data.Storage
 {
-	[UnmanagedService]
 	public interface IEntityProperty
 	{
 		string Name { get; }
 		PropertyInfo PropertyInfo { get; }
 	}
-	[UnmanagedService]
 	public interface IDataSetMetadata
 	{
 		string EntitySetName { get; }

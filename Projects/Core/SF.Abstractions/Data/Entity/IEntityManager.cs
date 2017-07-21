@@ -12,8 +12,6 @@ namespace SF.Data.Entity
 		Deletable=4,
 		All=7
 	}
-	[UnmanagedService]
-
 	public interface IEntityManager<TKey, TEntity>
 		where TKey:IEquatable<TKey>
 		where TEntity:class,IObjectWithId<TKey>

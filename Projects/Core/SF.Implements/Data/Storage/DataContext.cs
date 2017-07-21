@@ -70,14 +70,6 @@ namespace SF.Data.Storage
 			}
 		}
 
-		public IDataStorageEngine Engine
-        {
-            get
-            {
-                return _Provider.Engine;
-            }
-        }
-
 
         public void Dispose()
         {
