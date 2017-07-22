@@ -242,7 +242,7 @@ namespace SF.Core.ServiceManagement
 			if (cacheType == CacheType.NoCache)
 				return factory.Create(ServiceResolver);
 
-			var key = (ServiceType, factory.InstanceId??0);
+			var key = (ServiceType, factory.InstanceId);
 			object curEntiy = null;
 			if (_Services == null)
 				_Services = new Dictionary<(Type, long), object>();

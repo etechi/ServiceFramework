@@ -26,23 +26,23 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 		}
 
 		public virtual Task Bind(string Ident, string UnionIdent, bool Confirmed, long UserId)
-			=> CredentialStorage.Bind(ServiceInstance.InstanceId.Value, Ident, UnionIdent, Confirmed, UserId);
+			=> CredentialStorage.Bind(ServiceInstance.InstanceId, Ident, UnionIdent, Confirmed, UserId);
 
 
 		public virtual Task<IdentityCredential> Find(string Ident, string UnionIdent)
-			=> CredentialStorage.Find(ServiceInstance.InstanceId.Value, Ident, UnionIdent);
+			=> CredentialStorage.Find(ServiceInstance.InstanceId, Ident, UnionIdent);
 
 		public virtual Task<IdentityCredential> FindOrBind(string Ident, string UnionIdent, bool Confirmed, long UserId)
-			=> CredentialStorage.FindOrBind(ServiceInstance.InstanceId.Value, Ident, UnionIdent, Confirmed, UserId);
+			=> CredentialStorage.FindOrBind(ServiceInstance.InstanceId, Ident, UnionIdent, Confirmed, UserId);
 
 		public virtual Task<IdentityCredential[]> GetIdents(long UserId)
-			=> CredentialStorage.GetIdents(ServiceInstance.InstanceId.Value, UserId);
+			=> CredentialStorage.GetIdents(ServiceInstance.InstanceId, UserId);
 
 		public virtual Task SetConfirmed(string Ident, bool Confirmed)
-			=> CredentialStorage.SetConfirmed(ServiceInstance.InstanceId.Value, Ident, Confirmed);
+			=> CredentialStorage.SetConfirmed(ServiceInstance.InstanceId, Ident, Confirmed);
 
 		public virtual Task Unbind(string Ident, long UserId)
-			=> CredentialStorage.Unbind(ServiceInstance.InstanceId.Value, Ident, UserId);
+			=> CredentialStorage.Unbind(ServiceInstance.InstanceId, Ident, UserId);
 
 		public abstract Task<string> VerifyFormat(string Ident);
 		public abstract bool IsConfirmable();

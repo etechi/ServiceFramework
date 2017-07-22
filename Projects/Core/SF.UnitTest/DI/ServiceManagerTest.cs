@@ -68,6 +68,7 @@ namespace SF.UT
 
 
 			//var isc = sc.GetDIServiceCollection();
+			isc.UseManagedService();
 			isc.UseMemoryManagedServiceSource();
 			isc.UseSystemMemoryCache();
 			isc.UseNewtonsoftJson();

@@ -30,7 +30,7 @@ namespace SF.Core.ServiceManagement.Management
 		//IServiceInstanceLister
 	{
 		IDataEntityResolver EntityResolver { get;}
-		IServiceProvider ServiceProvider { get; }
+		Lazy<IServiceProvider> ServiceProvider { get; }
 		public IServiceInstanceConfigChangedNotifier ConfigChangedNotifier { get; }
 		ILogger<ServiceInstanceManager> Logger { get; }
 		Lazy<IIdentGenerator> IdentGenerator { get; }
@@ -40,11 +40,10 @@ namespace SF.Core.ServiceManagement.Management
 			IDataSet<DataModels.ServiceInstance> DataSet, 
 			IDataEntityResolver EntityResolver,
 			IServiceInstanceConfigChangedNotifier ConfigChangedNotifier,
-			IServiceProvider ServiceProvider,
+			Lazy<IServiceProvider> ServiceProvider,
 			ILogger<ServiceInstanceManager> Logger,
-			IServiceMetadata ServiceMetadata,
 			Lazy<IIdentGenerator> IdentGenerator,
-			TimeService TimeService,
+			ITimeService TimeService,
 			IServiceMetadata Metadata
 			) : 
 			base(DataSet)
@@ -97,7 +96,8 @@ namespace SF.Core.ServiceManagement.Management
 			if (svcDef == null)
 				throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
 			re.ServiceName = svcDef.ServiceType.Comment().Name;
-			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == re.ImplementType);
+			var (implType, _) = re.ImplementType.Split2('@');
+			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == implType);
 			if (svcImpl == null)
 				throw new InvalidOperationException($"找不到服务实现{re.ImplementType}");
 			re.ImplementName = svcImpl.ImplementType.Comment().Name;
@@ -156,29 +156,42 @@ namespace SF.Core.ServiceManagement.Management
 				});
 			return Internals;
 		}
-		//void TestConfig(string Id,string ImplementId,string CreateArguments)
-		//{
-		//	var ServiceScope = ServiceProvider.Resolve<IManagedServiceScope>();
-		//	var ImplementTypeResolver = ServiceProvider.Resolve<IServiceImplementTypeResolver>();
-		//	var ServiceMetadata = ServiceProvider.Resolve<IServiceMetadata>();
-		//	var ImplementType = ImplementTypeResolver.Resolve(ImplementId.Split2('@').Item1);
-		//	var ci = Runtime.ServiceFactoryBuilder.FindBestConstructorInfo(ImplementType);
-		//	var tmpl = Runtime.ServiceCreateParameterTemplate.Load(
-		//			ci,
-		//			Id,
-		//			CreateArguments,
-		//			ServiceMetadata
-		//			);
+		class TestServiceInstanceDescriptor : IServiceInstanceDescriptor
+		{
+			public long InstanceId { get; set; }
+			public long? ParentInstanceId { get; set; }
+			public bool IsManaged => true;
+			public IServiceDeclaration ServiceDeclaration { get; set; }
+			public IServiceImplement ServiceImplement { get; set; }
+		}
+		void TestConfig(long Id, long? ParentId, string ImplementId, string CreateArguments)
+		{
+			var (implTypeName, svcTypeName) = ImplementId.Split2('@');
+			var ServiceResolver = this.ServiceProvider.Value.NewResolver();
 
-		//	var factory = Runtime.ServiceFactoryBuilder.Build(
-		//		ServiceMetadata,
-		//		ImplementType,
-		//		ci
-		//		);
-		//	var svr=factory(ServiceProvider, ServiceScope, tmpl);
-		//	if (svr == null)
-		//		throw new PublicArgumentException("配置错误,创建服务失败");
-		//}
+			var (decl, impl) = ServiceFactory.ResolveMetadata(
+				ServiceResolver,
+				Id,
+				svcTypeName,
+				implTypeName,
+				null
+				);
+
+			var factory=ServiceFactory.Create(
+				Id,
+				ParentId,
+				decl,
+				impl,
+				decl.ServiceType,
+				null,
+				ServiceResolver.Resolve<IServiceMetadata>(),
+				CreateArguments
+				);
+
+			var svr = factory.Create(ServiceResolver);
+			if (svr == null)
+				throw new PublicArgumentException("创建服务失败,请检查配置是否有误");
+		}
 		protected override async Task OnUpdateModel(ModifyContext ctx)
 		{
 			var e = ctx.Editable;
@@ -209,7 +222,7 @@ namespace SF.Core.ServiceManagement.Management
 			m.Image = e.DisplayData?.Image;
 			m.UpdatedTime= TimeService.Now;
 			m.Setting = e.Setting;
-			//TestConfig(m.Id, m.ImplementId, m.CreateArguments);
+			TestConfig(m.Id,m.ParentId, m.ImplementType, m.Setting);
 			//var siis = DataSet.Context
 			//		.Set<DataModels.ServiceInstanceInterface>();
 			//var orgs = await siis.LoadListAsync(sii => sii.ServiceInstanceId == m.Id);
@@ -253,7 +266,8 @@ namespace SF.Core.ServiceManagement.Management
 		}
 		protected override async Task OnNewModel(ModifyContext ctx)
 		{
-			UIEnsure.NotNull(ctx.Model.Id, "未设置服务实例ID");
+			//UIEnsure.NotNull(ctx.Model.Id, "未设置服务实例ID");
+			ctx.Model.Id = await IdentGenerator.Value.GenerateAsync("系统服务", 0);
 			ctx.Model.CreatedTime = TimeService.Now;
 			await base.OnNewModel(ctx);
 		}

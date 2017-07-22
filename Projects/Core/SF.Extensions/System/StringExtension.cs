@@ -106,14 +106,14 @@ namespace System
 				return s;
 			return s.Substring(0, length);
 		}
-		public static Tuple<string, string> Split2(this string s,char c)
+		public static (string, string) Split2(this string s,char c)
 		{
 			if (s == null)
-				return Tuple.Create((string)null, (string)null);
+				return ((string)null, (string)null);
 			var i = s.IndexOf(c);
 			if (i == -1)
-				return Tuple.Create(s, (string)null);
-			return Tuple.Create(s.Substring(0, i), s.Substring(i + 1));
+				return (s, (string)null);
+			return (s.Substring(0, i), s.Substring(i + 1));
 		}
         public static IEnumerable<string> SplitAndNormalizae(this string s,char c=';')
         {

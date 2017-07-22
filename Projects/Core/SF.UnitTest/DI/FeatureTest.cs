@@ -115,6 +115,7 @@ namespace SF.UT.DI
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.UseManagedService();
 			sc.UseSystemMemoryCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.UseNewtonsoftJson();
@@ -160,6 +161,7 @@ namespace SF.UT.DI
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.UseManagedService();
 			sc.UseSystemMemoryCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.UseNewtonsoftJson();
@@ -184,6 +186,7 @@ namespace SF.UT.DI
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
+			sc.UseManagedService();
 			sc.UseSystemMemoryCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.UseNewtonsoftJson();
@@ -214,6 +217,7 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
+			sc.UseManagedService();
 			sc.UseSystemMemoryCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.UseNewtonsoftJson();
@@ -236,6 +240,7 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
+			sc.UseManagedService();
 			sc.UseSystemMemoryCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.UseNewtonsoftJson();
@@ -258,6 +263,7 @@ namespace SF.UT.DI
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
 			sc.AddTransient<IInterface2<int>, ImplementWithArg<int>>();
+			sc.UseManagedService();
 			sc.UseSystemMemoryCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.UseNewtonsoftJson();
@@ -300,6 +306,7 @@ namespace SF.UT.DI
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
+			sc.UseManagedService();
 			sc.UseSystemMemoryCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.UseNewtonsoftJson();
@@ -321,6 +328,7 @@ namespace SF.UT.DI
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
+			sc.UseManagedService();
 			sc.UseSystemMemoryCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.UseNewtonsoftJson();

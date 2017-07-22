@@ -9,9 +9,7 @@ namespace SF.Core.ServiceManagement
 	{	
 		IServiceProvider Build(
 			IServiceCollection Services,
-			Caching.ILocalCache<IServiceEntry> AppServiceCache,
-			IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver=null,
-			IServiceImplementTypeResolver ServiceImplementTypeResolver=null
+			Caching.ILocalCache<IServiceEntry> AppServiceCache
 			);
 	}
 }

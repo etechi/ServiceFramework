@@ -76,7 +76,7 @@ namespace SF.Users.Members.Entity
 		protected override async Task OnNewModel(ModifyContext ctx)
 		{
 			var m = ctx.Model;
-			m.Id = await IdentGenerator.Value.GenerateAsync("会员");
+			m.Id = await IdentGenerator.Value.GenerateAsync("会员",0);
 			m.CreatedTime = TimeService.Value.Now;
 			m.OwnerId = m.Id;
 			await base.OnNewModel(ctx);

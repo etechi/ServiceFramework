@@ -9,6 +9,6 @@ namespace SF.Data
 	[Metadata.Comment("对象标识生成器")]
 	public interface IIdentGenerator
 	{
-        Task<long> GenerateAsync(string Type);
+        Task<long> GenerateAsync(string Type,int Section);
 	}
 }

@@ -46,8 +46,9 @@ namespace SF.Core.ServiceManagement.Management
 					//e.SettingType = typeof(T).FullName + "CreateArguments";
 					e.Name = Name ?? comment.Name;
 					e.Title = Title ?? comment.Name;
+					if (e.DisplayData == null) e.DisplayData = new Data.Models.UIDisplayData();
 					e.DisplayData.Description = Description ?? comment.Description;
-					//e.Setting = Json.Stringify(Setting);
+					e.Setting = Json.Stringify(Setting);
 				});
 	
 		}
@@ -63,7 +64,7 @@ namespace SF.Core.ServiceManagement.Management
 				new ServiceInstanceQueryArgument
 				{
 					DeclarationId = typeof(I).FullName,
-					//ImplementId = typeof(T).FullName + "@" + typeof(I).FullName
+					ImplementId = typeof(T).FullName + "@" + typeof(I).FullName
 				}, Data.Paging.Default
 				);
 			var items = re.Items.ToArray();
@@ -85,7 +86,7 @@ namespace SF.Core.ServiceManagement.Management
 					{
 						Description = Description ?? comment.Description
 					};
-					//e.Setting = Json.Stringify(Setting);
+					e.Setting = Json.Stringify(Setting);
 				});
 
 		}

@@ -105,7 +105,6 @@
     <Compile Include="Data\IDataSource.cs" />
     <Compile Include="Data\Models\UIEntityBase.cs" />
     <Compile Include="Data\Models\EntityBase.cs" />
-    <Compile Include="Data\Storage\IDataConnection.cs" />
     <Compile Include="Data\Storage\IDataSetProvider.cs" />
     <Compile Include="Data\Storage\TransactionScope.cs" />
     <Compile Include="KB\IPhoneNumberValidator.cs" />

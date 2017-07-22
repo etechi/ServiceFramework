@@ -7,11 +7,7 @@ using SF.Metadata;
 
 namespace SF.Data.IdentGenerator
 {
-	class IdentBatch
-	{
-		public long Current { get; set; }
-		public long End { get; set; }
-	}
+	
 	public class IdentGeneratorSetting
 	{
 		public IDataSet<DataModels.IdentSeed> IdentSeedSet { get;private set; }
@@ -22,36 +18,55 @@ namespace SF.Data.IdentGenerator
 	[Comment("默认对象标识生成器")]
 	public class StorageIdentGenerator : IIdentGenerator
 	{
-		static ConcurrentDictionary<string, IdentBatch> Cache { get; } = new ConcurrentDictionary<string, IdentBatch>();
-		static ObjectSyncQueue<string> SyncQueue { get; } = new ObjectSyncQueue<string>();
+		class IdentBatch
+		{
+			public long Current { get; set; }
+			public long End { get; set; }
+			public int Section { get; set; }
+		}
+		static ConcurrentDictionary<(long,string), IdentBatch> Cache { get; } = new ConcurrentDictionary<(long, string), IdentBatch>();
+		static ObjectSyncQueue<(long,string)> SyncQueue { get; } = new ObjectSyncQueue<(long,string)>();
 		public IdentGeneratorSetting Setting { get; }
 		public StorageIdentGenerator(IdentGeneratorSetting Setting)
 		{
 			this.Setting = Setting;
 		}
-		async Task<long> GetNextBatchStartAsync(string Type)
+		async Task<long> GetNextBatchStartAsync((long,string) Scope, int Section)
 		{
+			var (sid, type) = Scope;
 			var re = await Setting.IdentSeedSet.RetryForConcurrencyExceptionAsync(() =>
 				  Setting.IdentSeedSet.AddOrUpdateAsync(
-					  Type,
-					  () => new DataModels.IdentSeed { NextValue = 1, Type = Type },
-					  s => s.NextValue += Setting.CountPerBatch
+					  e=>e.ScopeId==sid && e.Type==type,
+					  () => new DataModels.IdentSeed { NextValue = 1, Section= Section},
+					  s =>
+					  {
+						  if (s.Section == Section)
+						  {
+							  s.NextValue += Setting.CountPerBatch;
+						  }
+						  else
+						  {
+							  s.NextValue = 1 + Setting.CountPerBatch;
+							  s.Section = Section;
+						  }
+					  }
 					  )
 				);
 			return re.NextValue - Setting.CountPerBatch;
 		}
-		public async Task<long> GenerateAsync(string Type)
+		public async Task<long> GenerateAsync(string Type,int Section)
 		{
-			var cacheKey = Setting.ServiceDescriptor.InstanceId+ "/" + Type;
+			var cacheKey = (Setting.ServiceDescriptor.InstanceId,Type);
 			IdentBatch v;
 			if (!Cache.TryGetValue(cacheKey,out v))
 				v = Cache.GetOrAdd(cacheKey, new IdentBatch());
 			return await SyncQueue.Queue(cacheKey,async () =>
 			{
-				if (v.Current == v.End)
+				if (v.Current == v.End || v.Section!=Section )
 				{
-					v.Current = await GetNextBatchStartAsync(Type);
+					v.Current = await GetNextBatchStartAsync(cacheKey,Section);
 					v.End = v.Current + Setting.CountPerBatch;
+					v.Section = Section;
 				}
 				var re = v.Current;
 				v.Current++;

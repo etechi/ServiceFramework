@@ -3,13 +3,14 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Reflection;
 namespace SF.Core.ServiceManagement.Internals
 {
 	class ServiceFactory : IServiceFactory
 	{
-		public long? InstanceId { get; }
+		public long InstanceId { get; }
 		public long? ParentInstanceId { get; }
+		public bool IsManaged => InstanceId > 0;
 		public IServiceDeclaration ServiceDeclaration { get; }
 		public IServiceImplement ServiceImplement { get; }
 
@@ -17,7 +18,7 @@ namespace SF.Core.ServiceManagement.Internals
 		public ServiceCreator Creator { get; }
 
 		public ServiceFactory(
-			long? Id,
+			long Id,
 			long? ParentServiceId,
 			IServiceDeclaration ServiceDeclaration,
 			IServiceImplement ServiceImplement,
@@ -38,6 +39,109 @@ namespace SF.Core.ServiceManagement.Internals
 			)
 		{
 			return Creator(ServiceResolver, this, CreateParameterTemplate);
+		}
+
+		public static (IServiceDeclaration,IServiceImplement) ResolveMetadata(
+			IServiceResolver ServiceResolver,
+			long Id,
+			string svcTypeName,
+			string implTypeName,
+			Type ServiceType
+			)
+		{
+			var ServiceMetadata = ServiceResolver.Resolve<IServiceMetadata>();
+
+			var declType = ServiceResolver.Resolve<IServiceDeclarationTypeResolver>()
+				.Resolve(svcTypeName)
+				.AssertNotNull(
+					() => $"找不到服务类型({svcTypeName}),服务ID:{Id}"
+					)
+				.Assert(
+					type =>ServiceType==null || type == ServiceType,
+					type => $"服务实例({Id})的服务类型({type})和指定服务类型({ServiceType})不一致"
+					);
+
+			var decl = ServiceMetadata.Services
+				.Get(declType)
+				.AssertNotNull(
+					() => $"找不到服务描述({declType}),服务:{Id}"
+					);
+
+			var implType = ServiceResolver.Resolve<IServiceImplementTypeResolver>()
+				.Resolve(implTypeName)
+				.AssertNotNull(
+					() => $"找不到服务配置({Id})指定的服务实现类型({implTypeName}),服务:{declType}"
+					);
+
+			var impl = decl.Implements
+				.Last(i => i.ServiceImplementType == ServiceImplementType.Type && i.ImplementType == implType)
+				.AssertNotNull(
+					() => $"找不到服务配置({Id})指定的服务实现类型({implType}),服务:{declType}"
+					);
+			return (decl, impl);
+		}
+		public static IServiceFactory Create(
+			long Id,
+			long? ParentId,
+			IServiceDeclaration decl,
+			IServiceImplement impl,
+			Type ServiceType, 
+			ServiceCreatorCache CreatorCache,
+			IServiceMetadata ServiceMetadata,
+			string Setting
+			)
+		{
+			ServiceCreator Creator;
+			IServiceCreateParameterTemplate CreateParameterTemplate = null;
+			switch (impl.ServiceImplementType)
+			{
+				case ServiceImplementType.Creator:
+					var func = impl.ImplementCreator;
+					Creator = (sp, si, ctr) => func(sp.Provider);
+					break;
+				case ServiceImplementType.Instance:
+					var ins = impl.ImplementInstance;
+					Creator = (sp, si, ctr) => ins;
+					break;
+				case ServiceImplementType.Method:
+					var method = impl.ImplementMethod;
+					var fn = method.IsGenericMethodDefinition ?
+						method
+							.MakeGenericMethod(ServiceType.GetGenericArguments())
+							.CreateDelegate<Func<IServiceProvider, object>>() :
+						method
+						.CreateDelegate<Func<IServiceProvider, object>>();
+					Creator = (sp, si, ctr) => fn(sp.Provider);
+					break;
+				case ServiceImplementType.Type:
+					{
+						(Creator, CreateParameterTemplate) =
+							CreatorCache == null ?
+							ServiceCreatorCache.CreateServiceInstanceCreator(
+								ServiceType,
+								impl.ImplementType,
+								Setting,
+								ServiceMetadata
+								):
+							CreatorCache.GetServiceInstanceCreator(
+								ServiceType,
+								impl.ImplementType,
+								Setting
+								);
+						break;
+					}
+				default:
+					throw new NotSupportedException();
+			}
+
+			return new ServiceFactory(
+				Id,
+				ParentId,
+				decl,
+				impl,
+				CreateParameterTemplate,
+				Creator
+				);
 		}
 	}
 

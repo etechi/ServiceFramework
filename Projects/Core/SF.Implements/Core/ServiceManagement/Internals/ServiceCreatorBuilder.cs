@@ -69,7 +69,7 @@ namespace SF.Core.ServiceManagement.Internals
 			else
 			{
 				instance = Resolver.ResolveServiceByType(
-					(ServiceInstanceDescriptor.InstanceId??-1)<0?null: ServiceInstanceDescriptor.InstanceId,
+					ServiceInstanceDescriptor.IsManaged?(long?)ServiceInstanceDescriptor.InstanceId:null,
 					InterfaceType,
 					null
 					);
@@ -88,10 +88,9 @@ namespace SF.Core.ServiceManagement.Internals
 			)
 		{
 			return
-				ServiceInstanceDescriptor.InstanceId.HasValue ?
-				Resolver.CreateInternalServiceProvider(
-				ServiceInstanceDescriptor.InstanceId.Value
-				) : Resolver.Provider;
+				ServiceInstanceDescriptor.IsManaged?
+				Resolver.CreateInternalServiceProvider(ServiceInstanceDescriptor.InstanceId) : 
+				Resolver.Provider;
 		}
 		static MethodInfo CreateServiceProviderMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
 			nameof(CreateServiceProvider),

@@ -17,26 +17,15 @@ namespace SF.Core.ServiceManagement
 		{
 			return new Internals.ServiceMetadata(Services);
 		}
-		public virtual IServiceDeclarationTypeResolver OnCreateServiceDeclarationTypeResolver(IServiceMetadata meta)
-		{
-			return new DefaultServiceDeclarationTypeResolver(meta);
-		}
-		public virtual IServiceImplementTypeResolver OnCreateImplementDeclarationTypeResolver(IServiceMetadata meta)
-		{
-			return new DefaultServiceImplementTypeResolver(meta);
-		}
+		
 		public virtual Internals.IServiceFactoryManager OnCreateServcieFactoryManager(
 			IServiceMetadata meta, 
-			Caching.ILocalCache<IServiceEntry> AppServiceCache,
-			IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver,
-			IServiceImplementTypeResolver ServiceImplementTypeResolver
+			Caching.ILocalCache<IServiceEntry> AppServiceCache
 			)
 		{
 			return new Internals.ServiceFactoryManager(
 				AppServiceCache, 
-				meta,
-				ServiceDeclarationTypeResolver?? OnCreateServiceDeclarationTypeResolver(meta),
-				ServiceImplementTypeResolver?? OnCreateImplementDeclarationTypeResolver(meta)
+				meta
 				);
 		}
 		public virtual IServiceProvider OnCreateServiceProvider(Internals.IServiceFactoryManager Manager)
@@ -108,7 +97,7 @@ namespace SF.Core.ServiceManagement
 		static object NewLazy<I>(IServiceProvider sp) where I : class
 			=> new Lazy<I>(() => sp.Resolve<I>());
 		static object NewTypedInstanceResolver<I>(IServiceProvider sp) where I : class
-			=> new TypedInstanceResolver<I>((id) => sp.ResolveInternal<I>(id));
+			=> new TypedInstanceResolver<I>((id) => sp.Resolve<I>(id));
 
 		static IEnumerable<I> NewEnumerableReal<I>(IServiceProvider sp) where I : class
 		{
@@ -123,9 +112,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public IServiceProvider Build(
 			IServiceCollection Services,
-			Caching.ILocalCache<IServiceEntry> AppServiceCache=null,
-			IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver=null,
-			IServiceImplementTypeResolver ServiceImplementTypeResolver=null
+			Caching.ILocalCache<IServiceEntry> AppServiceCache=null
 			)
 		{
 
@@ -154,9 +141,7 @@ namespace SF.Core.ServiceManagement
 			OnValidate(meta);
 			manager = OnCreateServcieFactoryManager(
 				meta, 
-				AppServiceCache,
-				ServiceDeclarationTypeResolver,
-				ServiceImplementTypeResolver
+				AppServiceCache
 				);
 			provider = OnCreateServiceProvider(manager);
 			scopeFactory = new ServiceScopeFactory(provider, manager);

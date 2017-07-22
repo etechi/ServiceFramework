@@ -11,8 +11,9 @@ namespace SF.Core.ServiceManagement
 	[AutoBind]
 	public interface IServiceInstanceDescriptor
 	{
-		long? InstanceId { get; }
+		long InstanceId { get; }
 		long? ParentInstanceId { get; }
+		bool IsManaged { get; }
 		IServiceDeclaration ServiceDeclaration { get; }
 		IServiceImplement ServiceImplement { get; }
 
