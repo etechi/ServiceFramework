@@ -22,7 +22,7 @@ namespace SF.Core.ServiceManagement
 						>(
 						new
 						{
-							Setting = new Data.IdentGenerator.IdentGeneratorSetting()
+							CountPerBatch = 100
 						});
 				});
 			return sc;

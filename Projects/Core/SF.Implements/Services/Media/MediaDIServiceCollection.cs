@@ -38,18 +38,18 @@ namespace SF.Core.ServiceManagement
 				{
 					var sim = sp.Resolve<IServiceInstanceManager>();
 
-					var fpr = await sim.ResolveDefaultService<IFilePathResolver>();
-					var fc = await sim.ResolveDefaultService<IFileCache>();
+					//var fpr = await sim.ResolveDefaultService<IFilePathResolver>();
+					//var fc = await sim.ResolveDefaultService<IFileCache>();
 					var ms=await sim.TryAddService<IMediaStorage, Services.Media.Storages.FileSystemMediaStorage>(
 						new
 						{
-							PathResolver = fpr,
+							//PathResolver = fpr,
 							RootPath = "data://media/default"
 						});
 					var ss=await sim.TryAddService<IMediaStorage, Services.Media.Storages.StaticFileMediaStorage>(
 						new
 						{
-							PathResolver = fpr,
+							//PathResolver = fpr,
 							RootPath = "data://meida/static"
 						});
 					var mm=await sim.EnsureDefaultService<IMediaManager, MediaManager>(
@@ -74,8 +74,8 @@ namespace SF.Core.ServiceManagement
 					await sim.EnsureDefaultService<IMediaService, MediaService>(
 						new
 						{
-							Manager=mm.Id,
-							FileCache=fc,
+							//Manager=mm.Id,
+							//FileCache=fc,
 							Setting=new MediaServiceSetting
 							{
 								UploadMediaType="ms"

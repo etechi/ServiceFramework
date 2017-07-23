@@ -20,7 +20,7 @@ namespace SF.Core.ServiceFeatures
 				foreach (var bs in bss)
 				{
 					logger.Info("初始化开始:{0}", bs.Title);
-					await bs.Init();
+					await bs.Init(sp);
 					logger.Info("初始化结束:{0}", bs.Title);
 				}
 			}

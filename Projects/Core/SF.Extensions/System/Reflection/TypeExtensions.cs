@@ -151,6 +151,7 @@ namespace System.Reflection
 					Invoke(null, Array.Empty<object>())
 			);
 		}
+		
 		public static Reflection.GenericParameterAttributes GetGenericParameterAttributes(this Type Type)
 		{
 			return Type.GetTypeInfo().GenericParameterAttributes;

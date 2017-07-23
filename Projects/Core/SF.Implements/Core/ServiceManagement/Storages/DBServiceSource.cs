@@ -46,22 +46,36 @@ namespace SF.Core.ServiceManagement.Storages
 			if (svcDef == null)
 				throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
 
-			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == re.ImplementType);
+			var (implType, _) = re.ImplementType.Split2('@');
+			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == implType);
 			if (svcImpl == null)
-				throw new InvalidOperationException($"找不到服务实现{re.ImplementType}");
-
+				throw new InvalidOperationException($"找不到服务实现{implType}");
+			re.ImplementType = implType;
 			return re;
 		}
 
 		ServiceReference[] IServiceInstanceLister.List(long? ScopeId, string ServiceType, int Limit)
 		{
-			var re = Connection.Query<ServiceReference>(
-				"select top "+Limit+" Id,ServiceIdent " +
+			if (ScopeId.HasValue)
+			{
+				var re = Connection.Query<ServiceReference>(
+				"select top " + Limit + " Id,ServiceIdent " +
 				"from SysServiceInstance " +
 				"where ParentId=@ParentId and ServiceType=@ServiceType " +
 				"order by Priority", new { ParentId = ScopeId, ServiceType = ServiceType }
 				).ToArray();
-			return re;
+				return re;
+			}
+			else
+			{
+				var re = Connection.Query<ServiceReference>(
+				"select top " + Limit + " Id,ServiceIdent " +
+				"from SysServiceInstance " +
+				"where ParentId is null and ServiceType=@ServiceType " +
+				"order by Priority", new { ServiceType = ServiceType }
+				).ToArray();
+				return re;
+			}
 		}
 	}
 

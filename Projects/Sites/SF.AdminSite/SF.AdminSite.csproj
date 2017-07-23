@@ -226,6 +226,10 @@
     <Compile Include="Migrations\201707181523519_db-upgrade2.Designer.cs">
       <DependentUpon>201707181523519_db-upgrade2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201707231519591_ident-generator-upgrade.cs" />
+    <Compile Include="Migrations\201707231519591_ident-generator-upgrade.Designer.cs">
+      <DependentUpon>201707231519591_ident-generator-upgrade.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="AppInstanceBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -329,6 +333,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201707181523519_db-upgrade2.resx">
       <DependentUpon>201707181523519_db-upgrade2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707231519591_ident-generator-upgrade.resx">
+      <DependentUpon>201707231519591_ident-generator-upgrade.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -102,6 +102,7 @@
     <Compile Include="System\Linq\Expressions\ExpressionExtension.cs" />
     <Compile Include="System\Linq\IEnumerableExtension.cs" />
     <Compile Include="System\ExceptionExtension.cs" />
+    <Compile Include="System\RandomFactory.cs" />
     <Compile Include="System\Reflection\MethodInfoExtension.cs" />
     <Compile Include="System\Threading\FlowController.cs" />
     <Compile Include="System\Collections\Generic\IEnumerableExtension.cs" />

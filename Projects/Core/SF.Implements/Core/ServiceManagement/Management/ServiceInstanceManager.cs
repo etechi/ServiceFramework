@@ -140,7 +140,7 @@ namespace SF.Core.ServiceManagement.Management
 					.Filter(Arg.Name, i => i.Name)
 					.Filter(Arg.DeclarationId, i => i.ServiceType)
 					.Filter(Arg.ServiceIdent,i=>i.ServiceIdent)
-					//.Filter(Arg.ImplementId, i => i.ImplementId)
+					.Filter(Arg.ImplementId, i => i.ImplementType)
 					.Filter(Arg.IsDefaultService.HasValue? (Arg.IsDefaultService.Value?(int?)0:(int?)-1):null,i=>i.Priority)
 				;
 		}
@@ -245,7 +245,7 @@ namespace SF.Core.ServiceManagement.Management
 			if (await DataSet.ModifyPosition(
 				m,
 				PositionModifyAction.Insert,
-				i => i.ParentId == m.ParentId,
+				i => i.ParentId == m.ParentId && i.ServiceType==m.ServiceType,
 				i => i.Id == m.Id,
 				i => i.Priority,
 				(i, p) => i.Priority = p

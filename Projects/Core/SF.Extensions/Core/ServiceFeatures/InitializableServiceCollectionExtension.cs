@@ -10,11 +10,11 @@ namespace SF.Core.ServiceManagement
 	{
 		class InitHelper : IServiceInitializable
 		{
-			public Func<Task> Callback { get; set; }
+			public Func<IServiceProvider,Task> Callback { get; set; }
 			public string Title { get; set; }
-			public Task Init()
+			public Task Init(IServiceProvider ServiceProvider)
 			{
-				return Callback();
+				return Callback(ServiceProvider);
 			}
 		}
 		public static IServiceCollection AddInitializer(
@@ -26,7 +26,7 @@ namespace SF.Core.ServiceManagement
 					new InitHelper
 					{
 						Title=Title,
-						Callback = () => Callback(sp)
+						Callback = isp => Callback(isp)
 					});
 				return sc;
 			}

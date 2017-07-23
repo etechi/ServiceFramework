@@ -26,11 +26,10 @@ namespace System
 			SF.Ensure.NotNull(str,nameof(str));
 			return Convert.FromBase64String(str);
 		}
-        static Random DefaultRandom { get; } = new System.Random();
 		public static string Random(this string seed,int length,Random rand=null)
 		{
 			if (rand == null)
-                rand = DefaultRandom;
+                rand = RandomFactory.Create();
 			var sl = seed.Length;
 			var cs = new char[length];
             lock (rand)

@@ -279,7 +279,7 @@ namespace SF.Core.ServiceManagement.Internals
 						configLoader = scope.ServiceProvider.Resolve<IServiceConfigLoader>();
 					}
 					var cfg = EnsureManagedConfig(configLoader, curEntry, ScopeServiceId.Value);
-					ScopeServiceId = cfg.ParentId;
+					ScopeServiceId = cfg?.ParentId;
 				}
 				return TryGetManagedScopedInternalServiceData(
 					ServiceResolver,

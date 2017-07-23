@@ -219,7 +219,7 @@ namespace SF.Data.Storage
 		{
 			var e = await set.AsQueryable(false).Where(filter).SingleOrDefaultAsync();
 			if (e == null)
-				set.Add(creator());
+				e=set.Add(creator());
 			else if (updater == null)
 				return e;
 			else
@@ -582,7 +582,7 @@ namespace SF.Data.Storage
 			) where T : class
 		{
 			var i = -1;
-            var r = new Random();
+			Random rand = null;
             for(;;)
             {
                 try
@@ -596,7 +596,9 @@ namespace SF.Data.Storage
                         throw;
 					set.Context.Reset();
                 }
-                await Task.Delay(DelayMilliseconds/2+r.Next(DelayMilliseconds));
+				if (rand == null)
+					rand = RandomFactory.Create();
+				await Task.Delay(DelayMilliseconds/2+rand.Next(DelayMilliseconds));
             }
         }
 		public static async Task<TEntity> AddOrUpdateAsync<TKey,TEntity>(

@@ -8,24 +8,28 @@ namespace System.Threading
 	{
 		public static async Task<T> Retry<T>(this Func<Task<T>> Action, int Timeout = 60000, int Retry = 5)
 		{
+			Random rand = null;
 			for (var i = 0; i < Retry; i++)
 			{
 				try
 				{
-						return await Action();
+					return await Action();
 				}
 				catch
 				{
 					if (i == Retry - 1)
 						throw;
-					await Task.Delay(new Random().Next(Timeout / 10) + 1000);
+					if (rand == null)
+						rand = RandomFactory.Create();
+					await Task.Delay(rand.Next(Timeout / 10) + 1000);
 				}
 			}
 			throw new NotSupportedException();
 		}
 		public static async Task<T> Retry<T>(this Func<CancellationToken, Task<T>> Action,int Timeout=60000,int Retry=5)
         {
-            for(var i = 0; i < Retry; i++)
+			Random rand = null;
+			for (var i = 0; i < Retry; i++)
 			{
 				try
 				{
@@ -38,7 +42,9 @@ namespace System.Threading
 				{
 					if (i == Retry - 1)
 						throw;
-					await Task.Delay(new Random().Next(Timeout / 10) + 1000);
+					if (rand == null)
+						rand = RandomFactory.Create();
+					await Task.Delay(rand.Next(Timeout / 10) + 1000);
 				}
 			}
 			throw new NotSupportedException();

@@ -8,14 +8,10 @@ namespace System
 {
 	public static class Bytes
 	{
-		static Random random { get; } = new System.Random();
 		public static byte[] Random(int Length)
 		{
 			var re = new byte[Length];
-			lock (random)
-			{
-				random.NextBytes(re);
-			}
+			RandomFactory.Create().NextBytes(re);
 			return re;
 		}
 	}

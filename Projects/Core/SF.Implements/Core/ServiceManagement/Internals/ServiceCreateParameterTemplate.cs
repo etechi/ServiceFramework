@@ -215,7 +215,7 @@ namespace SF.Core.ServiceManagement.Internals
 			if (string.IsNullOrWhiteSpace(Config) || Config.Trim()=="null")
 			{
 				sis = new Dictionary<string, IServiceInstanceSetting>();
-				args = parameters.Select(p => p.ParameterType.GetDefaultValue()).ToArray();
+				args = parameters.Select(p => p.HasDefaultValue?p.DefaultValue:p.ParameterType.GetDefaultValue()).ToArray();
 			}
 			else
 			{
