@@ -9,9 +9,10 @@ namespace SF.AdminSite.Migrations
     {
         public Configuration()
         {
+			
             AutomaticMigrationsEnabled = false;
         }
-
+		
         protected override void Seed(SF.AdminSite.AppContext context)
         {
             //  This method will be called after migrating to the latest version.

@@ -4,6 +4,15 @@
 	{
 		public T Value { get; set; }
 		public bool HasValue { get; set; }
+
+		public static implicit operator Option<T>(T value)
+		{
+			return new Option<T>
+			{
+				Value = value,
+				HasValue = true
+			};
+		}
 	}
 	public static class OptionExtension
 	{

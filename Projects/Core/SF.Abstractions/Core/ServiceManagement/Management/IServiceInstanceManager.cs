@@ -17,7 +17,7 @@ namespace SF.Core.ServiceManagement.Management
 
 		[EntityIdent("系统服务定义")]
 		[Comment("服务定义")]
-		public string DeclarationId { get; set; }
+		public string ServiceType { get; set; }
 
 		[EntityIdent("系统服务实现")]
 		[Comment("服务实现")]

@@ -52,7 +52,10 @@ namespace SF.Core.Hosting
 		{
 			return new AppInstance(Name, EnvType, ServiceProvider, Shutdown);
 		}
+		protected virtual void OnInitStorage(IServiceProvider ServiceProvider)
+		{
 
+		}
 		protected virtual IAppInstance OnBuild()
 		{
 			var Services = OnBuildServiceCollection();
@@ -65,7 +68,9 @@ namespace SF.Core.Hosting
 			OnConfigServices(Services);
 			var sp = OnBuildServiceProvider(Services);
 			//OnInitServices(sp);
-			var shutdown = OnBootServices(sp);
+			OnInitStorage(sp);
+
+			var shutdown = EnvType == EnvironmentType.Utils ? null : OnBootServices(sp);
 
 			return ai= OnBuildAppInstance(sp,shutdown);
 		}

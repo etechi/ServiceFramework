@@ -134,11 +134,11 @@ namespace SF.Core.ServiceManagement.Management
 		protected override IContextQueryable<DataModels.ServiceInstance> OnBuildQuery(IContextQueryable<DataModels.ServiceInstance> Query, ServiceInstanceQueryArgument Arg, Paging paging)
 		{
 			if (Arg.Id.HasValue)
-				return Query.Filter(Arg.Id.Value, i => i.Id);
+				return Query.Filter(Arg.Id, i => i.Id);
 			else
 				return Query
 					.Filter(Arg.Name, i => i.Name)
-					.Filter(Arg.DeclarationId, i => i.ServiceType)
+					.Filter(Arg.ServiceType, i => i.ServiceType)
 					.Filter(Arg.ServiceIdent,i=>i.ServiceIdent)
 					.Filter(Arg.ImplementId, i => i.ImplementType)
 					.Filter(Arg.IsDefaultService.HasValue? (Arg.IsDefaultService.Value?(int?)0:(int?)-1):null,i=>i.Priority)
@@ -205,7 +205,7 @@ namespace SF.Core.ServiceManagement.Management
 			{
 				m.ServiceType = e.ServiceType;
 				m.ImplementType = e.ImplementType;
-				m.ParentId = e.ParentId;
+				
 			}
 			else
 			{
@@ -247,7 +247,23 @@ namespace SF.Core.ServiceManagement.Management
 			//	(mi, ei) => mi.Setting = ei.Setting
 			//	);
 
-		
+			if(m.ParentId != e.ParentId)
+			{
+				var orgParentId = m.ParentId;
+				m.ParentId = e.ParentId;
+				ctx.AddPostAction(() =>
+				{
+					ConfigChangedNotifier.NotifyInternalServiceChanged(
+						orgParentId,
+						m.ServiceType
+						);
+					ConfigChangedNotifier.NotifyInternalServiceChanged(
+						e.ParentId,
+						m.ServiceType
+						);
+				});
+			}
+			
 
 			if (await DataSet.ModifyPosition(
 				m,

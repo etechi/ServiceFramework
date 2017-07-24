@@ -13,6 +13,9 @@ using SF.Core.TaskServices;
 using SF.Core.Hosting;
 using SF.Core.Logging;
 using Microsoft.Extensions.Logging;
+using System.Data.Entity.Migrations;
+using SF.AdminSite.Migrations;
+using System.Data.Entity.Infrastructure;
 
 namespace SF.AdminSite
 {
@@ -104,6 +107,17 @@ namespace SF.AdminSite
 
 		public static AppInstanceBuilder Default { get; } = new AppInstanceBuilder();
 
+		protected override void OnInitStorage(IServiceProvider ServiceProvider)
+		{
+			if (EnvType!=EnvironmentType.Utils)
+			{
+				var configuration = new Configuration();
+				var migrator = new DbMigrator(configuration);
+				migrator.Update();
+			}
+
+			base.OnInitStorage(ServiceProvider);
+		}
 		protected override void OnConfigServices(IServiceCollection Services)
 		{
 			Services.AddLogService(LogService);
