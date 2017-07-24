@@ -43,7 +43,7 @@ namespace SF.Metadata
 		protected virtual Models.Parameter GenerateMethodParameter(MethodInfo method, ParameterInfo parameter)
 		{
 			var param_type = parameter.ParameterType;
-			bool optional = parameter.IsOptional;
+			bool optional = parameter.IsOptional || parameter.IsDefined(typeof(OptionalAttribute));
 			var attrs = parameter.GetCustomAttributes();
 			if (param_type.IsGeneric() && param_type.GetGenericTypeDefinition() == typeof(Nullable<>))
 				param_type = param_type.GetGenericArguments()[0];
@@ -261,7 +261,7 @@ namespace SF.Metadata
         }
 		public virtual Models.Property GenerateTypeProperty(PropertyInfo prop,object DefaultValueObject)
 		{
-			var attrs = prop.GetCustomAttributes();
+			var attrs = prop.GetCustomAttributes(true).Cast<Attribute>();
 			var prop_type = prop.PropertyType;
             bool optional;
 			if (prop_type.IsGeneric() && 

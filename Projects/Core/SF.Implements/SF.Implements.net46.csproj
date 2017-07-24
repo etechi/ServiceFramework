@@ -73,6 +73,12 @@
     <Compile Include="Core\ServiceFeatures\ServiceFeatureControlDICollectionExtension.cs" />
     <Compile Include="Core\ServiceFeatures\ServiceFeatureControlService.cs" />
     <Compile Include="Core\ServiceManagement\Internals\ServiceCreatorCache.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ManagedServiceFactoryManager.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ServiceMetadataExtension.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\UnmanagedServiceFactoryManager.cs" />
+    <Compile Include="Core\ServiceManagement\ScopedServiceProvider.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceResolver.cs" />
+    <Compile Include="Core\ServiceManagement\Types.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScopeFactory.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScopeBase.cs" />
     <Compile Include="Core\ServiceManagement\ServiceScope.cs" />

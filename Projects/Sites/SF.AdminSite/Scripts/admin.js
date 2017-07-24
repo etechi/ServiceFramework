@@ -11105,8 +11105,8 @@ function equal(l, r) {
         return true;
     if (!l != !r)
         return false;
-    var lt = typeof l;
-    var rt = typeof r;
+    var lt = Array.isArray(l) ? "array" : typeof l;
+    var rt = Array.isArray(r) ? "array" : typeof r;
     if (lt != rt)
         return false;
     switch (lt) {
@@ -52655,6 +52655,12 @@ function newFormItem(baseName, entity, type, optional, ctx) {
         ctx.pathEntities.pop();
         return itemAdjuest(new FI.FormItemArray(baseName + entity.Name, entity.Name, type, entity, optional, entity.Description, item), ctx);
     }
+    //if (t.IsDictType) {
+    //    ctx.pathEntities.push(entity);
+    //    var item = newFormItem(baseName + entity.Name, { Name: "[]" } as any, type.substr(0, type.length - 2), false, ctx);
+    //    ctx.pathEntities.pop();
+    //    return itemAdjuest(new FI.FormItemDict(baseName + entity.Name, entity.Name, type, entity, optional, entity.Description, item), ctx);
+    //}
     ctx.pathEntities.push(entity);
     var re = newFormItemSetFromType(baseName + entity.Name, entity.Name, t, entity.Description, entity.Title, ctx);
     ctx.pathEntities.pop();

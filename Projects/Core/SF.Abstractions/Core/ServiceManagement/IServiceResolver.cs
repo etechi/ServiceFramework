@@ -24,7 +24,7 @@ namespace SF.Core.ServiceManagement
 		object ResolveServiceByType(long? ScopeServiceId, Type ChildServiceType,string Name);
 		IServiceInstanceDescriptor ResolveDescriptorByType(long? ScopeServiceId, Type ChildServiceType, string Name);
 
-		IServiceProvider CreateInternalServiceProvider(long ServiceId);
+		IServiceProvider CreateInternalServiceProvider(IServiceInstanceDescriptor Descriptor);
 
 		IEnumerable<IServiceInstanceDescriptor> ResolveServiceDescriptors(
 			long? ScopeServiceId, 

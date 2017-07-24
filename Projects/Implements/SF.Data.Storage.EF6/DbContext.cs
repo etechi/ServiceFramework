@@ -90,7 +90,7 @@ namespace SF.Data.Storage
 			modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
 
 			modelBuilder.Conventions.Add<IndexAttributeConvention>();
-			//System.Diagnostics.Debugger.Launch();
+			System.Diagnostics.Debugger.Launch();
 			var types = from ems in ServiceProvider.Resolve<IEnumerable<SF.Data.Storage.EntityModels>>()
 						from et in ems.Types
 						select et;

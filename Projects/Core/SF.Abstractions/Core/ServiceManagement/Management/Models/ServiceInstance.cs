@@ -22,20 +22,20 @@ namespace SF.Core.ServiceManagement.Models
 	}
 	public class ServiceInstanceInternal : ServiceInstance
 	{
-		[Comment("服务类型")]
-		[EntityIdent("系统服务类型", nameof(ServiceName))]
+		[Comment("服务定义")]
+		[EntityIdent("系统服务定义", nameof(ServiceName))]
 		[Required]
 		public string ServiceType { get; set; }
-
-		[Comment("服务实现")]
-		[EntityIdent("系统服务实现", nameof(ImplementName), ScopeField = nameof(ServiceType))]
-		[Required]
-		public string ImplementType { get; set; }
 
 		[Ignore]
 		[TableVisible]
 		[Comment("服务名称")]
 		public string ServiceName { get; set; }
+
+		[Comment("服务实现")]
+		[EntityIdent("系统服务实现", nameof(ImplementName), ScopeField = nameof(ServiceType))]
+		[Required]
+		public string ImplementType { get; set; }
 
 
 		[Ignore]
@@ -43,9 +43,13 @@ namespace SF.Core.ServiceManagement.Models
 		[Comment("服务实现")]
 		public string ImplementName { get; set; }
 
-		[Comment("父服务实例ID")]
+		[Comment("父服务实例")]
+		[EntityIdent("系统服务实例", nameof(ParentName))]
 		public long? ParentId { get; set; }
 
+		[Ignore]
+		[TableVisible]
+		[Comment("父服务")]
 		public string ParentName { get; set; }
 	}
 
@@ -54,16 +58,6 @@ namespace SF.Core.ServiceManagement.Models
 	{
 		
 		public UIDisplayData DisplayData { get; set; }
-
-		[Key]
-		[ReadOnly(true)]
-		[Comment(Name = "接口类型")]
-		public string InterfaceType { get; set; }
-
-		[ReadOnly(true)]
-		[Comment(Name = "接口名称")]
-		public string InterfaceName { get; set; }
-
 
 
 		[Comment(Name = "服务设置", Description = "此项设置和具体的服务实现相关，更改服务实现以后需要保存后才会生效，原服务实现的设置会丢失。")]

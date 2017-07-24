@@ -21,6 +21,9 @@ namespace SF.Services.Media
 		[Comment("存储类型")]
 		[TableRows]
 		public Dictionary<string, MediaStorageSetting> Types { get; set; }
+
+		[Comment("媒体元信息缓存")]
+		[Optional]
 		public IMediaMetaCache MetaCache { get; set; }
 	}
 	[Comment("媒体管理器")]

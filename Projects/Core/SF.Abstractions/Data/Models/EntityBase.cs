@@ -37,10 +37,12 @@ namespace SF.Data.Models
 
 		[Comment("创建时间")]
 		[TableVisible]
+		[ReadOnly(true)]
 		public virtual DateTime CreatedTime { get; set; }
 
 		[Comment("修改时间")]
 		[TableVisible]
+		[ReadOnly(true)]
 		public virtual DateTime UpdatedTime { get; set; }
 	}
 

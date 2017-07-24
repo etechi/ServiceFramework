@@ -88,9 +88,9 @@ namespace SF.Core.ServiceManagement.Internals
 			)
 		{
 			return
-				ServiceInstanceDescriptor.IsManaged?
-				Resolver.CreateInternalServiceProvider(ServiceInstanceDescriptor.InstanceId) : 
-				Resolver.Provider;
+				//ServiceInstanceDescriptor.IsManaged?
+				Resolver.CreateInternalServiceProvider(ServiceInstanceDescriptor);//: 
+				//Resolver.Provider;
 		}
 		static MethodInfo CreateServiceProviderMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
 			nameof(CreateServiceProvider),

@@ -7,6 +7,7 @@ using SF.Core.ServiceManagement;
 
 namespace SF.Data.Storage
 {
+	[UnmanagedService]
 	public class EntityModels
 	{
 		public string Prefix { get; }

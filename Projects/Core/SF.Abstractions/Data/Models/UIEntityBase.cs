@@ -12,18 +12,18 @@ using System.Text;
 using System.Threading.Tasks;
 namespace SF.Data.Models
 {
-	[Comment("UI展示数据")]
+	[Comment("前端展示数据")]
 	public class UIDisplayData
 	{
-		[Comment("副标题", "用于UI显示")]
+		[Comment("副标题", "用于前端显示")]
 		[MaxLength(100)]
 		public virtual string SubTitle { get; set; }
 
-		[Comment("提示", "用于UI显示")]
+		[Comment("提示", "用于前端显示")]
 		[MaxLength(100)]
 		public virtual string Remarks { get; set; }
 
-		[Comment("说明", "用于UI显示")]
+		[Comment("说明", "用于前端显示")]
 		[MaxLength(2000)]
 		[MultipleLines]
 		public virtual string Description { get; set; }
@@ -48,7 +48,7 @@ namespace SF.Data.Models
 	public abstract class UIEntityBase<K> : EntityBase<K>
 		where K:IEquatable<K>
 	{
-		[Comment("标题", "用于UI显示")]
+		[Comment("标题", "用于前端显示")]
 		[MaxLength(100)]
 		[Required]
 		[TableVisible]

@@ -3,7 +3,7 @@ namespace SF.AdminSite.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class dbupgrade : DbMigration
+    public partial class init : DbMigration
     {
         public override void Up()
         {
@@ -11,11 +11,13 @@ namespace SF.AdminSite.Migrations
                 "dbo.SysIdentSeed",
                 c => new
                     {
-                        Type = c.String(nullable: false, maxLength: 128),
+                        ScopeId = c.Long(nullable: false),
+                        Type = c.String(nullable: false, maxLength: 100),
                         NextValue = c.Long(nullable: false),
+                        Section = c.Int(nullable: false),
                         TimeStamp = c.Binary(nullable: false, fixedLength: true, timestamp: true, storeType: "rowversion"),
                     })
-                .PrimaryKey(t => t.Type);
+                .PrimaryKey(t => new { t.ScopeId, t.Type });
             
             CreateTable(
                 "dbo.SysServiceInstance",

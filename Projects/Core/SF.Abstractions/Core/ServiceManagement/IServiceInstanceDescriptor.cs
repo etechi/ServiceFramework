@@ -9,6 +9,7 @@ namespace SF.Core.ServiceManagement
 	}
 
 	[AutoBind]
+	[UnmanagedService]
 	public interface IServiceInstanceDescriptor
 	{
 		long InstanceId { get; }

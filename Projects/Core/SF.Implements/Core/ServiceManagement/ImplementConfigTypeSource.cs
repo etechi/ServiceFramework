@@ -63,16 +63,17 @@ namespace SF.Core.ServiceManagement
 				?? Type;
 			if (realType.IsInterfaceType() && ServiceDetector.IsService(realType))
 			{
+				var prop = new Property
+				{
+					Name = Name,
+					Type = "long",
+					Optional=true
+				};
 				return Builder.LoadAttributes(
-					new Property
-					{
-						Name = Name,
-						Type = "string"
-					},
+					prop,
 					Attributes.Cast<System.Attribute>().Union(
 						new System.Attribute[]
 						{
-								new RequiredAttribute(),
 								new SF.Metadata.EntityIdentAttribute("系统服务实例") {
 									ScopeField =nameof(Models.ServiceInstanceInternal.ServiceType),
 									ScopeValue=realType.FullName
@@ -127,7 +128,7 @@ namespace SF.Core.ServiceManagement
 			var Title = (Type.GetCustomAttribute<CommentAttribute>()?.Name ?? Type.Name)+"设置";
 			var re = new SF.Metadata.Models.Type
 			{
-				Name = Type.FullName + "CreateArguments",
+				Name = Type.FullName + "SettingType",
 				//Title = Title
 			};
 			re.Properties = Args.Where(

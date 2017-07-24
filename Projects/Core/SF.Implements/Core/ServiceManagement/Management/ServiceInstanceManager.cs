@@ -103,7 +103,7 @@ namespace SF.Core.ServiceManagement.Management
 			re.ImplementName = svcImpl.ImplementType.Comment().Name;
 
 
-			re.SettingType = re.ImplementType + "SettingType";
+			re.SettingType = implType + "SettingType";
 
 			Logger.Info("Load ServiceInstance for Edit: {0}",Json.Stringify(re));
 			return re;
@@ -222,6 +222,13 @@ namespace SF.Core.ServiceManagement.Management
 			m.Image = e.DisplayData?.Image;
 			m.UpdatedTime= TimeService.Now;
 			m.Setting = e.Setting;
+
+			m.SubTitle = e.DisplayData?.SubTitle;
+			m.Icon = e.DisplayData?.Icon;
+			m.Image = e.DisplayData?.Image;
+			m.Description = e.DisplayData?.Description;
+			m.Remarks = e.DisplayData?.Remarks;
+
 			TestConfig(m.Id,m.ParentId, m.ImplementType, m.Setting);
 			//var siis = DataSet.Context
 			//		.Set<DataModels.ServiceInstanceInterface>();
