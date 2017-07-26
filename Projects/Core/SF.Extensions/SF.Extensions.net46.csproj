@@ -64,6 +64,7 @@
     <Compile Include="Data\Entity\EntityMapper.cs" />
     <Compile Include="Data\Entity\EntityManagerExtension.cs" />
     <Compile Include="Data\Entity\EntityServiceDIServiceCollectionExtension.cs" />
+    <Compile Include="Data\IEntityExtension.cs" />
     <Compile Include="Data\Storage\DataContextExtension.cs" />
     <Compile Include="Data\Storage\DataSetExtension.cs" />
     <Compile Include="Data\Storage\DIServiceCollectionExtension.cs" />

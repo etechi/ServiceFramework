@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SF.Data.DataModels
 {
 
-    public abstract class DataEntityBase<K> : IObjectWithId<K>
+    public abstract class DataEntityBase<K> : IObjectWithId<K>, IEntity
 		where K:IEquatable<K>
 	{
 

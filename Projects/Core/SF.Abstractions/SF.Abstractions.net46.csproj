@@ -103,6 +103,8 @@
     <Compile Include="Data\Entity\EntityIdent.cs" />
     <Compile Include="Data\AttributeValidators\IObjectAttributeValidator.cs" />
     <Compile Include="Data\IDataSource.cs" />
+    <Compile Include="Data\IUIEntity.cs" />
+    <Compile Include="Data\IEntity.cs" />
     <Compile Include="Data\Models\UIEntityBase.cs" />
     <Compile Include="Data\Models\EntityBase.cs" />
     <Compile Include="Data\Storage\IDataSetProvider.cs" />

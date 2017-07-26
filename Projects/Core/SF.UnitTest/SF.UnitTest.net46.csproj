@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Data\DBModels.cs" />
+    <Compile Include="Data\EFCoreBasic.cs" />
     <Compile Include="Data\EFBasic.cs" />
     <Compile Include="Infrastructure.cs" />
     <Compile Include="DI\FeatureTest.cs" />
@@ -48,6 +49,10 @@
     <Compile Include="Migrations\201707161129399_test-fix.Designer.cs">
       <DependentUpon>201707161129399_test-fix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201707251553296_add-user-location.cs" />
+    <Compile Include="Migrations\201707251553296_add-user-location.Designer.cs">
+      <DependentUpon>201707251553296_add-user-location.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,6 +64,10 @@
     <ProjectReference Include="..\..\Implements\SF.Data.Storage.EF6\SF.Data.Storage.EF6.csproj">
       <Project>{0bacd331-8e70-451b-b290-06dcc35324bf}</Project>
       <Name>SF.Data.Storage.EF6</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.net46.csproj">
+      <Project>{f69be9a4-1e81-4aa1-9b11-71077df6ca3d}</Project>
+      <Name>SF.Data.Storage.EFCore.net46</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Implements\SF.Services.dotNetFramework\SF.Services.dotNetFramework.csproj">
       <Project>{1111e437-2d49-4773-83df-ba42f6ca20f8}</Project>
@@ -96,8 +105,12 @@
     <EmbeddedResource Include="Migrations\201707161129399_test-fix.resx">
       <DependentUpon>201707161129399_test-fix.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201707251553296_add-user-location.resx">
+      <DependentUpon>201707251553296_add-user-location.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

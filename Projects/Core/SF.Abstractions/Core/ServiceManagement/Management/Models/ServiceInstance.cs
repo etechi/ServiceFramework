@@ -8,7 +8,8 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Core.ServiceManagement.Models
 {
 	[EntityObject("系统服务实例")]
-	public class ServiceInstance : SF.Data.Models.UIEntityBase<long>
+	public class ServiceInstance : 
+		SF.Data.Models.UIEntityBase<long>
 	{
 		[Comment("服务标识")]
 		[TableVisible]
@@ -57,8 +58,6 @@ namespace SF.Core.ServiceManagement.Models
 	public class ServiceInstanceEditable : ServiceInstanceInternal
 	{
 		
-		public UIDisplayData DisplayData { get; set; }
-
 
 		[Comment(Name = "服务设置", Description = "此项设置和具体的服务实现相关，更改服务实现以后需要保存后才会生效，原服务实现的设置会丢失。")]
 		[PropertyType(PropertyTypeSourceType.External, nameof(SettingType))]

@@ -77,5 +77,39 @@ namespace System.Linq
 			foreach (var it in enumerable)
 				Action(it,idx++);
 		}
+		public static IEnumerable<T> BuildTree<I,T,K>(
+			this IEnumerable<I> items,
+			Func<I,T> NewTreeItem,
+			Func<I,K> GetId, 
+			Func<I,K> GetParentId,
+			Action<T,T> AddChildItem
+			)
+			where K:IEquatable<K>
+		{
+			var dic = items.ToDictionary(GetId,i=>(NewTreeItem(i), i));
+			var roots = new List<T>();
+			foreach(var (ti,ii) in dic.Values)
+			{
+				var pi = GetParentId(ii);
+				if (EqualityComparer<K>.Default.Equals(pi, default(K)))
+					roots.Add(ti);
+				else
+				{
+					if (!dic.TryGetValue(pi, out var pnt))
+						throw new InvalidOperationException($"在节点列表中找不到节点{GetId(ii)}的父节点{pi}");
+					var (pti, pii) = pnt;
+					AddChildItem(pti, ti);
+				}
+			}
+			return roots;
+		}
+		public static IEnumerable<I> BuildTree<I, K>(
+		   this IEnumerable<I> items,
+		   Func<I, K> GetId,
+		   Func<I, K> GetParentId,
+		   Action<I, I> AddChildItem
+		   )
+		   where K : IEquatable<K>
+			=> BuildTree(items, i => i, GetId, GetParentId, AddChildItem);
 	}
 }

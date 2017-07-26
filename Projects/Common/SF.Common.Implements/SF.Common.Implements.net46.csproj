@@ -53,6 +53,9 @@
     <Compile Include="Auth\Identities\VerifyCode.cs" />
     <Compile Include="Auth\Identities\IdentServiceSetting.cs" />
     <Compile Include="Auth\Identities\IdentityService.cs" />
+    <Compile Include="Management\MenuServices\Entity\DataModels\MenuItem.cs" />
+    <Compile Include="Management\MenuServices\Entity\DataModels\Menu.cs" />
+    <Compile Include="Management\MenuServices\Entity\EntityMenuService.cs" />
     <Compile Include="Management\SysAdmins\Entity\DataModels\SysAdmin.cs" />
     <Compile Include="Management\SysAdmins\Entity\EntitySysAdminManagementService.cs" />
     <Compile Include="Management\SysAdmins\SysAdminServiceSetting.cs" />

@@ -3,69 +3,65 @@ using Xunit;
 using System.Reflection;
 using System.Linq.Expressions;
 using System.Collections.Generic;
-#if NETCORE
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using SF.Data.Storage.EntityFrameworkCore;
-#else
-using System.Data.Entity;
-
-#endif
-
 using SF.Core.DI;
 using SF.Data.Storage;
 using System.Linq;
 using SF.Core.ServiceManagement;
+using SF.UT.Data.DataModels;
 
 namespace SF.UT.Data
 {
-#if !NETCORE
-	public class AppContext : SF.Data.Storage.DbContext
+	class EFCoreContext : Microsoft.EntityFrameworkCore.DbContext
 	{
-		public AppContext():this(new EFStartup().ConfigureService())
+		public EFCoreContext(DbContextOptions options):base(options)
 		{
 
 		}
-		public AppContext(IServiceProvider sp) : base(sp,"name = default")
-		{
 
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+			modelBuilder.Ignore<Location>();
 		}
 	}
-#endif
-	class EFStartup {
+
+	class EFCoreStartup {
 		public IServiceProvider ConfigureService()
 		{
-			var isc = new ServiceCollection();
+			var isc = new Core.ServiceManagement.ServiceCollection();
 			isc.UseSystemMemoryCache();
 			isc.UseMemoryManagedServiceSource();
 			isc.UseDataModules<DataModels.User, DataModels.Post>();
-#if NETCORE
-			sc.AddEntityFrameworkInMemoryDatabase();
-			sc.AddDbContext<DbContext>((asp,op) =>
+
+			var msc = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
+
+			msc.AddEntityFrameworkSqlServer();
+			msc.AddDbContext<EFCoreContext>((asp,op) =>
 				{
-					op.UseInMemoryDatabase().LoadDataModels(asp);
+					op.UseSqlServer(System.Configuration.ConfigurationManager.ConnectionStrings["default"].ConnectionString).LoadDataModels(asp);
 
 					//((IDbContextOptionsBuilderInfrastructure)op).AddOrUpdateExtension(new DataExtension());
 					//op.Options.WithExtension();
 				},Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient
 				);
-			isc.UseEFCoreDataEntity<DbContext>();
-#else
-			isc.AddTransient<AppContext>(tsp => new AppContext(tsp));
-			isc.UseEF6DataEntity<AppContext>();
-#endif
+			msc.UseEFCoreDataEntity<EFCoreContext>();
+
+			isc.AddServices(msc);
 			isc.UseDataContext();
 			return isc.BuildServiceResolver();
 		}
 	}
 
-	public class EFBasicTest
+	public class EFCoreBasicTest
     {
 		[Fact]
 		public void Test()
 		{
-			var sp = new EFStartup().ConfigureService();
+			var sp = new EFCoreStartup().ConfigureService();
 			sp.WithScope(isp =>
 			{
 				var ac = isp.Resolve<IDataSet<DataModels.User>>();

@@ -65,30 +65,16 @@ namespace SF.Core.ServiceManagement.Management
 
 		protected override async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
-			var re= await Query.Select(i => new Models.ServiceInstanceEditable
+			var re= await Query.SelectUIEntity(i => new Models.ServiceInstanceEditable
 			{
 				Id = i.Id,
 				//ImplementId = i.ImplementId,
-				ObjectState = i.ObjectState,
 				Priority = i.Priority,
 				ServiceIdent=i.ServiceIdent,
-				Name = i.Name,
-				Title = i.Title,
-				CreatedTime = i.CreatedTime,
 				ParentId=i.ParentId,
 				ParentName=i.ParentId.HasValue?i.Parent.Name:null,
-				DisplayData=new Data.Models.UIDisplayData
-				{
-					Description=i.Description,
-					Icon=i.Icon,
-					Image=i.Image,
-					Remarks=i.Remarks,
-					SubTitle=i.SubTitle
-				},
-				UpdatedTime = i.UpdatedTime,
 				ServiceType = i.ServiceType,
 				ImplementType = i.ImplementType,
-				
 				Setting= i.Setting
 			}).SingleAsync();
 
@@ -111,21 +97,14 @@ namespace SF.Core.ServiceManagement.Management
 
 		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToPublic(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
-			return Query.Select(i => new Models.ServiceInstanceInternal
+			return Query.SelectUIEntity(i => new Models.ServiceInstanceInternal
 			{
-				Id = i.Id,
+				Id=i.Id,
 				ServiceType = i.ServiceType,
-				//ImplementId = i.ImplementId,
-				ObjectState = i.ObjectState,
 				Priority = i.Priority,
 				ServiceIdent=i.ServiceIdent,
-				Name = i.Name,
-				Title = i.Title,
-				CreatedTime = i.CreatedTime,
 				ServiceName = i.ServiceType,
 				ImplementType = i.ImplementType,
-				ImplementName = i.ImplementType,
-				UpdatedTime = i.UpdatedTime,
 				ParentId=i.ParentId,
 				ParentName = i.ParentId.HasValue?i.Parent.Name:null
 			});
@@ -212,23 +191,10 @@ namespace SF.Core.ServiceManagement.Management
 				UIEnsure.Equal(m.ServiceType, e.ServiceType,"服务类型不能修改");
 				UIEnsure.Equal(m.ImplementType, e.ImplementType, "服务实现类型不能修改");
 			}
-			m.ObjectState = e.ObjectState;
-			m.Name = e.Name;
-			m.Title = e.Title;
 
-			m.Description = e.DisplayData?.Description;
-			m.Icon = e.DisplayData?.Icon;
-			m.Remarks = e.DisplayData?.Remarks;
-			m.Image = e.DisplayData?.Image;
-			m.UpdatedTime= TimeService.Now;
+			m.Update(e, TimeService.Now);
+
 			m.Setting = e.Setting;
-
-			m.SubTitle = e.DisplayData?.SubTitle;
-			m.Icon = e.DisplayData?.Icon;
-			m.Image = e.DisplayData?.Image;
-			m.Description = e.DisplayData?.Description;
-			m.Remarks = e.DisplayData?.Remarks;
-
 			TestConfig(m.Id,m.ParentId, m.ImplementType, m.Setting);
 			//var siis = DataSet.Context
 			//		.Set<DataModels.ServiceInstanceInterface>();
@@ -291,7 +257,7 @@ namespace SF.Core.ServiceManagement.Management
 		{
 			//UIEnsure.NotNull(ctx.Model.Id, "未设置服务实例ID");
 			ctx.Model.Id = await IdentGenerator.Value.GenerateAsync("系统服务", 0);
-			ctx.Model.CreatedTime = TimeService.Now;
+			ctx.Model.Create(TimeService.Now);
 			await base.OnNewModel(ctx);
 		}
 		protected override async Task OnRemoveModel(ModifyContext ctx)
@@ -302,59 +268,6 @@ namespace SF.Core.ServiceManagement.Management
 			await base.OnRemoveModel(ctx);
 		}
 
-		//class Config : IServiceConfig
-		//{
-		//	public long Id { get; set; }
-
-		//	public long? ParentId { get; set; }
-
-		//	public string ServiceType { get; set; }
-
-		//	public string ImplementType { get; set; }
-
-		//	public string Setting { get; set; }
-		//	public string Name { get; set; }
-		//}
-		//IServiceConfig IServiceConfigLoader.GetConfig(long Id)
-		//{
-		//	var re = DataSet.QuerySingleAsync(
-		//		si => si.Id == Id,
-		//		si => new Config
-		//		{
-					
-		//			Id = Id,
-		//			ServiceType = si.ServiceType,
-		//			ImplementType = si.ImplementType,
-		//			Setting= si.Setting,
-		//			ParentId=si.ParentId
-		//		}
-		//		).Result;
-
-		//	var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
-		//	if (svcDef == null)
-		//		throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
-
-		//	var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == re.ImplementType);
-		//	if(svcImpl==null)
-		//		throw new InvalidOperationException($"找不到服务实现{re.ImplementType}");
-
-		//	return re;
-		//}
-		
-		//ServiceReference[] IServiceInstanceLister.List(long? ScopeId,string ServiceType,int Limit)
-		//{
-		//	var re = DataSet.AsQueryable()
-		//		.Where(si => si.ParentId == ScopeId && si.ServiceType == ServiceType)
-		//		.OrderBy(si => si.Priority)
-		//		.Select(si => new ServiceReference
-		//		{
-		//			Id = si.Id,
-		//			Name = si.ServiceIdent
-		//		})
-		//		.Take(Limit)
-		//		.ToArray();
-		//	return re;
-		//}
 	}
 
 }

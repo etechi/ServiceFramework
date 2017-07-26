@@ -10,6 +10,18 @@ using SF.Data.Storage;
 namespace SF.UT.Data.DataModels
 {
 	using IndexAttribute = SF.Data.Storage.IndexAttribute;
+
+	[ComplexType]
+	public class Location
+	{
+		[MaxLength(100)]
+		[Required]
+		public string City { get; set; }
+
+		[MaxLength(100)]
+		[Required]
+		public string Address { get; set; }
+	}
 	[Table("User")]
 	public class User
 	{
@@ -30,6 +42,8 @@ namespace SF.UT.Data.DataModels
 
 		[InverseProperty(nameof(Post.User))]
 		public List<Post> Posts { get; set; }
+
+		public Location Location { get; set; }
 	}
 	[Table("Post")]
 	public class Post

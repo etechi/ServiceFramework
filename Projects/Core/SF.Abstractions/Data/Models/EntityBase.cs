@@ -13,7 +13,8 @@ using System.Threading.Tasks;
 namespace SF.Data.Models
 {
 
-    public abstract class EntityBase<K> : IObjectWithId<K>
+
+    public abstract class EntityBase<K> : IObjectWithId<K>, IEntity
 		where K:IEquatable<K>
 	{
 		[Comment("Id")]

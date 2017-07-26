@@ -37,6 +37,20 @@ namespace System.Reflection
 				type.GetGenericArguments().Select(t=>t.GetFullName()).Join(",")+
 				"]";
 		}
+		public static IEnumerable<MemberInfo> GetInterfaceMembers(
+			this Type type,
+			BindingFlags flags=BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty | BindingFlags.InvokeMethod 
+			)
+		{
+			if (type.IsInterfaceType())
+			{
+				foreach (var m in type.GetMembers(flags))
+					yield return m;
+			}
+			foreach (var it in type.GetInterfaces())
+				foreach (var m in it.GetInterfaceMembers(flags))
+					yield return m;
+		}
 		public static TypeCode GetTypeCode(this Type type)
 		{
 #if NETCORE

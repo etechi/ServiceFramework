@@ -38,8 +38,7 @@ namespace SF.Core.ServiceManagement.Management
 			e.Name = Name ?? comment.Name;
 			e.Title = Title ?? comment.Name;
 			e.ParentId = ParentId;
-			if (e.DisplayData == null) e.DisplayData = new Data.Models.UIDisplayData();
-			e.DisplayData.Description = Description ?? comment.Description;
+			e.Description = Description ?? comment.Description;
 			e.Setting = Json.Stringify(Setting);
 		}
 		public static async Task<Models.ServiceInstanceEditable> EnsureDefaultService<I,T>(
