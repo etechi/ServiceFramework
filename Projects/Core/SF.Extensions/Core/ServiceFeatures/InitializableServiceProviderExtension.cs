@@ -15,8 +15,10 @@ namespace SF.Core.ServiceFeatures
 			public static ServiceInitializer Instance { get; } = new ServiceInitializer();
 			public async Task InitServices(IServiceProvider sp)
 			{
-				var bss = sp.Resolve<IEnumerable<IServiceInitializable>>();
 				var logger = sp.Resolve<ILogger<ServiceInitializer>>();
+				var bss = sp.Resolve<IEnumerable<IServiceInitializable>>()
+					.OrderBy(i=>i.Priority)
+					.ToArray();
 				foreach (var bs in bss)
 				{
 					logger.Info("初始化开始:{0}", bs.Title);

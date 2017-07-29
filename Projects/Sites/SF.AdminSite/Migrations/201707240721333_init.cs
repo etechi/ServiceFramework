@@ -1,7 +1,7 @@
+using System;
+using System.Data.Entity.Migrations;
 namespace SF.AdminSite.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
     
     public partial class init : DbMigration
     {

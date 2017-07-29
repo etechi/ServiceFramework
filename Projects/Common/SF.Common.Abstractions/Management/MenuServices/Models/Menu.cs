@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Management.MenuServices.Models
 {
+	[EntityObject("系统菜单")]
 	public class Menu : EntityBase<long>
 	{
 		[MaxLength(100)]

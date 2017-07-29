@@ -1,4 +1,5 @@
-﻿using SF.Auth.Identities.Models;
+﻿using SF.Auth;
+using SF.Auth.Identities.Models;
 using SF.Management.SysAdmins.Models;
 using SF.Metadata;
 using System;
@@ -16,7 +17,11 @@ namespace SF.Management.SysAdmins
 		public string Name { get; set; }
 	}
 
+	[EntityManager("管理员")]
+	[Authorize("admin")]
 	[NetworkService]
+	[Comment("管理员")]
+	[Category("系统管理", "管理员管理")]
 	public interface ISysAdminManagementService : 
 		Data.Entity.IEntitySource<long,SysAdminInternal,SysAdminQueryArgument>,
 		Data.Entity.IEntityManager<long,SysAdminEditable>

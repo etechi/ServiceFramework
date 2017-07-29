@@ -12,16 +12,22 @@ namespace SF.Data.Entity
 
 		class Mapper<S, T>
 		{
+			static Type SrcType { get; } = typeof(S);
+			static Type DstType { get; } = typeof(T);
+			static PropertyInfo[] dstTypeProps { get; } =
+				DstType.GetProperties(System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+			static Dictionary<string, PropertyInfo> srcTypeProps { get; } =
+				SrcType.GetProperties(System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+				.ToDictionary(p => p.Name);
+
 			public static Lazy<Expression<Func<S, T>>> Expr { get; } = new Lazy<Expression<Func<S, T>>>(() =>
 				{
 					var arg = Expression.Parameter(typeof(S), "src");
-					var dstType = typeof(T);
-					var srcType = typeof(S);
 					return Expression.Lambda<Func<S, T>>(
 						Expression.MemberInit(
-						  Expression.New(typeof(T)),
-						  (from dp in dstType.GetProperties(System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
-						   let sp = srcType.GetProperty(dp.Name, System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+						  Expression.New(DstType),
+						  (from dp in dstTypeProps
+						   let sp = srcTypeProps.Get(dp.Name)
 						   where sp != null
 						   select Expression.Bind(
 							   dp,

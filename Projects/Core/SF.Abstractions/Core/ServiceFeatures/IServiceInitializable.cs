@@ -9,5 +9,6 @@ namespace SF.Core.ServiceFeatures
 	{
 		string Title { get; }
 		Task Init(IServiceProvider ServiceProvider);
+		int Priority { get; }
 	}
 }

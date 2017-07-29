@@ -1,6 +1,4 @@
-﻿using SF.Auth.Identities.Models;
-using SF.Management.SysAdmins.Models;
-using SF.Metadata;
+﻿using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +17,9 @@ namespace SF.Management.MenuServices
 	}
 
 	[NetworkService]
+	[EntityManager("系统菜单")]
+	[Comment("菜单管理")]
+	[Category("系统管理", "系统菜单")]
 	public interface IMenuService :
 		Data.Entity.IEntitySource<long, Models.Menu, MenuQueryArgument>,
 		Data.Entity.IEntityManager<long, Models.MenuEditable>

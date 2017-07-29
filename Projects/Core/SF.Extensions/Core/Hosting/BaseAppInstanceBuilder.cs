@@ -16,7 +16,12 @@ namespace SF.Core.Hosting
 		public ILogService LogService { get; private set; }
 		IServiceCollection ServiceCollection { get; set; }
 
-		public static IAppInstance Build(EnvironmentType EnvType, string Name=null, IServiceCollection ServiceCollection=null, ILogService LogService = null)
+		public static IAppInstance Build(
+			EnvironmentType EnvType, 
+			string Name=null, 
+			IServiceCollection ServiceCollection=null, 
+			ILogService LogService = null
+			)
 		{
 			var builder = new T();
 			builder.Name = Name;

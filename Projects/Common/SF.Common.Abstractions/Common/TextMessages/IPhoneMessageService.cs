@@ -1,7 +1,7 @@
 ﻿using SF.Metadata;
 using System.Threading.Tasks;
 
-namespace SF.System.TextMessages
+namespace SF.Common.TextMessages
 {
 	[Comment(Name = "手机消息服务")]
     public interface IPhoneMessageService : ITextMessageService

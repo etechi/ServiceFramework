@@ -72,7 +72,7 @@
     <Compile Include="Core\ServiceManagement\Internals\IServiceInstanceChangedNotifier.cs" />
     <Compile Include="Core\ServiceManagement\Internals\IServiceFactoryManager.cs" />
     <Compile Include="Core\ServiceManagement\Internals\IServiceConfigLoader.cs" />
-    <Compile Include="Core\ServiceManagement\Internals\IServiceImplementTypeResolver.cs" />
+    <Compile Include="Core\ServiceManagement\IServiceImplementTypeResolver.cs" />
     <Compile Include="Core\ServiceManagement\SharedSettingAttribute.cs" />
     <Compile Include="Core\ServiceManagement\IServiceResolver.cs" />
     <Compile Include="Core\Interception\InterceptAttribute.cs" />
@@ -134,6 +134,7 @@
     <Compile Include="Metadata\Annotations\LayoutAttribute.cs" />
     <Compile Include="Metadata\Annotations\MediaAttribute.cs" />
     <Compile Include="Metadata\Annotations\MultipleLinesAttribute.cs" />
+    <Compile Include="Metadata\Annotations\CategoryAttribute.cs" />
     <Compile Include="Metadata\Annotations\NetworkServiceAttribute.cs" />
     <Compile Include="Metadata\Annotations\OptionalAttribute.cs" />
     <Compile Include="Metadata\Annotations\PasswordAttribute.cs" />

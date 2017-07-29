@@ -22,12 +22,10 @@ namespace SF.Management.MenuServices.Entity.DataModels
 		where TMenu : Menu<TMenu, TMenuItem>
 		where TMenuItem : MenuItem<TMenu, TMenuItem>
 	{
-		[Index("ident")]
-		[Column(Order =1)]
+		[Index("ident",Order =1)]
 		public long? ScopeId { get; set; }
 
-		[Index("ident")]
-		[Column(Order = 2)]
+		[Index("ident",Order =2)]
 		[Required]
 		[MaxLength(100)]
 		public string Ident { get; set; }
@@ -36,5 +34,8 @@ namespace SF.Management.MenuServices.Entity.DataModels
 		[InverseProperty(nameof(MenuItem<TMenu, TMenuItem>.Menu))]
 		public ICollection<TMenuItem> Items { get; set; }
 	}
+
+	public class Menu : Menu<Menu, MenuItem>
+	{ }
 }
 

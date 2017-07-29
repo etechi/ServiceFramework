@@ -9,7 +9,7 @@ namespace SF.Metadata
 	{
 		public string Entity { get; }
 		public string Title { get; set; }
-		public string IconClass { get; set; }
+		public string FontIcon { get; set; }
 		public EntityManagerAttribute(string Entity)
 		{
 			this.Entity = Entity;

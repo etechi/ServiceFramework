@@ -205,17 +205,50 @@ namespace SF.Core.ServiceManagement.Internals
 					);
 			}
 		}
-		static Expression GetServiceResolverExpression() =>
-			ParamServiceResolver;
-		static Expression GetServiceProviderExpression() =>
+
+		static Func<T> FuncWrapper<T>(object instance) =>
+			new Func<T>(() => (T)instance);
+		static Lazy<T> LazyWrapper<T>(object instance) =>
+			new Lazy<T>(() => (T)instance);
+
+		static MethodInfo FuncWrapperMethod= typeof(ServiceCreatorBuilder).GetMethodExt(
+			nameof(FuncWrapper),
+			typeof(object)
+			);
+		static MethodInfo LazyWrapperMethod = typeof(ServiceCreatorBuilder).GetMethodExt(
+			nameof(LazyWrapper),
+			typeof(object)
+			);
+
+		static Expression WrapInstance(ResolveType type, Expression expr) =>
+			type == ResolveType.Func ?
 			Expression.Call(
+				FuncWrapperMethod.MakeGenericMethod(expr.Type),
+				expr
+				) :
+			type == ResolveType.Lazy ?
+			Expression.Call(
+				LazyWrapperMethod.MakeGenericMethod(expr.Type),
+				expr
+				) :
+			throw new NotSupportedException();
+
+		static Expression GetServiceResolverExpression(ResolveType type) =>
+			type == ResolveType.Instance ? ParamServiceResolver:
+			WrapInstance(type, GetServiceResolverExpression(ResolveType.Instance));
+
+		static Expression GetServiceProviderExpression(ResolveType type) =>
+			type == ResolveType.Instance ? Expression.Call(
 				null,
 				CreateServiceProviderMethodInfo,
 				ParamServiceResolver,
 				ParamServiceInstanceDescriptor
-				);
-		static Expression GetServiceInstanceDescriptorExpression() =>
-			ParamServiceInstanceDescriptor;
+				):
+			WrapInstance(type, GetServiceProviderExpression(ResolveType.Instance));
+
+		static Expression GetServiceInstanceDescriptorExpression(ResolveType type) =>
+			type == ResolveType.Instance ? ParamServiceInstanceDescriptor :
+			WrapInstance(type, GetServiceInstanceDescriptorExpression(ResolveType.Instance));
 
 		static Expression StrConcat(Expression e1, Expression e2) =>
 			Expression.Call(null, StringConcat, e1, e2);
@@ -385,9 +418,8 @@ namespace SF.Core.ServiceManagement.Internals
 					dict
 				);
 			}
-			bool IsServiceType(IServiceDetector ServiceDetector, Type Type, out ResolveType ResolveType)
+			bool IsServiceType(IServiceDetector ServiceDetector, Type Type, out ResolveType ResolveType,out Type RealType)
 			{
-				Type RealType = null;
 				do
 				{
 					RealType = Type.GetGenericArgumentTypeAsLazy();
@@ -421,15 +453,6 @@ namespace SF.Core.ServiceManagement.Internals
 			{
 				if (!CopyRequiredPaths.Contains(PropPath))
 					return src;
-
-				if (Type == typeof(IServiceInstanceDescriptor))
-					return GetServiceInstanceDescriptorExpression();
-
-				if (Type == typeof(IServiceResolver))
-					return GetServiceResolverExpression();
-				if (Type == typeof(IServiceProvider))
-					return GetServiceProviderExpression();
-
 
 				if (Type.IsArray)
 				{
@@ -466,7 +489,16 @@ namespace SF.Core.ServiceManagement.Internals
 				else
 				{
 					ResolveType rType;
-					var isSvcType = IsServiceType(ServiceMetadata,Type,out rType);
+					Type RealType;
+					var isSvcType = IsServiceType(ServiceMetadata,Type,out rType,out RealType);
+
+					if (RealType == typeof(IServiceInstanceDescriptor))
+						return GetServiceInstanceDescriptorExpression(rType);
+					if (RealType == typeof(IServiceResolver))
+						return GetServiceResolverExpression(rType);
+					if (RealType == typeof(IServiceProvider))
+						return GetServiceProviderExpression(rType);
+
 					if (isSvcType)
 						return ManagedServiceResolveExpression(
 							Type, 
@@ -524,15 +556,16 @@ namespace SF.Core.ServiceManagement.Internals
 			Expression BuildParamExpression(ParameterInfo pi, int Index)
 			{
 				ResolveType resolveType;
-				var isSvcType = IsServiceType(ServiceMetadata,pi.ParameterType,out resolveType);
+				Type RealType;
+				var isSvcType = IsServiceType(ServiceMetadata,pi.ParameterType,out resolveType,out RealType);
 				//if (isSvcType == Internals.ServiceType.Normal)
 				//	return ServiceResolverResolveExpression(pi.ParameterType, resolveType);
-				if (pi.ParameterType == typeof(IServiceInstanceDescriptor))
-					return GetServiceInstanceDescriptorExpression();
-				else if (pi.ParameterType == typeof(IServiceResolver))
-					return GetServiceResolverExpression();
-				else if (pi.ParameterType == typeof(IServiceProvider))
-					return GetServiceProviderExpression();
+				if (RealType == typeof(IServiceInstanceDescriptor))
+					return GetServiceInstanceDescriptorExpression(resolveType);
+				else if (RealType == typeof(IServiceResolver))
+					return GetServiceResolverExpression(resolveType);
+				else if (RealType == typeof(IServiceProvider))
+					return GetServiceProviderExpression(resolveType);
 				else if (isSvcType)
 					return ManagedServiceResolveExpression(
 						pi.ParameterType, 

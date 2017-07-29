@@ -21,6 +21,7 @@ namespace SF.Metadata.Models
 		public string Group { get; set; }
 		public string Prompt { get; set; }
 		public string ShortName{get;set;}
+		public string[] Categories { get; set; }
 	}
 	public class Type : Entity
 	{

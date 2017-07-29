@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.System.TextMessages.Admin
+namespace SF.Common.TextMessages.Admin
 {
 	public enum SendStatus
 	{

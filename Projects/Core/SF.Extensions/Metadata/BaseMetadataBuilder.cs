@@ -321,6 +321,7 @@ namespace SF.Metadata
 			typeof(CommentAttribute),
 			typeof(System.ComponentModel.DataAnnotations.RequiredAttribute),
             typeof(System.Runtime.InteropServices.OptionalAttribute),
+			typeof(CategoryAttribute)
         };
 
 		protected virtual Type[] GetIgnoreAttributeTypes()
@@ -339,7 +340,10 @@ namespace SF.Metadata
 				item.Group = display.GroupName;
 				item.ShortName = display.ShortName;
 			}
-			
+			var cat = attrs.FirstOrDefault(a => a is CategoryAttribute) as CategoryAttribute;
+			if (cat != null)
+				item.Categories = cat.Names;
+
 			var re = attrs
 				.Where(a=>!GetIgnoreAttributeTypes().Contains(a.GetType()))
 				.Where(a => (predicate==null || predicate(a)) && a.GetType().IsPublicType())

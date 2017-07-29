@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ADT\Tree.cs" />
     <Compile Include="Core\Caching\CacheExtensions.cs" />
     <Compile Include="Core\CallGuarantors\CallableDIServoceCollectionExtension.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantorExtension.cs" />
@@ -65,6 +66,7 @@
     <Compile Include="Data\Entity\EntityManagerExtension.cs" />
     <Compile Include="Data\Entity\EntityServiceDIServiceCollectionExtension.cs" />
     <Compile Include="Data\IEntityExtension.cs" />
+    <Compile Include="Data\IIdentGeneratorExtension.cs" />
     <Compile Include="Data\Storage\DataContextExtension.cs" />
     <Compile Include="Data\Storage\DataSetExtension.cs" />
     <Compile Include="Data\Storage\DIServiceCollectionExtension.cs" />

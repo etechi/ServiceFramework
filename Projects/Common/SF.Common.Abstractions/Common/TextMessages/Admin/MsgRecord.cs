@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.System.TextMessages.Admin
+namespace SF.Common.TextMessages.Admin
 {
 	[EntityObject("文本消息记录")]
 	public class MsgRecord : IObjectWithId<long>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.System.TextMessages
+namespace SF.Common.TextMessages
 {
 	
 	public class Message

@@ -53,5 +53,8 @@ namespace SF.Management.MenuServices.Entity.DataModels
 
 
 	}
+
+	public class MenuItem : MenuItem<Menu, MenuItem>
+	{ }
 }
 

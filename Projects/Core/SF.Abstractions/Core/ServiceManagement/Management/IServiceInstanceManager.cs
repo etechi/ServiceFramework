@@ -34,7 +34,8 @@ namespace SF.Core.ServiceManagement.Management
 	[EntityManager("系统服务实例")]
 	[Authorize("sysadmin")]
 	[NetworkService]
-	[Comment("系统服务实例", "系统内置服务实例", GroupName = "系统服务管理")]
+	[Comment("服务实例管理", "系统内置服务实例")]
+	[Category("系统管理","系统服务管理")]
 	public interface IServiceInstanceManager :
 		IEntityManager<long, Models.ServiceInstanceEditable>,
 		IEntitySource<long, Models.ServiceInstanceInternal, ServiceInstanceQueryArgument>

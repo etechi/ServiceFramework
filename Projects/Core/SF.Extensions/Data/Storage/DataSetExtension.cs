@@ -393,16 +393,6 @@ namespace SF.Data.Storage
 			);
 		}
 
-		static void TreeCollect<T,D>(D cur, IEnumerable<T> items, Func<T, IEnumerable<T>> get_children,Func<T,D,D> converter,  List<D> all_items)
-		{
-			if (items == null) return;
-			foreach (var it in items)
-			{
-				var c = converter(it, cur);
-				all_items.Add(c);
-				TreeCollect(c, get_children(it), get_children, converter, all_items);
-			}
-		}
 		static M EnumTree<M,E,K>(
 			this IDataSet<M> set,
 			Dictionary<K,M> exists,
@@ -419,7 +409,7 @@ namespace SF.Data.Storage
 		{
 			M exist;
 			exists.TryGetValue(get_editable_ident(cur),out exist);
-			var new_children= get_children(cur)?.Where(e=>get_editable_ident(e).Equals(default(K))).Select(chd=>
+			var new_children= get_children(cur)?.Where(e=>!exists.ContainsKey(get_editable_ident(e)))?.Select(chd=>
 				EnumTree<M, E, K>(
 					set,
 					exists,
@@ -442,7 +432,7 @@ namespace SF.Data.Storage
 						set.Add(nc);
 				updater(exist, cur);
 			}
-			var exists_children = get_children(cur)?.Where(e => !get_editable_ident(e).Equals(default(K)));
+			var exists_children = get_children(cur)?.Where(e => exists.ContainsKey(get_editable_ident(e)));
 			if(exists_children!=null)
 				foreach (var chd in exists_children)
 					EnumTree<M, E, K>(
@@ -475,12 +465,12 @@ namespace SF.Data.Storage
 			where K : IEquatable<K>
 		{
 			var org_item_dict = org_items.ToDictionary(i => get_model_ident(i));
-			var all_items = new List<E>();
-			TreeCollect<E,E>(default(E),new_items, get_children,(i,p)=>i, all_items);
-
-			var updated_items = all_items
-				.Where(it => !get_editable_ident(it).Equals(default(K)))
-				.ToDictionary(i => get_editable_ident(i));
+			
+			var updated_items = 
+				ADT.Tree.AsEnumerable(new_items,i=>get_children(i))
+				.Select(i=>(get_editable_ident(i),i))
+				.Where(it => org_item_dict.ContainsKey(it.Item1))
+				.ToDictionary(i =>i.Item1,i=>i.Item2);
 
 			//删除节点
 			foreach (var it in org_items.Where(i => !updated_items.ContainsKey(get_model_ident(i))))
@@ -491,8 +481,11 @@ namespace SF.Data.Storage
 
 			var results = new List<M>();
 			foreach (var c in new_items.Select(c => EnumTree(set, org_item_dict, null, c, get_editable_ident, new_item, updater, get_children, results)))
-				if (get_model_ident(c).Equals(default(K)))
+			{
+				var cid = get_model_ident(c);
+				if (!org_item_dict.ContainsKey(cid))
 					set.Add(c);
+			}
 
 
 			////顶层新节点，需要新增

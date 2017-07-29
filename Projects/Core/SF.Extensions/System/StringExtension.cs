@@ -120,7 +120,15 @@ namespace System
                 return Enumerable.Empty<string>();
             return s.Split(c).Select(i => i.Trim()).Where(i => i.Length > 0).Distinct();
         }
-
+		public static (string, string) LastSplit2(this string s, char c)
+		{
+			if (s == null)
+				return ((string)null, (string)null);
+			var i = s.LastIndexOf(c);
+			if (i == -1)
+				return ((string)null,s);
+			return (s.Substring(0, i), s.Substring(i + 1));
+		}
 		public static sbyte ToInt8(this string str) => sbyte.Parse(str);
 		public static short ToInt16(this string str) => short.Parse(str);
 		public static int ToInt32(this string str) => int.Parse(str);

@@ -21,7 +21,8 @@ namespace SF.Core.ServiceManagement.Management
 	[EntityManager("系统服务定义")]
 	[Authorize("sysadmin")]
 	[NetworkService]
-	[Comment("系统服务定义", "定义系统内置服务",GroupName ="系统服务管理")]
+	[Comment("服务定义管理", "定义系统内置服务")]
+	[Category("系统管理", "系统服务管理")]
 	public interface IServiceDeclarationManager:
 		IEntitySource<string,Models.ServiceDeclaration, ServiceDeclarationQueryArgument>
 	{

@@ -1,7 +1,7 @@
 ﻿using SF.Metadata;
 using System.Threading.Tasks;
 
-namespace SF.System.TextMessages
+namespace SF.Common.TextMessages
 {
 	[Comment(Name = "消息服务提供者")]
     public interface ITextMessageLogger

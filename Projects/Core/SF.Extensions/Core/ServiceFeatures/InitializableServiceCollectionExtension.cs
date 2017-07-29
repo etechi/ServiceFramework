@@ -12,6 +12,7 @@ namespace SF.Core.ServiceManagement
 		{
 			public Func<IServiceProvider,Task> Callback { get; set; }
 			public string Title { get; set; }
+			public int Priority { get; set; }
 			public Task Init(IServiceProvider ServiceProvider)
 			{
 				return Callback(ServiceProvider);
@@ -20,13 +21,16 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection AddInitializer(
 			this IServiceCollection sc, 
 			string Title,
-			Func<IServiceProvider,Task> Callback)
+			Func<IServiceProvider,Task> Callback,
+			int Priority=0
+			)
 			{
 				sc.AddSingleton<IServiceInitializable>(sp =>
 					new InitHelper
 					{
 						Title=Title,
-						Callback = isp => Callback(isp)
+						Callback = isp => Callback(isp),
+						Priority=Priority
 					});
 				return sc;
 			}
@@ -34,7 +38,8 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection AddInitializer(
 			this IServiceCollection sc,
 			string Title,
-			Action<IServiceProvider> Callback)
+			Action<IServiceProvider> Callback,
+			int Priority = 0)
 		{
 			sc.AddInitializer(
 				Title,
@@ -42,7 +47,8 @@ namespace SF.Core.ServiceManagement
 				{
 					Callback(sp);
 					return Task.CompletedTask;
-				}
+				},
+				Priority
 				);
 			return sc;
 		}

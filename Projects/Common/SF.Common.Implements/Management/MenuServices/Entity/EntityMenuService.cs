@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SF.Management.MenuServices.Models;
 using System.Collections.Generic;
+using SF.Core.ServiceManagement;
 
 namespace SF.Management.MenuServices.Entity
 {
@@ -21,17 +22,21 @@ namespace SF.Management.MenuServices.Entity
 		public IDataSet<TMenu> MenuSet { get; }
 		public Lazy<IDataSet<TMenuItem>> MenuItemSet { get; }
 		public Lazy<IIdentGenerator> IdentGenerator{ get; }
+		public Lazy<IServiceInstanceDescriptor> ServiceInstanceDescriptor { get; }
+		
 		public EntityMenuService(
 			IDataSet<TMenu> DataSet,
 			Lazy<IDataSet<TMenuItem>> MenuItemSet,
 			Lazy<ITimeService> TimeService,
-			Lazy<IIdentGenerator> IdentGenerator
+			Lazy<IIdentGenerator> IdentGenerator,
+			Lazy<IServiceInstanceDescriptor> ServiceInstanceDescriptor
 			) : base(DataSet)
 		{
 			this.MenuItemSet = MenuItemSet;
 			this.TimeService = TimeService;
 			this.MenuSet = MenuSet;
 			this.IdentGenerator = IdentGenerator;
+			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
 
 		protected override PagingQueryBuilder<TMenu> PagingQueryBuilder =>
@@ -56,8 +61,9 @@ namespace SF.Management.MenuServices.Entity
 					  Action = i.Action,
 					  ActionArgument = i.ActionArgument
 				  }).ToArrayAsync();
-			menu.Items = items.BuildTree(
-				i=>i.Id,
+			menu.Items = ADT.Tree.Build(
+				items,
+				i =>i.Id,
 				i=>i.ParentId??0,
 				(p,i)=> {
 					if (p.Children == null)
@@ -77,7 +83,10 @@ namespace SF.Management.MenuServices.Entity
 		}
 		protected override IContextQueryable<TMenu> OnBuildQuery(IContextQueryable<TMenu> Query, MenuQueryArgument Arg, Paging paging)
 		{
-			var q = Query.Filter(Arg.Id, r => r.Id)
+			var scopeid = ServiceInstanceDescriptor.Value.ParentInstanceId ?? 0;
+
+			var q = Query.Where(m=>m.ScopeId==scopeid)
+				.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)
 				.FilterContains(Arg.Ident, r => r.Ident)
 				;
@@ -88,7 +97,7 @@ namespace SF.Management.MenuServices.Entity
 		protected override async Task OnNewModel(ModifyContext ctx)
 		{
 			var m = ctx.Model;
-			m.Id = await IdentGenerator.Value.GenerateAsync("系统管理员",0);
+			m.Id = await IdentGenerator.Value.GenerateAsync("系统菜单",0);
 			m.Create(TimeService.Value.Now);
 			await base.OnNewModel(ctx);
 		}
@@ -105,6 +114,11 @@ namespace SF.Management.MenuServices.Entity
 			m.Update(e, time);
 
 			var items = await MenuItemSet.Value.LoadListAsync(i => i.MenuId == m.Id);
+			var newIdents =await IdentGenerator.Value.BatchGenerateAsync(
+				"系统菜单项",
+				ADT.Tree.AsEnumerable(e.Items,ii=>ii.Children).Count(i => i.Id == 0)
+				);
+
 			MenuItemSet.Value.MergeTree(
 				items,
 				e.Items,
@@ -114,16 +128,20 @@ namespace SF.Management.MenuServices.Entity
 				ei => ei.Children,
 				(ei, pmi, chds) => {
 					var mi = new TMenuItem();
+					mi.Id = newIdents.Dequeue();
 					mi.Create(time);
 					mi.Update(ei, time);
 					mi.Action = ei.Action;
 					mi.ActionArgument = ei.ActionArgument;
 					mi.ParentId = pmi?.Id;
+					mi.MenuId = m.Id;
+					mi.Children = chds;
 					return mi;
 				},
 				(mi, ei) =>
 				{
 					mi.Update(ei, time);
+					mi.ParentId = ei.ParentId;
 					mi.Action = ei.Action;
 					mi.ActionArgument = ei.ActionArgument;
 				}
@@ -133,7 +151,13 @@ namespace SF.Management.MenuServices.Entity
 		
 		public async Task<MenuItem[]> GetMenu(string Ident)
 		{
-			var menuId = await MenuSet.AsQueryable().Where(m=>m.Ident==Ident).Select(i => i.Id).SingleOrDefaultAsync();
+			var scopeid = ServiceInstanceDescriptor.Value.ParentInstanceId ?? 0;
+			var menuId = await MenuSet
+				.AsQueryable()
+				.Where(m=>m.ScopeId== scopeid && m.Ident==Ident)
+				.Select(i => i.Id)
+				.SingleOrDefaultAsync();
+
 			if (menuId == 0)
 				return null;
 
@@ -147,7 +171,8 @@ namespace SF.Management.MenuServices.Entity
 					  ActionArgument = i.ActionArgument
 				  }).ToArrayAsync();
 
-			return items.BuildTree(
+			return ADT.Tree.Build(
+				items,
 				i => i.Id,
 				i => i.ParentId ?? 0,
 				(p, i) =>

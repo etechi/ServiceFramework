@@ -1,4 +1,5 @@
-﻿using SF.Auth.Identities;
+﻿using SF.Auth;
+using SF.Auth.Identities;
 using SF.Auth.Identities.Models;
 using SF.Metadata;
 using SF.Users.Members.Models;
@@ -30,6 +31,12 @@ namespace SF.Users.Members
 		public long? InvitorId { get; set; }
 
 	}
+
+	[EntityManager("会员")]
+	[Authorize("admin")]
+	[NetworkService]
+	[Comment("会员")]
+	[Category("用户管理", "会员管理")]
 	public interface IMemberManagementService : 
 		Data.Entity.IEntitySource<long,MemberInternal,MemberQueryArgument>,
 		Data.Entity.IEntityManager<long,MemberEditable>

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SF.Auth.Identities.Internals;
 using SF.KB.PhoneNumbers;
-using SF.System.TextMessages;
+using SF.Common.TextMessages;
 using System.Text;
 using System.Collections.Generic;
 using SF.Core.ServiceManagement;

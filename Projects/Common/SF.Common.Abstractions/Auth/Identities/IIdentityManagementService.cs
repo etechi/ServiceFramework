@@ -14,9 +14,11 @@ namespace SF.Auth.Identities
 		public string Ident { get; set; }
 		public string Name { get; set; }
 	}
-	
+
+	[EntityManager("身份标识")]
+	[Authorize("admin")]
 	[NetworkService]
-	[Authorize(Roles ="admin")]
+	[Comment("身份标识")]
 	public interface IIdentityManagementService :
 		Data.Entity.IEntitySource<long, Models.IdentityInternal, IdentityQueryArgument>
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SF.Core.ServiceManagement.Internals
+namespace SF.Core.ServiceManagement
 {
 	[UnmanagedService]
 	public interface IServiceImplementTypeResolver
