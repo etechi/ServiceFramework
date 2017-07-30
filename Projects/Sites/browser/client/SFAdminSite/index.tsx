@@ -18,6 +18,7 @@ declare var require: any;
 
 function init(
     lib: ApiMeta.Library,
+    menuItems: api.SF$Management$MenuServices$Models$MenuItem[],
     permissions: any//api.ServiceProtocol$Auth$Permission[]
 ) {
     //var modules=require("./modules").default;
@@ -34,7 +35,7 @@ function init(
     ApiFormManager.setDefaultFormManager(apiForms);
 
 
-    config.build(lib, permissions, window.location.href.indexOf("all=true")!=-1);
+    config.build(lib, permissions, menuItems, window.location.href.indexOf("all=true")!=-1);
 
     //const module_routes = modules.map(m => m.route);
     setupEntityLinkBuilder([config.ManagerBuildResult.entityLinkBuilders],"/");
@@ -108,11 +109,14 @@ function init(
 }
 Promise.all([
     api.ServiceMetadata.Json(),
+    api.Menu.GetMenu("admin"),
+
     //api.User.GetPermissions() 
 ]).then(re => {
     var lib = new ApiMeta.Library(re[0] as any);
-    var permissions = re[1];
-    init(lib, permissions);
+    var items = re[1];
+    var permissions = re[2];
+    init(lib, items,permissions);
 });
 
 

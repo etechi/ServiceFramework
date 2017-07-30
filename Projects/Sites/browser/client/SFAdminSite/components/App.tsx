@@ -10,7 +10,7 @@ import * as config from "../config";
 var auth: any;
 
 export interface AppProps {
-    children?: JSX.Element[]
+    children?: React.ReactNode;
 }
 interface state {
 }

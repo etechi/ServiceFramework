@@ -1,1 +1,1 @@
-module.exports = {"admin":{"js":"/scripts/admin.js?1e84d0cf857bd6ee6f3a"}};
+module.exports = {"admin":{"js":"/scripts/admin.js?8c9e5eae9decefc89714"}};

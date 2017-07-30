@@ -5,6 +5,7 @@
 //import * as Views from 'service-protocol-webadmin/lib/components/Views';
 import ManagerBuilder = require("SF/webadmin/ManagerBuilder"); 
 import * as ApiMeta from "SF/utils/ApiMeta";
+import api = require("./webapi-all");
 
 //var help_accounting = require("./help/accounting/index.md");
 //var help_delivery = require("./help/delivery/index.md");
@@ -227,7 +228,51 @@ var cfg: ManagerBuilder.IManagerConfig = {
     ]
 };
 
+function itemNormalize(items: api.SF$Management$MenuServices$Models$MenuItem[]): api.SF$Management$MenuServices$Models$MenuItem[] {
+    var re: api.SF$Management$MenuServices$Models$MenuItem[] = [];
+    var l2: api.SF$Management$MenuServices$Models$MenuItem[] = [];
+    items.forEach(i => {
+        if (i.Children[0].Children)
+            re.push(i);
+        else
+            l2.push(i);
+    });
+    re.unshift({Id: 0, ObjectState: "Enabled", Name: "", Title: "", Children: l2, Action: "None" } as any);
+    return re;
+}
+function newItem(item: api.SF$Management$MenuServices$Models$MenuItem): ManagerBuilder.IItemConfig {
+    switch (item.Action) {
+        case "Link":
+            return {
+                type: "open", title: item.Title || item.Name, source: item.ActionArgument
+            };
+        case "EntityManager":
+            return {
+                type: "entity", title: item.Title || item.Name, source: item.ActionArgument
+            };
+        default:
+            return null;
+    }
+}
+function newModule(item: api.SF$Management$MenuServices$Models$MenuItem): ManagerBuilder.IModuleConfig {
+    var items = item.Children.map(c => newItem(c));
+    return {
+        title: item.Title || item.Name,
+        items: items
+    };
+}
+function newGroup(item: api.SF$Management$MenuServices$Models$MenuItem): ManagerBuilder.IGroupConfig {
+    var modules = item.Children.map(c => newModule(c));
+    return {
+        title: item.Title || item.Name,
+        modules: modules
+    }; 
+
+}
 export var ManagerBuildResult: ManagerBuilder.IManagerBuildResult = null;
-export function build(lib: ApiMeta.Library, permissions: ManagerBuilder.IPermission[], all?: boolean) {
-    ManagerBuildResult = ManagerBuilder.buildManager(lib, cfg, permissions,all);
+export  function build(lib: ApiMeta.Library, permissions: ManagerBuilder.IPermission[], items: api.SF$Management$MenuServices$Models$MenuItem[], all?: boolean) {
+    items = itemNormalize(items);
+    cfg.groups = cfg.groups.concat(items.map(i => newGroup(i)));
+    ManagerBuildResult = ManagerBuilder.buildManager(lib, cfg, permissions, all);
+    
 }

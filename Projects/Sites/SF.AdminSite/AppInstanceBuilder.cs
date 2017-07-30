@@ -454,25 +454,18 @@ namespace SF.AdminSite
 							Action=MenuItemAction.Link,
 							ActionArgument="http://www.sina.com.cn"
 						},
+						
 						new MenuItem
 						{
-							Name="公告通知",
-							Children = new[]
-							{
-								new MenuItem
-								{
-									Name="全体通知",
-									Action=MenuItemAction.Link,
-									ActionArgument="http://www.sina.com.cn"
-								},
-								new MenuItem
-								{
-									Name="会员通知",
-									Action=MenuItemAction.Link,
-									ActionArgument="http://www.sina.com.cn"
-								}
-							}
-							
+							Name="全体通知",
+							Action=MenuItemAction.Link,
+							ActionArgument="http://www.sina.com.cn"
+						},
+						new MenuItem
+						{
+							Name="会员通知",
+							Action=MenuItemAction.Link,
+							ActionArgument="http://www.sina.com.cn"
 						}
 					}
 

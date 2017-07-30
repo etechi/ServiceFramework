@@ -19,7 +19,6 @@ namespace SF.Management.MenuServices.Entity
 		where TMenuItem : DataModels.MenuItem<TMenu, TMenuItem>, new()
 	{
 		public Lazy<ITimeService> TimeService { get; }
-		public IDataSet<TMenu> MenuSet { get; }
 		public Lazy<IDataSet<TMenuItem>> MenuItemSet { get; }
 		public Lazy<IIdentGenerator> IdentGenerator{ get; }
 		public Lazy<IServiceInstanceDescriptor> ServiceInstanceDescriptor { get; }
@@ -34,7 +33,6 @@ namespace SF.Management.MenuServices.Entity
 		{
 			this.MenuItemSet = MenuItemSet;
 			this.TimeService = TimeService;
-			this.MenuSet = MenuSet;
 			this.IdentGenerator = IdentGenerator;
 			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
@@ -83,12 +81,11 @@ namespace SF.Management.MenuServices.Entity
 		}
 		protected override IContextQueryable<TMenu> OnBuildQuery(IContextQueryable<TMenu> Query, MenuQueryArgument Arg, Paging paging)
 		{
-			var scopeid = ServiceInstanceDescriptor.Value.ParentInstanceId ?? 0;
-
+			var scopeid = ServiceInstanceDescriptor.Value.ParentInstanceId;
 			var q = Query.Where(m=>m.ScopeId==scopeid)
 				.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)
-				.FilterContains(Arg.Ident, r => r.Ident)
+				.Filter(Arg.Ident, r => r.Ident)
 				;
 			
 			return q;
@@ -151,8 +148,8 @@ namespace SF.Management.MenuServices.Entity
 		
 		public async Task<MenuItem[]> GetMenu(string Ident)
 		{
-			var scopeid = ServiceInstanceDescriptor.Value.ParentInstanceId ?? 0;
-			var menuId = await MenuSet
+			var scopeid = ServiceInstanceDescriptor.Value.ParentInstanceId;
+			var menuId = await DataSet
 				.AsQueryable()
 				.Where(m=>m.ScopeId== scopeid && m.Ident==Ident)
 				.Select(i => i.Id)
@@ -167,6 +164,7 @@ namespace SF.Management.MenuServices.Entity
 				  new MenuItem
 				  {
 					  Id = i.Id,
+					  ParentId=i.ParentId,
 					  Action = i.Action,
 					  ActionArgument = i.ActionArgument
 				  }).ToArrayAsync();
