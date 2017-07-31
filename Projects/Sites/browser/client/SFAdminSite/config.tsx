@@ -270,9 +270,11 @@ function newGroup(item: api.SF$Management$MenuServices$Models$MenuItem): Manager
 
 }
 export var ManagerBuildResult: ManagerBuilder.IManagerBuildResult = null;
-export  function build(lib: ApiMeta.Library, permissions: ManagerBuilder.IPermission[], items: api.SF$Management$MenuServices$Models$MenuItem[], all?: boolean) {
-    items = itemNormalize(items);
-    cfg.groups = cfg.groups.concat(items.map(i => newGroup(i)));
+export function build(lib: ApiMeta.Library, permissions: ManagerBuilder.IPermission[], items: api.SF$Management$MenuServices$Models$MenuItem[], all?: boolean) {
+    if (items && items.length) {
+        items = itemNormalize(items);
+        cfg.groups = items.map(i => newGroup(i));
+    }
     ManagerBuildResult = ManagerBuilder.buildManager(lib, cfg, permissions, all);
     
 }
