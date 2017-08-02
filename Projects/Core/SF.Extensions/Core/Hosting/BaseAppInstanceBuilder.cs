@@ -30,10 +30,7 @@ namespace SF.Core.Hosting
 			builder.ServiceCollection = ServiceCollection;
 			return builder.OnBuild();
 		}
-		protected virtual void OnInitServices(IServiceProvider sp)
-		{
-			sp.InitServices().Wait();
-		}
+		
 		protected virtual IDisposable OnBootServices(IServiceProvider sp)
 		{
 			if (EnvType == EnvironmentType.Utils)

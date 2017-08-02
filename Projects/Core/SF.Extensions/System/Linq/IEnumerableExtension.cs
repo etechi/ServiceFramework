@@ -19,9 +19,9 @@ namespace System.Linq
 
 			IQueryable IContextQueryable.Queryable => Queryable;
 
-			public IEnumerator<T> GetEnumerator()=>Queryable.GetEnumerator();
+			public IEnumerator<T> GetEnumerator() => Queryable.GetEnumerator();
 
-			IEnumerator IEnumerable.GetEnumerator()=>GetEnumerator();
+			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 		}
 		class SimpleQueryableContext : IQueryableContext
 		{
@@ -44,7 +44,7 @@ namespace System.Linq
 				Context = SimpleQueryableContext.Instance
 			};
 		}
-		public static int IndexOf<T>(this IEnumerable<T> enumerable,Func<T,bool> Predicate)
+		public static int IndexOf<T>(this IEnumerable<T> enumerable, Func<T, bool> Predicate)
 		{
 			var idx = 0;
 			foreach (var i in enumerable)
@@ -55,7 +55,7 @@ namespace System.Linq
 			}
 			return -1;
 		}
-		public static int IndexOf<T>(this IEnumerable<T> enumerable, T Item) where T:IEquatable<T>
+		public static int IndexOf<T>(this IEnumerable<T> enumerable, T Item) where T : IEquatable<T>
 		{
 			var idx = 0;
 			foreach (var i in enumerable)
@@ -66,17 +66,29 @@ namespace System.Linq
 			}
 			return -1;
 		}
-		public static void ForEach<T>(this IEnumerable<T> enumerable,Action<T> Action)
+		public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> Action)
 		{
 			foreach (var it in enumerable)
 				Action(it);
 		}
-		public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T,int> Action)
+		public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T, int> Action)
 		{
 			var idx = 0;
 			foreach (var it in enumerable)
-				Action(it,idx++);
+				Action(it, idx++);
 		}
-		
+		static Task<T> Async<T>(Func<Task<T>> func)
+		{
+			return func();
+		}
+		public static async Task<IEnumerable<T>> AsyncSelect<I, T>(
+			this IEnumerable<I> items,
+			Func<I, Task<T>> Selector
+			)
+		{
+			return await Task.WhenAll(
+				items.Select(pair => Selector(pair)).ToArray()
+				);
+		}
 	}
 }

@@ -248,7 +248,8 @@ function newItem(item: api.SF$Management$MenuServices$Models$MenuItem): ManagerB
             };
         case "EntityManager":
             return {
-                type: "entity", title: item.Title || item.Name, source: item.ActionArgument
+                type: "entity", title: item.Title || item.Name, source: item.ActionArgument,
+                service:(item as any).ServiceId
             };
         default:
             return null;

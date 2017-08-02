@@ -27,7 +27,7 @@ namespace SF.Core.DI
 
 		public static IServiceCollection UseCallGuarantorStorage(this IServiceCollection sc,string TablePrefix=null)
 		{
-			sc.UseDataModules<SF.Core.CallGuarantors.Storage.DataModels.CallExpired, SF.Core.CallGuarantors.Storage.DataModels.CallInstance>(TablePrefix);
+			sc.AddDataModules<SF.Core.CallGuarantors.Storage.DataModels.CallExpired, SF.Core.CallGuarantors.Storage.DataModels.CallInstance>(TablePrefix);
 			sc.AddScoped<ICallGuarantorStorage, CallGuarantorStorage>();
 			return sc;
 		}

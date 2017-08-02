@@ -39,7 +39,7 @@ namespace SF.UT.Data
 			var isc = new ServiceCollection();
 			isc.UseSystemMemoryCache();
 			isc.UseMemoryManagedServiceSource();
-			isc.UseDataModules<DataModels.User, DataModels.Post>();
+			isc.AddDataModules<DataModels.User, DataModels.Post>();
 #if NETCORE
 			sc.AddEntityFrameworkInMemoryDatabase();
 			sc.AddDbContext<DbContext>((asp,op) =>

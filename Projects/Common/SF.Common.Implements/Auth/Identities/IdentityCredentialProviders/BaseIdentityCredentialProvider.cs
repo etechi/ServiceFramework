@@ -15,6 +15,7 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 		protected IIdentityCredentialStorage CredentialStorage { get; }
 		public IServiceInstanceDescriptor ServiceInstance { get; }
 		public abstract string Name { get; }
+		public long Id => ServiceInstance.InstanceId;
 
 		public BaseIdentityCredentialProvider(
 			IIdentityCredentialStorage CredentialStorage,

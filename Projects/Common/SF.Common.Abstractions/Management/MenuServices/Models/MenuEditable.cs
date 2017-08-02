@@ -29,7 +29,7 @@ namespace SF.Management.MenuServices.Models
 	{
 
 		[Comment("字体图标", "字体图标", GroupName = "前端展示")]
-		[Image]
+		[MaxLength(100)]
 		public virtual string FontIcon { get; set; }
 
 
@@ -39,8 +39,12 @@ namespace SF.Management.MenuServices.Models
 		[Comment("动作参数")]
 		public string ActionArgument { get; set; }
 
+		[Comment("服务")]
+		[EntityIdent("系统服务实例")]
+		public long? ServiceId { get; set; }
 
 		[Comment("子菜单")]
+		[TreeNodes]
 		public IEnumerable<MenuItem> Children { get; set; }
 
 		[Ignore]

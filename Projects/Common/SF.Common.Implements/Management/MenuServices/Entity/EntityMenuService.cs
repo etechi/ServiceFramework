@@ -57,7 +57,9 @@ namespace SF.Management.MenuServices.Entity
 				  {
 					  Id = i.Id,
 					  Action = i.Action,
-					  ActionArgument = i.ActionArgument
+					  ActionArgument = i.ActionArgument,
+					  ServiceId=i.ServiceId,
+					  ParentId=i.ParentId
 				  }).ToArrayAsync();
 			menu.Items = ADT.Tree.Build(
 				items,
@@ -129,6 +131,7 @@ namespace SF.Management.MenuServices.Entity
 					mi.Create(time);
 					mi.Update(ei, time);
 					mi.Action = ei.Action;
+					mi.ServiceId = ei.ServiceId;
 					mi.ActionArgument = ei.ActionArgument;
 					mi.ParentId = pmi?.Id;
 					mi.MenuId = m.Id;
@@ -141,6 +144,7 @@ namespace SF.Management.MenuServices.Entity
 					mi.ParentId = ei.ParentId;
 					mi.Action = ei.Action;
 					mi.ActionArgument = ei.ActionArgument;
+					mi.ServiceId = ei.ServiceId;
 				}
 				);
 
@@ -166,6 +170,7 @@ namespace SF.Management.MenuServices.Entity
 					  Id = i.Id,
 					  ParentId=i.ParentId,
 					  Action = i.Action,
+					  ServiceId=i.ServiceId,
 					  ActionArgument = i.ActionArgument
 				  }).ToArrayAsync();
 

@@ -18,15 +18,10 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection UseFilePathResolver(this IServiceCollection sc)
 		{
 			sc.AddScoped<IFilePathResolver, FilePathResolver>();
-			sc.AddInitializer(
+			sc.InitDefaultService<IFilePathResolver, FilePathResolver>(
 				"初始化文件路径解析服务",
-				async sp =>
-				{
-					var sim = sp.Resolve<IServiceInstanceManager>();
-					await sim.EnsureDefaultService<IFilePathResolver, FilePathResolver>(
-						new FilePathDefination()
-						);
-				});
+				new FilePathDefination()
+				);
 			return sc;
 		}
 	}

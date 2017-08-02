@@ -303,7 +303,8 @@ namespace SF.Auth.Identities
 					AccessSource = Setting.ClientService.Value.AccessSource,
 					PasswordHash = passwordHash,
 					SecurityStamp = Bytes.Random(16),
-					Identity=new Identity
+					IdentProvider= CredentialProvider.Id,
+					Identity =new Identity
 					{
 						Id = uid,
 						Entity = Arg.Identity.Entity,

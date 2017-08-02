@@ -35,7 +35,7 @@ namespace SF.UT.Data
 			var isc = new Core.ServiceManagement.ServiceCollection();
 			isc.UseSystemMemoryCache();
 			isc.UseMemoryManagedServiceSource();
-			isc.UseDataModules<DataModels.User, DataModels.Post>();
+			isc.AddDataModules<DataModels.User, DataModels.Post>();
 
 			var msc = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 

@@ -28,7 +28,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public static void UseManagedServiceAdminServices(this IServiceCollection sc, string TablePrefix = null)
 		{
-			sc.UseDataModules<Management.DataModels.ServiceInstance>(TablePrefix);
+			sc.AddDataModules<Management.DataModels.ServiceInstance>(TablePrefix);
 
 			sc.AddEntityService<Management.IServiceDeclarationManager, Management.ServiceDeclarationManager,string,Models.ServiceDeclaration>();
 			sc.AddEntityService<Management.IServiceImplementManager, Management.ServiceImplementManager, string, Models.ServiceImplement>();

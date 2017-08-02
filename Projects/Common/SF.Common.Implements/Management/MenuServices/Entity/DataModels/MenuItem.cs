@@ -51,6 +51,8 @@ namespace SF.Management.MenuServices.Entity.DataModels
 		[InverseProperty(nameof(Parent))]
 		public ICollection<TMenuItem> Children { get; set; }
 
+		[Comment("系统服务实例ID")]
+		public long? ServiceId { get; set; }
 
 	}
 

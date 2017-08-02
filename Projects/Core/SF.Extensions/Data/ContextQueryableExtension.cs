@@ -113,8 +113,9 @@ namespace SF.Data
         public static IContextQueryable<O> Filter<O, T>(
             this IContextQueryable<O> q,
             T? value,
-            System.Linq.Expressions.Expression<Func<O, T?>> propExpr
-            )
+            System.Linq.Expressions.Expression<Func<O, T?>> propExpr,
+			bool UseDefaultValueForNoValue=true
+			)
             where O : class
             where T : struct
         {
@@ -122,6 +123,19 @@ namespace SF.Data
             var prop = propExpr.Body;
             if (value == null)
                 return q;
+			if(UseDefaultValueForNoValue)
+			{
+				if(value.HasValue && EqualityComparer<T>.Default.Equals(value.Value,default(T)))
+				{
+					return q.Where(
+						Expression.Lambda<Func<O, bool>>(
+							Expression.Not(
+								Expression.Property(prop, NullableProps<T>.HasValue)
+							),
+							o
+						));
+				}
+			}
             return q.Where(
                 Expression.Lambda<Func<O, bool>>(
                     Expression.AndAlso(

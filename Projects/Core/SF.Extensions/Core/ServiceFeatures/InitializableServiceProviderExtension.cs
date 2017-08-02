@@ -13,10 +13,11 @@ namespace SF.Core.ServiceFeatures
 		class ServiceInitializer
 		{
 			public static ServiceInitializer Instance { get; } = new ServiceInitializer();
-			public async Task InitServices(IServiceProvider sp)
+			public async Task InitServices(IServiceProvider sp,string Group)
 			{
 				var logger = sp.Resolve<ILogger<ServiceInitializer>>();
 				var bss = sp.Resolve<IEnumerable<IServiceInitializable>>()
+					.Where(i=>i.Group== Group)
 					.OrderBy(i=>i.Priority)
 					.ToArray();
 				foreach (var bs in bss)
@@ -27,9 +28,9 @@ namespace SF.Core.ServiceFeatures
 				}
 			}
 		}
-		public static async Task InitServices(this IServiceProvider sp)
+		public static async Task InitServices(this IServiceProvider sp,string Group)
 		{
-			await ServiceInitializer.Instance.InitServices(sp);
+			await ServiceInitializer.Instance.InitServices(sp,Group);
 		}
 
 	}

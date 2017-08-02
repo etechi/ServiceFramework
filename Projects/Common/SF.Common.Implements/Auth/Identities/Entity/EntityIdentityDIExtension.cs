@@ -11,7 +11,7 @@ namespace SF.Auth.Identities.Entity
 			string TablePrefix = null
 			)
 		{
-			sc.UseDataModules<
+			sc.AddDataModules<
 				DataModels.Identity,
 				DataModels.IdentityCredential
 				> (TablePrefix);

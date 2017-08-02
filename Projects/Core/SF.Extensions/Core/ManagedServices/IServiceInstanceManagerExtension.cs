@@ -41,10 +41,22 @@ namespace SF.Core.ServiceManagement.Management
 			e.Description = Description ?? comment.Description;
 			e.Setting = Json.Stringify(Setting);
 		}
+		public static async Task<long> TryGetDefaultService<I>(
+			this IServiceInstanceManager Manager,
+			long? ParentId = null
+			)
+			=> await Manager.ResolveEntity(
+				new ServiceInstanceQueryArgument
+				{
+					ParentId = ParentId ?? 0,
+					ServiceType = typeof(I).FullName,
+					IsDefaultService = true
+				});
+
 		public static async Task<Models.ServiceInstanceEditable> EnsureDefaultService<I,T>(
 			this IServiceInstanceManager Manager,
+			long? ParentId,
 			object Setting,
-			long? ParentId=null,
 			string Name=null,
 			string Title=null,
 			string Description=null,
@@ -52,39 +64,36 @@ namespace SF.Core.ServiceManagement.Management
 			)
 		{
 			return await Manager.EnsureEntity(
-				await Manager.ResolveEntity(
-					new ServiceInstanceQueryArgument
-					{
-						ServiceType = typeof(I).FullName,
-						IsDefaultService = true
-					}),
+				await TryGetDefaultService<I>(Manager,ParentId),
 				() => new Models.ServiceInstanceEditable { },
 				e => UpdateServiceModel<I, T>(e, Setting, ParentId,Name, Title, Description, ServiceIdent)
 				);
 	
 		}
+		public static async Task<long> TryGetService<I,T>(
+			this IServiceInstanceManager Manager,
+			long? ParentId = null
+			) => await Manager.ResolveEntity(
+				new ServiceInstanceQueryArgument
+				{
+					ServiceType = typeof(I).FullName,
+					ImplementId = typeof(T).FullName + "@" + typeof(I).FullName,
+					ParentId = ParentId ?? 0,
+				});
+		
 		public static async Task<Models.ServiceInstanceEditable> TryAddService<I, T>(
 			this IServiceInstanceManager Manager,
+			long? ParentId,
 			object Setting,
-			long? ParentId = null,
 			string Name = null,
 			string Title = null,
 			string Description = null,
 			string ServiceIdent = null
 			)
 		{
-			var re=await Manager.QueryAsync(
-				new ServiceInstanceQueryArgument
-				{
-					ServiceType = typeof(I).FullName,
-					ImplementId = typeof(T).FullName + "@" + typeof(I).FullName
-				}, Data.Paging.Default
-				);
-			var items = re.Items.ToArray();
-			if (items.Length > 1)
-				return null;
+			var re = Manager.TryGetService<I, T>(ParentId);
 			return await Manager.EnsureEntity(
-				items.Length==0?0:items[0].Id,
+				re?.Id ?? 0,
 				() => new Models.ServiceInstanceEditable { },
 				e => UpdateServiceModel<I, T>(e, Setting, ParentId, Name, Title, Description, ServiceIdent)
 				);

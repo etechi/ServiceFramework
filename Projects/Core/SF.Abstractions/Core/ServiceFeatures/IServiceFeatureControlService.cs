@@ -10,6 +10,6 @@ namespace SF.Core.ServiceFeatures
 	[Auth.Authorize("sysadmin")]
 	public interface IServiceFeatureControlService
 	{
-		Task<string> Init();
+		Task<string> Init(string Group=null);
 	}
 }

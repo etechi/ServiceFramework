@@ -11793,7 +11793,10 @@ function uri_encode(values) {
 ;
 function call(type, method, query, post, opts) {
     return new Promise(function (resolve, reject) {
-        var uri = "/api/" + type + "/" + method;
+        var uri = "/api/" + type;
+        if (opts && opts.serviceId)
+            uri += "-" + opts.serviceId;
+        uri += "/" + method;
         var q = {};
         if (query)
             for (var k in query)
@@ -15490,7 +15493,8 @@ function newItem(item) {
             };
         case "EntityManager":
             return {
-                type: "entity", title: item.Title || item.Name, source: item.ActionArgument
+                type: "entity", title: item.Title || item.Name, source: item.ActionArgument,
+                service: item.ServiceId
             };
         default:
             return null;
@@ -32158,7 +32162,7 @@ var ApiForm = (function (_super) {
     ApiForm.prototype.apiCall = function (data) {
         var _this = this;
         return wait.start(function () {
-            return formManager().library().call(_this.props.controller, _this.props.action, data, null);
+            return formManager().library().call(_this.props.controller, _this.props.action, data, { serviceId: _this.props.serviceId });
         });
     };
     //componentWillReceiveProps(nextProps: ApiFormProps) {
@@ -32370,7 +32374,7 @@ var EntityEditor = (function (_super) {
         var help = this.props.help || curAction && curAction.Description;
         return React.createElement("div", { className: "entity-editor " + (this.props.className || '') }, !this.state.value ? null : React.createElement(ApiForm_1.ApiForm, { 
             //key={this.state.formKey}
-            ref: "form", help: help, readonly: this.props.readonly, controller: this.props.controller, action: this.props.readonly ? "@" + this.props.loadAction : id ? (this.props.updateAction || "Update") : (this.props.createAction || "Create"), value: this.state.value, onChange: function (v) {
+            ref: "form", help: help, readonly: this.props.readonly, controller: this.props.controller, serviceId: this.props.serviceId, action: this.props.readonly ? "@" + this.props.loadAction : id ? (this.props.updateAction || "Update") : (this.props.createAction || "Create"), value: this.state.value, onChange: function (v) {
                 return _this.setState({ value: v });
             }, editMode: !!id, onSubmit: function (data) { return _this.handleOnSubmit(data); }, onSubmitSuccess: this.props.onSubmitSuccess, onBuildSubmitPanel: function (props, state) {
                 var cmds = React.createElement("div", { className: 'editor-submit-panel' },
@@ -32469,7 +32473,7 @@ var EntityTable = (function (_super) {
             if (p.onEntitySelected && r)
                 p.onEntitySelected(r, true);
         };
-        return React.createElement(ApiTable_1.ApiTable, { ref: "table", controller: p.controller, rowClassNameGetter: rowClassNameGetter, action: p.action, rowsHeight: p.rowsHeight, headerHeight: p.headerHeight, className: p.className, entityLinkBase: p.entityLinkBase, hideQueryPanel: p.hideQueryPanel, linkTarget: p.linkTarget, onRowClick: rowClick, onRowDoubleClick: rowDoubleClick, extraColumns: ecs, titleLinkBuilder: p.titleLinkBuilder, filterValue: p.filterValue });
+        return React.createElement(ApiTable_1.ApiTable, { ref: "table", controller: p.controller, serviceId: p.serviceId, rowClassNameGetter: rowClassNameGetter, action: p.action, rowsHeight: p.rowsHeight, headerHeight: p.headerHeight, className: p.className, entityLinkBase: p.entityLinkBase, hideQueryPanel: p.hideQueryPanel, linkTarget: p.linkTarget, onRowClick: rowClick, onRowDoubleClick: rowDoubleClick, extraColumns: ecs, titleLinkBuilder: p.titleLinkBuilder, filterValue: p.filterValue });
     };
     return EntityTable;
 }(React.Component));
@@ -56088,7 +56092,7 @@ var ApiTable = (function (_super) {
             summaryRequired: this.state.pgTotal == 0,
         };
         this.setState({ status: "数据载入中..." });
-        return ApiTableManager.defaultTableManager().library().call(this.props.controller, this.props.action, this.state.args || {}, { paging: pg })
+        return ApiTableManager.defaultTableManager().library().call(this.props.controller, this.props.action, this.state.args || {}, { paging: pg, serviceId: this.props.serviceId })
             .then(function (re) {
             var total = re.Total || _this.state.pgTotal;
             var summary = re.Summary;
@@ -56413,6 +56417,7 @@ function buildEntityItem(ctx) {
             component: Views.EditView({
                 links: [{ text: ctx.module.title }, { text: title }, { text: '查看' + entity }],
                 controller: controller.Name,
+                serviceId: ctx.item.service,
                 readonly: true,
                 loadAction: LoadForEditAction && !readonly ? "LoadForEdit" : LoadAction ? "Load" : "Get"
             }),
@@ -56424,6 +56429,7 @@ function buildEntityItem(ctx) {
                 component: Views.EditView({
                     links: [{ text: ctx.module.title }, { text: title }, { text: '添加' + entity }],
                     controller: controller.Name,
+                    serviceId: ctx.item.service,
                 })
             });
         if (UpdateAction)
@@ -56432,6 +56438,7 @@ function buildEntityItem(ctx) {
                 component: Views.EditView({
                     links: [{ text: ctx.module.title }, { text: title }, { text: '编辑' + entity }],
                     controller: controller.Name,
+                    serviceId: ctx.item.service,
                 }),
             });
     }
@@ -56476,6 +56483,7 @@ function buildEntityItem(ctx) {
                 component: Views.EditView({
                     links: [{ text: ctx.module.title }, { text: title }, { text: action.action.Title }],
                     controller: controller.Name,
+                    serviceId: ctx.item.service,
                     loadAction: initAction ? initAction.Name : null,
                     createAction: initAction ? null : action.action.Name,
                     updateAction: initAction ? action.action.Name : null,
@@ -56489,6 +56497,7 @@ function buildEntityItem(ctx) {
                 component: Views.EditView({
                     links: [{ text: ctx.module.title }, { text: title }, { text: action.action.Title }],
                     controller: controller.Name,
+                    serviceId: ctx.item.service,
                     loadAction: action.action.Name,
                     readonly: true
                 })
@@ -56602,6 +56611,7 @@ function buildEntityItem(ctx) {
         component: ListAction || QueryAction ? Views.ListView({
             links: [{ text: ctx.module.title }, { text: title }],
             controller: controller.Name,
+            serviceId: ctx.item.service,
             action: QueryAction ? "Query" : "List",
             headerLinks: !readonly && CreateAction && (ctx.item.entityMode != EntityItemMode.NoCreate) ? [{ to: ctx.cfg.urlRoot + ctx.linkBase + entityEncoded + "/new", text: "添加" + entity }] : null,
             headerActionBuilders: headActionBuilders,
@@ -56647,6 +56657,7 @@ function buildFormItem(ctx) {
             id: 1,
             links: [{ text: ctx.module.title }, { text: title }],
             controller: controller.Name,
+            serviceId: ctx.item.service,
             loadAction: loadAction ? loadAction.Name : null,
             createAction: loadAction ? null : saveAction.Name,
             updateAction: saveAction && saveAction.Name || null,
@@ -56694,6 +56705,7 @@ function buildListItem(ctx) {
             component: Views.EditView({
                 links: [{ text: ctx.module.title }, { text: listTitle }, { text: '查看' + objTitle }],
                 controller: controller.Name,
+                serviceId: ctx.item.service,
                 readonly: true,
                 loadAction: loadAction.Name
             }),
@@ -56705,6 +56717,7 @@ function buildListItem(ctx) {
                 component: Views.EditView({
                     links: [{ text: ctx.module.title }, { text: listTitle }, { text: '添加' + objTitle }],
                     controller: controller.Name,
+                    serviceId: ctx.item.service,
                     createAction: createAction.Name,
                     updateAction: saveAction && saveAction.Name
                 })
@@ -56715,6 +56728,7 @@ function buildListItem(ctx) {
                 component: Views.EditView({
                     links: [{ text: ctx.module.title }, { text: listTitle }, { text: '编辑' + objTitle }],
                     controller: controller.Name,
+                    serviceId: ctx.item.service,
                     loadAction: loadAction.Name,
                     updateAction: saveAction.Name
                 }),
@@ -56727,6 +56741,7 @@ function buildListItem(ctx) {
         component: Views.ListView({
             links: [{ text: ctx.module.title }, { text: listTitle }],
             controller: controller.Name,
+            serviceId: ctx.item.service,
             action: listAction.Name,
             titleLinkBuilder: function (ids) { return linkBase + ids.join('/'); },
             headerLinks: !readonly && createAction ? [{ to: ctx.cfg.urlRoot + ctx.linkBase + actionNameEncoded + "/new", text: "添加" + objTitle }] : null
@@ -57085,7 +57100,7 @@ function EditView(args) {
             }
             return React.createElement(Page.Container, null,
                 React.createElement(Page.Content, null,
-                    React.createElement(EntityEditor_1.EntityEditor, { id: id, controller: args.controller, loadAction: args.loadAction, createAction: args.createAction, updateAction: args.updateAction, readonly: args.readonly, onSubmitSuccess: function () {
+                    React.createElement(EntityEditor_1.EntityEditor, { id: id, controller: args.controller, serviceId: args.serviceId, loadAction: args.loadAction, createAction: args.createAction, updateAction: args.updateAction, readonly: args.readonly, onSubmitSuccess: function () {
                             if (args.jumpback)
                                 react_router_1.browserHistory.goBack();
                         }, onBuildSubmitPanel: function (props, cmds) {
@@ -57214,7 +57229,7 @@ function ListView(args) {
                             return a.build(null, i, refresh);
                         }) || null),
                     React.createElement(Page.Content, null,
-                        React.createElement(EntityTable_1.EntityTable, { ref: "table", controller: args.controller, action: args.action, className: "full-page-list", titleLinkBuilder: args.titleLinkBuilder, actions: args.actionBuilders, readonly: args.readonly, filterValue: filter }))));
+                        React.createElement(EntityTable_1.EntityTable, { ref: "table", controller: args.controller, action: args.action, serviceId: args.serviceId, className: "full-page-list", titleLinkBuilder: args.titleLinkBuilder, actions: args.actionBuilders, readonly: args.readonly, filterValue: filter }))));
         };
         return ListView;
     }(React.Component));

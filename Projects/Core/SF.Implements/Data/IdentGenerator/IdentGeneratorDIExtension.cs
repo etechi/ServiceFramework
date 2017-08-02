@@ -10,21 +10,13 @@ namespace SF.Core.ServiceManagement
 			string TablePrefix=null
 			)
 		{
-			sc.UseDataModules<SF.Data.IdentGenerator.DataModels.IdentSeed>(TablePrefix);
+			sc.AddDataModules<SF.Data.IdentGenerator.DataModels.IdentSeed>(TablePrefix);
 			sc.AddScoped<SF.Data.IIdentGenerator, SF.Data.IdentGenerator.StorageIdentGenerator>();
-			sc.AddInitializer(
-				"初始化对象标识生成器",
-				async sp =>
-				{
-					await sp.Resolve<IServiceInstanceManager>().EnsureDefaultService<
-						SF.Data.IIdentGenerator,
-						SF.Data.IdentGenerator.StorageIdentGenerator
-						>(
-						new
-						{
-							CountPerBatch = 100
-						});
-				});
+			sc.InitDefaultService<SF.Data.IIdentGenerator,SF.Data.IdentGenerator.StorageIdentGenerator>(
+				new{
+					CountPerBatch = 100
+				}
+			);
 			return sc;
 		}
 	}

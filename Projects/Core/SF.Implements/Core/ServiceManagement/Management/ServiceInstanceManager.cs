@@ -120,6 +120,7 @@ namespace SF.Core.ServiceManagement.Management
 					.Filter(Arg.ServiceType, i => i.ServiceType)
 					.Filter(Arg.ServiceIdent,i=>i.ServiceIdent)
 					.Filter(Arg.ImplementId, i => i.ImplementType)
+					.Filter(Arg.ParentId,i=>i.ParentId)
 					.Filter(Arg.IsDefaultService.HasValue? (Arg.IsDefaultService.Value?(int?)0:(int?)-1):null,i=>i.Priority)
 				;
 		}

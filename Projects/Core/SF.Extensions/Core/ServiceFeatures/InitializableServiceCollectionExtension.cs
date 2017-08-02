@@ -11,6 +11,7 @@ namespace SF.Core.ServiceManagement
 		class InitHelper : IServiceInitializable
 		{
 			public Func<IServiceProvider,Task> Callback { get; set; }
+			public string Group { get; set; }
 			public string Title { get; set; }
 			public int Priority { get; set; }
 			public Task Init(IServiceProvider ServiceProvider)
@@ -20,6 +21,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IServiceCollection AddInitializer(
 			this IServiceCollection sc, 
+			string Group,
 			string Title,
 			Func<IServiceProvider,Task> Callback,
 			int Priority=0
@@ -28,6 +30,7 @@ namespace SF.Core.ServiceManagement
 				sc.AddSingleton<IServiceInitializable>(sp =>
 					new InitHelper
 					{
+						Group=Group,
 						Title=Title,
 						Callback = isp => Callback(isp),
 						Priority=Priority
@@ -37,11 +40,13 @@ namespace SF.Core.ServiceManagement
 		
 		public static IServiceCollection AddInitializer(
 			this IServiceCollection sc,
+			string Group,
 			string Title,
 			Action<IServiceProvider> Callback,
 			int Priority = 0)
 		{
 			sc.AddInitializer(
+				Group,
 				Title,
 				sp =>
 				{

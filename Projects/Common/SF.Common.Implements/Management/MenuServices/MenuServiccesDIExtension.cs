@@ -81,33 +81,66 @@ namespace SF.Core.ServiceManagement
 				}
 			);
 		}
+
+		static async Task NewMenu(
+			this IServiceProvider sp, 
+			long? ParentId, 
+			string Ident, 
+			string Name, 
+			MenuItem[] items
+			)
+		{
+			ADT.Tree.AsEnumerable(items, i => i.Children)
+				.ForEach(it =>
+				{
+					if (it.Name == null)
+					{
+						if (it.Action == MenuItemAction.EntityManager)
+							it.Name = it.ActionArgument;
+						else
+							throw new ArgumentException("菜单项缺少名称:" + Json.Stringify(it));
+					}
+					it.Title = it.Title ?? it.Name;
+				});
+
+			var menuService = sp.Resolve<IMenuService>();
+			await menuService.EnsureEntity(
+				await menuService.ResolveEntity(new MenuQueryArgument { Ident = Ident }),
+				() => new MenuEditable(),
+				e => {
+					e.Name = Name;
+					e.Ident = Ident;
+					e.Items = items;
+				}
+			);
+		}
 		public static IServiceCollection UseMenuServices<TMenu, TMenuItem>(
 			this IServiceCollection sc,
-			Func<MenuItem[]> DefaultMenu=null,
+			//Func<MenuItem[]> DefaultMenu=null,
 			string TablePrefix = null
 			)
 			where TMenu : SF.Management.MenuServices.Entity.DataModels.Menu<TMenu, TMenuItem>,new()
 			where TMenuItem: SF.Management.MenuServices.Entity.DataModels.MenuItem<TMenu,TMenuItem>,new()
 		{
-			sc.UseDataModules<TMenu,TMenuItem>(TablePrefix);
+			sc.AddDataModules<TMenu,TMenuItem>(TablePrefix);
 			sc.AddScoped<IMenuService, SF.Management.MenuServices.Entity.EntityMenuService<TMenu, TMenuItem>>();
 
-			sc.AddInitializer(
-				"初始化菜单",
-				sp=>Init(sp,DefaultMenu),
-				int.MaxValue
-				);
+			//sc.AddInitializer(
+			//	"初始化菜单",
+			//	sp=>Init(sp,DefaultMenu),
+			//	int.MaxValue
+			//	);
 			return sc;
 		}
 
 		public static IServiceCollection UseMenuService(
 			this IServiceCollection sc,
-			Func<MenuItem[]> DefaultMenu = null,
+			//Func<MenuItem[]> DefaultMenu = null,
 			string TablePrefix = null
 			)
 			=> UseMenuServices<
 				SF.Management.MenuServices.Entity.DataModels.Menu, 
 				SF.Management.MenuServices.Entity.DataModels.MenuItem
-				>(sc, DefaultMenu,TablePrefix);
+				>(sc, /*DefaultMenu,*/TablePrefix);
 	}
 }

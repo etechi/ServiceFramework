@@ -11,6 +11,7 @@ namespace SF.Auth.Identities
 	}
     public interface IIdentityCredentialProvider
     {
+		long Id { get; }
 		string Name { get; }
 		bool IsConfirmable();
 		Task<string> VerifyFormat(string Ident);

@@ -14,21 +14,16 @@ namespace SF.Core.ServiceManagement
 			)
 		{
 			sc.AddScoped<Caching.IFileCache, Caching.LocalFileCache>();
-			sc.AddInitializer(
+			sc.InitDefaultService<Caching.IFileCache, Caching.LocalFileCache>(
 				"初始化文件缓存服务",
-				async sp =>
+				new
 				{
-					var sim = sp.Resolve<IServiceInstanceManager>();
-					await sim.EnsureDefaultService<Caching.IFileCache, Caching.LocalFileCache>(
-						new
-						{
-							Setting = new
-							{
-								RootPath = "temp://cache",
-								PathResolver = await sim.ResolveDefaultService<Hosting.IFilePathResolver>()
-							}
-						});
-				});
+					Setting = new
+					{
+						RootPath = "temp://cache",
+					}
+				}
+				);
 			return sc;
 		}
 	}

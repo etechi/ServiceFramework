@@ -8,6 +8,7 @@ namespace SF.Core.ServiceFeatures
 	public interface IServiceInitializable
 	{
 		string Title { get; }
+		string Group { get; }
 		Task Init(IServiceProvider ServiceProvider);
 		int Priority { get; }
 	}

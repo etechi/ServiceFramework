@@ -138,25 +138,29 @@ namespace SF.AdminSite
 
 			Services.AddTransient<ICalc, Calc>();
 
-			var msc = Services.UseManagedService();
-			msc.UseFilePathResolver();
-			msc.UseLocalFileCache();
-			msc.UseMediaService(EnvType);
-			
-			msc.AddScoped<IOperator, Add>();
-			msc.AddScoped<IOperator, Substract>();
-			msc.AddScoped<IAgg, Agg>();
+			Services.UseManagedService();
+			Services.UseFilePathResolver();
+			Services.UseLocalFileCache();
+			Services.UseMediaService(EnvType);
 
-			//msc.AddScoped<ICalc, Calc>();
-			//msc.AddScoped<IOperator, Substract>();
-			//msc.AddScoped<IAgg, Agg>();
-			msc.AddScoped<ITestService, TestService>();
-			msc.UseManagedServiceAdminServices();
-			msc.UseIdentGenerator();
+			Services.AddScoped<IOperator, Add>();
+			Services.AddScoped<IOperator, Substract>();
+			Services.AddScoped<IAgg, Agg>();
 
-			msc.UseMenuService(InitDefaultMenu);
+			//Services.AddScoped<ICalc, Calc>();
+			//Services.AddScoped<IOperator, Substract>();
+			//Services.AddScoped<IAgg, Agg>();
+			Services.AddScoped<ITestService, TestService>();
+
+			Services.UseManagedServiceAdminServices();
+
+			Services.UseIdentGenerator();
+
+			Services.UseMenuService();
 
 			Services.UseAspNetFilePathStructure();
+
+			
 			if (EnvType != EnvironmentType.Utils)
 			{
 
@@ -635,6 +639,18 @@ namespace SF.AdminSite
 									ActionArgument="http://www.sina.com.cn",
 									Name="系统操作日志"
 								},
+							}
+						},
+						new MenuItem
+						{
+							Name="其他设置",
+							Children=new []
+							{
+								new MenuItem
+								{
+									Action=MenuItemAction.EntityManager,
+									ActionArgument="系统菜单"
+								}
 							}
 						},
 						new MenuItem

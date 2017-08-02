@@ -50,6 +50,7 @@
     <Compile Include="Core\CallGuarantors\CallableDIServoceCollectionExtension.cs" />
     <Compile Include="Core\CallGuarantors\ICallGuarantorExtension.cs" />
     <Compile Include="Core\Hosting\AppInstance.cs" />
+    <Compile Include="Core\ManagedServices\IServiceInstanceInitializer.cs" />
     <Compile Include="Core\ManagedServices\IServiceInstanceManagerExtension.cs" />
     <Compile Include="Core\ServiceFeatures\BootableServiceProviderExtension.cs" />
     <Compile Include="Core\ServiceFeatures\InitializableServiceCollectionExtension.cs" />

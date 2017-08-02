@@ -23,6 +23,10 @@ namespace SF.Core.ServiceManagement.Management
 		[Comment("服务实现")]
 		public string ImplementId { get; set; }
 
+		[EntityIdent("系统服务实现")]
+		[Comment("父服务实现")]
+		public long? ParentId { get; set; }
+
 		[Comment("服务标识")]
 		[MaxLength(100)]
 		public string ServiceIdent { get; set; }
