@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Common.TextMessages.Admin
+namespace SF.Common.TextMessages.Management
 {
 	
 	public class MsgRecordQueryArgument : Data.Entity.QueryArgument<long>
@@ -21,8 +21,8 @@ namespace SF.Common.TextMessages.Admin
 
 
 		[Comment( "发送服务")]
-		[EntityIdent("系统服务")]
-		public int? ServiceId { get; set; }
+		[EntityIdent("系统服务实例")]
+		public long? ServiceId { get; set; }
 
 		[Comment( "发送时间")]
 		public QueryRange<DateTime> Time { get; set; }

@@ -18,7 +18,7 @@ using SF.Data.DataModels;
 namespace SF.Users.Members.Entity.DataModels
 {
 	[Table("UserMember")]
-	public class Member<TMember,TMemberSource> : DataEntityBase
+	public class Member<TMember,TMemberSource> : ObjectEntityBase
 		where TMember: Member<TMember, TMemberSource>
 		where TMemberSource: MemberSource<TMember, TMemberSource>
 	{

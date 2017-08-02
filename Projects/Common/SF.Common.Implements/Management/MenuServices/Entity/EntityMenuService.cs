@@ -41,7 +41,7 @@ namespace SF.Management.MenuServices.Entity
 			PagingQueryBuilder<TMenu>.Simple("ident", b => b.Ident, true);
 		protected override async Task<MenuEditable> OnMapModelToEditable(IContextQueryable<TMenu> Query)
 		{
-			var menu = await Query.SelectEntity(i =>
+			var menu = await Query.SelectObjectEntity(i =>
 				  new MenuEditable
 				  {
 					  Id=i.Id,
@@ -52,7 +52,7 @@ namespace SF.Management.MenuServices.Entity
 
 			var items = await MenuItemSet.Value.AsQueryable()
 				.Where(i => i.MenuId == menu.Id)
-				.SelectUIEntity(i =>
+				.SelectUIObjectEntity(i =>
 				  new MenuItem
 				  {
 					  Id = i.Id,
@@ -75,7 +75,7 @@ namespace SF.Management.MenuServices.Entity
 		}
 		protected override IContextQueryable<Menu> OnMapModelToPublic(IContextQueryable<TMenu> Query)
 		{
-			return Query.SelectEntity(m => new Menu
+			return Query.SelectObjectEntity(m => new Menu
 			{
 				Id = m.Id,
 				Ident = m.Ident
@@ -164,7 +164,7 @@ namespace SF.Management.MenuServices.Entity
 
 			var items = await MenuItemSet.Value.AsQueryable()
 				.Where(i => i.MenuId == menuId)
-				.SelectUIEntity(i =>
+				.SelectUIObjectEntity(i =>
 				  new MenuItem
 				  {
 					  Id = i.Id,

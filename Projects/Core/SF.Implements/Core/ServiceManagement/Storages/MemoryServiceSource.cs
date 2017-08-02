@@ -99,7 +99,7 @@ namespace SF.Core.ServiceManagement.Storages
 		public Config SetConfig<I,T>(long Id, object Settings,int Priority=-1,long? ParentId=null,string Name=null)
 			where T:I
 		{
-			return SetConfig(typeof(I).FullName, typeof(T).FullName, Id, Settings, Priority, ParentId,Name);
+			return SetConfig(typeof(I).GetFullName(), typeof(T).GetFullName(), Id, Settings, Priority, ParentId,Name);
 		}
 		public IServiceConfig GetConfig(long Id)
 		{

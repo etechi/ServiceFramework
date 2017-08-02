@@ -1,4 +1,6 @@
 using System;
+using System.Reflection;
+
 namespace SF.Core.ServiceManagement.Internals
 {
 
@@ -11,7 +13,7 @@ namespace SF.Core.ServiceManagement.Internals
 		}
 		public string GetTypeIdent(Type type)
 		{
-			return type.FullName;
+			return type.GetFullName();
 		}
 
 		public Type Resolve(string Name)
@@ -28,7 +30,7 @@ namespace SF.Core.ServiceManagement.Internals
 		}
 		public string GetTypeIdent(Type type)
 		{
-			return type.FullName;
+			return type.GetFullName();
 		}
 
 		public Type Resolve(string Name)

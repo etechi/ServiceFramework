@@ -54,7 +54,7 @@ namespace SF.Core.ServiceManagement.Internals
 				{
 					ServiceType = svc.InterfaceType,
 						ImplementType = svc.ImplementType,
-						ImplementName=svc.ImplementType?.FullName,
+						ImplementName=svc.ImplementType?.GetFullName(),
 						LifeTime = svc.Lifetime,
 						IsManagedService = svc.ImplementType != null &&
 									svc.Lifetime != ServiceImplementLifetime.Singleton &&
@@ -73,7 +73,7 @@ namespace SF.Core.ServiceManagement.Internals
 					g => (IServiceDeclaration)new Service
 					{
 						ServiceType = g.Key,
-						ServiceName = g.Key.FullName,
+						ServiceName = g.Key.GetFullName(),
 						Implements = g.ToArray()
 					});
 			ServicesByTypeName = Services.ToDictionary(p => p.Key.GetFullName(), p => p.Value);

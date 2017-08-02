@@ -14,7 +14,7 @@ namespace SF.Data.Models
 {
 
 
-    public abstract class EntityBase<K> : IObjectWithId<K>, IEntity
+    public abstract class EventEntityBase<K> : IObjectWithId<K>, IEventEntity
 		where K:IEquatable<K>
 	{
 		[Comment("Id")]
@@ -23,31 +23,25 @@ namespace SF.Data.Models
 		[TableVisible]
 		public virtual K Id { get; set; }
 
-		[Comment("名称")]
-		[MaxLength(100)]
-		[Index]
-		[EntityTitle]
-		[TableVisible]
-		[Required]
-		public virtual string Name { get; set; }
-		
-		[Comment("对象状态")]
-		[TableVisible]
-		public virtual LogicObjectState ObjectState { get; set; }
-
-
-		[Comment("创建时间")]
+	
+		[Comment("时间")]
 		[TableVisible]
 		[ReadOnly(true)]
-		public virtual DateTime CreatedTime { get; set; }
+		public virtual DateTime Time{ get; set; }
 
-		[Comment("修改时间")]
+		[Comment("用户")]
+		[ReadOnly(true)]
+		[EntityIdent("身份标识", nameof(UserName))]
+		public virtual long? UserId { get; set; }
+
+		[Comment("用户")]
 		[TableVisible]
 		[ReadOnly(true)]
-		public virtual DateTime UpdatedTime { get; set; }
+		[Ignore]
+		public virtual long UserName { get; set; }
 	}
 
-	public class EntityBase : EntityBase<long>
+	public class EventEntityBase : EventEntityBase<long>
 	{
 
 	}

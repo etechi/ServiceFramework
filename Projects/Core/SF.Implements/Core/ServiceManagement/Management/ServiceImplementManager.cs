@@ -16,23 +16,23 @@ namespace SF.Core.ServiceManagement.Management
 		public Dictionary<string, ServiceImplement> Items { get; }
 		public ServiceImplementManager(IServiceMetadata ServiceMetadata)
 		{
-			this.Items = (
-				from svc in ServiceMetadata.Services
-				from impl in svc.Value.Implements
-				let svcType=svc.Value.ServiceType
-				let implType= impl.ImplementType
-				where implType!=null
-				let declComment= svcType.GetCustomAttribute<CommentAttribute>()
-				let implComment = implType.GetCustomAttribute<CommentAttribute>()
-				select new ServiceImplement
-				{
-					Id = implType.FullName+'@'+svcType.FullName,
-					Description = implComment?.Description,
-					Name = implComment?.Name ?? implType.Name,
-					Group = implComment?.GroupName,
-					DeclarationId=svcType.FullName,
-					DeclarationName=declComment?.Name ?? svcType.Name
-				}).ToDictionary(t => t.Id);
+			var sis = from svc in ServiceMetadata.Services
+					  from impl in svc.Value.Implements
+					  let svcType = svc.Value.ServiceType
+					  let implType = impl.ImplementType
+					  where implType != null
+					  let declComment = svcType.GetCustomAttribute<CommentAttribute>()
+					  let implComment = implType.GetCustomAttribute<CommentAttribute>()
+					  select new ServiceImplement
+					  {
+						  Id = implType.GetFullName() + '@' + svcType.GetFullName(),
+						  Description = implComment?.Description,
+						  Name = implComment?.Name ?? implType.Name,
+						  Group = implComment?.GroupName,
+						  DeclarationId = svcType.GetFullName(),
+						  DeclarationName = declComment?.Name ?? svcType.Name
+					  };
+			this.Items = sis.ToDictionary(t => t.Id);
 		}
 
 		public Task<ServiceImplement[]> GetAsync(string[] Ids)

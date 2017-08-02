@@ -46,19 +46,25 @@
     <Compile Include="Auth\Identities\Entity\EntityIdentityCredentialStorage.cs" />
     <Compile Include="Auth\Identities\Entity\EntityIdentityDIExtension.cs" />
     <Compile Include="Auth\Identities\Entity\EntityIdentityManagementService.cs" />
-    <Compile Include="Auth\Identities\IdentityDIExtension.cs" />
+    <Compile Include="Auth\Identities\IdentityCredentialProviders\UserAccountIdentityCredentialProvider.cs" />
+    <Compile Include="Auth\Identities\IdentityServiceDIExtension.cs" />
     <Compile Include="Auth\Identities\IdentityCredentialProviders\ConfirmMessageSetting.cs" />
     <Compile Include="Auth\Identities\IdentityCredentialProviders\BaseIdentityCredentialProvider.cs" />
     <Compile Include="Auth\Identities\IdentityCredentialProviders\PhoneNumberIdentityCredentialProvider.cs" />
     <Compile Include="Auth\Identities\VerifyCode.cs" />
-    <Compile Include="Auth\Identities\IdentServiceSetting.cs" />
+    <Compile Include="Auth\Identities\IdentityServiceSetting.cs" />
     <Compile Include="Auth\Identities\IdentityService.cs" />
+    <Compile Include="Common\TextMessages\Management\DataModels\TextMessageRecord.cs" />
+    <Compile Include="Common\TextMessages\Management\MsgRecordManager.cs" />
+    <Compile Include="Common\TextMessages\TextMessageServiceDIExtension.cs" />
+    <Compile Include="Common\TextMessages\SimPhoneTextMessageService.cs" />
     <Compile Include="Management\MenuServices\Entity\DataModels\MenuItem.cs" />
     <Compile Include="Management\MenuServices\Entity\DataModels\Menu.cs" />
     <Compile Include="Management\MenuServices\Entity\EntityMenuService.cs" />
-    <Compile Include="Management\MenuServices\MenuServiccesDIExtension.cs" />
+    <Compile Include="Management\MenuServices\MenuServiceDIExtension.cs" />
     <Compile Include="Management\SysAdmins\Entity\DataModels\SysAdmin.cs" />
     <Compile Include="Management\SysAdmins\Entity\EntitySysAdminManagementService.cs" />
+    <Compile Include="Management\SysAdmins\SysAdminServiceDIExtension.cs" />
     <Compile Include="Management\SysAdmins\SysAdminServiceSetting.cs" />
     <Compile Include="Management\SysAdmins\SysAdminService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -89,9 +95,7 @@
   <ItemGroup>
     <None Include="project.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Basic\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

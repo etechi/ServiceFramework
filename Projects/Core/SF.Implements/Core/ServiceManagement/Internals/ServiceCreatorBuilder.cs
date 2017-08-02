@@ -303,7 +303,9 @@ namespace SF.Core.ServiceManagement.Internals
 					else if (t.IsGeneric())
 					{
 						var gtd = t.GetGenericTypeDefinition();
-						if (gtd == typeof(IEnumerable<>))
+						if (gtd == typeof(Func<,>) || gtd == typeof(Func<>) || gtd == typeof(Lazy<>))
+							return;
+						else if (gtd == typeof(IEnumerable<>))
 							t = t.GetGenericArguments()[0];
 						else if (gtd == typeof(Dictionary<,>))
 							t = t.GetGenericArguments()[1];

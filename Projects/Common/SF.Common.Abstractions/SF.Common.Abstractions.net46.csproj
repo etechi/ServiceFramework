@@ -62,11 +62,11 @@
     <Compile Include="Auth\Sessions\ISessionService.cs" />
     <Compile Include="Auth\Sessions\Models\UserSession.cs" />
     <Compile Include="Auth\Sessions\Models\UserSessionInternal.cs" />
-    <Compile Include="Common\TextMessages\Admin\IMsgRecordManager.cs" />
-    <Compile Include="Common\TextMessages\Admin\ITextMessageLogger.cs" />
-    <Compile Include="Common\TextMessages\Admin\MsgRecord.cs" />
-    <Compile Include="Common\TextMessages\Admin\MsgRecordQueryArgument.cs" />
-    <Compile Include="Common\TextMessages\Admin\SendStatus.cs" />
+    <Compile Include="Common\TextMessages\Management\IMsgRecordManager.cs" />
+    <Compile Include="Common\TextMessages\Management\ITextMessageLogger.cs" />
+    <Compile Include="Common\TextMessages\Management\MsgRecord.cs" />
+    <Compile Include="Common\TextMessages\Management\MsgRecordQueryArgument.cs" />
+    <Compile Include="Common\TextMessages\Management\SendStatus.cs" />
     <Compile Include="Common\TextMessages\IPhoneMessageService.cs" />
     <Compile Include="Common\TextMessages\ITextMessageService.cs" />
     <Compile Include="Common\TextMessages\Message.cs" />

@@ -9,7 +9,7 @@ namespace SF.Core.ServiceManagement.Models
 {
 	[EntityObject("系统服务实例")]
 	public class ServiceInstance : 
-		SF.Data.Models.UIEntityBase<long>
+		SF.Data.Models.UIObjectEntityBase<long>
 	{
 		[Comment("服务标识")]
 		[TableVisible]

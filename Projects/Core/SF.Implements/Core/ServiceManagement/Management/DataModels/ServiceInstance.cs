@@ -11,14 +11,12 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 {
 	[Table("SysServiceInstance")]
 	[Comment("服务实例")]
-	public class ServiceInstance : SF.Data.DataModels.UIDataEntityBase<long>
+	public class ServiceInstance : SF.Data.DataModels.UIObjectEntityBase<long>
 	{
-
 		//[ForeignKey(nameof(ServiceCategoryItem))]
 		//public override long Id { get => base.Id; set => base.Id = value; }
 
 		//public ServiceCategoryItem ServiceCategoryItem { get; set; }
-
 		
 		[Index("TypedService",1)]
 		public long? ParentId { get; set; }
@@ -37,7 +35,7 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 
 		[Comment("主接口实现")]
 		[Required]
-		[MaxLength(100)]
+		[MaxLength(200)]
 		[Index("impl", 1)]
 		public string ImplementType { get; set; }
 
@@ -46,7 +44,7 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 
 		[Comment("服务标识")]
 		[Index]
-		[MaxLength(100)]
+		[MaxLength(200)]
 		public string ServiceIdent { get; set; }
 
 		[Comment("服务设置")]

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SF.Data.DataModels
 {
 
-    public abstract class DataEntityBase<K> : IObjectWithId<K>, IEntity
+    public abstract class ObjectEntityBase<K> : IObjectWithId<K>, IObjectEntity
 		where K:IEquatable<K>
 	{
 
@@ -27,7 +27,10 @@ namespace SF.Data.DataModels
 		[Required]
 		public virtual string Name { get; set; }
 
-		
+		[Comment("区域")]
+		[Index]
+		public virtual long? ScopeId { get; set; }
+
 		[Comment("对象状态")]
 		public virtual LogicObjectState ObjectState { get; set; }
 
@@ -55,7 +58,7 @@ namespace SF.Data.DataModels
 
 	}
 
-	public class DataEntityBase : DataEntityBase<long>
+	public class ObjectEntityBase : ObjectEntityBase<long>
 	{
 
 	}

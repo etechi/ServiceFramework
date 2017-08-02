@@ -4,17 +4,16 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using SF.Data.Storage;
 using System.ComponentModel.DataAnnotations;
-using SF.Services.TextMessages.Admin;
+using SF.Common.TextMessages.Management;
+using SF.Data.DataModels;
 
-namespace SF.Basic.TextMessages.DataModels
+namespace SF.Common.TextMessages.Management.DataModels
 {
-	[Table("app_text_message_record")]
+	[Table("CommonTextMessageRecord")]
 	[Comment(GroupName = "文本消息服务", Name = "文本消息记录", Description = "记录所有外发文本消息以及发送结果")]
-	public class TextMessageRecord
+	public class TextMessageRecord : EventEntityBase
 	{
-		[Comment("ID")]
-		[Key]
-		public long Id { get; set; }
+		
 
 		[Comment("发送状态")]
 		[Index("status", Order = 1)]
@@ -22,11 +21,11 @@ namespace SF.Basic.TextMessages.DataModels
 
 		[Comment("目标用户ID")]
 		[Index("user", Order = 1)]
-		public int? TargetUserId { get; set; }
+		public override long? UserId { get; set; }
 
 		[Comment("消息发送服务ID")]
 		[Index("service", Order = 1)]
-		public int ServiceId { get; set; }
+		public long ServiceId { get; set; }
 
 		[Comment("发信人")]
 		[MaxLength(100)]
@@ -34,7 +33,7 @@ namespace SF.Basic.TextMessages.DataModels
 
 		[Comment("收信人")]
 		[Required]
-		public string Targets { get; set; }
+		public string Target { get; set; }
 
 		[Comment("标题")]
 		[MaxLength(100)]
@@ -57,7 +56,7 @@ namespace SF.Basic.TextMessages.DataModels
 		[Index("user", Order = 2)]
 		[Index("service", Order = 2)]
 		[Comment("创建时间")]
-		public DateTime CreatedTime { get; set; }
+		public override DateTime Time { get; set; }
 
 		[Comment("完成时间")]
 		public DateTime? CompletedTime { get; set; }
@@ -66,7 +65,7 @@ namespace SF.Basic.TextMessages.DataModels
 		public string Error { get; set; }
 
 		[Comment("单项发送结果")]
-		public string TargetResults { get; set; }
+		public string Result { get; set; }
 
 		[Comment("业务跟踪ID")]
 		[MaxLength(100)]

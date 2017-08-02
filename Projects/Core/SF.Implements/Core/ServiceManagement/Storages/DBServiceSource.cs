@@ -47,7 +47,7 @@ namespace SF.Core.ServiceManagement.Storages
 				throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
 
 			var (implType, _) = re.ImplementType.Split2('@');
-			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == implType);
+			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.GetFullName() == implType);
 			if (svcImpl == null)
 				throw new InvalidOperationException($"找不到服务实现{implType}");
 			re.ImplementType = implType;

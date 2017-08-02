@@ -47,6 +47,6 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 
 		public abstract Task<string> VerifyFormat(string Ident);
 		public abstract bool IsConfirmable();
-		public abstract Task<long> SendConfirmCode(string Ident, string Code, ConfirmMessageType Type, string TrackIdent);
+		public abstract Task<long> SendConfirmCode(long? IdentityId, string Ident, string Code, ConfirmMessageType Type, string TrackIdent);
 	}
 }

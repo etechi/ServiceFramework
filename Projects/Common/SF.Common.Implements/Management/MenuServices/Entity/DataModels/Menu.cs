@@ -18,12 +18,12 @@ using SF.Data.DataModels;
 namespace SF.Management.MenuServices.Entity.DataModels
 {
 	[Table("MgrMenu")]
-	public class Menu<TMenu,TMenuItem> : DataEntityBase
+	public class Menu<TMenu,TMenuItem> : ObjectEntityBase
 		where TMenu : Menu<TMenu, TMenuItem>
 		where TMenuItem : MenuItem<TMenu, TMenuItem>
 	{
 		[Index("ident",Order =1)]
-		public long? ScopeId { get; set; }
+		public override long? ScopeId { get; set; }
 
 		[Index("ident",Order =2)]
 		[Required]

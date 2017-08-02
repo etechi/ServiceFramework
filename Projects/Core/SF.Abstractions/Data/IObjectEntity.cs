@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SF.Data
 {
-	public interface IEntity
+	public interface IObjectEntity
 	{
 		string Name { get; set; }
 

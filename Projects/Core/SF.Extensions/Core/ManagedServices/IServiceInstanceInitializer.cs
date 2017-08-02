@@ -4,8 +4,9 @@ using System.Linq;
 using System.Reflection;
 using SF.Data.Entity;
 using System.Collections.Generic;
+using SF.Core.ServiceManagement.Management;
 
-namespace SF.Core.ServiceManagement.Management
+namespace SF.Core.ServiceManagement
 {
 
 	public static class ServiceInstanceInitializerImplement
@@ -108,7 +109,7 @@ namespace SF.Core.ServiceManagement.Management
 					//var fpr = await sim.ResolveDefaultService<IFilePathResolver>();
 					//var fc = await sim.ResolveDefaultService<IFileCache>();
 					var children = new HashSet<IServiceInstanceInitializer>(childServices);
-					var rcfg = ConfigResolve(cfg, sp, svcId == 0 ? (long?)null : svcId, children);
+					var rcfg = await ConfigResolve(cfg, sp, svcId == 0 ? (long?)null : svcId, children);
 					var ms = await ServiceCreator(parent, rcfg);
 
 					foreach (var chd in children)
@@ -122,7 +123,8 @@ namespace SF.Core.ServiceManagement.Management
 		public static IServiceCollection InitServices(
 			this IServiceCollection sc,
 			string Name,
-			Func<IServiceProvider,IServiceInstanceManager,Task> initializer
+			Func<IServiceProvider,IServiceInstanceManager, long?,Task> initializer,
+			long? ParentId=null
 			)
 		{
 			sc.AddInitializer("service",Name, (sp) =>
@@ -130,7 +132,7 @@ namespace SF.Core.ServiceManagement.Management
 				Task.Run(async () =>
 				{
 					var sim = sp.Resolve<IServiceInstanceManager>();
-					await initializer(sp, sim);
+					await initializer(sp, sim, ParentId);
 				}).Wait();
 			});
 			return sc;
@@ -138,30 +140,34 @@ namespace SF.Core.ServiceManagement.Management
 		public static IServiceCollection InitService(
 			this IServiceCollection sc,
 			string Name,
-			Func<IServiceProvider, IServiceInstanceManager, IServiceInstanceInitializer> initializer
+			Func<IServiceProvider, IServiceInstanceManager, IServiceInstanceInitializer> initializer,
+			long? ParentId=null
 			)
 		{
 			return sc.InitServices(
 				Name,
-				async (sp, sim) =>
+				async (sp, sim, parent) =>
 				{
 					var sii = initializer(sp, sim);
-					await sii.Ensure(sp, null);
+					await sii.Ensure(sp, ParentId);
 				});
 		}
 		public static IServiceCollection InitDefaultService<I,T>(
 			this IServiceCollection sc,
 			string Name,
-			object Config
+			object Config,
+			long? ParentId=null
 			)=>
 			sc.InitService(
 				Name ?? "³õÊ¼»¯"+typeof(T).Comment().Name,
-				(sp, sim) =>sim.DefaultService<I,T>(Config)
+				(sp, sim) =>sim.DefaultService<I,T>(Config),
+				ParentId
 				);
 		public static IServiceCollection InitDefaultService<I, T>(
 			this IServiceCollection sc,
-			object Config
-			) => sc.InitDefaultService<I, T>(null, Config);
+			object Config,
+			long? ParentId=null
+			) => sc.InitDefaultService<I, T>(null, Config,ParentId);
 	}
 
 }

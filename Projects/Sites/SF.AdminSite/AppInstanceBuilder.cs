@@ -17,6 +17,8 @@ using System.Data.Entity.Migrations;
 using SF.AdminSite.Migrations;
 using System.Data.Entity.Infrastructure;
 using SF.Management.MenuServices.Models;
+using SF.Core.ServiceManagement.Management;
+using System.Threading.Tasks;
 
 namespace SF.AdminSite
 {
@@ -127,7 +129,8 @@ namespace SF.AdminSite
 			Services.UseSystemMemoryCache();
 			Services.UseSystemTimeService();
 			Services.UseTaskServiceManager();
-			Services.UseDefaultMimeResolver();
+			Services.AddDefaultKBServices();
+
 			Services.UseSystemDrawing();
 			Services.AddTransient<AppContext>(tsp => new AppContext(tsp));
 			Services.UseEF6DataEntity<AppContext>();
@@ -142,6 +145,9 @@ namespace SF.AdminSite
 			Services.UseFilePathResolver();
 			Services.UseLocalFileCache();
 			Services.UseMediaService(EnvType);
+			Services.InitService("媒体服务", (sp, sim) =>
+				sim.NewMediaService()
+				);
 
 			Services.AddScoped<IOperator, Add>();
 			Services.AddScoped<IOperator, Substract>();
@@ -160,7 +166,11 @@ namespace SF.AdminSite
 
 			Services.UseAspNetFilePathStructure();
 
-			
+			Services.AddTextMessageServices();
+
+			Services.AddAuthIdentityServices();
+			Services.AddSysAdminServices();
+
 			if (EnvType != EnvironmentType.Utils)
 			{
 
@@ -169,12 +179,14 @@ namespace SF.AdminSite
 				Services.UseNetworkService();
 				Services.UseWebApiNetworkService(GlobalConfiguration.Configuration);
 			}
-
+			Services.InitServices("业务服务", InitBizServices);
 		}
 
-		static MenuItem[] InitDefaultMenu()
+		static async Task InitBizServices(IServiceProvider sp,IServiceInstanceManager sim,long? ParentId)
 		{
-			return new[]
+			var SysAdminService = await sim.NewSysAdminService().Ensure(sp, ParentId);
+
+			var items=new[]
 			{
 				new MenuItem
 				{
@@ -582,8 +594,10 @@ namespace SF.AdminSite
 						new MenuItem
 						{
 							Name="业务权限管理",
-							Children=new []
+							Children=(await sim.GetServiceMenuItems(sp,SysAdminService))
+							.Concat(new []
 							{
+								
 								new MenuItem
 								{
 									Action=MenuItemAction.Link,
@@ -608,7 +622,7 @@ namespace SF.AdminSite
 									ActionArgument="http://www.sina.com.cn",
 									Name="业务操作日志"
 								},
-							}
+							})
 						},
 						new MenuItem
 						{
@@ -679,6 +693,9 @@ namespace SF.AdminSite
 					
 				}
 			};
+
+			await sp.NewMenu(null,"admin","管理后台",items);
+			
 		}
 	}
 }

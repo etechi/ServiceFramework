@@ -10,10 +10,13 @@ using SF.KB;
 using SF.Auth.Identities.Models;
 using System.Collections.Generic;
 
-namespace SF.Auth.Identities.DataModels
+namespace SF.Auth.Identities.Entity.DataModels
 {
+	
 	[Table("SysAuthIdentity")]
-	public class Identity: IObjectWithId<long>
+	public class Identity<TIdentity,TIdentityCredential>: IObjectWithId<long>
+		where TIdentity: Identity<TIdentity, TIdentityCredential>
+		where TIdentityCredential : IdentityCredential<TIdentity, TIdentityCredential>
 	{
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -64,7 +67,6 @@ namespace SF.Auth.Identities.DataModels
 
 		[Index(Order = 1)]
 		[Comment("注册标识类型")]
-		[MaxLength(50)]
 		[Required]
 		public long SignupIdentProvider { get; set; }
 
@@ -76,7 +78,9 @@ namespace SF.Auth.Identities.DataModels
 
 
 
-		[InverseProperty(nameof(IdentityCredential.Identity))]
-		public ICollection<IdentityCredential> Credentials { get; set; }
+		[InverseProperty(nameof(IdentityCredential<TIdentity,TIdentityCredential>.Identity))]
+		public ICollection<TIdentityCredential> Credentials { get; set; }
 	}
+	public class Identity : Identity<Identity, IdentityCredential>
+	{ }
 }

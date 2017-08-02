@@ -13,7 +13,7 @@ namespace SF.Auth.Identities
 	public class VerifyCode
 	{
 		public ConfirmMessageType Type { get; set; }
-		public long UserId{ get; set; }
+		public long? UserId{ get; set; }
 		public string Ident { get; set; }
 		public string Code{ get; set; }
 	}

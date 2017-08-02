@@ -198,7 +198,7 @@ namespace SF.Core.ServiceManagement.Internals
 						ServiceResolver,
 						dss,
 						ScopeServiceId.Value,
-						ServiceType.FullName,
+						ServiceType.GetFullName(),
 						ref scope,
 						ref serviceInstanceLister
 						);
@@ -222,7 +222,7 @@ namespace SF.Core.ServiceManagement.Internals
 					ServiceResolver,
 					TopScopeServices,
 					null,
-					ServiceType.FullName,
+					ServiceType.GetFullName(),
 					ref scope,
 					ref serviceInstanceLister
 					);

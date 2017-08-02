@@ -19,14 +19,11 @@ using SF.Management.MenuServices.Models;
 namespace SF.Management.MenuServices.Entity.DataModels
 {
 	[Table("MgrMenuItem")]
-	public class MenuItem<TMenu,TMenuItem> : UIDataEntityBase
+	public class MenuItem<TMenu,TMenuItem> : UIObjectEntityBase
 		where TMenu : Menu<TMenu, TMenuItem>
 		where TMenuItem : MenuItem<TMenu, TMenuItem>
 
 	{
-		[Index("ident")]
-		[Column(Order = 1)]
-		public long? ScopeId { get; set; }
 
 		[MaxLength(100)]
 		public string FontIcon{get;set;}

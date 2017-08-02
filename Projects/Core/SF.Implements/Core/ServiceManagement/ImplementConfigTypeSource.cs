@@ -76,7 +76,7 @@ namespace SF.Core.ServiceManagement
 						{
 								new SF.Metadata.EntityIdentAttribute("系统服务实例") {
 									ScopeField =nameof(Models.ServiceInstanceInternal.ServiceType),
-									ScopeValue=realType.FullName
+									ScopeValue=realType.GetFullName()
 								}
 						})
 					);
@@ -128,7 +128,7 @@ namespace SF.Core.ServiceManagement
 			var Title = (Type.GetCustomAttribute<CommentAttribute>()?.Name ?? Type.Name)+"设置";
 			var re = new SF.Metadata.Models.Type
 			{
-				Name = Type.FullName + "SettingType",
+				Name = Type.GetFullName() + "SettingType",
 				//Title = Title
 			};
 			re.Properties = Args.Where(

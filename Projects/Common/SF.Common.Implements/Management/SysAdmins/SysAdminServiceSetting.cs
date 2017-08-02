@@ -13,9 +13,6 @@ namespace SF.Management.SysAdmins
 {
 	public class SysAdminServiceSetting 
 	{
-		public Lazy<IIdentityService> IdentityService { get; set; }
-		public Lazy<IIdentityCredentialProvider[]> SigninCredentialProviders { get; set; }
-		public Lazy<IIdentityCredentialProvider> SignupCredentialProvider { get; set; }
 	}
 
 }

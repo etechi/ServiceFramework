@@ -104,10 +104,12 @@
     <Compile Include="Data\Entity\EntityIdent.cs" />
     <Compile Include="Data\AttributeValidators\IObjectAttributeValidator.cs" />
     <Compile Include="Data\IDataSource.cs" />
-    <Compile Include="Data\IUIEntity.cs" />
-    <Compile Include="Data\IEntity.cs" />
-    <Compile Include="Data\Models\UIEntityBase.cs" />
-    <Compile Include="Data\Models\EntityBase.cs" />
+    <Compile Include="Data\IEventEntity.cs" />
+    <Compile Include="Data\IUIObjectEntity.cs" />
+    <Compile Include="Data\IObjectEntity.cs" />
+    <Compile Include="Data\Models\EventEntityBase.cs" />
+    <Compile Include="Data\Models\UIObjectEntityBase.cs" />
+    <Compile Include="Data\Models\ObjectEntityBase.cs" />
     <Compile Include="Data\Storage\IDataSetProvider.cs" />
     <Compile Include="Data\Storage\TransactionScope.cs" />
     <Compile Include="KB\IPhoneNumberValidator.cs" />

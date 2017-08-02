@@ -18,7 +18,7 @@ using SF.Data.DataModels;
 namespace SF.Management.SysAdmins.Entity.DataModels
 {
 	[Table("MgrAdmin")]
-	public class SysAdmin<TSysAdmin> : DataEntityBase
+	public class SysAdmin<TSysAdmin> : ObjectEntityBase
 		where TSysAdmin: SysAdmin<TSysAdmin>
 	{
 
@@ -32,5 +32,8 @@ namespace SF.Management.SysAdmins.Entity.DataModels
 		public string Icon { get; set; }
 
 	}
+	public class SysAdmin : SysAdmin<SysAdmin>
+	{ }
+
 }
 

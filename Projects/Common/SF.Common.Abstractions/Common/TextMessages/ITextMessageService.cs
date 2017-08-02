@@ -26,7 +26,7 @@ namespace SF.Common.TextMessages
 	[Comment(Name = "文本消息服务")]
     public interface ITextMessageService
 	{
-		Task<long> Send(string target, Message message);
+		Task<long> Send(long? targetId,string target, Message message);
 	}
 	//public interface IMsgBatchProvider :IMsgProvider
 	//{

@@ -20,7 +20,7 @@ namespace SF.Data.Models
 		public virtual string Memo { get; set; }
 
 	}
-	public abstract class UIEntityBase<K> : EntityBase<K>,IUIEntity
+	public abstract class UIObjectEntityBase<K> : ObjectEntityBase<K>,IUIObjectEntity
 		where K:IEquatable<K>
 	{
 		
@@ -53,5 +53,7 @@ namespace SF.Data.Models
 		public virtual string Icon { get; set; }
 
 	}
+	public abstract class UIObjectEntityBase : UIObjectEntityBase<long>
+	{ }
 	
 }

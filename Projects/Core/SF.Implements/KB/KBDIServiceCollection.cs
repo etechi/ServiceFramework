@@ -22,18 +22,24 @@ namespace SF.Core.ServiceManagement
 {
 	public static class KBDIServiceCollectionExtension
 	{
-		public static IServiceCollection UseDefaultMimeResolver(
+		public static IServiceCollection AddDefaultMimeResolver(
 			this IServiceCollection sc
 			)
 		{
 			sc.AddSingleton<IMimeResolver, DefaultMimeResolver>();
 			return sc;
 		}
-		public static IServiceCollection UseDefaultPhoneNumberValidator(
+		public static IServiceCollection AddDefaultPhoneNumberValidator(
 		   this IServiceCollection sc
 		   )
 		{
 			sc.AddSingleton<IPhoneNumberValidator, DefaultPhoneNumberValidator>();
+			return sc;
+		}
+		public static IServiceCollection AddDefaultKBServices(this IServiceCollection sc)
+		{
+			sc.AddDefaultMimeResolver();
+			sc.AddDefaultPhoneNumberValidator();
 			return sc;
 		}
 	}

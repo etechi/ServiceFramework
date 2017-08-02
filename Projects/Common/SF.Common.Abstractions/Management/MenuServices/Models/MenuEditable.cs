@@ -25,7 +25,7 @@ namespace SF.Management.MenuServices.Models
 	}
 
 	[Comment("菜单项")]
-	public class MenuItem : UIEntityBase<long>
+	public class MenuItem : UIObjectEntityBase<long>
 	{
 
 		[Comment("字体图标", "字体图标", GroupName = "前端展示")]

@@ -16,12 +16,12 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 		BaseIdentityCredentialProvider
 	{
 		public Lazy<IPhoneNumberValidator> PhoneNumberValidator { get; }
-		public Lazy<ITextMessageService> TextMessageService { get; }
+		public Lazy<IPhoneMessageService> TextMessageService { get; }
 		public ConfirmMessageTemplateSetting ConfirmMessageSetting { get; }
 		public PhoneNumberIdentityCredentialProvider(
 			IIdentityCredentialStorage IdentStorage,
 			Lazy<IPhoneNumberValidator> PhoneNumberValidator,
-			Lazy<ITextMessageService> TextMessageService,
+			Lazy<IPhoneMessageService> TextMessageService,
 			ConfirmMessageTemplateSetting ConfirmMessageSetting,
 			IServiceInstanceDescriptor ServiceInstanceMeta
 			) :
@@ -39,7 +39,7 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 		}
 		
 		public override async Task<long> SendConfirmCode(
-			string Ident, string Code, ConfirmMessageType Type, string TrackIdent)
+			 long? IdentityId, string Ident, string Code, ConfirmMessageType Type, string TrackIdent)
 		{
 
 			var args = new Dictionary<string, string> {
@@ -48,6 +48,7 @@ namespace SF.Auth.Identities.IdentityCredentialProviders
 				{"业务序号",TrackIdent }
 			};
 			var re= await TextMessageService.Value.Send(
+				IdentityId,
 				Ident,
 				new Message
 				{

@@ -9,6 +9,7 @@ using SF.Management.MenuServices.Models;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace SF.Core.ServiceManagement
 {
@@ -82,7 +83,7 @@ namespace SF.Core.ServiceManagement
 			);
 		}
 
-		static async Task NewMenu(
+		public static async Task NewMenu(
 			this IServiceProvider sp, 
 			long? ParentId, 
 			string Ident, 
@@ -142,5 +143,35 @@ namespace SF.Core.ServiceManagement
 				SF.Management.MenuServices.Entity.DataModels.Menu, 
 				SF.Management.MenuServices.Entity.DataModels.MenuItem
 				>(sc, /*DefaultMenu,*/TablePrefix);
+
+		static async Task CollectMenuItem(Models.ServiceInstanceInternal svc,IServiceInstanceManager sim, IServiceDeclarationTypeResolver svcTypeResolver,List<MenuItem> items)
+		{
+			var type = svcTypeResolver.Resolve(svc.ServiceType);
+			var em = type.GetCustomAttribute<EntityManagerAttribute>();
+			if (em != null)
+				items.Add(new MenuItem
+				{
+					Name = em.Entity,
+					Title = type.Comment().Name,
+					Action = MenuItemAction.EntityManager,
+					ActionArgument = em.Entity
+				});
+			var re=await sim.QueryAsync(
+				new ServiceInstanceQueryArgument
+				{
+					ParentId = svc.Id
+				},Data.Paging.Default
+				);
+			foreach (var i in re.Items)
+				await CollectMenuItem(i, sim, svcTypeResolver, items);
+		}
+		public static async Task<MenuItem[]> GetServiceMenuItems(this IServiceInstanceManager sim,IServiceProvider sp, long ServiceId)
+		{
+			var svcTypeResolver = sp.Resolve<IServiceDeclarationTypeResolver>();
+			var svc=await sim.GetAsync(ServiceId);
+			var items = new List<MenuItem>();
+			await CollectMenuItem(svc, sim, svcTypeResolver, items);
+			return items.ToArray();
+		}
 	}
 }

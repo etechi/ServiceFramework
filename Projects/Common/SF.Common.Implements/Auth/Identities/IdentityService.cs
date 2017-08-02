@@ -68,7 +68,7 @@ namespace SF.Auth.Identities
 		}
 
 
-		async Task<string> SendVerifyCode(IIdentityCredentialProvider CredentialProvider,ConfirmMessageType Type, string Ident, long UserId, string BizIdent)
+		async Task<string> SendVerifyCode(IIdentityCredentialProvider CredentialProvider,ConfirmMessageType Type, string Ident, long? UserId, string BizIdent)
 		{
 			var code = Strings.Numbers.Random(6);
 
@@ -86,6 +86,7 @@ namespace SF.Auth.Identities
 				return code;
 
 			await CredentialProvider.SendConfirmCode(
+				UserId,
 				Ident,
 				code,
 				Type,
@@ -113,9 +114,9 @@ namespace SF.Auth.Identities
 
 			var newPasswordHash = Setting.PasswordHasher.Value.Hash(Arg.NewPassword);
 			var stamp = Bytes.Random(16);
-			await Setting.IdentStorage.Value.UpdateSecurity(vc.UserId, newPasswordHash, stamp);
+			await Setting.IdentStorage.Value.UpdateSecurity(vc.UserId.Value, newPasswordHash, stamp);
 			return await SetOrReturnAccessToken(
-				vc.UserId,
+				vc.UserId.Value,
 				null,
 				Arg.ReturnToken
 				);
@@ -253,7 +254,7 @@ namespace SF.Auth.Identities
 				CredentialProvider,
 				ConfirmMessageType.Signup,
 				Arg.Credetial,
-				0,
+				null,
 				null
 				);
 		}

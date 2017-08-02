@@ -30,12 +30,11 @@ namespace System.Reflection
 
 		public static string GetFullName(this Type type)
 		{
-			var ft = type.FullName;
-			if (ft != null) return ft;
-			if (!type.IsGenericType) return null;
-			return type.GetGenericTypeDefinition().FullName + "[" +
+			if (!type.IsGenericType)
+				return type.FullName;
+			return type.GetGenericTypeDefinition().FullName + "<" +
 				type.GetGenericArguments().Select(t=>t.GetFullName()).Join(",")+
-				"]";
+				">";
 		}
 		public static IEnumerable<MemberInfo> GetInterfaceMembers(
 			this Type type,

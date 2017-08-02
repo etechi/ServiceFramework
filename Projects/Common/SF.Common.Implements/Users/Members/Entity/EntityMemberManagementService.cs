@@ -7,7 +7,6 @@ using SF.Auth.Identities.Models;
 using SF.Auth.Identities.Internals;
 using SF.Core.Caching;
 using SF.Data.Entity;
-using SF.Auth.Identities.DataModels;
 using SF.Core.Times;
 using SF.Auth.Identities;
 using SF.Users.Members.Models;

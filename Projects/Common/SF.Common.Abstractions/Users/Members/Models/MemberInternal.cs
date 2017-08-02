@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Users.Members.Models
 {
 	[EntityObject("会员")]
-	public class MemberInternal : EntityBase
+	public class MemberInternal : ObjectEntityBase
 	{
 		[MaxLength(20)]
 		[Comment("电话号码")]

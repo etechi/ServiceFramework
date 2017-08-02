@@ -230,6 +230,14 @@
     <Compile Include="Migrations\201708020344111_add-menu-item-serviceid.Designer.cs">
       <DependentUpon>201708020344111_add-menu-item-serviceid.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708021621531_add-sys-admin-tables.cs" />
+    <Compile Include="Migrations\201708021621531_add-sys-admin-tables.Designer.cs">
+      <DependentUpon>201708021621531_add-sys-admin-tables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201708021643046_adjust-type-length.cs" />
+    <Compile Include="Migrations\201708021643046_adjust-type-length.Designer.cs">
+      <DependentUpon>201708021643046_adjust-type-length.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="AppInstanceBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -348,6 +356,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708020344111_add-menu-item-serviceid.resx">
       <DependentUpon>201708020344111_add-menu-item-serviceid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708021621531_add-sys-admin-tables.resx">
+      <DependentUpon>201708021621531_add-sys-admin-tables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708021643046_adjust-type-length.resx">
+      <DependentUpon>201708021643046_adjust-type-length.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

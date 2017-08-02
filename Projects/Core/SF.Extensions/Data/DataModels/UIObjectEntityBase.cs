@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SF.Data.DataModels
 {
 
-    public abstract class UIDataEntityBase<K> : DataEntityBase<K>,IUIEntity
+    public abstract class UIObjectEntityBase<K> : ObjectEntityBase<K>,IUIObjectEntity
 		where K:IEquatable<K>
 	{
 		[Comment("标题", "用于UI显示")]
@@ -46,7 +46,7 @@ namespace SF.Data.DataModels
 
 	}
 
-	public class UIDataEntityBase : UIDataEntityBase<long>
+	public class UIObjectEntityBase : UIObjectEntityBase<long>
 	{
 
 	}

@@ -16,7 +16,7 @@ namespace SF.Auth.Identities
 		bool IsConfirmable();
 		Task<string> VerifyFormat(string Ident);
 
-		Task<long> SendConfirmCode(string Credential, string Code, ConfirmMessageType Type, string TrackIdent);
+		Task<long> SendConfirmCode(long? IdentityId, string Credential, string Code, ConfirmMessageType Type, string TrackIdent);
 		Task SetConfirmed(string Credential, bool Confirmed);
 
 		Task<IdentityCredential> FindOrBind(string Credential, string UnionIdent,bool Confirmed,long UserId);

@@ -65,7 +65,7 @@ namespace SF.Core.ServiceManagement.Management
 
 		protected override async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
-			var re= await Query.SelectUIEntity(i => new Models.ServiceInstanceEditable
+			var re= await Query.SelectUIObjectEntity(i => new Models.ServiceInstanceEditable
 			{
 				Id = i.Id,
 				//ImplementId = i.ImplementId,
@@ -83,7 +83,7 @@ namespace SF.Core.ServiceManagement.Management
 				throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
 			re.ServiceName = svcDef.ServiceType.Comment().Name;
 			var (implType, _) = re.ImplementType.Split2('@');
-			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.FullName == implType);
+			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.GetFullName() == implType);
 			if (svcImpl == null)
 				throw new InvalidOperationException($"找不到服务实现{re.ImplementType}");
 			re.ImplementName = svcImpl.ImplementType.Comment().Name;
@@ -97,7 +97,7 @@ namespace SF.Core.ServiceManagement.Management
 
 		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToPublic(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
-			return Query.SelectUIEntity(i => new Models.ServiceInstanceInternal
+			return Query.SelectUIObjectEntity(i => new Models.ServiceInstanceInternal
 			{
 				Id=i.Id,
 				ServiceType = i.ServiceType,
@@ -165,7 +165,7 @@ namespace SF.Core.ServiceManagement.Management
 				decl.ServiceType,
 				null,
 				ServiceResolver.Resolve<IServiceMetadata>(),
-				CreateArguments
+				string.IsNullOrWhiteSpace(CreateArguments) ? "{}":CreateArguments
 				);
 
 			var svr = factory.Create(ServiceResolver);

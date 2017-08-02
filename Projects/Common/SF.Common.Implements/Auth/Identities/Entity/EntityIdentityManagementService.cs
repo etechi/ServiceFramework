@@ -7,29 +7,30 @@ using SF.Auth.Identities.Models;
 using SF.Auth.Identities.Internals;
 using SF.Core.Caching;
 using SF.Data.Entity;
-using SF.Auth.Identities.DataModels;
 using SF.Core.Times;
 
 namespace SF.Auth.Identities.Entity
 {
-	public class EntityIdentityManagementService :
-		QuerableEntitySource<long, Models.IdentityInternal, IdentityQueryArgument, DataModels.Identity>,
+	public class EntityIdentityManagementService<TIdentity,TIdentityCredential> :
+		QuerableEntitySource<long, Models.IdentityInternal, IdentityQueryArgument, TIdentity>,
 		IIdentityManagementService,
 		IIdentStorage
+		where TIdentity:DataModels.Identity<TIdentity,TIdentityCredential>,new()
+		where TIdentityCredential : DataModels.IdentityCredential<TIdentity, TIdentityCredential>,new()
 	{
 		public Lazy<ITimeService> TimeService { get; }
 		public EntityIdentityManagementService(
-			IDataSet<DataModels.Identity> DataSet,
+			IDataSet<TIdentity> DataSet,
 			Lazy<ITimeService> TimeService
 			) : base(DataSet)
 		{
 			this.TimeService = TimeService;
 		}
 
-		protected override PagingQueryBuilder<DataModels.Identity> PagingQueryBuilder =>
-			PagingQueryBuilder<DataModels.Identity>.Simple("time", b => b.CreatedTime, true);
+		protected override PagingQueryBuilder<TIdentity> PagingQueryBuilder =>
+			PagingQueryBuilder<TIdentity>.Simple("time", b => b.CreatedTime, true);
 
-		protected override IContextQueryable<DataModels.Identity> OnBuildQuery(IContextQueryable<DataModels.Identity> Query, IdentityQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TIdentity> OnBuildQuery(IContextQueryable<TIdentity> Query, IdentityQueryArgument Arg, Paging paging)
 		{
 			return Query.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Ident,r=>r.SignupIdentValue);
@@ -48,7 +49,7 @@ namespace SF.Auth.Identities.Entity
 			
 
 			var time = TimeService.Value.Now;
-			DataSet.Add(new DataModels.Identity
+			DataSet.Add(new TIdentity
 			{
 				//AppId =Arg.AppId,
 				//ScopeId=Arg.ScopeId,
@@ -64,7 +65,7 @@ namespace SF.Auth.Identities.Entity
 				UpdatedTime= time,
 				Credentials=new[]
 				{
-					new DataModels.IdentityCredential
+					new TIdentityCredential
 					{
 						//AppId=Arg.AppId,
 						//ScopeId=Arg.ScopeId,
@@ -72,7 +73,7 @@ namespace SF.Auth.Identities.Entity
 						ConfirmedTime=time,
 						IdentityId=Arg.Identity.Id,
 						Credential=Arg.CredentialValue,
-						Provider=Arg.IdentProvider,
+						ProviderId=Arg.IdentProvider,
 						
 					}
 				}

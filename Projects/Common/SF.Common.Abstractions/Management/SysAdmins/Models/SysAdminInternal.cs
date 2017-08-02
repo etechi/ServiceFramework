@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Management.SysAdmins.Models
 {
-	public class SysAdminInternal : EntityBase
+	public class SysAdminInternal : ObjectEntityBase
 	{
 		[Comment("账号")]
 		[Required]

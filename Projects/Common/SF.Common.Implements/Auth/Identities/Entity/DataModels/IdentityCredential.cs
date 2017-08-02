@@ -7,10 +7,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
 
-namespace SF.Auth.Identities.DataModels
+namespace SF.Auth.Identities.Entity.DataModels
 {
+	
 	[Table("SysAuthIdentityCredential")]
-	public class IdentityCredential
+	public class IdentityCredential<TIdentity, TIdentityCredential>
+		where TIdentity : Identity<TIdentity, TIdentityCredential>
+		where TIdentityCredential : IdentityCredential<TIdentity, TIdentityCredential>
 	{
 
 		[Key]
@@ -22,8 +25,7 @@ namespace SF.Auth.Identities.DataModels
 		[Key]
 		[Column(Order =2)]
 		[Index("union",Order=2)]
-		[MaxLength(50)]
-		public long Provider { get; set; }
+		public long ProviderId { get; set; }
 
 		[Key]
 		[Column(Order = 3)]
@@ -39,14 +41,16 @@ namespace SF.Auth.Identities.DataModels
 		public long IdentityId { get; set; }
 
 		[Index("union", Order = 3)]
+		[MaxLength(100)]
 		public string UnionIdent { get; set; }
 
 		public DateTime CreatedTime { get; set; }
 		public DateTime? ConfirmedTime { get; set; }
 
 		[ForeignKey(nameof(IdentityId))]
-		public Identity Identity { get; set; }
+		public TIdentity Identity { get; set; }
 
 	}
-
+	public class IdentityCredential : IdentityCredential<Identity, IdentityCredential>
+	{ }
 }

@@ -11,12 +11,12 @@ namespace SF.Data
 
     public static class IEntityExtension
 	{
-		public static IEntity Create(this IEntity model,DateTime time)
+		public static IObjectEntity Create(this IObjectEntity model,DateTime time)
 		{
 			model.CreatedTime = time;
 			return model;
 		}
-		public static IEntity Update(this IEntity model,IEntity entity,DateTime time)
+		public static IObjectEntity Update(this IObjectEntity model,IObjectEntity entity,DateTime time)
 		{
 			model.UpdatedTime = time;
 			model.Name = entity.Name;
@@ -24,9 +24,9 @@ namespace SF.Data
 			return model;
 		}
 
-		public static IUIEntity Update(this IUIEntity model, IUIEntity entity, DateTime time) 
+		public static IUIObjectEntity Update(this IUIObjectEntity model, IUIObjectEntity entity, DateTime time) 
 		{
-			((IEntity)model).Update(entity, time);
+			((IObjectEntity)model).Update(entity, time);
 			model.Title = entity.Title;
 			model.SubTitle = entity.SubTitle;
 			model.Remarks = entity.Remarks;
@@ -44,8 +44,9 @@ namespace SF.Data
 			.Select(p => p.Name)
 			.ToArray();
 
-		static string[] EntityPropertyNames { get; } = GetTypePropertyNames(typeof(IEntity));
-		static string[] UIEntityPropertyNames { get; } = GetTypePropertyNames(typeof(IUIEntity));
+		static string[] ObjectEntityPropertyNames { get; } = GetTypePropertyNames(typeof(IObjectEntity));
+		static string[] UIObjectEntityPropertyNames { get; } = GetTypePropertyNames(typeof(IUIObjectEntity));
+		static string[] EventEntityPropertyNames { get; } = GetTypePropertyNames(typeof(IEventEntity));
 
 		public static IContextQueryable<TResult> SelectWithProperties<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector,string[] Properties)
 		{
@@ -75,13 +76,17 @@ namespace SF.Data
 
 			return source.New(source.Queryable.Select(selector));
 		}
-		public static IContextQueryable<TResult> SelectEntity<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
+		public static IContextQueryable<TResult> SelectObjectEntity<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
 		{
-			return source.SelectWithProperties(selector, EntityPropertyNames);
+			return source.SelectWithProperties(selector, ObjectEntityPropertyNames);
 		}
-		public static IContextQueryable<TResult> SelectUIEntity<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
+		public static IContextQueryable<TResult> SelectUIObjectEntity<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
 		{
-			return source.SelectWithProperties(selector, UIEntityPropertyNames);
+			return source.SelectWithProperties(selector, UIObjectEntityPropertyNames);
+		}
+		public static IContextQueryable<TResult> SelectEventEntity<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
+		{
+			return source.SelectWithProperties(selector, EventEntityPropertyNames);
 		}
 
 	}

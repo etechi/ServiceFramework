@@ -35,7 +35,7 @@ namespace SF.Core.Logging
 
 			public bool IsEnabled(LogLevel level)
 			{
-				return Trace.IsEnabled && level>=Provider.Level;
+				return Trace!=null && Trace.IsEnabled && level>=Provider.Level;
 			}
 
 			public void Write<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)

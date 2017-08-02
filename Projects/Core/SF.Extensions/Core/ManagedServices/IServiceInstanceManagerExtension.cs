@@ -14,7 +14,7 @@ namespace SF.Core.ServiceManagement.Management
 			return await Manager.ResolveEntity(
 					new ServiceInstanceQueryArgument
 					{
-						ServiceType = typeof(I).FullName,
+						ServiceType = typeof(I).GetFullName(),
 						IsDefaultService = true
 					});
 		}
@@ -29,8 +29,8 @@ namespace SF.Core.ServiceManagement.Management
 			)
 		{
 			var comment = typeof(T).Comment();
-			e.ImplementType = typeof(T).FullName + "@" + typeof(I).FullName;
-			e.ServiceType = typeof(I).FullName;
+			e.ImplementType = typeof(T).GetFullName() + "@" + typeof(I).GetFullName();
+			e.ServiceType = typeof(I).GetFullName();
 			e.Priority = 0;
 			e.ObjectState = Data.LogicObjectState.Enabled;
 			e.ServiceIdent = ServiceIdent;
@@ -49,7 +49,7 @@ namespace SF.Core.ServiceManagement.Management
 				new ServiceInstanceQueryArgument
 				{
 					ParentId = ParentId ?? 0,
-					ServiceType = typeof(I).FullName,
+					ServiceType = typeof(I).GetFullName(),
 					IsDefaultService = true
 				});
 
@@ -76,8 +76,8 @@ namespace SF.Core.ServiceManagement.Management
 			) => await Manager.ResolveEntity(
 				new ServiceInstanceQueryArgument
 				{
-					ServiceType = typeof(I).FullName,
-					ImplementId = typeof(T).FullName + "@" + typeof(I).FullName,
+					ServiceType = typeof(I).GetFullName(),
+					ImplementId = typeof(T).GetFullName() + "@" + typeof(I).GetFullName(),
 					ParentId = ParentId ?? 0,
 				});
 		
