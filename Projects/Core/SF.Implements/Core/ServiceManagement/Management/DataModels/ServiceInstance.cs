@@ -33,9 +33,9 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 		[Index("TypedService", 2)]
 		public string ServiceType { get; set; }
 
-		[Comment("主接口实现")]
+		[Comment("接口实现")]
 		[Required]
-		[MaxLength(200)]
+		[MaxLength(300)]
 		[Index("impl", 1)]
 		public string ImplementType { get; set; }
 

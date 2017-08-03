@@ -154,7 +154,8 @@ namespace SF.Core.ServiceManagement
 					Name = em.Entity,
 					Title = type.Comment().Name,
 					Action = MenuItemAction.EntityManager,
-					ActionArgument = em.Entity
+					ActionArgument = em.Entity,
+					ServiceId=svc.Id
 				});
 			var re=await sim.QueryAsync(
 				new ServiceInstanceQueryArgument

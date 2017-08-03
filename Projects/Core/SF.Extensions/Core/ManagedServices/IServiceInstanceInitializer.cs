@@ -5,6 +5,7 @@ using System.Reflection;
 using SF.Data.Entity;
 using System.Collections.Generic;
 using SF.Core.ServiceManagement.Management;
+using System.Collections;
 
 namespace SF.Core.ServiceManagement
 {
@@ -35,8 +36,17 @@ namespace SF.Core.ServiceManagement
 			return new ServiceBuilder<T>(Name, builder);
 		}
 
-		static async Task<object> ConfigResolve(object config, IServiceProvider ServiceProvider, long? ParentId, HashSet<IServiceInstanceInitializer> Children)
+		static async Task<object> ConfigResolve(
+			object config, 
+			IServiceProvider ServiceProvider, 
+			long? ParentId, 
+			HashSet<IServiceInstanceInitializer> Children,
+			int Level)
 		{
+			if (Level > 20)
+				throw new InvalidOperationException("配置结构太深，不能超过20级");
+
+
 			if (config == null)
 				return null;
 			var type = config.GetType();
@@ -47,14 +57,22 @@ namespace SF.Core.ServiceManagement
 				var arr = (Array)config;
 				var re = new object[arr.Length];
 				for (var i = 0; i < arr.Length; i++)
-					re[i] = await ConfigResolve(arr.GetValue(i), ServiceProvider, ParentId, Children);
+					re[i] = await ConfigResolve(arr.GetValue(i), ServiceProvider, ParentId, Children,Level+1);
 				return re;
 			}
-			if (type is IServiceInstanceInitializer)
+			if (config is IServiceInstanceInitializer)
 			{
 				var sb = (IServiceInstanceInitializer)config;
 				var sid = await sb.Ensure(ServiceProvider, ParentId);
 				return sid;
+			}
+			var enumerable = config as IEnumerable;
+			if(enumerable!=null)
+			{
+				var re = new List<object>();
+				foreach(var v in enumerable)
+					re.Add(await ConfigResolve(v, ServiceProvider, ParentId, Children, Level + 1));
+				return re.ToArray();
 			}
 			var props = config.GetType().GetProperties(
 				BindingFlags.Public |
@@ -64,7 +82,7 @@ namespace SF.Core.ServiceManagement
 				);
 			var dic = new Dictionary<string, object>();
 			foreach (var prop in props)
-				dic[prop.Name] = await ConfigResolve(prop.GetValue(config), ServiceProvider, ParentId, Children);
+				dic[prop.Name] = await ConfigResolve(prop.GetValue(config), ServiceProvider, ParentId, Children, Level + 1);
 			return dic;
 		}
 		public static IServiceInstanceInitializer<I> DefaultService<I, T>(
@@ -109,7 +127,7 @@ namespace SF.Core.ServiceManagement
 					//var fpr = await sim.ResolveDefaultService<IFilePathResolver>();
 					//var fc = await sim.ResolveDefaultService<IFileCache>();
 					var children = new HashSet<IServiceInstanceInitializer>(childServices);
-					var rcfg = await ConfigResolve(cfg, sp, svcId == 0 ? (long?)null : svcId, children);
+					var rcfg = await ConfigResolve(cfg, sp, svcId == 0 ? (long?)null : svcId, children,0);
 					var ms = await ServiceCreator(parent, rcfg);
 
 					foreach (var chd in children)

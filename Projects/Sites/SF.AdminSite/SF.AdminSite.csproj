@@ -238,6 +238,10 @@
     <Compile Include="Migrations\201708021643046_adjust-type-length.Designer.cs">
       <DependentUpon>201708021643046_adjust-type-length.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708030320272_adjust-impl-type-length.cs" />
+    <Compile Include="Migrations\201708030320272_adjust-impl-type-length.Designer.cs">
+      <DependentUpon>201708030320272_adjust-impl-type-length.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="AppInstanceBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -362,6 +366,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708021643046_adjust-type-length.resx">
       <DependentUpon>201708021643046_adjust-type-length.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708030320272_adjust-impl-type-length.resx">
+      <DependentUpon>201708030320272_adjust-impl-type-length.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

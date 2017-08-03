@@ -139,13 +139,22 @@ namespace SF.Core.ServiceManagement.Internals
 			}
 			public override bool CanConvert(Type objectType)
 			{
+				if (SkipCurrentToken)
+				{
+					SkipCurrentToken=false;
+					return false;
+				}
 				return GetDictDeserializer(objectType) != null;
 			}
+			bool SkipCurrentToken = false;
 			Dictionary<string, string[]> KeyMap;
 			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 			{
 				if (reader.TokenType != JsonToken.StartArray)
+				{
+					SkipCurrentToken = true;
 					return serializer.Deserialize(reader, objectType);
+				}
 				//a.b[  1].c => a.b.key.c
 				string[] keys;
 				var path = reader.Path;
@@ -203,6 +212,24 @@ namespace SF.Core.ServiceManagement.Internals
 		//	public long AppId { get; set; }
 
 		//}
+		static System.Collections.Concurrent.ConcurrentDictionary<Type, Lazy<object>> DefValues { get; } = new System.Collections.Concurrent.ConcurrentDictionary<Type, Lazy<object>>();
+		static object GetDefaultValue(Type type, IServiceDetector ServiceDetector)
+		{
+			if (DefValues.TryGetValue(type, out var v))
+				return v.Value;
+			return DefValues.GetOrAdd(
+				type,
+				new Lazy<object>(() =>
+				{
+					if (type.IsInterfaceType())
+						return null;
+					var ctr = type.GetConstructor(Array.Empty<Type>());
+					if (ctr == null) return null;
+					if (ServiceDetector.IsService(type))
+						return null;
+					return ctr.Invoke(Array.Empty<object>());
+				})).Value;
+		}
 		public static ServiceCreateParameterTemplate Load(
 			ConstructorInfo ci,
 			string Config,
@@ -273,8 +300,9 @@ namespace SF.Core.ServiceManagement.Internals
 					
 					args = parameters.Select(p => {
 						object a;
-						adic.TryGetValue(p.Name, out a);
-						return a;
+						if(adic.TryGetValue(p.Name, out a))
+							return a;
+						return GetDefaultValue(p.ParameterType, ServiceDetector);
 					}).ToArray();
 					sis = atod.ReplacePath(sc.ServiceIdents);
 				}

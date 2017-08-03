@@ -32,7 +32,9 @@ namespace SF.Core.ServiceManagement.Internals
 		{
 			Instance,
 			Lazy,
-			Func
+			Func,
+			Func2,
+			Enumerable
 		}
 		
 		public class MemberAttribute
@@ -303,12 +305,16 @@ namespace SF.Core.ServiceManagement.Internals
 					else if (t.IsGeneric())
 					{
 						var gtd = t.GetGenericTypeDefinition();
-						if (gtd == typeof(Func<,>) || gtd == typeof(Func<>) || gtd == typeof(Lazy<>))
-							return;
-						else if (gtd == typeof(IEnumerable<>))
-							t = t.GetGenericArguments()[0];
-						else if (gtd == typeof(Dictionary<,>))
-							t = t.GetGenericArguments()[1];
+						if (gtd == typeof(Func<,>) ||
+							gtd == typeof(Func<>) ||
+							gtd == typeof(Lazy<>) ||
+							gtd == typeof(Dictionary<,>) || 
+							gtd==typeof(IEnumerable<>)
+							)
+						{
+							var args = t.GetGenericArguments();
+							t = args[args.Length - 1];
+						}
 						else if (ServiceMetadata.IsService(gtd))
 						{
 							for (var i = 0; i < PathList.Count; i++)
@@ -438,6 +444,21 @@ namespace SF.Core.ServiceManagement.Internals
 						break;
 					}
 
+					Type fun2Arg1;
+					(fun2Arg1, RealType) = Type.GetGenericArgumentTypeAsFunc2();
+					if (RealType != null && fun2Arg1==typeof(long))
+					{
+						ResolveType = ResolveType.Func2;
+						break;
+					}
+
+					//IEnumerable<>总是服务
+					RealType = Type.GetGenericArgumentTypeAsEnumerable();
+					if (RealType != null )
+					{
+						ResolveType = ResolveType.Enumerable;
+						return true;
+					}
 
 					ResolveType = ResolveType.Instance;
 					RealType = Type;
@@ -481,13 +502,23 @@ namespace SF.Core.ServiceManagement.Internals
 							PropPath
 						);
 				}
-				else if (Type.IsGeneric() && Type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-				{
-					return Expression.Convert(
-						EnumerableCopyExpression(MemberAttribute, src, Type.GetGenericArguments()[0], PropPathExpr, PropPath),
-						Type
-						);
-				}
+				//else if (Type.IsGeneric() && Type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+				//{
+				//	var elementType = Type.GetGenericArguments()[0];
+				//	if (ServiceMetadata.IsService(elementType))
+				//		return ManagedServiceResolveExpression(
+				//			Type,
+				//			PropPathExpr,
+				//			ResolveType.Instance,
+				//			ServiceMetadata,
+				//			MemberAttribute
+				//			);
+
+				//	return Expression.Convert(
+				//		EnumerableCopyExpression(MemberAttribute, src, elementType, PropPathExpr, PropPath),
+				//		Type
+				//		);
+				//}
 				else
 				{
 					ResolveType rType;
@@ -524,7 +555,13 @@ namespace SF.Core.ServiceManagement.Internals
 
 			Expression PropCopyExpression(Type Type, Expression src, PropertyInfo pi, Expression PropPathExpr, string PropPath)
 			{
-				return CopyExpression(pi.PropertyType, TryGetAttributes(pi), Expression.Property(src, pi), StrConcat(PropPathExpr, Expression.Constant("." + pi.Name)), PropPath + "." + pi.Name);
+				var prop = Expression.Property(src, pi);
+				var copied= CopyExpression(pi.PropertyType, TryGetAttributes(pi), prop, StrConcat(PropPathExpr, Expression.Constant("." + pi.Name)), PropPath + "." + pi.Name);
+				if (!pi.PropertyType.IsClassType())
+					return copied;
+
+				return Expression.Condition(Expression.Equal(prop, Expression.Constant(null, pi.PropertyType)), Expression.Constant(null, pi.PropertyType), copied);
+
 			}
 			
 			MemberAttribute TryGetAttributes(MemberInfo pi)

@@ -51,7 +51,11 @@ namespace SF.Data.Entity
 			var hasInstance = !EqualityComparer<TKey>.Default.Equals(Id, default(TKey));
 			TEditable ins;
 			if (hasInstance)
-				ins = await Manager.LoadForEdit(Id);
+			{
+				ins = await Manager
+					.LoadForEdit(Id)
+					.AssertNotNull(() => $"不存在实体{typeof(TEditable)}实例:{Id} ");
+			}
 			else
 				ins = Creator();
 			if (Updater != null)

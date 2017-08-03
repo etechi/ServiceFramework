@@ -194,6 +194,9 @@ namespace System.Reflection
 			GetTypedGenericArgument(type, typeof(Func<>));
 		public static Type GetGenericArgumentTypeAsOption(this Type type) =>
 			GetTypedGenericArgument(type, typeof(Option<>));
+		public static Type GetGenericArgumentTypeAsEnumerable(this Type type) =>
+			GetTypedGenericArgument(type, typeof(IEnumerable<>));
+
 		public static (Type,Type) GetGenericArgumentTypeAsFunc2(this Type type)
 		{
 			if (type.IsGeneric() && type.GetGenericTypeDefinition() == typeof(Func<,>))

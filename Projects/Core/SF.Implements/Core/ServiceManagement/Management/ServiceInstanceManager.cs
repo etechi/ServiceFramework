@@ -76,7 +76,9 @@ namespace SF.Core.ServiceManagement.Management
 				ServiceType = i.ServiceType,
 				ImplementType = i.ImplementType,
 				Setting= i.Setting
-			}).SingleAsync();
+			}).SingleOrDefaultAsync();
+			if (re == null)
+				return null;
 
 			var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
 			if (svcDef == null)

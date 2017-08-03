@@ -91,9 +91,9 @@ namespace SF.Core.ServiceManagement.Management
 			string ServiceIdent = null
 			)
 		{
-			var re = Manager.TryGetService<I, T>(ParentId);
+			var re = await Manager.TryGetService<I, T>(ParentId);
 			return await Manager.EnsureEntity(
-				re?.Id ?? 0,
+				re,
 				() => new Models.ServiceInstanceEditable { },
 				e => UpdateServiceModel<I, T>(e, Setting, ParentId, Name, Title, Description, ServiceIdent)
 				);
