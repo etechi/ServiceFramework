@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{66A4F4E4-6A67-479D-8650-013BD4A3913B}"
 EndProject
@@ -46,6 +46,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Interception.net46", "Core\SF.Interception\SF.Interception.net46.csproj", "{899CD860-FF21-4CDD-907C-957435A862E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Common.Extensions.net46", "Common\SF.Common.Extensions\SF.Common.Extensions.net46.csproj", "{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Application.net46", "Sites\SF.Application\SF.Application.net46.csproj", "{A6C1B390-F3C2-4E54-8C4D-2B090C7739A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +115,10 @@ Global
 		{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6C1B390-F3C2-4E54-8C4D-2B090C7739A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6C1B390-F3C2-4E54-8C4D-2B090C7739A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6C1B390-F3C2-4E54-8C4D-2B090C7739A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6C1B390-F3C2-4E54-8C4D-2B090C7739A7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -133,5 +139,6 @@ Global
 		{089F553C-B608-4B76-BE81-39EE4D18CACC} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
 		{899CD860-FF21-4CDD-907C-957435A862E5} = {66A4F4E4-6A67-479D-8650-013BD4A3913B}
 		{B78373F2-F7F8-4461-AB16-A7B49F3DCB8D} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
+		{A6C1B390-F3C2-4E54-8C4D-2B090C7739A7} = {8E28520B-F54B-4C69-A62D-D5C7195031C4}
 	EndGlobalSection
 EndGlobal

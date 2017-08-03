@@ -1,13 +1,12 @@
 ﻿using SF.Core.Hosting;
 using System;
 
-namespace SF.AdminSite
+namespace SF.Applications
 {
 	public class AppContext : SF.Data.Storage.DbContext
 	{
 		public AppContext() : this(
-			 AppInstanceBuilder.Build(EnvironmentType.Utils)
-			.ServiceProvider
+			 AppInstanceBuilder.Build(EnvironmentType.Utils).ServiceProvider
 			)
 		{
 

@@ -217,12 +217,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="AppContext.cs" />
-    <Compile Include="Migrations\201708030508041_init.cs" />
-    <Compile Include="Migrations\201708030508041_init.Designer.cs">
-      <DependentUpon>201708030508041_init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="AppInstanceBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -330,11 +324,10 @@
       <Project>{1111e437-2d49-4773-83df-ba42f6ca20f8}</Project>
       <Name>SF.Services.dotNetFramework</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201708030508041_init.resx">
-      <DependentUpon>201708030508041_init.cs</DependentUpon>
-    </EmbeddedResource>
+    <ProjectReference Include="..\SF.Application\SF.Application.net46.csproj">
+      <Project>{a6c1b390-f3c2-4e54-8c4d-2b090c7739a7}</Project>
+      <Name>SF.Application.net46</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
