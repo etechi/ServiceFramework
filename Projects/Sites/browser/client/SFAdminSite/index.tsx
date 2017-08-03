@@ -15,6 +15,7 @@ import apicall = require("SF/utils/apicall");
 api.setApiInvoker(apicall.call);
 
 declare var require: any;
+var env = (window as any)["ENV"];
 
 function init(
     lib: ApiMeta.Library,
@@ -34,11 +35,12 @@ function init(
     //);
     ApiFormManager.setDefaultFormManager(apiForms);
 
+    
+    config.build(lib,env.root, permissions, menuItems, window.location.href.indexOf("all=true")!=-1);
 
-    config.build(lib, permissions, menuItems, window.location.href.indexOf("all=true")!=-1);
-
+ 
     //const module_routes = modules.map(m => m.route);
-    setupEntityLinkBuilder([config.ManagerBuildResult.entityLinkBuilders],"/");
+    setupEntityLinkBuilder([config.ManagerBuildResult.entityLinkBuilders], env.root);
 
     var tm = new ApiTableManager.ApiTableManager(apiForms);
     //modules.filter(m => m.api && m.api.queries ? true : false).forEach(m =>
@@ -70,15 +72,13 @@ function init(
         }
     ];
 
-    
-                
 
     const routes = {
-        path: "/",
+        path: env.root,
         component: App,
         indexRoute: {
             onEnter: (nextState, transition) => {
-                transition('/dashboard');
+                transition(env.root+'dashboard');
             }
         },
         childRoutes: chd_routes
@@ -109,7 +109,7 @@ function init(
 }
 Promise.all([
     api.ServiceMetadata.Json(),
-    api.Menu.GetMenu("admin"),
+    api.Menu.GetMenu(env.menu),
 
     //api.User.GetPermissions() 
 ]).then(re => {

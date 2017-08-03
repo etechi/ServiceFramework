@@ -123,11 +123,15 @@ namespace SF.Core.ServiceManagement
 				async (sp, parent) =>
 				{
 					var svcId = await FindService(parent);
-
+					var nsvcId = svcId == 0 ? (long?)null : svcId;
 					//var fpr = await sim.ResolveDefaultService<IFilePathResolver>();
 					//var fc = await sim.ResolveDefaultService<IFileCache>();
 					var children = new HashSet<IServiceInstanceInitializer>(childServices);
-					var rcfg = await ConfigResolve(cfg, sp, svcId == 0 ? (long?)null : svcId, children,0);
+					foreach (var chd in children)
+						await chd.Ensure(sp, nsvcId);
+
+					var rcfg = await ConfigResolve(cfg, sp, nsvcId, children,0);
+
 					var ms = await ServiceCreator(parent, rcfg);
 
 					foreach (var chd in children)

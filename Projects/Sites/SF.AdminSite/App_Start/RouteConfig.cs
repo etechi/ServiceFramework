@@ -12,7 +12,11 @@ namespace SF.AdminSite
 		public static void RegisterRoutes(RouteCollection routes)
 		{
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
+			routes.MapRoute(
+				name: "SysAdmin",
+				url: "sysadmin/{*id}",
+				defaults: new { controller = "SysAdmin", action = "Index", id = UrlParameter.Optional }
+			);
 			routes.MapRoute(
 				name: "Default",
 				url: "{*id}",

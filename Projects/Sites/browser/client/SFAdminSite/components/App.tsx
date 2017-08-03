@@ -6,10 +6,11 @@ import {Image} from "SF/components/utils/Image";
 import api = require("../webapi-all");
 //import * as auth from "../auth";
 import * as config from "../config";
-
+import { RouteProps } from "react-router";
 var auth: any;
 
 export interface AppProps {
+    route?: RouteProps;
     children?: React.ReactNode;
 }
 interface state {
@@ -38,9 +39,9 @@ export default class App extends React.Component<AppProps, state>
                 </WA.Header.Text>
                 <WA.Header.Button onClick={() => this.handleSignout() }><i className="icon-logout"></i></WA.Header.Button>
             </WA.Header.Container>
-            <WA.SideBar.Container pathPrefix="/" menuCategories={config.ManagerBuildResult.menus/* modules.map(m => m.menu) */} >
+            <WA.SideBar.Container pathPrefix={this.props.route.path} menuCategories={config.ManagerBuildResult.menus/* modules.map(m => m.menu) */} >
                 {/*<WA.SideBar.SearchBox></WA.SideBar.SearchBox>*/}
-                <WA.SideBar.MenuItem icon='icon-home' name='首页' to='/dashboard' />
+                <WA.SideBar.MenuItem icon='icon-home' name='首页' to={this.props.route.path + 'dashboard'} />
             </WA.SideBar.Container>
             {/*<WA.Footer>footer</WA.Footer>*/}
             {this.props.children}

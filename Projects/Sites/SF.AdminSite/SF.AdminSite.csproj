@@ -212,35 +212,15 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\SysAdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="AppContext.cs" />
-    <Compile Include="Migrations\201707240721333_init.cs" />
-    <Compile Include="Migrations\201707240721333_init.Designer.cs">
-      <DependentUpon>201707240721333_init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201707291452494_add-menu-service.cs" />
-    <Compile Include="Migrations\201707291452494_add-menu-service.Designer.cs">
-      <DependentUpon>201707291452494_add-menu-service.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708020344111_add-menu-item-serviceid.cs" />
-    <Compile Include="Migrations\201708020344111_add-menu-item-serviceid.Designer.cs">
-      <DependentUpon>201708020344111_add-menu-item-serviceid.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708021621531_add-sys-admin-tables.cs" />
-    <Compile Include="Migrations\201708021621531_add-sys-admin-tables.Designer.cs">
-      <DependentUpon>201708021621531_add-sys-admin-tables.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708021643046_adjust-type-length.cs" />
-    <Compile Include="Migrations\201708021643046_adjust-type-length.Designer.cs">
-      <DependentUpon>201708021643046_adjust-type-length.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201708030320272_adjust-impl-type-length.cs" />
-    <Compile Include="Migrations\201708030320272_adjust-impl-type-length.Designer.cs">
-      <DependentUpon>201708030320272_adjust-impl-type-length.cs</DependentUpon>
+    <Compile Include="Migrations\201708030508041_init.cs" />
+    <Compile Include="Migrations\201708030508041_init.Designer.cs">
+      <DependentUpon>201708030508041_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="AppInstanceBuilder.cs" />
@@ -297,7 +277,7 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="tsconfig.json" />
-    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\SysAdmin\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -352,23 +332,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201707240721333_init.resx">
-      <DependentUpon>201707240721333_init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201707291452494_add-menu-service.resx">
-      <DependentUpon>201707291452494_add-menu-service.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708020344111_add-menu-item-serviceid.resx">
-      <DependentUpon>201708020344111_add-menu-item-serviceid.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708021621531_add-sys-admin-tables.resx">
-      <DependentUpon>201708021621531_add-sys-admin-tables.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708021643046_adjust-type-length.resx">
-      <DependentUpon>201708021643046_adjust-type-length.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201708030320272_adjust-impl-type-length.resx">
-      <DependentUpon>201708030320272_adjust-impl-type-length.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201708030508041_init.resx">
+      <DependentUpon>201708030508041_init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

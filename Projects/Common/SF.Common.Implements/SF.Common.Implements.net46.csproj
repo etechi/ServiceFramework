@@ -62,6 +62,11 @@
     <Compile Include="Management\MenuServices\Entity\DataModels\Menu.cs" />
     <Compile Include="Management\MenuServices\Entity\EntityMenuService.cs" />
     <Compile Include="Management\MenuServices\MenuServiceDIExtension.cs" />
+    <Compile Include="Management\BizAdmins\Entity\DataModels\BizAdmin.cs" />
+    <Compile Include="Management\BizAdmins\Entity\EntityBizAdminManagementService.cs" />
+    <Compile Include="Management\BizAdmins\BizAdminService.cs" />
+    <Compile Include="Management\BizAdmins\BizAdminServiceDIExtension.cs" />
+    <Compile Include="Management\BizAdmins\BizAdminServiceSetting.cs" />
     <Compile Include="Management\SysAdmins\Entity\DataModels\SysAdmin.cs" />
     <Compile Include="Management\SysAdmins\Entity\EntitySysAdminManagementService.cs" />
     <Compile Include="Management\SysAdmins\SysAdminServiceDIExtension.cs" />

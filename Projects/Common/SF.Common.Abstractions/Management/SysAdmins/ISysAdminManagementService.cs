@@ -17,11 +17,11 @@ namespace SF.Management.SysAdmins
 		public string Name { get; set; }
 	}
 
-	[EntityManager("管理员")]
+	[EntityManager("系统管理员")]
 	[Authorize("admin")]
 	[NetworkService]
-	[Comment("管理员")]
-	[Category("系统管理", "管理员管理")]
+	[Comment("系统管理员")]
+	[Category("系统管理", "系统管理员管理")]
 	public interface ISysAdminManagementService : 
 		Data.Entity.IEntitySource<long,SysAdminInternal,SysAdminQueryArgument>,
 		Data.Entity.IEntityManager<long,SysAdminEditable>

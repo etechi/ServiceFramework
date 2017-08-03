@@ -46,6 +46,11 @@
     <Compile Include="Management\MenuServices\IMenuService.cs" />
     <Compile Include="Management\MenuServices\Models\Menu.cs" />
     <Compile Include="Management\MenuServices\Models\MenuEditable.cs" />
+    <Compile Include="Management\BizAdmins\IBizAdminManagementService.cs" />
+    <Compile Include="Management\BizAdmins\IBizAdminService.cs" />
+    <Compile Include="Management\BizAdmins\Models\BizAdminDesc.cs" />
+    <Compile Include="Management\BizAdmins\Models\BizAdminEditable.cs" />
+    <Compile Include="Management\BizAdmins\Models\BizAdminInternal.cs" />
     <Compile Include="Management\SysAdmins\ISysAdminService.cs" />
     <Compile Include="Management\SysAdmins\ISysAdminManagementService.cs" />
     <Compile Include="Management\SysAdmins\Models\SysAdminDesc.cs" />

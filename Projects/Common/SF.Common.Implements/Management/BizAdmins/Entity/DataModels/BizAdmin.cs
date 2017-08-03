@@ -15,11 +15,11 @@ using SF.Data;
 using System.ComponentModel.DataAnnotations;
 using SF.Data.DataModels;
 
-namespace SF.Management.SysAdmins.Entity.DataModels
+namespace SF.Management.BizAdmins.Entity.DataModels
 {
-	[Table("MgrSysAdmin")]
-	public class SysAdmin<TSysAdmin> : ObjectEntityBase
-		where TSysAdmin: SysAdmin<TSysAdmin>
+	[Table("MgrBizAdmin")]
+	public class BizAdmin<TBizAdmin> : ObjectEntityBase
+		where TBizAdmin: BizAdmin<TBizAdmin>
 	{
 
 		[Comment("账号")]
@@ -32,7 +32,7 @@ namespace SF.Management.SysAdmins.Entity.DataModels
 		public string Icon { get; set; }
 
 	}
-	public class SysAdmin : SysAdmin<SysAdmin>
+	public class BizAdmin : BizAdmin<BizAdmin>
 	{ }
 
 }

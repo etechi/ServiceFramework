@@ -7,20 +7,20 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SF.Management.SysAdmins.Entity
+namespace SF.Management.BizAdmins.Entity
 {
-	public class EntitySysAdminManagementService<TSysAdmin> :
-		EntityManager<long, Models.SysAdminInternal,  SysAdminQueryArgument, Models.SysAdminEditable, TSysAdmin>,
-		ISysAdminManagementService
-		where TSysAdmin: DataModels.SysAdmin<TSysAdmin>,new()
+	public class EntityBizAdminManagementService<TBizAdmin> :
+		EntityManager<long, Models.BizAdminInternal,  BizAdminQueryArgument, Models.BizAdminEditable, TBizAdmin>,
+		IBizAdminManagementService
+		where TBizAdmin: DataModels.BizAdmin<TBizAdmin>,new()
 	{
 		public Lazy<ITimeService> TimeService { get; }
 		public Lazy<IIdentityService> IdentityService { get; }
 		public Lazy<IIdentGenerator> IdentGenerator { get; }
 		public Lazy<IIdentityCredentialProvider> SignupCredentialProvider { get; }
 
-		public EntitySysAdminManagementService(
-			IDataSet<TSysAdmin> DataSet,
+		public EntityBizAdminManagementService(
+			IDataSet<TBizAdmin> DataSet,
 			Lazy<ITimeService> TimeService,
 			Lazy<IIdentityService> IdentityService,
 			Lazy<IIdentGenerator> IdentGenerator,
@@ -33,10 +33,10 @@ namespace SF.Management.SysAdmins.Entity
 			this.SignupCredentialProvider = SignupCredentialProvider;
 		}
 
-		protected override PagingQueryBuilder<TSysAdmin> PagingQueryBuilder =>
-			PagingQueryBuilder<TSysAdmin>.Simple("time", b => b.CreatedTime, true);
+		protected override PagingQueryBuilder<TBizAdmin> PagingQueryBuilder =>
+			PagingQueryBuilder<TBizAdmin>.Simple("time", b => b.CreatedTime, true);
 
-		protected override IContextQueryable<TSysAdmin> OnBuildQuery(IContextQueryable<TSysAdmin> Query, SysAdminQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TBizAdmin> OnBuildQuery(IContextQueryable<TBizAdmin> Query, BizAdminQueryArgument Arg, Paging paging)
 		{
 			var q = Query.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)
@@ -80,7 +80,7 @@ namespace SF.Management.SysAdmins.Entity
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity
 						{
-							Entity="系统管理员",
+							Entity="业务管理员",
 							Icon = e.Icon,
 							Id = m.Id,
 							Name=m.Name

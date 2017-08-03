@@ -10,6 +10,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Reflection;
+using SF.Management.MenuServices.Entity;
 
 namespace SF.Core.ServiceManagement
 {
@@ -82,6 +83,8 @@ namespace SF.Core.ServiceManagement
 				}
 			);
 		}
+		public static IServiceInstanceInitializer<IMenuService> NewMenuService(this IServiceInstanceManager manager)
+			=>manager.Service<IMenuService, EntityMenuService<SF.Management.MenuServices.Entity.DataModels.Menu, SF.Management.MenuServices.Entity.DataModels.MenuItem>>(null);
 
 		public static async Task NewMenu(
 			this IServiceProvider sp, 

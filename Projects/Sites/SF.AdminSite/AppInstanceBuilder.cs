@@ -170,6 +170,7 @@ namespace SF.AdminSite
 
 			Services.AddAuthIdentityServices();
 			Services.AddSysAdminServices();
+			Services.AddBizAdminServices();
 
 			if (EnvType != EnvironmentType.Utils)
 			{
@@ -185,8 +186,10 @@ namespace SF.AdminSite
 		static async Task InitBizServices(IServiceProvider sp,IServiceInstanceManager sim,long? ParentId)
 		{
 			var SysAdminService = await sim.NewSysAdminService().Ensure(sp, ParentId);
+			var BizAdminService = await sim.NewBizAdminService().Ensure(sp, ParentId);
+			var MenuService = await sim.NewMenuService().Ensure(sp,ParentId);
 
-			var items=new[]
+			var bizMenuItems =new[]
 			{
 				new MenuItem
 				{
@@ -594,16 +597,9 @@ namespace SF.AdminSite
 						new MenuItem
 						{
 							Name="业务权限管理",
-							Children=(await sim.GetServiceMenuItems(sp,SysAdminService))
+							Children=(await sim.GetServiceMenuItems(sp,BizAdminService))
 							.Concat(new []
 							{
-								
-								new MenuItem
-								{
-									Action=MenuItemAction.Link,
-									ActionArgument="http://www.sina.com.cn",
-									Name="业务管理员"
-								},
 								new MenuItem
 								{
 									Action=MenuItemAction.Link,
@@ -623,18 +619,30 @@ namespace SF.AdminSite
 									Name="业务操作日志"
 								},
 							})
-						},
+						}
+					}
+					
+				}
+			};
+
+			await sp.NewMenu(null,"bizadmin","业务管理后台",bizMenuItems);
+
+
+			var sysMenuItems = new[]
+			{
+				
+				new MenuItem
+				{
+					Name="系统管理",
+					Children=new[]
+					{
+						
 						new MenuItem
 						{
 							Name="系统权限管理",
-							Children=new []
+							Children=(await sim.GetServiceMenuItems(sp,SysAdminService))
+							.Concat(new []
 							{
-								new MenuItem
-								{
-									Action=MenuItemAction.Link,
-									ActionArgument="http://www.sina.com.cn",
-									Name="系统管理员"
-								},
 								new MenuItem
 								{
 									Action=MenuItemAction.Link,
@@ -653,19 +661,12 @@ namespace SF.AdminSite
 									ActionArgument="http://www.sina.com.cn",
 									Name="系统操作日志"
 								},
-							}
+							})
 						},
 						new MenuItem
 						{
 							Name="其他设置",
-							Children=new []
-							{
-								new MenuItem
-								{
-									Action=MenuItemAction.EntityManager,
-									ActionArgument="系统菜单"
-								}
-							}
+							Children=await sim.GetServiceMenuItems(sp,MenuService)
 						},
 						new MenuItem
 						{
@@ -690,12 +691,11 @@ namespace SF.AdminSite
 							}
 						}
 					}
-					
+
 				}
 			};
 
-			await sp.NewMenu(null,"admin","管理后台",items);
-			
+			await sp.NewMenu(null, "sysadmin", "系统管理后台", sysMenuItems);
 		}
 	}
 }

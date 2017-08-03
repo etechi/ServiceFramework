@@ -7,13 +7,13 @@ namespace SF.AdminSite.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class addmenuitemserviceid : IMigrationMetadata
+    public sealed partial class init : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(addmenuitemserviceid));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(init));
         
         string IMigrationMetadata.Id
         {
-            get { return "201708020344111_add-menu-item-serviceid"; }
+            get { return "201708030508041_init"; }
         }
         
         string IMigrationMetadata.Source

@@ -18,17 +18,17 @@ namespace SF.AdminSite
 				routeTemplate: "r/{id}",
 				defaults: new { controller = "media", action = "get", id = RouteParameter.Optional }
 			);
+			config.Routes.MapHttpRoute(
+				name: "ServiceApi",
+				routeTemplate: "api/{controller}-{service}/{action}/{id}",
+				defaults: new { id = RouteParameter.Optional }
+			);
 
 			config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{action}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
-			config.Routes.MapHttpRoute(
-				name: "ServiceApi",
-				routeTemplate: "api/{controller}-{service}/{action}/{id}",
-				defaults: new { id = RouteParameter.Optional }
-			);
 		}
     }
 }

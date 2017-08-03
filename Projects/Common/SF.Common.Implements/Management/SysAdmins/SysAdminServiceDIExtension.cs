@@ -15,7 +15,7 @@ using SF.Auth.Identities;
 
 namespace SF.Core.ServiceManagement
 {
-	public static class SusAdminServiceDIExtension
+	public static class SysAdminServiceDIExtension
 	{
 	
 		public static IServiceCollection AddSysAdminManagementService<TSysAdmin>(
