@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SF.Core.ServiceManagement;
+using SF.Core.Hosting;
 
 namespace SF.Core.ServiceFeatures
 {
@@ -18,5 +19,11 @@ namespace SF.Core.ServiceFeatures
 			return Disposable.Combine(ds.ToArray());
 		}
 
+		public static IAppInstanceBuilder BootServices(this IAppInstanceBuilder Builder)
+		{ 
+			if (Builder.EnvType == EnvironmentType.Utils)
+				return Builder;
+			return Builder.With(sp=>sp.BootServices().Result);
+		}
 	}
 }

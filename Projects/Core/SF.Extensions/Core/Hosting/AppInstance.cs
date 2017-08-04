@@ -6,22 +6,8 @@ using System.Threading.Tasks;
 
 namespace SF.Core.Hosting
 {
-	public class AppInstance : IAppInstance
+	public static class AppInstanceExtension
 	{
-		public EnvironmentType EnvType { get; }
-		public string Name { get; }
-		public IServiceProvider ServiceProvider { get; }
-		IDisposable _Shutdown;
-		public AppInstance(string Name,EnvironmentType EnvType,IServiceProvider ServiceProvider,IDisposable Shutdown)
-		{
-			this.Name = Name;
-			this.EnvType = EnvType;
-			this.ServiceProvider = ServiceProvider;
-			this._Shutdown = Shutdown;
-		}
-		public void Dispose()
-		{
-			Disposable.Release(ref _Shutdown);
-		}
+		
 	}
 }

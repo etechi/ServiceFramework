@@ -24,9 +24,10 @@ namespace SF.AdminSite
 	
 	public class AppInstanceBuilder : SF.Applications.AppInstanceBuilder
 	{
-		public static IAppInstance Build() =>
-			Build(EnvironmentTypeDetector.Detect());
-		 
+		public AppInstanceBuilder() : this(EnvironmentTypeDetector.Detect())
+		{ }
+		public AppInstanceBuilder(EnvironmentType EnvType) : base(EnvType)
+		{ }
 		protected override ILogService OnCreateLogService()
 		{
 			var ls = base.OnCreateLogService();

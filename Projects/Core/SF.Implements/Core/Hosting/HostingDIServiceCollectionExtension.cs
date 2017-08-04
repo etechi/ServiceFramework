@@ -15,6 +15,11 @@ namespace SF.Core.ServiceManagement
 {
 	public static class HostingDIServiceCollectionService
 	{
+		public static IServiceCollection UseConsoleDefaultFilePathStructure(this IServiceCollection sc)
+		{
+			sc.AddSingleton<IDefaultFilePathStructure, ConsoleDefaultFilePathStructure>();
+			return sc;
+		}
 		public static IServiceCollection UseFilePathResolver(this IServiceCollection sc)
 		{
 			sc.AddScoped<IFilePathResolver, FilePathResolver>();

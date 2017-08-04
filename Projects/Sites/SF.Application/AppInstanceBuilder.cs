@@ -13,6 +13,7 @@ using System.Data.Entity.Infrastructure;
 using SF.Management.MenuServices.Models;
 using SF.Core.ServiceManagement.Management;
 using System.Threading.Tasks;
+using SF.Application.Migrations;
 
 namespace SF.Applications
 {
@@ -83,37 +84,38 @@ namespace SF.Applications
 			ss.Aggregate(Cfg.Add, (s, i) => GetOp().Eval(s, Cfg.Op.Eval(i, i)));
 	}
 
-	public class AppInstanceBuilder : SF.Core.Hosting.BaseAppInstanceBuilder<AppInstanceBuilder>
+	public static class App 
 	{
-		 
-		protected override ILogService OnCreateLogService()
+		public static IAppInstanceBuilder Builder(EnvironmentType EnvType)
 		{
 			var ls = new LogService(new Core.Logging.MicrosoftExtensions.MSLogMessageFactory());
-
 			ls.AsMSLoggerFactory().AddDebug();
-			return ls;
+
+			var builder= new SF.Core.Hosting.AppInstanceBuilder(
+				null,
+				EnvType,
+				new SF.Core.ServiceManagement.ServiceCollection(),
+				ls
+				);
+
+			ConfigServices(builder.Services);
+
+			builder.OnEnvType(e => e != EnvironmentType.Utils, sp =>
+			{
+				var configuration = new Configuration();
+				var migrator = new DbMigrator(configuration);
+				migrator.Update();
+				return null;
+			});
+			return builder;
 		}
-		protected override IServiceCollection OnBuildServiceCollection()
-			=> new SF.Core.ServiceManagement.ServiceCollection();
-		protected override IServiceProvider OnBuildServiceProvider(IServiceCollection Services)
-			=>Services.BuildServiceResolver();
 
-		public static AppInstanceBuilder Default { get; } = new AppInstanceBuilder();
 
-		protected override void OnInitStorage(IServiceProvider ServiceProvider)
+		static void ConfigServices(IAppInstanceBuilder builder)
 		{
-			//if (EnvType!=EnvironmentType.Utils)
-			//{
-			//	var configuration = new Configuration();
-			//	var migrator = new DbMigrator(configuration);
-			//	migrator.Update();
-			//}
+			var Services = builder.Services;
+			builder.Services.AddLogService(builder.LogService);
 
-			base.OnInitStorage(ServiceProvider);
-		}
-		protected override void OnConfigServices(IServiceCollection Services)
-		{
-			Services.AddLogService(LogService);
 
 			Services.UseNewtonsoftJson();
 			Services.UseSystemMemoryCache();
@@ -132,9 +134,11 @@ namespace SF.Applications
 			Services.AddTransient<ICalc, Calc>();
 
 			Services.UseManagedService();
+
 			Services.UseFilePathResolver();
 			Services.UseLocalFileCache();
 			Services.UseMediaService(EnvType);
+
 			Services.InitService("媒体服务", (sp, sim) =>
 				sim.NewMediaService()
 				);
@@ -163,16 +167,15 @@ namespace SF.Applications
 
 			Services.InitServices("业务服务", InitBizServices);
 
-			
 		}
 
-		static async Task InitBizServices(IServiceProvider sp,IServiceInstanceManager sim,long? ParentId)
+		static async Task InitBizServices(IServiceProvider sp, IServiceInstanceManager sim, long? ParentId)
 		{
 			var SysAdminService = await sim.NewSysAdminService().Ensure(sp, ParentId);
 			var BizAdminService = await sim.NewBizAdminService().Ensure(sp, ParentId);
-			var MenuService = await sim.NewMenuService().Ensure(sp,ParentId);
+			var MenuService = await sim.NewMenuService().Ensure(sp, ParentId);
 
-			var bizMenuItems =new[]
+			var bizMenuItems = new[]
 			{
 				new MenuItem
 				{
@@ -222,7 +225,7 @@ namespace SF.Applications
 							ActionArgument="http://www.sina.com.cn"
 						}
 					}
-                },
+				},
 				new MenuItem
 				{
 					Name="交易管理",
@@ -456,7 +459,7 @@ namespace SF.Applications
 							Action=MenuItemAction.Link,
 							ActionArgument="http://www.sina.com.cn"
 						},
-						
+
 						new MenuItem
 						{
 							Name="全体通知",
@@ -471,7 +474,7 @@ namespace SF.Applications
 						}
 					}
 
-				},				
+				},
 				new MenuItem
 				{
 					Name="内容管理",
@@ -604,22 +607,22 @@ namespace SF.Applications
 							})
 						}
 					}
-					
+
 				}
 			};
 
-			await sp.NewMenu(null,"bizadmin","业务管理后台",bizMenuItems);
+			await sp.NewMenu(null, "bizadmin", "业务管理后台", bizMenuItems);
 
 
 			var sysMenuItems = new[]
 			{
-				
+
 				new MenuItem
 				{
 					Name="系统管理",
 					Children=new[]
 					{
-						
+
 						new MenuItem
 						{
 							Name="系统权限管理",

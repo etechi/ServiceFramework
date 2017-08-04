@@ -34,13 +34,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Data\DBModels.cs" />
-    <Compile Include="Data\EFCoreBasic.cs" />
-    <Compile Include="Data\EFBasic.cs" />
+    <Compile Include="Auth\Identity\IdentityTest.cs" />
+    <Compile Include="Core\Data\DBModels.cs" />
+    <Compile Include="Core\Data\EFCoreBasic.cs" />
+    <Compile Include="Core\Data\EFBasic.cs" />
+    <Compile Include="Initializer.cs" />
+    <Compile Include="AppInstanceBuilder.cs" />
+    <Compile Include="TestBase.cs" />
     <Compile Include="Infrastructure.cs" />
-    <Compile Include="DI\FeatureTest.cs" />
-    <Compile Include="DI\ServiceManagerTest.cs" />
-    <Compile Include="Interception\FeatureTest.cs" />
+    <Compile Include="Core\DI\FeatureTest.cs" />
+    <Compile Include="Core\DI\ServiceManagerTest.cs" />
+    <Compile Include="Core\Interception\FeatureTest.cs" />
     <Compile Include="Migrations\201701311537099_init.cs" />
     <Compile Include="Migrations\201701311537099_init.Designer.cs">
       <DependentUpon>201701311537099_init.cs</DependentUpon>
@@ -57,6 +61,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\SF.Common.Abstractions\SF.Common.Abstractions.net46.csproj">
+      <Project>{493a9630-cc6d-458e-b8f8-f5c0002d0522}</Project>
+      <Name>SF.Common.Abstractions.net46</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\SF.Common.Extensions\SF.Common.Extensions.net46.csproj">
+      <Project>{b78373f2-f7f8-4461-ab16-a7b49f3dcb8d}</Project>
+      <Name>SF.Common.Extensions.net46</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\SF.Common.Implements\SF.Common.Implements.net46.csproj">
+      <Project>{089f553c-b608-4b76-be81-39ee4d18cacc}</Project>
+      <Name>SF.Common.Implements.net46</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.net46.csproj">
       <Project>{958914a9-ccdd-43ff-8620-3588ef099539}</Project>
       <Name>SF.Core.MicrosoftExtensions.net46</Name>
@@ -72,6 +88,10 @@
     <ProjectReference Include="..\..\Implements\SF.Services.dotNetFramework\SF.Services.dotNetFramework.csproj">
       <Project>{1111e437-2d49-4773-83df-ba42f6ca20f8}</Project>
       <Name>SF.Services.dotNetFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Sites\SF.Application\SF.Application.net46.csproj">
+      <Project>{a6c1b390-f3c2-4e54-8c4d-2b090c7739a7}</Project>
+      <Name>SF.Application.net46</Name>
     </ProjectReference>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.net46.csproj">
       <Project>{69691ef2-2eff-4e50-aa49-93e9fdc5c34b}</Project>
@@ -112,6 +132,9 @@
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Management\SysAdmin\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

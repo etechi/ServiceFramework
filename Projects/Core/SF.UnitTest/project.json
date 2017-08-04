@@ -10,6 +10,7 @@
     "Microsoft.EntityFrameworkCore.Tools": "1.1.1",
     "Microsoft.Extensions.DependencyInjection": "1.1.1",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.1",
+    "Moq": "4.7.99",
     "xunit": "2.2.0",
     "xunit.runner.visualstudio": "2.2.0"
   },

@@ -40,8 +40,4 @@ namespace SF.Core.Hosting
 		EnvironmentType EnvType { get; }
 		string Name { get; }
 	}
-	public interface IAppInstanceBuilder
-	{
-		IAppInstance Build();
-	}
 }

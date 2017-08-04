@@ -47,6 +47,8 @@ namespace SF.Core.ServiceManagement
 				AppServiceCache
 				);
 		}
+
+		public static IAppInstance Build(this AppInstanceBuilder)
 	}
 
 }
