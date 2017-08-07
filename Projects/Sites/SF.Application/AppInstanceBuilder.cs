@@ -86,36 +86,38 @@ namespace SF.Applications
 
 	public static class App 
 	{
-		public static IAppInstanceBuilder Builder(EnvironmentType EnvType)
+		public static ILogService LogService()
 		{
 			var ls = new LogService(new Core.Logging.MicrosoftExtensions.MSLogMessageFactory());
 			ls.AsMSLoggerFactory().AddDebug();
-
-			var builder= new SF.Core.Hosting.AppInstanceBuilder(
+			return ls;
+		}
+		public static IAppInstanceBuilder Builder(EnvironmentType EnvType,ILogService logService=null)
+		{
+			var ls = logService ?? LogService();
+			var builder = new SF.Core.Hosting.AppInstanceBuilder(
 				null,
 				EnvType,
 				new SF.Core.ServiceManagement.ServiceCollection(),
 				ls
-				);
-
-			ConfigServices(builder.Services);
-
-			builder.OnEnvType(e => e != EnvironmentType.Utils, sp =>
-			{
-				var configuration = new Configuration();
-				var migrator = new DbMigrator(configuration);
-				migrator.Update();
-				return null;
-			});
+				)
+				.With(sc=>sc.AddLogService(ls))
+				.With((sc,envType)=> ConfigServices(sc,envType))
+				.OnEnvType(e => e != EnvironmentType.Utils, sp =>
+				{
+					var configuration = new Configuration();
+					var migrator = new DbMigrator(configuration);
+					migrator.Update();
+					return null;
+				});
 			return builder;
 		}
 
 
-		static void ConfigServices(IAppInstanceBuilder builder)
+		static void ConfigServices(IServiceCollection Services,EnvironmentType EnvType)
 		{
-			var Services = builder.Services;
-			builder.Services.AddLogService(builder.LogService);
-
+			if (EnvType == EnvironmentType.Utils)
+				Services.UseConsoleDefaultFilePathStructure();
 
 			Services.UseNewtonsoftJson();
 			Services.UseSystemMemoryCache();

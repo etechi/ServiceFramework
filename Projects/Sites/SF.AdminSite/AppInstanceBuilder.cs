@@ -22,31 +22,28 @@ using System.Threading.Tasks;
 namespace SF.AdminSite
 {
 	
-	public class AppInstanceBuilder : SF.Applications.AppInstanceBuilder
+	public static class App 
 	{
-		public AppInstanceBuilder() : this(EnvironmentTypeDetector.Detect())
-		{ }
-		public AppInstanceBuilder(EnvironmentType EnvType) : base(EnvType)
-		{ }
-		protected override ILogService OnCreateLogService()
+		public static IAppInstanceBuilder Builder()
 		{
-			var ls = base.OnCreateLogService();
-			ls.AddAspNetTrace();
-			return ls;
+			var envType = EnvironmentTypeDetector.Detect();
+			var builder = Applications.App.Builder(
+				envType,
+				Applications.App.LogService().AddAspNetTrace()
+				)
+				.With(sc => sc.UseAspNetFilePathStructure())
+				.OnEnvType(
+					et => et != EnvironmentType.Utils, 
+					sc =>
+					{
+						 sc.RegisterMvcControllers(typeof(App).Assembly);
+						 sc.RegisterWebApiControllers(GlobalConfiguration.Configuration);
+						 sc.UseNetworkService();
+						 sc.UseWebApiNetworkService(GlobalConfiguration.Configuration);
+					}
+				);
+			return builder;
 		}
 
-		protected override void OnConfigServices(IServiceCollection Services)
-		{
-			base.OnConfigServices(Services);
-
-			Services.UseAspNetFilePathStructure();
-			if (EnvType != EnvironmentType.Utils)
-			{
-				Services.RegisterMvcControllers(GetType().Assembly);
-				Services.RegisterWebApiControllers(GlobalConfiguration.Configuration);
-				Services.UseNetworkService();
-				Services.UseWebApiNetworkService(GlobalConfiguration.Configuration);
-			}
-		}
 	}
 }

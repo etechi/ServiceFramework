@@ -19,7 +19,7 @@ namespace SF.UT
 		public IServiceScope ServiceScope { get; }
 		public TestBase()
 		{
-			AppInstance = AppInstanceBuilder.Build(EnvironmentType.Development);
+			AppInstance = App.Builder(EnvironmentType.Development).Build();
 			ServiceScope = AppInstance.ServiceProvider.Resolve<IServiceScopeFactory>().CreateServiceScope();
 			ServiceProvider = ServiceScope.ServiceProvider;
 		}

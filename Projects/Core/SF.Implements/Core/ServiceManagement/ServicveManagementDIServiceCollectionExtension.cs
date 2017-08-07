@@ -4,6 +4,7 @@ using SF.Metadata;
 using System;
 using SF.Core.ServiceManagement.Internals;
 using SF.Core.ServiceManagement.Storages;
+using SF.Core.Hosting;
 
 namespace SF.Core.ServiceManagement
 {
@@ -48,7 +49,10 @@ namespace SF.Core.ServiceManagement
 				);
 		}
 
-		public static IAppInstance Build(this AppInstanceBuilder)
+		public static IAppInstance Build(this IAppInstanceBuilder Builder)
+		{
+			return Builder.Build(sc => sc.BuildServiceResolver());
+		}
 	}
 
 }

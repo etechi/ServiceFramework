@@ -14,14 +14,18 @@ using SF.Core.NetworkService;
 
 namespace SF.UT
 {
-	public class AppInstanceBuilder : SF.Applications.AppInstanceBuilder
+	public static class App
 	{
-		protected override void OnConfigServices(IServiceCollection Services)
+		public static IAppInstanceBuilder Builder(EnvironmentType envType=EnvironmentType.Production)
 		{
-			base.OnConfigServices(Services);
-			Services.UseConsoleDefaultFilePathStructure();
-			Services.AddSingleton(new Moq.Mock<IInvokeContext>().Object);
-			Services.AddSingleton(new Moq.Mock<IUploadedFileCollection>().Object);
+			return Applications.App.Builder(envType).
+				With(sc =>
+				{
+					sc.UseConsoleDefaultFilePathStructure();
+					sc.AddSingleton(new Moq.Mock<IInvokeContext>().Object);
+					sc.AddSingleton(new Moq.Mock<IUploadedFileCollection>().Object);
+				});
+			
 		}
 	}
 	

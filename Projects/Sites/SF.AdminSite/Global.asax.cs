@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using SF.Core.DI;
+using SF.Core.ServiceManagement;
 
 [assembly: PreApplicationStartMethod(typeof(SF.AdminSite.MvcApplication), nameof(SF.AdminSite.MvcApplication.RegisterDIHttpModule))]
 
@@ -26,7 +27,7 @@ namespace SF.AdminSite
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
 			StartAppInstance(
-				AppInstanceBuilder.Build(), 
+				App.Builder().Build(), 
 				GlobalConfiguration.Configuration
 				);
 

@@ -28,6 +28,29 @@ namespace SF.Core.ServiceManagement.Internals
 		static MethodInfo StringConcat = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 2 && m.GetParameters().All(pt=>pt.ParameterType== typeof(string)));
 		static MethodInfo StringConcat4 = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 4 && m.GetParameters().All(pt => pt.ParameterType == typeof(string)));
 		static MethodInfo Int32ToString = typeof(int).GetMethods().Single(m => m.Name == "ToString" && m.IsPublic && !m.IsStatic && m.GetParameters().Length == 0);
+
+		static T NullVerify<T>(object obj, IServiceInstanceDescriptor Descriptor, string Path)
+			where T:class
+		{
+			if (obj == null)
+				throw new NullReferenceException($"在构造服务{Descriptor.ServiceDeclaration.ServiceType}的实现{Descriptor.ServiceImplement.ImplementType}时，参数{Path}为Null, 类型:{typeof(T)}");
+			return (T)obj;
+		}
+		static MethodInfo NullVerifyMethod = typeof(ServiceCreatorBuilder).GetMethodExt(
+			nameof(NullVerify),
+			typeof(object),
+			typeof(IServiceInstanceDescriptor),
+			typeof(string)
+			);
+
+		static Expression NullVerify(Expression e,string Path)
+			=>Expression.Call(
+				NullVerifyMethod.MakeGenericMethod(e.Type),
+				e,
+				ParamServiceInstanceDescriptor,
+				Expression.Constant(Path)
+				);
+
 		enum ResolveType
 		{
 			Instance,
@@ -81,6 +104,8 @@ namespace SF.Core.ServiceManagement.Internals
 				throw new NotSupportedException($"找不到服务类型为{InterfaceType},ID为{si.InstanceId}的服务, 当前服务:{ServiceInstanceDescriptor.InstanceId}");
 			return instance;
 		}
+
+
 
 		
 
@@ -589,7 +614,12 @@ namespace SF.Core.ServiceManagement.Internals
 			}
 			Expression ObjectCreateExpression(Type Type, Expression Src, Expression PropPathExpr, string PropPath)
 			{
-				return Expression.MemberInit(Expression.New(Type), MemberInitExpressions(Type, Src, PropPathExpr, PropPath));
+				var srcVar = Expression.Variable(Src.Type);
+				return Expression.Block(
+					new[] { srcVar },
+					Expression.Assign(srcVar, NullVerify(Src, PropPath)),
+					Expression.MemberInit(Expression.New(Type), MemberInitExpressions(Type, srcVar, PropPathExpr, PropPath))
+					);
 			}
 
 			Expression BuildParamExpression(ParameterInfo pi, int Index)
