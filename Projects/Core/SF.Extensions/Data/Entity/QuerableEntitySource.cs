@@ -34,6 +34,7 @@ namespace SF.Data.Entity
 
 		abstract protected IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, TQueryArgument Arg, Paging paging);
 		abstract protected PagingQueryBuilder<TModel> PagingQueryBuilder { get; }
+
 		public async Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
 		{
 		

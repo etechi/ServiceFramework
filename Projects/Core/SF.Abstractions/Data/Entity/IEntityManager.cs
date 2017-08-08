@@ -12,14 +12,19 @@ namespace SF.Data.Entity
 		Deletable=4,
 		All=7
 	}
-	public interface IEntityManager<TKey, TEntity>
+	public interface IEntityManager<TKey>
+	{
+		EntityManagerCapability Capabilities { get; }
+		Task RemoveAsync(TKey Key);
+		Task RemoveAllAsync();
+	}
+	public interface IEntityManager<TKey, TEntity>:
+		IEntityManager<TKey>
 		where TKey:IEquatable<TKey>
 		where TEntity:class,IObjectWithId<TKey>
 	{
-		EntityManagerCapability Capabilities { get; }
 		Task<TEntity> LoadForEdit(TKey Id);
 		Task<TKey> CreateAsync(TEntity Entity);
 		Task UpdateAsync(TEntity Entity);
-		Task RemoveAsync(TKey Key);
 	}
 }

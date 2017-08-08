@@ -4,6 +4,7 @@ using SF.Auth.Identities.IdentityCredentialProviders;
 using SF.Auth.Identities.Internals;
 using SF.Core.ServiceManagement;
 using SF.Core.ServiceManagement.Management;
+using SF.Data.Entity;
 using System.Collections.Generic;
 
 namespace SF.Core.ServiceManagement
@@ -21,9 +22,11 @@ namespace SF.Core.ServiceManagement
 
 			sc.AddManagedScoped<IIdentityManagementService, EntityIdentityManagementService<TIdentity, TIdentityCredential>>(
 				null,
-				(sp,sid)=>
-					sp.Resolve<IIdentityManagementService>()
-				);
+				async (sp,sid)=>
+				{
+					var svc = sp.Resolve<IIdentityManagementService>();
+					await svc.RemoveAllAsync();
+				});
 			sc.AddTransient<IIdentStorage>(sp => (IIdentStorage)sp.Resolve<IIdentityManagementService>());
 			sc.AddManagedScoped<IIdentityCredentialStorage, EntityIdentityCredentialStorage<TIdentity, TIdentityCredential>>();
 			return sc;

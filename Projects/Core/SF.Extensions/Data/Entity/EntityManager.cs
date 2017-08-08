@@ -17,7 +17,7 @@ namespace SF.Data.Entity
 		where TPublic : class, IObjectWithId<TKey>
 		where TKey : IEquatable<TKey>
 		where TModel : class, IObjectWithId<TKey>, new()
-		where TQueryArgument : class, IQueryArgument<TKey>
+		where TQueryArgument : class, IQueryArgument<TKey>,new()
 		where TEditable : class, IObjectWithId<TKey>
 	{
 		public EntityManager(IDataSet<TModel> DataSet) : base(DataSet)
@@ -34,7 +34,7 @@ namespace SF.Data.Entity
 		where TPublic : class, IObjectWithId<TKey>
 		where TKey : IEquatable<TKey>
 		where TModel : class, IObjectWithId<TKey>,new()
-		where TQueryArgument : class, IQueryArgument<TKey>
+		where TQueryArgument : class, IQueryArgument<TKey>,new()
 		where TEditable : class,IObjectWithId<TKey>
 	{
 		public class ModifyContext 
@@ -194,6 +194,11 @@ namespace SF.Data.Entity
 		{
 			DataSet.Remove(ctx.Model);
 			return Task.CompletedTask;
+		}
+
+		public virtual async Task RemoveAllAsync()
+		{
+			await this.QueryAndRemoveAsync<EntityManager<TKey, TPublic, TTemp, TQueryArgument, TEditable, TModel>, TKey,TQueryArgument>();
 		}
 
 		#endregion

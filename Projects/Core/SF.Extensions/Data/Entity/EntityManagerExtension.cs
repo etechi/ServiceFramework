@@ -84,17 +84,15 @@ namespace SF.Data.Entity
 				Updater
 				);
 		}
-		public static async Task RemoveAll<TManager, TKey, TEditable, TPublic, TQueryArgument>(
+		public static async Task QueryAndRemoveAsync<TManager, TKey, TQueryArgument>(
 			this TManager Manager, 
 			TQueryArgument QueryArgument=null,
 			int BatchCount=100,
 			ITransactionScopeManager transScopeManager=null
 			)
 			where TKey : IEquatable<TKey>
-			where TEditable : class, IObjectWithId<TKey>
-			where TPublic : class, IObjectWithId<TKey>
 			where TQueryArgument : class, IQueryArgument<TKey>,new()
-			where TManager : IEntityQueryable<TKey, TPublic, TQueryArgument>, IEntityManager<TKey, TEditable>
+			where TManager : IEntityIdentQueryable<TKey, TQueryArgument>, IEntityManager<TKey>
 		{
 			var paging = new Paging { Count = BatchCount };
 			var arg = QueryArgument ?? new TQueryArgument();
@@ -113,6 +111,5 @@ namespace SF.Data.Entity
 				}
 			}
 		}
-			
 	}
 }
