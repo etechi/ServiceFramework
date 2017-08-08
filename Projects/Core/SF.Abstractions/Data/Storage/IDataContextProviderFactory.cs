@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace SF.Data.Storage
 {
-	[UnmanagedService]
 	public interface IDataContextProviderFactory
 	{
 		IDataContextProvider Create(IDataContext Context);

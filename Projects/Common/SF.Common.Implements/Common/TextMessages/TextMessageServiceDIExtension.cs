@@ -21,7 +21,7 @@ namespace SF.Core.ServiceManagement
 			)
 		{
 			sc.AddDataModules<SF.Common.TextMessages.Management.DataModels.TextMessageRecord>();
-			sc.AddScoped<IMsgRecordManager, EntityMsgRecordManager>();
+			sc.AddManagedScoped<IMsgRecordManager, EntityMsgRecordManager>();
 			sc.AddTransient(sp => (ITextMessageLogger)sp.Resolve<IMsgRecordManager>());
 
 			//sc.AddInitializer(
@@ -33,7 +33,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IServiceCollection AddSimPhoneTextMessageService(this IServiceCollection sc)
 		{
-			sc.AddScoped<IPhoneMessageService, SimPhoneTextMessageService>();
+			sc.AddManagedScoped<IPhoneMessageService, SimPhoneTextMessageService>();
 			return sc;
 		}
 		public static IServiceCollection AddTextMessageServices(this IServiceCollection sc)

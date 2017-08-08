@@ -57,7 +57,6 @@ namespace SF.Data.Storage
 		{
 		}
 	}
-	[UnmanagedService]
 	public class DbContext : System.Data.Entity.DbContext
 	{
 		public IServiceProvider ServiceProvider { get; }

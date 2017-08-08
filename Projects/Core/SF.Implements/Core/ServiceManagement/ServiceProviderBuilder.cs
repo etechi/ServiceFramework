@@ -59,7 +59,7 @@ namespace SF.Core.ServiceManagement
 				(from arg in Internals.ServiceCreatorBuilder.FindBestConstructorInfo(Implement.ImplementType).GetParameters()
 				 let type = GetRealServiceType(arg.ParameterType)
 				 where type.IsInterface && !type.IsDefined(typeof(AutoBindAttribute))
-				 let svcs = Meta.Services.Get(type) ?? (type.IsGenericType?Meta.Services.Get(type.GetGenericTypeDefinition()):null)
+				 let svcs = Meta.FindServiceByType(type)
 				select new { arg, svcs, type }
 				).ForEach(tuple => {
 					

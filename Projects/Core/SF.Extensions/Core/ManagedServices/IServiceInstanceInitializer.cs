@@ -13,7 +13,7 @@ namespace SF.Core.ServiceManagement
 	public static class ServiceInstanceInitializerImplement
 	{
 
-		class ServiceBuilder<T> : IServiceInstanceInitializer<T>
+		class ServiceBuilder<I,T> : IServiceInstanceInitializer<I>
 		{
 			public string Name { get; }
 			public Func<IServiceProvider, long?, Task<long>> Builder { get; }
@@ -24,16 +24,27 @@ namespace SF.Core.ServiceManagement
 				this.Builder = builder;
 			}
 			public async Task<long> Ensure(IServiceProvider ServiceProvider, long? ParentId)
-			{
+			{	
 				if (_ServiceId != 0)
 					return _ServiceId;
+
+
+				var metadata = ServiceProvider.Resolve<IServiceMetadata>();
+				var impl = metadata.FindServiceByType(typeof(I)).Implements.SingleOrDefault(i => i.ImplementType == typeof(T));
+				if (impl == null)
+					throw new ArgumentException($"找不到托管服务实现:{typeof(T)}");
+
+				if(!impl.IsManagedService)
+					throw new ArgumentException($"指定服务实现不是托管服务实现:{typeof(T)}");
+
 				_ServiceId = await Builder(ServiceProvider, ParentId);
 				return _ServiceId;
 			}
 		}
-		static IServiceInstanceInitializer<T> CreateBuilder<T>(string Name, Func<IServiceProvider, long?, Task<long>> builder)
+		
+		static IServiceInstanceInitializer<I> CreateBuilder<I,T>(string Name, Func<IServiceProvider, long?, Task<long>> builder)
 		{
-			return new ServiceBuilder<T>(Name, builder);
+			return new ServiceBuilder<I,T>(Name, builder);
 		}
 
 		static async Task<object> ConfigResolve(
@@ -118,7 +129,7 @@ namespace SF.Core.ServiceManagement
 			IServiceInstanceInitializer[] childServices
 			)
 		{
-			return CreateBuilder<I>(
+			return CreateBuilder<I,T>(
 				typeof(T).Comment().Name,
 				async (sp, parent) =>
 				{
@@ -182,7 +193,8 @@ namespace SF.Core.ServiceManagement
 			)=>
 			sc.InitService(
 				Name ?? "初始化"+typeof(T).Comment().Name,
-				(sp, sim) =>sim.DefaultService<I,T>(Config),
+				(sp, sim) =>
+					sim.DefaultService<I,T>(Config),
 				ParentId
 				);
 		public static IServiceCollection InitDefaultService<I, T>(

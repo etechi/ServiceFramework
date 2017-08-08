@@ -15,14 +15,17 @@ namespace SF.Core.ServiceManagement
 		ServiceImplementType ServiceImplementType { get; }
 		ServiceImplementLifetime LifeTime { get; }
 		bool IsManagedService { get; }
+		IManagedServiceInitializer ManagedServiceInitializer { get; }
 	}
+
 	public interface IServiceDeclaration
 	{
+		bool HasManagedServiceImplement{get;}
+		bool HasUnmanagedServiceImplement { get; }
 		string ServiceName { get; }
 		Type ServiceType { get; }
 		IReadOnlyList<IServiceImplement> Implements { get; }
 	}
-	[UnmanagedService]
 	public interface IServiceMetadata : IServiceDetector
 	{
 		IReadOnlyDictionary<string, IServiceDeclaration> ServicesByTypeName { get; }

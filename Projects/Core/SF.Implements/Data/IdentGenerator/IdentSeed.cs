@@ -8,12 +8,6 @@ namespace SF.Data.IdentGenerator.DataModels
 	public class IdentSeed
 	{
 		[Key]
-		[Comment(Name ="范围")]
-		[Column(Order =1)]
-		public long ScopeId { get; set; }
-
-		[Key]
-		[Column(Order = 2)]
 		[Comment(Name = "类型")]
 		[MaxLength(100)]
 		public string Type { get; set; }

@@ -205,8 +205,9 @@ namespace SF.Core.ServiceManagement
 				);
 			foreach(var type in (
 				from svc in Metadata.Services
-				where !svc.Value.ServiceType.IsDefined(typeof(UnmanagedServiceAttribute))
+				//where !svc.Value.ServiceType.IsDefined(typeof(UnmanagedServiceAttribute))
 				from impl in svc.Value.Implements
+				where impl.IsManagedService
 				let t= impl.ImplementType
 				where t!=null// && IsArgTypeSupportted(t)
 				select t

@@ -9,7 +9,6 @@ namespace SF.Core.ServiceManagement.Internals
 		public long Id { get; set; }
 		public string Name { get; set; }
 	}
-	[UnmanagedService]
 	public interface IServiceInstanceLister
 	{
 		ServiceReference[] List(long? ScopeServiceId, string ServiceType, int Limit);

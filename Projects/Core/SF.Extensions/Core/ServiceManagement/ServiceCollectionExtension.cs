@@ -1,11 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SF.Core.ServiceManagement
 {
 	public static class DIServiceCollectionExtension
 	{
+		class FuncManagedServiceInitializer : IManagedServiceInitializer
+		{
+			Func<IServiceProvider , IServiceInstanceDescriptor,Task> FuncInit { get; }
+			Func<IServiceProvider, IServiceInstanceDescriptor, Task> FuncUninit { get; }
+			public FuncManagedServiceInitializer(Func<IServiceProvider, IServiceInstanceDescriptor, Task> FuncInit, Func<IServiceProvider, IServiceInstanceDescriptor, Task> FuncUninit)
+			{
+				this.FuncInit = FuncInit;
+				this.FuncUninit = FuncUninit;
+			}
+			public async Task Init(IServiceProvider ServiceProvider, IServiceInstanceDescriptor Descriptor)
+			{
+				if(FuncInit!=null)
+					await FuncInit(ServiceProvider, Descriptor);
+			}
+
+			public async Task Uninit(IServiceProvider ServiceProvider, IServiceInstanceDescriptor Descriptor)
+			{
+				if (FuncInit != null)
+					await FuncUninit(ServiceProvider, Descriptor);
+			}
+		}
 		public static IEnumerable<Type> GetServiceTypes(this IServiceCollection sc)
 		{
 			return sc.Select(d => d.InterfaceType).Distinct();
@@ -60,9 +82,16 @@ namespace SF.Core.ServiceManagement
 			sc.Add(ImplementType, ImplementType, ServiceImplementLifetime.Transient);
 			return sc;
 		}
-		public static IServiceCollection Add(this IServiceCollection sc,Type ServiceType,Type ImplementType,ServiceImplementLifetime Lifetime)
+		public static IServiceCollection Add(
+			this IServiceCollection sc,
+			Type ServiceType,
+			Type ImplementType,
+			ServiceImplementLifetime Lifetime,
+			bool IsManagedService=false, 
+			IManagedServiceInitializer ManagedServiceInitializer=null
+			)
 		{
-			sc.Add(new ServiceDescriptor(ServiceType,ImplementType, Lifetime));
+			sc.Add(new ServiceDescriptor(ServiceType,ImplementType, Lifetime,IsManagedService,ManagedServiceInitializer));
 			return sc;
 		}
 		public static IServiceCollection Add(this IServiceCollection sc, Type ServiceType, System.Reflection.MethodInfo Method, ServiceImplementLifetime Lifetime)
@@ -99,6 +128,21 @@ namespace SF.Core.ServiceManagement
 			sc.Add(Service, Method, ServiceImplementLifetime.Transient);
 			return sc;
 		}
+		public static IServiceCollection AddManagedTransient<TService, TImplement>(
+			this IServiceCollection sc, 
+			Func<IServiceProvider,IServiceInstanceDescriptor,Task> FuncInit,
+			Func<IServiceProvider, IServiceInstanceDescriptor, Task> FuncUninit=null)
+			where TImplement : TService
+		{
+			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Transient, true, new FuncManagedServiceInitializer(FuncInit,FuncUninit));
+			return sc;
+		}
+		public static IServiceCollection AddManagedTransient<TService, TImplement>(this IServiceCollection sc,IManagedServiceInitializer ManagedServiceInitializer=null)
+			where TImplement : TService
+		{
+			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Transient,true,ManagedServiceInitializer);
+			return sc;
+		}
 		public static IServiceCollection AddTransient<TService, TImplement>(this IServiceCollection sc)
 			where TImplement : TService
 		{
@@ -121,7 +165,21 @@ namespace SF.Core.ServiceManagement
 		}
 
 
-
+		public static IServiceCollection AddManagedScoped<TService, TImplement>(
+			this IServiceCollection sc,
+			Func<IServiceProvider, IServiceInstanceDescriptor, Task> FuncInit,
+			Func<IServiceProvider, IServiceInstanceDescriptor, Task> FuncUninit = null)
+			where TImplement : TService
+		{
+			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped, true, new FuncManagedServiceInitializer(FuncInit, FuncUninit));
+			return sc;
+		}
+		public static IServiceCollection AddManagedScoped<TService, TImplement>(this IServiceCollection sc,IManagedServiceInitializer ManagedServiceInitializer=null)
+			where TImplement : TService
+		{
+			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped,true, ManagedServiceInitializer);
+			return sc;
+		}
 		public static IServiceCollection AddScoped<TService, TImplement>(this IServiceCollection sc)
 			where TImplement:TService
 		{

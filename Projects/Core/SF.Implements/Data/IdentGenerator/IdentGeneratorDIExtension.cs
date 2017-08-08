@@ -12,11 +12,6 @@ namespace SF.Core.ServiceManagement
 		{
 			sc.AddDataModules<SF.Data.IdentGenerator.DataModels.IdentSeed>(TablePrefix);
 			sc.AddScoped<SF.Data.IIdentGenerator, SF.Data.IdentGenerator.StorageIdentGenerator>();
-			sc.InitDefaultService<SF.Data.IIdentGenerator,SF.Data.IdentGenerator.StorageIdentGenerator>(
-				new{
-					CountPerBatch = 100
-				}
-			);
 			return sc;
 		}
 	}

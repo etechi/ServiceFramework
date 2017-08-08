@@ -26,14 +26,31 @@ namespace SF.Data.Entity
 		where TPublic : class, IObjectWithId<TKey>
 		where TKey : IEquatable<TKey>
 		where TModel : class, IObjectWithId<TKey>
-		where TQueryArgument: class, IQueryArgument<TKey>
+		where TQueryArgument : class, IQueryArgument<TKey>
 	{
 		public QuerableEntitySource(IDataSet<TModel> DataSet) : base(DataSet)
 		{
 		}
 
-		abstract protected IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query,TQueryArgument Arg, Paging paging);
+		abstract protected IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, TQueryArgument Arg, Paging paging);
 		abstract protected PagingQueryBuilder<TModel> PagingQueryBuilder { get; }
+		public async Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
+		{
+		
+			var q = DataSet.AsQueryable(true);
+			if (Arg.Id.HasValue)
+			{
+				var id = Arg.Id.Value;
+				q = q.Where(e => e.Id.Equals(id));
+			}
+			q=OnBuildQuery(q, Arg, paging);
+			var re = await q.ToQueryResultAsync(
+				qs=>qs.Select(i=>i.Id),
+				PagingQueryBuilder,
+				paging
+				);
+			return re;
+		}
 		public async Task<QueryResult<TPublic>> QueryAsync(TQueryArgument Arg, Paging paging)
 		{
 			var q = DataSet.AsQueryable(true);

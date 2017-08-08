@@ -21,6 +21,7 @@ namespace SF.AspNet
 		}
 
 		public static IServiceProvider ServiceProvider => AppInstance.ServiceProvider;
+		static object InitLock = new object();
 		public void SetAppInstance(IAppInstance Instance)
 		{
 			if (_AppInstance != null)
@@ -28,15 +29,20 @@ namespace SF.AspNet
 			_AppInstance = Instance;
 
 		}
-		public void StartAppInstance(IAppInstance Instance, HttpConfiguration cfg)
+		public void StartAppInstance(Func<IAppInstance> Instance, HttpConfiguration cfg)
 		{
-			SetAppInstance(Instance);
+			lock (InitLock)
+			{
+				if (_AppInstance == null)
+				{
+					SetAppInstance(Instance());
+					//初始化MVC参数提供者
+					ServiceProvider.InitMvcValueProvider();
+				}
+			}
 
 			//初始化WebApi格式化器
 			ServiceProvider.InitWebApiFormatter(cfg);
-
-			//初始化MVC参数提供者
-			ServiceProvider.InitMvcValueProvider();
 
 			//初始化WebApi,Mvc依赖注入
 			ServiceProvider.ReplaceDependenceResolver(cfg);

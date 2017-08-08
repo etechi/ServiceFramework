@@ -19,9 +19,13 @@ namespace SF.Core.ServiceManagement
 		{
 			sc.AddDataModules<TIdentity, TIdentityCredential>(TablePrefix);
 
-			sc.AddScoped<IIdentityManagementService, EntityIdentityManagementService<TIdentity, TIdentityCredential>>();
+			sc.AddManagedScoped<IIdentityManagementService, EntityIdentityManagementService<TIdentity, TIdentityCredential>>(
+				null,
+				(sp,sid)=>
+					sp.Resolve<IIdentityManagementService>()
+				);
 			sc.AddTransient<IIdentStorage>(sp => (IIdentStorage)sp.Resolve<IIdentityManagementService>());
-			sc.AddScoped<IIdentityCredentialStorage, EntityIdentityCredentialStorage<TIdentity, TIdentityCredential>>();
+			sc.AddManagedScoped<IIdentityCredentialStorage, EntityIdentityCredentialStorage<TIdentity, TIdentityCredential>>();
 			return sc;
 		}
 		public static IServiceCollection AddAuthIdentityManagementService(
@@ -35,15 +39,15 @@ namespace SF.Core.ServiceManagement
 			this IServiceCollection sc
 			)
 		{
-			sc.AddScoped<IIdentityService, IdentityService>();
+			sc.AddManagedScoped<IIdentityService, IdentityService>();
 			return sc;
 		}
 		public static IServiceCollection AddAuthIdentityCredentialProviders(
 			this IServiceCollection sc
 			)
 		{
-			sc.AddScoped<IIdentityCredentialProvider, PhoneNumberIdentityCredentialProvider>();
-			sc.AddScoped<IIdentityCredentialProvider, UserAccountIdentityCredentialProvider>();
+			sc.AddManagedScoped<IIdentityCredentialProvider, PhoneNumberIdentityCredentialProvider>();
+			sc.AddManagedScoped<IIdentityCredentialProvider, UserAccountIdentityCredentialProvider>();
 			return sc;
 		}
 		public static IServiceCollection AddAuthIdentityServices(this IServiceCollection sc)

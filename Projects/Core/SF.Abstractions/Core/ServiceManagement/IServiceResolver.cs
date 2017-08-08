@@ -13,7 +13,6 @@ namespace SF.Core.ServiceManagement
 	//}
 
 	
-	[UnmanagedService]
 	public interface IServiceResolver 
 	{
 		IServiceProvider Provider { get; }

@@ -42,7 +42,7 @@ namespace SF.Core.ServiceManagement.Internals
 				out var se
 				) || !CreateIfNotExists)
 				return se;
-			var decl= ServiceMetadata.ResolveServiceImplements(ServiceType);
+			var decl= ServiceMetadata.FindServiceByType(ServiceType);
 			if (decl == null)
 				return Array.Empty<UnmanagedServiceEntry>();
 			return UnmanagedServiceCache.GetOrAdd(

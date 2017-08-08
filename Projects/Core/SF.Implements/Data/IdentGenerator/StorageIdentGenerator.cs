@@ -17,30 +17,24 @@ namespace SF.Data.IdentGenerator
 			public long End { get; set; }
 			public int Section { get; set; }
 		}
-		static ConcurrentDictionary<(long,string), IdentBatch> Cache { get; } = new ConcurrentDictionary<(long, string), IdentBatch>();
-		static ObjectSyncQueue<(long,string)> SyncQueue { get; } = new ObjectSyncQueue<(long,string)>();
+		static ConcurrentDictionary<string, IdentBatch> Cache { get; } = new ConcurrentDictionary<string, IdentBatch>();
+		static ObjectSyncQueue<string> SyncQueue { get; } = new ObjectSyncQueue<string>();
 
 		public IDataSet<DataModels.IdentSeed> IdentSeedSet { get; }
-		public SF.Core.ServiceManagement.IServiceInstanceDescriptor ServiceDescriptor { get;  }
-		public int CountPerBatch { get; }
+		const int CountPerBatch = 100;
 
 		public StorageIdentGenerator(
-			IDataSet<DataModels.IdentSeed> IdentSeedSet,
-			SF.Core.ServiceManagement.IServiceInstanceDescriptor ServiceDescriptor,
-			[Comment("预分配数量", "每次预分配的数量")]
-			int CountPerBatch= 100
+			IDataSet<DataModels.IdentSeed> IdentSeedSet
 			)
 		{
 			this.IdentSeedSet = IdentSeedSet;
-			this.ServiceDescriptor = ServiceDescriptor;
-			this.CountPerBatch = CountPerBatch;
 		}
-		async Task<long> GetNextBatchStartAsync((long,string) Scope, int Section)
+		async Task<long> GetNextBatchStartAsync(string Scope, int Section)
 		{
-			var (sid, type) = Scope;
+			var type = Scope;
 			var re = await IdentSeedSet.RetryForConcurrencyExceptionAsync(() =>
 				  IdentSeedSet.AddOrUpdateAsync(
-					  e=>e.ScopeId==sid && e.Type==type,
+					  e=> e.Type==type,
 					  () => new DataModels.IdentSeed {
 						  NextValue = 1+ CountPerBatch,
 						  Section = Section,
@@ -64,8 +58,7 @@ namespace SF.Data.IdentGenerator
 		}
 		public async Task<long> GenerateAsync(string Type,int Section)
 		{
-			var iid = ServiceDescriptor.ParentInstanceId??0;
-			var cacheKey = (iid,Type);
+			var cacheKey = Type;
 			IdentBatch v;
 			if (!Cache.TryGetValue(cacheKey,out v))
 				v = Cache.GetOrAdd(cacheKey, new IdentBatch());

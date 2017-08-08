@@ -73,6 +73,10 @@ namespace SF.Core.ServiceManagement.Management
 					)
 					);
 		}
-
+		public async Task<QueryResult<string>> QueryIdentsAsync(ServiceImplementQueryArgument Arg, Paging paging)
+		{
+			var re = await QueryAsync(Arg, paging);
+			return re.Select(i => i.Id);
+		}
 	}
 }

@@ -12,7 +12,14 @@ using SF.Core.Times;
 namespace SF.Auth.Identities.Entity
 {
 	public class EntityIdentityManagementService<TIdentity,TIdentityCredential> :
-		QuerableEntitySource<long, Models.IdentityInternal, IdentityQueryArgument, TIdentity>,
+		//QuerableEntitySource<long, Models.IdentityInternal, IdentityQueryArgument, TIdentity>,
+		EntityManager<
+			long,
+			Models.IdentityInternal,
+			IdentityQueryArgument,
+			Models.IdentityInternal,
+			TIdentity
+			>,
 		IIdentityManagementService,
 		IIdentStorage
 		where TIdentity:DataModels.Identity<TIdentity,TIdentityCredential>,new()
@@ -83,6 +90,11 @@ namespace SF.Auth.Identities.Entity
 			return Arg.Identity.Id;
 		}
 
+		protected override Task OnUpdateModel(ModifyContext ctx)
+		{
+
+			return Task.CompletedTask;
+		}
 
 		async Task<IdentityData> IIdentStorage.Load(long Id)
 		{

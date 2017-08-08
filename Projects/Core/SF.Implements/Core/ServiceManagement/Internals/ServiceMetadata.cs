@@ -22,12 +22,15 @@ namespace SF.Core.ServiceManagement.Internals
 			public ServiceImplementType ServiceImplementType { get; set; }
 
 			public bool IsManagedService { get; set; }
+			public IManagedServiceInitializer ManagedServiceInitializer { get; set; }
 		}
 		public class Service : IServiceDeclaration
 		{
 			public string ServiceName { get; set; }
 			public Type ServiceType { get; set; }
 			public IReadOnlyList<IServiceImplement> Implements{ get; set; }
+			public bool HasManagedServiceImplement { get; set; }
+			public bool HasUnmanagedServiceImplement { get; set; }
 		}
 
 		//public Type DetectServiceType(Type InterfaceType)
@@ -53,16 +56,15 @@ namespace SF.Core.ServiceManagement.Internals
 				select new ServiceImplement
 				{
 					ServiceType = svc.InterfaceType,
-						ImplementType = svc.ImplementType,
-						ImplementName=svc.ImplementType?.GetFullName(),
-						LifeTime = svc.Lifetime,
-						IsManagedService = svc.ImplementType != null &&
-									svc.Lifetime != ServiceImplementLifetime.Singleton &&
-									svc.IsManagedServiceImplement(),
-						ImplementCreator = svc.ImplementCreator,
-						ImplementMethod=svc.ImplementMethod,
-						ImplementInstance = svc.ImplementInstance,
-						ServiceImplementType = svc.ServiceImplementType
+					ImplementType = svc.ImplementType,
+					ImplementName=svc.ImplementType?.GetFullName(),
+					LifeTime = svc.Lifetime,
+					IsManagedService = svc.IsManagedService,
+					ManagedServiceInitializer = svc.ManagedServiceInitializer,
+					ImplementCreator = svc.ImplementCreator,
+					ImplementMethod=svc.ImplementMethod,
+					ImplementInstance = svc.ImplementInstance,
+					ServiceImplementType = svc.ServiceImplementType
 				}
 				).ToArray();
 
@@ -74,7 +76,9 @@ namespace SF.Core.ServiceManagement.Internals
 					{
 						ServiceType = g.Key,
 						ServiceName = g.Key.GetFullName(),
-						Implements = g.ToArray()
+						Implements = g.ToArray(),
+						HasManagedServiceImplement=g.Any(i=>i.IsManagedService),
+						HasUnmanagedServiceImplement = g.Any(i =>!i.IsManagedService),
 					});
 			ServicesByTypeName = Services.ToDictionary(p => p.Key.GetFullName(), p => p.Value);
 

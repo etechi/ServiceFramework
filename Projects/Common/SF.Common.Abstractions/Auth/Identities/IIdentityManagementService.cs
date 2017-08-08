@@ -20,9 +20,9 @@ namespace SF.Auth.Identities
 	[NetworkService]
 	[Comment("身份标识")]
 	public interface IIdentityManagementService :
-		Data.Entity.IEntitySource<long, Models.IdentityInternal, IdentityQueryArgument>
+		IEntityManager<long, Models.IdentityInternal>,
+		IEntitySource<long, Models.IdentityInternal, IdentityQueryArgument>
 	{
-		
 	}
 
 }

@@ -22,10 +22,13 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IServiceCollection UseFilePathResolver(this IServiceCollection sc)
 		{
-			sc.AddScoped<IFilePathResolver, FilePathResolver>();
+			sc.AddManagedScoped<IFilePathResolver, FilePathResolver>();
 			sc.InitDefaultService<IFilePathResolver, FilePathResolver>(
 				"初始化文件路径解析服务",
-				new FilePathDefination()
+				new
+				{
+					Setting = new FilePathDefination()
+				}
 				);
 			return sc;
 		}

@@ -9,7 +9,6 @@ using System.Data.Common;
 using Dapper;
 namespace SF.Core.ServiceManagement.Storages
 {
-	[UnmanagedService]
 	public class DBServiceSource : IServiceConfigLoader, IServiceInstanceLister
 	{
 		DbConnection Connection { get; }

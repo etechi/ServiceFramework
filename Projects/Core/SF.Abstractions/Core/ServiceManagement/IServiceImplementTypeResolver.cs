@@ -2,7 +2,6 @@
 
 namespace SF.Core.ServiceManagement
 {
-	[UnmanagedService]
 	public interface IServiceImplementTypeResolver
 	{
 		string GetTypeIdent(Type type);
@@ -10,7 +9,6 @@ namespace SF.Core.ServiceManagement
 	}
 
 
-	[UnmanagedService]
 	public interface IServiceDeclarationTypeResolver
 	{
 		string GetTypeIdent(Type type);

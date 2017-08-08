@@ -116,7 +116,6 @@ namespace SF.Data.Entity
 					).Compile();
 		}
 	}
-	[UnmanagedService]
 	class DataEntityConfigCache 
 	{
 		Dictionary<string, DataEntityConfigItem> Items { get; }

@@ -8,7 +8,6 @@ using System.Linq;
 
 namespace SF.Core.ServiceManagement.Storages
 {
-	[UnmanagedService]
 	public class MemoryServiceSource : IServiceConfigLoader, IServiceInstanceLister
 	{
 

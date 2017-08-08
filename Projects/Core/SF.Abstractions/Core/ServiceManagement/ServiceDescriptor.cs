@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SF.Core.ServiceManagement
 {
@@ -18,6 +19,12 @@ namespace SF.Core.ServiceManagement
 		Creator,
 		Method
 	}
+
+	public interface IManagedServiceInitializer
+	{
+		Task Init(IServiceProvider ServiceProvider, IServiceInstanceDescriptor Descriptor);
+		Task Uninit(IServiceProvider ServiceProvider, IServiceInstanceDescriptor Descriptor);
+	}
 	
 	public class ServiceDescriptor
 	{
@@ -28,7 +35,10 @@ namespace SF.Core.ServiceManagement
 		public ServiceImplementLifetime Lifetime { get; }
 		public ServiceImplementType ServiceImplementType { get; }
 		public System.Reflection.MethodInfo ImplementMethod { get; }
-		public ServiceDescriptor(Type InterfaceType, Type ImplementType, ServiceImplementLifetime Lifetime)
+		public bool IsManagedService { get; }
+		public IManagedServiceInitializer ManagedServiceInitializer { get; }
+
+		public ServiceDescriptor(Type InterfaceType, Type ImplementType, ServiceImplementLifetime Lifetime,bool IsManagedService=false,IManagedServiceInitializer ManagedServiceInitializer=null)
 		{
 			if(ImplementType==null)
 				throw new ArgumentNullException();
@@ -50,6 +60,8 @@ namespace SF.Core.ServiceManagement
 			this.InterfaceType = InterfaceType;
 			this.ImplementType = ImplementType;
 			this.Lifetime = Lifetime;
+			this.IsManagedService = IsManagedService;
+			this.ManagedServiceInitializer = this.ManagedServiceInitializer;
 		}
 		public ServiceDescriptor(Type InterfaceType, object Implement)
 		{

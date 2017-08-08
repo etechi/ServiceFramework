@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace SF.Core.ServiceFeatures
 {	
-	[UnmanagedService]
 	public interface IServiceBootable 
 	{
 		Task<IDisposable> Boot();

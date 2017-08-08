@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace SF.Data
 { 
-	[UnmanagedService]
 	public interface IDataSource
 	{
 		DbConnection Connect();

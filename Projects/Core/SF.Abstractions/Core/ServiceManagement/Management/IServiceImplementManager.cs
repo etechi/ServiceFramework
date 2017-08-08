@@ -26,7 +26,6 @@ namespace SF.Core.ServiceManagement.Management
 	[NetworkService]
 	[Comment("服务实现管理", "系统内置服务实现")]
 	[Category("系统管理", "系统服务管理")]
-	[UnmanagedService]
 	public interface IServiceImplementManager :
 		IEntitySource<string, Models.ServiceImplement, ServiceImplementQueryArgument>
 	{

@@ -59,6 +59,7 @@
     <Compile Include="Core\Serialization\Json.cs" />
     <Compile Include="Core\Serialization\JsonSerializerExtension.cs" />
     <Compile Include="Core\ServiceFeatures\InitializableServiceProviderExtension.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceMetadataExtension.cs" />
     <Compile Include="Core\TaskServices\ITaskServiceManagerExtension.cs" />
     <Compile Include="Core\TaskServices\TaskServiceDIServiceCollectionExtension.cs" />
     <Compile Include="Data\DataModels\EventEntityBase.cs" />

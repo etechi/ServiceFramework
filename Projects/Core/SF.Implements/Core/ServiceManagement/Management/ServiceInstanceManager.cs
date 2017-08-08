@@ -138,15 +138,8 @@ namespace SF.Core.ServiceManagement.Management
 				});
 			return Internals;
 		}
-		class TestServiceInstanceDescriptor : IServiceInstanceDescriptor
-		{
-			public long InstanceId { get; set; }
-			public long? ParentInstanceId { get; set; }
-			public bool IsManaged => true;
-			public IServiceDeclaration ServiceDeclaration { get; set; }
-			public IServiceImplement ServiceImplement { get; set; }
-		}
-		void TestConfig(long Id, long? ParentId, string ImplementId, string CreateArguments)
+		
+		IServiceFactory TestConfig(long Id, long? ParentId, string ImplementId, string CreateArguments)
 		{
 			var (implTypeName, svcTypeName) = ImplementId.Split2('@');
 			var ServiceResolver = this.ServiceProvider.Value.NewResolver();
@@ -173,6 +166,8 @@ namespace SF.Core.ServiceManagement.Management
 			var svr = factory.Create(ServiceResolver);
 			if (svr == null)
 				throw new PublicArgumentException("创建服务失败,请检查配置是否有误");
+			return factory;		
+
 		}
 		protected override async Task OnUpdateModel(ModifyContext ctx)
 		{
@@ -198,7 +193,13 @@ namespace SF.Core.ServiceManagement.Management
 			m.Update(e, TimeService.Now);
 
 			m.Setting = e.Setting;
-			TestConfig(m.Id,m.ParentId, m.ImplementType, m.Setting);
+			var factory=TestConfig(m.Id,m.ParentId, m.ImplementType, m.Setting);
+			if (factory.ServiceImplement.ManagedServiceInitializer != null)
+				await factory.ServiceImplement.ManagedServiceInitializer.Init(
+					ServiceProvider.Value,
+					factory
+					);
+
 			//var siis = DataSet.Context
 			//		.Set<DataModels.ServiceInstanceInterface>();
 			//var orgs = await siis.LoadListAsync(sii => sii.ServiceInstanceId == m.Id);
@@ -216,7 +217,7 @@ namespace SF.Core.ServiceManagement.Management
 			//	(mi, ei) => mi.Setting = ei.Setting
 			//	);
 
-			if(m.ParentId != e.ParentId)
+			if (m.ParentId != e.ParentId)
 			{
 				var orgParentId = m.ParentId;
 				m.ParentId = e.ParentId;
@@ -263,11 +264,44 @@ namespace SF.Core.ServiceManagement.Management
 			ctx.Model.Create(TimeService.Now);
 			await base.OnNewModel(ctx);
 		}
+
+		class InstanceDescriptor : IServiceInstanceDescriptor
+		{
+			public long InstanceId { get; set; }
+
+			public long? ParentInstanceId { get; set; }
+
+			public bool IsManaged { get; set; }
+
+			public IServiceDeclaration ServiceDeclaration { get; set; }
+
+			public IServiceImplement ServiceImplement { get; set; }
+		}
 		protected override async Task OnRemoveModel(ModifyContext ctx)
 		{
 			//if (ctx.Model.IsDefaultService)
-				//throw new PublicInvalidOperationException("不能删除默认服务");
+			//throw new PublicInvalidOperationException("不能删除默认服务");
+			var (implTypeName, svcTypeName) = ctx.Model.ImplementType.Split2('@');
+			var ServiceResolver = this.ServiceProvider.Value.NewResolver();
 
+			var (decl, impl) = ServiceFactory.ResolveMetadata(
+				ServiceResolver,
+				ctx.Model.Id,
+				svcTypeName,
+				implTypeName,
+				null
+				);
+			if (impl != null && impl.ManagedServiceInitializer != null)
+				await impl.ManagedServiceInitializer.Uninit(
+					ServiceProvider.Value, 
+					new InstanceDescriptor
+					{
+						InstanceId = ctx.Model.Id,
+						ParentInstanceId = ctx.Model.ParentId,
+						IsManaged = true,
+						ServiceDeclaration = decl,
+						ServiceImplement = impl
+					});
 			await base.OnRemoveModel(ctx);
 		}
 

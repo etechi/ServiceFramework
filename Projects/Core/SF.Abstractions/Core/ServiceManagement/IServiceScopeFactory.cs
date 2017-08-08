@@ -4,7 +4,6 @@ using System.Text;
 
 namespace SF.Core.ServiceManagement
 {
-	[UnmanagedService]
 	public interface IServiceScopeFactory
 	{
 		IServiceScope CreateServiceScope();

@@ -13,7 +13,6 @@ namespace SF.Data.Entity
 		string Ident { get; }
 		string Name { get; }
 	}
-	[UnmanagedService]
 	public interface IDataEntityResolver
 	{
         Task<IDataEntity[]> Resolve(string Type,string[] Keys);

@@ -13,7 +13,7 @@ namespace SF.Core.ServiceManagement
 			this IServiceCollection sc
 			)
 		{
-			sc.AddScoped<Caching.IFileCache, Caching.LocalFileCache>();
+			sc.AddManagedScoped<Caching.IFileCache, Caching.LocalFileCache>();
 			sc.InitDefaultService<Caching.IFileCache, Caching.LocalFileCache>(
 				"初始化文件缓存服务",
 				new

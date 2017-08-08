@@ -18,6 +18,7 @@ namespace SF.Core.ServiceFeatures
 				var logger = sp.Resolve<ILogger<ServiceInitializer>>();
 				var bss = sp.Resolve<IEnumerable<IServiceInitializable>>()
 					.Where(i=>i.Group== Group)
+					.Reverse() //需要反向，返回顺序和注册顺序相反
 					.OrderBy(i=>i.Priority)
 					.ToArray();
 				foreach (var bs in bss)

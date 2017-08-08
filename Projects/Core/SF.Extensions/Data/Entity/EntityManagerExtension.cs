@@ -84,6 +84,35 @@ namespace SF.Data.Entity
 				Updater
 				);
 		}
+		public static async Task RemoveAll<TManager, TKey, TEditable, TPublic, TQueryArgument>(
+			this TManager Manager, 
+			TQueryArgument QueryArgument=null,
+			int BatchCount=100,
+			ITransactionScopeManager transScopeManager=null
+			)
+			where TKey : IEquatable<TKey>
+			where TEditable : class, IObjectWithId<TKey>
+			where TPublic : class, IObjectWithId<TKey>
+			where TQueryArgument : class, IQueryArgument<TKey>,new()
+			where TManager : IEntityQueryable<TKey, TPublic, TQueryArgument>, IEntityManager<TKey, TEditable>
+		{
+			var paging = new Paging { Count = BatchCount };
+			var arg = QueryArgument ?? new TQueryArgument();
+			for(;;)
+			{
+				using (var scope = await transScopeManager?.CreateScope("批量删除", TransactionScopeMode.RequireTransaction))
+				{
+					var re = await Manager.QueryIdentsAsync(arg, paging);
+					var ids = re.Items.ToArray();
+					if (ids.Length == 0)
+						break;
+					foreach (var id in ids)
+						await Manager.RemoveAsync(id);
+
+					await scope.Commit();
+				}
+			}
+		}
 			
 	}
 }

@@ -191,13 +191,12 @@ namespace SF.Application.Migrations
                 "dbo.SysIdentSeed",
                 c => new
                     {
-                        ScopeId = c.Long(nullable: false),
                         Type = c.String(nullable: false, maxLength: 100),
                         NextValue = c.Long(nullable: false),
                         Section = c.Int(nullable: false),
                         TimeStamp = c.Binary(nullable: false, fixedLength: true, timestamp: true, storeType: "rowversion"),
                     })
-                .PrimaryKey(t => new { t.ScopeId, t.Type });
+                .PrimaryKey(t => t.Type);
             
             CreateTable(
                 "dbo.SysServiceInstance",

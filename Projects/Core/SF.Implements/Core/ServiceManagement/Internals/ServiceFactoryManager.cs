@@ -59,9 +59,10 @@ namespace SF.Core.ServiceManagement.Internals
 		}
 
 		
-		static Type UnmanagedServiceAttributeType { get; } = typeof(UnmanagedServiceAttribute);
-		[ThreadStatic]
-		static bool IsUnmanagedServiceScope;
+		//static Type UnmanagedServiceAttributeType { get; } = typeof(UnmanagedServiceAttribute);
+
+		//[ThreadStatic]
+		//static bool IsUnmanagedServiceScope;
 
 		public IServiceFactory GetServiceFactoryByType(
 			IServiceResolver ServiceResolver,
@@ -70,32 +71,53 @@ namespace SF.Core.ServiceManagement.Internals
 			string Name
 			)
 		{
-			
+			var svc = ServiceMetadata.FindServiceByType(ServiceType);
+			if (svc == null)
+				return null;
 
-			var IsUnmanagedServiceScopeRoot=false;
-			try
-			{
-				if (!IsUnmanagedServiceScope && (ServiceType.IsDefined(UnmanagedServiceAttributeType) || !ServiceType.IsInterfaceType()))
-				{
-					IsUnmanagedServiceScopeRoot = true;
-					IsUnmanagedServiceScope = true;
-				}
+			if(svc.HasManagedServiceImplement && ManagedServiceFactoryManager.TryGetServiceFactoryByType(
+					ServiceResolver, 
+					ScopeServiceId, 
+					ServiceType, 
+					Name, 
+					out var factory
+					))
+					return factory;
 
-				if (!IsUnmanagedServiceScope && 
-					(!ServiceType.IsGenericType || ServiceType.GetGenericTypeDefinition() != typeof(IEnumerable<>))
-					)
-				{
-					if (ManagedServiceFactoryManager.TryGetServiceFactoryByType(ServiceResolver, ScopeServiceId, ServiceType, Name, out var factory))
-						return factory;
-				}
-				//已经是顶级区域， 直接尝试查找服务
+			if (svc.HasUnmanagedServiceImplement)
 				return UnmanagedServiceFactoryManager.GetUnmanagedServiceEntry(ServiceType, true)?.Factory.Value;
-			}
-			finally
-			{
-				if (IsUnmanagedServiceScopeRoot)
-					IsUnmanagedServiceScope = false;
-			}
+			return null;
+
+			//	}
+			//	//已经是顶级区域， 直接尝试查找服务
+			//	return UnmanagedServiceFactoryManager.GetUnmanagedServiceEntry(ServiceType, true)?.Factory.Value;
+
+
+				//var IsUnmanagedServiceScopeRoot=false;
+				//try
+				//{
+
+				//	if (!IsUnmanagedServiceScope && (ServiceType.IsDefined(UnmanagedServiceAttributeType) || !ServiceType.IsInterfaceType()))
+				//	{
+				//		IsUnmanagedServiceScopeRoot = true;
+				//		IsUnmanagedServiceScope = true;
+				//	}
+
+				//	if (!IsUnmanagedServiceScope && 
+				//		(!ServiceType.IsGenericType || ServiceType.GetGenericTypeDefinition() != typeof(IEnumerable<>))
+				//		)
+				//	{
+				//		if (ManagedServiceFactoryManager.TryGetServiceFactoryByType(ServiceResolver, ScopeServiceId, ServiceType, Name, out var factory))
+				//			return factory;
+				//	}
+				//	//已经是顶级区域， 直接尝试查找服务
+				//	return UnmanagedServiceFactoryManager.GetUnmanagedServiceEntry(ServiceType, true)?.Factory.Value;
+				//}
+				//finally
+				//{
+				//	if (IsUnmanagedServiceScopeRoot)
+				//		IsUnmanagedServiceScope = false;
+				//}
 		}
 		public IEnumerable<IServiceFactory> GetServiceFactoriesByType(
 			IServiceResolver ServiceResolver,
@@ -104,17 +126,23 @@ namespace SF.Core.ServiceManagement.Internals
 			string Name
 			)
 		{
-			if (!ServiceType.IsDefined(UnmanagedServiceAttributeType))
+			var svc = ServiceMetadata.FindServiceByType(ServiceType);
+			if (svc == null)
+				return Enumerable.Empty<IServiceFactory>();
+
+			if (svc.HasManagedServiceImplement)
 			{
 				if (ManagedServiceFactoryManager.TryGetServiceFactoriesByType(ServiceResolver, ScopeServiceId, ServiceType, Name, out var enumerable))
 					return enumerable;
 			}
-			
-			//已经是顶级区域， 直接尝试查找服务
-			var es = UnmanagedServiceFactoryManager.GetUnmanagedServiceEntries(ServiceType, true);
-			if (es != null)
-				return es.Select(e => e.Factory.Value);
 
+			//已经是顶级区域， 直接尝试查找服务
+			if (svc.HasUnmanagedServiceImplement)
+			{
+				var es = UnmanagedServiceFactoryManager.GetUnmanagedServiceEntries(ServiceType, true);
+				if (es != null)
+					return es.Select(e => e.Factory.Value);
+			}
 			return Enumerable.Empty<IServiceFactory>();
 		}
 

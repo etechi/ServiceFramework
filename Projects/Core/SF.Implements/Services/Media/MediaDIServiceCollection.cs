@@ -154,12 +154,12 @@ namespace SF.Core.ServiceManagement
 			)
 		{
 			sc.AddSingleton<IMediaMetaCache, MediaMetaCache>();
-			sc.AddScoped<IMediaManager, MediaManager>();
+			sc.AddManagedScoped<IMediaManager, MediaManager>();
 			if(EnvType!=EnvironmentType.Utils)
-				sc.AddScoped<IMediaService, MediaService>();
+				sc.AddManagedScoped<IMediaService, MediaService>();
 
-			sc.AddScoped<IMediaStorage, FileSystemMediaStorage>();
-			sc.AddScoped<IMediaStorage, StaticFileMediaStorage>();
+			sc.AddManagedScoped<IMediaStorage, FileSystemMediaStorage>();
+			sc.AddManagedScoped<IMediaStorage, StaticFileMediaStorage>();
 
 			//sc.AddInitializer(
 			//	"初始化媒体服务组",

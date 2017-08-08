@@ -7,7 +7,6 @@ using SF.Core.ServiceManagement;
 
 namespace SF.Core.NetworkService
 {
-	[UnmanagedService]
 	public interface IResultFactory
 	{
 		object Json<T>(T obj);

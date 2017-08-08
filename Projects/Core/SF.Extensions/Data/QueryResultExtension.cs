@@ -152,5 +152,14 @@ namespace SF.Data
 				Items = mappedResult
 			};
 		}
+		public static QueryResult<T> Select<R,T>(this QueryResult<R> result,Func<R,T> selector)
+		{
+			return new QueryResult<T>
+			{
+				Items = result.Items.Select(selector),
+				Summary = result.Summary,
+				Total = result.Total
+			};
+		}
 	}
 }

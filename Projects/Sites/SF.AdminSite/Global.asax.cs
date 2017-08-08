@@ -27,7 +27,7 @@ namespace SF.AdminSite
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
 			StartAppInstance(
-				App.Builder().Build(), 
+				()=>App.Builder().Build(), 
 				GlobalConfiguration.Configuration
 				);
 
