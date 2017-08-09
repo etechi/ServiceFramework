@@ -13,7 +13,7 @@ using SF.Core.ServiceManagement;
 using SF.Core.ServiceFeatures;
 using System.Threading.Tasks;
 
-namespace SF.UnitTest
+namespace SF.UT
 {
 	public class EnvInitializer : TestBase
 	{

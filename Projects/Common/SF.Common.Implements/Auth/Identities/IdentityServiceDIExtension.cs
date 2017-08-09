@@ -5,6 +5,7 @@ using SF.Auth.Identities.Internals;
 using SF.Core.ServiceManagement;
 using SF.Core.ServiceManagement.Management;
 using SF.Data.Entity;
+using System;
 using System.Collections.Generic;
 
 namespace SF.Core.ServiceManagement
@@ -21,14 +22,15 @@ namespace SF.Core.ServiceManagement
 			sc.AddDataModules<TIdentity, TIdentityCredential>(TablePrefix);
 
 			sc.AddManagedScoped<IIdentityManagementService, EntityIdentityManagementService<TIdentity, TIdentityCredential>>(
-				null,
-				async (sp,sid)=>
-				{
-					var svc = sp.Resolve<IIdentityManagementService>();
-					await svc.RemoveAllAsync();
-				});
+				async (sp,svc)=>
+					await svc.RemoveAllAsync()
+				);
+
 			sc.AddTransient<IIdentStorage>(sp => (IIdentStorage)sp.Resolve<IIdentityManagementService>());
-			sc.AddManagedScoped<IIdentityCredentialStorage, EntityIdentityCredentialStorage<TIdentity, TIdentityCredential>>();
+			sc.AddManagedScoped<IIdentityCredentialStorage, EntityIdentityCredentialStorage<TIdentity, TIdentityCredential>>(
+				async (sp, svc) =>
+					await svc.RemoveAllAsync()
+				);
 			return sc;
 		}
 		public static IServiceCollection AddAuthIdentityManagementService(
@@ -98,9 +100,12 @@ namespace SF.Core.ServiceManagement
 			params IServiceInstanceInitializer<IIdentityCredentialProvider>[] IdentityCredentialProviders
 			)
 		{
-
-			var chds = new List<IServiceInstanceInitializer>(IdentityCredentialProviders);
+			var chds = new List<IServiceInstanceInitializer>();
 			chds.Add(IdentityCredentialStorage ?? sim.NewAuthIdentityCredentialStorage());
+			if (chds.Count == 0)
+				chds.Add(sim.NewAuthUserAccountIdentityCredentialProvider());
+			else
+				chds.AddRange(IdentityCredentialProviders);
 			chds.Add(IdentityManagementService ?? sim.NewAuthIdentityManagementService());
 
 			return sim.DefaultService<IIdentityService, IdentityService>(

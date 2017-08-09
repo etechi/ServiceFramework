@@ -32,9 +32,6 @@ namespace SF.Auth.Identities.Entity.DataModels
 		[MaxLength(100)]
 		public string Credential { get; set; }
 
-		[Index]
-		[Comment("应用ID")]
-		public long AppId { get; set; }
 
 		[Index]
 		[Comment("标识ID")]

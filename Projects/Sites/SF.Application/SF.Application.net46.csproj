@@ -115,9 +115,9 @@
   <ItemGroup>
     <Compile Include="AppContext.cs" />
     <Compile Include="AppInstanceBuilder.cs" />
-    <Compile Include="Migrations\201708080552203_init.cs" />
-    <Compile Include="Migrations\201708080552203_init.Designer.cs">
-      <DependentUpon>201708080552203_init.cs</DependentUpon>
+    <Compile Include="Migrations\201708090822350_init.cs" />
+    <Compile Include="Migrations\201708090822350_init.Designer.cs">
+      <DependentUpon>201708090822350_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -171,8 +171,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201708080552203_init.resx">
-      <DependentUpon>201708080552203_init.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201708090822350_init.resx">
+      <DependentUpon>201708090822350_init.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

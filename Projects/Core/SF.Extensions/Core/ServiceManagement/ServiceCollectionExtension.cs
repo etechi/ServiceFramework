@@ -128,6 +128,16 @@ namespace SF.Core.ServiceManagement
 			sc.Add(Service, Method, ServiceImplementLifetime.Transient);
 			return sc;
 		}
+
+		public static IServiceCollection AddManagedTransient<TService, TImplement>(
+			this IServiceCollection sc,
+			Func<IServiceProvider, TService, Task> FuncUninit )
+			where TImplement : TService
+			where TService : class
+			=> sc.AddManagedTransient<TService, TImplement>(
+				null,
+				FuncUninit == null ? null : new Func<IServiceProvider, IServiceInstanceDescriptor, Task>((sp, sd) => FuncUninit(sp, sp.Resolve<TService>(sd.InstanceId)))
+				);
 		public static IServiceCollection AddManagedTransient<TService, TImplement>(
 			this IServiceCollection sc, 
 			Func<IServiceProvider,IServiceInstanceDescriptor,Task> FuncInit,
@@ -164,6 +174,16 @@ namespace SF.Core.ServiceManagement
 			return sc;
 		}
 
+		public static IServiceCollection AddManagedScoped<TService, TImplement>(
+			this IServiceCollection sc,
+			Func<IServiceProvider, TService, Task> FuncUninit
+			)
+			where TImplement : TService
+			where TService:class
+			=> sc.AddManagedScoped<TService, TImplement>(
+				null,
+				FuncUninit == null ?null : new Func<IServiceProvider, IServiceInstanceDescriptor, Task>((sp, sd) => FuncUninit(sp, sp.Resolve<TService>(sd.InstanceId)))
+				);
 
 		public static IServiceCollection AddManagedScoped<TService, TImplement>(
 			this IServiceCollection sc,

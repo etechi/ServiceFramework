@@ -12,7 +12,7 @@ using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
 using SF.Core.NetworkService;
 
-namespace SF.UnitTest
+namespace SF.UT
 {
 	public static class App
 	{

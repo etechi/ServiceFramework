@@ -281,6 +281,14 @@ namespace SF.Core.ServiceManagement.Management
 		{
 			//if (ctx.Model.IsDefaultService)
 			//throw new PublicInvalidOperationException("不能删除默认服务");
+
+			await this.QueryAndRemoveAsync<ServiceInstanceManager,long,ServiceInstanceQueryArgument>(
+				new ServiceInstanceQueryArgument
+				{
+					ParentId = ctx.Model.Id,
+				});
+
+
 			var (implTypeName, svcTypeName) = ctx.Model.ImplementType.Split2('@');
 			var ServiceResolver = this.ServiceProvider.Value.NewResolver();
 
@@ -304,7 +312,5 @@ namespace SF.Core.ServiceManagement.Management
 					});
 			await base.OnRemoveModel(ctx);
 		}
-
 	}
-
 }

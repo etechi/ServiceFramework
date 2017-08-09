@@ -10,10 +10,7 @@ using Xunit;
 using SF.Applications;
 using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
-using System.Threading.Tasks;
-using SF.Core.ServiceManagement.Management;
-
-namespace SF.UnitTest
+namespace SF.UT
 {
 	public class TestBase : IDisposable
 	{
@@ -32,7 +29,6 @@ namespace SF.UnitTest
 			ServiceScope.Dispose();
 			AppInstance.Dispose();
 		}
-		
 	}
 	
 

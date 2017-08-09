@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using SF.Data.Storage;
 
-namespace SF.UnitTest.Infrastructures
+namespace SF.UT.Infrastructures
 {
 	public interface ISystem
 	{

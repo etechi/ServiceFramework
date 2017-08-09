@@ -13,7 +13,7 @@ namespace SF.Application.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201708080552203_init"; }
+            get { return "201708090822350_init"; }
         }
         
         string IMigrationMetadata.Source

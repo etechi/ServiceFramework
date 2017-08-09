@@ -137,7 +137,7 @@ namespace SF.Auth.Identities
 				provider,
 				ConfirmMessageType.PasswordRecorvery, 
 				Arg.Credential, 
-				bind.UserId, 
+				bind.IdentityId, 
 				null
 				);
 		}
@@ -185,7 +185,7 @@ namespace SF.Auth.Identities
 			}
 			if (ui == null)
 				throw new PublicArgumentException("用户或密码错误！");
-			var idData = await GetIdentityData(ui.UserId);
+			var idData = await GetIdentityData(ui.IdentityId);
 			var passwordHash = idData.PasswordHash;
 			if (Setting.PasswordHasher.Value.Hash(Arg.Password) != passwordHash)
 			{
@@ -206,7 +206,7 @@ namespace SF.Auth.Identities
 			//	ui.UserId,
 			//	Setting.AccessInfo.Value.Value
 			//	);
-			return await SetOrReturnAccessToken(ui.UserId, Arg.Expires, Arg.ReturnToken);
+			return await SetOrReturnAccessToken(ui.IdentityId, Arg.Expires, Arg.ReturnToken);
 		}
 
 		async Task<string> SetOrReturnAccessToken(long UserId,int? Expires,bool ReturnToken)
@@ -292,7 +292,7 @@ namespace SF.Auth.Identities
 				canSendMessage,
 				uid
 				);
-			if (ui.UserId != uid)
+			if (ui.IdentityId != uid)
 				throw new PublicArgumentException($"您输入的{CredentialProvider.Name}已被注册");
 
 			if (string.IsNullOrWhiteSpace(Arg.Password))
@@ -304,7 +304,7 @@ namespace SF.Auth.Identities
 					AccessSource = Setting.ClientService.Value.AccessSource,
 					PasswordHash = passwordHash,
 					SecurityStamp = Bytes.Random(16),
-					IdentProvider= CredentialProvider.Id,
+					CredentialProvider= CredentialProvider.Id,
 					Identity =new Identity
 					{
 						Id = uid,

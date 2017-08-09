@@ -8,6 +8,8 @@ using SF.Auth.Identities.Internals;
 using SF.Core.Caching;
 using SF.Data.Entity;
 using SF.Core.Times;
+using System.Collections.Generic;
+using SF.Core.ServiceManagement;
 
 namespace SF.Auth.Identities.Entity
 {
@@ -17,7 +19,7 @@ namespace SF.Auth.Identities.Entity
 			long,
 			Models.IdentityInternal,
 			IdentityQueryArgument,
-			Models.IdentityInternal,
+			Models.IdentityEditable,
 			TIdentity
 			>,
 		IIdentityManagementService,
@@ -26,12 +28,15 @@ namespace SF.Auth.Identities.Entity
 		where TIdentityCredential : DataModels.IdentityCredential<TIdentity, TIdentityCredential>,new()
 	{
 		public Lazy<ITimeService> TimeService { get; }
+		public IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 		public EntityIdentityManagementService(
 			IDataSet<TIdentity> DataSet,
-			Lazy<ITimeService> TimeService
+			Lazy<ITimeService> TimeService,
+			IServiceInstanceDescriptor ServiceInstanceDescroptor
 			) : base(DataSet)
 		{
 			this.TimeService = TimeService;
+			this.ServiceInstanceDescroptor = ServiceInstanceDescroptor;
 		}
 
 		protected override PagingQueryBuilder<TIdentity> PagingQueryBuilder =>
@@ -39,61 +44,134 @@ namespace SF.Auth.Identities.Entity
 
 		protected override IContextQueryable<TIdentity> OnBuildQuery(IContextQueryable<TIdentity> Query, IdentityQueryArgument Arg, Paging paging)
 		{
-			return Query.Filter(Arg.Id, r => r.Id)
+			var sid = ServiceInstanceDescroptor.InstanceId;
+			return Query
+				.Where(r=>r.ScopeId==sid)
+				.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Ident,r=>r.SignupIdentValue);
 				
 		}
 
 		async Task<long> IIdentStorage.Create(IdentityCreateArgument Arg)
 		{
-			Ensure.NotNull(Arg.Identity, "身份标识");
-			Ensure.HasContent(Arg.Identity.Name, "身份标识名称");
-			Ensure.Positive(Arg.Identity.Id, "身份标识ID");
-			Ensure.HasContent(Arg.Identity.Entity, "身份类型");
-			Ensure.Positive(Arg.IdentProvider, "未制定标识提供者");
-			Ensure.HasContent(Arg.CredentialValue, "未指定标识");
-			Ensure.NotNull(Arg.SecurityStamp, "未制定安全戳");
-			
-
-			var time = TimeService.Value.Now;
-			DataSet.Add(new TIdentity
+			await CreateAsync(new IdentityEditable
 			{
-				//AppId =Arg.AppId,
-				//ScopeId=Arg.ScopeId,
-				CreatedTime= time,
 				Id=Arg.Identity.Id,
-				Name=Arg.Identity.Name,
+				Name = Arg.Identity.Name,
 				Icon=Arg.Identity.Icon,
+
+				CreateCredential = Arg.CredentialValue,
+				CreateCredentialProviderId=Arg.CredentialProvider,
+
 				ObjectState=LogicObjectState.Enabled,
+				
 				PasswordHash=Arg.PasswordHash,
-				SecurityStamp=Arg.SecurityStamp.Base64(),
-				SignupIdentProvider=Arg.IdentProvider,
-				SignupIdentValue=Arg.CredentialValue,
-				UpdatedTime= time,
-				Credentials=new[]
+				SecurityStamp= Arg.SecurityStamp.Base64(),
+
+				Credentials=new List<IdentityCredential>
 				{
-					new TIdentityCredential
+					new IdentityCredential
 					{
-						//AppId=Arg.AppId,
-						//ScopeId=Arg.ScopeId,
-						CreatedTime =time,
-						ConfirmedTime=time,
-						IdentityId=Arg.Identity.Id,
 						Credential=Arg.CredentialValue,
-						ProviderId=Arg.IdentProvider,
-						
+						ProviderId=Arg.CredentialProvider,
 					}
 				}
 			});
-
-			await DataSet.Context.SaveChangesAsync();
 			return Arg.Identity.Id;
+
+			//Ensure.NotNull(Arg.Identity, "身份标识");
+			//Ensure.HasContent(Arg.Identity.Name, "身份标识名称");
+			//Ensure.Positive(Arg.Identity.Id, "身份标识ID");
+			//Ensure.HasContent(Arg.Identity.Entity, "身份类型");
+			//Ensure.Positive(Arg.CredentialProvider, "未制定标识提供者");
+			//Ensure.HasContent(Arg.CredentialValue, "未指定标识");
+			//Ensure.NotNull(Arg.SecurityStamp, "未制定安全戳");
+			
+
+			//var time = TimeService.Value.Now;
+			//DataSet.Add(new TIdentity
+			//{
+			//	//AppId =Arg.AppId,
+			//	//ScopeId=Arg.ScopeId,
+			//	CreatedTime= time,
+			//	Id=Arg.Identity.Id,
+			//	Name=Arg.Identity.Name,
+			//	Icon=Arg.Identity.Icon,
+			//	ObjectState=LogicObjectState.Enabled,
+			//	PasswordHash=Arg.PasswordHash,
+			//	SecurityStamp=Arg.SecurityStamp.Base64(),
+			//	SignupIdentProviderId=Arg.CredentialProvider,
+			//	SignupIdentValue=Arg.CredentialValue,
+			//	UpdatedTime= time,
+			//	Credentials=new[]
+			//	{
+			//		new TIdentityCredential
+			//		{
+			//			//AppId=Arg.AppId,
+			//			//ScopeId=Arg.ScopeId,
+			//			CreatedTime =time,
+			//			ConfirmedTime=time,
+			//			IdentityId=Arg.Identity.Id,
+			//			Credential=Arg.CredentialValue,
+			//			ProviderId=Arg.CredentialProvider,
+						
+			//		}
+			//	}
+			//});
+		
+			//await DataSet.Context.SaveChangesAsync();
+			//return Arg.Identity.Id;
 		}
-
-		protected override Task OnUpdateModel(ModifyContext ctx)
+		protected override Task OnCreateAsync(ModifyContext ctx)
 		{
+			var e = ctx.Editable;
+			var m = ctx.Model;
+			m.SignupIdentProviderId = e.CreateCredentialProviderId;
+			m.SignupIdentValue = e.CreateCredential;
+			m.CreatedTime = TimeService.Value.Now;
+			m.ScopeId = ServiceInstanceDescroptor.InstanceId;
+			return base.OnCreateAsync(ctx);
+		}
+		protected override async Task OnUpdateModel(ModifyContext ctx)
+		{
+			var e = ctx.Editable;
+			var m = ctx.Model;
+			m.Name = e.Name;
+			m.Icon = e.Icon;
+			m.ObjectState = e.ObjectState;
+			var time = TimeService.Value.Now;
+			m.UpdatedTime = time;
+			if (e.Credentials != null)
+			{
+				var ics = DataSet.Context.Set<TIdentityCredential>();
+				var oitems = await ics.LoadListAsync(ic => ic.IdentityId == m.Id);
+				ics.Merge(
+					oitems,
+					e.Credentials,
+					(mi, ei) => mi.ProviderId == ei.ProviderId,
+					ei => new TIdentityCredential
+					{
+						ScopeId = m.ScopeId,
+						IdentityId = m.Id,
+						UnionIdent = ei.UnionIdent,
+						Credential = ei.Credential,
+						ProviderId = ei.ProviderId,
+						CreatedTime = time
+					},
+					(mi, ei) =>
+					{
+						mi.UnionIdent = ei.UnionIdent;
+						mi.Credential = ei.Credential;
+					}
+					);
 
-			return Task.CompletedTask;
+			}
+		}
+		protected override async Task OnRemoveModel(ModifyContext ctx)
+		{
+			var ics = DataSet.Context.Set<TIdentityCredential>();
+			await ics.RemoveRangeAsync(ic => ic.IdentityId == ctx.Model.Id);
+			await base.OnRemoveModel(ctx);
 		}
 
 		async Task<IdentityData> IIdentStorage.Load(long Id)

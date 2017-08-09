@@ -60,7 +60,6 @@ namespace SF.Application.Migrations
                 c => new
                     {
                         Id = c.Long(nullable: false),
-                        AppId = c.Long(nullable: false),
                         ScopeId = c.Long(nullable: false),
                         Name = c.String(nullable: false, maxLength: 100),
                         Icon = c.String(maxLength: 100),
@@ -70,15 +69,14 @@ namespace SF.Application.Migrations
                         SecurityStamp = c.String(nullable: false, maxLength: 100),
                         CreatedTime = c.DateTime(nullable: false),
                         UpdatedTime = c.DateTime(nullable: false),
-                        SignupIdentProvider = c.Long(nullable: false),
+                        SignupIdentProviderId = c.Long(nullable: false),
                         SignupIdentValue = c.String(nullable: false, maxLength: 200),
                     })
                 .PrimaryKey(t => t.Id)
-                .Index(t => t.AppId)
                 .Index(t => t.ScopeId)
                 .Index(t => t.Entity)
                 .Index(t => t.CreatedTime)
-                .Index(t => t.SignupIdentProvider)
+                .Index(t => t.SignupIdentProviderId)
                 .Index(t => t.SignupIdentValue);
             
             CreateTable(
@@ -88,7 +86,6 @@ namespace SF.Application.Migrations
                         ScopeId = c.Long(nullable: false),
                         ProviderId = c.Long(nullable: false),
                         Credential = c.String(nullable: false, maxLength: 100),
-                        AppId = c.Long(nullable: false),
                         IdentityId = c.Long(nullable: false),
                         UnionIdent = c.String(maxLength: 100),
                         CreatedTime = c.DateTime(nullable: false),
@@ -97,7 +94,6 @@ namespace SF.Application.Migrations
                 .PrimaryKey(t => new { t.ScopeId, t.ProviderId, t.Credential })
                 .ForeignKey("dbo.SysAuthIdentity", t => t.IdentityId)
                 .Index(t => new { t.ScopeId, t.ProviderId, t.UnionIdent }, name: "union")
-                .Index(t => t.AppId)
                 .Index(t => t.IdentityId);
             
             CreateTable(
@@ -269,14 +265,12 @@ namespace SF.Application.Migrations
             DropIndex("dbo.CommonTextMessageRecord", "user");
             DropIndex("dbo.CommonTextMessageRecord", "status");
             DropIndex("dbo.SysAuthIdentityCredential", new[] { "IdentityId" });
-            DropIndex("dbo.SysAuthIdentityCredential", new[] { "AppId" });
             DropIndex("dbo.SysAuthIdentityCredential", "union");
             DropIndex("dbo.SysAuthIdentity", new[] { "SignupIdentValue" });
-            DropIndex("dbo.SysAuthIdentity", new[] { "SignupIdentProvider" });
+            DropIndex("dbo.SysAuthIdentity", new[] { "SignupIdentProviderId" });
             DropIndex("dbo.SysAuthIdentity", new[] { "CreatedTime" });
             DropIndex("dbo.SysAuthIdentity", new[] { "Entity" });
             DropIndex("dbo.SysAuthIdentity", new[] { "ScopeId" });
-            DropIndex("dbo.SysAuthIdentity", new[] { "AppId" });
             DropIndex("dbo.MgrSysAdmin", new[] { "UpdatorId" });
             DropIndex("dbo.MgrSysAdmin", new[] { "CreatedTime" });
             DropIndex("dbo.MgrSysAdmin", new[] { "OwnerId" });

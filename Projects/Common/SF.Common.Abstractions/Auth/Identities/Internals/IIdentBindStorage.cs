@@ -41,5 +41,7 @@ namespace SF.Auth.Identities.Internals
 			long ProviderId,
 			long UserId
 			);
+
+		Task RemoveAllAsync();
 	}
 }

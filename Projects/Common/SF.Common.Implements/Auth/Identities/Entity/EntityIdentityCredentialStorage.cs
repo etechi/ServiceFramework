@@ -8,6 +8,7 @@ using SF.Data.Entity;
 using SF.Core.Times;
 using SF.Auth.Identities.Internals;
 using SF.Auth.Identities.Models;
+using SF.Core.ServiceManagement;
 
 namespace SF.Auth.Identities.Entity
 {
@@ -18,13 +19,16 @@ namespace SF.Auth.Identities.Entity
 	{
 		IDataSet<TIdentityCredential> DataSet { get; }
 		ITimeService TimeService { get; }
+		IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
 		public EntityIdentityCredentialStorage(
 			IDataSet<TIdentityCredential> DataSet,
-			ITimeService TimeService
+			ITimeService TimeService,
+			IServiceInstanceDescriptor ServiceInstanceDescriptor
 			)
 		{
 			this.DataSet = DataSet;
 			this.TimeService = TimeService;
+			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
 
 		public async Task<IdentityCredential> FindOrBind(long Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
@@ -47,6 +51,7 @@ namespace SF.Auth.Identities.Entity
 			{
 				exist = DataSet.Add(new TIdentityCredential
 				{
+					ScopeId= ServiceInstanceDescriptor.InstanceId,
 					ProviderId = Provider,
 					Credential = Credential,
 					IdentityId = existUserId ?? UserId,
@@ -78,6 +83,7 @@ namespace SF.Auth.Identities.Entity
 		{
 			DataSet.Add(new TIdentityCredential
 			{
+				ScopeId = ServiceInstanceDescriptor.InstanceId,
 				ProviderId = Provider,
 				Credential = Credential,
 				IdentityId = UserId,
@@ -109,6 +115,12 @@ namespace SF.Auth.Identities.Entity
 				i => i.ProviderId == Provider && i.IdentityId == UserId,
 				EntityMapper.Map<TIdentityCredential, IdentityCredential>()
 				);
+		}
+
+		public async Task RemoveAllAsync()
+		{
+			var sid =  ServiceInstanceDescriptor.InstanceId;
+			await DataSet.RemoveRangeAsync(ic => ic.ScopeId == sid);
 		}
 	}
 	

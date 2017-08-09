@@ -23,9 +23,6 @@ namespace SF.Auth.Identities.Entity.DataModels
 		[Comment("ID")]
 		public long Id { get; set; }
 
-		[Index]
-		[Comment("应用ID")]
-		public long AppId { get; set; }
 
 		[Index]
 		[Comment("功能ID")]
@@ -68,7 +65,7 @@ namespace SF.Auth.Identities.Entity.DataModels
 		[Index(Order = 1)]
 		[Comment("注册标识类型")]
 		[Required]
-		public long SignupIdentProvider { get; set; }
+		public long SignupIdentProviderId { get; set; }
 
 		[MaxLength(200)]
 		[Index(Order = 2)]
