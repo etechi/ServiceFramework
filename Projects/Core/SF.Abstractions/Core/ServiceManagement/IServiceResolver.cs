@@ -11,8 +11,9 @@ namespace SF.Core.ServiceManagement
 	//	IServiceImplement Implement { get; }
 	//	object ServiceInstance { get; }
 	//}
+	public delegate T TypedInstanceResolver<T>(long Id);
 
-	
+
 	public interface IServiceResolver 
 	{
 		IServiceProvider Provider { get; }

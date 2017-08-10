@@ -9,7 +9,6 @@ using SF.Core.ServiceManagement;
 
 namespace SF.Core.ServiceManagement
 {
-	public delegate T TypedInstanceResolver<T>(long Id);
 
 	public class ServiceProviderBuilder : IServiceProviderBuilder
 	{

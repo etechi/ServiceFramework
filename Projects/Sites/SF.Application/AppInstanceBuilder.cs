@@ -163,6 +163,8 @@ namespace SF.Applications
 
 			Services.AddTextMessageServices();
 
+			Services.AddDefaultSecurityServices();
+
 			Services.AddAuthIdentityServices();
 			Services.AddSysAdminServices();
 			Services.AddBizAdminServices();
@@ -173,6 +175,9 @@ namespace SF.Applications
 
 		static async Task InitBizServices(IServiceProvider sp, IServiceInstanceManager sim, long? ParentId)
 		{
+			await sim.NewDataProtectorService().Ensure(sp, ParentId);
+			await sim.NewPasswordHasherService().Ensure(sp, ParentId);
+
 			var SysAdminService = await sim.NewSysAdminService().Ensure(sp, ParentId);
 			var BizAdminService = await sim.NewBizAdminService().Ensure(sp, ParentId);
 			var MenuService = await sim.NewMenuService().Ensure(sp, ParentId);

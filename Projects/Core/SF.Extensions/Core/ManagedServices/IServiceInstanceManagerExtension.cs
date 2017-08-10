@@ -25,14 +25,15 @@ namespace SF.Core.ServiceManagement.Management
 			string Name = null,
 			string Title = null,
 			string Description = null,
-			string ServiceIdent = null
+			string ServiceIdent = null,
+			Data.LogicObjectState State=Data.LogicObjectState.Enabled
 			)
 		{
 			var comment = typeof(T).Comment();
 			e.ImplementType = typeof(T).GetFullName() + "@" + typeof(I).GetFullName();
 			e.ServiceType = typeof(I).GetFullName();
 			e.Priority = 0;
-			e.ObjectState = Data.LogicObjectState.Enabled;
+			e.ObjectState = State;
 			e.ServiceIdent = ServiceIdent;
 			//e.SettingType = typeof(T).FullName + "CreateArguments";
 			e.Name = Name ?? comment.Name;
@@ -60,13 +61,14 @@ namespace SF.Core.ServiceManagement.Management
 			string Name=null,
 			string Title=null,
 			string Description=null,
-			string ServiceIdent=null
+			string ServiceIdent=null,
+			Data.LogicObjectState State = Data.LogicObjectState.Enabled
 			)
 		{
 			return await Manager.EnsureEntity(
 				await TryGetDefaultService<I>(Manager,ParentId),
 				() => new Models.ServiceInstanceEditable { },
-				e => UpdateServiceModel<I, T>(e, Setting, ParentId,Name, Title, Description, ServiceIdent)
+				e => UpdateServiceModel<I, T>(e, Setting, ParentId,Name, Title, Description, ServiceIdent, State)
 				);
 	
 		}
@@ -88,14 +90,15 @@ namespace SF.Core.ServiceManagement.Management
 			string Name = null,
 			string Title = null,
 			string Description = null,
-			string ServiceIdent = null
+			string ServiceIdent = null,
+			Data.LogicObjectState State = Data.LogicObjectState.Enabled
 			)
 		{
 			var re = await Manager.TryGetService<I, T>(ParentId);
 			return await Manager.EnsureEntity(
 				re,
 				() => new Models.ServiceInstanceEditable { },
-				e => UpdateServiceModel<I, T>(e, Setting, ParentId, Name, Title, Description, ServiceIdent)
+				e => UpdateServiceModel<I, T>(e, Setting, ParentId, Name, Title, Description, ServiceIdent, State)
 				);
 
 		}
@@ -105,22 +108,12 @@ namespace SF.Core.ServiceManagement.Management
 			long ServiceId,
 			long? ParentServiceId
 			)
-		{
-			var re = await Manager.QueryAsync(
-				new ServiceInstanceQueryArgument
-				{
-					Id=ServiceId,
-				}, Data.Paging.Default
-				);
-			var items = re.Items.ToArray();
-			if (items.Length > 1)
-				throw new InvalidOperationException("找到多个服务实例");
-			await Manager.EnsureEntity(
-				items.Length == 0 ? 0 : items[0].Id,
-				() => throw new InvalidOperationException("找不到服务实例：" + ServiceId),
+		=> await Manager.UpdateEntity(
+				ServiceId,
 				e => e.ParentId=ParentServiceId
 				);
 
-		}
+	
+	
 	}
 }

@@ -106,6 +106,7 @@
     <Compile Include="Data\AttributeValidators\IObjectAttributeValidator.cs" />
     <Compile Include="Data\IDataSource.cs" />
     <Compile Include="Data\IEventEntity.cs" />
+    <Compile Include="Data\IHierarchicalEntity.cs" />
     <Compile Include="Data\IUIObjectEntity.cs" />
     <Compile Include="Data\IObjectEntity.cs" />
     <Compile Include="Data\Models\EventEntityBase.cs" />

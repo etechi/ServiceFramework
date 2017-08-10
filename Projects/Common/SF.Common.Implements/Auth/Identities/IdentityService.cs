@@ -50,9 +50,9 @@ namespace SF.Auth.Identities
 			if (id.HasValue) return id.Value;
 			throw new PublicDeniedException("未登录");
 		}
-		async Task<byte[]> LoadAccessTokenPassword(byte[] data)
+		async Task<byte[]> LoadAccessTokenPassword(byte[] data,int offset)
 		{
-			var uid = BitConverter.ToInt64(data, 0);
+			var uid = BitConverter.ToInt64(data, offset);
 			var idata = await GetIdentityData(uid);
 			return idata.SecurityStamp;
 		}
@@ -112,8 +112,8 @@ namespace SF.Auth.Identities
 		{
 			var vc = CheckVerifyCode(ConfirmMessageType.PasswordRecorvery, Arg.Credential, 0, Arg.VerifyCode);
 
-			var newPasswordHash = Setting.PasswordHasher.Value.Hash(Arg.NewPassword);
 			var stamp = Bytes.Random(16);
+			var newPasswordHash = Setting.PasswordHasher.Value.Hash(Arg.NewPassword, stamp);
 			await Setting.IdentStorage.Value.UpdateSecurity(vc.UserId.Value, newPasswordHash, stamp);
 			return await SetOrReturnAccessToken(
 				vc.UserId.Value,
@@ -145,12 +145,14 @@ namespace SF.Auth.Identities
 		public async Task<string> SetPassword(SetPasswordArgument Arg)
 		{
 			var uid = await EnsureCurUserId();
-			var hash = (await GetIdentityData(uid)).PasswordHash;
-			var oldPasswordHash = Setting.PasswordHasher.Value.Hash(Arg.OldPassword);
+			var iddata = await GetIdentityData(uid);
+			var hash = iddata.PasswordHash;
+			var oldPasswordHash = Setting.PasswordHasher.Value.Hash(Arg.OldPassword,iddata.SecurityStamp);
 			if (oldPasswordHash != hash)
 				throw new ArgumentException("旧密码错误");
-			var newPasswordHash = Setting.PasswordHasher.Value.Hash(Arg.NewPassword);
+
 			var stamp = Bytes.Random(16);
+			var newPasswordHash = Setting.PasswordHasher.Value.Hash(Arg.NewPassword,stamp);
 			await Setting.IdentStorage.Value.UpdateSecurity(uid, newPasswordHash, stamp);
 			return await SetOrReturnAccessToken(
 				uid,
@@ -187,7 +189,7 @@ namespace SF.Auth.Identities
 				throw new PublicArgumentException("用户或密码错误！");
 			var idData = await GetIdentityData(ui.IdentityId);
 			var passwordHash = idData.PasswordHash;
-			if (Setting.PasswordHasher.Value.Hash(Arg.Password) != passwordHash)
+			if (Setting.PasswordHasher.Value.Hash(Arg.Password, idData.SecurityStamp) != passwordHash)
 			{
 				//await Setting.UserStorage.SigninFailed(
 				//	ui.UserId,
@@ -286,24 +288,25 @@ namespace SF.Auth.Identities
 
 			var uid = Arg.Identity.Id;
 
-			ui = await CredentialProvider.FindOrBind(
-				Arg.Credential,
-				null,
-				canSendMessage,
-				uid
-				);
-			if (ui.IdentityId != uid)
-				throw new PublicArgumentException($"您输入的{CredentialProvider.Name}已被注册");
+			//ui = await CredentialProvider.FindOrBind(
+			//	Arg.Credential,
+			//	null,
+			//	canSendMessage,
+			//	uid
+			//	);
+			//if (ui.IdentityId != uid)
+			//	throw new PublicArgumentException($"您输入的{CredentialProvider.Name}已被注册");
 
 			if (string.IsNullOrWhiteSpace(Arg.Password))
 				throw new PublicArgumentException("请输入密码");
-			var passwordHash = Setting.PasswordHasher.Value.Hash(Arg.Password);
+			var stamp = Bytes.Random(16);
+			var passwordHash = Setting.PasswordHasher.Value.Hash(Arg.Password,stamp);
 			await Setting.IdentStorage.Value.Create(
 				new IdentityCreateArgument
 				{
 					AccessSource = Setting.ClientService.Value.AccessSource,
 					PasswordHash = passwordHash,
-					SecurityStamp = Bytes.Random(16),
+					SecurityStamp = stamp,
 					CredentialProvider= CredentialProvider.Id,
 					Identity =new Identity
 					{

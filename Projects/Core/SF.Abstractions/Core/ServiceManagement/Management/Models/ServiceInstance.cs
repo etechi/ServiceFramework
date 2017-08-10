@@ -21,7 +21,7 @@ namespace SF.Core.ServiceManagement.Models
 		public int Priority { get; set; }
 
 	}
-	public class ServiceInstanceInternal : ServiceInstance
+	public class ServiceInstanceInternal : ServiceInstance,IHierarachicalEntity<long?>
 	{
 		[Comment("服务定义")]
 		[EntityIdent("系统服务定义", nameof(ServiceName))]
@@ -29,7 +29,7 @@ namespace SF.Core.ServiceManagement.Models
 		public string ServiceType { get; set; }
 
 		[Ignore]
-		[TableVisible]
+		[TableVisible] 
 		[Comment("服务名称")]
 		public string ServiceName { get; set; }
 

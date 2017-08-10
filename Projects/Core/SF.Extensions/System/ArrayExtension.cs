@@ -10,13 +10,18 @@ namespace System
 {
 	public static class ArrayExtension
 	{
-		public static T[] Concat<T>(this T[] first,T[] second)
+		public static T[] Concat<T>(this T[] first,params T[][] tails)
 		{
-			var re = new T[first.Length + second.Length];
+			var re = new T[first.Length + tails.Sum(t=>t?.Length ?? 0)];
 			if (first.Length > 0)
 				Array.Copy(first,0, re, 0, first.Length);
-			if (second.Length > 0)
-				Array.Copy(second, 0, re, first.Length, second.Length);
+			var offset = first.Length;
+			foreach (var t in tails)
+				if ((t?.Length ?? 0) > 0)
+				{
+					Array.Copy(t, 0, re, offset, t.Length);
+					offset += t.Length;
+				}
 			return re;
 		}
 		public static T[] Copy<T>(this T[] data, int offset, int length=0)

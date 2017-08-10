@@ -86,10 +86,19 @@ namespace SF.Core.ServiceManagement.Internals
 			if (si?.InstanceId.HasValue ?? false)
 			{
 				if (si.InstanceId.Value > 0)
+				{
 					instance = Resolver.ResolveServiceByIdent(
 						si.InstanceId.Value,
 						InterfaceType
 						);
+					if (instance == null && !MemberAttribute.Optional)
+						throw new NotSupportedException($"找不到服务类型为{InterfaceType},ID为{si.InstanceId}的服务, 当前服务:{ServiceInstanceDescriptor.InstanceId}，配置路径:{Path},实现:{ServiceInstanceDescriptor.ServiceImplement.ImplementType}");
+				}
+				else
+				{
+					if (!MemberAttribute.Optional)
+						throw new NotSupportedException($"当前未配置{InterfaceType}的服务, 当前服务:{ServiceInstanceDescriptor.InstanceId}，配置路径:{Path},实现:{ServiceInstanceDescriptor.ServiceImplement.ImplementType}");
+				}
 			}
 			else
 			{
@@ -98,10 +107,10 @@ namespace SF.Core.ServiceManagement.Internals
 					InterfaceType,
 					null
 					);
+				if (instance == null && !MemberAttribute.Optional)
+					throw new NotSupportedException($"在当前服务下找不到服务类型为{InterfaceType}的服务, 当前服务:{ServiceInstanceDescriptor.InstanceId}，配置路径:{Path},实现:{ServiceInstanceDescriptor.ServiceImplement.ImplementType}");
 			}
 
-			if (instance == null && !MemberAttribute.Optional)
-				throw new NotSupportedException($"找不到服务类型为{InterfaceType},ID为{si.InstanceId}的服务, 当前服务:{ServiceInstanceDescriptor.InstanceId}");
 			return instance;
 		}
 
@@ -140,14 +149,20 @@ namespace SF.Core.ServiceManagement.Internals
 			IServiceInstanceDescriptor ServiceInstanceDescriptor,
 			string Path,
 			MemberAttribute MemberAttribute
-			) =>new Lazy<T>(() => (T)ResolveManagedService(
-				ServiceResolver, 
-				CreateParameterTemplate, 
-				ServiceInstanceDescriptor,
-				Path, 
-				typeof(T), 
-				MemberAttribute
-				));
+			) =>new Lazy<T>(() =>
+			{
+				var re = ResolveManagedService(
+					ServiceResolver,
+					CreateParameterTemplate,
+					ServiceInstanceDescriptor,
+					Path,
+					typeof(T),
+					MemberAttribute
+					);
+				if (re == null)
+					throw new InvalidOperationException($"找不到服务{typeof(T)},上下文:{ServiceInstanceDescriptor.InstanceId}");
+				return (T)re;
+			});
 
 		static MethodInfo CreateLazyedManagedServiceResolveMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
 			nameof(CreateLazyedManagedServiceResolve),
@@ -165,14 +180,19 @@ namespace SF.Core.ServiceManagement.Internals
 			string Path,
 			MemberAttribute MemberAttribute
 			) => () =>
-				(T)ResolveManagedService(
+			{
+				var re = ResolveManagedService(
 					resolver,
-					CreateParameterTemplate, 
+					CreateParameterTemplate,
 					ServiceInstanceDescriptor,
-					Path, 
-					typeof(T), 
+					Path,
+					typeof(T),
 					MemberAttribute
-					)
+					);
+				if (re == null)
+					throw new InvalidOperationException($"找不到服务{typeof(T)},上下文:{ServiceInstanceDescriptor.InstanceId}");
+				return (T)re;
+			}
 			;
 		
 		static MethodInfo CreateFuncManagedServiceResolveMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
@@ -498,7 +518,11 @@ namespace SF.Core.ServiceManagement.Internals
 				return dict.ToDictionary(p => p.Key, p => p.Value);
 			}
 			Expression CopyExpression(Type Type, MemberAttribute MemberAttribute, Expression src, Expression PropPathExpr, string PropPath)
+				=> CopyExpression(Type, MemberAttribute, src, PropPathExpr, PropPath, out var isSvcType);
+
+			Expression CopyExpression(Type Type, MemberAttribute MemberAttribute, Expression src, Expression PropPathExpr, string PropPath, out bool isSvcType)
 			{
+				isSvcType = false;
 				if (!CopyRequiredPaths.Contains(PropPath))
 					return src;
 
@@ -548,7 +572,7 @@ namespace SF.Core.ServiceManagement.Internals
 				{
 					ResolveType rType;
 					Type RealType;
-					var isSvcType = IsServiceType(ServiceMetadata,Type,out rType,out RealType);
+					isSvcType = IsServiceType(ServiceMetadata,Type,out rType,out RealType);
 
 					if (RealType == typeof(IServiceInstanceDescriptor))
 						return GetServiceInstanceDescriptorExpression(rType);
@@ -581,8 +605,15 @@ namespace SF.Core.ServiceManagement.Internals
 			Expression PropCopyExpression(Type Type, Expression src, PropertyInfo pi, Expression PropPathExpr, string PropPath)
 			{
 				var prop = Expression.Property(src, pi);
-				var copied= CopyExpression(pi.PropertyType, TryGetAttributes(pi), prop, StrConcat(PropPathExpr, Expression.Constant("." + pi.Name)), PropPath + "." + pi.Name);
-				if (!pi.PropertyType.IsClassType())
+				var copied= CopyExpression(
+					pi.PropertyType, 
+					TryGetAttributes(pi), 
+					prop, 
+					StrConcat(PropPathExpr, Expression.Constant("." + pi.Name)), 
+					PropPath + "." + pi.Name,
+					out var isSvcType
+					);
+				if (!pi.PropertyType.IsClassType() || isSvcType)
 					return copied;
 
 				return Expression.Condition(Expression.Equal(prop, Expression.Constant(null, pi.PropertyType)), Expression.Constant(null, pi.PropertyType), copied);

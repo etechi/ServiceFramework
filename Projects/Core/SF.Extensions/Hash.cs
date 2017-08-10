@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 namespace SF
@@ -48,25 +49,28 @@ namespace SF
 		{
 			return Sign(data, key, MD5);
 		}
+		public const int MD5SignedDataOffset = 16;
+
 		public static byte[] MD5Unsign(this byte[] data, byte[] key)
 		{
-			return Unsign(data, key, MD5, 16);
+			return Unsign(data, key, MD5, MD5SignedDataOffset);
 		}
         public static byte[] MD5PeekSignedData(this byte[] data)
         {
-            return PeekSignedData(data, 16);
+            return PeekSignedData(data, MD5SignedDataOffset);
         }
         public static byte[] Sha1Sign(this byte[] data, byte[] key)
 		{
 			return Sign(data, key, Sha1);
 		}
+		public const int Sha1SignedDataOffset = 20;
         public static byte[] Sha1PeekSignedData(this byte[] data)
         {
-            return PeekSignedData(data, 20);
+            return PeekSignedData(data, Sha1SignedDataOffset);
         }
 		public static byte[] Sha1Unsign(this byte[] data, byte[] key)
 		{
-			return Unsign(data, key, Sha1, 20);
+			return Unsign(data, key, Sha1, Sha1SignedDataOffset);
 		}
 
 		public static string Sha1Sign(this string data, string key)
@@ -84,6 +88,33 @@ namespace SF
 		public static string MD5Unsign(this string data, string key)
 		{
 			return MD5Unsign(data.Base64(), key.UTF8Bytes()).UTF8String();
+		}
+
+		public static byte[] Des3Encrypt(this byte[] data,byte[] key,int offset=0,int? length=null)
+		{
+			using (var tdes = new TripleDESCryptoServiceProvider
+			{
+				Key = key,
+				Mode = CipherMode.ECB,
+				Padding = PaddingMode.PKCS7
+			})
+			using (var transform = tdes.CreateEncryptor())
+			{
+				return transform.TransformFinalBlock(data, offset, length??(data.Length-offset));
+			}
+		}
+		public static byte[] Des3Decrypt(this byte[] data, byte[] key,int offset=0,int? length=null)
+		{
+			using (var tdes = new TripleDESCryptoServiceProvider
+			{
+				Key = key,
+				Mode = CipherMode.ECB,
+				Padding = PaddingMode.PKCS7
+			})
+			using (var transform = tdes.CreateDecryptor())
+			{
+				return transform.TransformFinalBlock(data, offset, length??(data.Length-offset));
+			}
 		}
 	}
 }

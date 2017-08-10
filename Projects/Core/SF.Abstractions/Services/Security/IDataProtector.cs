@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Security
+namespace SF.Services.Security
 {
 	public interface IDataProtector
 	{
@@ -12,7 +12,7 @@ namespace SF.Security
 			string Name, 
 			byte[] Data, 
 			DateTime Now,
-			Func<byte[],Task<byte[]>> LoadPassword
+			Func<byte[],int,Task<byte[]>> LoadPassword
 			);
 	}
 }

@@ -104,7 +104,7 @@ namespace SF.Core.ServiceManagement
 			=>
 			manager.CreateService<I, T>(
 				 parent => manager.TryGetDefaultService<I>(parent),
-				(parent, rcfg) => manager.EnsureDefaultService<I, T>(parent, rcfg),
+				(parent, rcfg) => manager.EnsureDefaultService<I, T>(parent, rcfg, State: Data.LogicObjectState.Disabled),
 				cfg,
 				childServices
 				);
@@ -116,7 +116,7 @@ namespace SF.Core.ServiceManagement
 			=>
 			manager.CreateService<I, T>(
 				parent => manager.TryGetService<I, T>(parent),
-				(parent, rcfg) => manager.TryAddService<I, T>(parent, rcfg),
+				(parent, rcfg) => manager.TryAddService<I, T>(parent, rcfg,State: Data.LogicObjectState.Disabled),
 				cfg,
 				childServices
 				);
@@ -133,24 +133,41 @@ namespace SF.Core.ServiceManagement
 				typeof(T).Comment().Name,
 				async (sp, parent) =>
 				{
+
 					var svcId = await FindService(parent);
-					var nsvcId = svcId == 0 ? (long?)null : svcId;
-					//var fpr = await sim.ResolveDefaultService<IFilePathResolver>();
-					//var fc = await sim.ResolveDefaultService<IFileCache>();
+					if(svcId==0)
+						svcId = (await ServiceCreator(parent, new { })).Id;
+
 					var children = new HashSet<IServiceInstanceInitializer>(childServices);
 					foreach (var chd in children)
-						await chd.Ensure(sp, nsvcId);
+						await chd.Ensure(sp, svcId);
 
-					var rcfg = await ConfigResolve(cfg, sp, nsvcId, children,0);
+					var rcfg = await ConfigResolve(cfg, sp, svcId, children,0);
+					var nsvcId = (await ServiceCreator(parent, cfg)).Id;
+					if (nsvcId != svcId)
+						throw new InvalidOperationException($"服务初始化{typeof(T)}@{typeof(I)}返回ID不一致：第一次：{svcId},第二次：{nsvcId}");
 
-					var ms = await ServiceCreator(parent, rcfg);
+					await manager.SetEntityState(svcId, Data.LogicObjectState.Enabled);
+					return svcId;
 
-					foreach (var chd in children)
-					{
-						var cid = await chd.Ensure(sp, ms.Id);
-						await manager.SetServiceParent(cid, ms.Id);
-					}
-					return ms.Id;
+
+					//var nsvcId = svcId == 0 ? (long?)null : svcId;
+					////var fpr = await sim.ResolveDefaultService<IFilePathResolver>();
+					////var fc = await sim.ResolveDefaultService<IFileCache>();
+					//var children = new HashSet<IServiceInstanceInitializer>(childServices);
+					//foreach (var chd in children)
+					//	await chd.Ensure(sp, nsvcId);
+
+					//var rcfg = await ConfigResolve(cfg, sp, nsvcId, children,0);
+
+					//var ms = await ServiceCreator(parent, rcfg);
+
+					//foreach (var chd in children)
+					//{
+					//	var cid = await chd.Ensure(sp, ms.Id);
+					//	await manager.SetServiceParent(cid, ms.Id);
+					//}
+					//return ms.Id;
 				});
 		}
 		public static IServiceCollection InitServices(

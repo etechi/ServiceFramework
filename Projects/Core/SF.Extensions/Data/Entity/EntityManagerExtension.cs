@@ -38,6 +38,40 @@ namespace SF.Data.Entity
 			Updater(ins);
 			await Manager.UpdateAsync(ins);
 		}
+
+		public static async Task SetEntityState<TKey, TEditable>(
+			this IEntityManager<TKey, TEditable> Manager,
+			TKey Id,
+			Data.LogicObjectState State
+			) where TKey : IEquatable<TKey>
+			where TEditable : class, IObjectWithId<TKey>,IObjectEntity
+		=> await Manager.UpdateEntity<TKey,TEditable>(
+			Id,
+			e => e.ObjectState = State
+			);
+
+		public static async Task SetEntityName<TKey, TEditable>(
+			this IEntityManager<TKey, TEditable> Manager,
+			TKey Id,
+			string Name
+			) where TKey : IEquatable<TKey>
+			where TEditable : class, IObjectWithId<TKey>, IObjectEntity
+		=> await Manager.UpdateEntity(
+			Id,
+			e => e.Name = Name
+			);
+
+		public static async Task SetEntityParent<TKey, TEditable>(
+			this IEntityManager<TKey, TEditable> Manager,
+			TKey Id,
+			TKey? ParentId
+			) where TKey : struct,IEquatable<TKey>
+			where TEditable : class, IObjectWithId<TKey>, IHierarachicalEntity<TKey?>
+		=> await Manager.UpdateEntity(
+			Id,
+			e => e.ParentId=ParentId
+			);
+
 		public static async Task<TEditable> EnsureEntity<TKey, TEditable>(
 			this IEntityManager<TKey,TEditable> Manager,
 			TKey Id,

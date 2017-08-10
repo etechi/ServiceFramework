@@ -193,13 +193,16 @@ namespace SF.Core.ServiceManagement.Management
 			m.Update(e, TimeService.Now);
 
 			m.Setting = e.Setting;
-			var factory=TestConfig(m.Id,m.ParentId, m.ImplementType, m.Setting);
-			if (factory.ServiceImplement.ManagedServiceInitializer != null)
-				await factory.ServiceImplement.ManagedServiceInitializer.Init(
-					ServiceProvider.Value,
-					factory
-					);
 
+			if (m.ObjectState == LogicObjectState.Enabled)
+			{
+				var factory = TestConfig(m.Id, m.ParentId, m.ImplementType, m.Setting);
+				if (factory.ServiceImplement.ManagedServiceInitializer != null)
+					await factory.ServiceImplement.ManagedServiceInitializer.Init(
+						ServiceProvider.Value,
+						factory
+						);
+			}
 			//var siis = DataSet.Context
 			//		.Set<DataModels.ServiceInstanceInterface>();
 			//var orgs = await siis.LoadListAsync(sii => sii.ServiceInstanceId == m.Id);

@@ -1,8 +1,8 @@
-﻿namespace SF.Security
+﻿namespace SF.Services.Security
 {
 	public interface IPasswordHasher
 	{
-		string Hash(string Value);
+		string Hash(string Value,byte[] SecurityStamp);
 	}
 }
 

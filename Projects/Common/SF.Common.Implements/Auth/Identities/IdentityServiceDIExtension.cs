@@ -102,7 +102,7 @@ namespace SF.Core.ServiceManagement
 		{
 			var chds = new List<IServiceInstanceInitializer>();
 			chds.Add(IdentityCredentialStorage ?? sim.NewAuthIdentityCredentialStorage());
-			if (chds.Count == 0)
+			if (IdentityCredentialProviders.Length== 0)
 				chds.Add(sim.NewAuthUserAccountIdentityCredentialProvider());
 			else
 				chds.AddRange(IdentityCredentialProviders);
