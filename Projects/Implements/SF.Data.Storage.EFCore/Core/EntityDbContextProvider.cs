@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Collections.Generic;
+using System.Data.Common;
 
 namespace SF.Data.Storage.EntityFrameworkCore
 {
@@ -73,8 +74,10 @@ namespace SF.Data.Storage.EntityFrameworkCore
 			}
 		}
 
+		public DbTransaction Transaction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-	
+
+
 		//protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		//{
 		//	base.OnModelCreating(modelBuilder);

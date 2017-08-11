@@ -37,37 +37,44 @@ namespace SF.Data.Entity
 
 		public async Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
 		{
-		
-			var q = DataSet.AsQueryable(true);
-			if (Arg.Id.HasValue)
+			return await UseTransaction(async () =>
 			{
-				var id = Arg.Id.Value;
-				q = q.Where(e => e.Id.Equals(id));
-			}
-			q=OnBuildQuery(q, Arg, paging);
-			var re = await q.ToQueryResultAsync(
-				qs=>qs.Select(i=>i.Id),
-				PagingQueryBuilder,
-				paging
-				);
-			return re;
+
+				var q = DataSet.AsQueryable(true);
+				if (Arg.Id.HasValue)
+				{
+					var id = Arg.Id.Value;
+					q = q.Where(e => e.Id.Equals(id));
+				}
+				q = OnBuildQuery(q, Arg, paging);
+				var re = await q.ToQueryResultAsync(
+					qs => qs.Select(i => i.Id),
+					PagingQueryBuilder,
+					paging
+					);
+				return re;
+			});
 		}
 		public async Task<QueryResult<TPublic>> QueryAsync(TQueryArgument Arg, Paging paging)
 		{
-			var q = DataSet.AsQueryable(true);
-			if (Arg.Id.HasValue)
+			return await UseTransaction(async () =>
 			{
-				var id = Arg.Id.Value;
-				q = q.Where(e => e.Id.Equals(id));
-			}
-			q=OnBuildQuery(q, Arg, paging);
-			var re=await q.ToQueryResultAsync(
-				OnMapModelToPublic,
-				OnPreparePublics,
-				PagingQueryBuilder,
-				paging
-				);
-			return re;
+
+				var q = DataSet.AsQueryable(true);
+				if (Arg.Id.HasValue)
+				{
+					var id = Arg.Id.Value;
+					q = q.Where(e => e.Id.Equals(id));
+				}
+				q = OnBuildQuery(q, Arg, paging);
+				var re = await q.ToQueryResultAsync(
+					OnMapModelToPublic,
+					OnPreparePublics,
+					PagingQueryBuilder,
+					paging
+					);
+				return re;
+			});
 		}
 	}
     

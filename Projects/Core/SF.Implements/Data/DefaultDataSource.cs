@@ -316,7 +316,14 @@ namespace SF.Data
 		{
 			var connection = Factory.CreateConnection();
 			connection.ConnectionString = Config.ConnectionString;
-			return new System.Data.Debug.DebugDbConnection(connection, new System.Data.Debug.DebugDbProviderFactory(Factory));
+			connection.Disposed += Connection_Disposed;
+			return connection;
+			//return new System.Data.Debug.DebugDbConnection(connection, new System.Data.Debug.DebugDbProviderFactory(Factory));
+		}
+
+		private void Connection_Disposed(object sender, EventArgs e)
+		{
+			
 		}
 	}
 }

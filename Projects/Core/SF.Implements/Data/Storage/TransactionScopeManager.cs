@@ -11,10 +11,14 @@ namespace SF.Data.Storage
     public class TransactionScopeManager : ITransactionScopeManager
     {
 		DbConnection Connection { get; }
-        public TransactionScopeManager(DbConnection Connection)
+
+		public DbTransaction CurrentDbTransaction => _Transaction;
+
+		public TransactionScopeManager(DbConnection Connection)
         {
             this.Connection = Connection;
         }
+
         class Scope : ITransactionScope
         {
             public TransactionScopeManager Manager { get; }
@@ -84,14 +88,18 @@ namespace SF.Data.Storage
         Scope _TopScope;
         bool _IsRollbacking;
 
-        public Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode,System.Data.IsolationLevel IsolationLevel)
+        public async Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode,System.Data.IsolationLevel IsolationLevel)
         {
             if (Mode == TransactionScopeMode.RequireNewTransaction && _Transaction != null)
                 throw new InvalidOperationException("事务已存在");
-            if (_Transaction == null)
-                _Transaction = Connection.BeginTransaction(IsolationLevel);
+			if (_Transaction == null)
+			{
+				if (Connection.State == System.Data.ConnectionState.Closed)
+					await Connection.OpenAsync();
+				_Transaction = Connection.BeginTransaction(IsolationLevel);
+			}
             _TopScope = new Scope(this, _TopScope, Message);
-            return Task.FromResult((ITransactionScope) _TopScope);
+			return (ITransactionScope)_TopScope;
         }
 
         public void Dispose()

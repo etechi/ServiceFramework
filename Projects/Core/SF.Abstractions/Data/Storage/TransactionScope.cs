@@ -3,6 +3,7 @@ using SF.Core.ServiceManagement;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace SF.Data.Storage
     }
 	public interface ITransactionScopeManager : IDisposable
     {
+		DbTransaction CurrentDbTransaction { get; }
         Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode, IsolationLevel IsolationLevel=IsolationLevel.ReadCommitted);
     }
 

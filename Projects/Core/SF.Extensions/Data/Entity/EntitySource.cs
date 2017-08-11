@@ -39,31 +39,56 @@ namespace SF.Data.Entity
 		}
 		protected abstract Task<TPublic[]> OnPreparePublics(TTemp[] Internals);
 
+		protected async Task<T> UseTransaction<T>(Func<Task<T>> Action)
+		{
+			var tm = DataSet.Context.TransactionScopeManager;
+			var tran = tm.CurrentDbTransaction;
+			if (tran == null)
+				return await Action();
+			var provider = DataSet.Context.Provider;
+			var orgTran = provider.Transaction;
+			provider.Transaction = tran;
+			try
+			{
+				return await Action();
+			}
+			finally
+			{
+				provider.Transaction = orgTran;
+			}
+
+		}
 		public async Task<TPublic[]> GetAsync(TKey[] Ids)
 		{
-			var re = await OnMapModelToPublic(
-				DataSet.AsQueryable(true).Where(s => Ids.Contains(s.Id))
-				).ToArrayAsync();
+			return await UseTransaction(async () =>
+			{
+				var re = await OnMapModelToPublic(
+					DataSet.AsQueryable(true).Where(s => Ids.Contains(s.Id))
+					).ToArrayAsync();
 
-			if (re == null)
-				return null;
+				if (re == null)
+					return null;
 
-			var res = await OnPreparePublics(re);
-			return res;
+				var res = await OnPreparePublics(re);
+				return res;
+			});
 		}
 
 		public async Task<TPublic> GetAsync(TKey Id)
 		{
-			var re = await OnMapModelToPublic(
+			return await UseTransaction(async () =>
+			{
+				var re = await OnMapModelToPublic(
 				DataSet.AsQueryable(true).Where(s => s.Id.Equals(Id))
 				).SingleOrDefaultAsync();
 
-			if (re == null)
-				return null;
+				if (re == null)
+					return null;
 
-			var res = await OnPreparePublics(new[] { re });
+				var res = await OnPreparePublics(new[] { re });
 
-			return res[0];
+				return res[0];
+			});
 		}
 	}
 	

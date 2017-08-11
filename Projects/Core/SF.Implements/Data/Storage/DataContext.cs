@@ -95,12 +95,12 @@ namespace SF.Data.Storage
 
         public int SaveChanges()
         {
-            return _Provider.SaveChanges();
+			return _Provider.SaveChanges();
         }
 
-        public Task<int> SaveChangesAsync()
+        public async Task<int> SaveChangesAsync()
         {
-            return _Provider.SaveChangesAsync();
+			return await _Provider.SaveChangesAsync();
         }
 
        

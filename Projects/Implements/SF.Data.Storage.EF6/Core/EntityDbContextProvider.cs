@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Common;
+
 namespace SF.Data.Storage.EF6
 {
 
@@ -73,8 +75,13 @@ namespace SF.Data.Storage.EF6
 			}
 		}
 
-	
-	
+		public DbTransaction Transaction {
+			get => DbContext.Database.CurrentTransaction?.UnderlyingTransaction;
+			set => DbContext.Database.UseTransaction(value) ;
+		}
+
+
+
 		//protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		//{
 		//	base.OnModelCreating(modelBuilder);

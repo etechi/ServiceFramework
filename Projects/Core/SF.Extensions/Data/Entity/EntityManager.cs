@@ -137,8 +137,11 @@ namespace SF.Data.Entity
         [TransactionScope("创建对象")]
 		public virtual async Task<TKey> CreateAsync(TEditable obj)
 		{
-			var ctx = await InternalCreateAsync(obj,null);
-            return ctx.Model.Id;
+			return await UseTransaction(async () =>
+			{
+				var ctx = await InternalCreateAsync(obj, null);
+				return ctx.Model.Id;
+			});
 		}
 		protected virtual async Task<ModifyContext> InternalCreateAsync(TEditable obj,object ExtraArgument)
 		{
@@ -166,7 +169,11 @@ namespace SF.Data.Entity
 		[TransactionScope("删除对象")]
 		public virtual async Task RemoveAsync(TKey Id)
 		{
-			await InternalRemoveAsync(Id);
+			await UseTransaction(async () =>
+			{
+				await InternalRemoveAsync(Id);
+				return 0;
+			});
 		}
 		protected virtual async Task<ModifyContext> InternalRemoveAsync(TKey Id)
 		{
@@ -218,7 +225,11 @@ namespace SF.Data.Entity
 		[TransactionScope("更新对象")]
 		public virtual async Task UpdateAsync(TEditable obj)
 		{
-			await InternalUpdateAsync(obj);                
+			await UseTransaction(async () =>
+			{
+				await InternalUpdateAsync(obj);
+				return 0;
+			});
         }
 		protected virtual async Task<ModifyContext> InternalUpdateAsync(TEditable obj)
 		{
@@ -255,9 +266,12 @@ namespace SF.Data.Entity
 			return Query.Select(EntityMapper.Map<TModel, TEditable>()).SingleOrDefaultAsync();
 		}
 
-		public virtual Task<TEditable> LoadForEdit(TKey Id)
+		public virtual async Task<TEditable> LoadForEdit(TKey Id)
 		{
-			return OnMapModelToEditable(DataSet.AsQueryable(false).Where(m => m.Id.Equals(Id)));
+			return await UseTransaction(async () =>
+			{
+				return await OnMapModelToEditable(DataSet.AsQueryable(false).Where(m => m.Id.Equals(Id)));
+			});
 		}
 	}
     
