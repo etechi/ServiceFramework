@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SF.Clients
+namespace SF.Auth
 {
 	
 	public class Claim

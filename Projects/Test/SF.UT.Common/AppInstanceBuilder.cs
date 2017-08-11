@@ -11,6 +11,7 @@ using SF.Applications;
 using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
 using SF.Core.NetworkService;
+using SF.Clients;
 
 namespace SF.UT
 {
@@ -24,6 +25,8 @@ namespace SF.UT
 					sc.UseConsoleDefaultFilePathStructure();
 					sc.AddSingleton(new Moq.Mock<IInvokeContext>().Object);
 					sc.AddSingleton(new Moq.Mock<IUploadedFileCollection>().Object);
+
+					sc.AddLocalClientService();
 				});
 			
 		}

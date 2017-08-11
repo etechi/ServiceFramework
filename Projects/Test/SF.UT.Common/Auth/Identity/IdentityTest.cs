@@ -28,7 +28,8 @@ namespace SF.UT.Auth
 				sim => sim.NewAuthIdentityServive(),
 				async svc =>
 				{
-					var account = "user1";
+					var account = "user"+await ig.GenerateAsync("测试ID");
+					var password = "123456";
 					var id = await ig.GenerateAsync("测试用户");
 
 					//var VerifyCode = await svc.SendCreateIdentityVerifyCode(
@@ -41,18 +42,33 @@ namespace SF.UT.Auth
 						new CreateIdentityArgument
 						{
 							Credential = account,
-							Password = "11111111",
+							Password = password,
 							Identity = new SF.Auth.Identities.Models.Identity
 							{
 								Id = id,
 								Entity = "测试用户",
 								Name = "测试用户1"
-							}
+							},
+							ReturnToken=true
 						}, true
 						);
 
 					var uid = await svc.ParseAccessToken(accessToken);
 					Assert.Equal(id, uid);
+
+					var signinResult = await svc.Signin(new SigninArgument
+					{
+						Credential = account,
+						Password = password,
+						ReturnToken=true
+					});
+					var uid2 = await svc.ParseAccessToken(signinResult);
+					Assert.Equal(id, uid2);
+				},
+				async (sp,sim,svc)=>
+				{
+					await sim.NewDataProtectorService().Ensure(sp, svc);
+					await sim.NewPasswordHasherService().Ensure(sp, svc);
 				});
 
 		}

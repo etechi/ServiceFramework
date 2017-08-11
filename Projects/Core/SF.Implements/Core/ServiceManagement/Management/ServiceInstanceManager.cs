@@ -142,7 +142,7 @@ namespace SF.Core.ServiceManagement.Management
 		IServiceFactory TestConfig(long Id, long? ParentId, string ImplementId, string CreateArguments)
 		{
 			var (implTypeName, svcTypeName) = ImplementId.Split2('@');
-			var ServiceResolver = this.ServiceProvider.Value.NewResolver();
+			var ServiceResolver = this.ServiceProvider.Value.Resolver();
 
 			var (decl, impl) = ServiceFactory.ResolveMetadata(
 				ServiceResolver,
@@ -293,7 +293,7 @@ namespace SF.Core.ServiceManagement.Management
 
 
 			var (implTypeName, svcTypeName) = ctx.Model.ImplementType.Split2('@');
-			var ServiceResolver = this.ServiceProvider.Value.NewResolver();
+			var ServiceResolver = this.ServiceProvider.Value.Resolver();
 
 			var (decl, impl) = ServiceFactory.ResolveMetadata(
 				ServiceResolver,

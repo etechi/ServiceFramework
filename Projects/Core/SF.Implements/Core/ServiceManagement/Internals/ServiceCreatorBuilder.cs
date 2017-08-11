@@ -20,17 +20,17 @@ namespace SF.Core.ServiceManagement.Internals
 
 		static ParameterExpression ParamServiceCreateParameterProvider = Expression.Parameter(typeof(IServiceCreateParameterTemplate), "ap");
 		static MethodInfo ServiceCreateParameterProviderGetParameter = typeof(IServiceCreateParameterTemplate).GetMethod("GetArgument", BindingFlags.Public | BindingFlags.Instance);
-		static MethodInfo ServiceCreateParameterProviderGetServiceIdent = typeof(IServiceCreateParameterTemplate).GetMethod("GetServiceIdent", BindingFlags.Public | BindingFlags.Instance );
+		static MethodInfo ServiceCreateParameterProviderGetServiceIdent = typeof(IServiceCreateParameterTemplate).GetMethod("GetServiceIdent", BindingFlags.Public | BindingFlags.Instance);
 
 		static ParameterExpression ParamServiceInstanceDescriptor = Expression.Parameter(typeof(IServiceInstanceDescriptor), "dsp");
 
 
-		static MethodInfo StringConcat = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 2 && m.GetParameters().All(pt=>pt.ParameterType== typeof(string)));
+		static MethodInfo StringConcat = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 2 && m.GetParameters().All(pt => pt.ParameterType == typeof(string)));
 		static MethodInfo StringConcat4 = typeof(String).GetMethods().Single(m => m.Name == "Concat" && m.IsStatic && m.IsPublic && m.GetParameters().Length == 4 && m.GetParameters().All(pt => pt.ParameterType == typeof(string)));
 		static MethodInfo Int32ToString = typeof(int).GetMethods().Single(m => m.Name == "ToString" && m.IsPublic && !m.IsStatic && m.GetParameters().Length == 0);
 
 		static T NullVerify<T>(object obj, IServiceInstanceDescriptor Descriptor, string Path)
-			where T:class
+			where T : class
 		{
 			if (obj == null)
 				throw new NullReferenceException($"在构造服务{Descriptor.ServiceDeclaration.ServiceType}的实现{Descriptor.ServiceImplement.ImplementType}时，参数{Path}为Null, 类型:{typeof(T)}");
@@ -43,23 +43,16 @@ namespace SF.Core.ServiceManagement.Internals
 			typeof(string)
 			);
 
-		static Expression NullVerify(Expression e,string Path)
-			=>Expression.Call(
+		static Expression NullVerify(Expression e, string Path)
+			=> Expression.Call(
 				NullVerifyMethod.MakeGenericMethod(e.Type),
 				e,
 				ParamServiceInstanceDescriptor,
 				Expression.Constant(Path)
 				);
 
-		enum ResolveType
-		{
-			Instance,
-			Lazy,
-			Func,
-			Func2,
-			Enumerable
-		}
 		
+
 		public class MemberAttribute
 		{
 			public bool Optional { get; set; }
@@ -79,7 +72,7 @@ namespace SF.Core.ServiceManagement.Internals
 			//if (pair.Key == null)
 			//	throw new NotImplementedException($"找不到服务{InterfaceType}，配置路径:{Path}");
 			//var ServiceType= MemberAttribute.ServiceType??InterfaceType;
-			if (si!=null && si.ServiceType != null && si.ServiceType != InterfaceType)
+			if (si != null && si.ServiceType != null && si.ServiceType != InterfaceType)
 				throw new NotSupportedException($"{InterfaceType}的配置路径:{Path}返回的服务类型为{si.ServiceType}不是{InterfaceType}");
 
 			object instance = null;
@@ -103,7 +96,7 @@ namespace SF.Core.ServiceManagement.Internals
 			else
 			{
 				instance = Resolver.ResolveServiceByType(
-					ServiceInstanceDescriptor.IsManaged?(long?)ServiceInstanceDescriptor.InstanceId:null,
+					ServiceInstanceDescriptor.IsManaged ? (long?)ServiceInstanceDescriptor.InstanceId : null,
 					InterfaceType,
 					null
 					);
@@ -116,23 +109,23 @@ namespace SF.Core.ServiceManagement.Internals
 
 
 
-		
 
-		static IServiceProvider CreateServiceProvider(
-			IServiceResolver Resolver,
-			IServiceInstanceDescriptor ServiceInstanceDescriptor
-			)
-		{
-			return
-				//ServiceInstanceDescriptor.IsManaged?
-				Resolver.CreateInternalServiceProvider(ServiceInstanceDescriptor);//: 
-				//Resolver.Provider;
-		}
-		static MethodInfo CreateServiceProviderMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
-			nameof(CreateServiceProvider),
-			typeof(IServiceResolver),
-			typeof(IServiceInstanceDescriptor)
-			);
+
+		//static IServiceProvider CreateServiceProvider(
+		//	IServiceResolver Resolver,
+		//	IServiceInstanceDescriptor ServiceInstanceDescriptor
+		//	)
+		//{
+		//	return
+		//		//ServiceInstanceDescriptor.IsManaged?
+		//		Resolver.CreateInternalServiceProvider(ServiceInstanceDescriptor);//: 
+		//		//Resolver.Provider;
+		//}
+		//static MethodInfo CreateServiceProviderMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
+		//	nameof(CreateServiceProvider),
+		//	typeof(IServiceResolver),
+		//	typeof(IServiceInstanceDescriptor)
+		//	);
 
 		static MethodInfo ResolveManagedServiceMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
 			nameof(ResolveManagedService),
@@ -149,20 +142,26 @@ namespace SF.Core.ServiceManagement.Internals
 			IServiceInstanceDescriptor ServiceInstanceDescriptor,
 			string Path,
 			MemberAttribute MemberAttribute
-			) =>new Lazy<T>(() =>
-			{
-				var re = ResolveManagedService(
-					ServiceResolver,
-					CreateParameterTemplate,
-					ServiceInstanceDescriptor,
-					Path,
-					typeof(T),
-					MemberAttribute
-					);
-				if (re == null)
-					throw new InvalidOperationException($"找不到服务{typeof(T)},上下文:{ServiceInstanceDescriptor.InstanceId}");
-				return (T)re;
-			});
+			){
+				var scopeId = ServiceResolver.CurrentServiceId;
+				return new Lazy<T>(() =>
+				{
+					using (ServiceResolver.WithScopeService(scopeId))
+					{
+						var re = ResolveManagedService(
+							ServiceResolver,
+							CreateParameterTemplate,
+							ServiceInstanceDescriptor,
+							Path,
+							typeof(T),
+							MemberAttribute
+							);
+						if (re == null)
+							throw new InvalidOperationException($"找不到服务{typeof(T)},上下文:{ServiceInstanceDescriptor.InstanceId}");
+						return (T)re;
+					}
+				});
+			}
 
 		static MethodInfo CreateLazyedManagedServiceResolveMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
 			nameof(CreateLazyedManagedServiceResolve),
@@ -179,21 +178,27 @@ namespace SF.Core.ServiceManagement.Internals
 			IServiceInstanceDescriptor ServiceInstanceDescriptor,
 			string Path,
 			MemberAttribute MemberAttribute
-			) => () =>
+			) {
+			var scopeId = resolver.CurrentServiceId;
+
+			return () =>
 			{
-				var re = ResolveManagedService(
-					resolver,
-					CreateParameterTemplate,
-					ServiceInstanceDescriptor,
-					Path,
-					typeof(T),
-					MemberAttribute
-					);
-				if (re == null)
-					throw new InvalidOperationException($"找不到服务{typeof(T)},上下文:{ServiceInstanceDescriptor.InstanceId}");
-				return (T)re;
+				using (resolver.WithScopeService(scopeId))
+				{
+					var re = ResolveManagedService(
+						resolver,
+						CreateParameterTemplate,
+						ServiceInstanceDescriptor,
+						Path,
+						typeof(T),
+						MemberAttribute
+						);
+					if (re == null)
+						throw new InvalidOperationException($"找不到服务{typeof(T)},上下文:{ServiceInstanceDescriptor.InstanceId}");
+					return (T)re;
+				}
+			};
 			}
-			;
 		
 		static MethodInfo CreateFuncManagedServiceResolveMethodInfo = typeof(ServiceCreatorBuilder).GetMethodExt(
 			nameof(CreateFuncManagedServiceResolve),
@@ -206,14 +211,14 @@ namespace SF.Core.ServiceManagement.Internals
 		static Expression ManagedServiceResolveExpression(
 			Type Type,
 			Expression PropPathExpr,
-			ResolveType resolveType,
+			ServiceResolveType resolveType,
 			IServiceMetadata Metadata,
 			MemberAttribute MemberAttribute
 			)
 		{
 			switch (resolveType)
 			{
-				case ResolveType.Lazy:
+				case ServiceResolveType.Lazy:
 					{
 						var type = Type.GetGenericArgumentTypeAsLazy();
 						return Expression.Call(
@@ -225,7 +230,7 @@ namespace SF.Core.ServiceManagement.Internals
 							Expression.Constant(MemberAttribute)
 							);
 					}
-				case ResolveType.Func:
+				case ServiceResolveType.Func:
 					{
 						var type = Type.GetGenericArgumentTypeAsFunc();
 						return Expression.Call(
@@ -267,35 +272,37 @@ namespace SF.Core.ServiceManagement.Internals
 			typeof(object)
 			);
 
-		static Expression WrapInstance(ResolveType type, Expression expr) =>
-			type == ResolveType.Func ?
+		static Expression WrapInstance(ServiceResolveType type, Expression expr) =>
+			type == ServiceResolveType.Func ?
 			Expression.Call(
 				FuncWrapperMethod.MakeGenericMethod(expr.Type),
 				expr
 				) :
-			type == ResolveType.Lazy ?
+			type == ServiceResolveType.Lazy ?
 			Expression.Call(
 				LazyWrapperMethod.MakeGenericMethod(expr.Type),
 				expr
 				) :
 			throw new NotSupportedException();
 
-		static Expression GetServiceResolverExpression(ResolveType type) =>
-			type == ResolveType.Instance ? ParamServiceResolver:
-			WrapInstance(type, GetServiceResolverExpression(ResolveType.Instance));
+		static Expression GetServiceResolverExpression(ServiceResolveType type) =>
+			type == ServiceResolveType.Direct ? ParamServiceResolver:
+			WrapInstance(type, GetServiceResolverExpression(ServiceResolveType.Direct));
 
-		static Expression GetServiceProviderExpression(ResolveType type) =>
-			type == ResolveType.Instance ? Expression.Call(
-				null,
-				CreateServiceProviderMethodInfo,
-				ParamServiceResolver,
-				ParamServiceInstanceDescriptor
-				):
-			WrapInstance(type, GetServiceProviderExpression(ResolveType.Instance));
+		static Expression GetServiceProviderExpression(ServiceResolveType type) =>
+			type == ServiceResolveType.Direct ?
+			//Expression.Call(
+			//	null,
+			//	CreateServiceProviderMethodInfo,
+			//	ParamServiceResolver,
+			//	ParamServiceInstanceDescriptor
+			//	):
+			Expression.Property(ParamServiceResolver,"Provider"):
+			WrapInstance(type, GetServiceProviderExpression(ServiceResolveType.Direct));
 
-		static Expression GetServiceInstanceDescriptorExpression(ResolveType type) =>
-			type == ResolveType.Instance ? ParamServiceInstanceDescriptor :
-			WrapInstance(type, GetServiceInstanceDescriptorExpression(ResolveType.Instance));
+		static Expression GetServiceInstanceDescriptorExpression(ServiceResolveType type) =>
+			type == ServiceResolveType.Direct ? ParamServiceInstanceDescriptor :
+			WrapInstance(type, GetServiceInstanceDescriptorExpression(ServiceResolveType.Direct));
 
 		static Expression StrConcat(Expression e1, Expression e2) =>
 			Expression.Call(null, StringConcat, e1, e2);
@@ -347,32 +354,16 @@ namespace SF.Core.ServiceManagement.Internals
 					var t = ot;
 					if (t.IsArray)
 						t = t.GetElementType();
-					else if (t.IsGeneric())
-					{
-						var gtd = t.GetGenericTypeDefinition();
-						if (gtd == typeof(Func<,>) ||
-							gtd == typeof(Func<>) ||
-							gtd == typeof(Lazy<>) ||
-							gtd == typeof(Dictionary<,>) || 
-							gtd==typeof(IEnumerable<>)
-							)
-						{
-							var args = t.GetGenericArguments();
-							t = args[args.Length - 1];
-						}
-						else if (ServiceMetadata.IsService(gtd))
-						{
-							for (var i = 0; i < PathList.Count; i++)
-								CopyRequiredPaths.Add(string.Join(".", PathList.Take(i + 1)));
-							return;
-						}
-					}
-					if (ServiceMetadata.IsService(t))
-					{
+					else if (t.IsGeneric() && t.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+						t = t.GetGenericArguments()[1];
+
+					if (ServiceMetadata.DetectService(t)!=ServiceResolveType.None)
+					{ 
 						for (var i = 0; i < PathList.Count; i++)
 							CopyRequiredPaths.Add(string.Join(".", PathList.Take(i + 1)));
 						return;
 					}
+
 					if (t.IsPrimitiveType() || t.GetTypeCode()!=TypeCode.Object || t.IsInterfaceType())
 						return;
 
@@ -471,48 +462,7 @@ namespace SF.Core.ServiceManagement.Internals
 					dict
 				);
 			}
-			bool IsServiceType(IServiceDetector ServiceDetector, Type Type, out ResolveType ResolveType,out Type RealType)
-			{
-				do
-				{
-					RealType = Type.GetGenericArgumentTypeAsLazy();
-					if (RealType != null)
-					{
-						ResolveType = ResolveType.Lazy;
-						break;
-					}
-
-					RealType = Type.GetGenericArgumentTypeAsFunc();
-					if (RealType != null)
-					{
-						ResolveType = ResolveType.Func;
-						break;
-					}
-
-					Type fun2Arg1;
-					(fun2Arg1, RealType) = Type.GetGenericArgumentTypeAsFunc2();
-					if (RealType != null && fun2Arg1==typeof(long))
-					{
-						ResolveType = ResolveType.Func2;
-						break;
-					}
-
-					//IEnumerable<>总是服务
-					RealType = Type.GetGenericArgumentTypeAsEnumerable();
-					if (RealType != null )
-					{
-						ResolveType = ResolveType.Enumerable;
-						return true;
-					}
-
-					ResolveType = ResolveType.Instance;
-					RealType = Type;
-
-				} while (false);
-				var re= ServiceDetector.IsService(RealType);
-				if (re || !RealType.IsGenericType) return re;
-				return ServiceDetector.IsService(RealType.GetGenericTypeDefinition());
-			}
+			
 			static Dictionary<K,T> CopyDirectionary<K,T>(Dictionary<K, T> dict)
 			{
 				return dict.ToDictionary(p => p.Key, p => p.Value);
@@ -570,10 +520,9 @@ namespace SF.Core.ServiceManagement.Internals
 				//}
 				else
 				{
-					ResolveType rType;
 					Type RealType;
-					isSvcType = IsServiceType(ServiceMetadata,Type,out rType,out RealType);
-
+					var rType= ServiceMetadata.DetectService(Type,out RealType);
+					isSvcType = rType != ServiceResolveType.None;
 					if (RealType == typeof(IServiceInstanceDescriptor))
 						return GetServiceInstanceDescriptorExpression(rType);
 					if (RealType == typeof(IServiceResolver))
@@ -655,9 +604,8 @@ namespace SF.Core.ServiceManagement.Internals
 
 			Expression BuildParamExpression(ParameterInfo pi, int Index)
 			{
-				ResolveType resolveType;
 				Type RealType;
-				var isSvcType = IsServiceType(ServiceMetadata,pi.ParameterType,out resolveType,out RealType);
+				var resolveType = ServiceMetadata.DetectService(pi.ParameterType,out RealType);
 				//if (isSvcType == Internals.ServiceType.Normal)
 				//	return ServiceResolverResolveExpression(pi.ParameterType, resolveType);
 				if (RealType == typeof(IServiceInstanceDescriptor))
@@ -666,7 +614,7 @@ namespace SF.Core.ServiceManagement.Internals
 					return GetServiceResolverExpression(resolveType);
 				else if (RealType == typeof(IServiceProvider))
 					return GetServiceProviderExpression(resolveType);
-				else if (isSvcType)
+				else if (resolveType!=ServiceResolveType.None)
 					return ManagedServiceResolveExpression(
 						pi.ParameterType, 
 						Expression.Constant(pi.Name), 

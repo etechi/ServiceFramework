@@ -48,6 +48,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clients\ClientDIExtensions.cs" />
+    <Compile Include="Clients\LocalClientService.cs" />
     <Compile Include="Core\Caching\LocalFileCache.cs" />
     <Compile Include="Core\Caching\CachingDIServiceCollectionExtension.cs" />
     <Compile Include="Core\CallGuarantors\CallGuarantorDIServoceCollectionExtension.cs" />

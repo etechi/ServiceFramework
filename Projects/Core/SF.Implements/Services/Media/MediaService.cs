@@ -244,7 +244,7 @@ namespace SF.Services.Media
 
 		async Task<HttpResponseMessage> GetCachedContent(string id,string format)
 		{
-			var file_name = Hash.MD5((id + "-" + format).UTF8Bytes()).Hex();
+			var file_name = (id + "-" + format).UTF8Bytes().CalcHash(Hash.MD5()).Hex();
 
 			var path = await FileCache.Value.Cache(
 				file_name,

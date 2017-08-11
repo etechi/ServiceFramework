@@ -10,7 +10,10 @@ namespace System
 {
 	public static class ArrayExtension
 	{
-		public static T[] Concat<T>(this T[] first,params T[][] tails)
+		public static T[] Concat<T>(this T[] first, params T[][] tails) =>
+			Concat(first, (IEnumerable<T[]>)tails);
+
+		public static T[] Concat<T>(this T[] first,IEnumerable<T[]> tails)
 		{
 			var re = new T[first.Length + tails.Sum(t=>t?.Length ?? 0)];
 			if (first.Length > 0)

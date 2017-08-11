@@ -301,12 +301,14 @@ namespace SF.Auth.Identities
 				throw new PublicArgumentException("请输入密码");
 			var stamp = Bytes.Random(16);
 			var passwordHash = Setting.PasswordHasher.Value.Hash(Arg.Password,stamp);
+			var client = Setting.ClientService.Value;
 			await Setting.IdentStorage.Value.Create(
 				new IdentityCreateArgument
 				{
-					AccessSource = Setting.ClientService.Value.AccessSource,
+					AccessSource = client.AccessSource,
 					PasswordHash = passwordHash,
 					SecurityStamp = stamp,
+					CredentialValue=Arg.Credential,
 					CredentialProvider= CredentialProvider.Id,
 					Identity =new Identity
 					{

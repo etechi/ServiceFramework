@@ -7,7 +7,4 @@ namespace SF.Core.ServiceManagement
 	{
 		bool IsService(Type type);
 	}
-	static class ServiceDetectorExtension
-	{
-	}
 }

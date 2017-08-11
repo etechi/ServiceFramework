@@ -90,5 +90,17 @@ namespace System.Linq
 				items.Select(pair => Selector(pair)).ToArray()
 				);
 		}
+		public static IEnumerable<T> WithFirst<T>(this IEnumerable<T> items,T first)
+		{
+			yield return first;
+			foreach (var i in items)
+				yield return i;
+		}
+		public static IEnumerable<T> WithLast<T>(this IEnumerable<T> items, T last)
+		{
+			foreach (var i in items)
+				yield return i;
+			yield return last;
+		}
 	}
 }

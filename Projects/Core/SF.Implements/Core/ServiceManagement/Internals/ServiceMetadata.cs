@@ -101,7 +101,7 @@ namespace SF.Core.ServiceManagement.Internals
 
 		public bool IsService(Type Type)
 		{
-			return Services.ContainsKey(Type);
+			return Services.ContainsKey(Type) || Type.IsDefined(typeof(AutoBindAttribute));
 		}
 	}
 

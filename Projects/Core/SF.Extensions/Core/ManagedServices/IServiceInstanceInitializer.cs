@@ -224,12 +224,14 @@ namespace SF.Core.ServiceManagement
 			this IServiceProvider ServiceProvider,
 			Func<IServiceInstanceManager, IServiceInstanceInitializer<I>> newInitializer,
 			Func<I, Task> Action,
+			Func<IServiceProvider, IServiceInstanceManager, long,Task> SetupService=null,
 			long? ParentId = null
 			) where I:class
 		{
 			var sim = ServiceProvider.Resolve<IServiceInstanceManager>();
 			var initializer = newInitializer(sim);
 			var sid = await initializer.Ensure(ServiceProvider, ParentId);
+			await SetupService(ServiceProvider, sim, sid);
 			var svc=ServiceProvider.Resolve<I>(sid);
 			await Action(svc);
 			await sim.RemoveAsync(sid);

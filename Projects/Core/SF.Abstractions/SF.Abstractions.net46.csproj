@@ -45,11 +45,11 @@
   <ItemGroup>
     <Compile Include="Auth\AuthorizeAttribute.cs" />
     <Compile Include="Auth\RequirePermissionAttribute.cs" />
-    <Compile Include="Clients\Claim.cs" />
+    <Compile Include="Auth\Claim.cs" />
     <Compile Include="Clients\ClientDeviceType.cs" />
     <Compile Include="Clients\IAccessSource.cs" />
     <Compile Include="Clients\IClientService.cs" />
-    <Compile Include="Clients\IIdentity.cs" />
+    <Compile Include="Auth\IIdentity.cs" />
     <Compile Include="Clients\ISession.cs" />
     <Compile Include="Core\Architecture\IDataScope.cs" />
     <Compile Include="Core\Caching\ILocalCache.cs" />
@@ -114,6 +114,7 @@
     <Compile Include="Data\Models\ObjectEntityBase.cs" />
     <Compile Include="Data\Storage\IDataSetProvider.cs" />
     <Compile Include="Data\Storage\TransactionScope.cs" />
+    <Compile Include="IContent - 复制.cs" />
     <Compile Include="KB\IPhoneNumberValidator.cs" />
     <Compile Include="KB\IMimeResolver.cs" />
     <Compile Include="KB\SexType.cs" />

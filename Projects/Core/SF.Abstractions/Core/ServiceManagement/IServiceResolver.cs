@@ -17,14 +17,15 @@ namespace SF.Core.ServiceManagement
 	public interface IServiceResolver 
 	{
 		IServiceProvider Provider { get; }
-
+		long? CurrentServiceId { get; }
+		IDisposable WithScopeService(long? ServiceId);
 		object ResolveServiceByIdent(long ServiceId, Type ServiceType);
 		IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId, Type ServiceType);
 
 		object ResolveServiceByType(long? ScopeServiceId, Type ChildServiceType,string Name);
 		IServiceInstanceDescriptor ResolveDescriptorByType(long? ScopeServiceId, Type ChildServiceType, string Name);
 
-		IServiceProvider CreateInternalServiceProvider(IServiceInstanceDescriptor Descriptor);
+		//IServiceProvider CreateInternalServiceProvider(IServiceInstanceDescriptor Descriptor);
 
 		IEnumerable<IServiceInstanceDescriptor> ResolveServiceDescriptors(
 			long? ScopeServiceId, 

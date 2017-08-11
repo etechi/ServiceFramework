@@ -10,8 +10,7 @@ namespace SF.Clients
 	{
 		IAccessSource AccessSource { get; }
 
-		long CurrentApplicationId { get; }
-		int CurrentScopeId { get; }
+		long? CurrentScopeId { get; }
 		string GetAccessToken();
 		Task SetAccessToken(string AccessToken);
 

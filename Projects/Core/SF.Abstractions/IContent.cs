@@ -18,6 +18,7 @@ namespace SF
     public interface IStreamContent : IContent
 	{
         System.IO.Stream Stream { get; }
+		
     }
     public interface IFileContent : IContent
 	{

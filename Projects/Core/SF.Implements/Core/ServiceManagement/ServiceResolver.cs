@@ -63,6 +63,18 @@ namespace SF.Core.ServiceManagement
 
 		static Type IServiceInstanceDescriptorType { get; } = typeof(IServiceInstanceDescriptor);
 
+		Stack<long?> CurrentServiceStack;
+		public long? CurrentServiceId => (CurrentServiceStack?.Count ?? 0) == 0 ? (long?)null : CurrentServiceStack.Peek();
+		public IDisposable WithScopeService(long? ServiceId)
+		{
+			if (CurrentServiceStack == null)
+				CurrentServiceStack = new Stack<long?>();
+			CurrentServiceStack.Push(ServiceId);
+			return Disposable.FromAction(
+				() =>
+					CurrentServiceStack.Pop()
+			);
+		}
 		public object ResolveServiceByType(long? ScopeServiceId, Type ServiceType, string Name)
 		{
 			AddType(ServiceType);
@@ -70,7 +82,7 @@ namespace SF.Core.ServiceManagement
 			{
 				var f = FactoryManager.GetServiceFactoryByType(
 					this,
-					ScopeServiceId,
+					ScopeServiceId ?? CurrentServiceId,
 					ServiceType,
 					Name
 					);
@@ -86,12 +98,22 @@ namespace SF.Core.ServiceManagement
 			AddType(ServiceType);
 			try
 			{
-				var f = ScopeBase.FactoryManager.GetServiceFactoryByIdent(
-					this,
-					ServiceId,
-					ServiceType
-					);
-				return f == null ? null : GetService(f, ServiceType);
+				if (CurrentServiceStack == null)
+					CurrentServiceStack = new Stack<long?>();
+				CurrentServiceStack.Push(ServiceId);
+				try
+				{
+					var f = ScopeBase.FactoryManager.GetServiceFactoryByIdent(
+						this,
+						ServiceId,
+						ServiceType
+						);
+					return f == null ? null : GetService(f, ServiceType);
+				}
+				finally
+				{
+					CurrentServiceStack.Pop();
+				}
 			}
 			finally
 			{
@@ -99,14 +121,14 @@ namespace SF.Core.ServiceManagement
 			}
 		}
 
-		public IServiceProvider CreateInternalServiceProvider(IServiceInstanceDescriptor Descriptor)
-		{
-			return new ScopedServiceProvider
-			{
-				ServiceResolver = this,
-				ScopeServiceInstanceDescriptor = Descriptor
-			};
-		}
+		//public IServiceProvider CreateInternalServiceProvider(IServiceInstanceDescriptor Descriptor)
+		//{
+		//	return new ScopedServiceProvider
+		//	{
+		//		ServiceResolver = this,
+		//		ScopeServiceInstanceDescriptor = Descriptor
+		//	};
+		//}
 
 		public IEnumerable<IServiceInstanceDescriptor> ResolveServiceDescriptors(
 			long? ScopeServiceId,

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SF.Auth;
+using System.Collections.Generic;
 
 namespace SF.Clients
 {

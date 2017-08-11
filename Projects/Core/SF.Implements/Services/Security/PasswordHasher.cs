@@ -21,7 +21,7 @@ namespace SF.Services.Security
 		}
 		public string Hash(string Password,byte[] SecurityStamp)
 		{
-			return Password.UTF8Bytes().Concat(SecurityStamp, GlobalPassword).Sha1().Hex();
+			return Password.UTF8Bytes().Concat(SecurityStamp, GlobalPassword).CalcHash(SF.Hash.Sha1()).Hex();
 		}
 	}
 }

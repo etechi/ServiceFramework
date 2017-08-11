@@ -92,15 +92,38 @@ namespace SF.Core.ServiceManagement
 		}
 
 		static object NewCreator<I>(IServiceProvider sp) where I : class
-			=> new Func<I>(() => sp.Resolve<I>());
+		{
+			var sr = sp.Resolver();
+			var curScopeId = sr.CurrentServiceId;
+			return new Func<I>(() =>
+			{
+				using (sr.WithScopeService(curScopeId)) 
+					return sp.Resolve<I>();
+			});
+		}
 		static object NewLazy<I>(IServiceProvider sp) where I : class
-			=> new Lazy<I>(() => sp.Resolve<I>());
+		{
+			var sr = sp.Resolver();
+			var curScopeId = sr.CurrentServiceId;
+			return new Lazy<I>(() =>
+			{
+				using (sr.WithScopeService(curScopeId)) 
+					return sp.Resolve<I>();
+			});
+		}
 		static object NewTypedInstanceResolver<I>(IServiceProvider sp) where I : class
-			=> new TypedInstanceResolver<I>((id) => sp.Resolve<I>(id));
-
+		{
+			var sr = sp.Resolver();
+			var curScopeId = sr.CurrentServiceId;
+			return new TypedInstanceResolver<I>((id) =>
+			{
+				using(sr.WithScopeService(curScopeId))
+					return sp.Resolve<I>(id);
+			});
+		}
 		static IEnumerable<I> NewEnumerableReal<I>(IServiceProvider sp) where I : class
 		{
-			var resolver = sp.NewResolver();
+			var resolver = sp.Resolver();
 			var desc = (IServiceInstanceDescriptor)resolver.ResolveServiceByType(null,typeof(IServiceInstanceDescriptor),null);
 			foreach (var i in resolver.ResolveServices(desc?.ParentInstanceId, typeof(I), null))
 				yield return (I)i;

@@ -56,18 +56,18 @@ namespace SF.Auth.Identities.Entity
 		{
 			await CreateAsync(new IdentityEditable
 			{
-				Id=Arg.Identity.Id,
+				Id = Arg.Identity.Id,
 				Name = Arg.Identity.Name,
-				Icon=Arg.Identity.Icon,
+				Icon = Arg.Identity.Icon,
 
 				CreateCredential = Arg.CredentialValue,
-				CreateCredentialProviderId=Arg.CredentialProvider,
+				CreateCredentialProviderId = Arg.CredentialProvider,
 
-				ObjectState=LogicObjectState.Enabled,
-				
-				PasswordHash=Arg.PasswordHash,
-				SecurityStamp= Arg.SecurityStamp.Base64(),
+				ObjectState = LogicObjectState.Enabled,
 
+				PasswordHash = Arg.PasswordHash,
+				SecurityStamp = Arg.SecurityStamp.Base64(),
+				Entity = Arg.Identity.Entity,
 				Credentials=new List<IdentityCredential>
 				{
 					new IdentityCredential
@@ -122,25 +122,34 @@ namespace SF.Auth.Identities.Entity
 			//await DataSet.Context.SaveChangesAsync();
 			//return Arg.Identity.Id;
 		}
-		protected override Task OnCreateAsync(ModifyContext ctx)
+		protected override Task OnNewModel(ModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
+			m.Id = e.Id;
 			m.SignupIdentProviderId = e.CreateCredentialProviderId;
 			m.SignupIdentValue = e.CreateCredential;
 			m.CreatedTime = TimeService.Value.Now;
 			m.ScopeId = ServiceInstanceDescroptor.InstanceId;
-			return base.OnCreateAsync(ctx);
+			return base.OnNewModel(ctx);
 		}
+		
 		protected override async Task OnUpdateModel(ModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
 			m.Name = e.Name;
 			m.Icon = e.Icon;
+
 			m.ObjectState = e.ObjectState;
 			var time = TimeService.Value.Now;
 			m.UpdatedTime = time;
+			if (e.Entity != null)
+				m.Entity = e.Entity;
+			if (e.PasswordHash!=null)
+				m.PasswordHash = e.PasswordHash;
+			if(e.SecurityStamp!=null)
+				m.SecurityStamp = e.SecurityStamp;
 			if (e.Credentials != null)
 			{
 				var ics = DataSet.Context.Set<TIdentityCredential>();
@@ -148,7 +157,7 @@ namespace SF.Auth.Identities.Entity
 				ics.Merge(
 					oitems,
 					e.Credentials,
-					(mi, ei) => mi.ProviderId == ei.ProviderId,
+					(mi, ei) => mi.ProviderId == ei.ProviderId && mi.Credential==ei.Credential,
 					ei => new TIdentityCredential
 					{
 						ScopeId = m.ScopeId,
@@ -156,12 +165,11 @@ namespace SF.Auth.Identities.Entity
 						UnionIdent = ei.UnionIdent,
 						Credential = ei.Credential,
 						ProviderId = ei.ProviderId,
-						CreatedTime = time
+						CreatedTime = time,
 					},
 					(mi, ei) =>
 					{
 						mi.UnionIdent = ei.UnionIdent;
-						mi.Credential = ei.Credential;
 					}
 					);
 

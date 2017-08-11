@@ -7,7 +7,7 @@ namespace SF.Core.ServiceManagement
 	public static class ServiceResolverExtension
 	{
 		static Type TypeServiceResolver { get; } = typeof(IServiceResolver);
-		public static IServiceResolver NewResolver(this IServiceProvider ServiceProvider)
+		public static IServiceResolver Resolver(this IServiceProvider ServiceProvider)
 			=> (IServiceResolver)ServiceProvider.GetService(TypeServiceResolver);
 
 		public static T TryResolve<T>(this IServiceResolver ServiceResolver,string Name=null,long? ScopeId=null)
@@ -16,7 +16,7 @@ namespace SF.Core.ServiceManagement
 
 		public static T TryResolve<T>(this IServiceProvider ServiceProvider, string Name = null, long? ScopeId = null)
 			where T : class
-			=> ServiceProvider.NewResolver().TryResolve<T>(Name, ScopeId);
+			=> ServiceProvider.Resolver().TryResolve<T>(Name, ScopeId);
 
 		public static T Resolve<T>(this IServiceResolver ServiceResolver, string Name = null, long? ScopeId = null)
 			where T : class
@@ -28,7 +28,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public static T Resolve<T>(this IServiceProvider ServiceProvider, string Name = null, long? ScopeId = null)
 			where T:class
-			=> ServiceProvider.NewResolver().Resolve<T>(Name, ScopeId);
+			=> ServiceProvider.Resolver().Resolve<T>(Name, ScopeId);
 
 
 		public static T Resolve<T>(this IServiceResolver ServiceResolver, long ServiceId)
@@ -49,7 +49,7 @@ namespace SF.Core.ServiceManagement
 
 		public static T Resolve<T>(this IServiceProvider ServiceProvider, long ServiceId)
 			where T : class
-			=> ServiceProvider.NewResolver().Resolve<T>(ServiceId);
+			=> ServiceProvider.Resolver().Resolve<T>(ServiceId);
 
 
 		public static T WithScope<T>(this IServiceProvider sp, Func<IServiceProvider, T> action)
@@ -74,7 +74,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IEnumerable<T> GetServices<T>(this IServiceProvider ServiceProvider, long? ScopeServiceId = null, string Name = null)
 		{
-			return ServiceProvider.NewResolver().ResolveServices(
+			return ServiceProvider.Resolver().ResolveServices(
 				ScopeServiceId,
 				typeof(T),
 				Name
@@ -82,7 +82,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IEnumerable<object> GetServices(this IServiceProvider ServiceProvider,Type ServiceType,long? ScopeServiceId=null,string Name=null)
 		{
-			return ServiceProvider.NewResolver().ResolveServices(
+			return ServiceProvider.Resolver().ResolveServices(
 				ScopeServiceId,
 				ServiceType,
 				Name

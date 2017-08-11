@@ -32,7 +32,9 @@ namespace SF.Core.ServiceManagement
 			{
 				return base.GetTypeProperties(type).Where(prop =>
 					!prop.PropertyType.IsInterfaceType() ||
-					ServiceDetector.IsService(prop.PropertyType)
+					!(ServiceDetector.IsService(prop.PropertyType) ||
+					prop.PropertyType.IsGeneric() && ServiceDetector.IsService(prop.PropertyType.GetGenericTypeDefinition())
+					)
 					);
 
 			}

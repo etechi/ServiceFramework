@@ -25,11 +25,8 @@ namespace SF.Core.ServiceManagement.Internals
 			public Dictionary<string, (Type,long)> ServiceIdents { get; } = new Dictionary<string, (Type,long)>();
 			public override bool CanConvert(Type objectType)
 			{
-				var realType = objectType.GetGenericArgumentTypeAsLazy() ??
-								objectType.GetGenericArgumentTypeAsFunc() ??
-								objectType;
-
-				var isService = realType.IsInterfaceType() && ServiceDetector.IsService(realType);
+				
+				var isService = ServiceDetector.DetectService(objectType)!=ServiceResolveType.None;
 
 				return isService;
 			}
@@ -225,7 +222,7 @@ namespace SF.Core.ServiceManagement.Internals
 						return null;
 					var ctr = type.GetConstructor(Array.Empty<Type>());
 					if (ctr == null) return null;
-					if (ServiceDetector.IsService(type))
+					if (ServiceDetector.DetectService(type)!=ServiceResolveType.None)
 						return null;
 					return ctr.Invoke(Array.Empty<object>());
 				})).Value;
@@ -273,11 +270,8 @@ namespace SF.Core.ServiceManagement.Internals
 						ParameterInfo p;
 						if (pdic.TryGetValue(prop, out p))
 						{
-							var realType = p.ParameterType.GetGenericArgumentTypeAsLazy() ??
-								p.ParameterType.GetGenericArgumentTypeAsFunc() ??
-								p.ParameterType;
-
-							var isService = realType.IsInterfaceType() && ServiceDetector.IsService(realType);
+						
+							var isService = ServiceDetector.DetectService(p.ParameterType,out var realType)!=ServiceResolveType.None;
 							//if (st == ServiceType.Normal)
 							//{
 							//	Skip(jr);

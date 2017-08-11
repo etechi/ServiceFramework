@@ -9,6 +9,7 @@ namespace SF.Clients
 		WinXin,
 		Andriod,
 		iPhone,
-		WAP
+		WAP,
+		Console
 	}
 }
