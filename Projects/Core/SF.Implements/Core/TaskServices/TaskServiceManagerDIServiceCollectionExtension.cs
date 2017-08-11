@@ -12,7 +12,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class TaskServiceManagerDIServiceCollectionExtension
 	{
-		public static IServiceCollection UseTaskServiceManager(
+		public static IServiceCollection AddTaskServiceManager(
 			this IServiceCollection sc
 			)
 		{

@@ -55,6 +55,7 @@ namespace SF.Data.Storage.EF6
 		{
 			this.DbContext = DbContext;
 			this.DataContext = DataContext;
+			
 		}
 		public IAsyncQueryableProvider AsyncQueryableProvider
 		{

@@ -12,12 +12,13 @@ namespace SF.Data.Storage
         IDataContextProvider _Provider;
 		public IDataContextProvider Provider => _Provider;
         public IDataContextProviderFactory ProviderFactory { get; }
-
-		public DataContext(IDataContextProviderFactory ProviderFactory)
+		public Lazy<ITransactionScopeManager> LazyTransactionScopeManager { get; }
+		public DataContext(IDataContextProviderFactory ProviderFactory, Lazy<ITransactionScopeManager> TransactionScopeManager)
         {
             this.ProviderFactory = ProviderFactory;
             _Provider = ProviderFactory.Create(this);
-        }
+			this.LazyTransactionScopeManager = TransactionScopeManager;
+		}
 		IEnumerable<IDataSetProviderResetable> ListRestable(IDataSetProviderResetable resetable)
 		{
 			var item = resetable;
@@ -41,6 +42,9 @@ namespace SF.Data.Storage
 					r.SetProvider=null;
         }
 		Dictionary<Type, IDataSetProviderResetable> Sets { get; } = new Dictionary<Type, IDataSetProviderResetable>();
+
+		public ITransactionScopeManager TransactionScopeManager => LazyTransactionScopeManager.Value;
+
 		internal IDataSetProvider<T> GetSetProvider<T>() where T : class
 		{
 			var type = typeof(T);

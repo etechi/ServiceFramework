@@ -12,10 +12,10 @@ namespace SF.Core.ServiceManagement
 	
 	public static class DataContextCollectionExtension
 	{
-		public static IServiceCollection UseDataContext(this IServiceCollection sc)
+		public static IServiceCollection AddDataContext(this IServiceCollection sc)
 		{
 			sc.AddTransient<IDataSource, DefaultDataSource>();
-			sc.AddScoped<DbConnection>(sp => sp.Resolve<IDataSource>().Connect());
+			sc.AddScoped(sp => sp.Resolve<IDataSource>().Connect());
 
 			sc.AddScoped<SF.Data.Storage.IDataContext, SF.Data.Storage.DataContext>();
 			sc.Add(typeof(SF.Data.Storage.IDataSet<>),typeof(SF.Data.Storage.DataSet<>),ServiceImplementLifetime.Scoped);

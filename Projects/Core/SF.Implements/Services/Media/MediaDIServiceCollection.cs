@@ -148,7 +148,7 @@ namespace SF.Core.ServiceManagement
 				);
 			return svc;
 		}
-		public static IServiceCollection UseMediaService(
+		public static IServiceCollection AddMediaService(
 			this IServiceCollection sc,
 			EnvironmentType EnvType
 			)

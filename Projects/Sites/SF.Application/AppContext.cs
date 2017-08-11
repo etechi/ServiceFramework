@@ -12,7 +12,7 @@ namespace SF.Applications
 		{
 
 		}
-		public AppContext(IServiceProvider sp) : base(sp, "name = default")
+		public AppContext(IServiceProvider sp) : base(sp)
 		{
 
 		}

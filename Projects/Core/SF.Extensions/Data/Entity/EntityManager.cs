@@ -198,7 +198,9 @@ namespace SF.Data.Entity
 
 		public virtual async Task RemoveAllAsync()
 		{
-			await this.QueryAndRemoveAsync<EntityManager<TKey, TPublic, TTemp, TQueryArgument, TEditable, TModel>, TKey,TQueryArgument>();
+			await this.QueryAndRemoveAsync<EntityManager<TKey, TPublic, TTemp, TQueryArgument, TEditable, TModel>, TKey,TQueryArgument>(
+				DataSet.Context.TransactionScopeManager
+				);
 		}
 
 		#endregion

@@ -6,7 +6,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class SysMemCachingDIServiceCollectionExtension
 	{
-		public static IServiceCollection UseSystemMemoryCache(
+		public static IServiceCollection AddSystemMemoryCache(
 			this IServiceCollection sc
 			)
 		{

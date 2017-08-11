@@ -37,7 +37,7 @@ namespace SF.UT.Data
 		public IServiceProvider ConfigureService()
 		{
 			var isc = new ServiceCollection();
-			isc.UseSystemMemoryCache();
+			isc.AddSystemMemoryCache();
 			isc.UseMemoryManagedServiceSource();
 			isc.AddDataModules<DataModels.User, DataModels.Post>();
 #if NETCORE
@@ -53,9 +53,9 @@ namespace SF.UT.Data
 			isc.UseEFCoreDataEntity<DbContext>();
 #else
 			isc.AddTransient<AppContext>(tsp => new AppContext(tsp));
-			isc.UseEF6DataEntity<AppContext>();
+			isc.AddEF6DataEntity<AppContext>();
 #endif
-			isc.UseDataContext();
+			isc.AddDataContext();
 			return isc.BuildServiceResolver();
 		}
 	}

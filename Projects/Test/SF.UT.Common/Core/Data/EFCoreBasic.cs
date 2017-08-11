@@ -33,7 +33,7 @@ namespace SF.UT.Data
 		public IServiceProvider ConfigureService()
 		{
 			var isc = new Core.ServiceManagement.ServiceCollection();
-			isc.UseSystemMemoryCache();
+			isc.AddSystemMemoryCache();
 			isc.UseMemoryManagedServiceSource();
 			isc.AddDataModules<DataModels.User, DataModels.Post>();
 
@@ -51,7 +51,7 @@ namespace SF.UT.Data
 			msc.UseEFCoreDataEntity<EFCoreContext>();
 
 			isc.AddServices(msc);
-			isc.UseDataContext();
+			isc.AddDataContext();
 			return isc.BuildServiceResolver();
 		}
 	}

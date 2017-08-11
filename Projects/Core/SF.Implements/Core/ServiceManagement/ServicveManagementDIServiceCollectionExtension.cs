@@ -10,7 +10,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class ServicveManagementDIServiceCollectionExtension
 	{
-		public static IServiceCollection UseManagedService(
+		public static IServiceCollection AddManagedService(
 			this IServiceCollection sc
 			)
 		{
@@ -27,7 +27,7 @@ namespace SF.Core.ServiceManagement
 			sc.AddScoped(sp => (IServiceConfigLoader)sp.Resolve<MemoryServiceSource>());
 			sc.AddScoped(sp => (IServiceInstanceLister)sp.Resolve<MemoryServiceSource>());
 		}
-		public static void UseManagedServiceAdminServices(this IServiceCollection sc, string TablePrefix = null)
+		public static void AddManagedServiceAdminServices(this IServiceCollection sc, string TablePrefix = null)
 		{
 			sc.AddDataModules<Management.DataModels.ServiceInstance>(TablePrefix);
 

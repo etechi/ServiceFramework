@@ -8,7 +8,7 @@ namespace SF.Core.ServiceManagement
 	public static class TimesDIServiceCollectionExtension
 	{
 		
-		public static IServiceCollection UseSystemTimeService(
+		public static IServiceCollection AddSystemTimeService(
 			this IServiceCollection sc
 			)
 		{

@@ -70,6 +70,11 @@ namespace SF.Data.Storage
 		{
 			this.ServiceProvider = ServiceProvider;
 		}
+		public DbContext(IServiceProvider ServiceProvider) :
+			base(ServiceProvider.Resolve<DbConnection>(), false)
+		{
+			this.ServiceProvider = ServiceProvider;
+		}
 		interface IEntityDeclarer
 		{
 			void Declare(DbModelBuilder modelBuilder);

@@ -9,7 +9,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class CachingDIServiceCollectionExtension
 	{
-		public static IServiceCollection UseLocalFileCache(
+		public static IServiceCollection AddLocalFileCache(
 			this IServiceCollection sc
 			)
 		{

@@ -114,7 +114,6 @@
     <Compile Include="Data\Models\ObjectEntityBase.cs" />
     <Compile Include="Data\Storage\IDataSetProvider.cs" />
     <Compile Include="Data\Storage\TransactionScope.cs" />
-    <Compile Include="IContent - 复制.cs" />
     <Compile Include="KB\IPhoneNumberValidator.cs" />
     <Compile Include="KB\IMimeResolver.cs" />
     <Compile Include="KB\SexType.cs" />

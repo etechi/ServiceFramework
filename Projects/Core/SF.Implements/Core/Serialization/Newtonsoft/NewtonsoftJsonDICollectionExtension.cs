@@ -5,7 +5,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class NewtonsoftJsonDICollectionExtension
 	{
-		public static void UseNewtonsoftJson(this IServiceCollection sc)
+		public static void AddNewtonsoftJson(this IServiceCollection sc)
 		{
 			var s = new JsonSerializer();
 			sc.AddSingleton<IJsonSerializer>(s);

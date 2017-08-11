@@ -21,7 +21,7 @@ namespace SF.UnitTest
 			return Applications.App.Builder(envType).
 				With(sc =>
 				{
-					sc.UseConsoleDefaultFilePathStructure();
+					sc.AddConsoleDefaultFilePathStructure();
 					sc.AddSingleton(new Moq.Mock<IInvokeContext>().Object);
 					sc.AddSingleton(new Moq.Mock<IUploadedFileCollection>().Object);
 				});

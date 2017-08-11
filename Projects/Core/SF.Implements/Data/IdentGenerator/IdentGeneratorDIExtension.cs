@@ -5,7 +5,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class IdentGeneratorDIExtension
 	{
-		public static IServiceCollection UseIdentGenerator(
+		public static IServiceCollection AddIdentGenerator(
 			this IServiceCollection sc,
 			string TablePrefix=null
 			)

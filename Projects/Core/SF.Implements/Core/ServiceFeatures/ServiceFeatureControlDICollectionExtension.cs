@@ -12,7 +12,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class ServiceFeatureDICollectionExtension
 	{
-		public static void UseServiceFeatureControl(
+		public static void AddServiceFeatureControl(
 					this IServiceCollection sc
 					)
 		{

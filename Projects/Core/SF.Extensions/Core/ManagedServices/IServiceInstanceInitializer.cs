@@ -231,7 +231,8 @@ namespace SF.Core.ServiceManagement
 			var sim = ServiceProvider.Resolve<IServiceInstanceManager>();
 			var initializer = newInitializer(sim);
 			var sid = await initializer.Ensure(ServiceProvider, ParentId);
-			await SetupService(ServiceProvider, sim, sid);
+			if(SetupService!=null)
+				await SetupService(ServiceProvider, sim, sid);
 			var svc=ServiceProvider.Resolve<I>(sid);
 			await Action(svc);
 			await sim.RemoveAsync(sid);

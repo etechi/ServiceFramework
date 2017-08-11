@@ -11,7 +11,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class DataEntityResolverDICollectionExtension
 	{
-		public static IServiceCollection UseDataEntity(this IServiceCollection sc)
+		public static IServiceCollection AddDataEntity(this IServiceCollection sc)
 		{
 			sc.AddSingleton(sp =>
 				new DataEntityConfigCache(

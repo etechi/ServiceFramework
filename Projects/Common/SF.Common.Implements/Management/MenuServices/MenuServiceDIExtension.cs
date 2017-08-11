@@ -137,7 +137,7 @@ namespace SF.Core.ServiceManagement
 			return sc;
 		}
 
-		public static IServiceCollection UseMenuService(
+		public static IServiceCollection AddMenuService(
 			this IServiceCollection sc,
 			//Func<MenuItem[]> DefaultMenu = null,
 			string TablePrefix = null

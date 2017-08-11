@@ -38,7 +38,7 @@ namespace SF.Core.ServiceManagement
 			sc.AddDefaultPasswordHasher();
 			return sc;
 		}
-		public static IServiceInstanceInitializer NewDataProtectorService(
+		public static IServiceInstanceInitializer<IDataProtector> NewDataProtectorService(
 			this IServiceInstanceManager manager,
 			string GlobalPassword="qw1%^(01e23"
 			)
@@ -50,7 +50,7 @@ namespace SF.Core.ServiceManagement
 				}
 				);
 		}
-		public static IServiceInstanceInitializer NewPasswordHasherService(
+		public static IServiceInstanceInitializer<IPasswordHasher> NewPasswordHasherService(
 			this IServiceInstanceManager manager,
 			string GlobalPassword = "qw1%^(01e23"
 			)

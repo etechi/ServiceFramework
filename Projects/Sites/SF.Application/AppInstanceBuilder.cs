@@ -117,29 +117,29 @@ namespace SF.Applications
 		static void ConfigServices(IServiceCollection Services,EnvironmentType EnvType)
 		{
 			if (EnvType == EnvironmentType.Utils)
-				Services.UseConsoleDefaultFilePathStructure();
+				Services.AddConsoleDefaultFilePathStructure();
 
-			Services.UseNewtonsoftJson();
-			Services.UseSystemMemoryCache();
-			Services.UseSystemTimeService();
-			Services.UseTaskServiceManager();
+			Services.AddNewtonsoftJson();
+			Services.AddSystemMemoryCache();
+			Services.AddSystemTimeService();
+			Services.AddTaskServiceManager();
 			Services.AddDefaultKBServices();
 
-			Services.UseSystemDrawing();
-			Services.AddTransient<AppContext>(tsp => new AppContext(tsp));
-			Services.UseEF6DataEntity<AppContext>();
+			Services.AddSystemDrawing();
+			Services.AddTransient(tsp => new AppContext(tsp));
+			Services.AddEF6DataEntity<AppContext>();
 
-			Services.UseDataContext();
-			Services.UseDataEntity();
-			Services.UseServiceFeatureControl();
+			Services.AddDataContext();
+			Services.AddDataEntity();
+			Services.AddServiceFeatureControl();
 
 			Services.AddTransient<ICalc, Calc>();
 
-			Services.UseManagedService();
+			Services.AddManagedService();
 
-			Services.UseFilePathResolver();
-			Services.UseLocalFileCache();
-			Services.UseMediaService(EnvType);
+			Services.AddFilePathResolver();
+			Services.AddLocalFileCache();
+			Services.AddMediaService(EnvType);
 
 			Services.InitService("媒体服务", (sp, sim) =>
 				sim.NewMediaService()
@@ -154,11 +154,11 @@ namespace SF.Applications
 			//Services.AddScoped<IAgg, Agg>();
 			Services.AddScoped<ITestService, TestService>();
 
-			Services.UseManagedServiceAdminServices();
+			Services.AddManagedServiceAdminServices();
 
-			Services.UseIdentGenerator();
+			Services.AddIdentGenerator();
 
-			Services.UseMenuService();
+			Services.AddMenuService();
 
 
 			Services.AddTextMessageServices();

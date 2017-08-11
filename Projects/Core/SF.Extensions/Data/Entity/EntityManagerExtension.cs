@@ -119,10 +119,10 @@ namespace SF.Data.Entity
 				);
 		}
 		public static async Task QueryAndRemoveAsync<TManager, TKey, TQueryArgument>(
-			this TManager Manager, 
-			TQueryArgument QueryArgument=null,
-			int BatchCount=100,
-			ITransactionScopeManager transScopeManager=null
+			this TManager Manager,
+			ITransactionScopeManager transScopeManager,
+			TQueryArgument QueryArgument =null,
+			int BatchCount=100
 			)
 			where TKey : IEquatable<TKey>
 			where TQueryArgument : class, IQueryArgument<TKey>,new()
@@ -132,7 +132,7 @@ namespace SF.Data.Entity
 			var arg = QueryArgument ?? new TQueryArgument();
 			for(;;)
 			{
-				using (var scope = await transScopeManager?.CreateScope("批量删除", TransactionScopeMode.RequireTransaction))
+				using (var scope = await transScopeManager.CreateScope("批量删除", TransactionScopeMode.RequireTransaction))
 				{
 					var re = await Manager.QueryIdentsAsync(arg, paging);
 					var ids = re.Items.ToArray();

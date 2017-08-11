@@ -107,9 +107,6 @@ namespace SF.Core.ServiceManagement
 				resolver:
 				resolver.ResolveServiceByType(null, serviceType,null);
 		}
-
-		
-
 		
 	}
 

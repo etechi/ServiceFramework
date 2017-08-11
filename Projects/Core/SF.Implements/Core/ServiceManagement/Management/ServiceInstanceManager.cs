@@ -286,6 +286,7 @@ namespace SF.Core.ServiceManagement.Management
 			//throw new PublicInvalidOperationException("不能删除默认服务");
 
 			await this.QueryAndRemoveAsync<ServiceInstanceManager,long,ServiceInstanceQueryArgument>(
+				DataSet.Context.TransactionScopeManager,
 				new ServiceInstanceQueryArgument
 				{
 					ParentId = ctx.Model.Id,

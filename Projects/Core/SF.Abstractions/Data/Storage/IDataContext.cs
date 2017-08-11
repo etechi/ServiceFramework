@@ -24,7 +24,7 @@ namespace SF.Data.Storage
 		Task<int> SaveChangesAsync();
 
 		IDataContextProvider Provider { get; }
-
+		ITransactionScopeManager TransactionScopeManager { get; }
 	}
 	public interface IDataContextExtension
     {

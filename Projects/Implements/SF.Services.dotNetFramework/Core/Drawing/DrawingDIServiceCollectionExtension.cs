@@ -12,7 +12,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class DrawingDIServiceCollectionExtension
 	{
-		public static IServiceCollection UseSystemDrawing(this IServiceCollection sc)
+		public static IServiceCollection AddSystemDrawing(this IServiceCollection sc)
 		{
 			sc.AddSingleton<IImageProvider, Drawing.dotNetFramework.ImageProcessor>();
 			return sc;
