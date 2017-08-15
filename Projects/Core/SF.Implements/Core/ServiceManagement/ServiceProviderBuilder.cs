@@ -121,16 +121,16 @@ namespace SF.Core.ServiceManagement
 					return sp.Resolve<I>(id);
 			});
 		}
-		static IEnumerable<I> NewEnumerableReal<I>(IServiceProvider sp) where I : class
+		static IEnumerable<I> NewEnumerableReal<I>(IServiceProvider sp,long? scopeId) where I : class
 		{
 			var resolver = sp.Resolver();
-			var desc = (IServiceInstanceDescriptor)resolver.ResolveServiceByType(null,typeof(IServiceInstanceDescriptor),null);
-			foreach (var i in resolver.ResolveServices(desc?.ParentInstanceId, typeof(I), null))
+			//var desc = (IServiceInstanceDescriptor)resolver.ResolveServiceByType(resolver.CurrentServiceId,typeof(IServiceInstanceDescriptor),null);
+			foreach (var i in resolver.ResolveServices(scopeId, typeof(I), null))
 				yield return (I)i;
 		}
 		static object NewEnumerable<I>(IServiceProvider sp) where I : class
 		{
-			return NewEnumerableReal<I>(sp);
+			return NewEnumerableReal<I>(sp, sp.Resolver().CurrentServiceId);
 		}
 		public IServiceProvider Build(
 			IServiceCollection Services,

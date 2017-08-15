@@ -47,6 +47,9 @@ namespace SF.Data.Entity
 				return await Action();
 			var provider = DataSet.Context.Provider;
 			var orgTran = provider.Transaction;
+			if (orgTran == tran)
+				return await Action();
+
 			provider.Transaction = tran;
 			try
 			{

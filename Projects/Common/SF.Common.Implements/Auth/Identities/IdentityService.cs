@@ -56,10 +56,11 @@ namespace SF.Auth.Identities
 			var idata = await GetIdentityData(uid);
 			return idata.SecurityStamp;
 		}
+		static string DataProtectName = "用户访问令牌";
 		public async Task<long?> ParseAccessToken(string AccessToken)
 		{
 			var re=await Setting.DataProtector.Value.Decrypt(
-				"访问令牌",
+				DataProtectName,
 				AccessToken.Base64(),
 				Setting.TimeService.Value.Now,
 				LoadAccessTokenPassword
@@ -176,7 +177,7 @@ namespace SF.Auth.Identities
 			IIdentityCredentialProvider identProvider = null;
 			foreach (var ip in Setting.IdentityCredentialProviders)
 			{
-				if (ip.VerifyFormat(Arg.Credential) != null)
+				if (await ip.VerifyFormat(Arg.Credential) != null)
 					continue;
 				ui = await ip.Find(Arg.Credential, null);
 				if (ui != null)
@@ -225,7 +226,7 @@ namespace SF.Auth.Identities
 		{
 			var stamp = (await GetIdentityData(Id)).SecurityStamp;
 			var re = await Setting.DataProtector.Value.Encrypt(
-				"用户访问令牌",
+				DataProtectName,
 				BitConverter.GetBytes(Id),
 				Expires ?? Setting.TimeService.Value.Now.AddYears(1),
 				stamp
