@@ -136,12 +136,12 @@ namespace SF.Data.Entity
 				{
 					var re = await Manager.QueryIdentsAsync(arg, paging);
 					var ids = re.Items.ToArray();
-					if (ids.Length == 0)
-						break;
 					foreach (var id in ids)
 						await Manager.RemoveAsync(id);
 
 					await scope.Commit();
+					if (ids.Length == 0)
+						break;
 				}
 			}
 		}

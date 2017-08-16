@@ -76,8 +76,10 @@ namespace SF.Data.Storage.EF6
 		}
 
 		public DbTransaction Transaction {
-			get => DbContext.Database.CurrentTransaction?.UnderlyingTransaction;
-			set => DbContext.Database.UseTransaction(value) ;
+			get => 
+				DbContext.Database.CurrentTransaction?.UnderlyingTransaction;
+			set => 
+				DbContext.Database.UseTransaction(value) ;
 		}
 
 
@@ -158,7 +160,7 @@ namespace SF.Data.Storage.EF6
 			if(IsChanged)
 				try
 				{
-					var re=DbContext.SaveChanges();
+					var re = DbContext.SaveChanges();
 					IsChanged = false;
 					return re;
 				}

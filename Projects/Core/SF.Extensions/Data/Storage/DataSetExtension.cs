@@ -574,6 +574,10 @@ namespace SF.Data.Storage
             int DelayMilliseconds=500
 			) where T : class
 		{
+			//如果当前上下文有显示事务，无法进行通过重置上下文进行并发重试
+			if (set.Context.Provider.Transaction != null)
+				return await Action();
+
 			var i = -1;
 			Random rand = null;
             for(;;)

@@ -17,6 +17,9 @@ using SF.Core.DI;
 using SF.Data.Storage;
 using System.Linq;
 using SF.Core.ServiceManagement;
+using System.Data.Common;
+using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace SF.UT.Data
 {
@@ -62,6 +65,46 @@ namespace SF.UT.Data
 
 	public class EFBasicTest
     {
+		class TestDBContext:System.Data.Entity.DbContext
+		{
+			public TestDBContext(DbConnection conn) : base(conn, contextOwnsConnection: false)
+			{
+
+			}
+			public DbSet<SF.Data.IdentGenerator.DataModels.IdentSeed> IdentSeeds { get; set; }
+		}
+
+		[Fact]
+		public async Task DBContextTransactionTest()
+		{
+			using (var conn = new SqlConnection("data source=.\\SQLEXPRESS;initial catalog=sfadmin;user id=sa;pwd=system;MultipleActiveResultSets=True;"))
+			{
+				using (var context = new TestDBContext(conn))
+				{
+					await context.IdentSeeds.ToArrayAsync();
+
+					await conn.OpenAsync();
+					using (var tran = conn.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+					{
+						
+						context.Database.UseTransaction(tran);
+						await context.IdentSeeds.ToArrayAsync();
+
+						context.Database.UseTransaction(null);
+
+						context.Database.UseTransaction(tran);
+						var a = await context.IdentSeeds.FirstAsync();
+						a.NextValue++;
+						context.Entry(a).State = EntityState.Modified;
+						await context.SaveChangesAsync();
+						context.Database.UseTransaction(null);
+
+						tran.Commit();
+						
+					}
+				}
+			}
+		}
 		[Fact]
 		public void Test()
 		{

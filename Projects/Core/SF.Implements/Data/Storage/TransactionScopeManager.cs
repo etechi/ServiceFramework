@@ -97,6 +97,7 @@ namespace SF.Data.Storage
 				if (Connection.State == System.Data.ConnectionState.Closed)
 					await Connection.OpenAsync();
 				_Transaction = Connection.BeginTransaction(IsolationLevel);
+
 			}
             _TopScope = new Scope(this, _TopScope, Message);
 			return (ITransactionScope)_TopScope;
