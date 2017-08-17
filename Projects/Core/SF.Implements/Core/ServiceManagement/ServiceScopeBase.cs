@@ -37,6 +37,8 @@ namespace SF.Core.ServiceManagement
 				return;
 			if (CurEntry == Service)
 				return;
+			if (Service == this)
+				return;
 			if (CurEntry == null)
 				CurEntry = Service;
 			else

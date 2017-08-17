@@ -4,7 +4,14 @@ using System.Text;
 
 namespace SF.Metadata
 {
-	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Enum)]
+	[AttributeUsage(
+		AttributeTargets.Class | 
+		AttributeTargets.Interface | 
+		AttributeTargets.Property | 
+		AttributeTargets.Field | 
+		AttributeTargets.Parameter | 
+		AttributeTargets.Enum |
+		AttributeTargets.Method)]
 	public class CommentAttribute : Attribute
 	{
 		public string Description { get; set; }

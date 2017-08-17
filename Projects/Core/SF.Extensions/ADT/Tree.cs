@@ -53,7 +53,7 @@ namespace SF.ADT
 			)
 			where K : IEquatable<K>
 		{
-			var dic = nodes.ToDictionary(GetId, i => (NewTreeItem(i), i));
+			var dic = nodes.ToDictionary(GetId, i => (TreeItem:NewTreeItem(i), Item:i));
 			var roots = new List<T>();
 			foreach (var (ti, ii) in dic.Values)
 			{

@@ -10,23 +10,29 @@ using Xunit;
 using SF.Applications;
 using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
+using System.Threading.Tasks;
+
 namespace SF.UT
 {
 	public class TestBase : IDisposable
 	{
 		public IAppInstance AppInstance { get; }
-		public IServiceProvider ServiceProvider { get; }
-		public IServiceScope ServiceScope { get; }
+		public Task<T> Scope<A0,T>(Func<A0, Task<T>> Action)
+			=> AppInstance.ServiceProvider.WithScope(Action);
+		public Task<T> Scope<A0, A1, T>(Func<A0, A1, Task<T>> Action)
+			=> AppInstance.ServiceProvider.WithScope(Action);
+		public Task<T> Scope<A0, A1, A2, T>(Func<A0, A1, A2, Task<T>> Action)
+			=> AppInstance.ServiceProvider.WithScope(Action);
+		public Task<T> Scope<A0, A1, A2, A3, T>(Func<A0, A1, A2, A3, Task<T>> Action)
+			=> AppInstance.ServiceProvider.WithScope(Action);
+
 		public TestBase()
 		{
 			AppInstance = App.Builder(EnvironmentType.Development).Build();
-			ServiceScope = AppInstance.ServiceProvider.Resolve<IServiceScopeFactory>().CreateServiceScope();
-			ServiceProvider = ServiceScope.ServiceProvider;
 		}
 
 		public void Dispose()
 		{
-			ServiceScope.Dispose();
 			AppInstance.Dispose();
 		}
 	}

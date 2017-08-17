@@ -22,16 +22,19 @@ namespace SF.UT.Services.Securitys
 		[Fact]
 		public async Task Create()
 		{
-			await ServiceProvider.TestService(
-				sim => sim.NewDataProtectorService(),
-				async svc =>
-				{
-					var data = Bytes.Random(10);
-					var password = Bytes.Random(10);
-					var dataEncrypted=await svc.Encrypt("test", data, DateTime.Now.AddDays(1), password);
-					var dataDecrypted = await svc.Decrypt("test", dataEncrypted, DateTime.Now, (buf, len) => Task.FromResult(password));
-					Assert.True(dataDecrypted.Compare(data) == 0);
-				});
+			await Scope(async (IServiceProvider sp) =>
+				await sp.TestService(
+					sim => sim.NewDataProtectorService(),
+					async (svc) =>
+					{
+						var data = Bytes.Random(10);
+						var password = Bytes.Random(10);
+						var dataEncrypted = await svc.Encrypt("test", data, DateTime.Now.AddDays(1), password);
+						var dataDecrypted = await svc.Decrypt("test", dataEncrypted, DateTime.Now, (buf, len) => Task.FromResult(password));
+						Assert.True(dataDecrypted.Compare(data) == 0);
+						return 0;
+					})
+			);
 
 		}
 	}

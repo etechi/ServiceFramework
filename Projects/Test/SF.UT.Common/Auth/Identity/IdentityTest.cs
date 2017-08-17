@@ -1,78 +1,142 @@
-using System;
-using System.Reflection;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SF.Data.Storage;
 using Xunit;
-using SF.Applications;
-using SF.Core.Hosting;
-using SF.Core.ServiceManagement;
-using SF.Core.ServiceFeatures;
 using System.Threading.Tasks;
-using SF.Auth.Identities;
-using SF.Data;
+using SF.UT.Utils;
+using System;
 
 namespace SF.UT.Auth
 {
 	public class IdentityTest : TestBase
 	{
+
 		[Fact]
-		public async Task Create()
+		public async Task 创建_成功_令牌()
 		{
-			var ig = ServiceProvider.Resolve<IIdentGenerator>();
-
-			await ServiceProvider.TestService(
-				sim => sim.NewAuthIdentityServive(),
-				async svc =>
-				{
-					var account = "user"+await ig.GenerateAsync("测试ID");
-					var password = "123456";
-					var id = await ig.GenerateAsync("测试用户");
-
-					//var VerifyCode = await svc.SendCreateIdentityVerifyCode(
-					//	new SendCreateIdentityVerifyCodeArgument
-					//	{
-					//		Credetial = phone
-					//	});
-
-					var accessToken = await svc.CreateIdentity(
-						new CreateIdentityArgument
-						{
-							Credential = account,
-							Password = password,
-							Identity = new SF.Auth.Identities.Models.Identity
-							{
-								Id = id,
-								Entity = "测试用户",
-								Name = "测试用户1"
-							},
-							ReturnToken=true
-						}, true
-						);
-
-					var uid = await svc.ParseAccessToken(accessToken);
-					Assert.Equal(id, uid);
-
-					var signinResult = await svc.Signin(new SigninArgument
-					{
-						Credential = account,
-						Password = password,
-						ReturnToken=true
-					});
-					var uid2 = await svc.ParseAccessToken(signinResult);
-					Assert.Equal(id, uid2);
-				},
-				async (sp,sim,svc)=>
-				{
-					await sim.NewDataProtectorService().Ensure(sp, svc);
-					await sim.NewPasswordHasherService().Ensure(sp, svc);
-				});
-
+			await Scope(async (IServiceProvider sp) =>
+				await sp.IdentityTest(
+					async (svc) =>
+						await sp.IdentityCreate(ReturnToken: true)
+				)
+			);
 		}
+		[Fact]
+		public async Task 创建_成功_会话()
+		{
+			await Scope(async (IServiceProvider sp) =>
+				await sp.IdentityTest(
+					async ( svc) => 
+						await sp.IdentityCreate(ReturnToken:false)
+					)
+			);
+		}
+		[Fact]
+		public async Task 创建_账号重复()
+		{
+			await Scope(async (IServiceProvider sp) =>
+				await sp.IdentityTest(
+					async (svc) =>
+					{ 
+						var re =await sp.IdentityCreate();
+						await Assert.ThrowsAsync<PublicArgumentException>(async () =>
+						{
+							await sp.IdentityCreate(0,re.account);
+						});
+						return 0;
+					}
+				)
+			);
+		}
+		[Fact]
+		public async Task 登录_成功_令牌()
+		{
+			await Scope(async (IServiceProvider sp) =>
+				await sp.IdentityTest(
+					async (svc) =>
+					{
+						var re = await sp.IdentityCreate();
+						var uid2 = await sp.IdentitySignin(re.account, re.password, returnToken: true);
+						Assert.Equal(re.identity.Id, uid2);
+						return 0;
+					})
+			);
+		}
+		[Fact]
+		public async Task 登录_成功_会话()
+		{
+
+			await Scope(async (IServiceProvider sp) =>
+				await sp.IdentityTest(
+					async ( svc) =>
+					{
+						var re = await sp.IdentityCreate();
+						var uid2 = await sp.IdentitySignin(re.account, re.password, returnToken: false);
+						Assert.Equal(re.identity.Id, uid2);
+						return 0;
+					})
+			);
+		}
+		[Fact]
+		public async Task 登录_密码错误()
+		{
+			await Scope(async (IServiceProvider sp) =>
+				await sp.IdentityTest(
+					async (svc) =>
+					{
+						var re = await sp.IdentityCreate();
+						await Assert.ThrowsAsync<PublicArgumentException>(async () =>
+						{
+							await sp.IdentitySignin(re.account, re.password + "123");
+						});
+						return 0;
+					})
+			);
+		}
+		[Fact]
+		public async Task 修改密码()
+		{
+			await Scope(async (IServiceProvider osp) =>
+				  await osp.IdentityTest(
+					  async ( svc) =>
+					  {
+						  var acc = await Scope(async (IServiceProvider sp) =>
+						  {
+							  var re = await sp.IdentityCreate(ReturnToken: false);
+							  var newPassword = re.password + "123";
+							  await svc.SetPassword(
+									  new SF.Auth.Identities.SetPasswordArgument
+									  {
+										  NewPassword = newPassword,
+										  OldPassword = re.password
+									  });
+							  await svc.Signout();
+							  Assert.Equal(null, await svc.GetCurIdentityId());
+							  return (identity: re.identity, account: re.account, password: re.password, newPassword: newPassword);
+						  });
+						  await Scope(async (IServiceProvider sp) =>
+						  {
+							  await Assert.ThrowsAsync<PublicArgumentException>(async () =>
+								{
+									await sp.IdentitySignin(acc.account, acc.password);
+								});
+							  var re = await sp.IdentitySignin(acc.account, acc.newPassword);
+							  Assert.Equal(acc.identity.Id, re);
+							  return 0;
+						  });
+						  return 0;
+					  })
+			);
+		}
+
+		//[Fact]
+		//public async Task 忘记密码()
+		//{
+		//	await ServiceProvider.IdentityTest(async (sp, svc) =>
+		//	{
+		//		var re = await sp.IdentityCreate();
+		//		Assert.Equal(re.identity.Id, uid2);
+		//		return 0;
+		//	});
+		//}
 	}
-	
+
 
 }

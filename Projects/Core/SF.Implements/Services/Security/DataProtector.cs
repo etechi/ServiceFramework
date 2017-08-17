@@ -24,7 +24,7 @@ namespace SF.Services.Security
 
 			var exp = DataOffset.AddMinutes(BitConverter.ToInt32(Data, Hash.Sha1SignedDataOffset));
 			if (exp < Now)
-				return null;
+				throw new PublicArgumentException("令牌已超时");
 			var dataDecrypted = Data.Des3Decrypt(GlobalPassword, Hash.Sha1SignedDataOffset + 4);
 			var pwd = Name.UTF8Bytes().Concat(await LoadPassword(dataDecrypted,0));
 			if (Data.Unsign(pwd,Hash.Sha1()) == null)

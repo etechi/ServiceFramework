@@ -192,6 +192,7 @@ namespace SF.Auth.Identities.Entity
 					Id=i.Id,
 					Icon=i.Icon,
 					Name=i.Name,
+					Entity=i.Entity,
 					IsEnabled=i.ObjectState==LogicObjectState.Enabled,
 					PasswordHash=i.PasswordHash,
 				}

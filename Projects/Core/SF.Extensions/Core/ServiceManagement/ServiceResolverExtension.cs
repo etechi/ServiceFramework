@@ -62,6 +62,29 @@ namespace SF.Core.ServiceManagement
 			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
 				return await action(s.ServiceProvider);
 		}
+		public static Task<T> WithScope<A0, T>(this IServiceProvider sp, Func<A0, Task<T>> action)
+			=> sp.WithDelegateScope<T>(action);
+
+		public static Task<T> WithScope<A0, A1, T>(this IServiceProvider sp, Func<A0, A1, Task<T>> action)
+			=> sp.WithDelegateScope<T>(action);
+
+		public static Task<T> WithScope<A0, A1, A2, T>(this IServiceProvider sp, Func<A0, A1, A2, Task<T>> action)
+			=> sp.WithDelegateScope<T>(action);
+
+		public static Task<T> WithScope<A0, A1, A2, A3, T>(this IServiceProvider sp, Func<A0, A1, A2, A3, Task<T>> action)
+			=> sp.WithDelegateScope<T>(action);
+
+		public static async Task<T> WithDelegateScope<T>(this IServiceProvider sp, Delegate action)
+		{
+			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
+			{
+				var sv = s.ServiceProvider.Resolver();
+				var args = action.Method.GetParameters()
+					.Select(p => sv.ResolveServiceByType(null,p.ParameterType,null))
+					.ToArray();
+				return await (Task<T>)action.DynamicInvoke(args);
+			}
+		}
 		public static void WithScope(this IServiceProvider sp, Action<IServiceProvider> action)
 		{
 			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())

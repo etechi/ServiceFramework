@@ -20,7 +20,12 @@ namespace SF.UT
 		[Fact]
 		public async Task InitServices()
 		{
-			await ServiceProvider.InitServices("service");
+			await Scope(async (IServiceProvider sp) =>
+				{
+					await sp.InitServices("service");
+					return 0;
+				}
+				);
 		}
 	}
 	

@@ -16,12 +16,13 @@ namespace SF.Auth.Identities
 		{
 			this.Setting = Setting;
 		}
-		Task<IdentityData> GetIdentityData(long Id)=>
-			Setting.IdentityDataCache.Value.GetOrCreateAsync(
-				  Id.ToString(),
-				  () => Setting.IdentStorage.Value.Load(Id),
-				  TimeSpan.FromHours(1)
-				  );
+		Task<IdentityData> GetIdentityData(long Id) =>
+			Setting.IdentStorage.Value.Load(Id);
+			//Setting.IdentityDataCache.Value.GetOrCreateAsync(
+			//	  Id.ToString(),
+			//	  () => Setting.IdentStorage.Value.Load(Id),
+			//	  TimeSpan.FromHours(1)
+			//	  );
 
 		public async Task<Identity> GetIdentity(long Id)
 		{
@@ -30,14 +31,14 @@ namespace SF.Auth.Identities
 			{
 				Id = data.Id,
 				Icon = data.Icon,
-				Name = data.Name
+				Name = data.Name,
+				Entity = data.Entity
 			};
 		}
 		public async Task<long?> GetCurIdentityId()
 		{
-			return await ParseAccessToken(
-					Setting.ClientService.Value.GetAccessToken()
-				);
+			var re = Setting.ClientService.Value?.GetAccessToken();
+			return re==null?(long?)null:await ParseAccessToken(re);
 		}
 		public async Task<Identity> GetCurIdentity()
 		{
@@ -57,7 +58,7 @@ namespace SF.Auth.Identities
 			return idata.SecurityStamp;
 		}
 		static string DataProtectName = "用户访问令牌";
-		public async Task<long?> ParseAccessToken(string AccessToken)
+		public async Task<long> ParseAccessToken(string AccessToken)
 		{
 			var re=await Setting.DataProtector.Value.Decrypt(
 				DataProtectName,

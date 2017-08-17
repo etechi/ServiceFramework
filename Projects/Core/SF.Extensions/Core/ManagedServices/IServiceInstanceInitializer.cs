@@ -220,10 +220,10 @@ namespace SF.Core.ServiceManagement
 			long? ParentId=null
 			) => sc.InitDefaultService<I, T>(null, Config,ParentId);
 
-		public static async Task TestService<I>(
+		public static async Task<T> TestService<I,T>(
 			this IServiceProvider ServiceProvider,
 			Func<IServiceInstanceManager, IServiceInstanceInitializer<I>> newInitializer,
-			Func<I, Task> Action,
+			Func<I, Task<T>> Action,
 			Func<IServiceProvider, IServiceInstanceManager, long,Task> SetupService=null,
 			long? ParentId = null
 			) where I:class
@@ -234,8 +234,9 @@ namespace SF.Core.ServiceManagement
 			if(SetupService!=null)
 				await SetupService(ServiceProvider, sim, sid);
 			var svc=ServiceProvider.Resolve<I>(sid);
-			await Action(svc);
+			var re=await Action(svc);
 			await sim.RemoveAsync(sid);
+			return re;
 		}
 	}
 
