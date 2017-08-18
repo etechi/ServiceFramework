@@ -62,16 +62,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.net46.csproj">
-      <Project>{69691ef2-2eff-4e50-aa49-93e9fdc5c34b}</Project>
-      <Name>SF.Abstractions.net46</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SF.Extensions\SF.Extensions.net46.csproj">
-      <Project>{ca3cceb7-ad9a-41b1-a06f-483c32b697b7}</Project>
-      <Name>SF.Extensions.net46</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="project.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

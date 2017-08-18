@@ -12,12 +12,12 @@ using SF.Services.Test;
 using SF.Core.TaskServices;
 using SF.Core.Hosting;
 using SF.Core.Logging;
-using Microsoft.Extensions.Logging;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Infrastructure;
 using SF.Management.MenuServices.Models;
 using SF.Core.ServiceManagement.Management;
 using System.Threading.Tasks;
+using SF.Applications;
 
 namespace SF.AdminSite
 {
@@ -27,9 +27,9 @@ namespace SF.AdminSite
 		public static IAppInstanceBuilder Builder()
 		{
 			var envType = EnvironmentTypeDetector.Detect();
-			var builder = Applications.App.Builder(
+			var builder = Net46App.Setup(
 				envType,
-				Applications.App.LogService().AddAspNetTrace()
+				Net46App.LogService().AddAspNetTrace()
 				)
 				.With(sc => sc.UseAspNetFilePathStructure())
 				.OnEnvType(

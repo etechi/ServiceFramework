@@ -15,13 +15,18 @@ using SF.Clients;
 
 namespace SF.UT
 {
-	public static class App
+	public static class TestApp
 	{
 		public static IAppInstanceBuilder Builder(EnvironmentType envType=EnvironmentType.Production)
 		{
-			return Applications.App.Builder(envType).
+			return Net46App.Setup(envType).
 				With(sc =>
 				{
+					sc.AddDataContext(new SF.Data.DataSourceConfig
+					{
+						ConnectionString = "data source=.\\SQLEXPRESS;initial catalog=sfadmin;user id=sa;pwd=system;MultipleActiveResultSets=True;App=EntityFramework"
+					});
+
 					sc.AddConsoleDefaultFilePathStructure();
 					sc.AddSingleton(new Moq.Mock<IInvokeContext>().Object);
 					sc.AddSingleton(new Moq.Mock<IUploadedFileCollection>().Object);

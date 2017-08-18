@@ -1,34 +1,35 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <!--<TargetFramework>netcoreapp1.1</TargetFramework>-->
-		<TargetFramework>netstandard1.6</TargetFramework>
+<Project Sdk="Microsoft.NET.Sdk">
 
-	</PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP1_1;NETCORE</DefineConstants>
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;RELEASE;NETCOREAPP1_1;NETCORE</DefineConstants>
-  </PropertyGroup>
+
   <ItemGroup>
+    <Compile Remove="Core\AppServices\**" />
+    <Compile Remove="Core\Architecture\Models\**" />
+    <Compile Remove="Core\ManagedServices\**" />
     <Compile Remove="Sessions\**" />
+    <EmbeddedResource Remove="Core\AppServices\**" />
+    <EmbeddedResource Remove="Core\Architecture\Models\**" />
+    <EmbeddedResource Remove="Core\ManagedServices\**" />
     <EmbeddedResource Remove="Sessions\**" />
+    <None Remove="Core\AppServices\**" />
+    <None Remove="Core\Architecture\Models\**" />
+    <None Remove="Core\ManagedServices\**" />
     <None Remove="Sessions\**" />
   </ItemGroup>
+
   <ItemGroup>
+    <Compile Remove="Core\Architecture\IServiceInstanceManager.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
-    <Compile Remove="TextMessages\IMsgLogger.cs" />
-    <Compile Remove="TextMessages\IMsgRecordManager.cs" />
-    <Compile Remove="TextMessages\IMsgServiceBackup.cs" />
-    <Compile Remove="TextMessages\ITextMessageSender.cs" />
   </ItemGroup>
+
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="system.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="system.ComponentModel.Annotations" Version="4.3.0" />
-    <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
-    <PackageReference Include="system.Linq.Queryable" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" />
   </ItemGroup>
+
 </Project>

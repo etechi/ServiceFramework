@@ -32,7 +32,7 @@ namespace SF.UT.Data
 	class EFCoreStartup {
 		public IServiceProvider ConfigureService()
 		{
-			var isc = new Core.ServiceManagement.ServiceCollection();
+			var isc = (SF.Core.ServiceManagement.IServiceCollection) new Core.ServiceManagement.ServiceCollection();
 			isc.AddSystemMemoryCache();
 			isc.UseMemoryManagedServiceSource();
 			isc.AddDataModules<DataModels.User, DataModels.Post>();
@@ -42,7 +42,9 @@ namespace SF.UT.Data
 			msc.AddEntityFrameworkSqlServer();
 			msc.AddDbContext<EFCoreContext>((asp,op) =>
 				{
-					op.UseSqlServer(System.Configuration.ConfigurationManager.ConnectionStrings["default"].ConnectionString).LoadDataModels(asp);
+					op.UseSqlServer(
+						//System.Configuration.ConfigurationManager.ConnectionStrings["default"].ConnectionString
+						).LoadDataModels(asp);
 
 					//((IDbContextOptionsBuilderInfrastructure)op).AddOrUpdateExtension(new DataExtension());
 					//op.Options.WithExtension();
@@ -51,7 +53,10 @@ namespace SF.UT.Data
 			msc.UseEFCoreDataEntity<EFCoreContext>();
 
 			isc.AddServices(msc);
-			isc.AddDataContext();
+			isc.AddDataContext(new SF.Data.DataSourceConfig
+			{
+				ConnectionString= "data source=.\\SQLEXPRESS;initial catalog=sftest;user id=sa;pwd=system;MultipleActiveResultSets=True;App=EntityFramework"
+			});
 			return isc.BuildServiceResolver();
 		}
 	}

@@ -23,7 +23,7 @@ namespace SF.Core.ServiceManagement
 				);
 			return sc;
 		}
-		public static IServiceCollection UseEF6DataEntity(this IServiceCollection sc)
+		public static IServiceCollection AddEF6DataEntity(this IServiceCollection sc)
 		{
 			sc.AddScoped<IDataContextProviderFactory, DataContextProviderFactory>();
 			return sc;

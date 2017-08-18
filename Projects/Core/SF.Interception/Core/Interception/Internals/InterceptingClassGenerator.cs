@@ -107,7 +107,7 @@ namespace SF.Core.Interception
 #else
 			var aba = AssemblyBuilderAccess.Run;
 #endif
-#if NETCORE
+#if NETSTANDARD2_0
 			AssemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("Unity_ILEmit_DynamicClasses"),aba);
 
 #else
@@ -147,7 +147,7 @@ namespace SF.Core.Interception
 						.Implement(implementedInterfaces, memberCount);
 			}
 
-#if NETCORE
+#if NETSTANDARD2_0
 			Type result = typeBuilder.CreateTypeInfo().AsType();
 
 #else

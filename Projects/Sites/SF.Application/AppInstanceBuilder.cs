@@ -129,7 +129,7 @@ namespace SF.Applications
 			Services.AddTransient(tsp => new AppContext(tsp));
 			Services.AddEF6DataEntity<AppContext>();
 
-			Services.AddDataContext();
+			//Services.AddDataContext();
 			Services.AddDataEntity();
 			Services.AddServiceFeatureControl();
 

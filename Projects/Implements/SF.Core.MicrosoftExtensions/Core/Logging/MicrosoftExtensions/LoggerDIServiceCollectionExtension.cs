@@ -78,5 +78,10 @@ namespace SF.Core.Logging
 		{
 			return new FakeLoggerFactory { LogService = ls };
 		}
+		public static ILogService AddDebug(this ILogService svc)
+		{
+			svc.AsMSLoggerFactory().AddDebug();
+			return svc;
+		}
 	}
 }

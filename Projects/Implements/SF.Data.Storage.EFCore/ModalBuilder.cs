@@ -10,6 +10,7 @@ using System.Reflection;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
+using JetBrains.Annotations;
 
 namespace SF.Data.Storage.EntityFrameworkCore
 {
@@ -20,6 +21,11 @@ namespace SF.Data.Storage.EntityFrameworkCore
 	}
 	class DataModelCustomizer : ModelCustomizer
 	{
+#if NETSTANDARD2_0
+		public DataModelCustomizer( ModelCustomizerDependencies dependencies) : base(dependencies)
+		{
+		}
+#endif
 		public override void Customize(ModelBuilder modelBuilder, DbContext dbContext)
 		{
 			base.Customize(modelBuilder, dbContext);
@@ -94,6 +100,9 @@ namespace SF.Data.Storage.EntityFrameworkCore
 	class DataModalLoaderExtension : IDbContextOptionsExtension
 	{
 		public EntityItem[] EntityItems { get; }
+
+		public string LogFragment => throw new NotImplementedException();
+
 		public DataModalLoaderExtension(EntityItem[] EntityItems)
 		{
 			this.EntityItems = EntityItems;
@@ -102,6 +111,22 @@ namespace SF.Data.Storage.EntityFrameworkCore
 		{
 			services.AddSingleton(new DataModalInitializer(EntityItems));
 		}
+#if NETSTANDARD2_0
+		bool IDbContextOptionsExtension.ApplyServices(IServiceCollection services)
+		{
+			throw new NotImplementedException();
+		}
+
+		public long GetServiceProviderHashCode()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Validate(IDbContextOptions options)
+		{
+			throw new NotImplementedException();
+		}
+#endif
 	}
 	public static class DbContextOptionBuilderExtension
 	{

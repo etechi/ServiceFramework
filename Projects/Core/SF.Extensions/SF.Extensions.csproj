@@ -1,37 +1,37 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-		<!--<TargetFramework>netcoreapp1.1</TargetFramework>-->
-		<TargetFramework>netstandard1.6</TargetFramework>
-	</PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP1_1;NETCORE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DefineConstants>TRACE;RELEASE;NETCOREAPP1_1;NETCORE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Data\Entity\ModifyFilters\**" />
-    <Compile Remove="Sessions\**" />
     <EmbeddedResource Remove="Data\Entity\ModifyFilters\**" />
-    <EmbeddedResource Remove="Sessions\**" />
     <None Remove="Data\Entity\ModifyFilters\**" />
-    <None Remove="Sessions\**" />
   </ItemGroup>
+
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\NetworkService\" />
-    <Folder Include="Properties\" />
-    <Folder Include="Properties\" />
-    <Folder Include="System\Security\Cryptography\" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+  </ItemGroup>
+
 </Project>

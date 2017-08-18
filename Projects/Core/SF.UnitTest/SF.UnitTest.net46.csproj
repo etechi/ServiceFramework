@@ -73,22 +73,6 @@
       <Project>{a6c1b390-f3c2-4e54-8c4d-2b090c7739a7}</Project>
       <Name>SF.Application.net46</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.net46.csproj">
-      <Project>{69691ef2-2eff-4e50-aa49-93e9fdc5c34b}</Project>
-      <Name>SF.Abstractions.net46</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SF.Extensions\SF.Extensions.net46.csproj">
-      <Project>{ca3cceb7-ad9a-41b1-a06f-483c32b697b7}</Project>
-      <Name>SF.Extensions.net46</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SF.Implements\SF.Implements.net46.csproj">
-      <Project>{dc7af484-4386-4cb8-ae4c-0f33b18c4add}</Project>
-      <Name>SF.Implements.net46</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SF.Interception\SF.Interception.net46.csproj">
-      <Project>{899cd860-ff21-4cdd-907c-957435a862e5}</Project>
-      <Name>SF.Interception.net46</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

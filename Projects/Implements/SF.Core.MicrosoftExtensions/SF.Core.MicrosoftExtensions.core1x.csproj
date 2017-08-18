@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+		<!--<TargetFramework>netcoreapp1.1</TargetFramework>-->
+		<TargetFramework>netstandard1.6</TargetFramework>
+	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP1_1;NETCORE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;RELEASE;NETCOREAPP1_1;NETCORE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Data\Entity\ModifyFilters\**" />
+    <Compile Remove="Sessions\**" />
+    <Compile Remove="System\**" />
+    <EmbeddedResource Remove="Data\Entity\ModifyFilters\**" />
+    <EmbeddedResource Remove="Sessions\**" />
+    <EmbeddedResource Remove="System\**" />
+    <None Remove="Data\Entity\ModifyFilters\**" />
+    <None Remove="Sessions\**" />
+    <None Remove="System\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="microsoft.extensions.caching.memory" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.abstractions" Version="1.1.1" />
+    <PackageReference Include="newtonsoft.json" Version="9.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.csproj" />
+  </ItemGroup>
+</Project>

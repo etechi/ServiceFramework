@@ -1,18 +1,32 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFramework>netstandard1.6</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Auth\Passport\**" />
+    <Compile Remove="Auth\Users\**" />
+    <EmbeddedResource Remove="Auth\Passport\**" />
+    <EmbeddedResource Remove="Auth\Users\**" />
+    <None Remove="Auth\Passport\**" />
+    <None Remove="Auth\Users\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
     <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.csproj" />
+    <ProjectReference Include="..\..\Core\SF.Support\SF.Support.csproj" />
     <ProjectReference Include="..\SF.Common.Abstractions\SF.Common.Abstractions.csproj" />
     <ProjectReference Include="..\SF.Common.Extensions\SF.Common.Extensions.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-    <Folder Include="Management\" />
-  </ItemGroup>
+
 </Project>

@@ -128,12 +128,6 @@
     <Compile Include="UIEnsure.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.net46.csproj">
-      <Project>{69691ef2-2eff-4e50-aa49-93e9fdc5c34b}</Project>
-      <Name>SF.Abstractions.net46</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Core\Interception\" />
   </ItemGroup>
   <ItemGroup>

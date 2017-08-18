@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -215,10 +214,7 @@ namespace System.Data.Debug
 		}
 		protected override DbProviderFactory DbProviderFactory => ProviderFactory;
 
-		public static explicit operator SqlConnection(DebugDbConnection conn)
-		{
-			return (SqlConnection)conn.BaseConnection;
-		}
+		
 	}
 	class DebugDbProviderFactory : DbProviderFactory
 	{
@@ -259,10 +255,10 @@ namespace System.Data.Debug
 			return BaseFactory.CreateParameter();
 		}
 		public override bool CanCreateDataSourceEnumerator => BaseFactory.CanCreateDataSourceEnumerator;
-		public override CodeAccessPermission CreatePermission(PermissionState state)
-		{
-			return BaseFactory.CreatePermission(state);
-		}
+		//public override CodeAccessPermission CreatePermission(PermissionState state)
+		//{
+		//	return BaseFactory.CreatePermission(state);
+		//}
 
 
 	}
@@ -284,32 +280,33 @@ namespace SF.Data
 	{
 		DbProviderFactory Factory { get; }
 		DataSourceConfig Config { get; }
-		static DefaultDataSource()
-		{
-			try
-			{
-				var dataSet = ConfigurationManager.GetSection("system.data") as System.Data.DataSet;
-				dataSet.Tables[0].Rows.Add(
-					"Debug Data Provider"
-					, ".Net Framework Data Provider for Debug"
-					, "System.Data.Debug"
-					, "System.Data.Debug.DebugDbProviderFactory, SF.Implements");
-			}
-			catch (System.Data.ConstraintException) { }
-		}
+		//static DefaultDataSource()
+		//{
+		//	try
+		//	{
+		//		var dataSet = ConfigurationManager.GetSection("system.data") as System.Data.DataSet;
+		//		dataSet.Tables[0].Rows.Add(
+		//			"Debug Data Provider"
+		//			, ".Net Framework Data Provider for Debug"
+		//			, "System.Data.Debug"
+		//			, "System.Data.Debug.DebugDbProviderFactory, SF.Implements");
+		//	}
+		//	catch (System.Data.ConstraintException) { }
+		//}
 		public DefaultDataSource(DataSourceConfig Config)
 		{
-			if (Config == null)
-			{
-				var conn = System.Configuration.ConfigurationManager.ConnectionStrings["default"];
-				Config = new DataSourceConfig
-				{
-					ConnectionString = conn.ConnectionString,
-					Provider = conn.ProviderName
-				};
-			}
+			//if (Config == null)
+			//{
+			//	var conn = System.Configuration.ConfigurationManager.ConnectionStrings["default"];
+			//	Config = new DataSourceConfig
+			//	{
+			//		ConnectionString = conn.ConnectionString,
+			//		Provider = conn.ProviderName
+			//	};
+			//}
 			this.Config = Config;
-			Factory = DbProviderFactories.GetFactory(Config.Provider);
+			Factory = System.Data.SqlClient.SqlClientFactory.Instance;
+			//var f=System.Data.SqlClient.SqlClientFactory.Instance.CreateConnection()
 			
 		}
 		public DbConnection Connect()

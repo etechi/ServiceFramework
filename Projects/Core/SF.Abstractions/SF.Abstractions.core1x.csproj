@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!--<TargetFramework>netcoreapp1.1</TargetFramework>-->
+		<TargetFramework>netstandard1.6</TargetFramework>
+
+	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP1_1;NETCORE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RELEASE;NETCOREAPP1_1;NETCORE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Sessions\**" />
+    <EmbeddedResource Remove="Sessions\**" />
+    <None Remove="Sessions\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+    <Compile Remove="TextMessages\IMsgLogger.cs" />
+    <Compile Remove="TextMessages\IMsgRecordManager.cs" />
+    <Compile Remove="TextMessages\IMsgServiceBackup.cs" />
+    <Compile Remove="TextMessages\ITextMessageSender.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="system.ComponentModel" Version="4.3.0" />
+    <PackageReference Include="system.ComponentModel.Annotations" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.Primitives" Version="4.3.0" />
+    <PackageReference Include="system.Linq.Queryable" Version="4.3.0" />
+  </ItemGroup>
+</Project>

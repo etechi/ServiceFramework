@@ -9,25 +9,29 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 namespace SF.Core.Caching.MicrosoftExtensions
 {
-	public class LocalCache : ILocalCache
+	public class LocalCache<T> : ILocalCache<T> where T : class
 	{
 		IMemoryCache Cache { get; }
+		static string ItemTypeName { get; } = typeof(T).FullName + ":";
+		static string GetKey(string key) =>
+			ItemTypeName + key;
+
 		public LocalCache(IMemoryCache cache)
 		{
 			this.Cache = cache;
 		}
-		public object AddOrGetExisting(string key, object value, TimeSpan keepalive)
+		public T AddOrGetExisting(string key, T value, TimeSpan keepalive)
 		{
-			 return Cache.GetOrCreate(key, e =>
+			 return Cache.GetOrCreate(GetKey(key), e =>
 			 {
 				 e.SetSlidingExpiration(keepalive);
 				 return value;
 			 });
 		}
 
-		public object AddOrGetExisting(string key, object value, DateTime expires)
+		public T AddOrGetExisting(string key, T value, DateTime expires)
 		{
-			return Cache.GetOrCreate(key, e =>
+			return Cache.GetOrCreate(GetKey(key), e =>
 			{
 				e.SetAbsoluteExpiration(expires);
 				return value;
@@ -37,28 +41,28 @@ namespace SF.Core.Caching.MicrosoftExtensions
 		public bool Contains(string key)
 		{
 			object v;
-			return Cache.TryGetValue(key, out v);
+			return Cache.TryGetValue(GetKey(key), out v);
 		}
 
-		public object Get(string key)
+		public T Get(string key)
 		{
-			return Cache.Get(key);
+			return (T)Cache.Get(GetKey(key));
 		}
 
 		public bool Remove(string key)
 		{
-			Cache.Remove(key);
+			Cache.Remove(GetKey(key));
 			return false;
 		}
 
-		public void Set(string key, object value, TimeSpan keepalive)
+		public void Set(string key, T value, TimeSpan keepalive)
 		{
-			 Cache.Set(key, value, keepalive);
+			 Cache.Set(GetKey(key), value, keepalive);
 		}
 
-		public void Set(string key, object value, DateTime expires)
+		public void Set(string key, T value, DateTime expires)
 		{
-			Cache.Set(key, value, expires);
+			Cache.Set(GetKey(key), value, expires);
 		}
 	}
 }

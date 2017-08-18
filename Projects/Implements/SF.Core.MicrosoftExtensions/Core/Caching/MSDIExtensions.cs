@@ -1,15 +1,18 @@
 ﻿using System;
 
-using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
+using SF.Core.ServiceManagement;
 
 namespace SF.Core.DI
 {
 	public static class MSCachingExtensions
 	{
-		public static IDIServiceCollection UseMicrosoftMemoryCacheAsLocalCache(this IDIServiceCollection sc)
+		public static IServiceCollection UseMicrosoftMemoryCacheAsLocalCache(this IServiceCollection sc)
 		{
-			return sc.AddSingleton<SF.Core.Caching.ILocalCache, SF.Core.Caching.MicrosoftExtensions.LocalCache>();
+			return sc.AddSingleton(
+				typeof(SF.Core.Caching.ILocalCache<>),
+				typeof(SF.Core.Caching.MicrosoftExtensions.LocalCache<>)
+				);
 		}
 	
 	}
