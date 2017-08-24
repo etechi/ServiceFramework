@@ -1,6 +1,6 @@
 ﻿using SF.Core.ServiceManagement;
-using SF.Data.Storage;
-using SF.Data.Storage.EF6;
+using SF.Data;
+using SF.Data.EF6;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace SF.Data.Storage
+namespace SF.Data
 {
 	public class IndexAttributeConvention : 
 		AttributeToColumnAnnotationConvention<IndexAttribute, IndexAnnotation>
@@ -95,7 +95,7 @@ namespace SF.Data.Storage
 
 			modelBuilder.Conventions.Add<IndexAttributeConvention>();
 			//System.Diagnostics.Debugger.Launch();
-			var types = from ems in ServiceProvider.Resolve<IEnumerable<SF.Data.Storage.EntityModels>>()
+			var types = from ems in ServiceProvider.Resolve<IEnumerable<SF.Data.EntityModels>>()
 						from et in ems.Types
 						select et;
 			foreach (var type in types.Distinct())

@@ -1,16 +1,11 @@
-﻿using SF.Data.Storage;
+﻿using SF.Auth.Identities;
+using SF.Core.Times;
 using SF.Data;
+using SF.Entities;
+using SF.Users.Members.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Auth.Identities.Models;
-using SF.Auth.Identities.Internals;
-using SF.Core.Caching;
-using SF.Data.Entity;
-using SF.Core.Times;
-using SF.Auth.Identities;
-using SF.Users.Members.Models;
-using SF.Clients;
 
 namespace SF.Users.Members.Entity
 {

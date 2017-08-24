@@ -8,8 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Auth.Identities.Models;
-using SF.Data.Entity;
-using SF.Data.Storage;
+using SF.Entities;
+using SF.Data;
 
 namespace SF.Users.Members
 {

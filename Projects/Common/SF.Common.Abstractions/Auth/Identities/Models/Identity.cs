@@ -1,4 +1,4 @@
-﻿using SF.Data;
+﻿using SF.Entities;
 using SF.Metadata;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +7,7 @@ namespace SF.Auth.Identities.Models
 {
 	[EntityObject("身份标识")]
 	[Comment("身份标识")]
-	public class Identity : IObjectWithId<long>
+	public class Identity : IEntityWithId<long>
     {
 		[Key]
 		[ReadOnly(true)]

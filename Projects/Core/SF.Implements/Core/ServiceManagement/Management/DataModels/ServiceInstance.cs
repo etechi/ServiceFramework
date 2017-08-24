@@ -1,5 +1,5 @@
 ﻿using SF.Data;
-using SF.Data.Storage;
+using SF.Entities;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 {
 	[Table("SysServiceInstance")]
 	[Comment("服务实例")]
-	public class ServiceInstance : SF.Data.DataModels.UIObjectEntityBase<long>
+	public class ServiceInstance : SF.Entities.DataModels.UIObjectEntityBase<long>
 	{
 		//[ForeignKey(nameof(ServiceCategoryItem))]
 		//public override long Id { get => base.Id; set => base.Id = value; }

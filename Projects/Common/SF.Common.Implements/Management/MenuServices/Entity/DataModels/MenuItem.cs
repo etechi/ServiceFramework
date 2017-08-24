@@ -8,12 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Auth.Identities.Models;
-using SF.Data.Entity;
-using SF.Data.Storage;
-using System.ComponentModel.DataAnnotations.Schema;
 using SF.Data;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Data.DataModels;
+using SF.Entities.DataModels;
 using SF.Management.MenuServices.Models;
 
 namespace SF.Management.MenuServices.Entity.DataModels

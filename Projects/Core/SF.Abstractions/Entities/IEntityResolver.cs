@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Reflection;
+using SF.Core.ServiceManagement;
+
+namespace SF.Entities
+{
+	public interface IDataEntity
+	{
+		string Ident { get; }
+		string Name { get; }
+	}
+	public interface IDataEntityResolver
+	{
+        Task<IDataEntity[]> Resolve(string Type,string[] Keys);
+    }
+}

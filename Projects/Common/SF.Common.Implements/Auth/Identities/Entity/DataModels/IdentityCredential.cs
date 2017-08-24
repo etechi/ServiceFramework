@@ -1,15 +1,12 @@
-﻿using SF.Data.Storage;
-using SF.Data;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using SF.Data;
 using SF.Metadata;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.Identities.Entity.DataModels
 {
-	
+
 	[Table("SysAuthIdentityCredential")]
 	public class IdentityCredential<TIdentity, TIdentityCredential>
 		where TIdentity : Identity<TIdentity, TIdentityCredential>

@@ -1,10 +1,4 @@
-﻿using SF.Data.Storage;
-using SF.Data;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using SF.Auth.Identities.Internals;
-using SF.Auth.Identities.Models;
+﻿using System;
 
 namespace SF.Auth.Identities.IdentityCredentialProviders
 {

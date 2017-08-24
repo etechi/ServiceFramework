@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Data.Storage;
+using SF.Data;
 
 namespace SF.Core.CallGuarantors.Storage
 {

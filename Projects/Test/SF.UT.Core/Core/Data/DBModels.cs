@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SF.Data.Storage;
+using SF.Data;
 
 namespace SF.UT.Data.DataModels
 {
-	using IndexAttribute = SF.Data.Storage.IndexAttribute;
+	using IndexAttribute = SF.Data.IndexAttribute;
 
 	[ComplexType]
 	public class Location

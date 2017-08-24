@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Data.Common;
 
-namespace SF.Data.Storage.EntityFrameworkCore
+namespace SF.Data.EntityFrameworkCore
 {
 	public class DataContextProviderFactory<T> : 
 		IDataContextProviderFactory

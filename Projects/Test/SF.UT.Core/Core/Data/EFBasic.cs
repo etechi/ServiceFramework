@@ -7,14 +7,14 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using SF.Data.Storage.EntityFrameworkCore;
+using SF.Data.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 
 #endif
 
 using SF.Core.DI;
-using SF.Data.Storage;
+using SF.Data;
 using System.Linq;
 using SF.Core.ServiceManagement;
 using System.Data.Common;
@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace SF.UT.Data
 {
 #if !NETCORE
-	public class AppContext : SF.Data.Storage.DbContext
+	public class AppContext : SF.Data.DbContext
 	{
 		public AppContext():this(new EFStartup().ConfigureService())
 		{

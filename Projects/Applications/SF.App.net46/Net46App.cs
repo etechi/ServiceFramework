@@ -40,7 +40,7 @@ namespace SF.Applications
 				.With((sc,envType)=> ConfigServices(sc,envType))
 				.OnEnvType(e => e != EnvironmentType.Utils, sp =>
 				{
-					var configuration = new Configuration();
+					var configuration = new DbMigrationsConfiguration();
 					var migrator = new DbMigrator(configuration);
 					migrator.Update();
 					return null;

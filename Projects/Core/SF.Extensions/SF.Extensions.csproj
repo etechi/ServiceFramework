@@ -13,9 +13,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Data\Entity\ModifyFilters\**" />
-    <EmbeddedResource Remove="Data\Entity\ModifyFilters\**" />
-    <None Remove="Data\Entity\ModifyFilters\**" />
+    <Compile Remove="Entities\ModifyFilters\**" />
+    <EmbeddedResource Remove="Entities\ModifyFilters\**" />
+    <None Remove="Entities\ModifyFilters\**" />
   </ItemGroup>
 
   <ItemGroup>

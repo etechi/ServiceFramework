@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace SF.Data.Storage.EntityFrameworkCore
+namespace SF.Data.EntityFrameworkCore
 {
 	class DbOrderedQueryable<T> :
 		DbQueryable<T>,

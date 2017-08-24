@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "targets": {
+    ".NETFramework,Version=v4.6.1": {},
+    ".NETFramework,Version=v4.6.1/win": {}
+  },
+  "libraries": {},
+  "projectFileDependencyGroups": {
+    "": [],
+    ".NETFramework,Version=v4.6.1": []
+  },
+  "packageFolders": {
+    "G:\\Users\\cy200\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "restore": {
+      "projectUniqueName": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Core\\SF.Abstractions\\SF.Abstractions.net46.csproj",
+      "projectName": "SF.Abstractions.net46",
+      "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Core\\SF.Abstractions\\SF.Abstractions.net46.csproj",
+      "projectJsonPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Core\\SF.Abstractions\\project.json",
+      "projectStyle": "ProjectJson"
+    },
+    "frameworks": {
+      "net461": {}
+    },
+    "runtimes": {
+      "win": {
+        "#import": []
+      }
+    }
+  }
+}

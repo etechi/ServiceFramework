@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace SF.Data.Storage.EntityFrameworkCore
+namespace SF.Data.EntityFrameworkCore
 {
 	class DataSetProvider<T> :  IDataSetProvider<T>,IDataSetMetadata
 		where T:class

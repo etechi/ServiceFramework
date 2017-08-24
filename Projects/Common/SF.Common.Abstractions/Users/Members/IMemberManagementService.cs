@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SF.Users.Members
 {
-	public class MemberQueryArgument : Data.Entity.IQueryArgument<long>
+	public class MemberQueryArgument : Entities.IQueryArgument<long>
 	{
 		[Comment("Id")]
 		public Option<long> Id { get; set; }
@@ -38,8 +38,8 @@ namespace SF.Users.Members
 	[Comment("会员")]
 	[Category("用户管理", "会员管理")]
 	public interface IMemberManagementService : 
-		Data.Entity.IEntitySource<long,MemberInternal,MemberQueryArgument>,
-		Data.Entity.IEntityManager<long,MemberEditable>
+		Entities.IEntitySource<long,MemberInternal,MemberQueryArgument>,
+		Entities.IEntityManager<long,MemberEditable>
     {
 		Task<string> CreateMemberAsync(
 			CreateIdentityArgument Arg,

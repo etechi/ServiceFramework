@@ -1,4 +1,4 @@
-﻿using SF.Data.Storage;
+﻿using SF.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 
-namespace SF.Data.Storage.EF6
+namespace SF.Data.EF6
 {
 	//class EntityItem
 	//{
@@ -108,7 +108,7 @@ namespace SF.Data.Storage.EF6
 	//		((IDbContextOptionsBuilderInfrastructure)Builder).AddOrUpdateExtension(
 	//			new DataModalLoaderExtension(
 	//				(
-	//				from ems in sp.GetService<IEnumerable<SF.Data.Entity.EntityModels>>()
+	//				from ems in sp.GetService<IEnumerable<SF.Entities.EntityModels>>()
 	//				from et in ems.Types
 	//				select new EntityItem { Prefix = ems.Prefix, Type = et }
 	//				).ToArray()

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using SF.Data.Storage;
+using SF.Data;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using JetBrains.Annotations;
 
-namespace SF.Data.Storage.EntityFrameworkCore
+namespace SF.Data.EntityFrameworkCore
 {
 	class EntityItem
 	{
@@ -137,7 +137,7 @@ namespace SF.Data.Storage.EntityFrameworkCore
 			((IDbContextOptionsBuilderInfrastructure)Builder).AddOrUpdateExtension(
 				new DataModalLoaderExtension(
 					(
-					from ems in sp.GetService<IEnumerable<SF.Data.Storage.EntityModels>>()
+					from ems in sp.GetService<IEnumerable<SF.Data.EntityModels>>()
 					from et in ems.Types
 					select new EntityItem { Prefix = ems.Prefix, Type = et }
 					).ToArray()

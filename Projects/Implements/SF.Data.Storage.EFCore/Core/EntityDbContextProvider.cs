@@ -7,10 +7,10 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Data.Common;
 
-namespace SF.Data.Storage.EntityFrameworkCore
+namespace SF.Data.EntityFrameworkCore
 {
 
-	//public class ServiceProtocolDataIndexAttributeConvention : AttributeToColumnAnnotationConvention<ServiceProtocol.Data.Entity.IndexAttribute, IndexAnnotation>
+	//public class ServiceProtocolDataIndexAttributeConvention : AttributeToColumnAnnotationConvention<ServiceProtocol.Entities.IndexAttribute, IndexAnnotation>
 	//{
 	//	public ServiceProtocolDataIndexAttributeConvention() :
 	//		base("Index",

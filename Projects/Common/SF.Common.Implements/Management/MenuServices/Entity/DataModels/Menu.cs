@@ -1,19 +1,8 @@
-﻿using SF.Metadata;
-using SF.Auth;
-using SF.Auth.Identities;
-using SF.Users.Members.Models;
-using System;
+﻿using SF.Data;
+using SF.Entities.DataModels;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SF.Auth.Identities.Models;
-using SF.Data.Entity;
-using SF.Data.Storage;
-using System.ComponentModel.DataAnnotations.Schema;
-using SF.Data;
 using System.ComponentModel.DataAnnotations;
-using SF.Data.DataModels;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Management.MenuServices.Entity.DataModels
 {

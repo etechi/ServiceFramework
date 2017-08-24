@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Data.Entity;
-namespace SF.Data.Storage.EF6
+namespace SF.Data.EF6
 {
 	public class AsyncQueryableProvider : System.Linq.IAsyncQueryableProvider,IEntityQueryableProvider
 	{

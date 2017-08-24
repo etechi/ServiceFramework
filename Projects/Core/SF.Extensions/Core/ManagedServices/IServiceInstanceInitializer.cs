@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Reflection;
-using SF.Data.Entity;
+using SF.Entities;
 using System.Collections.Generic;
 using SF.Core.ServiceManagement.Management;
 using System.Collections;
@@ -104,7 +104,7 @@ namespace SF.Core.ServiceManagement
 			=>
 			manager.CreateService<I, T>(
 				 parent => manager.TryGetDefaultService<I>(parent),
-				(parent, rcfg) => manager.EnsureDefaultService<I, T>(parent, rcfg, State: Data.LogicObjectState.Disabled),
+				(parent, rcfg) => manager.EnsureDefaultService<I, T>(parent, rcfg, State: LogicEntityState.Disabled),
 				cfg,
 				childServices
 				);
@@ -116,7 +116,7 @@ namespace SF.Core.ServiceManagement
 			=>
 			manager.CreateService<I, T>(
 				parent => manager.TryGetService<I, T>(parent),
-				(parent, rcfg) => manager.TryAddService<I, T>(parent, rcfg,State: Data.LogicObjectState.Disabled),
+				(parent, rcfg) => manager.TryAddService<I, T>(parent, rcfg,State: LogicEntityState.Disabled),
 				cfg,
 				childServices
 				);
@@ -147,7 +147,7 @@ namespace SF.Core.ServiceManagement
 					if (nsvcId != svcId)
 						throw new InvalidOperationException($"服务初始化{typeof(T)}@{typeof(I)}返回ID不一致：第一次：{svcId},第二次：{nsvcId}");
 
-					await manager.SetEntityState(svcId, Data.LogicObjectState.Enabled);
+					await manager.SetEntityState(svcId, LogicEntityState.Enabled);
 					return svcId;
 
 

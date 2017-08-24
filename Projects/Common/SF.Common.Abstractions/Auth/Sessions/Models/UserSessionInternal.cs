@@ -1,10 +1,9 @@
-﻿using SF.Data;
-using SF.KB;
+﻿using SF.Entities;
 using System;
 
 namespace SF.Auth.Sessions.Models
 {
-	public class UserSessionInternal : IObjectWithId<long>
+	public class UserSessionInternal : IEntityWithId<long>
     {
         public long Id { get; set; }
 		public long UserId { get; set; }

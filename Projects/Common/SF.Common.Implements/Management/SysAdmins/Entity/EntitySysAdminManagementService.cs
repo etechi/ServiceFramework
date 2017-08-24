@@ -1,8 +1,7 @@
 ﻿using SF.Auth.Identities;
 using SF.Core.Times;
 using SF.Data;
-using SF.Data.Entity;
-using SF.Data.Storage;
+using SF.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

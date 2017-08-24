@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Data.Entity;
 
-namespace SF.Data.Storage.EF6
+namespace SF.Data.EF6
 {
 	class DataSetProvider<T> :  IDataSetProvider<T>,IDataSetMetadata
 		where T:class

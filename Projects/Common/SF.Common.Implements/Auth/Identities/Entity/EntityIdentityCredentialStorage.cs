@@ -1,14 +1,12 @@
-﻿using SF.Data.Storage;
+﻿using SF.Auth.Identities.Internals;
+using SF.Auth.Identities.Models;
+using SF.Core.ServiceManagement;
+using SF.Core.Times;
 using SF.Data;
+using SF.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Clients;
-using SF.Data.Entity;
-using SF.Core.Times;
-using SF.Auth.Identities.Internals;
-using SF.Auth.Identities.Models;
-using SF.Core.ServiceManagement;
 
 namespace SF.Auth.Identities.Entity
 {

@@ -8,7 +8,7 @@ namespace SF.Core.NetworkService.Metadata
 		public string[] RolesRequired { get; set; }
 		public string[] PermissionsRequired { get; set; }
 	}
-	public class Service : Entity
+	public class Service : SF.Metadata.Models.Entity
 	{
         private System.Type ServiceSysType { get; }
         public System.Type GetSysType() => ServiceSysType;

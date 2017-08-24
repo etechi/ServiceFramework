@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SF.Management.SysAdmins
 {
-	public class SysAdminQueryArgument : Data.Entity.IQueryArgument<long>
+	public class SysAdminQueryArgument : Entities.IQueryArgument<long>
 	{
 		public Option<long> Id { get; set; }
 		public string Account { get; set; }
@@ -23,8 +23,8 @@ namespace SF.Management.SysAdmins
 	[Comment("系统管理员")]
 	[Category("系统管理", "系统管理员管理")]
 	public interface ISysAdminManagementService : 
-		Data.Entity.IEntitySource<long,SysAdminInternal,SysAdminQueryArgument>,
-		Data.Entity.IEntityManager<long,SysAdminEditable>
+		Entities.IEntitySource<long,SysAdminInternal,SysAdminQueryArgument>,
+		Entities.IEntityManager<long,SysAdminEditable>
     {
     }
 
