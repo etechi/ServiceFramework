@@ -6,11 +6,11 @@ using System.Threading;
 using System.Data.Entity;
 using System.Data.Common;
 
-namespace SF.Data.Storage.EF6
+namespace SF.Data.EF6
 {
 	public class DataContextProviderFactory<T> : 
 		IDataContextProviderFactory
-		where T:DbContext
+		where T: System.Data.Entity.DbContext
 	{
 		Func<T> DbContextCreator { get; }
 		public DataContextProviderFactory(Func<T> DbContextCreator)

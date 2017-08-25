@@ -1,14 +1,7 @@
-﻿using SF.Data.Storage;
-using SF.Data;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using SF.Auth.Identities.Internals;
-using SF.KB.PhoneNumbers;
-using SF.Common.TextMessages;
-using System.Text;
-using System.Collections.Generic;
+﻿using SF.Auth.Identities.Internals;
 using SF.Core.ServiceManagement;
+using System;
+using System.Threading.Tasks;
 
 namespace SF.Auth.Identities.IdentityCredentialProviders
 {

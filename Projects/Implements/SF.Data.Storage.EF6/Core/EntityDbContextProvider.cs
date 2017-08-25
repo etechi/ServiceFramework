@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Common;
 
-namespace SF.Data.Storage.EF6
+namespace SF.Data.EF6
 {
 
-	//public class ServiceProtocolDataIndexAttributeConvention : AttributeToColumnAnnotationConvention<ServiceProtocol.Data.Entity.IndexAttribute, IndexAnnotation>
+	//public class ServiceProtocolDataIndexAttributeConvention : AttributeToColumnAnnotationConvention<ServiceProtocol.Entities.IndexAttribute, IndexAnnotation>
 	//{
 	//	public ServiceProtocolDataIndexAttributeConvention() :
 	//		base("Index",
@@ -36,7 +36,7 @@ namespace SF.Data.Storage.EF6
 
 	public class EntityDbContextProvider<T> :
 		EntityDbContextProvider
-		where T : DbContext
+		where T : System.Data.Entity.DbContext
 	{
 		public EntityDbContextProvider(T Context, IDataContext DataContext) : base(Context, DataContext)
 		{
@@ -46,14 +46,14 @@ namespace SF.Data.Storage.EF6
         IDataContextProvider,
         IDataContextExtension
     {
-		public DbContext DbContext { get; }
+		public System.Data.Entity.DbContext DbContext { get; }
 		public IDataContext DataContext { get; }
 		public bool IsChanged { get; private set; }
 		internal void SetChanged()
 		{
 			IsChanged = true;
 		}
-		public EntityDbContextProvider(DbContext DbContext, IDataContext DataContext)
+		public EntityDbContextProvider(System.Data.Entity.DbContext DbContext, IDataContext DataContext)
 		{
 			this.DbContext = DbContext;
 			this.DataContext = DataContext;

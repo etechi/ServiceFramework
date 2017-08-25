@@ -1,15 +1,12 @@
-﻿using SF.Auth;
-using SF.Auth.Identities.Models;
-using SF.Data;
+﻿using SF.Entities;
 using SF.Metadata;
-using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SF.Users.Members.Models
 {
 	[EntityObject("会员")]
-	public class MemberDesc : IObjectWithId<long>
+	public class MemberDesc : IEntityWithId<long>
 	{
 		[Comment("ID")]
 		[ReadOnly(true)]

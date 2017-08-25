@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using SF.Data.Storage;
+using SF.Data;
 using System.ComponentModel.DataAnnotations;
 using SF.Common.TextMessages.Management;
-using SF.Data.DataModels;
+using SF.Entities.DataModels;
 
 namespace SF.Common.TextMessages.Management.DataModels
 {

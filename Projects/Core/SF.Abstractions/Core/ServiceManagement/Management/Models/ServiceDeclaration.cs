@@ -1,4 +1,4 @@
-﻿using SF.Data;
+﻿using SF.Entities;
 using SF.Metadata;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,7 +7,7 @@ namespace SF.Core.ServiceManagement.Models
 {
 	[EntityObject("系统服务定义")]
 	public class ServiceDeclaration : 
-		IObjectWithId<string>
+		IEntityWithId<string>
 	{
 		[Key]
 		[Comment("ID")]

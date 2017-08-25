@@ -1,6 +1,6 @@
 using SF.Auth;
 using SF.Data;
-using SF.Data.Entity;
+using SF.Entities;
 using SF.Metadata;
 using SF.Core.ServiceManagement.Models;
 using System.Collections.Generic;

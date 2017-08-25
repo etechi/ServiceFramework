@@ -3,8 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SF.Auth;
 using SF.Data;
-using SF.Data.Entity;
-using SF.Data.Storage;
+using SF.Entities;
 using SF.Metadata;
 using SF.Core.ServiceManagement.Models;
 using SF.Core.ServiceManagement.Internals;
@@ -71,7 +70,7 @@ namespace SF.Core.ServiceManagement.Management
 				//ImplementId = i.ImplementId,
 				Priority = i.Priority,
 				ServiceIdent=i.ServiceIdent,
-				ParentId=i.ParentId,
+				ContainerId=i.ParentId,
 				ParentName=i.ParentId.HasValue?i.Parent.Name:null,
 				ServiceType = i.ServiceType,
 				ImplementType = i.ImplementType,
@@ -107,7 +106,7 @@ namespace SF.Core.ServiceManagement.Management
 				ServiceIdent=i.ServiceIdent,
 				ServiceName = i.ServiceType,
 				ImplementType = i.ImplementType,
-				ParentId=i.ParentId,
+				ContainerId=i.ParentId,
 				ParentName = i.ParentId.HasValue?i.Parent.Name:null
 			});
 		}
@@ -194,7 +193,7 @@ namespace SF.Core.ServiceManagement.Management
 
 			m.Setting = e.Setting;
 
-			if (m.ObjectState == LogicObjectState.Enabled)
+			if (m.ObjectState == LogicEntityState.Enabled)
 			{
 				var factory = TestConfig(m.Id, m.ParentId, m.ImplementType, m.Setting);
 				if (factory.ServiceImplement.ManagedServiceInitializer != null)
@@ -220,10 +219,10 @@ namespace SF.Core.ServiceManagement.Management
 			//	(mi, ei) => mi.Setting = ei.Setting
 			//	);
 
-			if (m.ParentId != e.ParentId)
+			if (m.ParentId != e.ContainerId)
 			{
 				var orgParentId = m.ParentId;
-				m.ParentId = e.ParentId;
+				m.ParentId = e.ContainerId;
 				ctx.AddPostAction(() =>
 				{
 					ConfigChangedNotifier.NotifyInternalServiceChanged(
@@ -231,7 +230,7 @@ namespace SF.Core.ServiceManagement.Management
 						m.ServiceType
 						);
 					ConfigChangedNotifier.NotifyInternalServiceChanged(
-						e.ParentId,
+						e.ContainerId,
 						m.ServiceType
 						);
 				});

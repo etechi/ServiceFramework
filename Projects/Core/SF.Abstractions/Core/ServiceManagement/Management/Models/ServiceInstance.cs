@@ -1,8 +1,5 @@
-﻿using SF.Data;
-using SF.Data.Models;
+﻿using SF.Entities;
 using SF.Metadata;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SF.Core.ServiceManagement.Models
@@ -21,7 +18,7 @@ namespace SF.Core.ServiceManagement.Models
 		public int Priority { get; set; }
 
 	}
-	public class ServiceInstanceInternal : ServiceInstance,IHierarachicalEntity<long?>
+	public class ServiceInstanceInternal : ServiceInstance,IItemEntity<long?>
 	{
 		[Comment("服务定义")]
 		[EntityIdent("系统服务定义", nameof(ServiceName))]
@@ -46,7 +43,7 @@ namespace SF.Core.ServiceManagement.Models
 
 		[Comment("父服务实例")]
 		[EntityIdent("系统服务实例", nameof(ParentName))]
-		public long? ParentId { get; set; }
+		public long? ContainerId { get; set; }
 
 		[Ignore]
 		[TableVisible]

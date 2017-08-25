@@ -1,5 +1,5 @@
 using SF.Auth;
-using SF.Data.Entity;
+using SF.Entities;
 using SF.Metadata;
 using System;
 namespace SF.Core.ServiceManagement.Management

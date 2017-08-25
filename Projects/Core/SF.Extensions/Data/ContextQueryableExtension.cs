@@ -1,15 +1,13 @@
-﻿using System;
+﻿using SF.Entities;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 namespace SF.Data
 {
 
-    public static class ContextQueryableExtension
+	public static class ContextQueryableExtension
 	{
 		public static IContextQueryable<O> Filter<O,V>(
 			   this IContextQueryable<O> q,
@@ -49,8 +47,8 @@ namespace SF.Data
 
         public static IContextQueryable<O> Filter<O>(
              this IContextQueryable<O> q,
-             LogicObjectState? state,
-             System.Linq.Expressions.Expression<Func<O, LogicObjectState>> propExpr
+             LogicEntityState? state,
+             System.Linq.Expressions.Expression<Func<O, LogicEntityState>> propExpr
              )
              where O : class
         {
@@ -58,7 +56,7 @@ namespace SF.Data
             var prop = propExpr.Body;
             if (state == null)
                 return q.Where(Expression.Lambda<Func<O, bool>>(
-                   Expression.NotEqual(prop, Expression.Constant(LogicObjectState.Deleted)),
+                   Expression.NotEqual(prop, Expression.Constant(LogicEntityState.Deleted)),
                    o
                    ));
             return q.Where(

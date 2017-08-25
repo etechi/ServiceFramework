@@ -4,7 +4,7 @@ using SF.Common.TextMessages;
 using System.Linq;
 using SF.Metadata;
 using SF.Core.NetworkService.Metadata;
-using SF.Data.Entity;
+using SF.Entities;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;

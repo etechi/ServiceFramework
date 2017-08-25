@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
-namespace SF.Data.Storage.EntityFrameworkCore
+namespace SF.Data.EntityFrameworkCore
 {
 	public class AsyncQueryableProvider : System.Linq.IAsyncQueryableProvider,IEntityQueryableProvider
 	{

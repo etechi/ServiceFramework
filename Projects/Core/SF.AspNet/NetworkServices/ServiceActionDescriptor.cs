@@ -46,7 +46,7 @@ namespace SF.AspNet.NetworkService
 			this.HeavyParameter = HeavyParameter;
 			this.Parameters = new Collection<HttpParameterDescriptor>(
 				Method.GetParameters()
-				.Where(p=>p.ParameterType!=typeof(Data.Paging))
+				.Where(p=>p.ParameterType!=typeof(Entities.Paging))
 				.Select(p => new ParameterDescriptor(
 					this,
 					p,
@@ -150,8 +150,8 @@ namespace SF.AspNet.NetworkService
 			object[] array = new object[num];
 			for (int i = 0; i < num; i++)
 			{
-				if (parameterInfos[i].ParameterType == typeof(Data.Paging))
-					array[i] = Data.Paging.Create(controllerContext.Request.GetQueryNameValuePairs(),40);
+				if (parameterInfos[i].ParameterType == typeof(Entities.Paging))
+					array[i] = Entities.Paging.Create(controllerContext.Request.GetQueryNameValuePairs(),40);
 				else
 					array[i] = this.ExtractParameterFromDictionary(parameterInfos[i], parameters, controllerContext);
 			}

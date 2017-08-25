@@ -4,7 +4,7 @@ using SF.Auth.Identities.IdentityCredentialProviders;
 using SF.Auth.Identities.Internals;
 using SF.Core.ServiceManagement;
 using SF.Core.ServiceManagement.Management;
-using SF.Data.Entity;
+using SF.Entities;
 using System;
 using System.Collections.Generic;
 

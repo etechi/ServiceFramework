@@ -1,5 +1,5 @@
 using System;
-using SF.Data.Entity;
+using SF.Entities;
 using SF.Metadata;
 using SF.Auth;
 using SF.Data;

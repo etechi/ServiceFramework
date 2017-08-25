@@ -35,7 +35,7 @@ namespace SF.Core.NetworkService
 		}
 		public IEnumerable<ParameterInfo> GetMethodParameters(System.Reflection.MethodInfo method)
 		{
-			return method.GetParameters().Where(p => p.ParameterType != typeof(Data.Paging));
+			return method.GetParameters().Where(p => p.ParameterType != typeof(Entities.Paging));
 
 		}
 		IEnumerable<MethodInfo> GetServiceMethods(System.Type type, HashSet<MethodInfo> methods)
@@ -59,7 +59,7 @@ namespace SF.Core.NetworkService
 		public static bool IsHeavyParameter(ParameterInfo p)
 		{
 			var t = p.ParameterType;
-			if (t == typeof(Data.Paging))
+			if (t == typeof(Entities.Paging))
 				return false;
 			switch (t.GetTypeCode())
 			{

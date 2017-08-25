@@ -1,15 +1,13 @@
-﻿using SF.Data.Storage;
+﻿using SF.Auth.Identities.Internals;
+using SF.Auth.Identities.Models;
+using SF.Core.ServiceManagement;
+using SF.Core.Times;
 using SF.Data;
+using SF.Entities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Auth.Identities.Models;
-using SF.Auth.Identities.Internals;
-using SF.Core.Caching;
-using SF.Data.Entity;
-using SF.Core.Times;
-using System.Collections.Generic;
-using SF.Core.ServiceManagement;
 
 namespace SF.Auth.Identities.Entity
 {
@@ -63,7 +61,7 @@ namespace SF.Auth.Identities.Entity
 				CreateCredential = Arg.CredentialValue,
 				CreateCredentialProviderId = Arg.CredentialProvider,
 
-				ObjectState = LogicObjectState.Enabled,
+				ObjectState = LogicEntityState.Enabled,
 
 				PasswordHash = Arg.PasswordHash,
 				SecurityStamp = Arg.SecurityStamp.Base64(),
@@ -193,7 +191,7 @@ namespace SF.Auth.Identities.Entity
 					Icon=i.Icon,
 					Name=i.Name,
 					Entity=i.Entity,
-					IsEnabled=i.ObjectState==LogicObjectState.Enabled,
+					IsEnabled=i.ObjectState==LogicEntityState.Enabled,
 					PasswordHash=i.PasswordHash,
 				}
 			}).SingleOrDefaultAsync();

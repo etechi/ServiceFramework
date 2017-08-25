@@ -1,16 +1,11 @@
-﻿using SF.Data;
+﻿using SF.Entities;
 using SF.Metadata;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SF.Common.TextMessages.Management
 {
-	
-	public class MsgRecordQueryArgument : Data.Entity.QueryArgument<long>
+
+	public class MsgRecordQueryArgument : Entities.QueryArgument<long>
 	{
 		[Comment( "状态")]
 		public SendStatus? Status { get; set; }

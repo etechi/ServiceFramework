@@ -1,6 +1,6 @@
-﻿using System;
-using SF.Data;
+﻿using SF.Entities;
 using SF.Metadata;
+using System;
 using System.Collections.Generic;
 
 namespace SF.Auth.Identities.Models
@@ -19,7 +19,7 @@ namespace SF.Auth.Identities.Models
 		public DateTime UpdateTime { get; set; }
 
 		[Comment("对象状态")]
-		public LogicObjectState ObjectState { get; set; }
+		public LogicEntityState ObjectState { get; set; }
 	}
 	public class IdentityEditable : IdentityInternal
 	{

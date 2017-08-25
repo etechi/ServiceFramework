@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Reflection;
-using SF.Data.Entity;
+using SF.Entities;
 namespace SF.Core.ServiceManagement.Management
 {
 	public static class IServiceInstanceManagerExtension
@@ -26,7 +26,7 @@ namespace SF.Core.ServiceManagement.Management
 			string Title = null,
 			string Description = null,
 			string ServiceIdent = null,
-			Data.LogicObjectState State=Data.LogicObjectState.Enabled
+			LogicEntityState State=LogicEntityState.Enabled
 			)
 		{
 			var comment = typeof(T).Comment();
@@ -38,7 +38,7 @@ namespace SF.Core.ServiceManagement.Management
 			//e.SettingType = typeof(T).FullName + "CreateArguments";
 			e.Name = Name ?? comment.Name;
 			e.Title = Title ?? comment.Name;
-			e.ParentId = ParentId;
+			e.ContainerId = ParentId;
 			e.Description = Description ?? comment.Description;
 			e.Setting = Json.Stringify(Setting);
 		}
@@ -62,7 +62,7 @@ namespace SF.Core.ServiceManagement.Management
 			string Title=null,
 			string Description=null,
 			string ServiceIdent=null,
-			Data.LogicObjectState State = Data.LogicObjectState.Enabled
+			LogicEntityState State = LogicEntityState.Enabled
 			)
 		{
 			return await Manager.EnsureEntity(
@@ -91,7 +91,7 @@ namespace SF.Core.ServiceManagement.Management
 			string Title = null,
 			string Description = null,
 			string ServiceIdent = null,
-			Data.LogicObjectState State = Data.LogicObjectState.Enabled
+			LogicEntityState State = LogicEntityState.Enabled
 			)
 		{
 			var re = await Manager.TryGetService<I, T>(ParentId);
@@ -110,7 +110,7 @@ namespace SF.Core.ServiceManagement.Management
 			)
 		=> await Manager.UpdateEntity(
 				ServiceId,
-				e => e.ParentId=ParentServiceId
+				e => e.ContainerId=ParentServiceId
 				);
 
 	

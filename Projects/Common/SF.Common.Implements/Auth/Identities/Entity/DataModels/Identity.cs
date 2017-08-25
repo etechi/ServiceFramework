@@ -1,20 +1,16 @@
-﻿using SF.Data.Storage;
-using SF.Data;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿using SF.Data;
+using SF.Entities;
 using SF.Metadata;
-using SF.KB;
-using SF.Auth.Identities.Models;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.Identities.Entity.DataModels
 {
-	
+
 	[Table("SysAuthIdentity")]
-	public class Identity<TIdentity,TIdentityCredential>: IObjectWithId<long>
+	public class Identity<TIdentity,TIdentityCredential>: IEntityWithId<long>
 		where TIdentity: Identity<TIdentity, TIdentityCredential>
 		where TIdentityCredential : IdentityCredential<TIdentity, TIdentityCredential>
 	{
@@ -49,7 +45,7 @@ namespace SF.Auth.Identities.Entity.DataModels
 		public virtual string PasswordHash { get; set; }
 
 		[Comment("逻辑状态")]
-		public virtual LogicObjectState ObjectState { get; set; }
+		public virtual LogicEntityState ObjectState { get; set; }
 
 		[MaxLength(100)]
 		[Required]

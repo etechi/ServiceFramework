@@ -4,7 +4,7 @@ using SF.Management.MenuServices;
 using System.Linq;
 using SF.Metadata;
 using SF.Core.NetworkService.Metadata;
-using SF.Data.Entity;
+using SF.Entities;
 using SF.Management.MenuServices.Models;
 using System;
 using System.Threading.Tasks;

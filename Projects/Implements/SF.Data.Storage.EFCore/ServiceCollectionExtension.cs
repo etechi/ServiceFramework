@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using SF.Data.Storage;
-using SF.Data.Storage.EntityFrameworkCore;
+using SF.Data;
+using SF.Data.EntityFrameworkCore;
 using System;
 using System.Collections;
 using System.Collections.Generic;

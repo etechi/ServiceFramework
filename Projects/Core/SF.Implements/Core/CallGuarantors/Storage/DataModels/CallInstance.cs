@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
-using SF.Data.Storage;
+using SF.Data;
 
 namespace SF.Core.CallGuarantors.Storage.DataModels
 {

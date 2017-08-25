@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SF.Auth.Sessions.Models;
+﻿using SF.Auth.Sessions.Models;
 using SF.Metadata;
+using System;
+using System.Threading.Tasks;
 
 namespace SF.Auth.Sessions
 {
-	public class UserSessionQueryArgument : Data.Entity.IQueryArgument<long>
+	public class UserSessionQueryArgument : Entities.IQueryArgument<long>
 	{
 		public Option<long> Id { get; set; }
 		public string NickName { get; set; }
@@ -22,7 +19,7 @@ namespace SF.Auth.Sessions
 	public delegate Task<string> SessionCreator(long UserId);
 	[NetworkService]
 	public interface ISessionService : 
-		Data.Entity.IEntitySource<long,UserSessionInternal,UserSessionQueryArgument>
+		Entities.IEntitySource<long,UserSessionInternal,UserSessionQueryArgument>
 	{
 		Task<T> Create<T>(
 			int ScopeId,

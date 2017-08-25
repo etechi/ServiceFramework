@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace SF.Data.Storage.EF6
+namespace SF.Data.EF6
 {
 	class DbOrderedQueryable<T> :
 		DbQueryable<T>,

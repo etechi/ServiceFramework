@@ -1,14 +1,11 @@
-﻿using SF.Auth.Identities;
+﻿using SF.Core;
+using SF.Core.ServiceManagement;
 using SF.Core.Times;
 using SF.Data;
-using SF.Data.Entity;
-using SF.Data.Storage;
+using SF.Entities;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using SF.Core.ServiceManagement;
-using SF.Core;
 
 namespace SF.Common.TextMessages.Management
 {

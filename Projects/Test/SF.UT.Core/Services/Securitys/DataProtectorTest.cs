@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SF.Data.Storage;
+using SF.Data;
 using Xunit;
 using SF.Applications;
 using SF.Core.Hosting;
@@ -13,7 +13,7 @@ using SF.Core.ServiceManagement;
 using SF.Core.ServiceFeatures;
 using System.Threading.Tasks;
 using SF.Auth.Identities;
-using SF.Data;
+using SF.Entities;
 
 namespace SF.UT.Services.Securitys
 {
