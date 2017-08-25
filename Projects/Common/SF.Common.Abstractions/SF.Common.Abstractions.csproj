@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Bizness\Accounting\Events.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 
@@ -13,6 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Bizness\Carts\" />
+    <Folder Include="Bizness\Products\" />
+    <Folder Include="Bizness\Trades\" />
     <Folder Include="Common\Documents\" />
     <Folder Include="Properties\" />
   </ItemGroup>
