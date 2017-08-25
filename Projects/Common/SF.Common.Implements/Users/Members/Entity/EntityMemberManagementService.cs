@@ -87,7 +87,7 @@ namespace SF.Users.Members.Entity
 			m.Icon = e.Icon;
 			m.Name = e.Name.Trim();
 			m.PhoneNumber = e.PhoneNumber.Trim();
-			m.ObjectState = e.ObjectState;
+			m.LogicState = e.LogicState;
 			m.UpdatedTime = e.UpdatedTime;
 			m.UpdatorId = await IdentityService.Value.EnsureCurIdentityId();
 

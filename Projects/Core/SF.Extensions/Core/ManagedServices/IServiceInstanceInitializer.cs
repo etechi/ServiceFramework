@@ -104,7 +104,7 @@ namespace SF.Core.ServiceManagement
 			=>
 			manager.CreateService<I, T>(
 				 parent => manager.TryGetDefaultService<I>(parent),
-				(parent, rcfg) => manager.EnsureDefaultService<I, T>(parent, rcfg, State: LogicEntityState.Disabled),
+				(parent, rcfg) => manager.EnsureDefaultService<I, T>(parent, rcfg, State: EntityLogicState.Disabled),
 				cfg,
 				childServices
 				);
@@ -116,7 +116,7 @@ namespace SF.Core.ServiceManagement
 			=>
 			manager.CreateService<I, T>(
 				parent => manager.TryGetService<I, T>(parent),
-				(parent, rcfg) => manager.TryAddService<I, T>(parent, rcfg,State: LogicEntityState.Disabled),
+				(parent, rcfg) => manager.TryAddService<I, T>(parent, rcfg,State: EntityLogicState.Disabled),
 				cfg,
 				childServices
 				);
@@ -147,7 +147,7 @@ namespace SF.Core.ServiceManagement
 					if (nsvcId != svcId)
 						throw new InvalidOperationException($"服务初始化{typeof(T)}@{typeof(I)}返回ID不一致：第一次：{svcId},第二次：{nsvcId}");
 
-					await manager.SetEntityState(svcId, LogicEntityState.Enabled);
+					await manager.SetEntityState(svcId, EntityLogicState.Enabled);
 					return svcId;
 
 

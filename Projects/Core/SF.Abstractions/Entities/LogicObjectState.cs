@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SF.Entities
 {
-	public enum LogicEntityState : byte
+	public enum EntityLogicState : byte
 	{
 		[Comment(Name ="有效")]
 		Enabled=0,

@@ -14,11 +14,8 @@ namespace SF.Entities
 		{
 			static Type SrcType { get; } = typeof(S);
 			static Type DstType { get; } = typeof(T);
-			static PropertyInfo[] dstTypeProps { get; } =
-				DstType.GetProperties(System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-			static Dictionary<string, PropertyInfo> srcTypeProps { get; } =
-				SrcType.GetProperties(System.Reflection.BindingFlags.FlattenHierarchy | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
-				.ToDictionary(p => p.Name);
+			static PropertyInfo[] dstTypeProps { get; } = DstType.AllPublicInstanceProperties();
+			static Dictionary<string, PropertyInfo> srcTypeProps { get; } =SrcType.AllPublicInstanceProperties().ToDictionary(p => p.Name);
 
 			public static Lazy<Expression<Func<S, T>>> Expr { get; } = new Lazy<Expression<Func<S, T>>>(() =>
 				{

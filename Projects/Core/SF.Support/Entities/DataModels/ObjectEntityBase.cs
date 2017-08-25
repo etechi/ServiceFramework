@@ -13,7 +13,11 @@ using System.Threading.Tasks;
 namespace SF.Entities.DataModels
 {
 
-    public abstract class ObjectEntityBase<K> : IEntityWithId<K>, IObjectEntity
+    public abstract class ObjectEntityBase<K> : 
+		IEntityWithId<K>, 
+		IObjectEntity, 
+		IEntityWithScope, 
+		IEntityWithLogicState
 		where K:IEquatable<K>
 	{
 
@@ -33,7 +37,7 @@ namespace SF.Entities.DataModels
 		public virtual long? ScopeId { get; set; }
 
 		[Comment("对象状态")]
-		public virtual LogicEntityState ObjectState { get; set; }
+		public virtual EntityLogicState LogicState { get; set; }
 
 		[Comment("所有人")]
 		[Index]

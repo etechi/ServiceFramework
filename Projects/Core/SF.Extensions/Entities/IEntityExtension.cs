@@ -20,7 +20,7 @@ namespace SF.Entities
 		{
 			model.UpdatedTime = time;
 			model.Name = entity.Name;
-			model.ObjectState = entity.ObjectState;
+			model.LogicState = entity.LogicState;
 			return model;
 		}
 

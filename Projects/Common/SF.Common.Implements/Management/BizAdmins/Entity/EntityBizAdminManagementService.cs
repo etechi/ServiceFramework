@@ -64,7 +64,7 @@ namespace SF.Management.BizAdmins.Entity
 			m.Icon = e.Icon;
 			m.Name = e.Name.Trim();
 			m.Account = e.Account.Trim();
-			m.ObjectState = e.ObjectState;
+			m.LogicState = e.LogicState;
 			m.UpdatedTime = e.UpdatedTime;
 			m.UpdatorId = await IdentityService.Value.EnsureCurIdentityId();
 

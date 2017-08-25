@@ -26,7 +26,7 @@ namespace SF.Data.Models
 		
 		[Comment("对象状态")]
 		[TableVisible]
-		public virtual LogicEntityState ObjectState { get; set; }
+		public virtual EntityLogicState LogicState { get; set; }
 
 
 		[Comment("创建时间")]

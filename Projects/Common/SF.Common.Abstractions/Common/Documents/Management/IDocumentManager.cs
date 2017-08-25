@@ -15,13 +15,13 @@ namespace SF.Common.Documents.Management
 		public string Name { get; set; }
 
 		[Comment(Name = "发布日期")]
-		public DateQueryRange PublishDate { get; set; }
+		public NullableDateQueryRange PublishDate { get; set; }
 	}
 
 	[NetworkService]
 	public interface IDocumentManager<TInternal, TEditable> :
-		IEntitySource<long, DocumentInternal, DocumentQueryArguments>,
-		IEntityManager<long, DocumentEditable>
+		IEntitySource<long, TInternal, DocumentQueryArguments>,
+		IEntityManager<long, TEditable>
 		where TInternal : DocumentInternal
 		where TEditable : DocumentEditable
 	{

@@ -193,7 +193,7 @@ namespace SF.Core.ServiceManagement.Management
 
 			m.Setting = e.Setting;
 
-			if (m.ObjectState == LogicEntityState.Enabled)
+			if (m.LogicState == EntityLogicState.Enabled)
 			{
 				var factory = TestConfig(m.Id, m.ParentId, m.ImplementType, m.Setting);
 				if (factory.ServiceImplement.ManagedServiceInitializer != null)

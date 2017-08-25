@@ -3,130 +3,74 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ServiceProtocol.ObjectManager;
+using SF.Entities;
+using SF.Core.Times;
+using SF.Data;
+using SF.Core.ServiceManagement;
 
-using ServiceProtocol.Data.Entity;
-
-namespace ServiceProtocol.Biz.Documents.Entity
+namespace SF.Common.Documents.Management
 {
-    [DataObjectLoader("文档")]
-    public class DocumentManager<TInternal,TEditable,TDocument, TAuthor, TCategory, TTag, TTagReference, TScope> :
-		ObjectManager.EntityServiceObjectManager<int, TInternal, TEditable, TDocument>,
-		ServiceProtocol.Biz.Documents.IDocumentManager<TInternal, TEditable>,
-        IDataObjectLoader
-		where TInternal:DocumentInternal,new()
+    public class DocumentManager<TInternal,TEditable,TDocument, TAuthor, TCategory, TTag, TTagReference> :
+		EntityManager<long,TInternal, DocumentQueryArguments,TEditable,TDocument>,
+		IDocumentManager<TInternal,TEditable>
+		where TInternal: DocumentInternal,new()
 		where TEditable: DocumentEditable, new()
-		where TDocument : Models.Document<TDocument, TAuthor, TCategory, TTag, TTagReference, TScope>,new()
-		where TAuthor : Models.DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference, TScope>
-		where TCategory : Models.DocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference, TScope>
-		where TTag : Models.DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference, TScope>
-		where TTagReference : Models.DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference, TScope>
-		where TScope : Models.DocumentScope<TDocument, TAuthor, TCategory, TTag, TTagReference, TScope>
+		where TDocument : DataModels.Document<TDocument, TAuthor, TCategory, TTag, TTagReference>,new()
+		where TAuthor : DataModels.DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TCategory : DataModels.DocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TTag : DataModels.DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TTagReference : DataModels.DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{
-        protected override async Task<TEditable> MapModelToEditable(IContextQueryable<TDocument> Query)
-		{
-			return await Query.Select(s => new TEditable
-			{
-				Id = s.Id,
-				Name = s.Name,
-				Ident = s.Ident,
-				CategoryId = s.CategoryId,
-				PublishDate = s.PublishDate,
-				Order = s.Order,
-				ScopeId = s.ScopeId,
-				ObjectState = s.ObjectState,
-				Image = s.Image,
-				Content = s.Content,
+		public IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
+		public ITimeService TimeService { get; }
 
-			}).SingleOrDefaultAsync();
+		
+		public DocumentManager(IDataSet<TDocument> DataSet, ITimeService TimeService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(DataSet)
+		{
+			this.TimeService = TimeService;
+			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
+		}
+		protected override async Task<TEditable> OnMapModelToEditable(IContextQueryable<TDocument> Query)
+		{
+			return await Query.Select(
+				EntityMapper.Map<TDocument,TEditable>()
+				).SingleOrDefaultAsync();
 		}
 
-        protected override IContextQueryable<TInternal> MapModelToInternal(IContextQueryable<TDocument> Query)
+		protected override IContextQueryable<TInternal> OnMapModelToPublic(IContextQueryable<TDocument> Query)
 		{
-			return Query.Select(s => new TInternal
-			{
-				Id = s.Id,
-				Name = s.Name,
-				Ident = s.Ident,
-				CategoryId = s.CategoryId,
-				CategoryName=s.CategoryId==null?null:s.Category.Name,
-				PublishDate = s.PublishDate,
-				Order = s.Order,
-				ScopeId = s.ScopeId,
-				ScopeName=s.Scope.Name,
-				ObjectState = s.ObjectState,
-			});
+			return Query.Select(EntityMapper.Map<TDocument,TInternal>());
 		}
 
 		protected override Task OnUpdateModel(ModifyContext ctx)
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
-
-			Model.Id = obj.Id;
-			Model.Name = obj.Name;
+			Model.Update(obj, TimeService.Now);
+			
 			Model.Ident = obj.Ident;
-			Model.CategoryId = obj.CategoryId;
 			Model.PublishDate = obj.PublishDate;
-			Model.Order = obj.Order;
-			Model.ScopeId = obj.ScopeId;
-			Model.ObjectState = obj.ObjectState;
 			Model.Image = obj.Image;
 			Model.Content = obj.Content;
-
 			return Task.CompletedTask;
 		}
-
-		static PagingQueryBuilder<TDocument> pagingBuilder = new PagingQueryBuilder<TDocument>(
+		protected override PagingQueryBuilder<TDocument> PagingQueryBuilder => new PagingQueryBuilder<TDocument>(
 			"name",
 			i => i.Add("name", m => m.Name)
-			.Add("date",m=>m.PublishDate,true)
-			.Add("order", m => m.Order)
+			.Add("date", m => m.PublishDate, true)
+			.Add("order", m => m.ItemOrder)
 			);
-		public async Task<QueryResult<TInternal>> Query(DocumentQueryArguments args, Paging paging)
+
+
+		protected override IContextQueryable<TDocument> OnBuildQuery(IContextQueryable<TDocument> Query, DocumentQueryArguments args, Paging paging)
 		{
-			var q = (IContextQueryable<TDocument>)Context.ReadOnly<TDocument>();
-			if(args.ScopeId!=null)
-				q = q.Where(c => c.ScopeId == args.ScopeId);
-			if (args.CategoryId != null)
-				q = q.Where(c => c.CategoryId == args.CategoryId);
-			if(args.Name!=null)
-				q = q.Where(c => c.Name.Contains(args.Name));
-
-			if(args.PublishDate!=null)
-			{
-				if (args.PublishDate.Begin != null)
-					q = q.Where(c => c.PublishDate >= args.PublishDate.Begin);
-				if (args.PublishDate.End != null)
-					q = q.Where(c => c.PublishDate <= args.PublishDate.End);
-			}
-
-			return await q.ToQueryResultAsync(
-				MapModelToInternal,
-				r => r,
-				pagingBuilder,
-				paging
-				);
+			var q = DataSet.AsQueryable().WithScope(ServiceInstanceDescriptor);
+			q.Filter(args.CategoryId, c => c.ContainerId)
+				.FilterContains(args.Name, c => c.Name)
+				.Filter(args.CategoryId, c => c.ContainerId)
+				.Filter(args.PublishDate, c => c.PublishDate.Value);
+			return q;
+				
 		}
-
-        async Task<IDataObject[]> IDataObjectLoader.Load(string Type, string[][] Keys)
-        {
-            return await DataObjectLoader.Load(
-                Keys,
-                id => int.Parse(id[0]),
-                id => FindByIdAsync(id),
-                async (ids) => {
-                    var tmps = await MapModelToInternal(
-                        Context.ReadOnly<TDocument>().Where(a => ids.Contains(a.Id))
-                        ).ToArrayAsync();
-                    return await OnPrepareInternals(tmps);
-                }
-                );
-        }
-
-        public DocumentManager(IDataContext context,Lazy<IModifyFilter> ModifyFilter) : base(context, ModifyFilter)
-		{
-		}
-
 	}
 }

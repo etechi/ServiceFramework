@@ -10,7 +10,7 @@ namespace SF.Entities
 	{
 		string Name { get; set; }
 
-		LogicEntityState ObjectState { get; set; }
+		EntityLogicState LogicState { get; set; }
 
 		DateTime CreatedTime { get; set; }
 

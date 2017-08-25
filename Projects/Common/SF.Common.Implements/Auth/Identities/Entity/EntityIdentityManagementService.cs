@@ -61,7 +61,7 @@ namespace SF.Auth.Identities.Entity
 				CreateCredential = Arg.CredentialValue,
 				CreateCredentialProviderId = Arg.CredentialProvider,
 
-				ObjectState = LogicEntityState.Enabled,
+				LogicState = EntityLogicState.Enabled,
 
 				PasswordHash = Arg.PasswordHash,
 				SecurityStamp = Arg.SecurityStamp.Base64(),
@@ -139,7 +139,7 @@ namespace SF.Auth.Identities.Entity
 			m.Name = e.Name;
 			m.Icon = e.Icon;
 
-			m.ObjectState = e.ObjectState;
+			m.ObjectState = e.LogicState;
 			var time = TimeService.Value.Now;
 			m.UpdatedTime = time;
 			if (e.Entity != null)
@@ -191,7 +191,7 @@ namespace SF.Auth.Identities.Entity
 					Icon=i.Icon,
 					Name=i.Name,
 					Entity=i.Entity,
-					IsEnabled=i.ObjectState==LogicEntityState.Enabled,
+					IsEnabled=i.ObjectState==EntityLogicState.Enabled,
 					PasswordHash=i.PasswordHash,
 				}
 			}).SingleOrDefaultAsync();

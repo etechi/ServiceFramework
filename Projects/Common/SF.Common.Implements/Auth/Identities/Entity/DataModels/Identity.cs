@@ -45,7 +45,7 @@ namespace SF.Auth.Identities.Entity.DataModels
 		public virtual string PasswordHash { get; set; }
 
 		[Comment("逻辑状态")]
-		public virtual LogicEntityState ObjectState { get; set; }
+		public virtual EntityLogicState ObjectState { get; set; }
 
 		[MaxLength(100)]
 		[Required]

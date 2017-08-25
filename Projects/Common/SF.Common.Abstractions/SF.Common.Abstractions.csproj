@@ -5,7 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Bizness\Accounting\Events.cs" />
+    <Compile Remove="Bizness\Accounting\**" />
+    <EmbeddedResource Remove="Bizness\Accounting\**" />
+    <None Remove="Bizness\Accounting\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 

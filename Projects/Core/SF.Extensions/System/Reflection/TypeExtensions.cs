@@ -359,5 +359,13 @@ namespace System.Reflection
 		public static SF.Metadata.CommentAttribute Comment(this Type Info)
 			=> Comment(Info.GetTypeInfo());
 #endif
+
+
+		public static PropertyInfo[] AllPublicInstanceProperties(this Type type)
+			=>type.GetProperties(
+				System.Reflection.BindingFlags.FlattenHierarchy | 
+				System.Reflection.BindingFlags.Public | 
+				System.Reflection.BindingFlags.Instance
+				);
 	}
 }

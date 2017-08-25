@@ -26,14 +26,14 @@ namespace SF.Core.ServiceManagement.Management
 			string Title = null,
 			string Description = null,
 			string ServiceIdent = null,
-			LogicEntityState State=LogicEntityState.Enabled
+			EntityLogicState State=EntityLogicState.Enabled
 			)
 		{
 			var comment = typeof(T).Comment();
 			e.ImplementType = typeof(T).GetFullName() + "@" + typeof(I).GetFullName();
 			e.ServiceType = typeof(I).GetFullName();
 			e.Priority = 0;
-			e.ObjectState = State;
+			e.LogicState = State;
 			e.ServiceIdent = ServiceIdent;
 			//e.SettingType = typeof(T).FullName + "CreateArguments";
 			e.Name = Name ?? comment.Name;
@@ -62,7 +62,7 @@ namespace SF.Core.ServiceManagement.Management
 			string Title=null,
 			string Description=null,
 			string ServiceIdent=null,
-			LogicEntityState State = LogicEntityState.Enabled
+			EntityLogicState State = EntityLogicState.Enabled
 			)
 		{
 			return await Manager.EnsureEntity(
@@ -91,7 +91,7 @@ namespace SF.Core.ServiceManagement.Management
 			string Title = null,
 			string Description = null,
 			string ServiceIdent = null,
-			LogicEntityState State = LogicEntityState.Enabled
+			EntityLogicState State = EntityLogicState.Enabled
 			)
 		{
 			var re = await Manager.TryGetService<I, T>(ParentId);

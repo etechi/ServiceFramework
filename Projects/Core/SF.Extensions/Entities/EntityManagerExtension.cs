@@ -42,12 +42,12 @@ namespace SF.Entities
 		public static async Task SetEntityState<TKey, TEditable>(
 			this IEntityManager<TKey, TEditable> Manager,
 			TKey Id,
-			LogicEntityState State
+			EntityLogicState State
 			) where TKey : IEquatable<TKey>
 			where TEditable : class, IEntityWithId<TKey>,IObjectEntity
 		=> await Manager.UpdateEntity<TKey,TEditable>(
 			Id,
-			e => e.ObjectState = State
+			e => e.LogicState = State
 			);
 
 		public static async Task SetEntityName<TKey, TEditable>(

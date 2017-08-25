@@ -46,53 +46,48 @@ namespace SF.Common.Documents
 			"order",
 			i => i.Add("order", d => d.ItemOrder));
 
+
+		IContextQueryable<TDocument> LimitedDocuments => Documents.Value.AsQueryable()
+				.WithScope(ServiceInstanceDescriptor)
+				.IsEnabled();
+
+		IContextQueryable<TCategory> LimitedCategories => Categories.Value.AsQueryable()
+				.WithScope(ServiceInstanceDescriptor)
+				.IsEnabled();
+
 		public async Task<TDocumentPublic> GetAsync(long Id)
 		{
-			var sid = ServiceInstanceDescriptor.InstanceId;
 			var q = Documents.Value.AsQueryable()
-				.Where(d => d.ScopeId == sid &&
-				d.Id == Id &&
-				d.ObjectState == LogicEntityState.Enabled
-				);
-			return await MapModelToPublic(q, true).SingleOrDefaultAsync();
+				.EnabledScopedById(Id, ServiceInstanceDescriptor);
+
+			return await MapModelToPublic(q, true)
+				.SingleOrDefaultAsync();
 		}
 
 		public async Task<TDocumentPublic> GetByKeyAsync(string Key)
 		{
-			var sid = ServiceInstanceDescriptor.InstanceId;
-			var q = Documents.Value.AsQueryable()
-				.Where(d => d.ScopeId == sid &&
-				d.Ident == Key &&
-				d.ObjectState == LogicEntityState.Enabled
-				);
+			var q = LimitedDocuments.Where(d => d.Ident == Key);
 			return await MapModelToPublic(q, true).SingleOrDefaultAsync();
 		}
 
 		public async Task<TCategoryPublic> LoadContainerAsync(long Key)
 		{
-			var sid = ServiceInstanceDescriptor.InstanceId;
-			var q = Categories.Value.AsQueryable()
-				.Where(d => d.ScopeId == sid &&
-				d.Id == Key &&
-				d.ObjectState == LogicEntityState.Enabled
-				);
+			var q = LimitedCategories.EnabledScopedById(Key, ServiceInstanceDescriptor);
 			return await MapModelToPublic(q, true).SingleOrDefaultAsync();
 		}
 
 		public async Task<QueryResult<TDocumentPublic>> SearchAsync(string Key, Paging Paging)
 		{
-			var sid = ServiceInstanceDescriptor.InstanceId;
-			var q = Documents.Value.AsQueryable();
-			if (string.IsNullOrWhiteSpace(Key))
-				q = q.Where(d => d.ScopeId == sid && d.ObjectState == LogicEntityState.Enabled);
-			else
-				q = q.Where(d => d.ScopeId == sid && d.ObjectState == LogicEntityState.Enabled && (
+			var q = LimitedDocuments;
+			if (!string.IsNullOrWhiteSpace(Key))
+				q = q.Where(
+					d=>
 					d.Name.Contains(Key) || 
 					d.Description.Contains(Key) || 
 					d.Content.Contains(Key) || 
 					d.SubTitle.Contains(Key) || 
 					d.Remarks.Contains(Key)
-					));
+					);
 
 			return await q.ToQueryResultAsync(
 				iq => MapModelToPublic(iq, false),
@@ -104,11 +99,8 @@ namespace SF.Common.Documents
 
 		public async Task<QueryResult<TDocumentPublic>> ListItemsAsync(long? Container, Paging Paging)
 		{
-			var sid = ServiceInstanceDescriptor.InstanceId;
-			var q = Documents.Value.AsQueryable()
-				.Where(d => d.ScopeId == sid && 
-				d.ContainerId == Container && 
-				d.ObjectState == LogicEntityState.Enabled
+			var q = LimitedDocuments.Where(d => 
+				d.ContainerId == Container 
 				);
 			return await q.ToQueryResultAsync(
 				iq => MapModelToPublic(iq, false),
@@ -120,11 +112,8 @@ namespace SF.Common.Documents
 
 		public async Task<QueryResult<TCategoryPublic>> ListChildContainersAsync(long? Key, Paging Paging)
 		{
-			var sid = ServiceInstanceDescriptor.InstanceId;
-			var q = Categories.Value.AsQueryable()
-				.Where(d => d.ScopeId == sid &&
-				d.ContainerId == Key &&
-				d.ObjectState == LogicEntityState.Enabled
+			var q = LimitedCategories.Where(d=>
+				d.ContainerId == Key
 				);
 			return await q.ToQueryResultAsync(
 				iq => MapModelToPublic(q,false),

@@ -19,7 +19,7 @@ namespace SF.Auth.Identities.Models
 		public DateTime UpdateTime { get; set; }
 
 		[Comment("对象状态")]
-		public LogicEntityState ObjectState { get; set; }
+		public EntityLogicState LogicState { get; set; }
 	}
 	public class IdentityEditable : IdentityInternal
 	{

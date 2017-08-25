@@ -47,8 +47,8 @@ namespace SF.Data
 
         public static IContextQueryable<O> Filter<O>(
              this IContextQueryable<O> q,
-             LogicEntityState? state,
-             System.Linq.Expressions.Expression<Func<O, LogicEntityState>> propExpr
+             EntityLogicState? state,
+             System.Linq.Expressions.Expression<Func<O, EntityLogicState>> propExpr
              )
              where O : class
         {
@@ -56,7 +56,7 @@ namespace SF.Data
             var prop = propExpr.Body;
             if (state == null)
                 return q.Where(Expression.Lambda<Func<O, bool>>(
-                   Expression.NotEqual(prop, Expression.Constant(LogicEntityState.Deleted)),
+                   Expression.NotEqual(prop, Expression.Constant(EntityLogicState.Deleted)),
                    o
                    ));
             return q.Where(
