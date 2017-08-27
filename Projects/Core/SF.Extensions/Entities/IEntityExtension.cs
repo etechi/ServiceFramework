@@ -9,7 +9,7 @@ namespace SF.Entities
 {
 	
 
-    public static class IEntityExtension
+    public static class EntityExtension
 	{
 		public static IObjectEntity Create(this IObjectEntity model,DateTime time)
 		{
@@ -38,9 +38,9 @@ namespace SF.Entities
 		}
 
 
-		static string[] GetTypePropertyNames(Type type)=>
+		static string[] GetTypePropertyNames(Type type) =>
 			type.GetInterfaceMembers(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty)
-			.Where(m=>m is PropertyInfo)
+			.Where(m => m is PropertyInfo)
 			.Select(p => p.Name)
 			.ToArray();
 
@@ -48,7 +48,7 @@ namespace SF.Entities
 		static string[] UIObjectEntityPropertyNames { get; } = GetTypePropertyNames(typeof(IUIObjectEntity));
 		static string[] EventEntityPropertyNames { get; } = GetTypePropertyNames(typeof(IEventEntity));
 
-		public static IContextQueryable<TResult> SelectWithProperties<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector,string[] Properties)
+		public static IContextQueryable<TResult> SelectWithProperties<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector, string[] Properties)
 		{
 			var expr = selector.Body as MemberInitExpression;
 			if (expr != null)
@@ -76,18 +76,111 @@ namespace SF.Entities
 
 			return source.New(source.Queryable.Select(selector));
 		}
-		public static IContextQueryable<TResult> SelectObjectEntity<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
+
+		static Expression<Func<TSource, TResult>> Lambda<TSource, TResult>(Expression<Func<TSource, TResult>> expr)
+			=> expr;
+
+		
+		public static Expression<Func<TSource, TResult>> MergeMemberInit<TSource, TResult>(
+			this Expression<Func<TSource, TResult>> orgMapper,
+			Expression<Func<TSource, TResult>> newMapper
+			)
 		{
-			return source.SelectWithProperties(selector, ObjectEntityPropertyNames);
+			var oExpr = orgMapper.Body as MemberInitExpression;
+			if (oExpr == null)
+				throw new NotSupportedException();
+
+			var nExpr = newMapper.Body as MemberInitExpression;
+			if (nExpr == null)
+				throw new NotSupportedException();
+
+			var orgArg = orgMapper.Parameters[0];
+			var newArg = newMapper.Parameters[0];
+			var argMap = new Dictionary<ParameterExpression, ParameterExpression> { { orgArg, newArg } };
+
+			var binds = nExpr.Bindings.ToDictionary(b => b.Member.Name);
+			oExpr.Bindings
+				.Where(b => !binds.ContainsKey(b.Member.Name))
+				.ForEach(b => 
+					binds[b.Member.Name] = b.ReplaceArguments(argMap)
+					);
+
+			return Expression.Lambda<Func<TSource, TResult>>(
+					Expression.MemberInit(
+						nExpr.NewExpression,
+						binds.Values
+						),
+					newArg
+					);
 		}
-		public static IContextQueryable<TResult> SelectUIObjectEntity<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
+
+		public static Expression<Func<TSource, TResult>> GetObjectEntityMapper<TSource, TResult>()
+			where TSource : IObjectEntity
+			where TResult : IObjectEntity, new()
+			=> Lambda<TSource, TResult>(
+				s => new TResult
+				{
+					Name = s.Name,
+					LogicState = s.LogicState,
+					CreatedTime = s.CreatedTime,
+					UpdatedTime = s.UpdatedTime
+				}
+				);
+
+		static Expression<Func<TSource, TResult>> GetUIObjectEntityMapper<TSource, TResult>(this IContextQueryable<TSource> source)
+			where TSource : IUIObjectEntity
+			where TResult : IUIObjectEntity, new()
+			=> 
+				GetObjectEntityMapper<TSource, TResult>()
+					.MergeMemberInit(
+						s => new TResult
+						{
+							Title=s.Title,
+							SubTitle = s.SubTitle,
+							Remarks = s.Remarks,
+							Description = s.Description,
+							Image = s.Image,
+							Icon =s.Icon,
+						}
+					);
+
+		static Expression<Func<TSource, TResult>> GetContainerItemEntityMapper<TSource, TResult>(this IContextQueryable<TSource> source)
+			where TSource : IItemEntity
+			where TResult : IItemEntity, new()
+			=> Lambda<TSource, TResult>(
+				s => new TResult
+				{
+					ContainerId=s.ContainerId
+				}
+			);
+
+		public static IContextQueryable<TResult> SelectObjectEntity<TSource, TResult>(
+			this IContextQueryable<TSource> source,
+			Expression<Func<TSource, TResult>> selector
+			)
+			where TSource : IObjectEntity
+			where TResult : IObjectEntity, new()
 		{
-			return source.SelectWithProperties(selector, UIObjectEntityPropertyNames);
+			return source.SelectWithProperties(
+				selector,
+				ObjectEntityPropertyNames
+				);
+		}
+		public static IContextQueryable<TResult> SelectUIObjectEntity<TSource, TResult>(
+			this IContextQueryable<TSource> source,
+			Expression<Func<TSource, TResult>> selector
+			)
+			where TResult : IUIObjectEntity, new()
+			where TSource : IUIObjectEntity
+		{
+			return source.SelectWithProperties(
+				selector,
+				UIObjectEntityPropertyNames
+				);
 		}
 		public static IContextQueryable<TResult> SelectEventEntity<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
 		{
 			return source.SelectWithProperties(selector, EventEntityPropertyNames);
 		}
-
 	}
 }

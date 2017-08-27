@@ -1,5 +1,6 @@
 ﻿using SF.Entities;
 using SF.Metadata;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SF.Core.ServiceManagement.Models
@@ -15,10 +16,10 @@ namespace SF.Core.ServiceManagement.Models
 
 		[Comment("优先级")]
 		[TableVisible]
-		public int Priority { get; set; }
+		public int ItemOrder { get; set; }
 
 	}
-	public class ServiceInstanceInternal : ServiceInstance,IItemEntity<long?>
+	public class ServiceInstanceInternal : ServiceInstance,IItemEntity<long?>,ITreeNodeEntity<ServiceInstanceInternal>
 	{
 		[Comment("服务定义")]
 		[EntityIdent("系统服务定义", nameof(ServiceName))]
@@ -49,12 +50,13 @@ namespace SF.Core.ServiceManagement.Models
 		[TableVisible]
 		[Comment("父服务")]
 		public string ParentName { get; set; }
+
+		public IEnumerable<ServiceInstanceInternal> Children { get; set; }
 	}
 
 	
 	public class ServiceInstanceEditable : ServiceInstanceInternal
 	{
-		
 
 		[Comment(Name = "服务设置", Description = "此项设置和具体的服务实现相关，更改服务实现以后需要保存后才会生效，原服务实现的设置会丢失。")]
 		[PropertyType(PropertyTypeSourceType.External, nameof(SettingType))]

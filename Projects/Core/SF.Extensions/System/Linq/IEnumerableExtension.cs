@@ -102,5 +102,8 @@ namespace System.Linq
 				yield return i;
 			yield return last;
 		}
+
+		public static bool AllEquals<T>(this IEnumerable<T> items, IEnumerable<T> other) where T : class
+			=> items.Zip(other, (l, r) => l==r).All(r => r);
 	}
 }

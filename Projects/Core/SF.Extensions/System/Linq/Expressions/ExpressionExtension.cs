@@ -13,9 +13,9 @@ namespace System.Linq.Expressions
 	{
 		public static Expression Create(this Type type, params Expression[] args)
 		{
-			return Create(type,(IEnumerable<Expression>) args);
+			return Create(type, (IEnumerable<Expression>)args);
 		}
-		public static Expression Create(this Type type,IEnumerable<Expression> args)
+		public static Expression Create(this Type type, IEnumerable<Expression> args)
 		{
 			return Expression.New(
 				type.GetConstructor((from a in args select a.Type).ToArray()),
@@ -34,11 +34,11 @@ namespace System.Linq.Expressions
 		{
 			return Expression.Block(es);
 		}
-		public static Expression Assign(this Expression left,Expression right)
+		public static Expression Assign(this Expression left, Expression right)
 		{
 			return Expression.Assign(left, right);
 		}
-		public static Expression CallMethod(this Expression obj,MethodInfo method,params Expression[] args)
+		public static Expression CallMethod(this Expression obj, MethodInfo method, params Expression[] args)
 		{
 			return Expression.Call(
 				obj,
@@ -52,7 +52,7 @@ namespace System.Linq.Expressions
 		}
 		public static Expression CallMethod(this Expression obj, string name, IEnumerable<Expression> args)
 		{
-			return CallMethod(obj, obj.Type.FindMethod(name,BindingFlags.Public | BindingFlags.Instance), args.ToArray());
+			return CallMethod(obj, obj.Type.FindMethod(name, BindingFlags.Public | BindingFlags.Instance), args.ToArray());
 		}
 		public static MethodInfo FindMethod(this Type type, string name, BindingFlags flags)
 		{
@@ -61,28 +61,28 @@ namespace System.Linq.Expressions
 				return m;
 			foreach (var t in type.GetInterfaces())
 			{
-				m = t.FindMethod(name,flags);
+				m = t.FindMethod(name, flags);
 				if (m != null)
 					return m;
 			}
 			return null;
 
-				//type.method(name, BindingFlags.NonPublic | BindingFlags.Instance) ??
-				//type.method(name, BindingFlags.NonPublic | BindingFlags.Static);
+			//type.method(name, BindingFlags.NonPublic | BindingFlags.Instance) ??
+			//type.method(name, BindingFlags.NonPublic | BindingFlags.Static);
 		}
-		public static MethodInfo Method(this Type type,string name,System.Reflection.BindingFlags flags)
+		public static MethodInfo Method(this Type type, string name, System.Reflection.BindingFlags flags)
 		{
 			return type.GetMethod(name, flags);
 		}
-		public static MethodInfo Method(this Type type, string name,params Type[] types)
+		public static MethodInfo Method(this Type type, string name, params Type[] types)
 		{
 			name += "<" + new string(',', types.Length - 1) + ">";
-			var m=
+			var m =
 				type.GetMethod(name, BindingFlags.Public | BindingFlags.Instance) ??
 				type.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
-			
-				//type.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance) ??
-				//type.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static);
+
+			//type.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance) ??
+			//type.GetMethod(name, BindingFlags.NonPublic | BindingFlags.Static);
 			if (m == null)
 				return null;
 			return m.MakeGenericMethod(types);
@@ -90,51 +90,51 @@ namespace System.Linq.Expressions
 		public static MemberInfo Member(this Type type, string name)
 		{
 			return
-				type.Property(name, BindingFlags.Public | BindingFlags.Instance ) ??
+				type.Property(name, BindingFlags.Public | BindingFlags.Instance) ??
 				type.Property(name, BindingFlags.Public | BindingFlags.Static) ??
 				type.Field(name, BindingFlags.Public | BindingFlags.Instance) ??
 				type.Field(name, BindingFlags.Public | BindingFlags.Static);
-				/*type.prop(name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty) ??
-				type.prop(name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.SetProperty) ??
-				type.field(name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.SetField) ??
-				type.field(name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField | BindingFlags.SetField);
-				 */
+			/*type.prop(name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.SetProperty) ??
+			type.prop(name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetProperty | BindingFlags.SetProperty) ??
+			type.field(name, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.SetField) ??
+			type.field(name, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField | BindingFlags.SetField);
+			 */
 		}
-		public static MemberInfo Property(this Type type,string name,BindingFlags flags)
+		public static MemberInfo Property(this Type type, string name, BindingFlags flags)
 		{
-			return type.GetProperties(flags).FirstOrDefault(p=>p.Name==name);
+			return type.GetProperties(flags).FirstOrDefault(p => p.Name == name);
 		}
 		public static MemberInfo Field(this Type type, string name, BindingFlags flags)
 		{
 			return type.GetField(name, flags);
 		}
-		
-		public static Expression Loop(Expression body,LabelTarget break_target=null,LabelTarget continue_target=null)
+
+		public static Expression Loop(Expression body, LabelTarget break_target = null, LabelTarget continue_target = null)
 		{
 			return Expression.Loop(body, break_target, continue_target);
 		}
-		public static Expression Then(this Expression expr,params Expression[] true_expr)
+		public static Expression Then(this Expression expr, params Expression[] true_expr)
 		{
 			return true_expr.Length == 1 ?
 				Expression.IfThen(expr, true_expr[0]) :
 				Expression.IfThen(expr, Block(true_expr));
 		}
-		public static Expression Then(this Expression expr,IEnumerable<Expression> true_expr)
+		public static Expression Then(this Expression expr, IEnumerable<Expression> true_expr)
 		{
 			return Then(expr, true_expr.ToArray());
 		}
-		public static Expression Then(this Expression expr, Expression true_expr,Expression false_expr)
+		public static Expression Then(this Expression expr, Expression true_expr, Expression false_expr)
 		{
 			return Expression.IfThenElse(expr, true_expr, false_expr);
 		}
-		public static Expression ThenLoop(this Expression cond,params Expression[] body)
+		public static Expression ThenLoop(this Expression cond, params Expression[] body)
 		{
 			var bl = Expression.Label();
-			var b=body.Length==1?body[0]:Block(body);
+			var b = body.Length == 1 ? body[0] : Block(body);
 			return Loop(cond.Then(b, Expression.Break(bl)), bl);
 		}
 
-		public static Expression To(this Expression v,Type type)
+		public static Expression To(this Expression v, Type type)
 		{
 			return Expression.Convert(v, type);
 		}
@@ -142,7 +142,7 @@ namespace System.Linq.Expressions
 		{
 			return v.To(typeof(T));
 		}
-		public static Expression UseEnumerator<T>(this Expression e,Func<Expression,Expression> body)
+		public static Expression UseEnumerator<T>(this Expression e, Func<Expression, Expression> body)
 		{
 			return e.To<IEnumerable<T>>().CallMethod("GetEnumerator").Use(body);
 		}
@@ -154,23 +154,23 @@ namespace System.Linq.Expressions
 		{
 			return type.MakeGenericType(typeof(T));
 		}
-		public static Type MakeGenericType<T1,T2>(this Type type)
+		public static Type MakeGenericType<T1, T2>(this Type type)
 		{
-			return type.MakeGenericType(typeof(T1),typeof(T2));
+			return type.MakeGenericType(typeof(T1), typeof(T2));
 		}
 		public static Type MakeGenericType<T1, T2, T3>(this Type type)
 		{
-			return type.MakeGenericType(typeof(T1), typeof(T2),typeof(T3));
+			return type.MakeGenericType(typeof(T1), typeof(T2), typeof(T3));
 		}
-		public static Type MakeGenericType<T1, T2, T3,T4>(this Type type)
+		public static Type MakeGenericType<T1, T2, T3, T4>(this Type type)
 		{
-			return type.MakeGenericType(typeof(T1), typeof(T2), typeof(T3),typeof(T4));
+			return type.MakeGenericType(typeof(T1), typeof(T2), typeof(T3), typeof(T4));
 		}
-		public static Expression UseEnumerator(this Expression e, Type type,Func<Expression, Expression> body)
+		public static Expression UseEnumerator(this Expression e, Type type, Func<Expression, Expression> body)
 		{
 			return e.To(typeof(IEnumerable<>).MakeGenericType(type)).CallMethod("GetEnumerator").Use(body);
 		}
-		public static Expression Iterator(this Expression e, Type type,Func<Expression, Expression> body)
+		public static Expression Iterator(this Expression e, Type type, Func<Expression, Expression> body)
 		{
 			if (e.Type != typeof(IEnumerator<>).MakeGenericType(type))
 				throw new ArgumentException();
@@ -182,7 +182,7 @@ namespace System.Linq.Expressions
 					body(v)
 				));
 		}
-		public static Expression Iterator(this Expression e, ParameterExpression arg,Func<Expression, Expression> body)
+		public static Expression Iterator(this Expression e, ParameterExpression arg, Func<Expression, Expression> body)
 		{
 			if (e.Type != typeof(IEnumerator<>).MakeGenericType(arg.Type))
 				throw new ArgumentException();
@@ -200,19 +200,19 @@ namespace System.Linq.Expressions
 		{
 			return e.UseEnumerator<T>(ie => ie.Iterator<T>(body));
 		}
-		public static Expression ForEach(this Expression e,Type type,Func<Expression, Expression> body)
+		public static Expression ForEach(this Expression e, Type type, Func<Expression, Expression> body)
 		{
 			return e.UseEnumerator(type, ie => ie.Iterator(type, body));
 		}
-		public static Expression ForEachEach(this Expression e,ParameterExpression arg,Func<Expression, Expression> body)
+		public static Expression ForEachEach(this Expression e, ParameterExpression arg, Func<Expression, Expression> body)
 		{
 			return e.UseEnumerator(arg.Type, ie => ie.Iterator(arg, body));
 		}
-		public static Expression Use(this Expression e,Func<Expression,Expression> body)
+		public static Expression Use(this Expression e, Func<Expression, Expression> body)
 		{
 			var v = e.Type.AsVariable();
 			return Expression.Block(
-				new ParameterExpression[]{(ParameterExpression)v},
+				new ParameterExpression[] { (ParameterExpression)v },
 				new Expression[]{
 					v.Assign(e),
 					Expression.TryFinally(
@@ -239,21 +239,21 @@ namespace System.Linq.Expressions
 				args
 				);
 		}
-		public static Expression AsParameter(this Type type,string name)
+		public static Expression AsParameter(this Type type, string name)
 		{
-			return Expression.Parameter(type,name);
+			return Expression.Parameter(type, name);
 		}
 
-		public static Expression AsVariable(this Type type, string name=null)
+		public static Expression AsVariable(this Type type, string name = null)
 		{
 			return Expression.Variable(type, name);
 		}
-		public static Expression AsVariable<T>(string name=null)
+		public static Expression AsVariable<T>(string name = null)
 		{
 			return AsVariable(typeof(T), name);
 		}
-		
-		public static Expression Add(this Expression left,Expression right)
+
+		public static Expression Add(this Expression left, Expression right)
 		{
 			return Expression.Add(left, right);
 		}
@@ -280,7 +280,7 @@ namespace System.Linq.Expressions
 		public static Expression GetMember(this Expression left, string member)
 		{
 			return left.GetMember(
-				left.Type.Property(member, BindingFlags.Public | BindingFlags.Instance ) ??
+				left.Type.Property(member, BindingFlags.Public | BindingFlags.Instance) ??
 				left.Type.Field(member, BindingFlags.Public | BindingFlags.Instance)
 				);
 		}
@@ -316,7 +316,7 @@ namespace System.Linq.Expressions
 		{
 			return Expression.Not(left);
 		}
-		public static T Compile<T>(this Expression e,params Expression[] args)
+		public static T Compile<T>(this Expression e, params Expression[] args)
 		{
 			return Expression.Lambda<T>(e, from a in args select (ParameterExpression)a).Compile();
 		}
@@ -379,7 +379,7 @@ namespace System.Linq.Expressions
 						var mi = (MemberInitExpression)exp;
 						Visit(mi.NewExpression, level + 1, 0, visitor);
 						var idx = 1;
-						foreach(var b in mi.Bindings)
+						foreach (var b in mi.Bindings)
 						{
 							switch (b.BindingType)
 							{
@@ -445,6 +445,142 @@ namespace System.Linq.Expressions
 			}
 			return visitor(exp, level, index, false);
 		}
-	
+		public static MemberBinding Visit(this MemberBinding b, Func<Expression, Expression> Replace)
+		{
+			switch (b.BindingType)
+			{
+				case MemberBindingType.Assignment:
+					{
+						var oe = ((MemberAssignment)b).Expression;
+						var ne = oe.Visit(Replace);
+						if (oe == ne) return b;
+						return Expression.Bind(b.Member, ne);
+					}
+				case MemberBindingType.ListBinding:
+				case MemberBindingType.MemberBinding:
+				default:
+					throw new NotSupportedException();
+			}
+		}
+		public static Expression Visit(this Expression expr, Func<Expression, Expression> Replace)
+		{
+			var e = Replace(expr);
+			if (e == null)
+				return null;
+			switch (e.NodeType)
+			{
+				case ExpressionType.MemberInit:
+					{
+						var mi = (MemberInitExpression)e;
+						var newExpr = (NewExpression)Visit(mi.NewExpression, Replace);
+						var binds = mi.Bindings.Select(ie => Visit(ie, Replace)).ToArray();
+						if (newExpr == mi.NewExpression && binds.AllEquals(mi.Bindings))
+							return e;
+						return Expression.MemberInit(newExpr, binds);
+					}
+				case ExpressionType.New:
+					{
+						var ne = (NewExpression)e;
+						var args = ne.Arguments.Select(a => a.Visit(Replace)).ToArray();
+						if (args.AllEquals(ne.Arguments))
+							return e;
+						return Create(ne.Type, args);
+					}
+				case ExpressionType.NewArrayInit:
+					{
+						var nae = (NewArrayExpression)e;
+						var args = nae.Expressions.Select(a => a.Visit(Replace)).ToArray();
+						if (args.AllEquals(nae.Expressions))
+							return e;
+						return Expression.NewArrayInit(
+							nae.Type.GetElementType(),
+							args
+							);
+					}
+				case ExpressionType.MemberAccess:
+					{
+						var ma = (MemberExpression)e;
+						var ne = ma.Expression.Visit(Replace);
+						if (ne == ma.Expression)
+							return e;
+						return Expression.MakeMemberAccess(ne, ma.Member);
+					}
+				case ExpressionType.Constant:
+					{
+						return e;
+					}
+				case ExpressionType.Call:
+					{
+						var c = (MethodCallExpression)e;
+						var nobj = c.Object == null ? null : c.Object.Visit(Replace);
+						var nargs = c.Arguments.Select(a => a.Visit(Replace)).ToArray();
+						if (nobj == c.Object && nargs.AllEquals(c.Arguments))
+							return e;
+						return Expression.Call(
+							nobj,
+							c.Method,
+							nargs
+							);
+					}
+				default:
+
+					var be = e as BinaryExpression;
+					if (be != null)
+					{
+						var nl = be.Left.Visit(Replace);
+						var nr = be.Right.Visit(Replace);
+						if (nl == be.Left && nr == be.Right)
+							return e;
+						return Expression.MakeBinary(
+							e.NodeType,
+							nl,
+							nr,
+							be.IsLifted,
+							be.Method,
+							be.Conversion
+							);
+					}
+					var ue = e as UnaryExpression;
+					if (ue != null)
+					{
+						var nue = ue.Operand.Visit(Replace);
+						if (nue == ue.Operand)
+							return e;
+						return Expression.MakeUnary(
+							e.NodeType,
+							nue,
+							ue.Type,
+							ue.Method
+							);
+					}
+					throw new NotSupportedException();
+			}
+
+		}
+		public static Expression ReplaceArguments(this Expression expr, Dictionary<ParameterExpression, ParameterExpression> args)
+		{
+			return expr.Visit(e =>
+			{
+				var pe = e as ParameterExpression;
+				if(pe==null)
+					return e;
+				if (args.TryGetValue(pe, out var ne))
+					return ne;
+				return e;
+			});
+		}
+
+		public static MemberBinding ReplaceArguments(this MemberBinding expr, Dictionary<ParameterExpression, ParameterExpression> args)
+		{
+			return expr.Visit(e =>
+			{
+				var pe = e as ParameterExpression;
+				if (pe == null)
+					return e;
+				if (args.TryGetValue(pe, out var ne))
+					return ne;
+				return e;
+			});
+		}
 	}
 }

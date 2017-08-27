@@ -25,7 +25,7 @@ namespace SF.Core.ServiceManagement.Management
 
 		[EntityIdent("系统服务实现")]
 		[Comment("父服务实现")]
-		public long? ParentId { get; set; }
+		public long? ContainerId { get; set; }
 
 		[Comment("服务标识")]
 		[MaxLength(100)]

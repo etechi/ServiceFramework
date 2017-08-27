@@ -10,6 +10,7 @@ namespace SF.Entities
 	public interface IItemEntity<TContainerKey>
 	{
 		TContainerKey ContainerId { get; set; }
+		//string ContainerName { get; set; }
 	}
 
 	public interface IItemEntity : 

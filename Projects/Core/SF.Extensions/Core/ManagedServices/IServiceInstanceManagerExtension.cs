@@ -32,7 +32,7 @@ namespace SF.Core.ServiceManagement.Management
 			var comment = typeof(T).Comment();
 			e.ImplementType = typeof(T).GetFullName() + "@" + typeof(I).GetFullName();
 			e.ServiceType = typeof(I).GetFullName();
-			e.Priority = 0;
+			e.ItemOrder = 0;
 			e.LogicState = State;
 			e.ServiceIdent = ServiceIdent;
 			//e.SettingType = typeof(T).FullName + "CreateArguments";
@@ -49,7 +49,7 @@ namespace SF.Core.ServiceManagement.Management
 			=> await Manager.ResolveEntity(
 				new ServiceInstanceQueryArgument
 				{
-					ParentId = ParentId ?? 0,
+					ContainerId = ParentId ?? 0,
 					ServiceType = typeof(I).GetFullName(),
 					IsDefaultService = true
 				});
@@ -80,7 +80,7 @@ namespace SF.Core.ServiceManagement.Management
 				{
 					ServiceType = typeof(I).GetFullName(),
 					ImplementId = typeof(T).GetFullName() + "@" + typeof(I).GetFullName(),
-					ParentId = ParentId ?? 0,
+					ContainerId = ParentId ?? 0,
 				});
 		
 		public static async Task<Models.ServiceInstanceEditable> TryAddService<I, T>(

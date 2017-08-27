@@ -68,10 +68,10 @@ namespace SF.Core.ServiceManagement.Management
 			{
 				Id = i.Id,
 				//ImplementId = i.ImplementId,
-				Priority = i.Priority,
+				ItemOrder = i.ItemOrder,
 				ServiceIdent=i.ServiceIdent,
-				ContainerId=i.ParentId,
-				ParentName=i.ParentId.HasValue?i.Parent.Name:null,
+				ContainerId=i.ContainerId,
+				ParentName=i.ContainerId.HasValue?i.Container.Name:null,
 				ServiceType = i.ServiceType,
 				ImplementType = i.ImplementType,
 				Setting= i.Setting
@@ -102,12 +102,12 @@ namespace SF.Core.ServiceManagement.Management
 			{
 				Id=i.Id,
 				ServiceType = i.ServiceType,
-				Priority = i.Priority,
+				ItemOrder = i.ItemOrder,
 				ServiceIdent=i.ServiceIdent,
 				ServiceName = i.ServiceType,
 				ImplementType = i.ImplementType,
-				ContainerId=i.ParentId,
-				ParentName = i.ParentId.HasValue?i.Parent.Name:null
+				ContainerId=i.ContainerId,
+				ParentName = i.ContainerId.HasValue?i.Container.Name:null
 			});
 		}
 
@@ -121,8 +121,8 @@ namespace SF.Core.ServiceManagement.Management
 					.Filter(Arg.ServiceType, i => i.ServiceType)
 					.Filter(Arg.ServiceIdent,i=>i.ServiceIdent)
 					.Filter(Arg.ImplementId, i => i.ImplementType)
-					.Filter(Arg.ParentId,i=>i.ParentId)
-					.Filter(Arg.IsDefaultService.HasValue? (Arg.IsDefaultService.Value?(int?)0:(int?)-1):null,i=>i.Priority)
+					.Filter(Arg.ContainerId,i=>i.ContainerId)
+					.Filter(Arg.IsDefaultService.HasValue? (Arg.IsDefaultService.Value?(int?)0:(int?)-1):null,i=>i.ItemOrder)
 				;
 		}
 
@@ -195,7 +195,7 @@ namespace SF.Core.ServiceManagement.Management
 
 			if (m.LogicState == EntityLogicState.Enabled)
 			{
-				var factory = TestConfig(m.Id, m.ParentId, m.ImplementType, m.Setting);
+				var factory = TestConfig(m.Id, m.ContainerId, m.ImplementType, m.Setting);
 				if (factory.ServiceImplement.ManagedServiceInitializer != null)
 					await factory.ServiceImplement.ManagedServiceInitializer.Init(
 						ServiceProvider.Value,
@@ -219,10 +219,10 @@ namespace SF.Core.ServiceManagement.Management
 			//	(mi, ei) => mi.Setting = ei.Setting
 			//	);
 
-			if (m.ParentId != e.ContainerId)
+			if (m.ContainerId != e.ContainerId)
 			{
-				var orgParentId = m.ParentId;
-				m.ParentId = e.ContainerId;
+				var orgParentId = m.ContainerId;
+				m.ContainerId = e.ContainerId;
 				ctx.AddPostAction(() =>
 				{
 					ConfigChangedNotifier.NotifyInternalServiceChanged(
@@ -240,14 +240,14 @@ namespace SF.Core.ServiceManagement.Management
 			if (await DataSet.ModifyPosition(
 				m,
 				PositionModifyAction.Insert,
-				i => i.ParentId == m.ParentId && i.ServiceType==m.ServiceType,
+				i => i.ContainerId == m.ContainerId && i.ServiceType==m.ServiceType,
 				i => i.Id == m.Id,
-				i => i.Priority,
-				(i, p) => i.Priority = p
+				i => i.ItemOrder,
+				(i, p) => i.ItemOrder = p
 				) || m.ServiceIdent != e.ServiceIdent)
 				ctx.AddPostAction(() => 
 					ConfigChangedNotifier.NotifyInternalServiceChanged(
-						m.ParentId,
+						m.ContainerId,
 						m.ServiceType
 						)
 					);
@@ -288,7 +288,7 @@ namespace SF.Core.ServiceManagement.Management
 				DataSet.Context.TransactionScopeManager,
 				new ServiceInstanceQueryArgument
 				{
-					ParentId = ctx.Model.Id,
+					ContainerId = ctx.Model.Id,
 				});
 
 
@@ -308,7 +308,7 @@ namespace SF.Core.ServiceManagement.Management
 					new InstanceDescriptor
 					{
 						InstanceId = ctx.Model.Id,
-						ParentInstanceId = ctx.Model.ParentId,
+						ParentInstanceId = ctx.Model.ContainerId,
 						IsManaged = true,
 						ServiceDeclaration = decl,
 						ServiceImplement = impl

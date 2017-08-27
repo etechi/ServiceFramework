@@ -14,6 +14,13 @@ using SF.Management.MenuServices.Entity;
 
 namespace SF.Core.ServiceManagement
 {
+	public interface ITest
+	{
+		int name { get; set; }
+	}
+	public class Test : ITest
+	{
+	}
 	public static class MenuServicesDIExtension
 	{
 		//class TempItem : SF.Management.MenuServices.Models.MenuItem
@@ -163,7 +170,7 @@ namespace SF.Core.ServiceManagement
 			var re=await sim.QueryAsync(
 				new ServiceInstanceQueryArgument
 				{
-					ParentId = svc.Id
+					ContainerId = svc.Id
 				},Paging.Default
 				);
 			foreach (var i in re.Items)
