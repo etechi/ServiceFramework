@@ -51,7 +51,7 @@ namespace SF.Entities
 			}
 			else
 			{
-				var mel = sp.TryResolve<IEntityBatchLoader<TKey, TEntity>>();
+				var mel = sp.TryResolve<IEntityBatchLoadable<TKey, TEntity>>();
 				if (mel != null)
 					return (await mel.GetAsync(
 						Idents.Select(id => (TKey)Convert.ChangeType(id, typeof(TKey))).ToArray()

@@ -14,13 +14,6 @@ using SF.Management.MenuServices.Entity;
 
 namespace SF.Core.ServiceManagement
 {
-	public interface ITest
-	{
-		int name { get; set; }
-	}
-	public class Test : ITest
-	{
-	}
 	public static class MenuServicesDIExtension
 	{
 		//class TempItem : SF.Management.MenuServices.Models.MenuItem

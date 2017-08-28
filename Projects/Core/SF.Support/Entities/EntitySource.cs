@@ -23,7 +23,7 @@ namespace SF.Entities
 	}
 	public abstract class EntitySource<TKey, TPublic, TTemp, TModel> :
 		IEntityLoadable<TKey, TPublic>,
-		IEntityBatchLoader<TKey, TPublic>
+		IEntityBatchLoadable<TKey, TPublic>
 		where TPublic : class, IEntityWithId<TKey>
 		where TKey : IEquatable<TKey>
 		where TModel: class,IEntityWithId<TKey>

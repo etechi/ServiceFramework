@@ -17,7 +17,7 @@ namespace SF.Entities
 		Task RemoveAsync(TKey Key);
 		Task RemoveAllAsync();
 	}
-	public interface IEntityManager<TKey>: IEntityRemover<TKey>
+	public interface IEntityManagerCapabilities 
 	{
 		EntityManagerCapability Capabilities { get; }
 	}
@@ -40,7 +40,8 @@ namespace SF.Entities
 		Task<TKey> CreateAsync(TEntity Entity);
 	}
 	public interface IEntityManager<TKey, TEntity>:
-		IEntityManager<TKey>,
+		IEntityManagerCapabilities,
+		IEntityRemover<TKey>,
 		IEntityEditableLoader<TKey,TEntity>,
 		IEntityCreator<TKey,TEntity>,
 		IEntityUpdator<TKey, TEntity>

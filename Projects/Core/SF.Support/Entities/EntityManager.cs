@@ -6,12 +6,7 @@ using SF.Data;
 
 namespace SF.Entities
 {
-	public enum ModifyAction
-	{
-		Create,
-		Update,
-		Delete
-	}
+	
 	public abstract class EntityManager<TKey, TPublic, TQueryArgument, TEditable, TModel> :
 		EntityManager<TKey, TPublic, TPublic, TQueryArgument, TEditable, TModel>
 		where TPublic : class, IEntityWithId<TKey>

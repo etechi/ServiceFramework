@@ -16,8 +16,8 @@ namespace SF.Core.ServiceManagement
 			var nsc = sc;
 			if (typeof(IEntityLoadable<TKey, TEntity>).IsAssignableFrom(typeof(T)))
 				nsc.AddScoped(sp => (IEntityLoadable<TKey, TEntity>)(object)sp.Resolve<I>());
-			if (typeof(IEntityBatchLoader<TKey, TEntity>).IsAssignableFrom(typeof(T)))
-				nsc.AddScoped(sp => (IEntityBatchLoader<TKey, TEntity>)(object)sp.Resolve<I>());
+			if (typeof(IEntityBatchLoadable<TKey, TEntity>).IsAssignableFrom(typeof(T)))
+				nsc.AddScoped(sp => (IEntityBatchLoadable<TKey, TEntity>)(object)sp.Resolve<I>());
 			return sc;
 		}
 	}
