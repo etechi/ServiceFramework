@@ -76,11 +76,13 @@ namespace SF.Core.ServiceManagement
 					Attributes.Cast<System.Attribute>().Union(
 						new System.Attribute[]
 						{
-								new SF.Metadata.EntityIdentAttribute("系统服务实例") {
+								new SF.Metadata.EntityIdentAttribute(typeof(Management.IServiceInstanceManager)) {
+									
 									ScopeField =nameof(Models.ServiceInstanceInternal.ServiceType),
 									ScopeValue=realType.GetFullName()
 								}
-						})
+						}),
+					prop
 					);
 			}
 			return null;
@@ -109,7 +111,8 @@ namespace SF.Core.ServiceManagement
 					Name = Name,
 					Type = Builder.GenerateAndAddType(gtypes[1].MakeArrayType()).Name
 				},
-				Attributes.Cast<System.Attribute>()
+				Attributes.Cast<System.Attribute>(),
+				null
 				);
 		}
 		SF.Metadata.Models.Property GenerateArgsProperty(System.Type Type, ParameterInfo Arg, IMetadataBuilder Builder)
@@ -122,7 +125,8 @@ namespace SF.Core.ServiceManagement
 						Name=Arg.Name,
 						Type=Builder.TryGenerateAndAddType(Arg.ParameterType).Name
 					},
-					Arg.GetCustomAttributes(true).Cast<System.Attribute>()
+					Arg.GetCustomAttributes(true).Cast<System.Attribute>(),
+					null
 					);
 		}
 		SF.Metadata.Models.Type GenerateArgsType(System.Type Type, ParameterInfo[] Args, IMetadataBuilder Builder)

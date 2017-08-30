@@ -23,16 +23,16 @@ namespace SF.Users.Members
 		public string PhoneNumber { get; set; }
 
 		[Comment("来源")]
-		[EntityIdent("会员来源")]
+		[EntityIdent(typeof(MemberSources.IMemberSourceManagementService))]
 		public long? MemberSourceId { get; set; }
 
 		[Comment("邀请人")]
-		[EntityIdent("会员")]
+		[EntityIdent(typeof(IMemberManagementService))]
 		public long? InvitorId { get; set; }
 
 	}
 
-	[EntityManager("会员")]
+	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
 	[Comment("会员")]

@@ -40,7 +40,7 @@ namespace SF.Management.MenuServices.Models
 		public string ActionArgument { get; set; }
 
 		[Comment("服务")]
-		[EntityIdent("系统服务实例")]
+		[EntityIdent(typeof(Core.ServiceManagement.Management.IServiceInstanceManager))]
 		public long? ServiceId { get; set; }
 
 		[Comment("子菜单")]

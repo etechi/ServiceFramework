@@ -1,4 +1,5 @@
-﻿using SF.Entities;
+﻿using SF.Auth.Identities;
+using SF.Entities;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace SF.Data.Models
 
 		[Comment("用户")]
 		[ReadOnly(true)]
-		[EntityIdent("身份标识", nameof(UserName))]
+		[EntityIdent(typeof(IIdentityManagementService),  nameof(UserName))]
 		public virtual long? UserId { get; set; }
 
 		[Comment("用户")]

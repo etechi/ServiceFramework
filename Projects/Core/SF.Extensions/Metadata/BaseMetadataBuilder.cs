@@ -56,7 +56,7 @@ namespace SF.Metadata
 				Optional=optional,
 				Type = ResolveType(param_type),
                 DefaultValue= parameter.HasDefaultValue? JsonSerializer.Serialize(parameter.DefaultValue):null
-            },attrs);
+            },attrs, parameter);
 		}
 
 		protected virtual string ResolveResultType(Type type)
@@ -140,7 +140,7 @@ namespace SF.Metadata
 							Prompt=da?.Prompt,
 							Group=da?.GroupName,
 						};
-                        LoadAttributes(i, p.GetCustomAttributes());
+                        LoadAttributes(i, p.GetCustomAttributes(), p);
                         return i;
                     })
 					.ToArray();
@@ -160,7 +160,7 @@ namespace SF.Metadata
 				re.BaseTypes = baseTypes.ToArray();
 			var props=GenerateTypeProperties(type);
 			re.Properties = props.Length > 0 ? props : null;
-			LoadAttributes(re, type.GetCustomAttributes(true).Cast<Attribute>());
+			LoadAttributes(re,type.GetCustomAttributes(true).Cast<Attribute>(), type);
 			return re;
 		}
 		public virtual string FormatTypeName(Type type)
@@ -298,7 +298,7 @@ namespace SF.Metadata
 				Type = ResolveType(prop_type),
 				Optional = optional,
                 DefaultValue= def_value
-            },attrs);
+            }, attrs, prop);
 		}
 		protected virtual bool IsRootType(Type type)
 		{
@@ -329,7 +329,7 @@ namespace SF.Metadata
 			return DefaultIgnoreAttributeTypes;
 		}
 
-		public virtual T LoadAttributes<T>(T item,IEnumerable<Attribute> attrs,Predicate<Attribute> predicate=null)where T : Models.Entity
+		public virtual T LoadAttributes<T>(T item,IEnumerable<Attribute> attrs, object attrSource, Predicate<Attribute> predicate=null)where T : Models.Entity
 		{
 			var display = (CommentAttribute)
 				attrs.FirstOrDefault(a => a is CommentAttribute);
@@ -347,15 +347,19 @@ namespace SF.Metadata
 			var re = attrs
 				.Where(a=>!GetIgnoreAttributeTypes().Contains(a.GetType()))
 				.Where(a => (predicate==null || predicate(a)) && a.GetType().IsPublicType())
-				.Select(a => GenerateAttribute(a)).ToArray();
+				.Select(a => GenerateAttribute(attrSource,a)).ToArray();
 			if(re.Length>0)
 				item.Attributes=re;
 			return item;
 		}
-		Models.Attribute GenerateAttribute(Attribute attr)
+		protected virtual IMetadataAttributeValuesProvider TryGetAttributeValuesProvider(Attribute attr)
+			=> null;
+
+		protected virtual Models.Attribute GenerateAttribute(object attrSource,Attribute attr)
 		{
 			var type = attr.GetType();
-			var values = JsonSerializer.Serialize(attr);
+			var valuesProvider = TryGetAttributeValuesProvider(attr);
+			var values = JsonSerializer.Serialize(valuesProvider==null?attr:valuesProvider.GetValues(attr, attrSource));
 			return new Models.Attribute
 			{
 				Type = type.FullName,

@@ -6,7 +6,7 @@ namespace SF.Common.Documents.Management
 	public class DocumentCategoryQueryArgument : QueryArgument
 	{
 		[Comment(Name = "父分类")]
-		[EntityIdent("文档目录")]
+		[EntityIdent(typeof(IDocumentCategoryManager))]
 		public int? ParentId { get; set; }
 	}
 	[NetworkService]

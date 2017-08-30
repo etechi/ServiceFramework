@@ -10,7 +10,7 @@ namespace SF.Auth.Identities
 		public string Name { get; set; }
 	}
 
-	[EntityManager("身份标识")]
+	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
 	[Comment("身份标识")]

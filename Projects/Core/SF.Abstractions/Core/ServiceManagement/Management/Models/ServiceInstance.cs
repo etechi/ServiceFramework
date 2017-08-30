@@ -1,4 +1,5 @@
-﻿using SF.Entities;
+﻿using SF.Core.ServiceManagement.Management;
+using SF.Entities;
 using SF.Metadata;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -22,7 +23,7 @@ namespace SF.Core.ServiceManagement.Models
 	public class ServiceInstanceInternal : ServiceInstance,IItemEntity<long?>,ITreeNodeEntity<ServiceInstanceInternal>
 	{
 		[Comment("服务定义")]
-		[EntityIdent("系统服务定义", nameof(ServiceName))]
+		[EntityIdent(typeof(IServiceDeclarationManager), nameof(ServiceName))]
 		[Required]
 		public string ServiceType { get; set; }
 
@@ -32,7 +33,7 @@ namespace SF.Core.ServiceManagement.Models
 		public string ServiceName { get; set; }
 
 		[Comment("服务实现")]
-		[EntityIdent("系统服务实现", nameof(ImplementName), ScopeField = nameof(ServiceType))]
+		[EntityIdent(typeof(IServiceImplementManager), nameof(ImplementName), ScopeField = nameof(ServiceType))]
 		[Required]
 		public string ImplementType { get; set; }
 
@@ -43,7 +44,7 @@ namespace SF.Core.ServiceManagement.Models
 		public string ImplementName { get; set; }
 
 		[Comment("父服务实例")]
-		[EntityIdent("系统服务实例", nameof(ContainerName))]
+		[EntityIdent(typeof(IServiceImplementManager), nameof(ContainerName))]
 		public long? ContainerId { get; set; }
 
 		[Ignore]

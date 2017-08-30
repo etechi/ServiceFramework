@@ -367,5 +367,19 @@ namespace System.Reflection
 				System.Reflection.BindingFlags.Public | 
 				System.Reflection.BindingFlags.Instance
 				);
+
+
+		static IEnumerable<Type> _AllInterfaces(Type type)
+		{
+			yield return type;
+			foreach (var i in type.GetInterfaces())
+				foreach (var ii in _AllInterfaces(i))
+					yield return ii;
+		}
+		public static IEnumerable<Type> AllInterfaces(this Type type)
+		{
+			return _AllInterfaces(type).Distinct();
+		}
+
 	}
 }

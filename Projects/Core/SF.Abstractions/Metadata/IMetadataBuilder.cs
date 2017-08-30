@@ -13,6 +13,12 @@ namespace SF.Metadata
 		void AddType(Models.Type type);
 		IEnumerable<Models.Type> GetTypes();
 	}
+	public interface IMetadataAttributeValuesProvider
+	{
+		object GetValues(System.Attribute Attribute, object AttrSource);
+	}
+	public interface IMetadataAttributeValuesProvider<T> : IMetadataAttributeValuesProvider
+	{ }
 	public interface IMetadataBuilder
 	{
 		IMetadataTypeCollection TypeCollection { get; }
@@ -22,6 +28,6 @@ namespace SF.Metadata
 		Models.Type GenerateAndAddType(Type type);
 		Models.Property GenerateTypeProperty(System.Reflection.PropertyInfo prop, object DefaultValueObject);
 		Models.Property[] GenerateTypeProperties(Type type);
-		T LoadAttributes<T>(T item, IEnumerable<Attribute> attrs, Predicate<Attribute> predicate = null) where T : Models.Entity;
+		T LoadAttributes<T>(T item, IEnumerable<Attribute> attrs, object attrSource, Predicate<Attribute> predicate = null) where T : Models.Entity;
 	}
 }

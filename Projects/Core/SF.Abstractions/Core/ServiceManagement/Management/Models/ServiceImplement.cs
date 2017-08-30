@@ -1,4 +1,5 @@
-﻿using SF.Entities;
+﻿using SF.Core.ServiceManagement.Management;
+using SF.Entities;
 using SF.Metadata;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -34,7 +35,7 @@ namespace SF.Core.ServiceManagement.Models
 		public bool Disabled { get; set; }
 
 		[Comment("服务定义")]
-		[EntityIdent("系统服务定义", nameof(DeclarationName))]
+		[EntityIdent(typeof(IServiceDeclarationManager), nameof(DeclarationName))]
 		[ReadOnly(true)]
 		public string DeclarationId { get; set; }
 

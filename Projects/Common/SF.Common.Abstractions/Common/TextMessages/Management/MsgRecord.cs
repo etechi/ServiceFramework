@@ -22,7 +22,7 @@ namespace SF.Common.TextMessages.Management
 		[TableVisible]
 		public string Target { get; set; }
 
-		[EntityIdent("系统服务实例", nameof(ServiceName))]
+		[EntityIdent(typeof(Core.ServiceManagement.Management.IServiceInstanceManager), nameof(ServiceName))]
 		[Comment( "发送服务")]
 		public long ServiceId { get; set; }
 

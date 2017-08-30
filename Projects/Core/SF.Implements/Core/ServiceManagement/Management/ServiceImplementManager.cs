@@ -61,7 +61,7 @@ namespace SF.Core.ServiceManagement.Management
 				q = q.Where(i => i.Id == Arg.Id.Value);
 			else
 				q = q.Filter(Arg.Name, i => i.Name)
-					.Filter(Arg.CategoryId, i => i.Group)
+					.Filter(Arg.Group, i => i.Group)
 					.Filter(Arg.DeclarationId,i=>i.DeclarationId)
 					;
 			return Task.FromResult(

@@ -12,16 +12,15 @@ namespace SF.Core.ServiceManagement.Management
 		[Comment("服务实现名称")]
 		public string Name { get; set; }
 
-		[EntityIdent("系统服务实现分类")]
 		[Comment("服务实现分类")]
-		public string CategoryId { get; set; }
+		public string Group { get; set; }
 
-		[EntityIdent("系统服务定义")]
+		[EntityIdent(typeof(IServiceDeclarationManager))]
 		[Comment("服务定义")]
 		public string DeclarationId { get; set; }
 	}
 
-	[EntityManager("系统服务实现")]
+	[EntityManager]
 	[Authorize("sysadmin")]
 	[NetworkService]
 	[Comment("服务实现管理", "系统内置服务实现")]

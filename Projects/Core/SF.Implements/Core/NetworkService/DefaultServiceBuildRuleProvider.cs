@@ -3,11 +3,21 @@ using System.Linq;
 using System.Reflection;
 using SF.Metadata.Models;
 using System.Collections.Generic;
+using SF.Core.ServiceManagement;
+using SF.Entities;
+using SF.Metadata;
 
 namespace SF.Core.NetworkService
 {
 	public class DefaultServiceBuildRuleProvider : IServiceBuildRuleProvider
 	{
+		IServiceProvider ServiceProvider { get; }
+		public DefaultServiceBuildRuleProvider(IServiceProvider ServiceProvider)
+		{
+			this.ServiceProvider = ServiceProvider;
+		}
+
+
 		class MethodComparer : IEqualityComparer<MethodInfo>
 		{
 			public static MethodComparer Instance { get; } = new MethodComparer();
@@ -92,7 +102,6 @@ namespace SF.Core.NetworkService
         public ParameterInfo DetectHeavyParameter(MethodInfo method)
 		{
 			return method.GetParameters().LastOrDefault(p => IsHeavyParameter(p));
-
 		}
 
 		public string FormatServiceName(System.Type type)
@@ -115,6 +124,12 @@ namespace SF.Core.NetworkService
 			if (name.EndsWith("Async"))
 				name = name.Substring(0, name.Length - 5);
 			return name;
+		}
+
+		public IMetadataAttributeValuesProvider TryGetAttributeValuesProvider(System.Attribute attr)
+		{
+			var type = typeof(IMetadataAttributeValuesProvider<>).MakeGenericType(attr.GetType());
+			return ServiceProvider.GetService(type) as IMetadataAttributeValuesProvider;
 		}
 	}
 }

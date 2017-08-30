@@ -147,17 +147,22 @@ namespace SF.Core.ServiceManagement
 				SF.Management.MenuServices.Entity.DataModels.MenuItem
 				>(sc, /*DefaultMenu,*/TablePrefix);
 
-		static async Task CollectMenuItem(Models.ServiceInstanceInternal svc,IServiceInstanceManager sim, IServiceDeclarationTypeResolver svcTypeResolver,List<MenuItem> items)
+		static async Task CollectMenuItem(
+			Models.ServiceInstanceInternal svc,
+			IServiceInstanceManager sim, 
+			IServiceDeclarationTypeResolver svcTypeResolver,
+			List<MenuItem> items
+			)
 		{
 			var type = svcTypeResolver.Resolve(svc.ServiceType);
 			var em = type.GetCustomAttribute<EntityManagerAttribute>();
 			if (em != null)
 				items.Add(new MenuItem
 				{
-					Name = em.Entity,
+					Name = svcTypeResolver.GetTypeIdent(type),
 					Title = type.Comment().Name,
 					Action = MenuItemAction.EntityManager,
-					ActionArgument = em.Entity,
+					ActionArgument = svcTypeResolver.GetTypeIdent(type),
 					ServiceId=svc.Id
 				});
 			var re=await sim.QueryAsync(

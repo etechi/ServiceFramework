@@ -97,7 +97,7 @@ namespace SF.Applications
 			Services.AddSystemTimeService();
 			Services.AddTaskServiceManager();
 			//Services.AddDataContext();
-			Services.AddDataEntity();
+			Services.AddDataEntityProviders();
 			Services.AddServiceFeatureControl();
 			Services.AddFilePathResolver();
 			Services.AddLocalFileCache();

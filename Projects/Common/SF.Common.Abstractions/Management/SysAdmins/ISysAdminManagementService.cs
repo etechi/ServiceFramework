@@ -17,7 +17,7 @@ namespace SF.Management.SysAdmins
 		public string Name { get; set; }
 	}
 
-	[EntityManager("系统管理员")]
+	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
 	[Comment("系统管理员")]

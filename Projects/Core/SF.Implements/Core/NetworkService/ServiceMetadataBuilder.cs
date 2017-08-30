@@ -60,7 +60,8 @@ namespace SF.Core.NetworkService
 					Methods = GenerateMethodsMetadata(type, ac),
 					GrantInfo= UseOrIgnoreGrantInfo(ac)
 				},
-				attrs
+				attrs,
+				type
 				);
 
 		}
@@ -158,7 +159,7 @@ namespace SF.Core.NetworkService
 				Optional=optional,
 				//TransportMode=attrs.Any(a=>a is FromBodyAttribute),
 				Type = ResolveType(param_type)
-			},attrs/*,a=>!(a is FromBodyAttribute)*/);
+			},attrs,parameter/*,a=>!(a is FromBodyAttribute)*/);
 		}
 		public SF.Metadata.Models.Type GetUnknownType()
 		{
@@ -194,7 +195,7 @@ namespace SF.Core.NetworkService
 		}
 
 
-		public override T LoadAttributes<T>(T item,IEnumerable<Attribute> attrs,Predicate<Attribute> predicate=null)
+		public override T LoadAttributes<T>(T item,IEnumerable<Attribute> attrs,object attrSource,Predicate<Attribute> predicate=null)
 		{
 			var display= (CommentAttribute)attrs.FirstOrDefault(a => a is CommentAttribute);
 			if (display != null)
@@ -203,7 +204,11 @@ namespace SF.Core.NetworkService
 				if (!string.IsNullOrWhiteSpace(display.Description)) item.Description = display.Description;
 				if (!string.IsNullOrWhiteSpace(display.GroupName)) item.Group = display.GroupName;
 			}
-			return base.LoadAttributes(item, attrs, predicate);
+			return base.LoadAttributes(item, attrs, attrSource,predicate);
+		}
+		protected override IMetadataAttributeValuesProvider TryGetAttributeValuesProvider(Attribute attr)
+		{
+			return BuildRule.TryGetAttributeValuesProvider(attr);
 		}
 		
 	}

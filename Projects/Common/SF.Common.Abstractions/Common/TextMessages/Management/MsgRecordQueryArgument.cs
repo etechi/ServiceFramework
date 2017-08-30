@@ -11,12 +11,12 @@ namespace SF.Common.TextMessages.Management
 		public SendStatus? Status { get; set; }
 
 		[Comment( "目标用户")]
-		[EntityIdent("用户")]
+		[EntityIdent(typeof(Auth.Identities.IIdentityManagementService))]
 		public long? TargeUserId { get; set; }
 
 
 		[Comment( "发送服务")]
-		[EntityIdent("系统服务实例")]
+		[EntityIdent(typeof(Core.ServiceManagement.Management.IServiceInstanceManager))]
 		public long? ServiceId { get; set; }
 
 		[Comment( "发送时间")]
