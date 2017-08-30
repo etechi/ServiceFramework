@@ -28,11 +28,15 @@ namespace SF.Data
         string Message { get; }
         Task Commit();
         bool IsRollbacking { get; }
-    }
+
+		void AddPostAction(Action action, bool CallOnCommited = true);
+		void AddPostAction(Func<Task> action, bool CallOnCommited = true);
+	}
 	public interface ITransactionScopeManager : IDisposable
     {
 		DbTransaction CurrentDbTransaction { get; }
-        Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode, IsolationLevel IsolationLevel=IsolationLevel.ReadCommitted);
+		ITransactionScope CurrentScope { get; }
+		Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode, IsolationLevel IsolationLevel=IsolationLevel.ReadCommitted);
     }
 
 	[AttributeUsage(AttributeTargets.Method)]

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SF.Bizness.Accounting.Management
 {
-    public interface IAccountTitleManager:
-		ObjectManager.IServiceObjectManager<int, AccountTitle>
+    public interface IAccountTypeManager:
+		IServiceObjectManager<int, AccountTitle>
     {
         Task<AccountTitle[]> List();
     }

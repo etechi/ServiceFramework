@@ -35,7 +35,6 @@ namespace SF.Core.ServiceManagement.Management
 			IDataEntityResolver EntityResolver,
 			IServiceInstanceConfigChangedNotifier ConfigChangedNotifier,
 			Lazy<IServiceProvider> ServiceProvider,
-			ILogger<ServiceInstanceManager> Logger,
 			Lazy<IIdentGenerator> IdentGenerator,
 			ITimeService TimeService,
 			IServiceMetadata Metadata,
@@ -57,7 +56,7 @@ namespace SF.Core.ServiceManagement.Management
 				"name",
 				b => b.Add("name", i => i.Name));
 
-		public EntityManagerCapability Capabilities => throw new NotImplementedException();
+		public EntityManagerCapability Capabilities => EntityManagerCapability.All;
 
 		async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
@@ -68,7 +67,7 @@ namespace SF.Core.ServiceManagement.Management
 				ItemOrder = i.ItemOrder,
 				ServiceIdent=i.ServiceIdent,
 				ContainerId=i.ContainerId,
-				ParentName=i.ContainerId.HasValue?i.Container.Name:null,
+				ContainerName=i.ContainerId.HasValue?i.Container.Name:null,
 				ServiceType = i.ServiceType,
 				ImplementType = i.ImplementType,
 				Setting= i.Setting
@@ -104,7 +103,7 @@ namespace SF.Core.ServiceManagement.Management
 				ServiceName = i.ServiceType,
 				ImplementType = i.ImplementType,
 				ContainerId=i.ContainerId,
-				ParentName = i.ContainerId.HasValue?i.Container.Name:null
+				ContainerName = i.ContainerId.HasValue?i.Container.Name:null
 			});
 		}
 
@@ -220,7 +219,7 @@ namespace SF.Core.ServiceManagement.Management
 			{
 				var orgParentId = m.ContainerId;
 				m.ContainerId = e.ContainerId;
-				ctx.AddPostAction(() =>
+				Storage.AddPostAction(() =>
 				{
 					ConfigChangedNotifier.NotifyInternalServiceChanged(
 						orgParentId,
@@ -234,7 +233,7 @@ namespace SF.Core.ServiceManagement.Management
 			}
 			
 
-			if (await ctx.DataSet.ModifyPosition(
+			if (await Storage.DataSet.ModifyPosition(
 				m,
 				PositionModifyAction.Insert,
 				i => i.ContainerId == m.ContainerId && i.ServiceType==m.ServiceType,
@@ -242,7 +241,7 @@ namespace SF.Core.ServiceManagement.Management
 				i => i.ItemOrder,
 				(i, p) => i.ItemOrder = p
 				) || m.ServiceIdent != e.ServiceIdent)
-				ctx.AddPostAction(() => 
+				Storage.AddPostAction(() => 
 					ConfigChangedNotifier.NotifyInternalServiceChanged(
 						m.ContainerId,
 						m.ServiceType
@@ -250,7 +249,7 @@ namespace SF.Core.ServiceManagement.Management
 					);
 			m.ServiceIdent = e.ServiceIdent;
 
-			ctx.AddPostAction(() =>
+			Storage.AddPostAction(() =>
 			{
 				ConfigChangedNotifier.NotifyChanged( m.Id);
 				Logger.Info("ServiceInstance Saved:{0}",Json.Stringify(m));
@@ -280,13 +279,10 @@ namespace SF.Core.ServiceManagement.Management
 			//if (ctx.Model.IsDefaultService)
 			//throw new PublicInvalidOperationException("不能删除默认服务");
 
-			await ctx.QueryAndRemoveAsync<ServiceInstanceManager,long,ServiceInstanceQueryArgument>(
-				Storage.DataSet.Context.TransactionScopeManager,
-				new ServiceInstanceQueryArgument
-				{
-					ContainerId = ctx.Model.Id,
-				});
-
+			await Storage.RemoveAllAsync<long,DataModels.ServiceInstance>(
+				RemoveAsync,
+				q => q.ContainerId == ctx.Model.Id
+				);
 
 			var (implTypeName, svcTypeName) = ctx.Model.ImplementType.Split2('@');
 			var ServiceResolver = this.ServiceProvider.Value.Resolver();
@@ -313,17 +309,17 @@ namespace SF.Core.ServiceManagement.Management
 
 		public Task RemoveAsync(long Key)
 		{
-			this.Storage.remo
+			return this.Storage.RemoveAsync(Key);
 		}
 
 		public Task RemoveAllAsync()
 		{
-			throw new NotImplementedException();
+			return this.Storage.RemoveAllAsync<long,DataModels.ServiceInstance>(RemoveAsync);
 		}
 
 		public Task<ServiceInstanceEditable> LoadForEdit(long Id)
 		{
-			throw new NotImplementedException();
+			return Storage.LoadForEdit(Id, OnMapModelToEditable);
 		}
 
 		public async Task<long> CreateAsync(ServiceInstanceEditable Entity)
@@ -336,9 +332,9 @@ namespace SF.Core.ServiceManagement.Management
 			
 		}
 
-		public Task UpdateAsync(ServiceInstanceEditable Entity)
+		public async Task UpdateAsync(ServiceInstanceEditable Entity)
 		{
-			throw new NotImplementedException();
+			await Storage.UpdateAsync(Entity, OnUpdateModel);
 		}
 
 		public Task<ServiceInstanceInternal> GetAsync(long Id)

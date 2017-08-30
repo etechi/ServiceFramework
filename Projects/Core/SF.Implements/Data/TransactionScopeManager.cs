@@ -19,30 +19,39 @@ namespace SF.Data
             this.Connection = Connection;
         }
 
-        class Scope : ITransactionScope
+		class ActionItem
+		{
+			public bool CallOnSaved { get; set; }
+			public Action Func { get; set; }
+			public Func<Task> AsyncFunc { get; set; }
+		}
+		class Scope : ITransactionScope
         {
             public TransactionScopeManager Manager { get; }
             public Scope PrevScope { get; }
             public string Message { get; }
             bool _Completed;
             public bool IsRollbacking { get { return Manager._IsRollbacking; } }
+			List<ActionItem> _PostActions;
 
-            public Scope(TransactionScopeManager Manager, Scope PrevScope,string Message)
+			public Scope(TransactionScopeManager Manager, Scope PrevScope,string Message)
             {
                 this.Manager = Manager;
                 this.PrevScope = PrevScope;
                 this.Message = Message;
             }
-            public Task Commit()
+            public async Task Commit()
             {
                 if (_Completed)
                     throw new InvalidOperationException();
                 if (Manager._TopScope != this)
                     throw new InvalidCastException();
-                if(PrevScope==null)
-                    Manager._Transaction.Commit();
+				if (PrevScope == null)
+				{
+					Manager._Transaction.Commit();
+					await ExecutePostActionsAsync(true);
+				}
                 _Completed = true;
-                return Task.CompletedTask;
             }
 
             public void Dispose()
@@ -59,14 +68,19 @@ namespace SF.Data
                     Manager._Transaction = null;
                     using (trans)
                     {
-                        if (!_Completed && !isRollbacking)
-                            try
-                            {
-                                trans.Rollback();
-                            }
-                            catch { }
-                    }
-                }
+						if (!_Completed)
+						{
+							if (!isRollbacking)
+								try
+								{
+									trans.Rollback();
+								}
+								catch { }
+						}
+					}
+					if (!_Completed)
+						ExecutePostActions(false);
+				}
                 else
                 {
                     if (_Completed)
@@ -77,18 +91,65 @@ namespace SF.Data
                         try
                         {
                             Manager._Transaction.Rollback();
-                        }
+						}
                         catch { }
                     }
                 }
             }
-        }
 
-        DbTransaction _Transaction;
+			public void AddPostAction(
+				Action action,
+				bool CallOnCommitted = true
+				)
+			{
+				var pas = Manager._TopScope._PostActions;
+				if (pas == null)
+					Manager._TopScope._PostActions = pas = new List<ActionItem>();
+				pas.Add(new ActionItem { Func = action, CallOnSaved = CallOnCommitted });
+			}
+			public void AddPostAction(
+			   Func<Task> action,
+			   bool CallOnCommitted = true
+			   )
+			{
+				var pas = Manager._TopScope._PostActions;
+				if (pas == null)
+					Manager._TopScope._PostActions = pas = new List<ActionItem>();
+				pas.Add(new ActionItem { AsyncFunc = action, CallOnSaved = CallOnCommitted });
+			}
+			async Task ExecutePostActionsAsync(bool Committed)
+			{
+				if (_PostActions == null)
+					return;
+				foreach (var action in _PostActions)
+					if (Committed || !action.CallOnSaved)
+					{
+						action.Func?.Invoke();
+						if (action.AsyncFunc != null)
+							await action.AsyncFunc();
+					}
+			}
+			void ExecutePostActions(bool Committed)
+			{
+				if (_PostActions == null)
+					return;
+				if (_PostActions.Any(a => a.AsyncFunc != null))
+				{
+					Task.Run(() => ExecutePostActions(Committed)).Wait();
+					return;
+				}
+				foreach (var action in _PostActions)
+					if (Committed || !action.CallOnSaved)
+						action.Func?.Invoke();
+			}
+		}
+		
+		DbTransaction _Transaction;
         Scope _TopScope;
         bool _IsRollbacking;
+		public ITransactionScope CurrentScope => _TopScope;
 
-        public async Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode,System.Data.IsolationLevel IsolationLevel)
+		public async Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode,System.Data.IsolationLevel IsolationLevel)
         {
             if (Mode == TransactionScopeMode.RequireNewTransaction && _Transaction != null)
                 throw new InvalidOperationException("事务已存在");

@@ -71,7 +71,7 @@ namespace SF.Core.ServiceManagement.Management
 				ItemOrder = i.ItemOrder,
 				ServiceIdent=i.ServiceIdent,
 				ContainerId=i.ContainerId,
-				ParentName=i.ContainerId.HasValue?i.Container.Name:null,
+				ContainerName=i.ContainerId.HasValue?i.Container.Name:null,
 				ServiceType = i.ServiceType,
 				ImplementType = i.ImplementType,
 				Setting= i.Setting
@@ -107,7 +107,7 @@ namespace SF.Core.ServiceManagement.Management
 				ServiceName = i.ServiceType,
 				ImplementType = i.ImplementType,
 				ContainerId=i.ContainerId,
-				ParentName = i.ContainerId.HasValue?i.Container.Name:null
+				ContainerName = i.ContainerId.HasValue?i.Container.Name:null
 			});
 		}
 
@@ -170,16 +170,7 @@ namespace SF.Core.ServiceManagement.Management
 		}
 		protected override async Task OnUpdateModel(ModifyContext ctx)
 		{
-			var ctx = new ModifyContext(this, DataSet, ModifyAction.Update)
-			{
-				Editable = ctx.Editable,
-				Id = ctx.Id
-			};
-			await OnUpdateAsync(ctx);
-			return await SaveChangesAsync();
-		}, RetryForConcurrencyExceptionCount);
-			await ctx.ExecutePostActionsAsync(true);
-
+			
 
 			var e = ctx.Editable;
 			var m = ctx.Model;

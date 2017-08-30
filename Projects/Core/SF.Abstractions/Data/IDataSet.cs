@@ -6,10 +6,15 @@ using System.Threading.Tasks;
 
 namespace SF.Data
 {
-	public interface IDataSet<T>
-		where T : class
+	public interface IDataSet
 	{
 		IDataContext Context { get; }
+		IDataSetMetadata Metadata { get; }
+	}
+
+	public interface IDataSet<T> : IDataSet
+		where T : class
+	{
 		Task<T> FindAsync(object Ident);
 		Task<T> FindAsync(params object[] Idents);
 
@@ -23,6 +28,5 @@ namespace SF.Data
 
 		IContextQueryable<T> AsQueryable(bool ReadOnly=true);
 
-		IDataSetMetadata Metadata { get; }
 	}
 }

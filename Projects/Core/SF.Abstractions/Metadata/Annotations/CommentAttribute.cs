@@ -14,6 +14,10 @@ namespace SF.Metadata
 		AttributeTargets.Method)]
 	public class CommentAttribute : Attribute
 	{
+		public override string ToString()
+		{
+			return Name;
+		}
 		public string Description { get; set; }
 		public string GroupName { get; set; }
 		public string Name { get; set; }

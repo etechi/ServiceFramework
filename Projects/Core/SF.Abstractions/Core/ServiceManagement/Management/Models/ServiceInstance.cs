@@ -43,13 +43,13 @@ namespace SF.Core.ServiceManagement.Models
 		public string ImplementName { get; set; }
 
 		[Comment("父服务实例")]
-		[EntityIdent("系统服务实例", nameof(ParentName))]
+		[EntityIdent("系统服务实例", nameof(ContainerName))]
 		public long? ContainerId { get; set; }
 
 		[Ignore]
 		[TableVisible]
 		[Comment("父服务")]
-		public string ParentName { get; set; }
+		public string ContainerName { get; set; }
 
 		public IEnumerable<ServiceInstanceInternal> Children { get; set; }
 	}
