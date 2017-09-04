@@ -13,12 +13,13 @@ namespace SF.Entities
 		where TKey : IEquatable<TKey>
 		where TModel : class, IEntityWithId<TKey>
 	{
-		public EntitySource(IDataSet<TModel> DataSet) : base(DataSet)
+		public EntitySource(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
 		}
-		protected override Task<TPublic[]> OnPreparePublics(TPublic[] Internals)
+		protected override async Task<TPublic[]> OnPreparePublics(TPublic[] Internals)
 		{
-			return Task.FromResult(Internals);
+			await EntityManager.DataEntityResolver.Fill(Internals);
+			return Internals;
 		}
 	}
 	public abstract class EntitySource<TKey, TPublic, TTemp, TModel> :
@@ -28,10 +29,10 @@ namespace SF.Entities
 		where TKey : IEquatable<TKey>
 		where TModel: class,IEntityWithId<TKey>
 	{
-		public IDataSet<TModel> DataSet { get; }
-		public EntitySource(IDataSet<TModel> DataSet)
+		protected IDataSetEntityManager<TModel> EntityManager { get; }
+		public EntitySource(IDataSetEntityManager<TModel> EntityManager)
 		{
-			this.DataSet = DataSet;
+			this.EntityManager = EntityManager;
 		}
 		protected virtual IContextQueryable<TTemp> OnMapModelToPublic(IContextQueryable<TModel> Query)
 		{
@@ -39,59 +40,14 @@ namespace SF.Entities
 		}
 		protected abstract Task<TPublic[]> OnPreparePublics(TTemp[] Internals);
 
-		protected async Task<T> UseTransaction<T>(Func<Task<T>> Action)
+		public Task<TPublic[]> GetAsync(TKey[] Ids)
 		{
-			var tm = DataSet.Context.TransactionScopeManager;
-			var tran = tm.CurrentDbTransaction;
-			if (tran == null)
-				return await Action();
-			var provider = DataSet.Context.Provider;
-			var orgTran = provider.Transaction;
-			if (orgTran == tran)
-				return await Action();
-
-			provider.Transaction = tran;
-			try
-			{
-				return await Action();
-			}
-			finally
-			{
-				provider.Transaction = orgTran;
-			}
-
-		}
-		public async Task<TPublic[]> GetAsync(TKey[] Ids)
-		{
-			return await UseTransaction(async () =>
-			{
-				var re = await OnMapModelToPublic(
-					DataSet.AsQueryable(true).Where(s => Ids.Contains(s.Id))
-					).ToArrayAsync();
-
-				if (re == null)
-					return null;
-
-				var res = await OnPreparePublics(re);
-				return res;
-			});
+			return EntityManager.GetAsync<TKey,TTemp,TPublic,TModel>(Ids, OnMapModelToPublic,OnPreparePublics);
 		}
 
-		public async Task<TPublic> GetAsync(TKey Id)
+		public Task<TPublic> GetAsync(TKey Id)
 		{
-			return await UseTransaction(async () =>
-			{
-				var re = await OnMapModelToPublic(
-				DataSet.AsQueryable(true).Where(s => s.Id.Equals(Id))
-				).SingleOrDefaultAsync();
-
-				if (re == null)
-					return null;
-
-				var res = await OnPreparePublics(new[] { re });
-
-				return res[0];
-			});
+			return EntityManager.GetAsync<TKey, TTemp, TPublic, TModel>(Id, OnMapModelToPublic, OnPreparePublics);
 		}
 	}
 	

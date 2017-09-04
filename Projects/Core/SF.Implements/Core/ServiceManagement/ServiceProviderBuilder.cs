@@ -152,7 +152,6 @@ namespace SF.Core.ServiceManagement
 			Services.AddSingleton(sp => meta);
 			Services.AddSingleton(sp => manager);
 			Services.AddSingleton(sp => scopeFactory );
-			Services.AddSingleton(sp => (IServiceInstanceConfigChangedNotifier)manager);
 			//Services.AddTransient(typeof(IEnumerable<>), typeof(ManagedServices.Runtime.EnumerableService<>));
 			Services.AddTransient(typeof(IEnumerable<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewEnumerable), typeof(IServiceProvider)));
 			Services.AddTransient(typeof(Func<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewCreator), typeof(IServiceProvider)));
@@ -167,6 +166,7 @@ namespace SF.Core.ServiceManagement
 				);
 			provider = OnCreateServiceProvider(manager);
 			scopeFactory = new ServiceScopeFactory(provider, manager);
+			manager.SubscribeEvents(provider);
 			return provider;
 		}
 	}

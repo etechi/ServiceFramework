@@ -21,7 +21,7 @@ namespace SF.Data
 
 		class ActionItem
 		{
-			public bool CallOnSaved { get; set; }
+			public PostActionType ActionType { get; set; }
 			public Action Func { get; set; }
 			public Func<Task> AsyncFunc { get; set; }
 		}
@@ -48,8 +48,9 @@ namespace SF.Data
                     throw new InvalidCastException();
 				if (PrevScope == null)
 				{
+					await ExecutePostActionsAsync(PostActionType.BeforeCommit);
 					Manager._Transaction.Commit();
-					await ExecutePostActionsAsync(true);
+					await ExecutePostActionsAsync(PostActionType.AfterCommit);
 				}
                 _Completed = true;
             }
@@ -79,7 +80,7 @@ namespace SF.Data
 						}
 					}
 					if (!_Completed)
-						ExecutePostActions(false);
+						ExecutePostActions(PostActionType.AfterCommitOrRollback);
 				}
                 else
                 {
@@ -99,47 +100,51 @@ namespace SF.Data
 
 			public void AddPostAction(
 				Action action,
-				bool CallOnCommitted = true
+				PostActionType ActionType
 				)
 			{
 				var pas = Manager._TopScope._PostActions;
 				if (pas == null)
 					Manager._TopScope._PostActions = pas = new List<ActionItem>();
-				pas.Add(new ActionItem { Func = action, CallOnSaved = CallOnCommitted });
+				pas.Add(new ActionItem { Func = action, ActionType = ActionType });
 			}
 			public void AddPostAction(
 			   Func<Task> action,
-			   bool CallOnCommitted = true
+				PostActionType ActionType
 			   )
 			{
 				var pas = Manager._TopScope._PostActions;
 				if (pas == null)
 					Manager._TopScope._PostActions = pas = new List<ActionItem>();
-				pas.Add(new ActionItem { AsyncFunc = action, CallOnSaved = CallOnCommitted });
+				pas.Add(new ActionItem { AsyncFunc = action, ActionType = ActionType });
 			}
-			async Task ExecutePostActionsAsync(bool Committed)
+			async Task ExecutePostActionsAsync(PostActionType ActionType)
 			{
 				if (_PostActions == null)
 					return;
 				foreach (var action in _PostActions)
-					if (Committed || !action.CallOnSaved)
+					if (action.ActionType==PostActionType.AfterCommitOrRollback && ActionType!=PostActionType.BeforeCommit ||
+						action.ActionType==ActionType
+						)
 					{
 						action.Func?.Invoke();
 						if (action.AsyncFunc != null)
 							await action.AsyncFunc();
 					}
 			}
-			void ExecutePostActions(bool Committed)
+			void ExecutePostActions(PostActionType ActionType)
 			{
 				if (_PostActions == null)
 					return;
 				if (_PostActions.Any(a => a.AsyncFunc != null))
 				{
-					Task.Run(() => ExecutePostActions(Committed)).Wait();
+					Task.Run(() => ExecutePostActions(ActionType)).Wait();
 					return;
 				}
 				foreach (var action in _PostActions)
-					if (Committed || !action.CallOnSaved)
+					if (action.ActionType == PostActionType.AfterCommitOrRollback && ActionType != PostActionType.BeforeCommit ||
+						action.ActionType == ActionType
+						)
 						action.Func?.Invoke();
 			}
 		}

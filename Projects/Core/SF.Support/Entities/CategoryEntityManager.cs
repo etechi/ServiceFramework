@@ -28,8 +28,8 @@ namespace SF.Entities
 		where TItemModel : class, IEntityWithId<TItemKey>, new()
 	{
 		public CategoryEntityManager(
-			IDataSet<TCategoryModel> DataSet
-			) : base(DataSet)
+			IDataSetEntityManager<TCategoryModel> EntityManager
+			) : base(EntityManager)
 		{
 		}
 	}

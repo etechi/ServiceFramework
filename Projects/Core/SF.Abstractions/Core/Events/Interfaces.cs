@@ -8,7 +8,7 @@ namespace SF.Core.Events
 {
 	public interface IEventSubscriber<T>
 	{
-		void OnEvent(Func<T,Task> Callback);
+		void Wait(Func<T,Task> Callback);
 	}
 
 	public interface IEventObservable
@@ -27,7 +27,7 @@ namespace SF.Core.Events
 
 	public interface IEventEmitter
 	{
-		Task Emit(object Event,bool SyncMode);
+		Task Emit(object Event,bool SyncMode=true);
 	}
    
 }

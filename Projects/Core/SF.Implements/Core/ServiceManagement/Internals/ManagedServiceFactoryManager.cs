@@ -143,6 +143,12 @@ namespace SF.Core.ServiceManagement.Internals
 				);
 			return Entry.Factories.GetOrAdd(ServiceType, factory);
 		}
+		public Type GetServiceTypeByIdent(IServiceResolver ServiceResolver, long ServiceId)
+		{
+			var curEntry = GetManagedServiceEntry(ServiceResolver, ServiceId, true);
+			var TypeResolver = ServiceResolver.Resolve<IServiceDeclarationTypeResolver>();
+			return TypeResolver.Resolve(curEntry.Config.ServiceType);
+		}
 		public IServiceFactory GetServiceFactoryByIdent(
 			IServiceResolver ServiceResolver,
 			long ServiceId,

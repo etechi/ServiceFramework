@@ -22,15 +22,20 @@ namespace SF.Data
 
         }
     }
-
+	public enum PostActionType
+	{
+		BeforeCommit,
+		AfterCommit,
+		AfterCommitOrRollback
+	}
     public interface ITransactionScope : IDisposable
     {
         string Message { get; }
         Task Commit();
         bool IsRollbacking { get; }
 
-		void AddPostAction(Action action, bool CallOnCommited = true);
-		void AddPostAction(Func<Task> action, bool CallOnCommited = true);
+		void AddPostAction(Action action, PostActionType Type=PostActionType.AfterCommit);
+		void AddPostAction(Func<Task> action, PostActionType Type = PostActionType.AfterCommit);
 	}
 	public interface ITransactionScopeManager : IDisposable
     {

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System;
 using System.Linq;
+using SF.Core.Events;
 
 namespace SF.Core.ServiceManagement.Storages
 {
@@ -28,11 +29,11 @@ namespace SF.Core.ServiceManagement.Storages
 		Dictionary<string, SortedList<int,Config> > ServiceList { get; } = new Dictionary<string, SortedList<int, Config>>();
 		Dictionary<long, Config> Configs { get; } = new Dictionary<long, Config>();
 
-		public IServiceInstanceConfigChangedNotifier ConfigChangedNotifier { get; }
+		public IEventEmitter EventEmitter { get; }
 
-		public MemoryServiceSource(IServiceInstanceConfigChangedNotifier ConfigChangedNotifier)
+		public MemoryServiceSource(IEventEmitter EventEmitter)
 		{
-			this.ConfigChangedNotifier = ConfigChangedNotifier;
+			this.EventEmitter = EventEmitter;
 		}
 		
 		SortedList<int,Config> GetServices(string type,long? ParentId)
@@ -91,8 +92,17 @@ namespace SF.Core.ServiceManagement.Storages
 				);
 			svcs.Clear();
 			re.ForEach(i => svcs.Add(i.Priority, i));
-			ConfigChangedNotifier.NotifyInternalServiceChanged(ParentId, ServiceType);
-			ConfigChangedNotifier.NotifyChanged(Id);
+			EventEmitter.Emit(
+				new InternalServiceChanged
+				{
+					ScopeId = ParentId,
+					ServiceType = ServiceType
+				});
+			EventEmitter.Emit(
+				new ServiceInstanceChanged
+				{
+					Id = Id
+				});
 			return cfg;
 		}
 		public Config SetConfig<I,T>(long Id, object Settings,int Priority=-1,long? ParentId=null,string Name=null)

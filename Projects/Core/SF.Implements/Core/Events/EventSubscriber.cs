@@ -34,7 +34,7 @@ namespace SF.Core.Events
 			Disposable.Release(ref _Disposable);
 		}
 
-		public void OnEvent(Func<T, Task> Callback)
+		public void Wait(Func<T, Task> Callback)
 		{
 			if (EventHandler == null)
 				EventHandler = Callback;

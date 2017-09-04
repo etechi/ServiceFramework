@@ -13,23 +13,23 @@ namespace SF.Entities
 		public static void AddPostAction(
 			this IDataSetEntityManager Storage,
 			Action action,
-			bool CallOnSaved = true
+			PostActionType Type
 			)
 		{
 			Storage.DataSet.Context.TransactionScopeManager.CurrentScope.AddPostAction(
-				action, 
-				CallOnSaved
+				action,
+				Type
 				);
 		}
 		public static void AddPostAction(
 			this IDataSetEntityManager Storage,
 			Func<Task> action,
-			bool CallOnSaved = true
+			PostActionType Type
 			)
 		{
 			Storage.DataSet.Context.TransactionScopeManager.CurrentScope.AddPostAction(
 				action,
-				CallOnSaved
+				Type
 				);
 		}
 		public static async Task<T> UseTransaction<TModel,T>(
@@ -387,7 +387,29 @@ namespace SF.Entities
 
 
 		#region Create
-
+		public static async Task<IEntityModifyContext<TKey, TEditableEntity, TModel>> InternalCreateAsync<TKey, TEditableEntity, TModel>(
+			this IDataSetEntityManager<TModel> Storage,
+			TEditableEntity Entity,
+			Func<IEntityModifyContext<TKey, TEditableEntity, TModel>, Task> UpdateModel,
+			Func<IEntityModifyContext<TKey, TEditableEntity, TModel>, Task> InitModel,
+			object ExtraArgument = null
+			)
+			where TKey : IEquatable<TKey>
+			where TModel : class, IEntityWithId<TKey>, new()
+			where TEditableEntity : class, IEntityWithId<TKey>
+		{
+			return await Storage.UseTransaction(
+				$"新建实体{typeof(TModel).Comment().Name}",
+				async () =>
+				{
+					var ctx = Storage.NewCreateContext<TKey, TEditableEntity>(Entity, ExtraArgument);
+					await InitModel(ctx);
+					await UpdateModel(ctx);
+					Storage.DataSet.Add(ctx.Model);
+					await Storage.DataSet.Context.SaveChangesAsync();
+					return ctx;
+				});
+		}
 		public static async Task<TKey> CreateAsync<TKey,TEditableEntity,TModel>(
 			this IDataSetEntityManager<TModel> Storage,
 			TEditableEntity Entity,
@@ -399,18 +421,8 @@ namespace SF.Entities
 			where TModel:class,IEntityWithId<TKey>,new()
 			where TEditableEntity:class,IEntityWithId<TKey>
 		{
-			return await Storage.UseTransaction(
-				$"新建实体{typeof(TModel).Comment().Name}",
-				async () =>
-				{
-					var ctx = Storage.NewCreateContext<TKey,TEditableEntity>(Entity, ExtraArgument);
-					await InitModel(ctx);
-					await UpdateModel(ctx);
-					Storage.DataSet.Add(ctx.Model);
-					await Storage.DataSet.Context.SaveChangesAsync();
-					return ctx.Model.Id;
-				});
-
+			var ctx = await InternalCreateAsync(Storage, Entity, UpdateModel, InitModel, ExtraArgument);
+			return ctx.Id;
 		}
 		public static Task<long> CreateAsync<TEditableEntity, TModel>(
 			this IDataSetEntityManager<TModel> Storage,
@@ -426,47 +438,61 @@ namespace SF.Entities
 		#endregion
 
 		#region Update
-		public static async Task UpdateAsync<TKey, TEditableEntity,TModel>(
+		public static async Task<IEntityModifyContext<TKey, TEditableEntity, TModel>> InternalUpdateAsync<TKey, TEditableEntity, TModel>(
 			this IDataSetEntityManager<TModel> Storage,
 			TEditableEntity Entity,
 			Func<IEntityModifyContext<TKey, TEditableEntity, TModel>, Task> UpdateModel,
-			Func<IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+			Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
 			)
-			where TKey:IEquatable<TKey>
+			where TKey : IEquatable<TKey>
 			where TModel : class, IEntityWithId<TKey>
-			where TEditableEntity :class,IEntityWithId<TKey>
+			where TEditableEntity : class, IEntityWithId<TKey>
 		{
-			await Storage.UseTransaction(
+			return await Storage.UseTransaction(
 				$"编辑实体{typeof(TModel).Comment().Name}:{Entity.Id}",
 				async () =>
 				{
 					var id = Entity.Id;
 					var q = Storage.DataSet.AsQueryable(false).Where(s => s.Id.Equals(id));
-					var model = LoadModelForEdit == null ? await q.SingleOrDefaultAsync() : await LoadModelForEdit(q);
-					var ctx = Storage.NewUpdateContext<TKey, TEditableEntity>(Entity, model, null);
+					var model = LoadModelForEdit == null ? await q.SingleOrDefaultAsync() : await LoadModelForEdit(id,q);
+					if (model == null)
+						return null;
+					var ctx = Storage.NewUpdateContext<TKey, TEditableEntity>(id, Entity, model, null);
 					await UpdateModel(ctx);
 					Storage.DataSet.Update(ctx.Model);
 					await Storage.DataSet.Context.SaveChangesAsync();
-					return 0;
+					return ctx;
 				});
+		}
+		public static async Task<bool> UpdateAsync<TKey, TEditableEntity,TModel>(
+			this IDataSetEntityManager<TModel> Storage,
+			TEditableEntity Entity,
+			Func<IEntityModifyContext<TKey, TEditableEntity, TModel>, Task> UpdateModel,
+			Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+			)
+			where TKey:IEquatable<TKey>
+			where TModel : class, IEntityWithId<TKey>
+			where TEditableEntity :class,IEntityWithId<TKey>
+		{
+			var ctx = await InternalUpdateAsync(Storage, Entity, UpdateModel, LoadModelForEdit);
+			return ctx != null;
 		}
 		public static Task UpdateAsync<TEditableEntity, TModel>(
 			this IDataSetEntityManager<TModel> Storage,
 			TEditableEntity Entity,
 			Func<IEntityModifyContext<long, TEditableEntity, TModel>, Task> UpdateModel,
-			Func<IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+			Func<long, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
 			)
 			where TModel : class, IEntityWithId<long>
 			where TEditableEntity : class, IEntityWithId<long>
 			=> Storage.UpdateAsync<long,TEditableEntity,TModel>(Entity, UpdateModel, LoadModelForEdit);
 
 		#endregion
-
-		public static async Task<bool> RemoveAsync<TKey,TModel>(
+		public static async Task<IEntityModifyContext<TKey, TModel>> InternalRemoveAsync<TKey, TModel>(
 			this IDataSetEntityManager<TModel> Storage,
 			TKey Id,
-			Func<IEntityModifyContext<TKey, TModel>, Task> RemoveModel=null,
-			Func<IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+			Func<IEntityModifyContext<TKey, TModel>, Task> RemoveModel = null,
+			Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
 			)
 			where TKey : IEquatable<TKey>
 			where TModel : class, IEntityWithId<TKey>
@@ -476,16 +502,28 @@ namespace SF.Entities
 				async () =>
 				{
 					var q = Storage.DataSet.AsQueryable(false).Where(s => s.Id.Equals(Id));
-					var model = LoadModelForEdit==null?await q.SingleOrDefaultAsync(): await LoadModelForEdit(q);
+					var model = LoadModelForEdit == null ? await q.SingleOrDefaultAsync() : await LoadModelForEdit(Id,q);
 					if (model == null)
-						return false;
-					var ctx = Storage.NewRemoveContext<TKey>(model, null);
-					if(RemoveModel!=null)
+						return null;
+					var ctx = Storage.NewRemoveContext<TKey>(Id, model, null);
+					if (RemoveModel != null)
 						await RemoveModel(ctx);
 					Storage.DataSet.Remove(ctx.Model);
 					await Storage.DataSet.Context.SaveChangesAsync();
-					return true;
+					return ctx;
 				});
+		}
+		public static async Task<bool> RemoveAsync<TKey,TModel>(
+			this IDataSetEntityManager<TModel> Storage,
+			TKey Id,
+			Func<IEntityModifyContext<TKey, TModel>, Task> RemoveModel=null,
+			Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+			)
+			where TKey : IEquatable<TKey>
+			where TModel : class, IEntityWithId<TKey>
+		{
+			var ctx = await InternalRemoveAsync<TKey, TModel>(Storage, Id, RemoveModel, LoadModelForEdit);
+			return ctx != null;
 		}
 		public static async Task RemoveAllAsync<TKey,TModel>(
 			this IDataSetEntityManager<TModel> Storage,

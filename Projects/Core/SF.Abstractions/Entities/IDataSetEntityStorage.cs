@@ -5,6 +5,7 @@ using System.Linq;
 using SF.Data;
 using SF.Core.Logging;
 using SF.Core.Times;
+using SF.Core.Events;
 
 namespace SF.Entities
 {
@@ -41,6 +42,7 @@ namespace SF.Entities
 		IDataEntityResolver DataEntityResolver { get; }
 		ITimeService TimeService { get; }
 		ILogger Logger { get; }
+		IEventEmitter EventEmitter { get; }
 	}
 	public interface IEntityManager<TModel>: IEntityManager
 		where TModel:class
@@ -53,6 +55,7 @@ namespace SF.Entities
 		where TEditable : IEntityWithId<TKey>;
 
 		IEntityModifyContext<TKey, TEditable, TModel> NewUpdateContext<TKey, TEditable>(
+			TKey Id,
 			TEditable Editable,
 			TModel Model,
 			object ExtraArguments
@@ -61,6 +64,7 @@ namespace SF.Entities
 		where TEditable : IEntityWithId<TKey>;
 
 		IEntityModifyContext<TKey, TModel> NewRemoveContext<TKey>(
+			TKey Id,
 			TModel Model,
 			object ExtraArguments
 			)

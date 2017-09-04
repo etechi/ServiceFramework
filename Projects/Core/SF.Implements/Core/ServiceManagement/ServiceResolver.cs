@@ -27,6 +27,7 @@ namespace SF.Core.ServiceManagement
 			if (!Add(ServiceType))
 				throw new InvalidOperationException($"服务{ServiceType}已经在获取中");
 		}
+		
 		public IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId, Type ServiceType)
 		{
 			AddType(ServiceType);
@@ -92,6 +93,14 @@ namespace SF.Core.ServiceManagement
 			{
 				Remove(ServiceType);
 			}
+		}
+		public object ResolveServiceByIdent(long ServiceId)
+		{
+			var ServiceType= ScopeBase.FactoryManager.GetServiceTypeByIdent(
+				this,
+				ServiceId
+				);
+			return ResolveServiceByIdent(ServiceId, ServiceType);
 		}
 		public object ResolveServiceByIdent(long ServiceId, Type ServiceType)
 		{

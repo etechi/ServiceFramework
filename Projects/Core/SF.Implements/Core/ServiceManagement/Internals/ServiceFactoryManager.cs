@@ -1,19 +1,20 @@
+using SF.Core.Events;
 using System;
 
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SF.Core.ServiceManagement.Internals
 {
-	
-	
-	class ServiceFactoryManager : IServiceFactoryManager,IServiceInstanceConfigChangedNotifier
+
+
+	class ServiceFactoryManager : IServiceFactoryManager
 	{
 		//服务实例创建缓存
 		ServiceCreatorCache ServiceCreatorCache { get; }
-
 		public IServiceMetadata ServiceMetadata { get; }
 
 		ManagedServiceFactoryManager ManagedServiceFactoryManager { get; }
@@ -44,7 +45,33 @@ namespace SF.Core.ServiceManagement.Internals
 				ServiceCreatorCache
 				);
 		}
+		public void SubscribeEvents(IServiceProvider Provider)
+		{
+			var OnServiceInstanceChanged = Provider.Resolve<IEventSubscriber<ServiceInstanceChanged>>();
+			var OnInternalServiceChanged = Provider.Resolve<IEventSubscriber<InternalServiceChanged>>();
 
+			OnServiceInstanceChanged.Wait(
+				sic =>
+				{
+					ManagedServiceFactoryManager.NotifyChanged(sic.Id);
+					return Task.CompletedTask;
+				});
+
+			OnInternalServiceChanged.Wait(
+				isc =>
+				{
+					ManagedServiceFactoryManager.NotifyInternalServiceChanged(isc.ScopeId, isc.ServiceType);
+					return Task.CompletedTask;
+				});
+		}
+
+		public Type GetServiceTypeByIdent(IServiceResolver ServiceResolver, long ServiceId)
+		{
+			return ManagedServiceFactoryManager.GetServiceTypeByIdent(
+				ServiceResolver,
+				ServiceId
+				);
+		}
 		public IServiceFactory GetServiceFactoryByIdent(
 			IServiceResolver ServiceResolver,
 			long ServiceId,
@@ -144,16 +171,6 @@ namespace SF.Core.ServiceManagement.Internals
 					return es.Select(e => e.Factory.Value);
 			}
 			return Enumerable.Empty<IServiceFactory>();
-		}
-
-		void IServiceInstanceConfigChangedNotifier.NotifyChanged( long Id)
-		{
-			ManagedServiceFactoryManager.NotifyChanged(Id);
-		}
-
-		void IServiceInstanceConfigChangedNotifier.NotifyInternalServiceChanged(long? ScopeId, string ServiceType)
-		{
-			ManagedServiceFactoryManager.NotifyInternalServiceChanged(ScopeId, ServiceType);
 		}
 
 	}

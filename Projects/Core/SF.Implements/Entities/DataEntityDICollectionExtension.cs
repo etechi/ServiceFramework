@@ -36,6 +36,9 @@ namespace SF.Core.ServiceManagement
 			});
 
 			sc.AddScoped<IDataEntityResolver, DefaultDataEntityResolver>();
+
+			sc.Add(typeof(IDataSetEntityManager<>), typeof(DataSetEntityManager<>),ServiceImplementLifetime.Scoped);
+			
 			return sc;
 		}
 	}

@@ -102,6 +102,7 @@ namespace SF.Applications
 			Services.AddFilePathResolver();
 			Services.AddLocalFileCache();
 			Services.AddDefaultSecurityServices();
+			Services.AddEventServices();
 		}
 		static void AddCommonServices(IServiceCollection Services, EnvironmentType EnvType)
 		{

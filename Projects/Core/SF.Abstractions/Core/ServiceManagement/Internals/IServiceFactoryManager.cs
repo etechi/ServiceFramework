@@ -6,6 +6,8 @@ namespace SF.Core.ServiceManagement.Internals
 
 	public interface IServiceFactoryManager
 	{
+		Type GetServiceTypeByIdent(IServiceResolver ServiceResolver, long ServiceId);
+
 		IServiceFactory GetServiceFactoryByIdent(
 			IServiceResolver ServiceResolver, 
 			long ServiceId,
@@ -23,6 +25,8 @@ namespace SF.Core.ServiceManagement.Internals
 			Type ChildServiceType,
 			string Name
 			);
+
+		void SubscribeEvents(IServiceProvider Provider);
 
 	}
 

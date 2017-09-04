@@ -1,9 +1,12 @@
 namespace SF.Core.ServiceManagement.Internals
 {
-	public interface IServiceInstanceConfigChangedNotifier
+	public class ServiceInstanceChanged
 	{
-		void NotifyChanged(long Id);
-		void NotifyInternalServiceChanged( long? ScopeId,string ServiceType);
+		public long Id { get; set; }
 	}
-
+	public class InternalServiceChanged
+	{
+		public long? ScopeId { get; set; }
+		public string ServiceType { get; set; }
+	}
 }

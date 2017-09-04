@@ -15,12 +15,8 @@ namespace SF.Entities
 		where TQueryArgument : class, IQueryArgument<TKey>,new()
 		where TEditable : class, IEntityWithId<TKey>
 	{
-		public EntityManager(IDataSet<TModel> DataSet) : base(DataSet)
+		public EntityManager(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
-		}
-		protected override Task<TPublic[]> OnPreparePublics(TPublic[] Items)
-		{
-			return Task.FromResult(Items);
 		}
 	}
 	public abstract class EntityManager<TKey, TPublic, TTemp, TQueryArgument, TEditable,TModel> :
@@ -32,176 +28,55 @@ namespace SF.Entities
 		where TQueryArgument : class, IQueryArgument<TKey>,new()
 		where TEditable : class,IEntityWithId<TKey>
 	{
-		public class ModifyContext 
-		{
-			class ActionItem
-			{
-				public bool CallOnSaved { get; set; }
-				public Action Func { get; set; }
-				public Func<Task> AsyncFunc { get; set; }
-			}
-
-			List<ActionItem> _postActions;
-			EntityManager<TKey, TPublic, TTemp, TQueryArgument, TEditable, TModel> Manager { get; }
-			public ModifyAction Action { get; }
-			public TKey Id { get; set; }
-			public TEditable Editable { get; set; }
-			public TModel Model { get; set; }
-			public object OwnerId { get; set; }
-			public IDataSet<TModel> ModelSet { get; }
-			public object UserData { get; set; }
-			public object ExtraArgument { get; set; }
-			public void AddPostAction(
-				Action action,
-				bool CallOnSaved = true
-				)
-			{
-				if (_postActions == null)
-					_postActions = new List<ActionItem>();
-				_postActions.Add(new ActionItem { Func = action, CallOnSaved = CallOnSaved });
-			}
-			public void AddPostAction(
-			   Func<Task> action,
-			   bool CallOnSaved = true
-			   )
-			{
-				if (_postActions == null)
-					_postActions = new List<ActionItem>();
-				_postActions.Add(new ActionItem { AsyncFunc = action, CallOnSaved = CallOnSaved });
-			}
-			public async Task ExecutePostActionsAsync(bool ChangedSaved)
-			{
-				if (_postActions == null)
-					return;
-				foreach (var action in _postActions)
-					if (ChangedSaved || !action.CallOnSaved)
-					{
-						action.Func?.Invoke();
-						if (action.AsyncFunc != null)
-							await action.AsyncFunc();
-					}
-			}
-			public ModifyContext(
-				EntityManager<TKey, TPublic, TTemp, TQueryArgument, TEditable, TModel> Manager,
-				IDataSet<TModel> ModelSet,
-				ModifyAction Action
-				)
-			{
-				this.Manager = Manager;
-				this.ModelSet = ModelSet;
-				this.Action = Action;
-			}
-		}
-
-        protected virtual int RetryForConcurrencyExceptionCount => 0;
-        public EntityManager(IDataSet<TModel> DataSet) :base(DataSet)
+		
+        public EntityManager(IDataSetEntityManager<TModel> EntityManager) :base(EntityManager)
         {
         }
 
 		public virtual EntityManagerCapability Capabilities => EntityManagerCapability.All;
 		public bool AutoSaveChanges { get; set; } = true;
 
-		public async Task<bool> SaveChangesAsync()
-		{
-			if (AutoSaveChanges)
-			{
-				await OnSaveChangesAsync();
-				return true;
-			}
-			return false;
-		}
-		protected virtual Task OnSaveChangesAsync()
-		{
-			return DataSet.Context.SaveChangesAsync();	
-		}
 
 		#region create
 
-		protected virtual Task OnNewModel(ModifyContext ctx)
+		protected virtual Task OnNewModel(IEntityModifyContext<TKey,TModel> ctx)
 		{
 			return Task.CompletedTask;
 		}
-		protected virtual async Task OnCreateAsync(ModifyContext ctx)
-		{
-			ctx.Model = new TModel();
-			await OnNewModel(ctx);
-			await OnUpdateModel(ctx);
-			DataSet.Add(ctx.Model);
-		}
-
-        [TransactionScope("创建对象")]
+		
 		public virtual async Task<TKey> CreateAsync(TEditable obj)
 		{
-			return await UseTransaction(async () =>
-			{
-				var ctx = await InternalCreateAsync(obj, null);
-				return ctx.Model.Id;
-			});
+			var re=await InternalCreateAsync(obj, null);
+			return re.Id;
 		}
-		protected virtual async Task<ModifyContext> InternalCreateAsync(TEditable obj,object ExtraArgument)
+		protected virtual Task<IEntityModifyContext<TKey,TEditable, TModel>> InternalCreateAsync(TEditable obj,object ExtraArgument)
 		{
-			ModifyContext ctx = null;
-			var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
-			{
-				ctx = new ModifyContext(this, DataSet, ModifyAction.Create)
-				{
-					Editable = obj,
-					ExtraArgument= ExtraArgument
-				};
-				await OnCreateAsync(ctx);
-				return await SaveChangesAsync();
-			}, RetryForConcurrencyExceptionCount);
-
-			ctx.Id = ctx.Model.Id;
-			await ctx.ExecutePostActionsAsync(saved);
-			return ctx;
+			return EntityManager.InternalCreateAsync<TKey,TEditable,TModel>(obj, OnUpdateModel, OnNewModel, ExtraArgument);
 		}
 		#endregion
 
 
 		#region delete
 
-		[TransactionScope("删除对象")]
 		public virtual async Task RemoveAsync(TKey Id)
 		{
-			await UseTransaction(async () =>
-			{
-				await InternalRemoveAsync(Id);
-				return 0;
-			});
+			await InternalRemoveAsync(Id);
 		}
-		protected virtual async Task<ModifyContext> InternalRemoveAsync(TKey Id)
+		protected virtual Task<IEntityModifyContext<TKey, TModel>> InternalRemoveAsync(TKey Id)
 		{
-			ModifyContext ctx = null;
-			var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
-			{
-				ctx = new ModifyContext(this, DataSet, ModifyAction.Delete)
-				{
-					Id = Id
-				};
-				await OnRemoveAsync(ctx);
-
-				return await SaveChangesAsync();
-			}, RetryForConcurrencyExceptionCount);
-			await ctx.ExecutePostActionsAsync(saved);
-			return ctx;
-		}
-		protected virtual async Task OnRemoveAsync(ModifyContext ctx)
-		{
-			ctx.Model = await OnLoadModelForUpdate(ctx);
-			await OnRemoveModel(ctx);
+			return EntityManager.InternalRemoveAsync(Id, OnRemoveModel,OnLoadModelForUpdate);
 		}
 
-		protected virtual Task OnRemoveModel(ModifyContext ctx)
+		protected virtual Task OnRemoveModel(IEntityModifyContext<TKey, TModel> ctx)
 		{
-			DataSet.Remove(ctx.Model);
+			EntityManager.DataSet.Remove(ctx.Model);
 			return Task.CompletedTask;
 		}
 
 		public virtual async Task RemoveAllAsync()
 		{
-			await this.QueryAndRemoveAsync<EntityManager<TKey, TPublic, TTemp, TQueryArgument, TEditable, TModel>, TKey,TQueryArgument>(
-				DataSet.Context.TransactionScopeManager
+			await EntityManager.RemoveAllAsync<TKey,TModel>(
+				RemoveAsync
 				);
 		}
 
@@ -209,51 +84,31 @@ namespace SF.Entities
 
 
 		#region Update
-		protected abstract Task OnUpdateModel(ModifyContext ctx);
+		protected abstract Task OnUpdateModel(IEntityModifyContext<TKey,TEditable, TModel> ctx);
 
-		protected virtual async Task OnUpdateAsync(ModifyContext ctx)
-		{
-			ctx.Model = await OnLoadModelForUpdate(ctx);
-			await OnUpdateModel(ctx);
-			DataSet.Update(ctx.Model);
-		}
-		[TransactionScope("更新对象")]
 		public virtual async Task UpdateAsync(TEditable obj)
 		{
-			await UseTransaction(async () =>
-			{
-				await InternalUpdateAsync(obj);
-				return 0;
-			});
+			await InternalUpdateAsync(obj);
         }
-		protected virtual async Task<ModifyContext> InternalUpdateAsync(TEditable obj)
+		protected virtual async Task<IEntityModifyContext<TKey,TEditable,TModel>> InternalUpdateAsync(TEditable obj)
 		{
-			ModifyContext ctx = null;
-			var saved = await DataSet.RetryForConcurrencyExceptionAsync(async () =>
-			{
-				ctx = new ModifyContext(this, DataSet, ModifyAction.Update)
-				{
-					Editable = obj,
-					Id = obj.Id
-				};
-				await OnUpdateAsync(ctx);
-				return await SaveChangesAsync();
-			}, RetryForConcurrencyExceptionCount);
-			await ctx.ExecutePostActionsAsync(saved);
+			var ctx = await EntityManager.InternalUpdateAsync<TKey,TEditable,TModel>(
+				obj, 
+				OnUpdateModel, 
+				OnLoadModelForUpdate
+				);
 			return ctx;
 		}
 
         #endregion
 
-        protected virtual IContextQueryable<TModel> OnLoadChildObjectsForUpdate(ModifyContext ctx,IContextQueryable<TModel> query)
+        protected virtual IContextQueryable<TModel> OnLoadChildObjectsForUpdate(TKey Id,IContextQueryable<TModel> query)
 		{
 			return query;
 		}
-		protected virtual Task<TModel> OnLoadModelForUpdate(ModifyContext ctx)
+		protected virtual Task<TModel> OnLoadModelForUpdate(TKey Id,IContextQueryable<TModel> ctx)
 		{
-            var id = ctx.Id;
-			return OnLoadChildObjectsForUpdate(ctx, DataSet.AsQueryable(false).Where(s => s.Id.Equals(id)))
-				.SingleOrDefaultAsync();
+			return OnLoadChildObjectsForUpdate(Id,ctx).SingleOrDefaultAsync();
 		}
 
 		protected virtual Task<TEditable> OnMapModelToEditable(IContextQueryable<TModel> Query)
@@ -261,12 +116,9 @@ namespace SF.Entities
 			return Query.Select(EntityMapper.Map<TModel, TEditable>()).SingleOrDefaultAsync();
 		}
 
-		public virtual async Task<TEditable> LoadForEdit(TKey Id)
+		public virtual Task<TEditable> LoadForEdit(TKey Id)
 		{
-			return await UseTransaction(async () =>
-			{
-				return await OnMapModelToEditable(DataSet.AsQueryable(false).Where(m => m.Id.Equals(Id)));
-			});
+			return EntityManager.LoadForEdit(Id, OnMapModelToEditable);
 		}
 	}
     
