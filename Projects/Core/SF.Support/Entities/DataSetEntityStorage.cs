@@ -11,7 +11,7 @@ namespace SF.Entities
 	public static class DataSetEntityStorage
 	{
 		public static void AddPostAction(
-			this IDataSetEntityStorage Storage,
+			this IDataSetEntityManager Storage,
 			Action action,
 			bool CallOnSaved = true
 			)
@@ -22,7 +22,7 @@ namespace SF.Entities
 				);
 		}
 		public static void AddPostAction(
-			this IDataSetEntityStorage Storage,
+			this IDataSetEntityManager Storage,
 			Func<Task> action,
 			bool CallOnSaved = true
 			)
@@ -33,7 +33,7 @@ namespace SF.Entities
 				);
 		}
 		public static async Task<T> UseTransaction<TModel,T>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			string TransMessage,
 			Func<Task<T>> Action
 			)
@@ -64,7 +64,7 @@ namespace SF.Entities
 
 		public static async Task<TReadOnlyEntity> GetAsync<TKey, TTempReadOnlyEntity, TReadOnlyEntity, TModel>
 		(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TKey Id,
 			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
@@ -89,7 +89,7 @@ namespace SF.Entities
 
 		public static Task<TReadOnlyEntity> GetAsync<TKey, TReadOnlyEntity, TModel>
 		(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TKey Id,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly,
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
@@ -106,7 +106,7 @@ namespace SF.Entities
 
 		public static Task<TReadOnlyEntity> GetAsync<TKey, TReadOnlyEntity, TModel>
 		(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TKey Id,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
 		)
@@ -125,7 +125,7 @@ namespace SF.Entities
 
 		public static async Task<TReadOnlyEntity[]> GetAsync<TKey, TTempReadOnlyEntity, TReadOnlyEntity, TModel>
 		(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TKey[] Ids,
 			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
@@ -150,7 +150,7 @@ namespace SF.Entities
 
 		public static Task<TReadOnlyEntity[]> GetAsync<TKey, TReadOnlyEntity, TModel>
 		(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TKey[] Ids,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly,
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
@@ -167,7 +167,7 @@ namespace SF.Entities
 
 		public static Task<TReadOnlyEntity[]> GetAsync<TKey, TReadOnlyEntity, TModel>
 		(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TKey[] Ids,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
 		)
@@ -186,7 +186,7 @@ namespace SF.Entities
 		#region Query Idents
 
 		public static async Task<QueryResult<TKey>> QueryIdentsAsync<TKey, TQueryArgument, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
@@ -218,7 +218,7 @@ namespace SF.Entities
 		}
 
 		public static Task<QueryResult<long>> QueryIdentsAsync<TQueryArgument, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
@@ -231,7 +231,7 @@ namespace SF.Entities
 
 		#region Query
 		public static async Task<QueryResult<TReadOnlyEntity>> QueryAsync<TKey, TTempReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
@@ -264,7 +264,7 @@ namespace SF.Entities
 			});
 		}
 		public static  Task<QueryResult<TReadOnlyEntity>> QueryAsync<TTempReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
@@ -277,7 +277,7 @@ namespace SF.Entities
 			=> Storage.QueryAsync(Arg, paging, BuildQuery, PagingQueryBuilder, MapModelToReadOnly, PrepareReadOnly);
 
 		public static Task<QueryResult<TReadOnlyEntity>> QueryAsync<TKey, TReadOnlyEntity, TQueryArgument, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
@@ -298,7 +298,7 @@ namespace SF.Entities
 				PrepareReadOnly
 				);
 		public static Task<QueryResult<TReadOnlyEntity>> QueryAsync<TReadOnlyEntity, TQueryArgument, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
@@ -319,7 +319,7 @@ namespace SF.Entities
 
 
 		public static Task<QueryResult<TReadOnlyEntity>> QueryAsync<TKey, TReadOnlyEntity, TQueryArgument, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
@@ -340,7 +340,7 @@ namespace SF.Entities
 				);
 
 		public static Task<QueryResult<TReadOnlyEntity>> QueryAsync<TReadOnlyEntity, TQueryArgument, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
@@ -361,7 +361,7 @@ namespace SF.Entities
 
 		#region LoadForEdit
 		public static async Task<TEditableEntity> LoadForEdit<TKey, TEditableEntity, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TKey Id,
 			Func<IContextQueryable<TModel>, Task<TEditableEntity>> MapModelToEditable
 			)
@@ -377,7 +377,7 @@ namespace SF.Entities
 		}
 
 		public static Task<TEditableEntity> LoadForEdit<TEditableEntity, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			long Id,
 			Func<IContextQueryable<TModel>, Task<TEditableEntity>> MapModelToEditable
 			)	where TModel:class,IEntityWithId<long>
@@ -389,7 +389,7 @@ namespace SF.Entities
 		#region Create
 
 		public static async Task<TKey> CreateAsync<TKey,TEditableEntity,TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TEditableEntity Entity,
 			Func<IEntityModifyContext<TKey, TEditableEntity, TModel>, Task> UpdateModel,
 			Func<IEntityModifyContext<TKey, TEditableEntity, TModel>, Task> InitModel,
@@ -413,7 +413,7 @@ namespace SF.Entities
 
 		}
 		public static Task<long> CreateAsync<TEditableEntity, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TEditableEntity Entity,
 			Func<IEntityModifyContext<long, TEditableEntity, TModel>, Task> UpdateModel,
 			Func<IEntityModifyContext<long, TEditableEntity, TModel>, Task> InitModel,
@@ -427,7 +427,7 @@ namespace SF.Entities
 
 		#region Update
 		public static async Task UpdateAsync<TKey, TEditableEntity,TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TEditableEntity Entity,
 			Func<IEntityModifyContext<TKey, TEditableEntity, TModel>, Task> UpdateModel,
 			Func<IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
@@ -451,7 +451,7 @@ namespace SF.Entities
 				});
 		}
 		public static Task UpdateAsync<TEditableEntity, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TEditableEntity Entity,
 			Func<IEntityModifyContext<long, TEditableEntity, TModel>, Task> UpdateModel,
 			Func<IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
@@ -463,7 +463,7 @@ namespace SF.Entities
 		#endregion
 
 		public static async Task<bool> RemoveAsync<TKey,TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			TKey Id,
 			Func<IEntityModifyContext<TKey, TModel>, Task> RemoveModel=null,
 			Func<IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
@@ -488,7 +488,7 @@ namespace SF.Entities
 				});
 		}
 		public static async Task RemoveAllAsync<TKey,TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			Func<TKey, Task> Remove,
 			Expression<Func<TModel,bool>> Condition=null,
 			int BatchCount=100
@@ -518,7 +518,7 @@ namespace SF.Entities
 		}
 
 		public static Task RemoveAllScoppedAsync<TKey, TModel>(
-			this IDataSetEntityStorage<TModel> Storage,
+			this IDataSetEntityManager<TModel> Storage,
 			long ScopeId,
 			Func<TKey, Task> Remove,
 			int BatchCount = 100

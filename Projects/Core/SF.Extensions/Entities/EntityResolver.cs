@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using SF.Metadata;
+using System.Linq.Expressions;
 
 namespace SF.Entities
 {
@@ -142,6 +144,86 @@ namespace SF.Entities
            Action<TItem, string> action
            )
             => Resolver.Fill(items, IdSelector, i => i.Name, action);
+
+		class Filler {
+			protected static string ToIdent<T>(string Type, T Id)
+			{
+				return Type + "-" + Id.ToString();
+			}
+			protected static MethodInfo ToIdentMethod { get; } = typeof(Filler).GetMethod(nameof(ToIdent), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod);
+			protected static string GetItemName(IReadOnlyList<string> list, int index) => list[index];
+
+		}
+
+		class Filler<TItem>:Filler
+		{
+			static ParameterExpression ArgItem { get; } = Expression.Parameter(typeof(TItem));
+			static ParameterExpression ArgNames { get; } = Expression.Parameter(typeof(IReadOnlyList<string>));
+			static PropertyInfo[] AllProps { get; } = typeof(TItem).AllPublicInstanceProperties();
+
+			static (PropertyInfo id, PropertyInfo name, EntityIdentAttribute attr)[] PropPairs { get; } = 
+				(from prop in AllProps
+				 let ei = prop.GetCustomAttribute<EntityIdentAttribute>()
+				 where ei != null && ei.NameField != null
+				 let nameProp = AllProps.FirstOrDefault(p => p.Name == ei.NameField) ?? throw new ArgumentException($"实体{typeof(TItem)}没有指定的字段{ei.NameField}")
+				 select (prop, nameProp,ei)
+				 ).ToArray();
+			static bool FillRequired { get; } = PropPairs.Length > 0;
+
+			static Func<TItem, string[]> GetIdents { get; } =
+				Expression.Lambda<Func<TItem, string[]>>(
+					Expression.NewArrayInit(
+						typeof(string),
+						PropPairs.Select(p=>
+						Expression.Call(
+							 null,
+							 ToIdentMethod.MakeGenericMethod(p.id.PropertyType),
+							 Expression.Constant(p.attr.EntityManagementType.FullName),
+							 Expression.Property(ArgItem, p.id)
+							 )
+						).ToArray()
+						),
+					ArgItem
+					).Compile();
+			static IReadOnlyList<string> vaa;
+
+			static Action<TItem, IReadOnlyList<string>> FillIdents { get; } =
+				Expression.Lambda<Action<TItem, IReadOnlyList<string>>>(
+					Expression.Block(
+						PropPairs.Select((p, i) =>
+						Expression.Call(
+							ArgItem,
+							p.name.GetSetMethod(),
+							Expression.Call(
+								null,
+								typeof(Filler).GetMethod(nameof(GetItemName), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod),
+								ArgNames,
+								Expression.Constant(i)
+								)
+						)
+					)
+					),
+					ArgItem,
+					ArgNames
+					).Compile();
+
+			public static async Task Fill(IDataEntityResolver Resolver,IEnumerable<TItem> items)
+			{
+				if(FillRequired)
+					await Resolver.Fill(
+						items,
+						GetIdents,
+						FillIdents
+						);
+			}
+		}
+		public static Task Fill<TItem>(
+			this IDataEntityResolver Resolver,
+		   IEnumerable<TItem> items
+			)
+		{
+			return Filler<TItem>.Fill(Resolver, items);
+		}
     }
    
 }

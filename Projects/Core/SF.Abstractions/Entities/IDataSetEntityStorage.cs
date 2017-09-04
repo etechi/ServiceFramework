@@ -4,6 +4,7 @@ using SF.Core.ServiceManagement;
 using System.Linq;
 using SF.Data;
 using SF.Core.Logging;
+using SF.Core.Times;
 
 namespace SF.Entities
 {
@@ -34,11 +35,14 @@ namespace SF.Entities
 		TEditable Editable { get; set; }
 	}
 
-	public interface IEntityStorage
+	public interface IEntityManager
 	{
-
+		IIdentGenerator IdentGenerator { get; }
+		IDataEntityResolver DataEntityResolver { get; }
+		ITimeService TimeService { get; }
+		ILogger Logger { get; }
 	}
-	public interface IEntityStorage<TModel>: IEntityStorage
+	public interface IEntityManager<TModel>: IEntityManager
 		where TModel:class
 	{
 		IEntityModifyContext<TKey, TEditable, TModel> NewCreateContext<TKey, TEditable>(
@@ -62,15 +66,15 @@ namespace SF.Entities
 			)
 		where TKey : IEquatable<TKey>;
 	}
-	public interface IDataSetEntityStorage : IEntityStorage
+	public interface IDataSetEntityManager : IEntityManager
 	{
 		IDataSet DataSet { get; }
 	}
 
-	public interface IDataSetEntityStorage<TModel> : IDataSetEntityStorage,IEntityStorage<TModel>
+	public interface IDataSetEntityManager<TModel> : IDataSetEntityManager,IEntityManager<TModel>
 		where TModel:class
 	{
 		new IDataSet<TModel> DataSet { get; }
-		ILogger<TModel> Logger { get; }
+
 	}
 }

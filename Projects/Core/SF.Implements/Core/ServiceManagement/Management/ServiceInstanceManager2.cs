@@ -21,34 +21,22 @@ namespace SF.Core.ServiceManagement.Management
 		// IServiceConfigLoader,
 		//IServiceInstanceLister
 	{
-		IDataEntityResolver EntityResolver { get;}
 		Lazy<IServiceProvider> ServiceProvider { get; }
 		public IServiceInstanceConfigChangedNotifier ConfigChangedNotifier { get; }
-		ILogger<ServiceInstanceManager> Logger { get; }
-		Lazy<IIdentGenerator> IdentGenerator { get; }
-		ITimeService TimeService { get; }
 		IServiceMetadata Metadata { get; }
-		IDataSetEntityStorage<DataModels.ServiceInstance> Storage { get; }
+		IDataSetEntityManager<DataModels.ServiceInstance> Manager { get; }
 
 		public ServiceInstanceManager2(
-			IDataSet<DataModels.ServiceInstance> DataSet, 
-			IDataEntityResolver EntityResolver,
 			IServiceInstanceConfigChangedNotifier ConfigChangedNotifier,
 			Lazy<IServiceProvider> ServiceProvider,
-			Lazy<IIdentGenerator> IdentGenerator,
-			ITimeService TimeService,
 			IServiceMetadata Metadata,
-			IDataSetEntityStorage<DataModels.ServiceInstance> Storage
+			IDataSetEntityManager<DataModels.ServiceInstance> Manager
 			)
 		{
 			this.ServiceProvider = ServiceProvider;
-			this.EntityResolver = EntityResolver;
 			this.ConfigChangedNotifier = ConfigChangedNotifier;
-			this.Logger = Logger;
-			this.IdentGenerator = IdentGenerator;
-			this.TimeService = TimeService;
 			this.Metadata = Metadata;
-			this.Storage = Storage;
+			this.Manager = Manager;
 		}
 
 		PagingQueryBuilder<DataModels.ServiceInstance> PagingQueryBuilder =>
@@ -88,7 +76,7 @@ namespace SF.Core.ServiceManagement.Management
 
 			re.SettingType = implType + "SettingType";
 
-			Logger.Info("Load ServiceInstance for Edit: {0}",Json.Stringify(re));
+			Manager.Logger.Info("Load ServiceInstance for Edit: {0}",Json.Stringify(re));
 			return re;
 		}
 
@@ -124,13 +112,7 @@ namespace SF.Core.ServiceManagement.Management
 
 		async Task<Models.ServiceInstanceInternal[]> OnPreparePublics(Models.ServiceInstanceInternal[] Internals)
 		{
-			await EntityResolver.Fill(
-				Internals,
-				i => new[] { "系统服务实现-" + i.ImplementType, "系统服务定义-" + i.ServiceType},
-				(i,ns)=> {
-					i.ImplementName=ns[0];
-					i.ServiceName=ns[1];
-				});
+			await Manager.DataEntityResolver.Fill(Internals);
 			return Internals;
 		}
 		
@@ -185,7 +167,7 @@ namespace SF.Core.ServiceManagement.Management
 				UIEnsure.Equal(m.ImplementType, e.ImplementType, "服务实现类型不能修改");
 			}
 
-			m.Update(e, TimeService.Now);
+			m.Update(e, Manager.TimeService.Now);
 
 			m.Setting = e.Setting;
 
@@ -219,7 +201,7 @@ namespace SF.Core.ServiceManagement.Management
 			{
 				var orgParentId = m.ContainerId;
 				m.ContainerId = e.ContainerId;
-				Storage.AddPostAction(() =>
+				Manager.AddPostAction(() =>
 				{
 					ConfigChangedNotifier.NotifyInternalServiceChanged(
 						orgParentId,
@@ -233,7 +215,7 @@ namespace SF.Core.ServiceManagement.Management
 			}
 			
 
-			if (await Storage.DataSet.ModifyPosition(
+			if (await Manager.DataSet.ModifyPosition(
 				m,
 				PositionModifyAction.Insert,
 				i => i.ContainerId == m.ContainerId && i.ServiceType==m.ServiceType,
@@ -241,7 +223,7 @@ namespace SF.Core.ServiceManagement.Management
 				i => i.ItemOrder,
 				(i, p) => i.ItemOrder = p
 				) || m.ServiceIdent != e.ServiceIdent)
-				Storage.AddPostAction(() => 
+				Manager.AddPostAction(() => 
 					ConfigChangedNotifier.NotifyInternalServiceChanged(
 						m.ContainerId,
 						m.ServiceType
@@ -249,17 +231,17 @@ namespace SF.Core.ServiceManagement.Management
 					);
 			m.ServiceIdent = e.ServiceIdent;
 
-			Storage.AddPostAction(() =>
+			Manager.AddPostAction(() =>
 			{
 				ConfigChangedNotifier.NotifyChanged( m.Id);
-				Logger.Info("ServiceInstance Saved:{0}",Json.Stringify(m));
+				Manager.Logger.Info("ServiceInstance Saved:{0}",Json.Stringify(m));
 			});
 		}
 		async Task OnNewModel(IEntityModifyContext<long,ServiceInstanceEditable,DataModels.ServiceInstance>  ctx)
 		{
 			//UIEnsure.NotNull(ctx.Model.Id, "未设置服务实例ID");
-			ctx.Model.Id = await IdentGenerator.Value.GenerateAsync("系统服务", 0);
-			ctx.Model.Create(TimeService.Now);
+			ctx.Model.Id = await Manager.IdentGenerator.GenerateAsync("系统服务", 0);
+			ctx.Model.Create(Manager.TimeService.Now);
 		}
 
 		class InstanceDescriptor : IServiceInstanceDescriptor
@@ -279,7 +261,7 @@ namespace SF.Core.ServiceManagement.Management
 			//if (ctx.Model.IsDefaultService)
 			//throw new PublicInvalidOperationException("不能删除默认服务");
 
-			await Storage.RemoveAllAsync<long,DataModels.ServiceInstance>(
+			await Manager.RemoveAllAsync<long,DataModels.ServiceInstance>(
 				RemoveAsync,
 				q => q.ContainerId == ctx.Model.Id
 				);
@@ -309,22 +291,22 @@ namespace SF.Core.ServiceManagement.Management
 
 		public Task RemoveAsync(long Key)
 		{
-			return this.Storage.RemoveAsync(Key);
+			return this.Manager.RemoveAsync(Key);
 		}
 
 		public Task RemoveAllAsync()
 		{
-			return this.Storage.RemoveAllAsync<long,DataModels.ServiceInstance>(RemoveAsync);
+			return this.Manager.RemoveAllAsync<long,DataModels.ServiceInstance>(RemoveAsync);
 		}
 
 		public Task<ServiceInstanceEditable> LoadForEdit(long Id)
 		{
-			return Storage.LoadForEdit(Id, OnMapModelToEditable);
+			return Manager.LoadForEdit(Id, OnMapModelToEditable);
 		}
 
 		public async Task<long> CreateAsync(ServiceInstanceEditable Entity)
 		{
-			return await Storage.CreateAsync(
+			return await Manager.CreateAsync(
 				Entity,
 				OnUpdateModel,
 				OnNewModel
@@ -334,22 +316,22 @@ namespace SF.Core.ServiceManagement.Management
 
 		public async Task UpdateAsync(ServiceInstanceEditable Entity)
 		{
-			await Storage.UpdateAsync(Entity, OnUpdateModel);
+			await Manager.UpdateAsync(Entity, OnUpdateModel);
 		}
 
 		public Task<ServiceInstanceInternal> GetAsync(long Id)
 		{
-			return Storage.GetAsync(Id, OnMapModelToPublic);
+			return Manager.GetAsync(Id, OnMapModelToPublic);
 		}
 
 		public Task<ServiceInstanceInternal[]> GetAsync(long[] Ids)
 		{
-			return Storage.GetAsync(Ids, OnMapModelToPublic);
+			return Manager.GetAsync(Ids, OnMapModelToPublic);
 		}
 
 		public Task<QueryResult<ServiceInstanceInternal>> QueryAsync(ServiceInstanceQueryArgument Arg, Paging paging)
 		{
-			return Storage.QueryAsync(
+			return Manager.QueryAsync(
 				Arg, 
 				paging, 
 				OnBuildQuery, 
@@ -360,7 +342,7 @@ namespace SF.Core.ServiceManagement.Management
 
 		public Task<QueryResult<long>> QueryIdentsAsync(ServiceInstanceQueryArgument Arg, Paging paging)
 		{
-			return Storage.QueryIdentsAsync(
+			return Manager.QueryIdentsAsync(
 				Arg,
 				paging,
 				OnBuildQuery,
