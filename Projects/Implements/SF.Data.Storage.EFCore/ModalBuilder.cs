@@ -114,17 +114,18 @@ namespace SF.Data.EntityFrameworkCore
 #if NETSTANDARD2_0
 		bool IDbContextOptionsExtension.ApplyServices(IServiceCollection services)
 		{
-			throw new NotImplementedException();
+			services.AddSingleton(new DataModalInitializer(EntityItems));
+			return true;
 		}
 
 		public long GetServiceProviderHashCode()
 		{
-			throw new NotImplementedException();
+			return 0;
 		}
 
 		public void Validate(IDbContextOptions options)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 #endif
 	}

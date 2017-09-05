@@ -121,12 +121,14 @@ namespace SF.Core.ServiceManagement.Internals
 								ServiceType,
 								impl.ImplementType,
 								Setting,
-								ServiceMetadata
-								):
+								ServiceMetadata,
+								impl.IsManagedService
+								) :
 							CreatorCache.GetServiceInstanceCreator(
 								ServiceType,
 								impl.ImplementType,
-								Setting
+								Setting,
+								impl.IsManagedService
 								);
 						break;
 					}

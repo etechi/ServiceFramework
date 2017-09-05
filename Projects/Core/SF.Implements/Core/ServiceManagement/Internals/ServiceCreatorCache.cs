@@ -22,7 +22,12 @@ namespace SF.Core.ServiceManagement.Internals
 			this.ServiceMetadata = ServiceMetadata;
 		}
 
-		public static (ServiceCreator, ConstructorInfo) CreateServiceCreator(Type ServiceType, Type ImplementType,IServiceMetadata ServiceMetadata)
+		public static (ServiceCreator, ConstructorInfo) CreateServiceCreator(
+			Type ServiceType, 
+			Type ImplementType,
+			IServiceMetadata ServiceMetadata,
+			bool IsManagedService
+			)
 		{
 			var ci = ServiceCreatorBuilder
 				.FindBestConstructorInfo(ImplementType)
@@ -34,7 +39,8 @@ namespace SF.Core.ServiceManagement.Internals
 				ServiceMetadata,
 				ServiceType,
 				ImplementType,
-				ci
+				ci,
+				IsManagedService
 				);
 			return (creator, ci);
 		}
@@ -43,14 +49,15 @@ namespace SF.Core.ServiceManagement.Internals
 			Type ImplementType,
 			string Setting,
 			IServiceMetadata ServiceMetadata,
-			Func<Type,Type,(ServiceCreator, ConstructorInfo)> ServiceCreator
+			Func<Type,Type,bool,(ServiceCreator, ConstructorInfo)> ServiceCreator,
+			bool IsManagedService
 			)
 		{
 			var realImplType = ImplementType.IsGenericTypeDefinition ?
 							ImplementType.MakeGenericType(ServiceType.GetGenericArguments()) :
 							ImplementType;
 
-			var (Creator, ConstructorInfo) = ServiceCreator(ServiceType, realImplType);
+			var (Creator, ConstructorInfo) = ServiceCreator(ServiceType, realImplType, IsManagedService);
 			var CreateParameterTemplate = ServiceCreateParameterTemplate.Load(
 				ConstructorInfo,
 				Setting,
@@ -63,34 +70,38 @@ namespace SF.Core.ServiceManagement.Internals
 			Type ServiceType,
 			Type ImplementType,
 			string Setting,
-			IServiceMetadata ServiceMetadata
+			IServiceMetadata ServiceMetadata,
+			bool IsManagedService
 			)
 			=> CreateServiceInstanceCreator(
 				ServiceType,
 				ImplementType,
 				Setting,
 				ServiceMetadata,
-				(st,it)=>CreateServiceCreator(st,it, ServiceMetadata)
+				(st,it, ims) =>CreateServiceCreator(st,it, ServiceMetadata, ims),
+				IsManagedService
 				);
 
-		public (ServiceCreator,ConstructorInfo) GetServiceCreator(Type ServiceType, Type ImplementType)
+		public (ServiceCreator,ConstructorInfo) GetServiceCreator(Type ServiceType, Type ImplementType,bool IsManagedService)
 			=> ServiceCreatorDict.GetOrAdd(
 				(ServiceType, ImplementType), 
-				key => CreateServiceCreator(key.Item1,key.Item2,ServiceMetadata)
+				key => CreateServiceCreator(key.Item1,key.Item2,ServiceMetadata,IsManagedService)
 				);
 
 
 		public (ServiceCreator, IServiceCreateParameterTemplate) GetServiceInstanceCreator(
 			Type ServiceType,
 			Type ImplementType,
-			string Setting
+			string Setting,
+			bool IsManagedService
 			)
 			=> CreateServiceInstanceCreator(
 				ServiceType,
 				ImplementType,
 				Setting,
 				ServiceMetadata,
-				GetServiceCreator
+				GetServiceCreator,
+				IsManagedService
 				);
 
 	}

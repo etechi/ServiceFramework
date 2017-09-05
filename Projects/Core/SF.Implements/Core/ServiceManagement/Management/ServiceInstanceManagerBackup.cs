@@ -241,7 +241,7 @@ namespace SF.Core.ServiceManagement.Management
 							ServiceType = m.ServiceType
 						}
 						);
-				},
+				}			
 
 				);
 			}

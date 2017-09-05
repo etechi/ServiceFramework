@@ -32,7 +32,7 @@ namespace SF.Core.ServiceManagement
 				else if (gtd == typeof(TypedInstanceResolver<>))
 					ResolveType = ServiceResolveType.ResolveByIdent;
 				else if (gtd == typeof(IEnumerable<>))
-					ResolveType = ServiceResolveType.Enumerable;
+					return ServiceResolveType.Enumerable;
 
 				if (ResolveType != ServiceResolveType.Direct)
 					RealType = Type.GetGenericArguments()[0];

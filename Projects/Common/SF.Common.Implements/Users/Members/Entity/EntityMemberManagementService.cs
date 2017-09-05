@@ -1,27 +1,39 @@
 ﻿using SF.Auth.Identities;
+using SF.Core;
+using SF.Core.CallPlans;
 using SF.Core.Times;
 using SF.Data;
 using SF.Entities;
 using SF.Users.Members.Models;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SF.Users.Members.Entity
 {
 	public class EntityMemberManagementService<TMember,TMemberSource> :
 		EntityManager<long, Models.MemberInternal,  MemberQueryArgument, Models.MemberEditable, TMember>,
-		IMemberManagementService
+		IMemberManagementService,
+		ICallable
 		where TMember: DataModels.Member<TMember,TMemberSource>,new()
 		where TMemberSource: DataModels.MemberSource<TMember, TMemberSource>
 	{
 		public Lazy<IIdentityService> IdentityService { get; }
 		public EntityMemberManagementService(
 			IDataSetEntityManager<TMember> Manager,
-			Lazy<IIdentityService> IdentityService
+			Lazy<IIdentityService> IdentityService,
+			ICallPlanProvider CallPlanProvider
 			) : base(Manager)
 		{
 			this.IdentityService = IdentityService;
+			//CallPlanProvider.DelayCall(
+			//	typeof(IMemberManagementService).FullName + "-" + Manager.ServiceInstanceDescroptor.InstanceId,
+			//	"0",
+			//	null,
+			//	null,
+			//	""
+			//	);
 		}
 
 		protected override PagingQueryBuilder<TMember> PagingQueryBuilder =>
@@ -127,6 +139,23 @@ namespace SF.Users.Members.Entity
 						Name = e.Name
 					});
 			}
+		}
+		Task Execute(Expression<Func<ICallContext,Task>> expr)
+		{
+			return null;
+		}
+		class MemberSignup
+		{
+			public long ServiceScopeId { get; set; }
+			public long MemberId { get; set; }
+		}
+		Task ICallable.Execute(ICallContext CallContext)
+		{
+			Execute(
+				ctx=>
+					EntityManager.EventEmitter.Emit(Json.Parse<MemberSignup>(ctx.Argument),true)
+				);
+			return null;
 		}
 	}
 

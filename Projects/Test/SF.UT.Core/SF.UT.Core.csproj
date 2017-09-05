@@ -101,6 +101,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\CallPlans\ExpressionTest.cs" />
     <Compile Include="TestApp.cs" />
     <Compile Include="Auth\Identity\IdentityTest.cs" />
     <Compile Include="Core\Data\DBModels.cs" />

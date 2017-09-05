@@ -332,6 +332,104 @@ namespace System.Linq.Expressions
 		{
 			return Expression.Lambda(e, from a in args select (ParameterExpression)a);
 		}
+		public static IEnumerable<Expression> SelfAndChildren(this Expression e)
+		{
+			yield return e;
+			switch (e.NodeType)
+			{
+				case ExpressionType.Lambda:
+					{
+						var mi = (LambdaExpression)e;
+
+						foreach (var c in mi.Parameters)
+							yield return c;
+						
+						foreach (var c in mi.Body.SelfAndChildren())
+							yield return c;
+
+						break;
+					}
+				case ExpressionType.MemberInit:
+					{
+						var mi = (MemberInitExpression)e;
+
+						foreach (var c in mi.NewExpression.SelfAndChildren())
+							yield return c;
+
+						foreach (var b in mi.Bindings)
+						{
+							switch (b.BindingType)
+							{
+								case MemberBindingType.Assignment:
+									{
+										var oe = ((MemberAssignment)b).Expression;
+										foreach (var c in oe.SelfAndChildren()) 
+											yield return c;
+									}
+									break;
+								case MemberBindingType.ListBinding:
+								case MemberBindingType.MemberBinding:
+								default:
+									throw new NotSupportedException();
+							}
+						}
+						break;
+					}
+				case ExpressionType.New:
+					{
+						var ne = (NewExpression)e;
+						foreach (var arg in ne.Arguments)
+							foreach (var c in arg.SelfAndChildren())
+								yield return c;
+						break;
+					}
+				case ExpressionType.NewArrayInit:
+					{
+						var nae = (NewArrayExpression)e;
+						foreach (var arg in nae.Expressions)
+							foreach (var c in arg.SelfAndChildren())
+								yield return c;
+						break;
+					}
+				case ExpressionType.MemberAccess:
+					{
+						var ma = (MemberExpression)e;
+						foreach (var c in ma.Expression.SelfAndChildren())
+							yield return c;
+						break;
+					}
+				case ExpressionType.Call:
+					{
+						var ce = (MethodCallExpression)e;
+						if (ce.Object != null)
+							foreach (var c in ce.Object.SelfAndChildren())
+								yield return c;
+						foreach (var arg in ce.Arguments)
+							foreach (var c in arg.SelfAndChildren())
+								yield return c;
+						break;
+					}
+				default:
+					var be = e as BinaryExpression;
+					if (be != null)
+					{
+						foreach (var c in be.Left.SelfAndChildren())
+							yield return c;
+
+						foreach (var c in be.Right.SelfAndChildren())
+							yield return c;
+
+					}
+					var ue = e as UnaryExpression;
+					if (ue != null)
+					{
+						foreach (var c in ue.Operand.SelfAndChildren())
+							yield return c;
+					}
+					throw new NotSupportedException();
+			}
+		}
+
 		public static void CollectArguments(this Expression exp, ICollection<ParameterExpression> list)
 		{
 			Visit(exp, (e, l, i, enter) =>
@@ -353,6 +451,7 @@ namespace System.Linq.Expressions
 
 			});
 		}
+
 		public static bool Visit(this Expression exp, Func<Expression, int, int, bool, bool> visitor)
 		{
 			return Visit(exp, 0, 0, visitor);
@@ -445,14 +544,14 @@ namespace System.Linq.Expressions
 			}
 			return visitor(exp, level, index, false);
 		}
-		public static MemberBinding Visit(this MemberBinding b, Func<Expression, Expression> Replace)
+		public static MemberBinding Replace(this MemberBinding b, Func<Expression, Expression> Mapper)
 		{
 			switch (b.BindingType)
 			{
 				case MemberBindingType.Assignment:
 					{
 						var oe = ((MemberAssignment)b).Expression;
-						var ne = oe.Visit(Replace);
+						var ne = oe.Replace(Mapper);
 						if (oe == ne) return b;
 						return Expression.Bind(b.Member, ne);
 					}
@@ -462,18 +561,28 @@ namespace System.Linq.Expressions
 					throw new NotSupportedException();
 			}
 		}
-		public static Expression Visit(this Expression expr, Func<Expression, Expression> Replace)
+		public static Expression Replace(this Expression expr, Func<Expression, Expression> Mapper)
 		{
-			var e = Replace(expr);
+			var e = Mapper(expr);
 			if (e == null)
 				return null;
 			switch (e.NodeType)
 			{
+				case ExpressionType.Lambda:
+					{
+						var mi = (LambdaExpression)e;
+						var newBody = (NewExpression)Replace(mi.Body, Mapper);
+						var newArgs = mi.Parameters.Select(Mapper).Cast<ParameterExpression>().ToArray();
+						if (newBody == mi.Body && newArgs.AllEquals(mi.Parameters))
+							return e;
+
+						return Expression.Lambda(newBody, newArgs);
+					}
 				case ExpressionType.MemberInit:
 					{
 						var mi = (MemberInitExpression)e;
-						var newExpr = (NewExpression)Visit(mi.NewExpression, Replace);
-						var binds = mi.Bindings.Select(ie => Visit(ie, Replace)).ToArray();
+						var newExpr = (NewExpression)Replace(mi.NewExpression, Mapper);
+						var binds = mi.Bindings.Select(ie => Replace(ie, Mapper)).ToArray();
 						if (newExpr == mi.NewExpression && binds.AllEquals(mi.Bindings))
 							return e;
 						return Expression.MemberInit(newExpr, binds);
@@ -481,7 +590,7 @@ namespace System.Linq.Expressions
 				case ExpressionType.New:
 					{
 						var ne = (NewExpression)e;
-						var args = ne.Arguments.Select(a => a.Visit(Replace)).ToArray();
+						var args = ne.Arguments.Select(a => a.Replace(Mapper)).ToArray();
 						if (args.AllEquals(ne.Arguments))
 							return e;
 						return Create(ne.Type, args);
@@ -489,7 +598,7 @@ namespace System.Linq.Expressions
 				case ExpressionType.NewArrayInit:
 					{
 						var nae = (NewArrayExpression)e;
-						var args = nae.Expressions.Select(a => a.Visit(Replace)).ToArray();
+						var args = nae.Expressions.Select(a => a.Replace(Mapper)).ToArray();
 						if (args.AllEquals(nae.Expressions))
 							return e;
 						return Expression.NewArrayInit(
@@ -500,7 +609,7 @@ namespace System.Linq.Expressions
 				case ExpressionType.MemberAccess:
 					{
 						var ma = (MemberExpression)e;
-						var ne = ma.Expression.Visit(Replace);
+						var ne = ma.Expression.Replace(Mapper);
 						if (ne == ma.Expression)
 							return e;
 						return Expression.MakeMemberAccess(ne, ma.Member);
@@ -512,8 +621,8 @@ namespace System.Linq.Expressions
 				case ExpressionType.Call:
 					{
 						var c = (MethodCallExpression)e;
-						var nobj = c.Object == null ? null : c.Object.Visit(Replace);
-						var nargs = c.Arguments.Select(a => a.Visit(Replace)).ToArray();
+						var nobj = c.Object == null ? null : c.Object.Replace(Mapper);
+						var nargs = c.Arguments.Select(a => a.Replace(Mapper)).ToArray();
 						if (nobj == c.Object && nargs.AllEquals(c.Arguments))
 							return e;
 						return Expression.Call(
@@ -527,8 +636,8 @@ namespace System.Linq.Expressions
 					var be = e as BinaryExpression;
 					if (be != null)
 					{
-						var nl = be.Left.Visit(Replace);
-						var nr = be.Right.Visit(Replace);
+						var nl = be.Left.Replace(Mapper);
+						var nr = be.Right.Replace(Mapper);
 						if (nl == be.Left && nr == be.Right)
 							return e;
 						return Expression.MakeBinary(
@@ -543,7 +652,7 @@ namespace System.Linq.Expressions
 					var ue = e as UnaryExpression;
 					if (ue != null)
 					{
-						var nue = ue.Operand.Visit(Replace);
+						var nue = ue.Operand.Replace(Mapper);
 						if (nue == ue.Operand)
 							return e;
 						return Expression.MakeUnary(
@@ -555,32 +664,55 @@ namespace System.Linq.Expressions
 					}
 					throw new NotSupportedException();
 			}
-
 		}
-		public static Expression ReplaceArguments(this Expression expr, Dictionary<ParameterExpression, ParameterExpression> args)
+
+		public static Expression Replace(this Expression expr, Dictionary<Expression, Expression> args)
 		{
-			return expr.Visit(e =>
+			return expr.Replace(e =>
 			{
-				var pe = e as ParameterExpression;
-				if(pe==null)
-					return e;
-				if (args.TryGetValue(pe, out var ne))
+				if (args.TryGetValue(e, out var ne))
 					return ne;
 				return e;
 			});
 		}
 
-		public static MemberBinding ReplaceArguments(this MemberBinding expr, Dictionary<ParameterExpression, ParameterExpression> args)
+		public static MemberBinding Replace(this MemberBinding expr, Dictionary<Expression, Expression> args)
 		{
-			return expr.Visit(e =>
+			return expr.Replace(e =>
 			{
-				var pe = e as ParameterExpression;
-				if (pe == null)
-					return e;
-				if (args.TryGetValue(pe, out var ne))
+				if (args.TryGetValue(e, out var ne))
 					return ne;
 				return e;
 			});
 		}
+		public static Expression ReplaceAndValidateReference(
+			this Expression expr, 
+			Dictionary<Expression, Expression> args
+			)
+		{
+			return expr.Replace(e =>
+			{
+				if (args.TryGetValue(e, out var ne))
+					return ne;
+				var r = e as ConstantExpression;
+				if (r != null)
+				{
+					var type = r.Type;
+					if (type.HasElementType)
+						type = type.GetElementType();
+					if (type.IsGenericType)
+					{
+						var gt = type.GetGenericTypeDefinition();
+						if (gt == typeof(IEnumerable<>) || gt == typeof(Dictionary<,>) || gt == typeof(List<>))
+							type = gt.GetGenericArguments().Last();
+					}
+					if (!type.IsSystemType())
+						throw new NotSupportedException($"表达式不支持类型为{r.Type}的引用:{r.Value}");
+				}
+				return e;
+			});
+		}
+
+		
 	}
 }

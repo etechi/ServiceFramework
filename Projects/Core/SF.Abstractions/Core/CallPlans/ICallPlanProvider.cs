@@ -19,16 +19,22 @@ namespace SF.Core.CallPlans
             this.Target = Target;
         }
     }
-
+	public interface ICallContext
+	{
+		string Argument { get; }
+		string Context { get; }
+		Exception Exception { get; }
+		object CallData { get; }
+	}
 
     public interface ICallable
 	{
-		Task Execute(string Argument,string Context, Exception Exception,object CallData);
+		Task Execute(ICallContext CallContext);
 	}
 	public interface ICallableDefination
 	{
-		Type Type { get; }
-		Func<IServiceProvider,ICallable> CallableCreator { get; }
+		string Type { get; }
+		Func<IServiceProvider,long?,ICallable> CallableCreator { get; }
 	}
 	public interface ICallPlanProvider
 	{

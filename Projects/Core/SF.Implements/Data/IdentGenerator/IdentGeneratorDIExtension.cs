@@ -1,5 +1,4 @@
-﻿using SF.Core.DI;
-using SF.Core.ServiceManagement.Management;
+﻿using SF.Core.ServiceManagement.Management;
 
 namespace SF.Core.ServiceManagement
 {

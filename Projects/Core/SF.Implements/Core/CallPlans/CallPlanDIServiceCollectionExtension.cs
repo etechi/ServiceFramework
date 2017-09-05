@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 using SF.Data;
 using SF.Core.ServiceManagement;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class CallGuarantorDIServiceCollectionExtension
 	{
 
-		public static IServiceCollection AddCallPlans(this IServiceCollection sc,int Interval=5*1000)
+		public static IServiceCollection AddCallPlans(this IServiceCollection sc,int Interval=5*1000,int ExecCountPerInterval=100)
 		{
 			sc.AddSingleton(sp =>
 				new CallableFactory(sp.Resolve<IEnumerable<ICallableDefination>>())
@@ -27,7 +27,7 @@ namespace SF.Core.DI
 				Interval,
 				async sp =>
 				{
-					await CallScheduler.Execute(sp, 10);
+					await CallScheduler.Execute(sp, ExecCountPerInterval);
 					return Interval;
 				},
 				async sp =>

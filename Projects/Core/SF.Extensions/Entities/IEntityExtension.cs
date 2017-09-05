@@ -87,7 +87,7 @@ namespace SF.Entities
 		static void AddBinds(
 			Dictionary<string, MemberBinding> dict,
 			IEnumerable<MemberBinding> binds,
-			Dictionary<ParameterExpression, ParameterExpression> argMap
+			Dictionary<Expression, Expression> argMap
 			)
 		{
 			foreach (var b in binds)
@@ -95,7 +95,7 @@ namespace SF.Entities
 				if (dict.ContainsKey(b.Member.Name))
 					continue;
 
-				dict[b.Member.Name] = b.ReplaceArguments(argMap);
+				dict[b.Member.Name] = b.Replace(argMap);
 			}
 		}
 
@@ -124,7 +124,7 @@ namespace SF.Entities
 				AddBinds(
 					binds,
 					mapper.Bindings,
-					new Dictionary<ParameterExpression, ParameterExpression> { { newMappers[i].Parameters[0], dstArg } }
+					new Dictionary<Expression, Expression> { { newMappers[i].Parameters[0], dstArg } }
 					);
 			}
 			var firstMapper = orgMapper.Body as MemberInitExpression;
@@ -133,7 +133,7 @@ namespace SF.Entities
 			AddBinds(
 				binds,
 				firstMapper.Bindings,
-				new Dictionary<ParameterExpression, ParameterExpression> { { orgMapper.Parameters[0], dstArg } }
+				new Dictionary<Expression, Expression> { { orgMapper.Parameters[0], dstArg } }
 				);
 
 

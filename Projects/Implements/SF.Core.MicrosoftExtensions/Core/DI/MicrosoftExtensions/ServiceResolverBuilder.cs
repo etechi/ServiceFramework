@@ -65,7 +65,7 @@ namespace SF.Core.ServiceManagement
 					throw new NotSupportedException();
 			}
 		}
-		public static IServiceCollection AddServices(this IServiceCollection Services, Microsoft.Extensions.DependencyInjection.ServiceCollection MSServices)
+		public static IServiceCollection AddServices(this IServiceCollection Services, Microsoft.Extensions.DependencyInjection.IServiceCollection MSServices)
 		{
 			return Services.AddRange(
 				MSServices.Select(s =>

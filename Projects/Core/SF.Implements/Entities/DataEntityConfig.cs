@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Core.DI;
 using System.ComponentModel;
 using System.Reflection;
 using System.ComponentModel.DataAnnotations;

@@ -323,13 +323,13 @@ namespace SF.Core.ServiceManagement.Internals
 				(a, b) => b.GetParameters().Length.CompareTo(a.GetParameters().Length));
 
 			var bestConstructor = constructors[0];
-			var bestConstructorParameterTypes = new HashSet<Type>(bestConstructor.GetParameters().Select(p => p.ParameterType));
-			for (var i = 1; i < constructors.Length; i++)
-			{
-				var parameters = constructors[i].GetParameters();
-				if (!bestConstructorParameterTypes.IsSupersetOf(parameters.Select(p => p.ParameterType)))
-					throw new InvalidOperationException($"服务构造函数冲突:{bestConstructor.GetParameters()}和{constructors[i].GetParameters()}");
-			}
+			//var bestConstructorParameterTypes = new HashSet<Type>(bestConstructor.GetParameters().Select(p => p.ParameterType));
+			//for (var i = 1; i < constructors.Length; i++)
+			//{
+			//	var parameters = constructors[i].GetParameters();
+			//	if (!bestConstructorParameterTypes.IsSupersetOf(parameters.Select(p => p.ParameterType)))
+			//		throw new InvalidOperationException($"服务{Type}构造函数冲突:{bestConstructor.GetParameters().Select(p=>p.Name).Join(",")}和{constructors[i].GetParameters().Select(p=>p.Name).Join(",")}");
+			//}
 			return bestConstructor;
 		}
 
@@ -473,7 +473,7 @@ namespace SF.Core.ServiceManagement.Internals
 			Expression CopyExpression(Type Type, MemberAttribute MemberAttribute, Expression src, Expression PropPathExpr, string PropPath, out bool isSvcType)
 			{
 				isSvcType = false;
-				if (!CopyRequiredPaths.Contains(PropPath))
+				if (CopyRequiredPaths==null || !CopyRequiredPaths.Contains(PropPath))
 					return src;
 
 				if (Type.IsArray)
@@ -624,7 +624,7 @@ namespace SF.Core.ServiceManagement.Internals
 						);
 				else
 				{
-					if (!CopyRequiredPaths.Contains(pi.Name))
+					if (CopyRequiredPaths==null || !CopyRequiredPaths.Contains(pi.Name))
 						return Expression.Convert(
 							Expression.Call(
 								ParamServiceCreateParameterProvider,
@@ -678,18 +678,21 @@ namespace SF.Core.ServiceManagement.Internals
 			IServiceMetadata ServiceMetadata,
 			Type ServiceType,
 			Type ImplementType,
-			ConstructorInfo constructorInfo
+			ConstructorInfo constructorInfo,
+			bool IsManagedService
 			)
 		{
-			var CopyRequiredPaths = new HashSet<string>();
-			new InitCopyRequiredPathsHelper
+			HashSet<string> CopyRequiredPaths = null;
+			if (IsManagedService)
 			{
-				constructorInfo = constructorInfo,
-				CopyRequiredPaths = CopyRequiredPaths,
-				ImplementType = ImplementType,
-				ServiceMetadata = ServiceMetadata
-			}.InitCopyRequiredPaths();
-
+				new InitCopyRequiredPathsHelper
+				{
+					constructorInfo = constructorInfo,
+					CopyRequiredPaths = CopyRequiredPaths,
+					ImplementType = ImplementType,
+					ServiceMetadata = ServiceMetadata
+				}.InitCopyRequiredPaths();
+			}
 			return new Builder
 			{
 				constructorInfo = constructorInfo,

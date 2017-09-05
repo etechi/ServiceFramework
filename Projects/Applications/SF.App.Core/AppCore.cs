@@ -103,6 +103,8 @@ namespace SF.Applications
 			Services.AddLocalFileCache();
 			Services.AddDefaultSecurityServices();
 			Services.AddEventServices();
+			Services.AddCallPlans();
+			Services.AddDefaultCallPlanStorage();
 		}
 		static void AddCommonServices(IServiceCollection Services, EnvironmentType EnvType)
 		{

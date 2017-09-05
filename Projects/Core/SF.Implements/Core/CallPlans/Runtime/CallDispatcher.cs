@@ -83,7 +83,17 @@ namespace SF.Core.CallPlans.Runtime
 
 
         static ObjectSyncQueue<string> ExecQueue { get; } = new ObjectSyncQueue<string>();
-        Task ExecuteInstance(string id,object CallData)
+		class CallContext : ICallContext
+		{
+			public string Argument { get; set; }
+
+			public string Context { get; set; }
+
+			public Exception Exception { get; set; }
+
+			public object CallData { get; set; }
+		}
+		Task ExecuteInstance(string id,object CallData)
 		{
              //同一个调用不能进入多次
              return ExecQueue.Queue(id, async () =>
@@ -99,7 +109,9 @@ namespace SF.Core.CallPlans.Runtime
                          Logger.Error("发现无效主键！ " + id);
                          return;
                      }
-                     var CallableName = id.Substring(0, i);
+					 var si = id.IndexOf('-', 0, i);
+                     var CallableName = si==-1?id.Substring(0, i):id.Substring(0,si);
+					 var CallableIdent = si == -1 ? null : (long?)long.Parse(id.Substring(si + 1, i - si - 1));
                      var CallContext = id.Substring(i + 1);
 
                      try
@@ -111,12 +123,14 @@ namespace SF.Core.CallPlans.Runtime
                          {
                              try
                              {
-                                 var cb = sp.Resolve<CallableFactory>().Create(sp, CallableName);
+                                 var cb = sp.Resolve<CallableFactory>().Create(sp, CallableName,CallableIdent);
                                  await cb.Execute(
-                                     instance.CallArgument,
-                                     CallContext,
-                                     ExceptionFactory.CreateFromError(instance.CallError),
-									 CallData
+									 new CallContext {
+										 Argument=instance.CallArgument,
+										 Context=CallContext,
+										 Exception=ExceptionFactory.CreateFromError(instance.CallError),
+										 CallData=CallData
+									 }
 									 );
                                  Log(LogLevel.Trace, "执行完成", instance);
                              }

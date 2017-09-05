@@ -165,6 +165,7 @@ namespace SF.Core.ServiceManagement
 			sc.Add(typeof(TService), typeof(TService), ServiceImplementLifetime.Transient);
 			return sc;
 		}
+		
 		public static IServiceCollection AddTransient<T>(
 			this IServiceCollection sc,
 			Func<IServiceProvider, T> ImplementCreator
@@ -204,6 +205,12 @@ namespace SF.Core.ServiceManagement
 			where TImplement:TService
 		{
 			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped);
+			return sc;
+		}
+		public static IServiceCollection AddScoped<TService>(this IServiceCollection sc)
+		   where TService : class
+		{
+			sc.Add(typeof(TService), typeof(TService), ServiceImplementLifetime.Scoped);
 			return sc;
 		}
 		public static IServiceCollection AddScoped<T>(

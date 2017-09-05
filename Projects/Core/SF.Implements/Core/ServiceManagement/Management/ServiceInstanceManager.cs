@@ -7,7 +7,6 @@ using SF.Entities;
 using SF.Metadata;
 using SF.Core.ServiceManagement.Models;
 using SF.Core.ServiceManagement.Internals;
-using SF.Core.DI;
 using SF.Core.Logging;
 using System.Collections.Generic;
 using SF.Core.Times;
