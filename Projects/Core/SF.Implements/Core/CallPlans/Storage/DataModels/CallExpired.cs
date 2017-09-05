@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
 
-namespace SF.Core.CallGuarantors.Storage.DataModels
+namespace SF.Core.CallPlans.Storage.DataModels
 {
 	[Table("SysCallExpired")]
     [Comment(GroupName = "可靠调用服务", Name = "已过期实例")]

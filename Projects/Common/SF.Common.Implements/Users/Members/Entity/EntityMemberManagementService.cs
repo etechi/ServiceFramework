@@ -59,7 +59,7 @@ namespace SF.Users.Members.Entity
 					Password=Arg.Password,
 					PhoneNumber=Arg.Credential,
 				},
-				Tuple.Create(Arg, CredentialProvider)
+				(Arg, CredentialProvider)
 				);
 			return (string)ctx.UserData;
 		}
@@ -89,7 +89,7 @@ namespace SF.Users.Members.Entity
 
 			if (ctx.Action == ModifyAction.Create)
 			{
-				var ExtraArg = (Tuple<CreateIdentityArgument,IIdentityCredentialProvider>)ctx.ExtraArgument;
+				var ExtraArg = ((CreateIdentityArgument,IIdentityCredentialProvider))ctx.ExtraArgument;
 				UIEnsure.HasContent(e.Password, "需要提供密码");
 				ctx.UserData=await IdentityService.Value.CreateIdentity(
 					new CreateIdentityArgument
@@ -111,6 +111,11 @@ namespace SF.Users.Members.Entity
 					}, 
 					false
 					);
+				EntityManager.AddPostAction(() =>
+				{
+					
+
+				}, PostActionType.BeforeCommit);
 			}
 			else
 			{

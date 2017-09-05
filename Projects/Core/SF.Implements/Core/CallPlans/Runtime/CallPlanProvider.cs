@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Core.CallGuarantors.Runtime
+namespace SF.Core.CallPlans.Runtime
 {
-	public class CallGuarantor :
-		ICallGuarantor
+	public class CallPlanProvider :
+		ICallPlanProvider
 	{
-		public ICallGuarantorStorage Storage { get; }
+		public ICallPlanStorage Storage { get; }
 		public Times.ITimeService TimeService { get; }
 		public Lazy<ICallDispatcher> CallScheduler { get; }
 		public CallableFactory CallableFactory { get; }
-		public CallGuarantor(
-			ICallGuarantorStorage Storage, 
+		public CallPlanProvider(
+			ICallPlanStorage Storage, 
 			Times.ITimeService TimeService, 
 			Lazy<ICallDispatcher> Scheduler,
 			CallableFactory CallableFactory
@@ -35,7 +35,8 @@ namespace SF.Core.CallGuarantors.Runtime
             DateTime CallTime,
             int ExpireSeconds,
             int DelaySecondsOnError,
-            bool SkipExecute = false
+            bool SkipExecute = false,
+			object CallData=null
 			)
 		{
 			if (!CallableFactory.Exists(CallableName))
@@ -74,7 +75,7 @@ namespace SF.Core.CallGuarantors.Runtime
 				DelaySecondsOnError
 			);
             if(re && immediately && !SkipExecute)
-				await Execute(CallableName,CallContext);
+				await Execute(CallableName,CallContext,CallData);
             return true;
 		}
         public async Task Cancel(
@@ -87,17 +88,18 @@ namespace SF.Core.CallGuarantors.Runtime
         }
         public async Task Execute(
            string CallableName,
-           string CallContext
+           string CallContext,
+		   object CallData
            )
         {
             var id = CallableName + ":" + CallContext;
-            await ExecuteDelayed(id);
+            await ExecuteDelayed(id,CallData);
         }
-        async Task ExecuteDelayed(string id)
+        async Task ExecuteDelayed(string id,object CallData)
         {
             try
             {
-                await CallScheduler.Value.Execute(id);
+                await CallScheduler.Value.Execute(id,CallData);
             }
             catch { }
         }

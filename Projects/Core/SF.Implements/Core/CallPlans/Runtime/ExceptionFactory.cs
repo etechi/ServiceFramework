@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace SF.Core.CallGuarantors.Runtime
+namespace SF.Core.CallPlans.Runtime
 {
 	static class ExceptionFactory
 	{

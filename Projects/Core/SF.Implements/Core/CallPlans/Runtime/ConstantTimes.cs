@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Core.CallGuarantors.Runtime
+namespace SF.Core.CallPlans.Runtime
 {
 	public static class ConstantTimes
 	{

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SF.Core.CallPlans
 {
-	
+
 	public static class ICallPlanProviderExtension
 	{
 		public static Task DelayCall(
-			this ICallPlanProvider CallGuarantor,
+			this ICallPlanProvider Provider,
 			string CallableName,
 			string CallContext,
 			string CallArgument,
@@ -21,7 +21,7 @@ namespace SF.Core.CallPlans
 			int DelaySecondsOnError=5*60
 			)
 		{
-			return CallGuarantor.Schedule(
+			return Provider.Schedule(
 				CallableName,
 				CallContext,
 				CallArgument,
@@ -34,7 +34,7 @@ namespace SF.Core.CallPlans
 		}
 
 		public static Task Call(
-			this ICallPlanProvider CallGuarantor,
+			this ICallPlanProvider Provider,
 			string CallableName,
 			string CallContext,
 			string Argument,
@@ -44,7 +44,7 @@ namespace SF.Core.CallPlans
 			int DelaySecondsOnError
 			)
 		{
-			return CallGuarantor.Schedule(
+			return Provider.Schedule(
 				CallableName,
 				CallContext,
 				Argument,

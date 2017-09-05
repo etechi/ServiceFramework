@@ -7,11 +7,11 @@ using SF.Core.Logging;
 using SF.Core.DI;
 using System.Threading;
 
-namespace SF.Core.CallGuarantors.Runtime
+namespace SF.Core.CallPlans.Runtime
 {
 	public class CallableFactory
 	{
-		Dictionary<string, Func<IServiceProvider, ICallable>> Creators { get; }
+		Dictionary<string, Func<IServiceProvider, long?, ICallable>> Creators { get; }
 		public CallableFactory(IEnumerable<ICallableDefination> callables)
 		{
 			Creators = callables.ToDictionary(c => c.Type.FullName, c => c.CallableCreator);

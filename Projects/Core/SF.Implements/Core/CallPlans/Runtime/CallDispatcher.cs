@@ -7,7 +7,7 @@ using SF.Core.Logging;
 using SF.Core.ServiceManagement;
 using System.Threading;
 
-namespace SF.Core.CallGuarantors.Runtime
+namespace SF.Core.CallPlans.Runtime
 {
 	public class TimeoutException : PublicException
 	{
@@ -32,10 +32,10 @@ namespace SF.Core.CallGuarantors.Runtime
 			var now = TimeService.Now;
 			using (var scope = ScopeFactory.CreateServiceScope())
 			{
-				var storage = scope.ServiceProvider.Resolve<ICallGuarantorStorage>();
+				var storage = scope.ServiceProvider.Resolve<ICallPlanStorage>();
 				var timers = await storage.GetInstancesForCleanup(ConstantTimes.ExecutingStartTime);
 				var error_unexcepted = new Exception("系统异常终止");
-				var actions = new List<ICallStorageAction>();
+				var actions = new List<ICallPlanStorageAction>();
 				foreach (var timer in timers)
 				{
 					actions.Add(CreateStorageAction(storage,timer, error_unexcepted, now, null));
@@ -50,7 +50,7 @@ namespace SF.Core.CallGuarantors.Runtime
 			string[] ids;
 			using (var scope = ScopeFactory.CreateServiceScope())
 			{
-				var storage = scope.ServiceProvider.Resolve<ICallGuarantorStorage>();
+				var storage = scope.ServiceProvider.Resolve<ICallPlanStorage>();
 				ids = await storage.GetOnTimeInstances(
 					count,
 					now,
@@ -60,7 +60,7 @@ namespace SF.Core.CallGuarantors.Runtime
 			}
 
 			return ids.Select(id =>
-					Task.Run(() => ExecuteInstance(id))
+					Task.Run(() => ExecuteInstance(id,null))
 					).ToArray();
 		}
 
@@ -76,23 +76,22 @@ namespace SF.Core.CallGuarantors.Runtime
 				instance.CallError
 				);
 		}
-		public async Task Execute(string id)
+		public async Task Execute(string id,object CallData)
 		{
-            await ExecuteInstance(id);
+            await ExecuteInstance(id,CallData);
 		}
 
 
-        static ObjectSyncQueue<string> execQueue { get; } = new ObjectSyncQueue<string>();
-        Task ExecuteInstance(string id)
+        static ObjectSyncQueue<string> ExecQueue { get; } = new ObjectSyncQueue<string>();
+        Task ExecuteInstance(string id,object CallData)
 		{
-
              //同一个调用不能进入多次
-             return execQueue.Queue(id, async () =>
+             return ExecQueue.Queue(id, async () =>
              {
                  using (var scope = ScopeFactory.CreateServiceScope())
                  {
 					 var sp = scope.ServiceProvider;
-					 var storage = sp.Resolve<ICallGuarantorStorage>();
+					 var storage = sp.Resolve<ICallPlanStorage>();
                      var instance = await storage.GetInstance(id);
                      var i = id.IndexOf(':');
                      if (i == -1)
@@ -116,8 +115,9 @@ namespace SF.Core.CallGuarantors.Runtime
                                  await cb.Execute(
                                      instance.CallArgument,
                                      CallContext,
-                                     ExceptionFactory.CreateFromError(instance.CallError)
-                                     );
+                                     ExceptionFactory.CreateFromError(instance.CallError),
+									 CallData
+									 );
                                  Log(LogLevel.Trace, "执行完成", instance);
                              }
                              catch (RepeatCallException rce)
@@ -143,8 +143,8 @@ namespace SF.Core.CallGuarantors.Runtime
                  }
              });
 		}
-		ICallStorageAction CreateStorageAction(
-            ICallGuarantorStorage storage, 
+		ICallPlanStorageAction CreateStorageAction(
+            ICallPlanStorage storage, 
             ICallInstance timer, 
             Exception error, 
             DateTime now,
@@ -173,11 +173,12 @@ namespace SF.Core.CallGuarantors.Runtime
 							.Add(timer.CallTime.Subtract(ConstantTimes.ExecutingStartTime))
 							.AddSeconds(repeatDelay??timer.DelaySecondsOnError),
 						false,
-						error?.ToString()
+						error?.ToString(),
+						error is RepeatCallException repeat? repeat.NewCallArgument:null
 						);
 			}
 		}
-		async Task Save(ICallGuarantorStorage storage, ICallInstance timer, Exception error, DateTime now,int? repeatDelay)
+		async Task Save(ICallPlanStorage storage, ICallInstance timer, Exception error, DateTime now,int? repeatDelay)
 		{
 			var action = CreateStorageAction(storage,timer, error, now, repeatDelay);
 			await storage.ExecuteActions(new[] { action });

@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
 using SF.Data;
 
-namespace SF.Core.CallGuarantors.Storage.DataModels
+namespace SF.Core.CallPlans.Storage.DataModels
 {
 	[Table("SysCallInstance")]
     [Comment(GroupName = "可靠调用服务", Name = "调用实例")]

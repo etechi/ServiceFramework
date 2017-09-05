@@ -7,7 +7,7 @@ using System.Threading;
 using SF.Core.Logging;
 using SF.Core.ServiceManagement;
 
-namespace SF.Core.CallGuarantors.Runtime
+namespace SF.Core.CallPlans.Runtime
 {
 	public static class CallScheduler
 	{

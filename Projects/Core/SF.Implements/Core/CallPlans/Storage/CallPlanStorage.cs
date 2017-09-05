@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using SF.Data;
 
-namespace SF.Core.CallGuarantors.Storage
+namespace SF.Core.CallPlans.Storage
 {
-	public class CallGuarantorStorage :
-		ICallGuarantorStorage
+	public class CallPlanStorage :
+		ICallPlanStorage
 	{
 		public IDataSet<DataModels.CallInstance> CallInstances { get; }
 		public Lazy<IDataSet<DataModels.CallExpired>> CallExpireds { get; }
 
-		public CallGuarantorStorage(
+		public CallPlanStorage(
 			IDataSet<DataModels.CallInstance> CallInstances,
 			Lazy<IDataSet<DataModels.CallExpired>> CallExpireds
 			)
@@ -70,7 +70,7 @@ namespace SF.Core.CallGuarantors.Storage
 				Lazy<IDataSet<DataModels.CallExpired>> CallExpireds
 				);
 		}
-		class ExpiredAction : BaseAction, ICallStorageAction
+		class ExpiredAction : BaseAction, ICallPlanStorageAction
 		{
 			public DateTime Now { get; set; }
 			public string ExecError { get; set; }
@@ -94,11 +94,12 @@ namespace SF.Core.CallGuarantors.Storage
 				});
 			}
 		}
-		class RetryAction : BaseAction, ICallStorageAction
+		class RetryAction : BaseAction, ICallPlanStorageAction
 		{
 			public DateTime NewTarget { get; set; }
 			public bool Expired { get; set; }
 			public string ExecError { get; set; }
+			public string NewArgument { get; set; }
 			public override void Update(
 				IDataSet<DataModels.CallInstance> CallInstances,
 				Lazy<IDataSet<DataModels.CallExpired>> CallExpireds
@@ -110,10 +111,12 @@ namespace SF.Core.CallGuarantors.Storage
 					Instance.ErrorCount++;
 				}
 				Instance.CallTime = NewTarget;
+				if (NewArgument != null)
+					Instance.CallArgument = NewArgument;
 				CallInstances.Update(Instance);
 			}
 		}
-		class SuccessAction : BaseAction, ICallStorageAction
+		class SuccessAction : BaseAction, ICallPlanStorageAction
 		{
 			public override void Update(
 				IDataSet<DataModels.CallInstance> CallInstances,
@@ -123,7 +126,7 @@ namespace SF.Core.CallGuarantors.Storage
 				CallInstances.Remove(Instance);
 			}
 		}
-		public ICallStorageAction CreateExpiredAction(ICallInstance Instance, DateTime Now, string Error)
+		public ICallPlanStorageAction CreateExpiredAction(ICallInstance Instance, DateTime Now, string Error)
 		{
 			return new ExpiredAction
 			{
@@ -133,18 +136,19 @@ namespace SF.Core.CallGuarantors.Storage
 			};
 		}
 
-		public ICallStorageAction CreateRetryAction(ICallInstance Instance, DateTime NewTarget, bool Expired, string Error)
+		public ICallPlanStorageAction CreateRetryAction(ICallInstance Instance, DateTime NewTarget, bool Expired, string Error,string NewArgument)
 		{
 			return new RetryAction
 			{
 				Instance = (DataModels.CallInstance)Instance,
 				NewTarget = NewTarget,
 				Expired = Expired,
-				ExecError = Error
+				ExecError = Error,
+				NewArgument= NewArgument
 			};
 		}
 
-		public ICallStorageAction CreateSuccessAction(ICallInstance Instance)
+		public ICallPlanStorageAction CreateSuccessAction(ICallInstance Instance)
 		{
 			return new SuccessAction
 			{
@@ -152,7 +156,7 @@ namespace SF.Core.CallGuarantors.Storage
 			};
 		}
 
-		public async Task ExecuteActions(IEnumerable<ICallStorageAction> Actions)
+		public async Task ExecuteActions(IEnumerable<ICallPlanStorageAction> Actions)
 		{
 			foreach (var action in Actions)
 				((BaseAction)action).Update(
