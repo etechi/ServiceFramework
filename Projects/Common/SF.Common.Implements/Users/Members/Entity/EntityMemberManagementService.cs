@@ -15,19 +15,13 @@ namespace SF.Users.Members.Entity
 		where TMember: DataModels.Member<TMember,TMemberSource>,new()
 		where TMemberSource: DataModels.MemberSource<TMember, TMemberSource>
 	{
-		public Lazy<ITimeService> TimeService { get; }
 		public Lazy<IIdentityService> IdentityService { get; }
-		public Lazy<IIdentGenerator> IdentGenerator { get; }
 		public EntityMemberManagementService(
-			IDataSet<TMember> DataSet,
-			Lazy<ITimeService> TimeService,
-			Lazy<IIdentityService> IdentityService,
-			Lazy<IIdentGenerator> IdentGenerator
-			) : base(DataSet)
+			IDataSetEntityManager<TMember> Manager,
+			Lazy<IIdentityService> IdentityService
+			) : base(Manager)
 		{
-			this.TimeService = TimeService;
 			this.IdentityService = IdentityService;
-			this.IdentGenerator = IdentGenerator;
 		}
 
 		protected override PagingQueryBuilder<TMember> PagingQueryBuilder =>
@@ -55,7 +49,9 @@ namespace SF.Users.Members.Entity
 			IIdentityCredentialProvider CredentialProvider
 			)
 		{
-			var ctx = await InternalCreateAsync(
+			var ctx = NewModifyContext();
+			await InternalCreateAsync(
+				ctx,
 				new MemberEditable
 				{
 					Name=Arg.Identity?.Name,
@@ -67,15 +63,15 @@ namespace SF.Users.Members.Entity
 				);
 			return (string)ctx.UserData;
 		}
-		protected override async Task OnNewModel(ModifyContext ctx)
+		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var m = ctx.Model;
-			m.Id = await IdentGenerator.Value.GenerateAsync("会员",0);
-			m.CreatedTime = TimeService.Value.Now;
+			m.Id = await IdentGenerator.GenerateAsync("会员",0);
+			m.CreatedTime = TimeService.Now;
 			m.OwnerId = m.Id;
 			await base.OnNewModel(ctx);
 		}
-		protected override async Task OnUpdateModel(ModifyContext ctx)
+		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;

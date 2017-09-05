@@ -25,16 +25,10 @@ namespace SF.Auth.Identities.Entity
 		where TIdentity:DataModels.Identity<TIdentity,TIdentityCredential>,new()
 		where TIdentityCredential : DataModels.IdentityCredential<TIdentity, TIdentityCredential>,new()
 	{
-		public Lazy<ITimeService> TimeService { get; }
-		public IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 		public EntityIdentityManagementService(
-			IDataSet<TIdentity> DataSet,
-			Lazy<ITimeService> TimeService,
-			IServiceInstanceDescriptor ServiceInstanceDescroptor
-			) : base(DataSet)
+			IDataSetEntityManager<TIdentity> EntityManager
+			) : base(EntityManager)
 		{
-			this.TimeService = TimeService;
-			this.ServiceInstanceDescroptor = ServiceInstanceDescroptor;
 		}
 
 		protected override PagingQueryBuilder<TIdentity> PagingQueryBuilder =>
@@ -42,7 +36,7 @@ namespace SF.Auth.Identities.Entity
 
 		protected override IContextQueryable<TIdentity> OnBuildQuery(IContextQueryable<TIdentity> Query, IdentityQueryArgument Arg, Paging paging)
 		{
-			var sid = ServiceInstanceDescroptor.InstanceId;
+			var sid = EntityManager.ServiceInstanceDescroptor.InstanceId;
 			return Query
 				.Where(r=>r.ScopeId==sid)
 				.Filter(Arg.Id, r => r.Id)
@@ -120,19 +114,19 @@ namespace SF.Auth.Identities.Entity
 			//await DataSet.Context.SaveChangesAsync();
 			//return Arg.Identity.Id;
 		}
-		protected override Task OnNewModel(ModifyContext ctx)
+		protected override Task OnNewModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
 			m.Id = e.Id;
 			m.SignupIdentProviderId = e.CreateCredentialProviderId;
 			m.SignupIdentValue = e.CreateCredential;
-			m.CreatedTime = TimeService.Value.Now;
-			m.ScopeId = ServiceInstanceDescroptor.InstanceId;
+			m.CreatedTime = TimeService.Now;
+			m.ScopeId = ServiceInstanceDescriptor.InstanceId;
 			return base.OnNewModel(ctx);
 		}
 		
-		protected override async Task OnUpdateModel(ModifyContext ctx)
+		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
@@ -140,7 +134,7 @@ namespace SF.Auth.Identities.Entity
 			m.Icon = e.Icon;
 
 			m.ObjectState = e.LogicState;
-			var time = TimeService.Value.Now;
+			var time = TimeService.Now;
 			m.UpdatedTime = time;
 			if (e.Entity != null)
 				m.Entity = e.Entity;
@@ -173,7 +167,7 @@ namespace SF.Auth.Identities.Entity
 
 			}
 		}
-		protected override async Task OnRemoveModel(ModifyContext ctx)
+		protected override async Task OnRemoveModel(IModifyContext ctx)
 		{
 			var ics = DataSet.Context.Set<TIdentityCredential>();
 			await ics.RemoveRangeAsync(ic => ic.IdentityId == ctx.Model.Id);

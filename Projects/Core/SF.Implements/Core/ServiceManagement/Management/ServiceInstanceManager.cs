@@ -17,9 +17,10 @@ namespace SF.Core.ServiceManagement.Management
 {
 	[Comment("默认服务实例管理")]
 	public class ServiceInstanceManager :
+		EntityManager<long, ServiceInstanceInternal, ServiceInstanceQueryArgument, ServiceInstanceEditable, DataModels.ServiceInstance>,
 		IServiceInstanceManager
-		// IServiceConfigLoader,
-		//IServiceInstanceLister
+	// IServiceConfigLoader,
+	//IServiceInstanceLister
 	{
 		Lazy<IServiceProvider> ServiceProvider { get; }
 		IServiceMetadata Metadata { get; }
@@ -29,21 +30,19 @@ namespace SF.Core.ServiceManagement.Management
 			Lazy<IServiceProvider> ServiceProvider,
 			IServiceMetadata Metadata,
 			IDataSetEntityManager<DataModels.ServiceInstance> Manager
-			)
+			):base(Manager)
 		{
 			this.ServiceProvider = ServiceProvider;
 			this.Metadata = Metadata;
-			this.Manager = Manager;
 		}
 
-		PagingQueryBuilder<DataModels.ServiceInstance> PagingQueryBuilder =>
+		protected override PagingQueryBuilder<DataModels.ServiceInstance> PagingQueryBuilder =>
 			new PagingQueryBuilder<DataModels.ServiceInstance>(
 				"name",
 				b => b.Add("name", i => i.Name));
 
-		public EntityManagerCapability Capabilities => EntityManagerCapability.All;
 
-		async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IContextQueryable<DataModels.ServiceInstance> Query)
+		protected override async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
 			var re= await Query.SelectUIObjectEntity(i => new Models.ServiceInstanceEditable
 			{
@@ -77,7 +76,7 @@ namespace SF.Core.ServiceManagement.Management
 			return re;
 		}
 
-		IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToPublic(IContextQueryable<DataModels.ServiceInstance> Query)
+		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToPublic(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
 			return Query.SelectUIObjectEntity(i => new Models.ServiceInstanceInternal
 			{
@@ -92,7 +91,7 @@ namespace SF.Core.ServiceManagement.Management
 			});
 		}
 
-		IContextQueryable<DataModels.ServiceInstance> OnBuildQuery(IContextQueryable<DataModels.ServiceInstance> Query, ServiceInstanceQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<DataModels.ServiceInstance> OnBuildQuery(IContextQueryable<DataModels.ServiceInstance> Query, ServiceInstanceQueryArgument Arg, Paging paging)
 		{
 			if (Arg.Id.HasValue)
 				return Query.Filter(Arg.Id, i => i.Id);
@@ -107,11 +106,7 @@ namespace SF.Core.ServiceManagement.Management
 				;
 		}
 
-		async Task<Models.ServiceInstanceInternal[]> OnPreparePublics(Models.ServiceInstanceInternal[] Internals)
-		{
-			await Manager.DataEntityResolver.Fill(Internals);
-			return Internals;
-		}
+		
 		
 		IServiceFactory TestConfig(long Id, long? ParentId, string ImplementId, string CreateArguments)
 		{
@@ -143,7 +138,7 @@ namespace SF.Core.ServiceManagement.Management
 			return factory;		
 
 		}
-		async Task OnUpdateModel(IEntityModifyContext<long,ServiceInstanceEditable,DataModels.ServiceInstance> ctx)
+		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
@@ -250,7 +245,7 @@ namespace SF.Core.ServiceManagement.Management
 			},
 			PostActionType.AfterCommit);
 		}
-		async Task OnNewModel(IEntityModifyContext<long,ServiceInstanceEditable,DataModels.ServiceInstance>  ctx)
+		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			//UIEnsure.NotNull(ctx.Model.Id, "未设置服务实例ID");
 			ctx.Model.Id = await Manager.IdentGenerator.GenerateAsync("系统服务", 0);
@@ -269,7 +264,7 @@ namespace SF.Core.ServiceManagement.Management
 
 			public IServiceImplement ServiceImplement { get; set; }
 		}
-		async Task OnRemoveModel(IEntityModifyContext<long,ServiceInstanceInternal,DataModels.ServiceInstance> ctx)
+		protected override async Task OnRemoveModel(IModifyContext ctx)
 		{
 			//if (ctx.Model.IsDefaultService)
 			//throw new PublicInvalidOperationException("不能删除默认服务");
@@ -302,65 +297,5 @@ namespace SF.Core.ServiceManagement.Management
 					});
 		}
 
-		public Task RemoveAsync(long Key)
-		{
-			return this.Manager.RemoveAsync(Key);
-		}
-
-		public Task RemoveAllAsync()
-		{
-			return this.Manager.RemoveAllAsync<long,DataModels.ServiceInstance>(RemoveAsync);
-		}
-
-		public Task<ServiceInstanceEditable> LoadForEdit(long Id)
-		{
-			return Manager.LoadForEdit(Id, OnMapModelToEditable);
-		}
-
-		public async Task<long> CreateAsync(ServiceInstanceEditable Entity)
-		{
-			return await Manager.CreateAsync(
-				Entity,
-				OnUpdateModel,
-				OnNewModel
-				);
-			
-		}
-
-		public async Task UpdateAsync(ServiceInstanceEditable Entity)
-		{
-			await Manager.UpdateAsync(Entity, OnUpdateModel);
-		}
-
-		public Task<ServiceInstanceInternal> GetAsync(long Id)
-		{
-			return Manager.GetAsync(Id, OnMapModelToPublic);
-		}
-
-		public Task<ServiceInstanceInternal[]> GetAsync(long[] Ids)
-		{
-			return Manager.GetAsync(Ids, OnMapModelToPublic);
-		}
-
-		public Task<QueryResult<ServiceInstanceInternal>> QueryAsync(ServiceInstanceQueryArgument Arg, Paging paging)
-		{
-			return Manager.QueryAsync(
-				Arg, 
-				paging, 
-				OnBuildQuery, 
-				PagingQueryBuilder, 
-				OnMapModelToPublic
-				);
-		}
-
-		public Task<QueryResult<long>> QueryIdentsAsync(ServiceInstanceQueryArgument Arg, Paging paging)
-		{
-			return Manager.QueryIdentsAsync(
-				Arg,
-				paging,
-				OnBuildQuery,
-				PagingQueryBuilder
-				);
-		}
 	}
 }

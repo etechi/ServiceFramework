@@ -32,7 +32,7 @@ namespace SF.Common.Documents.Management
 			return Query.Select(EntityMapper.Map<TCategory,TCategoryInternal>());
 		}
 
-		protected override async Task OnUpdateModel(ModifyContext ctx)
+		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
@@ -56,16 +56,10 @@ namespace SF.Common.Documents.Management
 			Model.Update(obj, TimeService.Now);
 		}
 
-		public IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
-		public ITimeService TimeService { get; }
 		public DocumentCategoryManager(
-			IDataSet<TCategory> DataSet,
-			IServiceInstanceDescriptor ServiceInstanceDescriptor,
-			ITimeService TimeService
-			) : base(DataSet)
+			IDataSetEntityManager<TCategory> EntityManager
+			) : base(EntityManager)
 		{
-			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
-			this.TimeService = TimeService;
 
 		}
 

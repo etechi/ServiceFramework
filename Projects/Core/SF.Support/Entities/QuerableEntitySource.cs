@@ -15,6 +15,11 @@ namespace SF.Entities
 		public QuerableEntitySource(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
 		}
+		protected override async Task<TPublic[]> OnPreparePublics(TPublic[] Internals)
+		{
+			await EntityManager.DataEntityResolver.Fill(Internals);
+			return Internals;
+		}
 	}
 	public abstract class QuerableEntitySource<TKey, TPublic, TTemp, TQueryArgument, TModel> :
 		EntitySource<TKey, TPublic, TTemp, TModel>,

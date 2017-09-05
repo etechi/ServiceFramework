@@ -185,7 +185,6 @@ namespace SF.Entities
 						),
 					ArgItem
 					).Compile();
-			static IReadOnlyList<string> vaa;
 
 			static Action<TItem, IReadOnlyList<string>> FillIdents { get; } =
 				Expression.Lambda<Action<TItem, IReadOnlyList<string>>>(

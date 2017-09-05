@@ -17,7 +17,7 @@ namespace SF.Entities
 	}
 	public interface IEntityModifyContext
 	{
-		ModifyAction Action { get; }
+		ModifyAction Action { get; set; }
 		object OwnerId { get; set; }
 		object UserData { get; set; }
 		object ExtraArgument { get; set; }
@@ -43,18 +43,21 @@ namespace SF.Entities
 		ITimeService TimeService { get; }
 		ILogger Logger { get; }
 		IEventEmitter EventEmitter { get; }
+		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 	}
 	public interface IEntityManager<TModel>: IEntityManager
 		where TModel:class
 	{
-		IEntityModifyContext<TKey, TEditable, TModel> NewCreateContext<TKey, TEditable>(
+		void InitCreateContext<TKey, TEditable>(
+			IEntityModifyContext<TKey, TEditable, TModel> Context,
 			TEditable Editable,
 			object ExtraArguments
 			)
 		where TKey : IEquatable<TKey>
 		where TEditable : IEntityWithId<TKey>;
 
-		IEntityModifyContext<TKey, TEditable, TModel> NewUpdateContext<TKey, TEditable>(
+		void InitUpdateContext<TKey, TEditable>(
+			IEntityModifyContext<TKey, TEditable, TModel> Context,
 			TKey Id,
 			TEditable Editable,
 			TModel Model,
@@ -63,7 +66,8 @@ namespace SF.Entities
 		where TKey : IEquatable<TKey>
 		where TEditable : IEntityWithId<TKey>;
 
-		IEntityModifyContext<TKey, TModel> NewRemoveContext<TKey>(
+		void InitRemoveContext<TKey>(
+			IEntityModifyContext<TKey, TModel> Context,
 			TKey Id,
 			TModel Model,
 			object ExtraArguments

@@ -14,20 +14,11 @@ namespace SF.Common.TextMessages.Management
 		IMsgRecordManager,
 		ITextMessageLogger
 	{
-		public Lazy<ITimeService> TimeService { get; }
-		public Lazy<IIdentGenerator> IdentGenerator{ get; }
-		public IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
 		
 		public EntityMsgRecordManager(
-			IDataSet<DataModels.TextMessageRecord> DataSet,
-			Lazy<ITimeService> TimeService,
-			Lazy<IIdentGenerator> IdentGenerator,
-			IServiceInstanceDescriptor ServiceInstanceDescriptor
-			) : base(DataSet)
+			IDataSetEntityManager<DataModels.TextMessageRecord> Manager
+			) : base(Manager)
 		{
-			this.TimeService = TimeService;
-			this.IdentGenerator = IdentGenerator;
-			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
 
 		protected override PagingQueryBuilder<DataModels.TextMessageRecord> PagingQueryBuilder =>
@@ -71,7 +62,7 @@ namespace SF.Common.TextMessages.Management
 		{
 			var re=DataSet.Add(new DataModels.TextMessageRecord
 			{
-				Id = await IdentGenerator.Value.GenerateAsync("文本消息记录"),
+				Id = await IdentGenerator.GenerateAsync("文本消息记录"),
 				Args = Json.Stringify(message.Arguments),
 				Body = message.Body,
 				Headers = Json.Stringify(message.Headers),
@@ -81,7 +72,7 @@ namespace SF.Common.TextMessages.Management
 				Status = SendStatus.Sending,
 				Target = Target,
 				UserId = TargetUserId,
-				Time = TimeService.Value.Now,
+				Time = TimeService.Now,
 				TrackEntityId = message.TrackEntityId
 			});
 			await DataSet.Context.SaveChangesAsync();
@@ -95,7 +86,7 @@ namespace SF.Common.TextMessages.Management
 				return;
 			r.Error = Error;
 			r.Result = ExtIdent;
-			r.CompletedTime = TimeService.Value.Now;
+			r.CompletedTime = TimeService.Now;
 			r.Status = Error == null ? SendStatus.Completed : SendStatus.Failed;
 			DataSet.Update(r);
 			await DataSet.Context.SaveChangesAsync();

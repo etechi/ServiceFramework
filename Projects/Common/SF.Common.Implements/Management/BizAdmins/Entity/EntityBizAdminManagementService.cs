@@ -13,22 +13,16 @@ namespace SF.Management.BizAdmins.Entity
 		IBizAdminManagementService
 		where TBizAdmin: DataModels.BizAdmin<TBizAdmin>,new()
 	{
-		public Lazy<ITimeService> TimeService { get; }
 		public Lazy<IIdentityService> IdentityService { get; }
-		public Lazy<IIdentGenerator> IdentGenerator { get; }
 		public Lazy<IIdentityCredentialProvider> SignupCredentialProvider { get; }
 
 		public EntityBizAdminManagementService(
-			IDataSet<TBizAdmin> DataSet,
-			Lazy<ITimeService> TimeService,
+			IDataSetEntityManager<TBizAdmin> EntityManager,
 			Lazy<IIdentityService> IdentityService,
-			Lazy<IIdentGenerator> IdentGenerator,
 			Lazy<IIdentityCredentialProvider> SignupCredentialProvider
-			) : base(DataSet)
+			) : base(EntityManager)
 		{
-			this.TimeService = TimeService;
 			this.IdentityService = IdentityService;
-			this.IdentGenerator = IdentGenerator;
 			this.SignupCredentialProvider = SignupCredentialProvider;
 		}
 
@@ -45,15 +39,15 @@ namespace SF.Management.BizAdmins.Entity
 			return q;
 		}
 
-		protected override async Task OnNewModel(ModifyContext ctx)
+		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var m = ctx.Model;
-			m.Id = await IdentGenerator.Value.GenerateAsync("系统管理员",0);
-			m.CreatedTime = TimeService.Value.Now;
+			m.Id = await IdentGenerator.GenerateAsync("系统管理员",0);
+			m.CreatedTime = TimeService.Now;
 			m.OwnerId = m.Id;
 			await base.OnNewModel(ctx);
 		}
-		protected override async Task OnUpdateModel(ModifyContext ctx)
+		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;

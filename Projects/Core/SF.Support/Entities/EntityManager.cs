@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SF.Data;
+using System.Reflection;
 
 namespace SF.Entities
 {
@@ -18,6 +19,11 @@ namespace SF.Entities
 		public EntityManager(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
 		}
+		protected override async Task<TPublic[]> OnPreparePublics(TPublic[] Internals)
+		{
+			await EntityManager.DataEntityResolver.Fill(Internals);
+			return Internals;
+		}
 	}
 	public abstract class EntityManager<TKey, TPublic, TTemp, TQueryArgument, TEditable,TModel> :
 		QuerableEntitySource<TKey, TPublic, TTemp, TQueryArgument, TModel>,
@@ -28,7 +34,14 @@ namespace SF.Entities
 		where TQueryArgument : class, IQueryArgument<TKey>,new()
 		where TEditable : class,IEntityWithId<TKey>
 	{
-		
+		public interface IModifyContext : IEntityModifyContext<TKey, TEditable, TModel>
+		{
+
+		}
+		class ModifyContext : EntityModifyContext<TKey, TEditable, TModel>, IModifyContext
+		{
+
+		}
         public EntityManager(IDataSetEntityManager<TModel> EntityManager) :base(EntityManager)
         {
         }
@@ -39,19 +52,21 @@ namespace SF.Entities
 
 		#region create
 
-		protected virtual Task OnNewModel(IEntityModifyContext<TKey,TModel> ctx)
+		protected virtual Task OnNewModel(IModifyContext ctx)
 		{
 			return Task.CompletedTask;
 		}
-		
+		protected IModifyContext NewModifyContext()
+			=> new ModifyContext();
 		public virtual async Task<TKey> CreateAsync(TEditable obj)
 		{
-			var re=await InternalCreateAsync(obj, null);
-			return re.Id;
+			var ctx = NewModifyContext();
+			await InternalCreateAsync(ctx, obj, null);
+			return ctx.Id;
 		}
-		protected virtual Task<IEntityModifyContext<TKey,TEditable, TModel>> InternalCreateAsync(TEditable obj,object ExtraArgument)
+		protected virtual Task InternalCreateAsync(IModifyContext Context, TEditable obj,object ExtraArgument)
 		{
-			return EntityManager.InternalCreateAsync<TKey,TEditable,TModel>(obj, OnUpdateModel, OnNewModel, ExtraArgument);
+			return EntityManager.InternalCreateAsync<TKey,TEditable,TModel,IModifyContext>(Context, obj, OnUpdateModel, OnNewModel, ExtraArgument);
 		}
 		#endregion
 
@@ -60,14 +75,17 @@ namespace SF.Entities
 
 		public virtual async Task RemoveAsync(TKey Id)
 		{
-			await InternalRemoveAsync(Id);
+			var ctx = NewModifyContext();
+			var re =await InternalRemoveAsync(ctx,Id);
+			if (!re)
+				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Id}");
 		}
-		protected virtual Task<IEntityModifyContext<TKey, TModel>> InternalRemoveAsync(TKey Id)
+		protected virtual Task<bool> InternalRemoveAsync(IModifyContext Context,TKey Id)
 		{
-			return EntityManager.InternalRemoveAsync(Id, OnRemoveModel,OnLoadModelForUpdate);
+			return EntityManager.InternalRemoveAsync(Context, Id, OnRemoveModel,OnLoadModelForUpdate);
 		}
 
-		protected virtual Task OnRemoveModel(IEntityModifyContext<TKey, TModel> ctx)
+		protected virtual Task OnRemoveModel(IModifyContext ctx)
 		{
 			EntityManager.DataSet.Remove(ctx.Model);
 			return Task.CompletedTask;
@@ -84,20 +102,23 @@ namespace SF.Entities
 
 
 		#region Update
-		protected abstract Task OnUpdateModel(IEntityModifyContext<TKey,TEditable, TModel> ctx);
+		protected abstract Task OnUpdateModel(IModifyContext ctx);
 
 		public virtual async Task UpdateAsync(TEditable obj)
 		{
-			await InternalUpdateAsync(obj);
-        }
-		protected virtual async Task<IEntityModifyContext<TKey,TEditable,TModel>> InternalUpdateAsync(TEditable obj)
+			var ctx = NewModifyContext();
+			var re =await InternalUpdateAsync(ctx,obj);
+			if (!re)
+				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{obj.Id}");
+		}
+		protected virtual async Task<bool> InternalUpdateAsync(IModifyContext Context,TEditable obj)
 		{
-			var ctx = await EntityManager.InternalUpdateAsync<TKey,TEditable,TModel>(
+			return await EntityManager.InternalUpdateAsync<TKey,TEditable,TModel,IModifyContext>(
+				Context,
 				obj, 
 				OnUpdateModel, 
 				OnLoadModelForUpdate
 				);
-			return ctx;
 		}
 
         #endregion

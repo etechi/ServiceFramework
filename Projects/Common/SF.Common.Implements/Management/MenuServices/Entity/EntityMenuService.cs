@@ -17,23 +17,14 @@ namespace SF.Management.MenuServices.Entity
 		where TMenu: DataModels.Menu<TMenu,TMenuItem>,new()
 		where TMenuItem : DataModels.MenuItem<TMenu, TMenuItem>, new()
 	{
-		public Lazy<ITimeService> TimeService { get; }
 		public Lazy<IDataSet<TMenuItem>> MenuItemSet { get; }
-		public Lazy<IIdentGenerator> IdentGenerator{ get; }
-		public Lazy<IServiceInstanceDescriptor> ServiceInstanceDescriptor { get; }
 		
 		public EntityMenuService(
-			IDataSet<TMenu> DataSet,
-			Lazy<IDataSet<TMenuItem>> MenuItemSet,
-			Lazy<ITimeService> TimeService,
-			Lazy<IIdentGenerator> IdentGenerator,
-			Lazy<IServiceInstanceDescriptor> ServiceInstanceDescriptor
-			) : base(DataSet)
+			IDataSetEntityManager<TMenu> Manager,
+			Lazy<IDataSet<TMenuItem>> MenuItemSet
+			) : base(Manager)
 		{
 			this.MenuItemSet = MenuItemSet;
-			this.TimeService = TimeService;
-			this.IdentGenerator = IdentGenerator;
-			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
 
 		protected override PagingQueryBuilder<TMenu> PagingQueryBuilder =>
@@ -82,7 +73,7 @@ namespace SF.Management.MenuServices.Entity
 		}
 		protected override IContextQueryable<TMenu> OnBuildQuery(IContextQueryable<TMenu> Query, MenuQueryArgument Arg, Paging paging)
 		{
-			var scopeid = ServiceInstanceDescriptor.Value.ParentInstanceId;
+			var scopeid = ServiceInstanceDescriptor.ParentInstanceId;
 			var q = Query.Where(m=>m.ScopeId==scopeid)
 				.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)
@@ -92,14 +83,14 @@ namespace SF.Management.MenuServices.Entity
 			return q;
 		}
 
-		protected override async Task OnNewModel(ModifyContext ctx)
+		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var m = ctx.Model;
-			m.Id = await IdentGenerator.Value.GenerateAsync("系统菜单",0);
-			m.Create(TimeService.Value.Now);
+			m.Id = await IdentGenerator.GenerateAsync("系统菜单",0);
+			m.Create(TimeService.Now);
 			await base.OnNewModel(ctx);
 		}
-		protected override async Task OnUpdateModel(ModifyContext ctx)
+		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
@@ -108,11 +99,11 @@ namespace SF.Management.MenuServices.Entity
 			UIEnsure.HasContent(e.Ident.Trim(), "请输入账号");
 
 			m.Ident = e.Ident.Trim();
-			var time = TimeService.Value.Now;
+			var time = TimeService.Now;
 			m.Update(e, time);
 
 			var items = await MenuItemSet.Value.LoadListAsync(i => i.MenuId == m.Id);
-			var newIdents =await IdentGenerator.Value.BatchGenerateAsync(
+			var newIdents =await IdentGenerator.BatchGenerateAsync(
 				"系统菜单项",
 				ADT.Tree.AsEnumerable(e.Items,ii=>ii.Children).Count(i => i.Id == 0)
 				);
@@ -151,7 +142,7 @@ namespace SF.Management.MenuServices.Entity
 		
 		public async Task<MenuItem[]> GetMenu(string Ident)
 		{
-			var scopeid = ServiceInstanceDescriptor.Value.ParentInstanceId;
+			var scopeid = ServiceInstanceDescriptor.ParentInstanceId;
 			var menuId = await DataSet
 				.AsQueryable()
 				.Where(m=>m.ScopeId== scopeid && m.Ident==Ident)

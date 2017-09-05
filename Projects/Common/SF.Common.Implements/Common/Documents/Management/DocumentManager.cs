@@ -21,14 +21,9 @@ namespace SF.Common.Documents.Management
 		where TTag : DataModels.DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTagReference : DataModels.DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{
-		public IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
-		public ITimeService TimeService { get; }
-
 		
-		public DocumentManager(IDataSet<TDocument> DataSet, ITimeService TimeService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(DataSet)
+		public DocumentManager(IDataSetEntityManager<TDocument> Manager) : base(Manager)
 		{
-			this.TimeService = TimeService;
-			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
 		protected override async Task<TEditable> OnMapModelToEditable(IContextQueryable<TDocument> Query)
 		{
@@ -42,7 +37,7 @@ namespace SF.Common.Documents.Management
 			return Query.Select(EntityMapper.Map<TDocument,TInternal>());
 		}
 
-		protected override Task OnUpdateModel(ModifyContext ctx)
+		protected override Task OnUpdateModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
