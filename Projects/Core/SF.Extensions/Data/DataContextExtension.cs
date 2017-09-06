@@ -33,7 +33,7 @@ namespace SF.Data
 			)
 		{
 			var tm = Context.TransactionScopeManager;
-			using (var ts = tm.CreateScope(TransMessage, TransactionScopeMode.RequireTransaction))
+			using (var ts = await tm.CreateScope(TransMessage, TransactionScopeMode.RequireTransaction))
 			{
 				var tran = tm.CurrentDbTransaction;
 				var provider = Context.Provider;
@@ -43,12 +43,15 @@ namespace SF.Data
 				provider.Transaction = tran;
 				try
 				{
-					return await Action(tran);
+					var re= await Action(tran);
+					await ts.Commit();
+					return re;
 				}
 				finally
 				{
 					provider.Transaction = orgTran;
 				}
+				
 			}
 		}
 	}

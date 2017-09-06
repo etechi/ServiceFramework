@@ -129,6 +129,18 @@ namespace System
 				return ((string)null,s);
 			return (s.Substring(0, i), s.Substring(i + 1));
 		}
+		public static string Substring(this string s,string Head,int HeadOffset,string Tail,int TailOffset)
+		{
+			var i = s.IndexOf(Head);
+			if (i == -1)
+				return string.Empty;
+			i += Head.Length + HeadOffset;
+			var j = s.LastIndexOf(Tail);
+			if (j == -1)
+				return string.Empty;
+			j += TailOffset;
+			return s.Substring(i, j - i);
+		}
 		public static sbyte ToInt8(this string str) => sbyte.Parse(str);
 		public static short ToInt16(this string str) => short.Parse(str);
 		public static int ToInt32(this string str) => int.Parse(str);
@@ -141,6 +153,8 @@ namespace System
 		public static double ToDouble(this string str) => double.Parse(str);
 		public static float ToFloat(this string str) => float.Parse(str);
 		public static decimal ToDecimal(this string str) => decimal.Parse(str);
+		public static DateTime ToDateTime(this string str, string Format, System.Globalization.DateTimeStyles Styles = Globalization.DateTimeStyles.AssumeLocal)
+			=> DateTime.ParseExact(str, Format, null, Styles);
 
 		public static sbyte? TryToInt8(this string str) => sbyte.TryParse(str,out var re)?(sbyte?)re:null;
 		public static short? TryToInt16(this string str) => short.TryParse(str, out var re) ? (short?)re : null;
@@ -154,6 +168,8 @@ namespace System
 		public static double? TryToDouble(this string str) => double.TryParse(str, out var re) ? (double?)re : null;
 		public static float? TryToFloat(this string str) => float.TryParse(str, out var re) ? (float?)re : null;
 		public static decimal? TryToDecimal(this string str) => decimal.TryParse(str, out var re) ? (decimal?)re : null;
+		public static DateTime? TryToDateTime(this string str, string Format, System.Globalization.DateTimeStyles Styles = Globalization.DateTimeStyles.AssumeLocal)
+					=> DateTime.TryParseExact(str, Format, null, Styles,out var re)?(DateTime?)re:null;
 
 	}
 }
