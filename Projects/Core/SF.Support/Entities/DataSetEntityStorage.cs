@@ -5,6 +5,7 @@ using System.Linq;
 using SF.Data;
 using System.Reflection;
 using System.Linq.Expressions;
+using System.Data.Common;
 
 namespace SF.Entities
 {
@@ -55,32 +56,15 @@ namespace SF.Entities
 				Type
 				);
 		}
-		public static async Task<T> UseTransaction<TModel,T>(
+		public static Task<T> UseTransaction<TModel,T>(
 			this IDataSetEntityManager<TModel> Storage,
 			string TransMessage,
-			Func<Task<T>> Action
+			Func<DbTransaction, Task<T>> Action
 			)
 			where TModel : class
 		{
 			var ctx = Storage.DataSet.Context;
-			var tm = ctx.TransactionScopeManager;
-			using (var ts = tm.CreateScope(TransMessage, TransactionScopeMode.RequireTransaction))
-			{
-				var tran = tm.CurrentDbTransaction;
-				var provider = ctx.Provider;
-				var orgTran = provider.Transaction;
-				if (orgTran == tran)
-					return await Action();
-				provider.Transaction = tran;
-				try
-				{
-					return await Action();
-				}
-				finally
-				{
-					provider.Transaction = orgTran;
-				}
-			}
+			return ctx.UseTransaction(TransMessage, Action);
 		}
 
 		#region GetAsync
@@ -98,7 +82,7 @@ namespace SF.Entities
 		{
 			return await Storage.UseTransaction(
 				$"载入实体{typeof(TModel).Comment().Name}:{Id}",
-				async () =>
+				async (trans) =>
 				{
 					var re = await MapModelToReadOnly(
 						Storage.DataSet.AsQueryable(true).Where(s => Id.Equals(s.Id))
@@ -159,7 +143,7 @@ namespace SF.Entities
 		{
 			return await Storage.UseTransaction(
 				$"批量载入实体：{typeof(TModel).Comment().Name}",
-				async () =>
+				async (trans) =>
 			{
 				var re = await MapModelToReadOnly(
 					Storage.DataSet.AsQueryable(true).Where(s => Ids.Contains(s.Id))
@@ -221,7 +205,7 @@ namespace SF.Entities
 		{
 			return await Storage.UseTransaction(
 				$"查询实体主键：{typeof(TModel).Comment().Name}",
-				async () =>
+				async (trans) =>
 				{
 					var q = Storage.DataSet.AsQueryable(true);
 					if (Arg.Id.HasValue)
@@ -268,7 +252,7 @@ namespace SF.Entities
 		{
 			return await Storage.UseTransaction(
 				$"查询实体{typeof(TModel).Comment().Name}",
-				async () =>
+				async (trans) =>
 			{
 				var q = Storage.DataSet.AsQueryable(true);
 				if (Arg.Id.HasValue)
@@ -393,7 +377,7 @@ namespace SF.Entities
 		{
 			return await Storage.UseTransaction(
 				$"载入编辑实体{typeof(TModel).Comment().Name}:{Id}",
-				async () =>
+				async (trans) =>
 				{
 					return await MapModelToEditable(Storage.DataSet.AsQueryable(false).Where(m => m.Id.Equals(Id)));
 				});
@@ -425,7 +409,7 @@ namespace SF.Entities
 		{
 			await Storage.UseTransaction(
 				$"新建实体{typeof(TModel).Comment().Name}",
-				async () =>
+				async (trans) =>
 				{
 					Storage.InitCreateContext<TKey, TEditableEntity>(Context,Entity, ExtraArgument);
 					await InitModel(Context);
@@ -485,7 +469,7 @@ namespace SF.Entities
 		{
 			return await Storage.UseTransaction(
 				$"编辑实体{typeof(TModel).Comment().Name}:{Entity.Id}",
-				async () =>
+				async (trans) =>
 				{
 					var id = Entity.Id;
 					var q = Storage.DataSet.AsQueryable(false).Where(s => s.Id.Equals(id));
@@ -536,7 +520,7 @@ namespace SF.Entities
 		{
 			return await Storage.UseTransaction(
 				$"删除实体{typeof(TModel).Comment().Name}:{Id}",
-				async () =>
+				async (trans) =>
 				{
 					var q = Storage.DataSet.AsQueryable(false).Where(s => s.Id.Equals(Id));
 					var model = LoadModelForEdit == null ? await q.SingleOrDefaultAsync() : await LoadModelForEdit(Id,q);

@@ -55,7 +55,7 @@ namespace SF.Core.ServiceManagement
 
 			if (!ValidatedImplements.Contains(Implement.ImplementType) && Implement.ServiceImplementType==ServiceImplementType.Type)
 			{
-				(from arg in Internals.ServiceCreatorBuilder.FindBestConstructorInfo(Implement.ImplementType).GetParameters()
+				(from arg in Internals.ServiceCreatorBuilder.FindBestConstructorInfo(Implement.ImplementType, Meta).GetParameters()
 				 let type = GetRealServiceType(arg.ParameterType)
 				 where type.IsInterface && !type.IsDefined(typeof(AutoBindAttribute))
 				 let svcs = Meta.FindServiceByType(type)

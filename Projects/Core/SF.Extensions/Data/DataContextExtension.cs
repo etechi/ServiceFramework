@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -25,5 +26,30 @@ namespace SF.Data
 				}
 			},Timeout,Retry);
 		}
-    }
+		public static async Task<T> UseTransaction< T>(
+			this IDataContext Context,
+			string TransMessage,
+			Func<DbTransaction,Task<T>> Action
+			)
+		{
+			var tm = Context.TransactionScopeManager;
+			using (var ts = tm.CreateScope(TransMessage, TransactionScopeMode.RequireTransaction))
+			{
+				var tran = tm.CurrentDbTransaction;
+				var provider = Context.Provider;
+				var orgTran = provider.Transaction;
+				if (orgTran == tran)
+					return await Action(tran);
+				provider.Transaction = tran;
+				try
+				{
+					return await Action(tran);
+				}
+				finally
+				{
+					provider.Transaction = orgTran;
+				}
+			}
+		}
+	}
 }

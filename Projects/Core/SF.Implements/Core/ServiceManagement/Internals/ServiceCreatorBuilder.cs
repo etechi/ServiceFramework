@@ -307,7 +307,9 @@ namespace SF.Core.ServiceManagement.Internals
 		static Expression StrConcat(Expression e1, Expression e2) =>
 			Expression.Call(null, StringConcat, e1, e2);
 
-		public static ConstructorInfo FindBestConstructorInfo(Type Type)
+
+
+		public static ConstructorInfo FindBestConstructorInfo(Type Type,IServiceMetadata Meta)
 		{
 			var constructors = Type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
 				.ToArray();
@@ -322,14 +324,28 @@ namespace SF.Core.ServiceManagement.Internals
 			Array.Sort(constructors,
 				(a, b) => b.GetParameters().Length.CompareTo(a.GetParameters().Length));
 
-			var bestConstructor = constructors[0];
-			//var bestConstructorParameterTypes = new HashSet<Type>(bestConstructor.GetParameters().Select(p => p.ParameterType));
-			//for (var i = 1; i < constructors.Length; i++)
-			//{
-			//	var parameters = constructors[i].GetParameters();
-			//	if (!bestConstructorParameterTypes.IsSupersetOf(parameters.Select(p => p.ParameterType)))
-			//		throw new InvalidOperationException($"服务{Type}构造函数冲突:{bestConstructor.GetParameters().Select(p=>p.Name).Join(",")}和{constructors[i].GetParameters().Select(p=>p.Name).Join(",")}");
-			//}
+			ConstructorInfo bestConstructor =null;
+			HashSet<Type> bestConstructorParameterTypes = null;
+			for (var i = 0; i < constructors.Length; i++)
+			{
+				var c = constructors[i];
+				if (c.GetParameters().Any(p => Meta.DetectService(p.ParameterType) == ServiceResolveType.None))
+					continue;
+				if (bestConstructor == null)
+				{
+					bestConstructor = c;
+				}
+				else if (bestConstructorParameterTypes == null)
+				{
+					bestConstructorParameterTypes = new HashSet<Type>(bestConstructor.GetParameters().Select(p => p.ParameterType));
+				}
+				else
+				{
+					var parameters = constructors[i].GetParameters();
+					if (!bestConstructorParameterTypes.IsSupersetOf(parameters.Select(p => p.ParameterType)))
+						throw new InvalidOperationException($"服务{Type}构造函数冲突:{bestConstructor.GetParameters().Select(p => p.Name).Join(",")}和{constructors[i].GetParameters().Select(p => p.Name).Join(",")}");
+				}
+			}
 			return bestConstructor;
 		}
 

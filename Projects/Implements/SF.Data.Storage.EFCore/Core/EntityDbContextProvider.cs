@@ -73,8 +73,11 @@ namespace SF.Data.EntityFrameworkCore
 				return EntityFrameworkCore.AsyncQueryableProvider.Instance;
 			}
 		}
-
-		public DbTransaction Transaction { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+		DbTransaction _tran;
+		public DbTransaction Transaction {
+			get => _tran;
+			set => DbContext.Database.UseTransaction(_tran=value);
+		}
 
 
 

@@ -146,7 +146,7 @@ namespace SF.Core.ServiceManagement
 		}
 		void GenerateImplConfig(System.Type Type, IMetadataBuilder Builder)
 		{
-			var ci = ServiceCreatorBuilder.FindBestConstructorInfo(Type);
+			var ci = ServiceCreatorBuilder.FindBestConstructorInfo(Type,Metadata);
 			var args = ci.GetParameters();
 			var type = GenerateArgsType(Type, args, Builder);
 			Builder.TypeCollection.AddType(type);

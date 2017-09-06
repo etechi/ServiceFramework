@@ -30,11 +30,10 @@ namespace SF.Core.ServiceManagement.Internals
 			)
 		{
 			var ci = ServiceCreatorBuilder
-				.FindBestConstructorInfo(ImplementType)
+				.FindBestConstructorInfo(ImplementType, ServiceMetadata)
 				.AssertNotNull(
 					() => $"找不到服务实现类型{ImplementType}的构造函数"
 					);
-
 			var creator = ServiceCreatorBuilder.Build(
 				ServiceMetadata,
 				ServiceType,

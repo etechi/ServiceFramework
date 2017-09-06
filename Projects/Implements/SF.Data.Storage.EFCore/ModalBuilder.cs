@@ -101,7 +101,7 @@ namespace SF.Data.EntityFrameworkCore
 	{
 		public EntityItem[] EntityItems { get; }
 
-		public string LogFragment => throw new NotImplementedException();
+		public string LogFragment => "SF.EFCore";
 
 		public DataModalLoaderExtension(EntityItem[] EntityItems)
 		{
