@@ -32,6 +32,12 @@ namespace SF.Users.Members
 
 	}
 
+	public class CreateMemberArgument : CreateIdentityArgument
+	{
+		public long? MemberSourceId { get; set; }
+
+		public long? InvitorId { get; set; }
+	}
 	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
@@ -42,7 +48,7 @@ namespace SF.Users.Members
 		Entities.IEntityManager<long,MemberEditable>
     {
 		Task<string> CreateMemberAsync(
-			CreateIdentityArgument Arg,
+			CreateMemberArgument Arg,
 			IIdentityCredentialProvider CredentialProvider
 			);
 	}

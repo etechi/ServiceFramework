@@ -18,6 +18,7 @@ namespace SF.Entities
 		public ITimeService TimeService => EntityManager.TimeService;
 		public ILogger Logger => EntityManager.Logger;
 		public IDataSet<TModel> DataSet => EntityManager.DataSet;
+		public IDataContext DataContext => DataSet.Context;
 		public IIdentGenerator IdentGenerator => EntityManager.IdentGenerator;
 
 		public BaseEntityManager(IDataSetEntityManager<TModel> EntityManager)

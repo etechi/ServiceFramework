@@ -168,22 +168,39 @@ namespace SF.Data
 		{
 			return set.AsQueryable(true).Where(filter).ToArrayAsync();
 		}
-		public static Task<M> QuerySingleAsync<T, M>(
+		public static Task<M> FirstOrDefaultAsync<T, M>(
 		   this IDataSet<T> set,
 		   System.Linq.Expressions.Expression<Func<T, bool>> filter,
-		   System.Linq.Expressions.Expression<Func<T, M>> map
+		   System.Linq.Expressions.Expression<Func<T, M>> map = null
 		   )
 		   where T : class
 		{
 			return set.AsQueryable(true).Where(filter).Select(map).FirstOrDefaultAsync();
 		}
-		public static Task<T> QuerySingleAsync<T>(
+		public static Task<T> FirstOrDefaultAsync<T>(
 		   this IDataSet<T> set,
 		   System.Linq.Expressions.Expression<Func<T, bool>> filter
 		   )
 		   where T : class
 		{
 			return set.AsQueryable(true).Where(filter).FirstOrDefaultAsync();
+		}
+		public static Task<M> SingleOrDefaultAsync<T, M>(
+		   this IDataSet<T> set,
+		   System.Linq.Expressions.Expression<Func<T, bool>> filter,
+		   System.Linq.Expressions.Expression<Func<T, M>> map = null
+		   )
+		   where T : class
+		{
+			return set.AsQueryable(true).Where(filter).Select(map).SingleOrDefaultAsync();
+		}
+		public static Task<T> SingleOrDefaultAsync<T>(
+		   this IDataSet<T> set,
+		   System.Linq.Expressions.Expression<Func<T, bool>> filter
+		   )
+		   where T : class
+		{
+			return set.AsQueryable(true).Where(filter).SingleOrDefaultAsync();
 		}
 		public static async Task<T> EnsureAsync<T>(
 			this IDataSet<T> set,

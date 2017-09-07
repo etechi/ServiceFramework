@@ -41,7 +41,7 @@ namespace SF.Auth.Identities.Entity
 			}
 			else
 			{
-				exist = await DataSet.QuerySingleAsync(i => i.ProviderId == Provider && i.Credential == Credential);
+				exist = await DataSet.FirstOrDefaultAsync(i => i.ProviderId == Provider && i.Credential == Credential);
 				existUserId = exist?.IdentityId;
 			}
 
@@ -66,12 +66,12 @@ namespace SF.Auth.Identities.Entity
 		public async Task<IdentityCredential> Find(long Provider, string Credential, string UnionIdent)
 		{
 			if (UnionIdent != null)
-				return await DataSet.QuerySingleAsync(
+				return await DataSet.FirstOrDefaultAsync(
 					i => i.ProviderId == Provider && i.UnionIdent == UnionIdent && i.Credential == Credential,
 					EntityMapper.Map<TIdentityCredential, IdentityCredential>()
 					);
 			else
-				return await DataSet.QuerySingleAsync(
+				return await DataSet.FirstOrDefaultAsync(
 					i => i.ProviderId == Provider && i.Credential == Credential,
 					EntityMapper.Map<TIdentityCredential, IdentityCredential>()
 					);

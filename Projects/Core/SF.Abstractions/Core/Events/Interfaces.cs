@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace SF.Core.Events
 {
+	public interface IEventValidator<T>
+	{
+		Task<bool> Validate(T Event);
+	}
+
 	public interface IEventSubscriber<T>
 	{
 		void Wait(Func<T,Task> Callback);

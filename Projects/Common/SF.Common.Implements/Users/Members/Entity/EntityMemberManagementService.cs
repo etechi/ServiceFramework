@@ -57,7 +57,7 @@ namespace SF.Users.Members.Entity
 			return q;
 		}
 		public async Task<string> CreateMemberAsync(
-			CreateIdentityArgument Arg,
+			CreateMemberArgument Arg,
 			IIdentityCredentialProvider CredentialProvider
 			)
 		{
@@ -101,12 +101,33 @@ namespace SF.Users.Members.Entity
 
 			if (ctx.Action == ModifyAction.Create)
 			{
-				var ExtraArg = ((CreateIdentityArgument,IIdentityCredentialProvider))ctx.ExtraArgument;
+				var (CreateArgument,IdentityProvider)= ((CreateMemberArgument, IIdentityCredentialProvider))ctx.ExtraArgument;
+
+				m.InvitorId = CreateArgument.InvitorId;
+
+				if (CreateArgument.MemberSourceId.HasValue)
+				{
+					var PntSourceId = await DataContext.Set<TMemberSource>().SingleOrDefaultAsync(
+						mi => mi.Id == CreateArgument.MemberSourceId.Value,
+						mi => mi.ParentId.HasValue ? mi.ParentId: 0
+						);
+					if (PntSourceId.HasValue)
+					{
+						if (PntSourceId.Value == 0)
+							m.MemberSourceId = CreateArgument.MemberSourceId;
+						else
+						{
+							m.ChildMemberSourceId = CreateArgument.MemberSourceId;
+							m.MemberSourceId = PntSourceId;
+						}
+					}
+				}
+
 				UIEnsure.HasContent(e.Password, "需要提供密码");
 				ctx.UserData=await IdentityService.Value.CreateIdentity(
 					new CreateIdentityArgument
 					{
-						CredentialProviderId=ExtraArg.Item1.CredentialProviderId,
+						CredentialProviderId= IdentityProvider.Id,
 						Credential = m.PhoneNumber,
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity
@@ -116,17 +137,21 @@ namespace SF.Users.Members.Entity
 							Id = m.Id,
 							Name=m.Name
 						},
-						ReturnToken= ExtraArg.Item1.ReturnToken,
-						CaptchaCode= ExtraArg.Item1.CaptchaCode,
-						VerifyCode= ExtraArg.Item1.VerifyCode,
-						Expires= ExtraArg.Item1.Expires
+						ReturnToken= CreateArgument.ReturnToken,
+						CaptchaCode= CreateArgument.CaptchaCode,
+						VerifyCode= CreateArgument.VerifyCode,
+						Expires= CreateArgument.Expires
 					}, 
 					false
 					);
+
 				EntityManager.AddPostAction(() =>
 				{
-					
-
+					EntityManager.EventEmitter.Emit(new MemberRegisted
+					{
+						MemberId = m.Id,
+						ServiceId = ServiceInstanceDescriptor.InstanceId
+					});
 				}, PostActionType.BeforeCommit);
 			}
 			else

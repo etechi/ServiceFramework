@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Linq.Expressions;
+
 namespace SF.Core.ServiceManagement
 {
 	public static class ServiceResolverExtension
@@ -110,6 +112,35 @@ namespace SF.Core.ServiceManagement
 				ServiceType,
 				Name
 				);
+		}
+		static Type[] FuncTypes { get; } = new[]
+		{
+			typeof(Func<>)
+		}
+		static Func<IServiceResolver,Task<R>> GetDelegateInvoker<R>(Delegate Delegate)
+		{
+			var typeResolver = typeof(IServiceResolver);
+			var ArgServiceProvider = Expression.Parameter(typeResolver);
+			var MethodResolve = typeResolver.GetMethod("ResolveDescriptorByType", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Public);
+
+			var args = Delegate.Method.GetParameters().Select(p =>
+				ArgServiceProvider.CallMethod(
+					MethodResolve,
+					Expression.Constant(null, typeof(long?)),
+					Expression.Constant(p.ParameterType),
+					Expression.Constant(null, typeof(string))
+					)
+				);
+			Expression.Lambda<Func<IServiceResolver,Task<R>>>(
+				Expression.Invoke(
+					Expression.Constant(Delegate,typeof(Func<),
+
+			Delegate.inv
+		}
+		public static Task<R> Invoke<R>(this IServiceProvider ServiceProvider, Delegate Delegate)
+		{
+			var invoker = GetDelegateInvoker<R>(Delegate);
+			return invoker(ServiceProvider);
 		}
 	}
 }
