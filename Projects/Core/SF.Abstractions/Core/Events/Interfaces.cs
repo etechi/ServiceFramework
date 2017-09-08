@@ -8,7 +8,7 @@ namespace SF.Core.Events
 {
 	public interface IEventValidator<T>
 	{
-		Task<bool> Validate(T Event);
+		Task<bool> Validate(IServiceProvider ServiceProvider,T Event);
 	}
 
 	public interface IEventSubscriber<T>

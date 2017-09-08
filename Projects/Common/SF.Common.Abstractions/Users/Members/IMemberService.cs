@@ -11,7 +11,6 @@ using SF.Data.Models;
 
 namespace SF.Users.Members
 {
-	[Event]
 	public class MemberRegisted 
 	{
 		public long ServiceId { get; set; }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace SF.Core.ServiceManagement
 {
@@ -12,9 +13,9 @@ namespace SF.Core.ServiceManagement
 		public static IServiceResolver Resolver(this IServiceProvider ServiceProvider)
 			=> (IServiceResolver)ServiceProvider.GetService(TypeServiceResolver);
 
-		public static T TryResolve<T>(this IServiceResolver ServiceResolver,string Name=null,long? ScopeId=null)
-			where T:class
-			=>(T)ServiceResolver.ResolveServiceByType(ScopeId,typeof(T),Name);
+		public static T TryResolve<T>(this IServiceResolver ServiceResolver, string Name = null, long? ScopeId = null)
+			where T : class
+			=> (T)ServiceResolver.ResolveServiceByType(ScopeId, typeof(T), Name);
 
 		public static T TryResolve<T>(this IServiceProvider ServiceProvider, string Name = null, long? ScopeId = null)
 			where T : class
@@ -29,7 +30,7 @@ namespace SF.Core.ServiceManagement
 			return re;
 		}
 		public static T Resolve<T>(this IServiceProvider ServiceProvider, string Name = null, long? ScopeId = null)
-			where T:class
+			where T : class
 			=> ServiceProvider.Resolver().Resolve<T>(Name, ScopeId);
 
 
@@ -45,7 +46,7 @@ namespace SF.Core.ServiceManagement
 			return re;
 		}
 
-		public static T ResolveInternal<T>(this IServiceProvider ServiceProvider, long ServiceId,string Name=null)
+		public static T ResolveInternal<T>(this IServiceProvider ServiceProvider, long ServiceId, string Name = null)
 			where T : class
 			=> ServiceProvider.Resolve<T>(Name, ServiceId);
 
@@ -82,7 +83,7 @@ namespace SF.Core.ServiceManagement
 			{
 				var sv = s.ServiceProvider.Resolver();
 				var args = action.Method.GetParameters()
-					.Select(p => sv.ResolveServiceByType(null,p.ParameterType,null))
+					.Select(p => sv.ResolveServiceByType(null, p.ParameterType, null))
 					.ToArray();
 				return await (Task<T>)action.DynamicInvoke(args);
 			}
@@ -105,7 +106,7 @@ namespace SF.Core.ServiceManagement
 				Name
 				).Cast<T>();
 		}
-		public static IEnumerable<object> GetServices(this IServiceProvider ServiceProvider,Type ServiceType,long? ScopeServiceId=null,string Name=null)
+		public static IEnumerable<object> GetServices(this IServiceProvider ServiceProvider, Type ServiceType, long? ScopeServiceId = null, string Name = null)
 		{
 			return ServiceProvider.Resolver().ResolveServices(
 				ScopeServiceId,
@@ -115,15 +116,52 @@ namespace SF.Core.ServiceManagement
 		}
 		static Type[] FuncTypes { get; } = new[]
 		{
-			typeof(Func<>)
-		}
-		static Func<IServiceResolver,Task<R>> GetDelegateInvoker<R>(Delegate Delegate)
+			typeof(Func<>),
+			typeof(Func<,>),
+			typeof(Func<,,>),
+			typeof(Func<,,>),
+			typeof(Func<,,,>),
+			typeof(Func<,,,,>),
+			typeof(Func<,,,,,>),
+			typeof(Func<,,,,,,>),
+			typeof(Func<,,,,,,,>),
+			typeof(Func<,,,,,,,,>),
+			typeof(Func<,,,,,,,,,>),
+			typeof(Func<,,,,,,,,,,>),
+			typeof(Func<,,,,,,,,,,,>),
+			typeof(Func<,,,,,,,,,,,,>),
+			typeof(Func<,,,,,,,,,,,,,>),
+			typeof(Func<,,,,,,,,,,,,,,>),
+			typeof(Func<,,,,,,,,,,,,,,,>),
+			typeof(Func<,,,,,,,,,,,,,,,,>)
+		};
+		static Type[] ActionTypes { get; } = new[]
+		{
+			typeof(Action<>),
+			typeof(Action<,>),
+			typeof(Action<,,>),
+			typeof(Action<,,>),
+			typeof(Action<,,,>),
+			typeof(Action<,,,,>),
+			typeof(Action<,,,,,>),
+			typeof(Action<,,,,,,>),
+			typeof(Action<,,,,,,,>),
+			typeof(Action<,,,,,,,,>),
+			typeof(Action<,,,,,,,,,>),
+			typeof(Action<,,,,,,,,,,>),
+			typeof(Action<,,,,,,,,,,,>),
+			typeof(Action<,,,,,,,,,,,,>),
+			typeof(Action<,,,,,,,,,,,,,>),
+			typeof(Action<,,,,,,,,,,,,,,>),
+			typeof(Action<,,,,,,,,,,,,,,,>),
+		};
+		static Action<IServiceResolver> GetDelegateInvoker(Delegate Delegate)
 		{
 			var typeResolver = typeof(IServiceResolver);
 			var ArgServiceProvider = Expression.Parameter(typeResolver);
 			var MethodResolve = typeResolver.GetMethod("ResolveDescriptorByType", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Public);
-
-			var args = Delegate.Method.GetParameters().Select(p =>
+			var ps = Delegate.Method.GetParameters();
+			var args = ps.Select(p =>
 				ArgServiceProvider.CallMethod(
 					MethodResolve,
 					Expression.Constant(null, typeof(long?)),
@@ -131,16 +169,115 @@ namespace SF.Core.ServiceManagement
 					Expression.Constant(null, typeof(string))
 					)
 				);
-			Expression.Lambda<Func<IServiceResolver,Task<R>>>(
+			var func = Expression.Lambda<Action<IServiceResolver>>(
 				Expression.Invoke(
-					Expression.Constant(Delegate,typeof(Func<),
-
-			Delegate.inv
+					Expression.Constant(
+						Delegate,
+						ps.Length == 0 ? typeof(Action) :
+						ActionTypes[ps.Length - 1].MakeGenericType(
+						ps.Select(p => p.ParameterType)
+						)
+					),
+					args
+					),
+				ArgServiceProvider
+				).Compile();
+			return func;
 		}
-		public static Task<R> Invoke<R>(this IServiceProvider ServiceProvider, Delegate Delegate)
+		static System.Collections.Concurrent.ConcurrentDictionary<MethodInfo, Lazy<Action<IServiceResolver>>> Invokers = new System.Collections.Concurrent.ConcurrentDictionary<MethodInfo, Lazy<Action<IServiceResolver>>>();
+		public static void RawInvoke(this IServiceProvider ServiceProvider, Delegate Delegate)
 		{
-			var invoker = GetDelegateInvoker<R>(Delegate);
-			return invoker(ServiceProvider);
+			if (!Invokers.TryGetValue(Delegate.Method, out var l))
+				l = Invokers.GetOrAdd(Delegate.Method, new Lazy<Action<IServiceResolver>>(() => GetDelegateInvoker(Delegate)));
+			l.Value(ServiceProvider.Resolver());
+		}
+		public static void Invoke<I0, I1, I2, I3, I4, I5, I6, I7>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4, I5, I6, I7> callback) =>
+			ServiceProvider.RawInvoke((Delegate)callback);
+		public static void Invoke<I0, I1, I2, I3, I4, I5, I6>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4, I5, I6> callback) =>
+			ServiceProvider.RawInvoke((Delegate)callback);
+		public static void Invoke<I0, I1, I2, I3, I4, I5>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4, I5> callback) =>
+			ServiceProvider.RawInvoke((Delegate)callback);
+		public static void Invoke<I0, I1, I2, I3, I4>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4> callback) =>
+			ServiceProvider.RawInvoke((Delegate)callback);
+		public static void Invoke<I0, I1, I2, I3>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3> callback) =>
+			ServiceProvider.RawInvoke((Delegate)callback);
+		public static void Invoke<I0, I1, I2>(this IServiceProvider ServiceProvider, Action<I0, I1, I2> callback) =>
+			ServiceProvider.RawInvoke((Delegate)callback);
+		public static void Invoke<I0, I1>(this IServiceProvider ServiceProvider, Action<I0, I1> callback) =>
+			ServiceProvider.RawInvoke((Delegate)callback);
+		public static void Invoke<I0>(this IServiceProvider ServiceProvider, Action<I0> callback) =>
+			ServiceProvider.RawInvoke((Delegate)callback);
+
+		public static R Invoke<I0, I1, I2, I3, I4, I5, I6, I7, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, I5, I6, I7, R> callback)
+		{
+			R re=default(R);
+			ServiceProvider.Invoke<I0, I1, I2, I3, I4, I5, I6, I7>((i0, i1, i2, i3, i4, i5, i6, i7)=>{
+				re =callback(i0, i1, i2, i3, i4, i5, i6, i7); }
+			);
+			return re;
+		}
+		public static R Invoke<I0, I1, I2, I3, I4, I5, I6, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, I5, I6, R> callback)
+		{
+			R re = default(R);
+			ServiceProvider.Invoke<I0, I1, I2, I3, I4, I5, I6>((i0, i1, i2, i3, i4, i5, i6) => {
+				re = callback(i0, i1, i2, i3, i4, i5, i6);
+			}
+			);
+			return re;
+		}
+		public static R Invoke<I0, I1, I2, I3, I4, I5, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, I5, R> callback)
+		{
+			R re = default(R);
+			ServiceProvider.Invoke<I0, I1, I2, I3, I4, I5>((i0, i1, i2, i3, i4, i5) => {
+				re = callback(i0, i1, i2, i3, i4, i5);
+			}
+			);
+			return re;
+		}
+		public static R Invoke<I0, I1, I2, I3, I4, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, R> callback)
+		{
+			R re = default(R);
+			ServiceProvider.Invoke<I0, I1, I2, I3, I4>((i0, i1, i2, i3, i4) => {
+				re = callback(i0, i1, i2, i3, i4);
+			}
+			);
+			return re;
+		}
+		public static R Invoke<I0, I1, I2, I3, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, R> callback)
+		{
+			R re = default(R);
+			ServiceProvider.Invoke<I0, I1, I2, I3>((i0, i1, i2, i3) => {
+				re = callback(i0, i1, i2, i3);
+			}
+			);
+			return re;
+		}
+		public static R Invoke<I0, I1, I2, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, R> callback)
+		{
+			R re = default(R);
+			ServiceProvider.Invoke<I0, I1, I2>((i0, i1, i2) => {
+				re = callback(i0, i1, i2);
+			}
+			);
+			return re;
+		}
+		public static R Invoke<I0, I1, R>(this IServiceProvider ServiceProvider, Func<I0, I1, R> callback)
+		{
+			R re = default(R);
+			ServiceProvider.Invoke<I0, I1>((i0, i1) => {
+				re = callback(i0, i1);
+			}
+			);
+			return re;
+		}
+		public static R Invoke<I0, R>(this IServiceProvider ServiceProvider, Func<I0, R> callback)
+		{
+			R re = default(R);
+			ServiceProvider.Invoke<I0>((i0) => {
+				re = callback(i0);
+			}
+			);
+			return re;
 		}
 	}
 }

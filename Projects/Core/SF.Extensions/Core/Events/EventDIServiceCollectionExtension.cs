@@ -11,7 +11,7 @@ namespace SF.Core.ServiceManagement
 		class EventValidator<T> : IEventValidator<T>
 		{
 			public IServiceProvider ServiceProvider { get; }
-			public Func<IServiceProvider,T,Task<bool>> Validator { get; }
+			public Func<IServiceProvider, T, Task<bool>> Validator { get; }
 			public EventValidator(IServiceProvider ServiceProvider, Func<IServiceProvider, T, Task<bool>> Validator)
 			{
 				this.ServiceProvider = ServiceProvider;
@@ -24,41 +24,58 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IServiceCollection AddEventValidator<E>(
 			this IServiceCollection sc,
-			Func<IServiceProvider,E,Task<bool>> Validator)
+			Func<IServiceProvider, E, Task<bool>> Validator)
 		{
 			sc.AddScoped<IEventValidator<E>>(sp =>
 				new EventValidator<E>(sp, Validator)
 				);
 			return sc;
 		}
-	}
-	public interface IEventValidator<T>
-	{
-		Task<bool> Validate(T Event);
-	}
 
-	public interface IEventSubscriber<T>
-	{
-		void Wait(Func<T,Task> Callback);
-	}
+		public static IServiceCollection AddEventValidator<I0, I1, I2, I3, E>(
+			this IServiceCollection sc,
+			Func<I0, I1, I2, I3, E, Task<bool>> Validator)
+			=> sc.AddScoped<IEventValidator<E>>(
+				sp =>
+					 new EventValidator<E>(
+						 sp,
+						(isp, e) =>
+							isp.Invoke<I0, I1, I2, I3, Task<bool>>((i0,i1,i2,i3) => Validator(i0,i1,i2,i3, e))
+					 )
+				);
+		public static IServiceCollection AddEventValidator<I0, I1, I2, E>(
+			this IServiceCollection sc,
+			Func<I0, I1, I2,  E, Task<bool>> Validator)
+			=> sc.AddScoped<IEventValidator<E>>(
+				sp =>
+					 new EventValidator<E>(
+						 sp,
+						(isp, e) =>
+							isp.Invoke<I0, I1, I2,  Task<bool>>((i0, i1, i2) => Validator(i0, i1, i2,  e))
+					 )
+				);
+		public static IServiceCollection AddEventValidator<I0, I1,  E>(
+			this IServiceCollection sc,
+			Func<I0, I1,  E, Task<bool>> Validator)
+			=> sc.AddScoped<IEventValidator<E>>(
+				sp =>
+					 new EventValidator<E>(
+						 sp,
+						(isp, e) =>
+							isp.Invoke<I0, I1, Task<bool>>((i0, i1) => Validator(i0, i1, e))
+					 )
+				);
+		public static IServiceCollection AddEventValidator<I0, E>(
+			this IServiceCollection sc,
+			Func<I0,  E, Task<bool>> Validator)
+			=> sc.AddScoped<IEventValidator<E>>(
+				sp =>
+					 new EventValidator<E>(
+						 sp,
+						(isp, e) =>
+							isp.Invoke<I0,  Task<bool>>((i0) => Validator(i0, e))
+					 )
+				);
 
-	public interface IEventObservable
-    {
-        IDisposable Subscribe(Func<object,Task> observer);
-    }
-    public interface IEventSource
-    {
-		IEventObservable GetObservable(string Type);
-    }
-
-	public interface ISourceResolver
-	{
-		IEventSource GetSource(string Name);
 	}
-
-	public interface IEventEmitter
-	{
-		Task Emit(object Event,bool SyncMode=true);
-	}
-   
 }
