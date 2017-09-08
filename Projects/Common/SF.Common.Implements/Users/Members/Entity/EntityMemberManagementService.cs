@@ -12,12 +12,11 @@ using System.Threading.Tasks;
 
 namespace SF.Users.Members.Entity
 {
-	public class EntityMemberManagementService<TMember,TMemberSource> :
+	public class EntityMemberManagementService<TMember> :
 		EntityManager<long, Models.MemberInternal,  MemberQueryArgument, Models.MemberEditable, TMember>,
 		IMemberManagementService,
 		ICallable
-		where TMember: DataModels.Member<TMember,TMemberSource>,new()
-		where TMemberSource: DataModels.MemberSource<TMember, TMemberSource>
+		where TMember: DataModels.Member<TMember>,new()
 	{
 		public Lazy<IIdentityService> IdentityService { get; }
 		public EntityMemberManagementService(
@@ -44,16 +43,15 @@ namespace SF.Users.Members.Entity
 			var q = Query.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)
 				.FilterContains(Arg.PhoneNumber, r => r.PhoneNumber)
-				.Filter(Arg.InvitorId, r => r.InvitorId)
 				;
-			if (Arg.MemberSourceId.HasValue)
-			{
-				var sid = Arg.MemberSourceId.Value;
-				q = q.Where(r =>
-				  r.MemberSourceId.HasValue && r.MemberSourceId.Value == sid ||
-				  r.ChildMemberSourceId.HasValue && r.ChildMemberSourceId.Value == sid
-				);
-			}
+			//if (Arg.MemberSourceId.HasValue)
+			//{
+			//	var sid = Arg.MemberSourceId.Value;
+			//	q = q.Where(r =>
+			//	  r.MemberSourceId.HasValue && r.MemberSourceId.Value == sid ||
+			//	  r.ChildMemberSourceId.HasValue && r.ChildMemberSourceId.Value == sid
+			//	);
+			//}
 			return q;
 		}
 		public async Task<string> CreateMemberAsync(
@@ -96,32 +94,13 @@ namespace SF.Users.Members.Entity
 			m.Name = e.Name.Trim();
 			m.PhoneNumber = e.PhoneNumber.Trim();
 			m.LogicState = e.LogicState;
-			m.UpdatedTime = e.UpdatedTime;
+			m.UpdatedTime = TimeService.Now;
 			m.UpdatorId = await IdentityService.Value.EnsureCurIdentityId();
 
 			if (ctx.Action == ModifyAction.Create)
 			{
 				var (CreateArgument,IdentityProvider)= ((CreateMemberArgument, IIdentityCredentialProvider))ctx.ExtraArgument;
 
-				m.InvitorId = CreateArgument.InvitorId;
-
-				if (CreateArgument.MemberSourceId.HasValue)
-				{
-					var PntSourceId = await DataContext.Set<TMemberSource>().SingleOrDefaultAsync(
-						mi => mi.Id == CreateArgument.MemberSourceId.Value,
-						mi => mi.ParentId.HasValue ? mi.ParentId: 0
-						);
-					if (PntSourceId.HasValue)
-					{
-						if (PntSourceId.Value == 0)
-							m.MemberSourceId = CreateArgument.MemberSourceId;
-						else
-						{
-							m.ChildMemberSourceId = CreateArgument.MemberSourceId;
-							m.MemberSourceId = PntSourceId;
-						}
-					}
-				}
 
 				UIEnsure.HasContent(e.Password, "需要提供密码");
 				ctx.UserData=await IdentityService.Value.CreateIdentity(
@@ -146,13 +125,13 @@ namespace SF.Users.Members.Entity
 					);
 
 				EntityManager.AddPostAction(() =>
-				{
 					EntityManager.EventEmitter.Emit(new MemberRegisted
 					{
 						MemberId = m.Id,
-						ServiceId = ServiceInstanceDescriptor.InstanceId
-					});
-				}, PostActionType.BeforeCommit);
+						ServiceId = ServiceInstanceDescriptor.InstanceId,
+						Time= m.CreatedTime
+					})
+				, PostActionType.BeforeCommit);
 			}
 			else
 			{

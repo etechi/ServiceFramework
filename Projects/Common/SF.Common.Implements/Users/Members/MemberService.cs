@@ -32,6 +32,10 @@ namespace SF.Users.Members
 			return token;
 		}
 
+		public Task<MemberDesc> GetCurrentMember()
+		{
+			return null;
+		}
 	}
 
 }

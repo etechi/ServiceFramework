@@ -22,13 +22,13 @@ namespace SF.Users.Members
 		[Comment("电话")]
 		public string PhoneNumber { get; set; }
 
-		[Comment("来源")]
-		[EntityIdent(typeof(MemberSources.IMemberSourceManagementService))]
-		public long? MemberSourceId { get; set; }
+		//[Comment("来源")]
+		//[EntityIdent(typeof(MemberSources.IMemberSourceManagementService))]
+		//public long? MemberSourceId { get; set; }
 
-		[Comment("邀请人")]
-		[EntityIdent(typeof(IMemberManagementService))]
-		public long? InvitorId { get; set; }
+		//[Comment("邀请人")]
+		//[EntityIdent(typeof(IMemberManagementService))]
+		//public long? InvitorId { get; set; }
 
 	}
 

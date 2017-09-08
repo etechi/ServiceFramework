@@ -5,18 +5,19 @@ using SF.Core.Times;
 using SF.Data;
 using SF.Entities;
 using SF.Users.Members.Models;
+using SF.Users.Promotions.MemberSources.Models;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace SF.Users.Members.Entity
+namespace SF.Users.Promotions.MemberSources.Entity
 {
-	public class EntityMemberSourceManagementService<TMember,TMemberSource> :
-		EntityManager<long, Models.MemberSourceInternal,  MemberSourceQueryArgument, Models.MemberSourceInternal, TMemberSource>,
+	public class EntityMemberSourceManagementService<TMemberSource, TSourceMember> :
+		EntityManager<long, MemberSourceInternal,  MemberSourceQueryArgument, Models.MemberSourceInternal, TMemberSource>,
 		IMemberSourceManagementService
-		where TMember: DataModels.Member<TMember,TMemberSource>
-		where TMemberSource: DataModels.MemberSource<TMember, TMemberSource>, new()
+		where TMemberSource: DataModels.MemberSource<TMemberSource, TSourceMember>, new()
+		where TSourceMember : DataModels.SourceMember<TMemberSource,TSourceMember>,new()
 	{
 		public EntityMemberSourceManagementService(
 			IDataSetEntityManager<TMemberSource> Manager
@@ -33,6 +34,32 @@ namespace SF.Users.Members.Entity
 
 		protected override PagingQueryBuilder<TMemberSource> PagingQueryBuilder =>
 			PagingQueryBuilder<TMemberSource>.Simple("time", b => b.CreatedTime, true);
+
+		public async Task AddSourceMember(long SourceId, long MemberId)
+		{
+			//m.InvitorId = CreateArgument.InvitorId;
+			//var PntSourceId = await DataContext.Set<TMemberSource>().SingleOrDefaultAsync(
+			//	mi => mi.Id == SourceId,
+			//	mi => mi.ContainerId.HasValue ? mi.ContainerId : 0
+			//	);
+			//if (PntSourceId.HasValue)
+			//{
+			//	if (PntSourceId.Value == 0)
+			//		m.MemberSourceId = CreateArgument.MemberSourceId;
+			//	else
+			//	{
+			//		m.ChildMemberSourceId = CreateArgument.MemberSourceId;
+			//		m.MemberSourceId = PntSourceId;
+			//	}
+			//}
+
+			DataContext.Set<TSourceMember>().Add(new TSourceMember
+			{
+				Id = MemberId,
+				ContainerId = SourceId
+			});
+			await DataContext.SaveChangesAsync();
+		}
 
 		protected override IContextQueryable<TMemberSource> OnBuildQuery(IContextQueryable<TMemberSource> Query, MemberSourceQueryArgument Arg, Paging paging)
 		{

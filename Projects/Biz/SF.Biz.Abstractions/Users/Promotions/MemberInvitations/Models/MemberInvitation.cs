@@ -5,10 +5,10 @@ using SF.Metadata;
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace SF.Users.MemberSources.Models
+namespace SF.Users.Promotions.MemberInvitations.Models
 {
-	[EntityObject("会员来源")]
-	public class MemberSourceInternal : ObjectEntityBase
+	[EntityObject("会员邀请")]
+	public class MemberInvitations : ObjectEntityBase
 	{
 
 	}

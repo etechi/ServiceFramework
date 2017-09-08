@@ -41,7 +41,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Users\UserSources\IUserSourceService.cs" />
+    <Compile Include="Users\Promotions\MemberInvitations\Models\MemberInvitationInternal.cs" />
+    <Compile Include="Users\Promotions\MemberSources\IMemberSourceManagementService.cs" />
+    <Compile Include="Users\Promotions\MemberSources\Models\MemberSourceInternal.cs" />
+    <Compile Include="Users\Promotions\MemberInvitations\IMemberInvitationManagementService.cs" />
+    <Compile Include="Users\Promotions\MemberInvitations\Models\MemberInvitation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Bizness\Carts\" />
@@ -50,10 +54,19 @@
     <Folder Include="Bizness\Trades\" />
     <Folder Include="Users\Accounting\" />
     <Folder Include="Users\Payments\" />
-    <Folder Include="Users\Promotions\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\SF.Common.Abstractions\SF.Common.Abstractions.csproj">
+      <Project>{540ed117-f2ea-4841-90f5-19f81f65e8c5}</Project>
+      <Name>SF.Common.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj">
+      <Project>{8880140e-8868-4b08-880e-dc3e0bc10d76}</Project>
+      <Name>SF.Abstractions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

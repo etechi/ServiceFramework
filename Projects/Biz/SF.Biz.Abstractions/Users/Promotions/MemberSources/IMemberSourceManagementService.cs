@@ -2,14 +2,14 @@
 using SF.Auth.Identities;
 using SF.Auth.Identities.Models;
 using SF.Metadata;
-using SF.Users.Members.Models;
+using SF.Users.Promotions.MemberSources.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Users.Members
+namespace SF.Users.Promotions.MemberSources
 {
 	public class MemberSourceQueryArgument : Entities.IQueryArgument<long>
 	{
@@ -30,6 +30,7 @@ namespace SF.Users.Members
 		Entities.IEntitySource<long,MemberSourceInternal,MemberSourceQueryArgument>,
 		Entities.IEntityManager<long,MemberSourceInternal>
     {
+		Task AddSourceMember(long SourceId, long MemberId);
 	}
 
 }
