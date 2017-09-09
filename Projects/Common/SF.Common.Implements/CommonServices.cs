@@ -1,153 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SF.Core.ServiceManagement;
-using SF.Metadata;
-using SF.Services.Test;
-using SF.Core.TaskServices;
+﻿
 using SF.Core.Hosting;
-using SF.Core.Logging;
-using SF.Management.MenuServices.Models;
 using SF.Core.ServiceManagement.Management;
+using SF.Management.MenuServices.Models;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SF.Applications
+namespace SF.Core.ServiceManagement
 {
-	[NetworkService]
-	public interface ICalc
+	public static class CommonServices
 	{
-		int Add(int a, int b);
-	}
-	public class Calc : ICalc
-	{
-		public int Add(int a, int b)
+		public static IServiceCollection AddCommonServices(this IServiceCollection Services, EnvironmentType EnvType)
 		{
-			return a + b;
-		}
-	}
-
-	public interface IOperator
-	{
-		int Eval(int a, int b);
-	}
-	public class Add : IOperator
-	{
-		public int Eval(int a, int b) => a + b;
-	}
-	public class Substract : IOperator
-	{
-		public int Eval(int a, int b) => a - b;
-	}
-
-	public interface IAgg
-	{
-		int Sum(int[] ss);
-	}
-	public class AggConfig
-	{
-		[Comment("操作1")]
-		public IOperator Op { get; set; }
-
-		[Comment("增加")]
-		public int Add { get; set; }
-	}
-	public class Agg : IAgg
-	{
-		private readonly IOperator op;
-
-		private IOperator GetOp()
-		{
-			return Op;
-		}
-
-		AggConfig Cfg { get; }
-
-		public IOperator Op => Op1;
-
-		public IOperator Op1 => op;
-
-		public Agg(
-			[Comment("操作")]
-			IOperator op,
-			[Comment("设置")]
-			AggConfig cfg
-			)
-		{
-			this.op = op;
-			this.Cfg = cfg;
-		}
-		public int Sum(int[] ss) =>
-			ss.Aggregate(Cfg.Add, (s, i) => GetOp().Eval(s, Cfg.Op.Eval(i, i)));
-	}
-
-	public static class AppCore 
-	{
-		public static void AddAppCoreServices(IServiceCollection Services, EnvironmentType EnvType)
-		{
-			AddSysServices(Services, EnvType);
-			AddCommonServices(Services, EnvType);
-			AddBizServices(Services, EnvType);
-		}
-		static void AddSysServices(IServiceCollection Services, EnvironmentType EnvType)
-		{
-			if (EnvType == EnvironmentType.Utils)
-				Services.AddConsoleDefaultFilePathStructure();
-
-			Services.AddNewtonsoftJson();
-			Services.AddSystemTimeService();
-			Services.AddTaskServiceManager();
-			//Services.AddDataContext();
-			Services.AddDataEntityProviders();
-			Services.AddServiceFeatureControl();
-			Services.AddFilePathResolver();
-			Services.AddLocalFileCache();
-			Services.AddDefaultSecurityServices();
-			Services.AddEventServices();
-			Services.AddCallPlans();
-			Services.AddDefaultCallPlanStorage();
-		}
-		static void AddCommonServices(IServiceCollection Services, EnvironmentType EnvType)
-		{
-			Services.AddDefaultKBServices();
-
-			Services.AddManagedService();
-			Services.AddManagedServiceAdminServices();
-
-			Services.AddMediaService(EnvType);
-
-			Services.InitService("媒体服务", (sp, sim) =>
-				sim.NewMediaService()
-				);
-
-
-			Services.AddIdentGenerator();
-
 			Services.AddMenuService();
-
-			Services.AddTextMessageServices();
-
 
 			Services.AddAuthIdentityServices();
 			Services.AddSysAdminServices();
 			Services.AddBizAdminServices();
 
-			Services.InitServices("通用服务", InitCommonServices);
-
+			Services.InitServices("系统服务", InitServices);
+			return Services;
 		}
-		static void AddBizServices(IServiceCollection Services, EnvironmentType EnvType)
+		static async Task InitServices(IServiceProvider sp,IServiceInstanceManager sim,long? ParentId)
 		{
-			Services.AddTransient<ICalc, Calc>();
-			Services.AddScoped<IOperator, Add>();
-			Services.AddScoped<IOperator, Substract>();
-			Services.AddScoped<IAgg, Agg>();
-			Services.AddScoped<ITestService, TestService>();
-		}
-
-		static async Task InitCommonServices(IServiceProvider sp, IServiceInstanceManager sim, long? ParentId)
-		{
-			await sim.NewDataProtectorService().Ensure(sp, ParentId);
-			await sim.NewPasswordHasherService().Ensure(sp, ParentId);
-
 			var SysAdminService = await sim.NewSysAdminService().Ensure(sp, ParentId);
 			var BizAdminService = await sim.NewBizAdminService().Ensure(sp, ParentId);
 			var MenuService = await sim.NewMenuService().Ensure(sp, ParentId);

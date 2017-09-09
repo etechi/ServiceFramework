@@ -67,6 +67,8 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IServiceCollection AddServices(this IServiceCollection Services, Microsoft.Extensions.DependencyInjection.IServiceCollection MSServices)
 		{
+			Services.Remove(typeof(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory));
+			Services.AddTransient< Microsoft.Extensions.DependencyInjection.IServiceScopeFactory, MSScopeFactory>();
 			return Services.AddRange(
 				MSServices.Select(s =>
 				{

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{66A4F4E4-6A67-479D-8650-013BD4A3913B}"
 EndProject
@@ -53,11 +53,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.App.Core", "Applications
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.UT.Core", "Test\SF.UT.Core\SF.UT.Core.csproj", "{AA81972D-0F60-4A52-BBE8-63EB8831F5A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Biz.Implements", "Biz\SF.Biz.Implements\SF.Biz.Implements.csproj", "{B0B411B0-E59C-4593-A83C-7819974F874B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Implements", "Biz\SF.Biz.Implements\SF.Biz.Implements.csproj", "{B0B411B0-E59C-4593-A83C-7819974F874B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Biz.Extensions", "Biz\SF.Biz.Extensions\SF.Biz.Extensions.csproj", "{042C3B6A-AC1F-48A3-8936-F0C3CF942EB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Extensions", "Biz\SF.Biz.Extensions\SF.Biz.Extensions.csproj", "{042C3B6A-AC1F-48A3-8936-F0C3CF942EB9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Abstractions", "Biz\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj", "{7ABD734C-FCEE-4CE0-A126-3D9816B37731}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.AdminSiteCore2", "Sites\SF.AdminSiteCore2\SF.AdminSiteCore2.csproj", "{17148021-8D02-488E-8392-A27BD42CAFF3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.AspNetCore", "Core\SF.AspNetCore\SF.AspNetCore.csproj", "{567EA1F7-CC6F-4B0D-9F3F-5AA11B8EBE0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,6 +149,14 @@ Global
 		{7ABD734C-FCEE-4CE0-A126-3D9816B37731}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7ABD734C-FCEE-4CE0-A126-3D9816B37731}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7ABD734C-FCEE-4CE0-A126-3D9816B37731}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17148021-8D02-488E-8392-A27BD42CAFF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17148021-8D02-488E-8392-A27BD42CAFF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17148021-8D02-488E-8392-A27BD42CAFF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17148021-8D02-488E-8392-A27BD42CAFF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{567EA1F7-CC6F-4B0D-9F3F-5AA11B8EBE0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{567EA1F7-CC6F-4B0D-9F3F-5AA11B8EBE0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{567EA1F7-CC6F-4B0D-9F3F-5AA11B8EBE0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{567EA1F7-CC6F-4B0D-9F3F-5AA11B8EBE0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -170,6 +182,8 @@ Global
 		{B0B411B0-E59C-4593-A83C-7819974F874B} = {7FB34344-E354-4075-8F29-A0AAD2EF72D4}
 		{042C3B6A-AC1F-48A3-8936-F0C3CF942EB9} = {7FB34344-E354-4075-8F29-A0AAD2EF72D4}
 		{7ABD734C-FCEE-4CE0-A126-3D9816B37731} = {7FB34344-E354-4075-8F29-A0AAD2EF72D4}
+		{17148021-8D02-488E-8392-A27BD42CAFF3} = {8E28520B-F54B-4C69-A62D-D5C7195031C4}
+		{567EA1F7-CC6F-4B0D-9F3F-5AA11B8EBE0E} = {66A4F4E4-6A67-479D-8650-013BD4A3913B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CEC16A9-B2F8-4F62-83CD-A3938068964F}

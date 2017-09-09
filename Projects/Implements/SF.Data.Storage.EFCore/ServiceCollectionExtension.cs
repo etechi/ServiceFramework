@@ -17,7 +17,7 @@ namespace SF.Core.ServiceManagement
 	{
 		
 		public static IServiceCollection AddEFCoreDataEntity<TDbContext>(this IServiceCollection sc)
-			where TDbContext : DbContext
+			where TDbContext : Microsoft.EntityFrameworkCore.DbContext
 		{
 			sc.AddScoped<IDataContextProviderFactory>(x => 
 				new DataContextProviderFactory<TDbContext>(
@@ -26,7 +26,7 @@ namespace SF.Core.ServiceManagement
 				);
 			return sc;
 		}
-		public static IServiceCollection AddEFCoreDataEntity(this IServiceCollection sc,Func<IServiceProvider,DbConnection,DbContext> DbContextCreator)
+		public static IServiceCollection AddEFCoreDataEntity(this IServiceCollection sc,Func<IServiceProvider,DbConnection, Microsoft.EntityFrameworkCore.DbContext> DbContextCreator)
 		{
 			sc.AddScoped<IDataContextProviderFactory>(x =>
 				new DataContextProviderFactory(

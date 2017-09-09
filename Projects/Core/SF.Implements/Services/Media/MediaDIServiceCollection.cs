@@ -150,7 +150,8 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IServiceCollection AddMediaService(
 			this IServiceCollection sc,
-			EnvironmentType EnvType
+			EnvironmentType EnvType,
+			bool InitMediaServiceInstance=true
 			)
 		{
 			sc.AddSingleton<IMediaMetaCache, MediaMetaCache>();
@@ -160,6 +161,12 @@ namespace SF.Core.ServiceManagement
 
 			sc.AddManagedScoped<IMediaStorage, FileSystemMediaStorage>();
 			sc.AddManagedScoped<IMediaStorage, StaticFileMediaStorage>();
+
+			if(InitMediaServiceInstance)
+				sc.InitService("媒体服务", (sp, sim) =>
+					sim.NewMediaService()
+					);
+
 
 			//sc.AddInitializer(
 			//	"初始化媒体服务组",

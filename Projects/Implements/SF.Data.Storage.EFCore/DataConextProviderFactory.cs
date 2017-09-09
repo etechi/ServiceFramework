@@ -10,7 +10,7 @@ namespace SF.Data.EntityFrameworkCore
 {
 	public class DataContextProviderFactory<T> : 
 		IDataContextProviderFactory
-		where T:DbContext
+		where T: Microsoft.EntityFrameworkCore.DbContext
 	{
 		Func<T> DbContextCreator { get; }
 		public DataContextProviderFactory(Func<T> DbContextCreator)
@@ -25,7 +25,7 @@ namespace SF.Data.EntityFrameworkCore
 	public class DataContextProviderFactory :
 		IDataContextProviderFactory
 	{
-		Func<DbContext> DbContextCreator { get; }
+		Func<Microsoft.EntityFrameworkCore.DbContext> DbContextCreator { get; }
 		public DataContextProviderFactory(Func<DbContext> DbContextCreator)
 		{
 			this.DbContextCreator = DbContextCreator;

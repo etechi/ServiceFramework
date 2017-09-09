@@ -1,18 +1,25 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="microsoft.aspnetcore.mvc" Version="1.1.2" />
+    <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
-    <ProjectReference Include="..\SF.Extensions\SF.Extensions.csproj" />
-  </ItemGroup>
+
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="microsoft.aspnetcore" Version="2.0.0" />
+    <PackageReference Include="microsoft.aspnetcore.mvc" Version="2.0.0" />
+  </ItemGroup>
+
 </Project>

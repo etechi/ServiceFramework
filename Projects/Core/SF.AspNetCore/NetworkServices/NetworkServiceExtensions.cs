@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SF.Core.DI;
+using SF.Core.ServiceManagement;
 using SF.AspNetCore.NetworkServices;
 using SF.Metadata;
 using SF.Core.NetworkService;
@@ -20,7 +20,7 @@ namespace SF.Core.DI
 	public static class MvcNetworkServiceExtensions
 	{
 		public static void UseAspNetCoreServiceInterface(
-			this IDIServiceCollection sc,
+			this IServiceCollection sc,
 			NetworkServiceConfig cfg=null
 			)
 		{
@@ -37,7 +37,7 @@ namespace SF.Core.DI
 			sc.Replace(new ServiceDescriptor(
 				typeof(IControllerActivator),
 				typeof(SF.AspNetCore.NetworkServices.ServiceBasedControllerActivator),
-				ServiceLifetime.Singleton
+				ServiceImplementLifetime.Singleton
 				));
 
 			sc.AddSingleton<IResultFactory, ResultFactory>();

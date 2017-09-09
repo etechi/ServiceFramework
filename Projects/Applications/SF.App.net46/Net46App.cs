@@ -36,7 +36,7 @@ namespace SF.Applications
 				ls
 				)
 				.With(sc=>sc.AddLogService(ls))
-				.With((sc,envType)=>AppCore.AddAppCoreServices(sc,envType))
+				.With((sc,envType)=>sc.AddSystemServices(EnvType))
 				.With((sc,envType)=> ConfigServices(sc,envType))
 				.OnEnvType(e => e != EnvironmentType.Utils, sp =>
 				{

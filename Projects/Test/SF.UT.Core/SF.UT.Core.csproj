@@ -148,10 +148,6 @@
     <Folder Include="Management\SysAdmin\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Applications\SF.App.Core\SF.App.Core.csproj">
-      <Project>{cf20fa89-703f-4a75-98c8-35de47115e7f}</Project>
-      <Name>SF.App.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Applications\SF.App.net46\SF.App.net46.csproj">
       <Project>{094850bb-29f4-41a5-b586-97804a302be0}</Project>
       <Name>SF.App.net46</Name>
