@@ -3,6 +3,8 @@ using SF.Metadata;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace SF.Data.Models
 {
 
@@ -14,6 +16,7 @@ namespace SF.Data.Models
 		[Key]
 		[ReadOnly(true)]
 		[TableVisible]
+		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public virtual K Id { get; set; }
 
 		[Comment("名称")]
