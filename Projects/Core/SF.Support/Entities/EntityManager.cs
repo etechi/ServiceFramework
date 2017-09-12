@@ -7,7 +7,36 @@ using System.Reflection;
 
 namespace SF.Entities
 {
-	
+	public class IdQueryArgument<TKey> : IQueryArgument<TKey>
+		where TKey : IEquatable<TKey>
+	{
+		public Option<TKey> Id { get; set; }
+	}
+	public abstract class EntityManager<TKey, TPublic, TEditable, TModel> :
+		EntityManager<TKey, TPublic, TPublic, IdQueryArgument<TKey>, TEditable, TModel>
+		where TPublic : class, IEntityWithId<TKey>
+		where TKey : IEquatable<TKey>
+		where TModel : class, IEntityWithId<TKey>, new()
+		where TEditable : class, IEntityWithId<TKey>
+	{
+		public EntityManager(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		{
+		}
+		protected override async Task<TPublic[]> OnPreparePublics(TPublic[] Internals)
+		{
+			await EntityManager.DataEntityResolver.Fill(Internals);
+			return Internals;
+		}
+		protected override PagingQueryBuilder<TModel> PagingQueryBuilder => new PagingQueryBuilder<TModel>(
+			"id",
+			b => b.Add("id", m => m.Id)
+			);
+		protected override IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, IdQueryArgument<TKey> Arg, Paging paging)
+		{
+			return Query;
+		}
+	}
+
 	public abstract class EntityManager<TKey, TPublic, TQueryArgument, TEditable, TModel> :
 		EntityManager<TKey, TPublic, TPublic, TQueryArgument, TEditable, TModel>
 		where TPublic : class, IEntityWithId<TKey>
@@ -82,7 +111,12 @@ namespace SF.Entities
 		}
 		protected virtual Task<bool> InternalRemoveAsync(IModifyContext Context,TKey Id)
 		{
-			return EntityManager.InternalRemoveAsync(Context, Id, OnRemoveModel,OnLoadModelForUpdate);
+			return EntityManager.InternalRemoveAsync<TKey,TModel,TEditable,IModifyContext>(
+				Context, 
+				Id, 
+				OnRemoveModel,
+				OnLoadModelForUpdate
+				);
 		}
 
 		protected virtual Task OnRemoveModel(IModifyContext ctx)

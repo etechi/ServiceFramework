@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 namespace SF.Management.FrontEndServices
 {
     [EntityObject("界面站点模板")]
-    public class SiteTemplate:IEntityWithId<int>
+    public class SiteTemplate:IEntityWithId<long>
     {
 		[Key]
 		[Display(Name = "ID", Prompt = "保存后自动产生")]
 		[ReadOnly(true)]
 		[TableVisible]
-		public int Id { get; set; }
+		public long Id { get; set; }
 
 		[TableVisible]
 		[Display(Name = "名称")]

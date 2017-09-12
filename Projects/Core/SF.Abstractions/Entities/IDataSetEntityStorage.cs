@@ -44,6 +44,7 @@ namespace SF.Entities
 		ILogger Logger { get; }
 		IEventEmitter EventEmitter { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
+		DateTime Now { get; }
 	}
 	public interface IEntityManager<TModel>: IEntityManager
 		where TModel:class

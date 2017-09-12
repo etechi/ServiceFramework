@@ -6,21 +6,28 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
-using SF.Entities;
 using SF.Data;
-using SF.Data.Models;
+using SF.Entities;
 
 namespace SF.Management.FrontEndServices.DataModels
 {
 
-	[Table("FESite")]
+	[Table("FrontSite")]
     [Comment(GroupName= "界面管理服务", Name = "站点配置")]
+
     public class Site<TSite, TSiteTemplate> :
-		ObjectEntityBase<string>
+		IEntityWithId<string>
 		where TSite : Site<TSite, TSiteTemplate>
 		where TSiteTemplate : SiteTemplate<TSite, TSiteTemplate>
 	{
-	
+		[Key]
+		[MaxLength(100)]
+        [Display(Name="Id")]
+		public string Id{get;set;}
+
+		[MaxLength(100)]
+        [Display(Name = "站点名称")]
+        public string Name { get; set; }
 		[Index]
         [Display(Name = "站点模板ID")]
         public int TemplateId{get;set;}

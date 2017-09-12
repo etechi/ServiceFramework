@@ -7,27 +7,55 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
 using SF.Entities;
-using SF.Data.Models;
 
 namespace SF.Management.FrontEndServices.DataModels
 {
-	[Table("FEContent")]
+	[Table("FrontContent")]
     [Comment(GroupName = "界面管理服务", Name = "界面内容")]
     public class Content :
-		UIObjectEntityBase<long>		
+		IEntityWithId<long>
 	{
+		[Key]
+        [Display(Name = "ID")]
+        public long Id { get; set; }
+		[Required]
+		[MaxLength(200)]
+        [Display(Name = "名称")]
+        public string Name { get; set; }
+
 		[Required]
 		[MaxLength(200)]
         [Display(Name = "分类")]
         public string Category { get; set; }
 
+
+		[MaxLength(100)]
+        [Display(Name = "字体图标")]
+        public string FontIcon{get;set;}
+
+		[MaxLength(200)]
+        [Display(Name = "图片图标")]
+        public string Icon { get; set; }
+
+		[MaxLength(200)]
+        [Display(Name = "大图片")]
+        public string Image { get; set; }
+
+
         [Display(Name = "摘要")]
         public string Summary { get; set; }
 
-		[MaxLength(100)]
-		[Display(Name = "字体图标")]
-		public string FontIcon { get; set; }
+		[MaxLength(200)]
+        [Display(Name = "标题1")]
+        public string Title1 { get; set; }
 
+		[MaxLength(200)]
+        [Display(Name = "标题2")]
+        public string Title2 { get; set; }
+
+		[MaxLength(200)]
+        [Display(Name = "标题3")]
+        public string Title3 { get; set; }
 
 		[MaxLength(200)]
         [Display(Name = "链接地址")]

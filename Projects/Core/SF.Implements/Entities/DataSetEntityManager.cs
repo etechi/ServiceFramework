@@ -22,6 +22,8 @@ namespace SF.Entities
 		IIdentGenerator _IdentGenerator;
 		IEventEmitter _EventEmitter;
 		IServiceInstanceDescriptor _ServiceInstanceDescroptor;
+		DateTime _Now;
+
 		I Resolve<I>(ref I value)
 			where I:class
 		{
@@ -29,7 +31,15 @@ namespace SF.Entities
 				value = ServiceProvider.Resolve<I>();
 			return value;
 		}
-
+		public DateTime Now
+		{
+			get
+			{
+				if (_Now == default(DateTime))
+					_Now = TimeService.Now;
+				return _Now;
+			}
+		}
 		public IDataSet<T> DataSet => Resolve(ref _DataSet);
 		public IIdentGenerator IdentGenerator => Resolve(ref _IdentGenerator);
 		public IDataEntityResolver DataEntityResolver => Resolve(ref _DataEntityResolver);

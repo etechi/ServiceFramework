@@ -1,25 +1,22 @@
-﻿using System;
+﻿using SF.Core;
+using SF.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ServiceProtocol.ObjectManager;
 
-using ServiceProtocol.Data.Entity;
-
-namespace ServiceProtocol.Biz.UIManager.Entity
+namespace SF.Management.FrontEndServices
 {
-    [DataObjectLoader("界面站点模板")]
 	public class SiteTemplateManager<TSiteTemplatePublic,TSite,TSiteTemplate> :
-		ObjectManager.EntityServiceObjectManager<int, TSiteTemplatePublic, TSiteTemplatePublic, TSiteTemplate>,
-		ServiceProtocol.Biz.UIManager.ISiteTemplateManager<TSiteTemplatePublic>,
-        IDataObjectLoader
-		where TSiteTemplatePublic :SiteTemplate, new()
-		where TSite : Models.Site<TSite,TSiteTemplate>
-		where TSiteTemplate : Models.SiteTemplate<TSite,TSiteTemplate>, new()
+		EntityManager<long, TSiteTemplatePublic, TSiteTemplatePublic, TSiteTemplate>,
+		ServiceProtocol.Biz.UIManager.ISiteTemplateManager<TSiteTemplatePublic>
+		where TSiteTemplatePublic : SiteTemplate, new()
+		where TSite : DataModels.Site<TSite,TSiteTemplate>
+		where TSiteTemplate : DataModels.SiteTemplate<TSite,TSiteTemplate>, new()
 	{
 
-        protected override async Task<TSiteTemplatePublic> MapModelToEditable(IContextQueryable<TSiteTemplate> Query)
+        protected override async Task<TSiteTemplatePublic> OnMapModelToEditable(IContextQueryable<TSiteTemplate> Query)
 		{
 			var re=await Query.Select(s =>
 				new
@@ -33,11 +30,11 @@ namespace ServiceProtocol.Biz.UIManager.Entity
 				}).SingleOrDefaultAsync();
 			if (re == null)
 				return null;
-			re.tmpl.Model = Json.Decode<SiteConfigModels.SiteModel>(re.data);
+			re.tmpl.Model = Json.Parse<SiteConfigModels.SiteModel>(re.data);
 			return re.tmpl;
 		}
 
-        protected override IContextQueryable<TSiteTemplatePublic> MapModelToInternal(IContextQueryable<TSiteTemplate> Query)
+        protected override IContextQueryable<TSiteTemplatePublic> OnMapModelToPublic(IContextQueryable<TSiteTemplate> Query)
 		{
 			return Query.Select(s => new TSiteTemplatePublic
 			{
@@ -46,58 +43,32 @@ namespace ServiceProtocol.Biz.UIManager.Entity
 				
 			});
 		}
-        protected override Task OnRemoveModel(ModifyContext ctx)
-        {
-            var mid = ctx.Model.Id;
-            ctx.AddPostAction(() =>
-                Engine.NotifySiteTemplateChanged(mid)
-                );
-            return base.OnRemoveModel(ctx);
-        }
+        
 
-		protected override Task OnUpdateModel(ModifyContext ctx)
+		protected override Task OnUpdateModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
 			Model.Name = obj.Name;
-			Model.Data = Json.Encode(obj.Model);
-            ctx.AddPostAction(() =>
-                Engine.NotifySiteTemplateChanged(obj.Id)
-                );
+			Model.Data = Json.Stringify(obj.Model);
 			return Task.CompletedTask;
 		}
-        public ISiteRenderEngine Engine { get; }
 
-        public SiteTemplateManager(IDataContext context, ISiteRenderEngine Engine,Lazy<IModifyFilter> ModifyFilter) : base(context, ModifyFilter)
+        public SiteTemplateManager(IDataSetEntityManager<TSiteTemplate> EntityManager) : base(EntityManager)
 		{
-            this.Engine = Engine;
-
         }
+
 		public async Task<TSiteTemplatePublic[]> List()
 		{
-			return await MapModelToInternal(Context.ReadOnly<TSiteTemplate>()).ToArrayAsync();
+			return await OnMapModelToPublic(DataSet.AsQueryable()).ToArrayAsync();
 		}
-
 		public async Task<string> LoadConfig(int templateId)
 		{
-			return await Context.ReadOnly<TSiteTemplate>()
+			return await DataSet.AsQueryable()
 				.Where(t => t.Id == templateId)
 				.Select(t => t.Data)
 				.SingleOrDefaultAsync();
 		}
-
-        async Task<IDataObject[]> IDataObjectLoader.Load(string Type, string[][] Keys)
-        {
-            var re = await DataObjectLoader.Load(
-                Keys,
-                id => int.Parse(id[0]),
-                id => FindByIdAsync(id),
-                async (ids) => {
-                    var tmps = await MapModelToInternal(Context.ReadOnly<TSiteTemplate>().Where(a => ids.Contains(a.Id))).ToArrayAsync();
-                    return tmps;
-                });
-            return re;
-        }
 
     }
 }

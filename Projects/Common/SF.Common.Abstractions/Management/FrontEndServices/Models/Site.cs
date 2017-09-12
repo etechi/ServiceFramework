@@ -1,4 +1,5 @@
-﻿using SF.Metadata;
+﻿using SF.Entities;
+using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,7 +26,7 @@ namespace SF.Management.FrontEndServices
 		public string Name { get; set; }
 
 		[Display(Name = "站点模板")]
-		[EntityIdent("界面站点模板", nameof(TemplateName))]
+		[EntityIdent(typeof(ServiceProtocol.Biz.UIManager.ISiteTemplateManager<>), nameof(TemplateName))]
 		[Required]
 		public int TemplateId { get; set; }
 

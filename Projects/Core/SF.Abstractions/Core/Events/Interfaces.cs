@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace SF.Core.Events
 {
-	public interface IEvent
+	public interface IEventValidator<T>
 	{
-		long? IdentityId { get; }
-		long? ServiceId { get; }
-		DateTime Time { get; }
+		Task<bool> Validate(T Event);
 	}
 
 	public interface IEventSubscriber<T>

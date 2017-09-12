@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SF.Entities;
+using SF.Core;
+using SF.Data;
 
 namespace SF.Management.FrontEndServices
 {
     public class ContentManager<TContentPublic,TContent> :
-		EntityManger<int,TContentPublic, TContentPublic,TContent>,
-		ServiceProtocol.Biz.UIManager.IContentManager<TContentPublic>,
-        IDataObjectLoader
+		EntityManager<long,TContentPublic, ContentQueryArgument, TContentPublic,TContent>,
+		IContentManager<TContentPublic>
 		where TContentPublic : Content,new()
-		where TContent: Models.Content, new() 
+		where TContent: DataModels.Content, new() 
 	{
 
-        protected override async Task<TContentPublic> MapModelToEditable(IContextQueryable<TContent> Query)
+        protected override async Task<TContentPublic> OnMapModelToEditable(IContextQueryable<TContent> Query)
 		{
 			var re = await Query.Select(m => new
 			{
@@ -41,11 +43,11 @@ namespace SF.Management.FrontEndServices
 			if (re == null)
 				return null;
 			if (!string.IsNullOrEmpty(re.items))
-				re.content.Items = Json.Decode<ContentItem[]>(re.items);
+				re.content.Items = Json.Parse<ContentItem[]>(re.items);
 			return re.content;
 		}
 
-        protected override IContextQueryable<TContentPublic> MapModelToInternal(IContextQueryable<TContent> Query)
+        protected override IContextQueryable<TContentPublic> OnMapModelToPublic(IContextQueryable<TContent> Query)
 		{
 			return Query.Select(m => new TContentPublic
 			{
@@ -67,7 +69,7 @@ namespace SF.Management.FrontEndServices
 			});
 		}
 
-		protected override Task OnUpdateModel(ModifyContext ctx)
+		protected override Task OnUpdateModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
@@ -86,59 +88,26 @@ namespace SF.Management.FrontEndServices
 			Model.ProviderType = obj.ProviderType;
 			Model.ProviderConfig = obj.ProviderConfig;
 			Model.Disabled = obj.Disabled;
-			Model.ItemsData = obj.Items == null ? null : Json.Encode(obj.Items);
+			Model.ItemsData = obj.Items == null ? null : Json.Stringify(obj.Items);
             var mid = Model.Id;
-            ctx.AddPostAction(() => 
-                Engine.NotifyContentChanged(mid)
-                );
 			return Task.CompletedTask;
 		}
-        protected override Task OnRemoveModel(ModifyContext ctx)
-        {
-            var id = ctx.Model.Id;
-            ctx.AddPostAction(() =>
-                Engine.NotifyContentChanged(id)
-                );
-            return base.OnRemoveModel(ctx);
-        }
-        static PagingQueryBuilder<TContent> pagingBuilder = new PagingQueryBuilder<TContent>(
-			"name",
-			i => i.Add("name", m => m.Name));
-		public async Task<QueryResult<TContentPublic>> Query(ContentQueryArguments args,Paging paging)
+		protected override PagingQueryBuilder<TContent> PagingQueryBuilder { get; }=
+			new PagingQueryBuilder<TContent>(
+				"name",
+				i => i.Add("name", m => m.Name));
+		protected override IContextQueryable<TContent> OnBuildQuery(IContextQueryable<TContent> Query, ContentQueryArgument Arg, Paging paging)
 		{
-			var q = (IContextQueryable<TContent>)Context.ReadOnly<TContent>();
-			if (args.Category != null)
-				q = q.Where(c => c.Category == args.Category);
-			return await q.ToQueryResultAsync(
-				MapModelToInternal,
-				r => r,
-				pagingBuilder,
-				paging
-				);
+			return Query.Filter(Arg.Category,c=>c.Category);
 		}
 
-		public async Task<IContent> LoadContent(int contentId)
+		public async Task<IContent> LoadContent(long contentId)
 		{
-			return await LoadForEditAsync(contentId);
+			return await GetAsync(contentId);
 		}
 
-        async Task<IDataObject[]> IDataObjectLoader.Load(string Type, string[][] Keys)
-        {
-            var re = await DataObjectLoader.Load(
-                Keys,
-                id => int.Parse(id[0]),
-                id => FindByIdAsync(id),
-                async (ids) => {
-                    var tmps = await MapModelToInternal(Context.ReadOnly<TContent>().Where(a => ids.Contains(a.Id))).ToArrayAsync();
-                    return tmps;
-                });
-            return re;
-        }
-
-        public ISiteRenderEngine Engine { get; }
-		public ContentManager(IDataContext context, ISiteRenderEngine Engine,Lazy<IModifyFilter> ModifyFilter) : base(context, ModifyFilter)
+		public ContentManager(IDataSetEntityManager<TContent> EntityManager) : base(EntityManager)
 		{
-            this.Engine = Engine;
 
         }
 

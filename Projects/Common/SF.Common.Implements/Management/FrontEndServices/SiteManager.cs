@@ -3,23 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ServiceProtocol.ObjectManager;
-
-using ServiceProtocol.Data.Entity;
-
-namespace ServiceProtocol.Biz.UIManager.Entity
+using SF.Entities;
+using SF.Data;
+namespace SF.Management.FrontEndServices
 {
-    [DataObjectLoader("界面站点")]
 	public class SiteManager<TSitePublic,TSite,TSiteTemplate> :
-		ObjectManager.EntityServiceObjectManager<string,TSitePublic, TSitePublic,TSite>,
-		ServiceProtocol.Biz.UIManager.ISiteManager<TSitePublic>,
-        IDataObjectLoader
+		EntityManager<string,TSitePublic, TSitePublic,TSite>,
+		ServiceProtocol.Biz.UIManager.ISiteManager<TSitePublic>
 		where TSitePublic:Site,new()
-		where TSite : Models.Site<TSite,TSiteTemplate>, new() 
-		where TSiteTemplate : Models.SiteTemplate<TSite,TSiteTemplate>
+		where TSite : DataModels.Site<TSite,TSiteTemplate>, new() 
+		where TSiteTemplate : DataModels.SiteTemplate<TSite,TSiteTemplate>
 	{
 
-        protected override async Task<TSitePublic> MapModelToEditable(IContextQueryable<TSite> Query)
+        protected override async Task<TSitePublic> OnMapModelToEditable(IContextQueryable<TSite> Query)
 		{
 			return await Query.Select(s => new TSitePublic
 				{
@@ -29,7 +25,7 @@ namespace ServiceProtocol.Biz.UIManager.Entity
 				}).SingleOrDefaultAsync();
 		}
 
-        protected override IContextQueryable<TSitePublic> MapModelToInternal(IContextQueryable<TSite> Query)
+        protected override IContextQueryable<TSitePublic> OnMapModelToPublic(IContextQueryable<TSite> Query)
 		{
 			return Query.Select(s => new TSitePublic
 			{
@@ -40,37 +36,28 @@ namespace ServiceProtocol.Biz.UIManager.Entity
 			});
 		}
 
-		protected override Task OnUpdateModel(ModifyContext ctx)
+		protected override Task OnUpdateModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
 			Model.Id = obj.Id;
 			Model.Name = obj.Name;
 			Model.TemplateId = obj.TemplateId;
-            ctx.AddPostAction(() =>
-                Engine.NotifySiteBindChanged(obj.Id)
-                );
 			return Task.CompletedTask;
         }
-        protected override Task OnRemoveModel(ModifyContext ctx)
+        protected override Task OnRemoveModel(IModifyContext ctx)
         {
             var mid = ctx.Model.Id;
-            ctx.AddPostAction(() =>
-                Engine.NotifySiteBindChanged(mid)
-                );
             return base.OnRemoveModel(ctx);
         }
-        public ISiteRenderEngine Engine { get; }
 
-        public SiteManager(IDataContext context, ISiteRenderEngine Engine,Lazy<IModifyFilter> ModifyFilter) : base(context, ModifyFilter)
+        public SiteManager(IDataSetEntityManager<TSite> EntityManager) : base(EntityManager)
 		{
-            this.Engine = Engine;
 		}
 
 		public async Task<int> FindTemplateId(string site)
 		{
-			return await Context
-				.ReadOnly<TSite>()
+			return await DataSet.AsQueryable()
 				.Where(s => s.Id == site)
 				.Select(s => s.TemplateId)
 				.SingleOrDefaultAsync();
@@ -78,7 +65,7 @@ namespace ServiceProtocol.Biz.UIManager.Entity
 
 		public async Task<TSitePublic[]> List()
 		{
-			return await MapModelToInternal(Context.ReadOnly<TSite>()).ToArrayAsync();
+			return await OnMapModelToPublic(DataSet.AsQueryable()).ToArrayAsync();
 		}
 
     }

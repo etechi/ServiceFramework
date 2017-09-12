@@ -19,8 +19,8 @@ namespace SF.Management.FrontEndServices
 		void Render(object rawRenderContext,string view,string config, IContent content,object data);
 	}
 
-    [RequireServiceType(typeof(IDataProvider), "界面管理器数据源")]
-    [RequireServiceType(typeof(IRenderProvider), "界面管理器渲染器")]
+    //[RequireServiceType(typeof(IDataProvider), "界面管理器数据源")]
+    //[RequireServiceType(typeof(IRenderProvider), "界面管理器渲染器")]
     public class ServiceTypeDeclare
     {
 
@@ -56,17 +56,17 @@ namespace SF.Management.FrontEndServices
 	}
 	public interface ISiteResolver
 	{
-		Task<int> FindTemplateId(string site);
+		Task<long> FindTemplateId(string site);
 	}
 
 	public interface ISiteConfigLoader
 	{
-		Task<string> LoadConfig(int templateId);
+		Task<string> LoadConfig(long templateId);
 	}
 
 	public interface IContentLoader
 	{
-		Task<IContent> LoadContent(int contentId);
+		Task<IContent> LoadContent(long contentId);
 	}
 
 	public interface IUIConfigLoader
@@ -79,7 +79,7 @@ namespace SF.Management.FrontEndServices
     public interface ISiteRenderEngine
     {
 		Task<IContent> GetContent(
-			int contentId, 
+			long contentId, 
 			IContentLoader Loader
 			);
 		Task<IPageRenderContext> CreatePageContext(
@@ -108,8 +108,8 @@ namespace SF.Management.FrontEndServices
 			);
 
 		void NotifySiteBindChanged(string site);
-		void NotifySiteTemplateChanged(int templateId);
-		void NotifyContentChanged(int contentId);
+		void NotifySiteTemplateChanged(long templateId);
+		void NotifyContentChanged(long contentId);
 	}
 	public interface IRenderContextCreator
 	{
@@ -130,7 +130,7 @@ namespace SF.Management.FrontEndServices
 			IServiceScope scope
 			);
 		Task<ISiteRenderContext> CreateSiteContext(
-			 int templateId,
+			 long templateId,
 			 IServiceScope scope
 			 );
 	}

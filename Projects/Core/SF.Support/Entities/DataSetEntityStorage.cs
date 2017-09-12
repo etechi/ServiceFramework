@@ -415,6 +415,33 @@ namespace SF.Entities
 					await InitModel(Context);
 					await UpdateModel(Context);
 					Storage.DataSet.Add(Context.Model);
+					Storage.AddPostAction(() =>
+						Storage.EventEmitter.Emit(
+							new EntityModified<TKey, TEditableEntity>()
+							{
+								Id = Context.Model.Id,
+								Action = DataActionType.Create,
+								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
+								Time = Storage.Now,
+								PostActionType=PostActionType.BeforeCommit
+							}
+							),
+							PostActionType.BeforeCommit
+						);
+					Storage.AddPostAction(() =>
+						Storage.EventEmitter.Emit(
+							new EntityModified<TKey, TEditableEntity>()
+							{
+								Id = Context.Model.Id,
+								Action = DataActionType.Create,
+								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
+								Time = Storage.Now,
+								PostActionType = PostActionType.AfterCommit
+							},
+							false
+							),
+							PostActionType.AfterCommit
+						);
 					await Storage.DataSet.Context.SaveChangesAsync();
 					return 0;
 				});
@@ -479,6 +506,35 @@ namespace SF.Entities
 					Storage.InitUpdateContext<TKey, TEditableEntity>(Context,id, Entity, model, null);
 					await UpdateModel(Context);
 					Storage.DataSet.Update(Context.Model);
+
+					Storage.AddPostAction(() =>
+						Storage.EventEmitter.Emit(
+							new EntityModified<TKey, TEditableEntity>()
+							{
+								Id = Context.Model.Id,
+								Action = DataActionType.Update,
+								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
+								Time = Storage.Now,
+								PostActionType = PostActionType.BeforeCommit
+							}
+							),
+							PostActionType.BeforeCommit
+						);
+					Storage.AddPostAction(() =>
+						Storage.EventEmitter.Emit(
+							new EntityModified<TKey, TEditableEntity>()
+							{
+								Id = Context.Model.Id,
+								Action = DataActionType.Update,
+								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
+								Time = Storage.Now,
+								PostActionType = PostActionType.AfterCommit
+							},
+							false
+							),
+							PostActionType.AfterCommit
+						);
+
 					await Storage.DataSet.Context.SaveChangesAsync();
 					return true;
 				});
@@ -507,7 +563,7 @@ namespace SF.Entities
 			=> Storage.UpdateAsync<long,TEditableEntity,TModel>(Entity, UpdateModel, LoadModelForEdit);
 
 		#endregion
-		public static async Task<bool> InternalRemoveAsync<TKey, TModel,TModifyContext>(
+		public static async Task<bool> InternalRemoveAsync<TKey, TModel,TEditableEntity,TModifyContext>(
 			this IDataSetEntityManager<TModel> Storage,
 			TModifyContext Context,
 			TKey Id,
@@ -530,11 +586,40 @@ namespace SF.Entities
 					if (RemoveModel != null)
 						await RemoveModel(Context);
 					Storage.DataSet.Remove(Context.Model);
+
+					Storage.AddPostAction(() =>
+						Storage.EventEmitter.Emit(
+							new EntityModified<TKey, TEditableEntity>()
+							{
+								Id = Context.Model.Id,
+								Action = DataActionType.Delete,
+								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
+								Time = Storage.Now,
+								PostActionType = PostActionType.BeforeCommit
+							}
+							),
+							PostActionType.BeforeCommit
+						);
+					Storage.AddPostAction(() =>
+						Storage.EventEmitter.Emit(
+							new EntityModified<TKey, TEditableEntity>()
+							{
+								Id = Context.Model.Id,
+								Action = DataActionType.Delete,
+								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
+								Time = Storage.Now,
+								PostActionType = PostActionType.AfterCommit
+							},
+							false
+							),
+							PostActionType.AfterCommit
+						);
+
 					await Storage.DataSet.Context.SaveChangesAsync();
 					return true;
 				});
 		}
-		public static async Task<bool> RemoveAsync<TKey,TModel>(
+		public static async Task<bool> RemoveAsync<TKey,TModel, TEditableEntity>(
 			this IDataSetEntityManager<TModel> Storage,
 			TKey Id,
 			Func<IEntityModifyContext<TKey, TModel>, Task> RemoveModel=null,
@@ -542,9 +627,10 @@ namespace SF.Entities
 			)
 			where TKey : IEquatable<TKey>
 			where TModel : class, IEntityWithId<TKey>
+			where TEditableEntity: class, IEntityWithId<TKey>
 		{
 			var ctx =(IEntityModifyContext < TKey, TModel >) new EntityModifyContext<TKey, TModel>();
-			return await InternalRemoveAsync(Storage, ctx, Id, RemoveModel, LoadModelForEdit);
+			return await InternalRemoveAsync<TKey,TModel,TEditableEntity, IEntityModifyContext<TKey, TModel>>(Storage, ctx, Id, RemoveModel, LoadModelForEdit);
 		}
 		public static async Task RemoveAllAsync<TKey,TModel>(
 			this IDataSetEntityManager<TModel> Storage,

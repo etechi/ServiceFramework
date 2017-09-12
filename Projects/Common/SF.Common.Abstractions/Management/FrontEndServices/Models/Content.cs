@@ -25,7 +25,7 @@ namespace SF.Management.FrontEndServices
 	}
 	public interface IContent : IContentItem
 	{
-		int Id { get; }
+		long Id { get; }
 		string Name { get; }
 		string Category { get; }
 		string ProviderType { get; }
@@ -83,14 +83,14 @@ namespace SF.Management.FrontEndServices
 		public ContentItem[] Items { get; set; }
 	}
     [EntityObject("界面内容")]
-    public class Content:ContentItem, IContent,IEntityWithId<int>
+    public class Content:ContentItem, IContent,IEntityWithId<long>
 	{
 		[Key]
 		[Display(Name = "ID", Prompt = "保存后自动产生")]
 		[ReadOnly(true)]
 		[Layout(1)]
 		[TableVisible(1)]
-		public int Id { get; set; }
+		public long Id { get; set; }
 
 		[Display(Name = "内容分类")]
 		[StringLength(50)]

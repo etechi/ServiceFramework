@@ -158,7 +158,7 @@ namespace SF.Core.ServiceManagement.Management
 				UIEnsure.Equal(m.ImplementType, e.ImplementType, "服务实现类型不能修改");
 			}
 
-			m.Update(e, Manager.TimeService.Now);
+			m.Update(e, Manager.Now);
 
 			m.Setting = e.Setting;
 
@@ -248,7 +248,7 @@ namespace SF.Core.ServiceManagement.Management
 		{
 			//UIEnsure.NotNull(ctx.Model.Id, "未设置服务实例ID");
 			ctx.Model.Id = await Manager.IdentGenerator.GenerateAsync("系统服务", 0);
-			ctx.Model.Create(Manager.TimeService.Now);
+			ctx.Model.Create(Manager.Now);
 		}
 
 		class InstanceDescriptor : IServiceInstanceDescriptor
