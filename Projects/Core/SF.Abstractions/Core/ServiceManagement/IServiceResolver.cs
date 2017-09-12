@@ -12,6 +12,7 @@ namespace SF.Core.ServiceManagement
 	//	object ServiceInstance { get; }
 	//}
 	public delegate T TypedInstanceResolver<T>(long Id);
+	public delegate T NamedServiceResolver<T>(string Name);
 
 
 	public interface IServiceResolver 

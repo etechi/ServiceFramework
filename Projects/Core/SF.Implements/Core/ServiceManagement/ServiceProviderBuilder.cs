@@ -121,6 +121,16 @@ namespace SF.Core.ServiceManagement
 					return sp.Resolve<I>(id);
 			});
 		}
+		static object NewNamedInstanceResolver<I>(IServiceProvider sp) where I : class
+		{
+			var sr = sp.Resolver();
+			var curScopeId = sr.CurrentServiceId;
+			return new NamedServiceResolver<I>((name) =>
+			{
+				using (sr.WithScopeService(curScopeId))
+					return sp.Resolve<I>(name);
+			});
+		}
 		static IEnumerable<I> NewEnumerableReal<I>(IServiceProvider sp,long? scopeId) where I : class
 		{
 			var resolver = sp.Resolver();
@@ -157,6 +167,7 @@ namespace SF.Core.ServiceManagement
 			Services.AddTransient(typeof(Func<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewCreator), typeof(IServiceProvider)));
 			Services.AddTransient(typeof(Lazy<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewLazy), typeof(IServiceProvider)));
 			Services.AddTransient(typeof(TypedInstanceResolver<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewTypedInstanceResolver), typeof(IServiceProvider)));
+			Services.AddTransient(typeof(NamedServiceResolver<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewNamedInstanceResolver), typeof(IServiceProvider)));
 
 			meta = OnCreateServcieMetadata(Services);
 			OnValidate(meta);

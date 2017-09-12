@@ -34,8 +34,7 @@ namespace SF.Core.ServiceManagement.Internals
 				sp =>
 				{
 					var cacheType = typeof(Caching.ILocalCache<IServiceEntry>);
-					var entry = UnmanagedServiceFactoryManager.GetUnmanagedServiceEntry(cacheType, true);
-					var factory = entry.Factory.Value;
+					var factory = UnmanagedServiceFactoryManager.GetUnmanagedServiceFactory(cacheType, null,true);
 					var cache = (Caching.ILocalCache<IServiceEntry>)factory.Create(sp);
 					return cache;
 				}
@@ -112,7 +111,7 @@ namespace SF.Core.ServiceManagement.Internals
 					return factory;
 
 			if (svc.HasUnmanagedServiceImplement)
-				return UnmanagedServiceFactoryManager.GetUnmanagedServiceEntry(ServiceType, true)?.Factory.Value;
+				return UnmanagedServiceFactoryManager.GetUnmanagedServiceFactory(ServiceType,Name, true);
 			return null;
 
 			//	}
@@ -166,9 +165,7 @@ namespace SF.Core.ServiceManagement.Internals
 			//已经是顶级区域， 直接尝试查找服务
 			if (svc.HasUnmanagedServiceImplement)
 			{
-				var es = UnmanagedServiceFactoryManager.GetUnmanagedServiceEntries(ServiceType, true);
-				if (es != null)
-					return es.Select(e => e.Factory.Value);
+				return UnmanagedServiceFactoryManager.GetUnmanagedServiceFactories(ServiceType, true);
 			}
 			return Enumerable.Empty<IServiceFactory>();
 		}

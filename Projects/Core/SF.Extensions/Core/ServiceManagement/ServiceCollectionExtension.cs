@@ -72,14 +72,14 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton(typeof(T), implement);
 			return sc;
 		}
-		public static IServiceCollection AddSingleton(this IServiceCollection sc, Type ImplementType)
+		public static IServiceCollection AddSingleton(this IServiceCollection sc, Type ImplementType,string Name=null)
 		{
-			sc.Add(ImplementType, ImplementType,ServiceImplementLifetime.Singleton);
+			sc.Add(ImplementType, ImplementType,ServiceImplementLifetime.Singleton,Name);
 			return sc;
 		}
-		public static IServiceCollection AddTransient(this IServiceCollection sc, Type ImplementType)
+		public static IServiceCollection AddTransient(this IServiceCollection sc, Type ImplementType,string Name=null)
 		{
-			sc.Add(ImplementType, ImplementType, ServiceImplementLifetime.Transient);
+			sc.Add(ImplementType, ImplementType, ServiceImplementLifetime.Transient,Name);
 			return sc;
 		}
 		public static IServiceCollection Add(
@@ -87,40 +87,51 @@ namespace SF.Core.ServiceManagement
 			Type ServiceType,
 			Type ImplementType,
 			ServiceImplementLifetime Lifetime,
-			bool IsManagedService=false, 
+			string Name=null
+			)
+		{
+			sc.Add(new ServiceDescriptor(ServiceType, ImplementType, Lifetime, false, null, Name));
+			return sc;
+		}
+		public static IServiceCollection AddManaged(
+			this IServiceCollection sc,
+			Type ServiceType,
+			Type ImplementType,
+			ServiceImplementLifetime Lifetime,
 			IManagedServiceInitializer ManagedServiceInitializer=null
 			)
 		{
-			sc.Add(new ServiceDescriptor(ServiceType,ImplementType, Lifetime,IsManagedService,ManagedServiceInitializer));
+			sc.Add(new ServiceDescriptor(ServiceType,ImplementType, Lifetime,true,ManagedServiceInitializer));
 			return sc;
 		}
-		public static IServiceCollection Add(this IServiceCollection sc, Type ServiceType, System.Reflection.MethodInfo Method, ServiceImplementLifetime Lifetime)
+		public static IServiceCollection Add(this IServiceCollection sc, Type ServiceType, System.Reflection.MethodInfo Method, ServiceImplementLifetime Lifetime,string Name=null)
 		{
-			sc.Add(new ServiceDescriptor(ServiceType, Method, Lifetime));
+			sc.Add(new ServiceDescriptor(ServiceType, Method, Lifetime,Name));
 			return sc;
 		}
-		public static IServiceCollection Add(this IServiceCollection sc, Type ServiceType, Func<IServiceProvider,object> ImplementCreator, ServiceImplementLifetime Lifetime)
+		public static IServiceCollection Add(this IServiceCollection sc, Type ServiceType, Func<IServiceProvider,object> ImplementCreator, ServiceImplementLifetime Lifetime,string Name=null)
 		{
-			sc.Add(new ServiceDescriptor(ServiceType,ImplementCreator, Lifetime));
+			sc.Add(new ServiceDescriptor(ServiceType,ImplementCreator, Lifetime,Name));
 			return sc;
 		}
-		public static IServiceCollection AddSingleton<TService, TImplement>(this IServiceCollection sc)
+		public static IServiceCollection AddSingleton<TService, TImplement>(this IServiceCollection sc,string Name=null)
 			where TImplement : TService
 		{
-			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Singleton);
+			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Singleton,Name);
 			return sc;
 		}
 		public static IServiceCollection AddSingleton<T>(
 			this IServiceCollection sc,
-			Func<IServiceProvider, T> ImplementCreator
+			Func<IServiceProvider, T> ImplementCreator,
+			string Name=null
 			)
 		{
 			sc.Add(typeof(T), sp => ImplementCreator(sp), ServiceImplementLifetime.Singleton);
 			return sc;
 		}
-		public static IServiceCollection AddTransient(this IServiceCollection sc,Type Service,Type Implement)
+		public static IServiceCollection AddTransient(this IServiceCollection sc,Type Service,Type Implement,string Name=null)
 		{
-			sc.Add(Service, Implement, ServiceImplementLifetime.Transient);
+			sc.Add(Service, Implement, ServiceImplementLifetime.Transient, Name);
 			return sc;
 		}
 		public static IServiceCollection AddTransient(this IServiceCollection sc, Type Service, System.Reflection.MethodInfo Method)
@@ -144,25 +155,25 @@ namespace SF.Core.ServiceManagement
 			Func<IServiceProvider, IServiceInstanceDescriptor, Task> FuncUninit=null)
 			where TImplement : TService
 		{
-			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Transient, true, new FuncManagedServiceInitializer(FuncInit,FuncUninit));
+			sc.AddManaged(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Transient, new FuncManagedServiceInitializer(FuncInit,FuncUninit));
 			return sc;
 		}
 		public static IServiceCollection AddManagedTransient<TService, TImplement>(this IServiceCollection sc,IManagedServiceInitializer ManagedServiceInitializer=null)
 			where TImplement : TService
 		{
-			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Transient,true,ManagedServiceInitializer);
+			sc.AddManaged(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Transient,ManagedServiceInitializer);
 			return sc;
 		}
-		public static IServiceCollection AddTransient<TService, TImplement>(this IServiceCollection sc)
+		public static IServiceCollection AddTransient<TService, TImplement>(this IServiceCollection sc,string Name=null)
 			where TImplement : TService
 		{
-			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Transient);
+			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Transient,Name);
 			return sc;
 		}
-		public static IServiceCollection AddTransient<TService>(this IServiceCollection sc)
+		public static IServiceCollection AddTransient<TService>(this IServiceCollection sc,string Name=null)
 		   where TService : class
 		{
-			sc.Add(typeof(TService), typeof(TService), ServiceImplementLifetime.Transient);
+			sc.Add(typeof(TService), typeof(TService), ServiceImplementLifetime.Transient,Name);
 			return sc;
 		}
 		
@@ -192,33 +203,34 @@ namespace SF.Core.ServiceManagement
 			Func<IServiceProvider, IServiceInstanceDescriptor, Task> FuncUninit = null)
 			where TImplement : TService
 		{
-			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped, true, new FuncManagedServiceInitializer(FuncInit, FuncUninit));
+			sc.AddManaged(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped, new FuncManagedServiceInitializer(FuncInit, FuncUninit));
 			return sc;
 		}
 		public static IServiceCollection AddManagedScoped<TService, TImplement>(this IServiceCollection sc,IManagedServiceInitializer ManagedServiceInitializer=null)
 			where TImplement : TService
 		{
-			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped,true, ManagedServiceInitializer);
+			sc.AddManaged(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped,ManagedServiceInitializer);
 			return sc;
 		}
-		public static IServiceCollection AddScoped<TService, TImplement>(this IServiceCollection sc)
+		public static IServiceCollection AddScoped<TService, TImplement>(this IServiceCollection sc,string Name=null)
 			where TImplement:TService
 		{
-			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped);
+			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped,Name);
 			return sc;
 		}
-		public static IServiceCollection AddScoped<TService>(this IServiceCollection sc)
+		public static IServiceCollection AddScoped<TService>(this IServiceCollection sc,string Name=null)
 		   where TService : class
 		{
-			sc.Add(typeof(TService), typeof(TService), ServiceImplementLifetime.Scoped);
+			sc.Add(typeof(TService), typeof(TService), ServiceImplementLifetime.Scoped,Name);
 			return sc;
 		}
 		public static IServiceCollection AddScoped<T>(
 			this IServiceCollection sc,
-			Func<IServiceProvider, T> ImplementCreator
+			Func<IServiceProvider, T> ImplementCreator,
+			string Name=null
 			)
 		{
-			sc.Add(typeof(T), sp=>ImplementCreator(sp),ServiceImplementLifetime.Scoped);
+			sc.Add(typeof(T), sp=>ImplementCreator(sp),ServiceImplementLifetime.Scoped,Name);
 			return sc;
 		}
 	}

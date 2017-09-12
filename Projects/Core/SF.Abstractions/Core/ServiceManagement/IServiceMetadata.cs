@@ -6,6 +6,7 @@ namespace SF.Core.ServiceManagement
 {
 	public interface IServiceImplement
 	{
+		string Name { get; }
 		string ImplementName { get; }
 		Type ServiceType { get; }
 		Type ImplementType { get; }

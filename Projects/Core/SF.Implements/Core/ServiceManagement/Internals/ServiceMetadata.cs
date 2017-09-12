@@ -21,6 +21,7 @@ namespace SF.Core.ServiceManagement.Internals
 			public ServiceImplementType ServiceImplementType { get; set; }
 
 			public bool IsManagedService { get; set; }
+			public string Name { get; set; }
 			public IManagedServiceInitializer ManagedServiceInitializer { get; set; }
 		}
 		public class Service : IServiceDeclaration
@@ -59,6 +60,7 @@ namespace SF.Core.ServiceManagement.Internals
 					ImplementName=svc.ImplementType?.GetFullName(),
 					LifeTime = svc.Lifetime,
 					IsManagedService = svc.IsManagedService,
+					Name=svc.Name,
 					ManagedServiceInitializer = svc.ManagedServiceInitializer,
 					ImplementCreator = svc.ImplementCreator,
 					ImplementMethod=svc.ImplementMethod,

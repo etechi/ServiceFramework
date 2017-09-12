@@ -7,13 +7,9 @@ using System.Reflection;
 
 namespace SF.Entities
 {
-	public class IdQueryArgument<TKey> : IQueryArgument<TKey>
-		where TKey : IEquatable<TKey>
-	{
-		public Option<TKey> Id { get; set; }
-	}
+
 	public abstract class EntityManager<TKey, TPublic, TEditable, TModel> :
-		EntityManager<TKey, TPublic, TPublic, IdQueryArgument<TKey>, TEditable, TModel>
+		EntityManager<TKey, TPublic, TPublic, QueryArgument<TKey>, TEditable, TModel>
 		where TPublic : class, IEntityWithId<TKey>
 		where TKey : IEquatable<TKey>
 		where TModel : class, IEntityWithId<TKey>, new()
@@ -31,7 +27,7 @@ namespace SF.Entities
 			"id",
 			b => b.Add("id", m => m.Id)
 			);
-		protected override IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, IdQueryArgument<TKey> Arg, Paging paging)
+		protected override IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, QueryArgument<TKey> Arg, Paging paging)
 		{
 			return Query;
 		}

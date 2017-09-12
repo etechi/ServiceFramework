@@ -11,17 +11,17 @@ namespace SF.Core.ServiceManagement.Internals
 	
 	class UnmanagedServiceFactoryManager 
 	{
-		
-		public class UnmanagedServiceEntry
+		class UnmanagedServiceEntry
 		{
-			public Lazy<IServiceFactory> Factory;
+			public Dictionary<string, int> NameMap;
+			public Lazy<IServiceFactory>[] Factories;
 		}
 
 		//服务实例创建缓存
 		ServiceCreatorCache ServiceCreatorCache { get; }
 
 		//不可配置服务缓存
-		ConcurrentDictionary<Type, UnmanagedServiceEntry[]> UnmanagedServiceCache { get; } = new ConcurrentDictionary<Type, UnmanagedServiceEntry[]>();
+		ConcurrentDictionary<Type, UnmanagedServiceEntry> UnmanagedServiceCache { get; } = new ConcurrentDictionary<Type, UnmanagedServiceEntry>();
 
 		public IServiceMetadata ServiceMetadata { get; }
 
@@ -34,41 +34,56 @@ namespace SF.Core.ServiceManagement.Internals
 			this.ServiceCreatorCache = ServiceCreatorCache;
 		}
 
-		
-		public UnmanagedServiceEntry[] GetUnmanagedServiceEntries(Type ServiceType, bool CreateIfNotExists)
+		UnmanagedServiceEntry GetUnmanagedServiceEntry(Type ServiceType, bool CreateIfNotExists)
 		{
 			if (UnmanagedServiceCache.TryGetValue(
 				ServiceType,
 				out var se
 				) || !CreateIfNotExists)
 				return se;
-			var decl= ServiceMetadata.FindServiceByType(ServiceType);
+			var decl = ServiceMetadata.FindServiceByType(ServiceType);
 			if (decl == null)
-				return Array.Empty<UnmanagedServiceEntry>();
+				return null;
+
 			return UnmanagedServiceCache.GetOrAdd(
 				ServiceType,
-				decl.Implements.Reverse().Select((impl,idx) => new UnmanagedServiceEntry()
+				(t) =>
 				{
-					Factory = new Lazy<IServiceFactory>(() =>
-						ServiceFactory.Create(
-							-1 - idx,
-							null,
-							decl,
-							impl,
-							ServiceType,
-							ServiceCreatorCache,
-							ServiceMetadata,
-							null
-							)
-						)
-				}).ToArray()
-				);
+					var impls = decl.Implements.Reverse().Select((impl, idx) => (idx, impl)).ToArray();
+					return new UnmanagedServiceEntry()
+					{
+						NameMap = impls.Where(i => i.impl.Name != null).ToDictionary(i => i.impl.Name, i => i.idx),
+						Factories = impls.Select(impl =>
+							new Lazy<IServiceFactory>(() =>
+								ServiceFactory.Create(
+									-1 - impl.idx,
+									null,
+									decl,
+									impl.impl,
+									ServiceType,
+									ServiceCreatorCache,
+									ServiceMetadata,
+									null
+									)
+								)).ToArray()
+					};
+				});
 		}
-		public UnmanagedServiceEntry GetUnmanagedServiceEntry(Type ServiceType, bool CreateIfNotExists)
+		public IServiceFactory[] GetUnmanagedServiceFactories(Type ServiceType, bool CreateIfNotExists)
 		{
-			var re = GetUnmanagedServiceEntries(ServiceType, CreateIfNotExists);
-			if(re==null || re.Length==0) return null;
-			return re[0];
+			var re = GetUnmanagedServiceEntry(ServiceType, CreateIfNotExists);
+			if (re == null) return Array.Empty<IServiceFactory>();
+			return re.Factories.Select(f => f.Value).ToArray();
+		}
+		public IServiceFactory GetUnmanagedServiceFactory(Type ServiceType,string Name, bool CreateIfNotExists)
+		{
+			var re = GetUnmanagedServiceEntry(ServiceType, CreateIfNotExists);
+			if(re==null) return null;
+			if (Name == null)
+				return re.Factories[0].Value;
+			if (!re.NameMap.TryGetValue(Name, out var idx))
+				return null;
+			return re.Factories[idx].Value;
 		}
 	}
 
