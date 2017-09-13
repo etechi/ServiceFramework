@@ -12,7 +12,7 @@ namespace SF.Management.FrontEndContents
 	public class MobileImageLandingPageManager :
 		MobileImageLandingPageManager<Content, IContentManager>
 	{
-		public MobileImageLandingPageManager(IFriendlyContentSettingService SettingService, IContentManager<Content> ContentManager) : base(SettingService, ContentManager)
+		public MobileImageLandingPageManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
 		}
 	}

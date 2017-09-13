@@ -1,4 +1,5 @@
-﻿using SF.Metadata;
+﻿using SF.Entities;
+using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -7,9 +7,19 @@ using SF.Data;
 using SF.Entities;
 using SF.Core.ServiceManagement;
 using SF.Core.Times;
+using SF.Common.Documents.DataModels;
 
 namespace SF.Common.Documents.Management
 {
+	public class DocumentCategoryManager :
+		DocumentCategoryManager<CategoryInternal, DataModels.Document, DataModels.DocumentAuthor, DataModels.DocumentCategory, DataModels.DocumentTag, DataModels.DocumentTagReference>,
+		IDocumentCategoryManager
+	{
+		public DocumentCategoryManager(IDataSetEntityManager<DocumentCategory> EntityManager) : base(EntityManager)
+		{
+		}
+	}
+
 	public class DocumentCategoryManager<TCategoryInternal, TDocument, TAuthor, TCategory, TTag, TTagReference> :
 		EntityManager<long, TCategoryInternal, DocumentCategoryQueryArgument,TCategoryInternal, TCategory>,
 		IDocumentCategoryManager<TCategoryInternal>

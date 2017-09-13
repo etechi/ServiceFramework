@@ -11,6 +11,9 @@ using SF.Metadata;
 
 namespace SF.Common.Documents.DataModels
 {
+	public class Document : Document<Document, DocumentAuthor, DocumentCategory, DocumentTag, DocumentTagReference>
+	{ }
+
 	[Table("CommonDocument")]
 	[Comment(GroupName = "文档服务", Name = "文档作者")]
 	public class Document<TDocument, TAuthor, TCategory, TTag, TTagReference> :

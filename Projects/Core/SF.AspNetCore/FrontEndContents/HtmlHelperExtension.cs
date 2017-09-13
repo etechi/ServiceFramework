@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace SF.Services.FrontEndContents.Mvc
+namespace SF.Management.FrontEndContents.Mvc
 {
     public static class HtmlHelperExtension
     {

@@ -40,6 +40,8 @@ namespace SF.Core.ServiceManagement
 
 			Services.AddDefaultKBServices();
 
+			Services.AddFrontEndServices();
+
 			Services.InitServices("系统服务", async (sp, sim, ParentId) =>
 			{
 				await sim.NewDataProtectorService().Ensure(sp, ParentId);

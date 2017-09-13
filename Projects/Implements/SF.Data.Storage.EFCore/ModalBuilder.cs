@@ -47,14 +47,25 @@ namespace SF.Data.EntityFrameworkCore
 			var indexs = (
 					from p in item.Type.GetProperties(BindingFlags.Public | BindingFlags.Instance  | BindingFlags.FlattenHierarchy)
 					from idx in p.GetCustomAttributes().Where(a => a is IndexAttribute).Cast<IndexAttribute>()
-					let rec = new { name = idx.Name ?? p.Name, field = p.Name, unique = idx.IsUnique, clustered = idx.IsClustered, order = idx.Order }
+					let rec = new {
+						name = idx.Name ?? p.Name,
+						field = p.Name,
+						unique = idx.IsUnique,
+						clustered = idx.IsClustered,
+						order = idx.Order,
+						level =p.DeclaringType.GetInheritLevel()
+					}
 					group rec by rec.name into g
 					select new
 					{
 						name = g.Key,
 						unique = g.Any(i => i.unique),
 						clustered = g.Any(i => i.clustered),
-						fields = g.OrderBy(i => i.order).Select(i => i.field).ToArray()
+						fields = g.GroupBy(a=>a.field)
+								.Select(gi=>gi.OrderByDescending(i=>i.level).First())
+								.OrderBy(i => i.order)
+								.Select(i => i.field)
+								.ToArray()
 					}
 					).ToArray();
 			foreach (var idx in indexs)

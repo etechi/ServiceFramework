@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
-using SF.Services.FrontEndContents;
+using SF.Management.FrontEndContents;
 using System;
 using System.Collections.Generic;
 using System.Linq;

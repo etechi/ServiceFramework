@@ -11,7 +11,7 @@ namespace SF.Management.FrontEndContents
 	public class PCHeadMenuManager :
 		PCHeadMenuManager<Content, IContentManager>
 	{
-		public PCHeadMenuManager(IFriendlyContentSettingService SettingService, IContentManager<Content> ContentManager) : base(SettingService, ContentManager)
+		public PCHeadMenuManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
 		}
 	}

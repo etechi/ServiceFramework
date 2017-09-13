@@ -23,6 +23,9 @@ namespace SF.Core.ServiceManagement
 			sc.AddManagedScoped<IPCHomeSilderManager, PCHomeSilderManager>();
 			sc.AddManagedScoped<IPCProductCategoryMenuManager, PCProductCategoryMenuManager>();
 
+			sc.AddManagedScoped<IPCAdManager, PCAdManager>();
+			sc.AddManagedScoped<IMobileAdManager, MobileAdManager>();
+
 			sc.AddManagedScoped<IFriendlyContentSettingService, FriendlyContentSettingService>();
 
 			return sc;

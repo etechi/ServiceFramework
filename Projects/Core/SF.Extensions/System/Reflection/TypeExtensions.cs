@@ -373,7 +373,16 @@ namespace System.Reflection
 			=> Comment(Info.GetTypeInfo());
 #endif
 
-
+		public static int GetInheritLevel(this Type type)
+		{
+			var l = 0;
+			while (type != null)
+			{
+				type = type.BaseType;
+				l = l + 1;
+			}
+			return l;
+		}
 		public static PropertyInfo[] AllPublicInstanceProperties(this Type type)
 			=>type.GetProperties(
 				System.Reflection.BindingFlags.FlattenHierarchy | 

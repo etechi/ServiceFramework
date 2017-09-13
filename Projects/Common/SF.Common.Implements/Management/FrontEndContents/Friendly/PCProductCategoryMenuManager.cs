@@ -13,7 +13,7 @@ namespace SF.Management.FrontEndContents
 	public class PCProductCategoryMenuManager :
 		PCProductCategoryMenuManager<Content, IContentManager>
 	{
-		public PCProductCategoryMenuManager(IFriendlyContentSettingService SettingService, IContentManager<Content> ContentManager) : base(SettingService, ContentManager)
+		public PCProductCategoryMenuManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
 		}
 	}

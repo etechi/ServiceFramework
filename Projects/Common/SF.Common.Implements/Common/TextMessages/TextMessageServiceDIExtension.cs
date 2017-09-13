@@ -40,6 +40,7 @@ namespace SF.Core.ServiceManagement
 		{
 			sc.AddMsgRecordManager();
 			sc.AddSimPhoneTextMessageService();
+
 			return sc;
 		}
 

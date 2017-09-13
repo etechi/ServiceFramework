@@ -11,6 +11,9 @@ using SF.Data;
 
 namespace SF.Common.Documents.DataModels
 {
+	public class DocumentCategory : DocumentCategory<Document, DocumentAuthor, DocumentCategory, DocumentTag, DocumentTagReference>
+	{ }
+
 	[Table("CommonDocumentCategory")]
 	[Comment(GroupName ="文档服务", Name = "文档目录")]
     public class DocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference> :

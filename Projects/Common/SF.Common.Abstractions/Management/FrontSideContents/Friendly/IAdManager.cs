@@ -5,18 +5,11 @@ using SF.Metadata;
 
 namespace SF.Management.FrontEndContents.Friendly
 {
-	public interface IAdManager
-	{
-		[Comment(Name = "PC广告位")]
-		Task<AdArea[]> List();
-		Task<AdArea> Load(long Id);
-		Task Save(AdArea value);
-	}
-	[EntityManager]
-	public interface IPCAdManager : IAdManager
+	[Comment("PC广告管理")]
+	public interface IPCAdManager : IItemGroupListManager<ImageItem>
 	{ }
-	[EntityManager]
-	public interface IMobileAdManager : IAdManager
+	[Comment("移动端广告管理")]
+	public interface IMobileAdManager : IItemGroupListManager<ImageItem>
 	{ }
 
 

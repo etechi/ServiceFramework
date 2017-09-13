@@ -10,7 +10,15 @@ using SF.Core.ServiceManagement;
 
 namespace SF.Common.Documents.Management
 {
-    public class DocumentManager<TInternal,TEditable,TDocument, TAuthor, TCategory, TTag, TTagReference> :
+	public class DocumentManager :
+		DocumentManager<DocumentInternal, DocumentEditable, DataModels.Document, DataModels.DocumentAuthor, DataModels.DocumentCategory, DataModels.DocumentTag, DataModels.DocumentTagReference>,
+		IDocumentManager
+	{
+		public DocumentManager(IDataSetEntityManager<DataModels.Document> EntityManager) : base(EntityManager)
+		{
+		}
+	}
+	public class DocumentManager<TInternal,TEditable,TDocument, TAuthor, TCategory, TTag, TTagReference> :
 		EntityManager<long,TInternal, DocumentQueryArguments,TEditable,TDocument>,
 		IDocumentManager<TInternal,TEditable>
 		where TInternal: DocumentInternal,new()

@@ -10,6 +10,9 @@ using SF.Entities.DataModels;
 
 namespace SF.Common.Documents.DataModels
 {
+	public class DocumentAuthor : DocumentAuthor<Document, DocumentAuthor, DocumentCategory, DocumentTag, DocumentTagReference>
+	{ }
+
 	[Table("CommonDocumentAuthor")]
 	[Comment(GroupName="文档服务", Name = "文档作者")]
     public class DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference> :

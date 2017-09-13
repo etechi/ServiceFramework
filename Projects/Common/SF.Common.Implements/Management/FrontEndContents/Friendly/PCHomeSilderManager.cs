@@ -12,7 +12,7 @@ namespace SF.Management.FrontEndContents
 	public class PCHomeSilderManager :
 		PCHomeSilderManager<Content, IContentManager>
 	{
-		public PCHomeSilderManager(IFriendlyContentSettingService SettingService, IContentManager<Content> ContentManager) : base(SettingService, ContentManager)
+		public PCHomeSilderManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
 		}
 	}

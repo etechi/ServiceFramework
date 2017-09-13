@@ -6,9 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using SF.Entities;
 using SF.Core.ServiceManagement;
+using SF.Common.Documents.DataModels;
 
 namespace SF.Common.Documents
 {
+	public class DocumentService : 
+		DocumentService<Document, Category, DataModels.Document, DataModels.DocumentAuthor, DataModels.DocumentCategory, DataModels.DocumentTag, DataModels.DocumentTagReference>,
+		IDocumentService
+	{
+		public DocumentService(Lazy<IDataSet<DataModels.Document>> Documents, Lazy<IDataSet<DocumentCategory>> Categories, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(Documents, Categories, ServiceInstanceDescriptor)
+		{
+		}
+	}
+
 	public class DocumentService<TDocumentPublic, TCategoryPublic, TDocument, TAuthor, TCategory, TTag, TTagReference> :
 		IDocumentService<TDocumentPublic, TCategoryPublic>
 		where TDocumentPublic : Document, new()

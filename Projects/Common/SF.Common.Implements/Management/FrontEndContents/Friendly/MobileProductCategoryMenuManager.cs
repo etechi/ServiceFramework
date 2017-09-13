@@ -12,7 +12,7 @@ namespace SF.Management.FrontEndContents
 	public class MobileProductCategoryMenuManager :
 		MobileProductCategoryMenuManager<Content, IContentManager>
 	{
-		public MobileProductCategoryMenuManager(IFriendlyContentSettingService SettingService, IContentManager<Content> ContentManager) : base(SettingService, ContentManager)
+		public MobileProductCategoryMenuManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
 		}
 	}

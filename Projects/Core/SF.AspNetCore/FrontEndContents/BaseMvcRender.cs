@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using SF.Core;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace SF.Services.FrontEndContents.Mvc
+namespace SF.Management.FrontEndContents.Mvc
 {
 	public abstract class BaseRender : IRenderProvider
 	{

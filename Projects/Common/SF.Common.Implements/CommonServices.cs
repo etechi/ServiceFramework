@@ -12,12 +12,17 @@ namespace SF.Core.ServiceManagement
 	{
 		public static IServiceCollection AddCommonServices(this IServiceCollection Services, EnvironmentType EnvType)
 		{
+			Services.AddTextMessageServices();
+
 			Services.AddMenuService();
 
 			Services.AddAuthIdentityServices();
 			Services.AddSysAdminServices();
 			Services.AddBizAdminServices();
+			Services.AddFriendlyFrontEndServices();
 
+			Services.AddDocumentServices();
+			
 			Services.InitServices("系统服务", InitServices);
 			return Services;
 		}

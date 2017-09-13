@@ -11,6 +11,8 @@ using SF.Entities.DataModels;
 
 namespace SF.Common.Documents.DataModels
 {
+	public class DocumentTag : DocumentTag<Document, DocumentAuthor, DocumentCategory, DocumentTag, DocumentTagReference>
+	{ }
 
 	[Table("CommonDocumentTag")]
     [Comment(Name = "文档标签",GroupName ="文档服务")]
@@ -23,11 +25,11 @@ namespace SF.Common.Documents.DataModels
 		where TTagReference : DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{
 	
-		[Index("Name",IsUnique =true,Order =1)]
+		[Index("ScopedName",IsUnique =true,Order =1)]
         public override long? ScopeId { get; set; }
 
 
-		[Index("Name", IsUnique = true, Order = 2)]
+		[Index("ScopedName", IsUnique = true, Order = 2)]
         public override string Name{get;set;}
 
 	}

@@ -10,6 +10,8 @@ using SF.Data;
 
 namespace SF.Common.Documents.DataModels
 {
+	public class DocumentTagReference : DocumentTagReference<Document, DocumentAuthor, DocumentCategory, DocumentTag, DocumentTagReference>
+	{ }
 
 	[Table("CommonDocumentTagRef")]
     [Comment(GroupName = "文档服务", Name = "标签引用")]

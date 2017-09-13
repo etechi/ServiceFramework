@@ -12,7 +12,7 @@ namespace SF.Management.FrontEndContents
 	public class PCTailMenuManager :
 		PCTailMenuManager<Content, IContentManager>
 	{
-		public PCTailMenuManager(IFriendlyContentSettingService SettingService, IContentManager<Content> ContentManager) : base(SettingService, ContentManager)
+		public PCTailMenuManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
 		}
 	}

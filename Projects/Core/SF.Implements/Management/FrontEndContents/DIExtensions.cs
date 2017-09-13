@@ -7,12 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using SF.Management.FrontEndContents;
 using SF.Management.FrontEndContents.Runtime;
-
+using SF.Management.FrontEndContents.DataModels;
 namespace SF.Core.ServiceManagement
 {
 	public static class FrontEndServicesDIExtensions
 	{
-		public static IServiceCollection AddFrontEndServices(this IServiceCollection sc)
+		public static IServiceCollection AddFrontEndServices(this IServiceCollection sc,string TablePrefix=null)
 		{
 			sc.AddScoped<ISiteResolver, SiteManager>();
 			sc.AddScoped<ISiteConfigLoader, SiteTemplateManager>();
@@ -28,6 +28,11 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<ISiteRenderEngine, SiteRenderEngine>();
 			sc.AddScoped<IRenderContextCreator, RenderContextCreator>();
 
+			sc.AddDataModules<
+				SF.Management.FrontEndContents.DataModels.Content, 
+				SF.Management.FrontEndContents.DataModels.Site, 
+				SF.Management.FrontEndContents.DataModels.SiteTemplate
+				>(TablePrefix);
 
 			//sc.AddSingleton<IRenderProvider, RazorRender>("razor");
 			return sc;

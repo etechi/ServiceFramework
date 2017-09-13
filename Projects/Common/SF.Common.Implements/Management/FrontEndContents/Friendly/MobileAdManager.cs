@@ -8,23 +8,22 @@ using SF.Metadata;
 
 namespace SF.Management.FrontEndContents
 {
-	
-	public class MobileHomeSilderManager :
-		MobileHomeSilderManager<Content, IContentManager>
+	public class MobileAdManager :
+		MobileAdManager<Content, IContentManager>
 	{
-		public MobileHomeSilderManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
+		public MobileAdManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
 		}
 	}
-
-	public class MobileHomeSilderManager<TContent, TContentManager> :
-		ImageItemGroupManager<TContent, TContentManager>,
-		IMobileHomeSilderManager
+	
+	public class MobileAdManager<TContent, TContentManager> :
+		ImageItemGroupListManager<TContent,TContentManager>,
+		IMobileAdManager
 		where TContent : Content
 		where TContentManager : IContentManager<TContent>
 	{
 		IFriendlyContentSettingService SettingService { get; }
-		public MobileHomeSilderManager(
+		public MobileAdManager(
 			IFriendlyContentSettingService SettingService,
 			IContentManager<TContent> ContentManager
 			) : base(ContentManager)
@@ -32,8 +31,7 @@ namespace SF.Management.FrontEndContents
 			this.SettingService = SettingService;
 		}
 
-		protected override long EntityId => SettingService.Setting.MobileHomePageSliderId;
+		protected override string ContentGroup=> SettingService.Setting.MobileAdCategory;
 	}
 
-	
 }
