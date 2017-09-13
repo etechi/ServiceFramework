@@ -5,18 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\**" />
     <Compile Remove="Entities\backup\**" />
+    <EmbeddedResource Remove="Data\**" />
     <EmbeddedResource Remove="Entities\backup\**" />
+    <None Remove="Data\**" />
     <None Remove="Entities\backup\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
     <ProjectReference Include="..\SF.Extensions\SF.Extensions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>

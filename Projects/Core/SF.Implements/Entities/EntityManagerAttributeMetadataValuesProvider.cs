@@ -30,11 +30,11 @@ namespace SF.Core.ServiceManagement
 				.Where(t =>
 					t.IsInterface &&
 					t.IsGenericType &&
-					t.GetGenericTypeDefinition() == typeof(IEntityLoadable<,>)
+					t.GetGenericTypeDefinition() == typeof(IAbstractEntityManager<>)
 					)
 				.FirstOrDefault();
 			if (loadable == null)
-				throw new NotSupportedException($"指定的类型{EntityManagementType}未实现IEntityLoadable<,>接口");
+				throw new NotSupportedException($"指定的类型{EntityManagementType}未实现IAbstractEntityManager<>接口");
 
 		}
 		public object GetValues(Attribute Attribute,object AttrSource)
