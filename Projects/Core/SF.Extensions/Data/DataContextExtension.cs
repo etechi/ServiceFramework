@@ -26,6 +26,11 @@ namespace SF.Data
 				}
 			},Timeout,Retry);
 		}
+		public static void Remove<T>(this IDataContext Context, T Entity) where T:class
+			=> Context.Set<T>().Remove(Entity);
+		public static void RemoveRange<T>(this IDataContext Context, IEnumerable<T> Entity) where T : class
+			=> Context.Set<T>().RemoveRange(Entity);
+
 		public static async Task<T> UseTransaction< T>(
 			this IDataContext Context,
 			string TransMessage,

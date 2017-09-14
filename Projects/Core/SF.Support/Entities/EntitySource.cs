@@ -15,7 +15,7 @@ namespace SF.Entities
 	{
 		protected IDataSetEntityManager<TModel> EntityManager { get; }
 		public IServiceInstanceDescriptor ServiceInstanceDescriptor => EntityManager.ServiceInstanceDescroptor;
-		public ITimeService TimeService => EntityManager.TimeService;
+		public DateTime Now => EntityManager.Now;
 		public ILogger Logger => EntityManager.Logger;
 		public IDataSet<TModel> DataSet => EntityManager.DataSet;
 		public IDataContext DataContext => DataSet.Context;
