@@ -72,7 +72,7 @@ namespace SF.Common.TextMessages.Management
 				Status = SendStatus.Sending,
 				Target = Target,
 				UserId = TargetUserId,
-				Time = TimeService.Now,
+				Time = Now,
 				TrackEntityId = message.TrackEntityId
 			});
 			await DataSet.Context.SaveChangesAsync();
@@ -86,7 +86,7 @@ namespace SF.Common.TextMessages.Management
 				return;
 			r.Error = Error;
 			r.Result = ExtIdent;
-			r.CompletedTime = TimeService.Now;
+			r.CompletedTime = Now;
 			r.Status = Error == null ? SendStatus.Completed : SendStatus.Failed;
 			DataSet.Update(r);
 			await DataSet.Context.SaveChangesAsync();

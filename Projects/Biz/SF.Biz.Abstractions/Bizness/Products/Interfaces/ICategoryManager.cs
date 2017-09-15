@@ -31,8 +31,8 @@ namespace SF.Biz.Products
 		IEntitySource<long,TEditable, CategoryQueryArgument>
 		where TEditable : CategoryEditable
 	{
-		Task<TEditable[]> BatchUpdate(int SellerId, TEditable[] Items);
-		Task UpdateItems(int CategoryId, int[] Items);
-        Task<int[]> LoadItems(int CategoryId);
+		Task<TEditable[]> BatchUpdate(long SellerId, TEditable[] Items);
+		Task UpdateItems(long CategoryId, long[] Items);
+        Task<long[]> LoadItems(long CategoryId);
 	}
 }

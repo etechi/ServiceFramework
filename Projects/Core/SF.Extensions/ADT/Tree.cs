@@ -133,6 +133,29 @@ namespace SF.ADT
 				);
 
 		}
+		public static async Task ValidateTreeParent<TKey>(
+			string Title,
+			TKey Id,
+			TKey NewParentId,
+			Func<TKey, Task<TKey>> GetParentId
+			) where TKey : IEquatable<TKey>
+		{
+			//检查父节点不能是自身，或自身的子节点
+			if (Id.Equals(default(TKey)) || NewParentId.Equals(default(TKey)))
+				return;
+			if (Id.Equals(NewParentId))
+				throw new PublicArgumentException($"父{Title}不能是当前{Title}自己");
+
+			for (; ; )
+			{
+				var npid = await GetParentId(NewParentId);
+				if (npid.Equals(default(TKey)))
+					break;
+				if (npid.Equals(Id))
+					throw new PublicArgumentException($"父{Title}不能是当{Title}的子{Title}");
+				NewParentId = npid;
+			}
+		}
 	}
 }
 

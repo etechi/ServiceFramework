@@ -49,7 +49,7 @@ namespace SF.Common.Documents.Management
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
-			Model.Update(obj, TimeService.Now);
+			Model.Update(obj, Now);
 			
 			Model.Ident = obj.Ident;
 			Model.PublishDate = obj.PublishDate;

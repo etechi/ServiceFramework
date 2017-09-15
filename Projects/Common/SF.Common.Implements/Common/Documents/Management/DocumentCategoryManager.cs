@@ -63,7 +63,7 @@ namespace SF.Common.Documents.Management
 
 				Model.ContainerId = obj.ContainerId;
 			}
-			Model.Update(obj, TimeService.Now);
+			Model.Update(obj, Now);
 		}
 
 		public DocumentCategoryManager(

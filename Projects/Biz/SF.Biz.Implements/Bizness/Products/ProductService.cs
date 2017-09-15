@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using SF.ObjectManager;
-using SF.Data.Entity;
-using System.Data.Entity;
 using System.Linq.Expressions;
 using SF.Data;
 
 namespace SF.Biz.Products.Entity
 {
-	
+
 	public class ProductService<TPublicProduct, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TUserFavorited> :
 		IProductService<TPublicProduct>
 		where TPublicProduct : Product<TKey>, new()

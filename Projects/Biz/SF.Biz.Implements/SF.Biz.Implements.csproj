@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <Compile Remove="Bizness\Products\ProductCollectionService.cs" />
+    <Compile Remove="Bizness\Products\ProductService.cs" />
+    <Compile Remove="Bizness\Products\ProductTypeService.cs" />
   </ItemGroup>
 
   <ItemGroup>

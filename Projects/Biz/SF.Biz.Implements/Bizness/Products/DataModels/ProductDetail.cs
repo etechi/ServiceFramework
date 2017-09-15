@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-
+using SF.Metadata;
 namespace SF.Biz.Products.Entity.DataModels
 {
 

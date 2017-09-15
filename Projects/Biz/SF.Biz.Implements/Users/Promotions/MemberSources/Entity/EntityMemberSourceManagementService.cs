@@ -73,7 +73,7 @@ namespace SF.Users.Promotions.MemberSources.Entity
 		{
 			var m = ctx.Model;
 			m.Id = await IdentGenerator.GenerateAsync("会员渠道",0);
-			m.CreatedTime = TimeService.Now;
+			m.CreatedTime = Now;
 			await base.OnNewModel(ctx);
 		}
 		protected override Task OnUpdateModel(IModifyContext ctx)
@@ -82,7 +82,7 @@ namespace SF.Users.Promotions.MemberSources.Entity
 			var m = ctx.Model;
 
 			UIEnsure.HasContent(e.Name,"请输入渠道名称");
-			m.Update(e, TimeService.Now);
+			m.Update(e, Now);
 
 			return Task.CompletedTask;
 		}

@@ -77,7 +77,7 @@ namespace SF.Users.Members.Entity
 		{
 			var m = ctx.Model;
 			m.Id = await IdentGenerator.GenerateAsync("会员",0);
-			m.CreatedTime = TimeService.Now;
+			m.CreatedTime = Now;
 			m.OwnerId = m.Id;
 			await base.OnNewModel(ctx);
 		}
@@ -94,7 +94,7 @@ namespace SF.Users.Members.Entity
 			m.Name = e.Name.Trim();
 			m.PhoneNumber = e.PhoneNumber.Trim();
 			m.LogicState = e.LogicState;
-			m.UpdatedTime = TimeService.Now;
+			m.UpdatedTime = Now;
 			m.UpdatorId = await IdentityService.Value.EnsureCurIdentityId();
 
 			if (ctx.Action == ModifyAction.Create)

@@ -9,6 +9,8 @@
     <ProjectReference Include="..\..\Common\SF.Common.Extensions\SF.Common.Extensions.csproj" />
     <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
     <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.csproj" />
+    <ProjectReference Include="..\..\Core\SF.Support\SF.Support.csproj" />
+    <ProjectReference Include="..\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

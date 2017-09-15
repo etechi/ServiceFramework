@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+VisualStudioVersion = 15.0.26730.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{66A4F4E4-6A67-479D-8650-013BD4A3913B}"
 EndProject
@@ -59,9 +59,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Extensions", "Biz\SF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Abstractions", "Biz\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj", "{7ABD734C-FCEE-4CE0-A126-3D9816B37731}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.AdminSiteCore2", "Sites\SF.AdminSiteCore2\SF.AdminSiteCore2.csproj", "{17148021-8D02-488E-8392-A27BD42CAFF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.AdminSiteCore2", "Sites\SF.AdminSiteCore2\SF.AdminSiteCore2.csproj", "{17148021-8D02-488E-8392-A27BD42CAFF3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.AspNetCore", "Core\SF.AspNetCore\SF.AspNetCore.csproj", "{567EA1F7-CC6F-4B0D-9F3F-5AA11B8EBE0E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{2EB92F6A-F55C-4B5C-9BB1-A74CFEE13C84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

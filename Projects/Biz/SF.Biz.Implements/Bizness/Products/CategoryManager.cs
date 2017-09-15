@@ -105,7 +105,7 @@ namespace SF.Biz.Products.Entity
 			Model.ObjectState = Editable.ObjectState;
 			
 		}
-		public async Task<TEditable[]> BatchUpdate(int SellerId, TEditable[] Items)
+		public async Task<TEditable[]> BatchUpdate(long SellerId, TEditable[] Items)
 		{
 			var org_items= DataSet.AsQueryable(false).Where(c => c.OwnerUserId.Equals(SellerId));
 			var time = EntityManager.Now;
@@ -155,7 +155,7 @@ namespace SF.Biz.Products.Entity
 			}
 			return BatchMapModelToEditable(re.AsQueryable(DataSet.Context.Provider)).ToArray();
 		}
-        public async Task<long[]> LoadItems(int CategoryId)
+        public async Task<long[]> LoadItems(long CategoryId)
         {
             var items = await (
                 from ci in DataContext.Set<TCategoryItem>().AsQueryable()
@@ -166,7 +166,7 @@ namespace SF.Biz.Products.Entity
                 ).ToArrayAsync();
             return items;
         }
-        public async Task UpdateItems(int CategoryId, int[] Items)
+        public async Task UpdateItems(long CategoryId, long[] Items)
 		{
 			Items = Items.Distinct().ToArray();
 			var itemSet = DataContext.Set<TCategoryItem>();
@@ -243,7 +243,7 @@ namespace SF.Biz.Products.Entity
 					"商品分类", 
 					Model.Id,
 					npid,
-					pnt => Context.ReadOnly<TCategory>()
+					pnt => DataSet.AsQueryable()
 						.Where(c => c.Id == pnt)
 						.Select(c => c.ParentId.HasValue?c.ParentId.Value:0)
 					);
@@ -299,77 +299,68 @@ namespace SF.Biz.Products.Entity
 			return base.OnRemoveModel(ctx);
 		}
 
-        //async Task<IDataObject[]> IDataObjectLoader.Load(string Type, string[][] Keys)
-        //{
-        //    return await DataObjectLoader.Load(
-        //       Keys,
-        //       id => int.Parse(id[0]),
-        //       id => FindByIdAsync(id),
-        //       async (ids) => {
-        //           var tmps = await MapModelToInternal(
-        //               Context.ReadOnly<TCategory>().Where(a => ids.Contains(a.Id))
-        //               ).ToArrayAsync();
-        //           return await OnPrepareInternals(tmps);
-        //       }
-        //       );
-        //}
-        //public override async Task<int> CreateAsync(TEditable obj)
-        //{
-        //	var re=await base.CreateAsync(obj);
-        //	if (obj.ParentId.HasValue)
-        //		Notifier.NotifyCategoryChildrenChanged(obj.ParentId.Value);
-        //	return re;
-        //}
-        //public override async Task<TCategory> UpdateAsync(TEditable obj)
-        //{
-        //	var cat = await Context.Editable<TCategory>().FindAsync(obj.Id);
-        //	var orgParentId = cat.ParentId ?? 0;
-        //	var newParentId = obj.ParentId ?? 0;
-        //	var pntChildChanged = cat.ObjectState != obj.ObjectState || orgParentId!=newParentId;
-        //	var re=await base.UpdateAsync(obj);
-        //	if(pntChildChanged)
-        //	{
-        //		if(newParentId!=0)
-        //			Notifier.NotifyCategoryChildrenChanged(newParentId);
-        //		if(orgParentId!=0 && orgParentId != newParentId)
-        //			Notifier.NotifyCategoryChildrenChanged(orgParentId);
-        //	}
-        //	Notifier.NotifyCategoryChanged(obj.Id);
-        //	return re;
-        //}
-        //public override async Task<TCategory> DeleteAsync(int Id)
-        //{
-        //	var re=await base.DeleteAsync(Id);
-        //	if (re == null)
-        //		return re;
-        //	if(re.ParentId.HasValue)
-        //		Notifier.NotifyCategoryChildrenChanged(re.ParentId.Value);
-        //	Notifier.NotifyCategoryChanged(Id);
-        //	return re;
-        //}
+		//async Task<IDataObject[]> IDataObjectLoader.Load(string Type, string[][] Keys)
+		//{
+		//    return await DataObjectLoader.Load(
+		//       Keys,
+		//       id => int.Parse(id[0]),
+		//       id => FindByIdAsync(id),
+		//       async (ids) => {
+		//           var tmps = await MapModelToInternal(
+		//               Context.ReadOnly<TCategory>().Where(a => ids.Contains(a.Id))
+		//               ).ToArrayAsync();
+		//           return await OnPrepareInternals(tmps);
+		//       }
+		//       );
+		//}
+		//public override async Task<int> CreateAsync(TEditable obj)
+		//{
+		//	var re=await base.CreateAsync(obj);
+		//	if (obj.ParentId.HasValue)
+		//		Notifier.NotifyCategoryChildrenChanged(obj.ParentId.Value);
+		//	return re;
+		//}
+		//public override async Task<TCategory> UpdateAsync(TEditable obj)
+		//{
+		//	var cat = await Context.Editable<TCategory>().FindAsync(obj.Id);
+		//	var orgParentId = cat.ParentId ?? 0;
+		//	var newParentId = obj.ParentId ?? 0;
+		//	var pntChildChanged = cat.ObjectState != obj.ObjectState || orgParentId!=newParentId;
+		//	var re=await base.UpdateAsync(obj);
+		//	if(pntChildChanged)
+		//	{
+		//		if(newParentId!=0)
+		//			Notifier.NotifyCategoryChildrenChanged(newParentId);
+		//		if(orgParentId!=0 && orgParentId != newParentId)
+		//			Notifier.NotifyCategoryChildrenChanged(orgParentId);
+		//	}
+		//	Notifier.NotifyCategoryChanged(obj.Id);
+		//	return re;
+		//}
+		//public override async Task<TCategory> DeleteAsync(int Id)
+		//{
+		//	var re=await base.DeleteAsync(Id);
+		//	if (re == null)
+		//		return re;
+		//	if(re.ParentId.HasValue)
+		//		Notifier.NotifyCategoryChildrenChanged(re.ParentId.Value);
+		//	Notifier.NotifyCategoryChanged(Id);
+		//	return re;
+		//}
+		
+		protected override PagingQueryBuilder<TCategory> PagingQueryBuilder => new PagingQueryBuilder<TCategory>(
+			"updated",
+			i => i
+			.Add("name", c => c.Name)
+			.Add("updated", c => c.UpdatedTime, true)
+			.Add("created", c => c.CreatedTime, true)
+			);
+		
 
-        //static PagingQueryBuilder<TCategory> pagingBuilder = new PagingQueryBuilder<TCategory>(
-        //	"updated",
-        //	i => i
-        //	.Add("name", c => c.Name)
-        //	.Add("updated", c => c.UpdatedTime,true)
-        //	.Add("created", c => c.CreatedTime, true)
-        //	);
-        //public Task<QueryResult<TInternal>> Query(string category, Paging paging)
-        //{
-        //	var q = category==null?Set:Set.Where(e => e.Category == category);
-        //	return q.ToQueryResultAsync(
-        //		MapModelToInternal, 
-        //		r=>r,
-        //		pagingBuilder, 
-        //		paging
-        //		);
-        //}
+		//public async Task<string[]> Categories()
+		//{
+		//	return await Set.Select(c => c.Category).Distinct().ToArrayAsync();
+		//}
 
-        //public async Task<string[]> Categories()
-        //{
-        //	return await Set.Select(c => c.Category).Distinct().ToArrayAsync();
-        //}
-
-    }
+	}
 }

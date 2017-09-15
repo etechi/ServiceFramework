@@ -10,7 +10,7 @@ namespace SF.Biz.Products
 
 	public interface IItemManager<TInternal, TEditable> :
 		IEntityManager<long, TEditable>,
-		IEntitySource<long, TInternal>
+		IEntitySource<long, TInternal,ItemQueryArgument>
 		where TInternal : ItemInternal
 		where TEditable : ItemEditable
 	{

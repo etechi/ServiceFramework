@@ -121,7 +121,7 @@ namespace SF.Auth.Identities.Entity
 			m.Id = e.Id;
 			m.SignupIdentProviderId = e.CreateCredentialProviderId;
 			m.SignupIdentValue = e.CreateCredential;
-			m.CreatedTime = TimeService.Now;
+			m.CreatedTime = Now;
 			m.ScopeId = ServiceInstanceDescriptor.InstanceId;
 			return base.OnNewModel(ctx);
 		}
@@ -134,7 +134,7 @@ namespace SF.Auth.Identities.Entity
 			m.Icon = e.Icon;
 
 			m.ObjectState = e.LogicState;
-			var time = TimeService.Now;
+			var time = Now;
 			m.UpdatedTime = time;
 			if (e.Entity != null)
 				m.Entity = e.Entity;

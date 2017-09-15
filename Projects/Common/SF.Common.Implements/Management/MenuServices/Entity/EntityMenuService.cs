@@ -87,7 +87,7 @@ namespace SF.Management.MenuServices.Entity
 		{
 			var m = ctx.Model;
 			m.Id = await IdentGenerator.GenerateAsync("系统菜单",0);
-			m.Create(TimeService.Now);
+			m.Create(Now);
 			await base.OnNewModel(ctx);
 		}
 		protected override async Task OnUpdateModel(IModifyContext ctx)
@@ -99,7 +99,7 @@ namespace SF.Management.MenuServices.Entity
 			UIEnsure.HasContent(e.Ident.Trim(), "请输入账号");
 
 			m.Ident = e.Ident.Trim();
-			var time = TimeService.Now;
+			var time = Now;
 			m.Update(e, time);
 
 			var items = await MenuItemSet.Value.LoadListAsync(i => i.MenuId == m.Id);

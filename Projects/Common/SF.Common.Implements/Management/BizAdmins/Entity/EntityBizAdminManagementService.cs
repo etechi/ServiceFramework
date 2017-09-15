@@ -43,7 +43,7 @@ namespace SF.Management.BizAdmins.Entity
 		{
 			var m = ctx.Model;
 			m.Id = await IdentGenerator.GenerateAsync("系统管理员",0);
-			m.CreatedTime = TimeService.Now;
+			m.CreatedTime = Now;
 			m.OwnerId = m.Id;
 			await base.OnNewModel(ctx);
 		}

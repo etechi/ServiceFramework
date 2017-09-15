@@ -1,19 +1,15 @@
-﻿using System;
+﻿using SF.Data;
+using SF.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using SF.ObjectManager;
-using SF.Times;
-using SF.Data.Entity;
 
 namespace SF.Biz.Products.Entity
 {
-    [DataObjectLoader("产品类型")]
 	public class ProductTypeManager<TInternal, TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec> :
-		EntityServiceObjectManager<int, TInternal, TEditable, TProductType>,
-		IProductTypeManager<TInternal, TEditable>,
-        IDataObjectLoader
+		EntityManager<long, TInternal,ProductTypeQueryArgument,  TEditable, TProductType>,
+		IProductTypeManager<TInternal, TEditable>
 		where TInternal : ProductTypeInternal, new()
 		where TEditable : ProductTypeEditable, new()
 		where TProduct : DataModels.Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -27,12 +23,10 @@ namespace SF.Biz.Products.Entity
 		where TItem : DataModels.Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : DataModels.ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>
     {
-		Lazy<ITimeService> TimeService { get; }
-		public ProductTypeManager(IDataContext Context, Lazy<ITimeService> TimeService,Lazy<IModifyFilter> ModifyFilter) : base(Context, ModifyFilter)
+		public ProductTypeManager(IDataSetEntityManager<TProductType> EntityManager) : base(EntityManager)
 		{
-			this.TimeService = TimeService;
 		}
-        protected override IContextQueryable<TInternal> MapModelToInternal(IContextQueryable<TProductType> Query)
+        protected override IContextQueryable<TInternal> OnMapModelToPublic(IContextQueryable<TProductType> Query)
 		{
 			return from c in Query
 				   select new TInternal
@@ -49,7 +43,7 @@ namespace SF.Biz.Products.Entity
 						ProductCount = c.ProductCount
 					};
 		}
-        protected override Task<TEditable> MapModelToEditable(IContextQueryable<TProductType> Query)
+        protected override Task<TEditable> OnMapModelToEditable(IContextQueryable<TProductType> Query)
 		{
 			return (from c in Query
 					select new TEditable
@@ -66,7 +60,7 @@ namespace SF.Biz.Products.Entity
 				   }).SingleOrDefaultAsync();
 		}
 		
-		protected override Task OnUpdateModel(ModifyContext ctx)
+		protected override Task OnUpdateModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
@@ -76,51 +70,34 @@ namespace SF.Biz.Products.Entity
 			Model.Image = obj.Image;
 			Model.ObjectState = obj.ObjectState;
 			Model.Unit = obj.Unit;
-			Model.UpdatedTime = TimeService.Value.Now;
+			Model.UpdatedTime = Now;
 			return Task.CompletedTask;
 		}
-		protected override Task OnNewModel(ModifyContext ctx)
+		protected override Task OnNewModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
-			Model.CreatedTime = TimeService.Value.Now;
+			Model.CreatedTime = Now;
 			return Task.CompletedTask;
 		}
-		protected override Task<TProductType> OnLoadModelForUpdate(ModifyContext ctx)
+		protected override Task<TProductType> OnLoadModelForUpdate(long Id, IContextQueryable<TProductType> ctx)
 		{
-            var Id=ctx.Id;
-			return Set
-				.Where(s => s.Id==Id)
+			return ctx
+				.Where(s => s.Id == Id)
 				//.Include(s => s.Items)
 				.SingleOrDefaultAsync();
 		}
-		
-
-		static PagingQueryBuilder<TCategory> pagingBuilder = new PagingQueryBuilder<TCategory>(
+		protected override IContextQueryable<TProductType> OnBuildQuery(IContextQueryable<TProductType> Query, ProductTypeQueryArgument Arg, Paging paging)
+		{
+			return Query.Filter(Arg.ObjectState, p => p.ObjectState);
+		}
+		protected override PagingQueryBuilder<TProductType> PagingQueryBuilder =>new PagingQueryBuilder<TProductType>(
 			"name",
 			i => i
 			.Add("name", c => c.Name)
 			.Add("updated", c => c.UpdatedTime, true)
 			.Add("created", c => c.CreatedTime, true)
 			);
-		public async Task<TInternal[]> List(ProductTypeQueryArgument Arg)
-		{
-			return await MapModelToInternal(
-				Context.ReadOnly<TProductType>().Filter(Arg.ObjectState,t=>t.ObjectState).OrderBy(t=>t.Order)
-				).ToArrayAsync();
-		}
-
-        async Task<IDataObject[]> IDataObjectLoader.Load(string Type, string[][] Keys)
-        {
-            var re = await DataObjectLoader.Load(
-                Keys,
-                id => int.Parse( id[0]),
-                id => FindByIdAsync(id),
-                async (ids) => {
-                    var tmps = await MapModelToInternal(Context.ReadOnly<TProductType>().Where(a => ids.Contains(a.Id))).ToArrayAsync();
-                    return tmps;
-                });
-            return re;
-        }
+	
 
     }
 }

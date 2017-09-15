@@ -1,4 +1,5 @@
-﻿using SF.Entities;
+﻿using SF.ADT;
+using SF.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -639,6 +640,20 @@ namespace SF.Data
 			await set.Context.SaveChangesAsync();
 			return obj;
 		}
-
-    }
+		public static Task ValidateTreeParent<TKey>(
+			this IDataSet context,
+			string Title,
+			TKey Id,
+			TKey NewParentId,
+			Func<TKey, IContextQueryable<TKey>> GetParentId
+			) where TKey : IEquatable<TKey>
+		{
+			return Tree.ValidateTreeParent(
+				Title,
+				Id, 
+				NewParentId, 
+				id => GetParentId(id).SingleOrDefaultAsync()
+				);
+		}
+	}
 }

@@ -15,6 +15,9 @@ namespace SF.Entities
 	public interface IEntityRemover<TKey>
 	{
 		Task RemoveAsync(TKey Key);
+	}
+	public interface IEntityAllRemover
+	{
 		Task RemoveAllAsync();
 	}
 	public interface IEntityManagerCapabilities 
@@ -42,6 +45,7 @@ namespace SF.Entities
 	public interface IEntityManager<TKey, TEntity>:
 		IEntityManagerCapabilities,
 		IEntityRemover<TKey>,
+		IEntityAllRemover,
 		IEntityEditableLoader<TKey,TEntity>,
 		IEntityCreator<TKey,TEntity>,
 		IEntityUpdator<TKey, TEntity>
