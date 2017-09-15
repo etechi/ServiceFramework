@@ -1,0 +1,58 @@
+﻿@model ServiceProtocol.ObjectManager.QueryResult<CrowdMall.Bizness.CrowdFounding.Models.CFWinShared>
+@{
+	var items =  Model.Items;
+}
+<div class="container open-page">
+	
+	<div class="product-list all-shared-list">
+		<h3>
+			全部晒单
+		</h3>
+		<ul class="items" id="list">
+			@foreach (var item in items)
+			{
+				<li class="list-item">
+					<a href="/other/shareddetail/@item.Id" target="_blank">
+						<img src="@Html.Media(@item.Image,"c270x350")" />
+						<h5>(第@(item.Round)期)@item.Item.Title</h5>
+					</a>
+					<div class="content">@item.Content</div>
+					<div class="time">@item.CreatedTime.ToString("yyyy-MM-dd HH:mm:ss")</div>
+					<div class="author">
+						<a href="/other/@item.AuthorId" target="_blank">
+							<img src="@Html.Media(@item.UserIcon,"c30")"/> @item.UserNick
+						</a>
+					</div>
+				</li>
+			}
+		</ul>
+		<div class="more  @(Model.Items.Count()<40?"hidden":"")" data-action="more" id="more">
+			更多...
+		</div>
+		<div class="loading hidden" id="loading">
+			加载中...
+		</div>
+	</div>
+	
+</div>
+
+@section scripts{
+<script id="tmpl-shared" type="text/x-handlebars-template">
+	<li class="list-item">
+		<a href="/other/shareddetail/{{Id}}" target="_blank">
+			<img src="/r/{{Image}}?format=c270x350" />
+			<h5>(第{{Round}}期){{Item.Title}}</h5>
+		</a>
+		<div class="content">{{Content}}</div>
+		<div class="time">{{CreatedTime}}</div>
+		<div class="author">
+			<a href="/other/{{AuthorId}}" target="_blank">
+				<img src="/r/{{UserIcon}}?format=c30" /> {{UserNick}}
+			</a>
+		</div>
+	</li>
+</script>
+<script>
+	window.boot("round-shared",{loaded:@Model.Items.Count()});
+</script>
+}

@@ -1,0 +1,10 @@
+﻿@{ 
+	Layout = "../Shared/_UserSigninLayout.cshtml";
+}
+@Html.Partial("_SigninPanel")
+
+@section scripts{
+<script>
+	window.boot("user-signin");
+</script>
+}

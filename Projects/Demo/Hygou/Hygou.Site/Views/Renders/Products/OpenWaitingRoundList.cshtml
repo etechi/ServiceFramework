@@ -1,0 +1,62 @@
+﻿@model ServiceProtocol.Biz.UIManager.Mvc.RenderModel<ServiceProtocol.ObjectManager.QueryResult<CrowdMall.Bizness.CrowdFounding.Models.CFRound>>
+@{
+	var showStatus =  !(Model.Args?.Get("hideStatus") == "true");
+}
+
+<div class="product-list left-menu-item" data-menu-text="@Model.Content.Title2" >
+@if (!String.IsNullOrEmpty(Model.Content.Title1))
+{
+	<div class="head">
+		<div class="floor">@Model.Content.Title3</div>
+		<h3 class="title">
+			@Model.Content.Title1
+		</h3>
+		<div class="more">
+			<a href="@Model.Content.Uri">更多揭晓,点击查看&gt;&gt;</a>
+		</div>
+	</div>
+}
+	<ul class="items">
+		@foreach (var item in Model.Data.Items)
+		{
+			<li class="product-round list-item">
+				<div>
+					<a href="/item/@item.ProductId-@item.Round" target="_blank"  title="(第@(item.Round)期)@item.Title">
+						<img src="@Html.Media(item.Image,"c200")" width="200" height="200" />
+						<h5>(第@(item.Round)期)@item.Title</h5>
+					</a>
+					<span class="price">价值：￥@(Math.Round(item.MarketPrice))</span>
+				</div>
+				<div class="result">
+					@if (item.State == CrowdMall.DataModels.CFState.Opening)
+                    {
+                        <strong class="open-waiting"></strong>
+						<div class="pending">
+							彩票中心通讯延时，请稍后
+						</div>
+                    }
+                    else if (item.State == CrowdMall.DataModels.CFState.OpenWaiting)
+                    {
+                        <strong class="open-waiting"></strong>
+						<ins class="timer" type="utils.round-timer" data-cfg="[0,@item.ProductId,@item.Round,@item.ExpectOpenTime.Value.ToJsTime()]">
+							<b></b><b></b><i>：</i><b></b><b></b><i>：</i><b></b><b></b>
+						</ins>
+                    }
+                    else if (item.State == CrowdMall.DataModels.CFState.Opened)
+                    {
+                        <strong class="opened"></strong>
+						<div class="win">
+							<a href="/other/@item.WinSummary.User.Id" target="_blank"><img src="/r/@item.WinSummary.User.Image?format=c40" /></a>
+							<dl>
+								<dt>揭晓时间:</dt>
+								<dd>@item.OpenTime.Value.ToString("MM-dd HH:mm")</dd>
+								<dt>获得者:</dt>
+								<dd><a class="user" href="/other/@item.WinSummary.User.Id" target="_blank">@item.WinSummary.User.NickName</a></dd>
+							</dl>
+						</div>
+					}
+				</div>
+			</li>
+		}
+	</ul>
+</div>

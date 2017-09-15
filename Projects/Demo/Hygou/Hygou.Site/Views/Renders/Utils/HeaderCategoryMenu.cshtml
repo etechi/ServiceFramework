@@ -1,0 +1,11 @@
+﻿@model ServiceProtocol.Biz.UIManager.Mvc.RenderModel
+@foreach (var item in Model.Content.Items)
+{
+    <li>
+        <a href="@item.Uri" target="@item.UriTarget">
+            <img src="@Html.Media(item.Icon)" />
+            <div>@item.Title1</div>
+            <div>@item.Title2</div>
+        </a>
+    </li>
+}

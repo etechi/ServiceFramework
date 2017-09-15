@@ -1,0 +1,22 @@
+﻿@model CrowdMall.Bizness.Docs.Document
+@{ 
+	var cats = (IEnumerable<CrowdMall.Bizness.Docs.Category>)ViewBag.Categories;
+}
+<div class="help-center clearfix container">
+	@Html.Partial("_Menu")
+	<div class="help-doc">
+		<ol class="breadcrumb">
+			<li><a href="/">首页</a></li>
+			<li><a href="/help/">帮助中心</a></li>
+			@if (Model.Category != null)
+			{
+			<li>@Model.Category.Name</li>
+			}
+			<li class="active">@Model.Name</li>
+		</ol>
+		<div class="help-content">
+			<h3 class="help-title">@Model.Name</h3>
+			<div class="help-body">@Html.Raw(Model.Content)</div>
+		</div>
+	</div>
+</div>

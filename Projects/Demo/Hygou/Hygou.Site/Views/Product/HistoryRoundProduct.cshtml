@@ -1,0 +1,391 @@
+﻿@model CrowdMall.Bizness.Products.IItem
+@{
+    var Setting = Html.Setting<CrowdMallSetting>();
+    var CurRound = Model.CurRound;
+    var Round = (CrowdMall.Bizness.CrowdFounding.Models.CFRound)ViewBag.Round;
+    var TradeItems = (CrowdMall.Bizness.CrowdFounding.Models.CFRoundTradeItem[])ViewBag.TradeItems;
+}
+<div class="container body-content product-history">
+    <div class="head clearfix">
+        <div class="cur-round">
+            <div class="head">最新一期</div>
+            <div class="body" id="round-history-panel">
+                @if (Model.CurRound.Selled < Model.CurRound.Total)
+                {
+                    <div>最新一期正在进行，赶紧参加吧！</div>
+                }
+                else
+                {
+                    <div>该商品已下架！</div>
+                }
+                <div class="product-item">
+                    <a href="/item/@Model.ItemId" target="_blank">
+                        <img src="@Html.Media(Model.Image,"c200")" />
+                        <h5>(第@(Model.CurRound.Round)期)@Model.Title</h5>
+                    </a>
+                    <span class="price">价值：￥@(Math.Round(Model.MarketPrice))</span>
+
+                    <div class="product-status">
+                        <div>
+                            <div style="width:@(Model.CurRound.Selled * 100 / Model.CurRound.Total)%"></div>
+                        </div>
+                        <ul>
+                            <li>
+                                <div>@Model.CurRound.Selled</div>
+                                <div>已夺宝人次</div>
+                            </li>
+                            <li>
+                                <div>@(Model.CurRound.Total - Model.CurRound.Selled)</div>
+                                <div>剩余人次</div>
+                            </li>
+                        </ul>
+                    </div>
+                    <button data-action="buy" disabled="@(Model.CurRound.Selled == Model.CurRound.Total)" data-item="@Model.ItemId" class="btn btn-primary btn-product-buy">立即抢购</button>
+                </div>
+            </div>
+        </div>
+        <div class="detail ">
+            <ol class="breadcrumb">
+                <li><a href="/">首页</a></li>
+                <li><a href="/cat/">全部商品</a></li>
+                @*<li><a href="/products/@Model.Type.Id">@Model.Type.Title</a></li>*@
+                <li class="active">商品详情</li>
+            </ol>
+            <div class="image">
+                <img src="@Html.Media(Model.Image,"s200")" />
+            </div>
+            <div class="desc">
+                <h2>(第@(Round.Round)期)@Model.Title</h2>
+                <div class="code-status">
+                    @if (Round.State == CrowdMall.DataModels.CFState.OpenWaiting)
+                    {
+                        <div class="clock">
+                            <div>揭晓倒计时</div>
+                            <ins id="round_timer" class="timer">
+                                <b></b><b></b><i>：</i><b></b><b></b><i>：</i><b></b><b></b>
+                            </ins>
+                        </div>
+                    }
+                    else if (Round.State == CrowdMall.DataModels.CFState.Opening)
+                    {
+                        <div class="pending">
+                            彩票中心通讯延时，请稍后
+                        </div>
+                    }
+                    else if (Round.State == CrowdMall.DataModels.CFState.Opened)
+                    {
+                        <div class="win-code">
+                            <div>
+                                <div>揭晓结果</div>
+                                <div>幸运夺宝码</div>
+                            </div>
+                            <div>@Round.WinSummary.Code</div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="round-status ">
+                <div class="win clearfix" id="win-summary">
+                    @if (Round.OpenTime == null)
+                    {
+                        <div class="waiting">谁将会是本期幸运儿呢？</div>
+                    }
+                    else
+                    {
+                        <a class="icon" href="/other/@Round.WinSummary.User.Id" target="_blank">
+                            <img src="@Html.Media(Round.WinSummary.User.Image,"c90")" />
+                        </a>
+                        <div class="name">恭喜<a class="user" href="/other/@Round.WinSummary.User.Id" target="_blank">@Round.WinSummary.User.NickName</a>获得本期奖品</div>
+                        <dl>
+                            <dt>幸运号码:</dt>
+                            <dd><b>@Round.WinSummary.Code</b></dd>
+                            <dt>参与人次:</dt>
+                            <dd><b>@Round.WinSummary.Quantity</b>人次</dd>
+                            <dt>揭晓时间:</dt>
+                            <dd>@Round.OpenTime.Value.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+                            <dt>夺宝时间:</dt>
+                            <dd>@Round.WinSummary.TradeTime.Value.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+                        </dl>
+                    }
+                </div>
+                <div class="user-status" id="user-codes">
+                    <a href="/user/signin">请登录后查看您的夺宝号码</a>
+                </div>
+            </div>
+            <ul class="rounds">
+                <li><a href="/item/@Model.ItemId@(Model.CurRound.Selled < Model.CurRound.Total?"":"-"+Model.CurRound.Round)">第@(Model.CurRound.Round)期@(Model.CurRound.Selled < Model.CurRound.Total ? "进行中" : "") </a></li>
+                @if (Model.CurRound.Round - Round.Round > 6)
+                {
+                    <li data-action="selectRound">...</li>
+                    <li class="active">第@(Round.Round)期</li>
+                    for (var i = Round.Round + 1; i >= Math.Max(1, Round.Round - 2); i--)
+                    {
+                        <li><a href="/item/@Round.ProductId-@i">第@(i)期</a></li>
+                    }
+                }
+                else
+                {
+                    for (var i = Model.CurRound.Round - 1; i >= Math.Max(1, Model.CurRound.Round - 6); i--)
+                    {
+                        if (i == Round.Round)
+                        {
+                            <li class="active">第@(i)期</li>
+                        }
+                        else
+                        {
+                            <li><a href="/item/@Round.ProductId-@i">第@(i)期</a></li>
+                        }
+                    }
+                }
+                <li data-action="selectRound">查看更多&gt;&gt;</li>
+            </ul>
+            <div class="intro">
+                <span class="fa fa-balance-scale"></span>
+                <h4>我们有严谨的幸运号码计算规则，保证公平公正公开</h4>
+
+                <ul>
+                    <li>
+                        <label>为什么会进行倒计时？</label>
+                        <p>为保证公平公正公开，正等待一小段时间，取最近一期中国福利彩票“老时时彩”的开奖结果。<a href="http://data.shishicai.cn/cqssc/haoma/" target="_blank">开奖查询&gt;&gt;</a></p>
+                    </li>
+                    <li>
+                        <label>计算公式</label>
+                        <div class="expr">
+                            <dl>
+                                <dd>
+                                    @if (Round.WinSummary == null)
+                                    {
+                                        <span id="win-code1">?</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@Round.WinSummary.Code</span>
+                                    }
+                                </dd>
+                                <dt>本期幸运号码</dt>
+                            </dl>
+                            <s>=(</s>
+                            <dl>
+                                <dd>@Round.TimeValue</dd>
+                                <dt>100个时间求和</dt>
+                            </dl>
+                            <s>+</s>
+                            <dl>
+                                <dd>
+                                    @if (Round.WinSummary == null)
+                                    {
+                                        <span id="lottery-code1">?</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@Round.WinSummary.LotteryCode.ToString("00000")</span>
+                                    }
+                                </dd>
+                                <dt>"老时时彩"开奖号码</dt>
+                            </dl>
+                            <s>)%</s>
+                            <dl>
+                                <dd>@Round.Total</dd>
+                                <dt>该奖品总需人次</dt>
+                            </dl>
+                            <s>+</s>
+                            <dl>
+                                <dd>10000001</dd>
+                                <dt>原始数</dt>
+                            </dl>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="modal fade" id="allCodes" tabindex="-1" role="dialog" aria-labelledby="allCodesLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="allCodesLabel">所有夺宝号码</h4>
+                    </div>
+                    <div class="modal-body"><ul id="allCodesContent"></ul></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="allRounds" tabindex="-1" role="dialog" aria-labelledby="allRoundsLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="allRoundsLabel">最近50期揭晓记录</h4>
+                    </div>
+                    <div class="modal-body"><ul id="allRoundsContent" class="clearfix options"></ul></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tabs">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#detail" role="tab" aria-controls="shared" data-toggle="tab">计算结果</a></li>
+            <li role="presentation"><a href="#records" id="records-tab" role="tab" aria-controls="records" data-toggle="tab">所有参与记录</a></li>
+            <li role="presentation"><a href="#shares" id="shares-tab" role="tab" aria-controls="shares" data-toggle="tab">晒单</a></li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="detail">
+                <div class="calc-desc">
+                    <div>
+                        <div><span class="fa fa-calculator"></span></div>
+                        <div>幸运号码</div>
+                        <div>计算规则</div>
+                    </div>
+                    <div>
+                        <p>（1） 奖品的最后一个号码分配完毕后，将公示该分配时间点前本站全部奖品的最后100个参与时间；</p>
+                        <p>（2） 将这100个时间的数值进行求和（得出数值A）（每个时间按时、分、秒、毫秒的顺序组合，如20:15:25.362则为201525362）；</p>
+                        <p>（3） 为保证公平公正公开，系统还会等待一小段时间，取最近下一期中国福利彩票“老时时彩”的开奖结果（一个五位数值B）；</p>
+                        <p>（4） （数值A+数值B）除以该奖品总需人次得到的余数 + 原始数 10000001，得到最终幸运号码，拥有该幸运号码者，直接获得该奖品。</p>
+                        <p>注：本商品最后一个夺宝码分配时间对应的“老时时彩”期数号码因福彩中心未开奖或福彩中心通讯故障导致未能及时揭晓的,将于@(Setting.LotteryOpenTimeout)小时后默认按“老时时彩”开奖结果为“00000”计算揭晓。了解更多“<a href="http://chart.cp.360.cn/zst/ssccq/" target="_blank">老时时彩</a>”信息</p>
+                    </div>
+                </div>
+                <table id="calc-table" class="calc-table">
+                    <tr>
+                        <th>夺宝时间</th>
+                        <th>时间因子</th>
+                        <th>会员账号</th>
+                        <th>商品名称</th>
+                        <th>夺宝人次</th>
+                    </tr>
+                    <tr class="sp">
+                        <td colspan="5">
+                            截止改商品最后夺宝时间【@TradeItems[0].Time.ToString("yyyy-MM-dd HH:mm:ss:fff")】最后100条权重夺宝参与记录
+                        </td>
+                    </tr>
+                    @{
+                        var count = 100;
+                        var idx = 0;
+                        var showAllRecordsIndex = Math.Max(12, Math.Min(TradeItems.Length, count));
+                        var introIndex = Math.Min(TradeItems.Length, count + 2);
+                    }
+                    @foreach (var i in TradeItems)
+                    {
+                        <tr class="@(idx>=10 && idx<count?"hidden":"")">
+                            @{
+                                var tv = i.TimeValue.ToString().PadLeft(9, '0');
+                                var s = tv.Substring(0, 2) + ":" + tv.Substring(2, 2) + ":" + tv.Substring(4, 2) + ":" + tv.Substring(6);
+                            }
+                            <td>@i.Time.ToString("yyyy-MM-dd")</td>
+                            <td>@s<span class="fa fa-arrow-right"></span><span class="tv">@tv</span></td>
+                            <td><a class="user" href="/other/@i.UserId" target="_blank">@i.NickName</a></td>
+                            <td><a href="/item/@i.ItemId" target="_blank">(第@(i.Round)期)@i.ProductName</a></td>
+                            <td>@(i.Quantity)人次</td>
+                        </tr>
+
+                                idx++;
+                                if (idx == showAllRecordsIndex)
+                                {
+                                    <tr class="sp pointer"><td colspan="5" data-action="toggleAllRecords">展开全部100条数据</td></tr>
+                                }
+                                if (idx == introIndex)
+                                {
+                                    <tr class="sp">
+                                        <td colspan="5" class="calc">
+                                            <div class="calc">
+                                                <div>计算结果:</div>
+                                                <div>
+                                                    <p>1、求和： @Round.TimeValue (上面100条夺宝记录时间取值相加之和)</p>
+                                                    <p>
+                                                        2、最近下一期（<span id="lottery-isssue">@(Round.LotteryIssue == 0 ? "?" : Round.LotteryIssue.ToString())</span>期）
+                                                        “老时时彩”开奖号码 <span id="lottery-code2">@(Round.WinSummary == null ? "?????" : Round.WinSummary.LotteryCode.ToString("00000"))</span>
+                                                        <a href="http://chart.cp.360.cn/zst/ssccq/" target="_blank">开奖查询&gt;&gt;</a>
+                                                    </p>
+                                                    <p>
+                                                        3、求余：（@Round.TimeValue + <span id="lottery-code3">@(Round.WinSummary == null ? "?????" : Round.WinSummary.LotteryCode.ToString("00000"))</span>）%
+                                                        @(Round.Total)(奖品需要人次) = <span id="win-index1">@(Round.WinSummary == null ? "?" : (Round.WinSummary.Code - 10000001).ToString())</span>（余数）
+                                                    </p>
+                                                    <p>4、<span id="win-index2">@(Round.WinSummary == null ? "?" : (Round.WinSummary.Code - 10000001).ToString())</span>（余数）+10000001=<span id="win-code2">@(Round.WinSummary == null ? "?" : Round.WinSummary.Code.ToString())</span></p>
+                                                    <p class="result">最终结果：<span id="win-code3">@(Round.WinSummary == null ? "?" : Round.WinSummary.Code.ToString())</span></p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                </table>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="records">
+                <div id="trade-item-records">
+                    <data-table v-cloak :version="version" :total="total">
+                        <table class="grid">
+                            <tr>
+                                <th>时间</th>
+                                <th>昵称</th>
+                                <th>参与人次</th>
+                                <th>@*IP*@</th>
+                                <th>@*来源*@</th>
+                            </tr>
+                            <tr v-if="!items.length">
+                                <td colspan="5" class="empty-list">暂时没有参与记录 </td>
+                            </tr>
+                            <tr v-for="t in items">
+                                <td>{{t.Time}}</td>
+                                <td>
+                                    <a href="/other/{{t.UserId}}" class="user" target="_blank">
+                                        <img v-bind:src="'/r/'+t.UserIcon+'?format=c20'" />
+                                        {{t.NickName}}
+                                    </a>
+                                </td>
+                                <td>{{t.Quantity}}</td>
+                                <td>@*{{t.OpAddress}}*@</td>
+                                <td>@*{{t.OpDevcie}}*@</td>
+                            </tr>
+                        </table>
+                    </data-table>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="shares">
+                <div id="product-share-list">
+                    <data-table v-cloak :version="version" :total="total">
+
+                        <ul>
+                            <li v-if="!items.length" class="empty-list">
+                                暂时没有晒单记录
+                            </li>
+
+                            <li v-for="i in items">
+                                <div class="user">
+                                    <a href="/other/{{i.AuthorId}}" target="_blank">
+                                        <img v-bind:src="'/r/'+i.UserIcon+'?format=c100'" />
+                                        <div>{{i.UserNick}}</div>
+                                    </a>
+                                </div>
+                                <div class="share">
+                                    <div class="head">
+                                        <div class="pull-right">{{i.CreatedTime}}</div>
+                                        <div class="title">
+                                            <a href="/other/shareddetail/{{i.Id}}" target="_blank">
+                                                <span>第{{i.Round}}期晒单</span>{{i.Title}}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="content">{{i.Content}}</div>
+                                        <ul class="clearfix">
+                                            <li v-for="img in i.Images">
+                                                <img v-bind:src="'/r/'+img.image+'?format=c140'" />
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </data-table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    @{ Html.UIBlock("推荐产品"); }
+</div>
+@section scripts{
+    <script>
+        window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "2", "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+
+        window.boot("product-history-round", {curRound:@Model.CurRound.Round, item:@Model.MainItemId, product:@Model.ProductId,round:@Round.Round,expect:@(Round.OpenTime==null?Round.ExpectOpenTime.Value.ToJsTime():0)});
+    </script>
+}

@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.Title = "圣诞树";
+    var RewardItems = (ServiceProtocol.Biz.Promotion.Activities.ActivityRewardItemDesc[])ViewBag.RewardItems;
+    var GrantStatus = (ServiceProtocol.Biz.Promotion.Activities.GrantActivityStatus)ViewBag.GrantStatus;
+    var TimeRange = (ServiceProtocol.ObjectManager.DateQueryRange)ViewBag.TimeRange;
+}
+@section header{
+    @Html.CDNStyle("~/bundles/desktop/css")
+    <link href="~/content/ActivityMobile/A20161224/Assets/css/style.min.css" rel="stylesheet" type="text/css" />
+}
+<!--顶部横条-->
+<div id="wout">
+
+<div id="wrapper" class="wrapper">
+   <script>
+        var ww = document.documentElement && document.documentElement.clientWidth || document.body.clientWidth || window.innerWidth;
+        var w=document.getElementById('wrapper');
+        var ws=w.style;
+        window.scale=ww/640;
+        ws.transformOrigin = 'top left';
+        ws.transform = 'scale(' + (ww/640) + ')';
+        ws.MozTransformOrigin = 'top left';
+        ws.MozTransform = 'scale(' + (ww/640) + ')';
+        ws.webkitTransformOrigin = 'top left';
+        ws.webkitTransform = 'scale(' + (ww/640) + ')';
+	
+        var ows=document.getElementById('wout').style;
+        ows.width=ww+"px";
+        ows.overflow='hidden';
+    </script>
+    <div class="m1">
+        <div class="container">
+            <div id="join-count">0000000</div>
+            <div id="new-rewards">
+                <div id="scroll">
+                </div>
+            </div>
+            <button id="rewards1"></button>
+        </div>
+    </div>
+    <div class="m2">
+
+    </div>
+    <div class="m3">
+        <div class="status">
+            <div>您的夺宝金额已达:<span id="quantity">@GrantStatus.ActionQuantity</span>元</div>
+            <div>您的抽奖机会剩余:<span id="left">@GrantStatus.Left</span>次</div>
+            <a href="/"></a>
+        </div>
+    </div>
+    <div class="m4">
+        <div class="main">
+            <div id="end">活动已经结束了，等下次机会吧~</div>
+            <div class="items">
+                @{var idx = 1;}
+                @foreach (var item in RewardItems)
+            {
+                    <div class="ri ri@(idx++)" rid="@item.Id">
+                        <img src="@Html.Media(item.Image,"c130")" />
+                        <span>@item.Name</span>
+                    </div>
+                }
+            </div>
+
+            <div class="modal fade simple imgdlg" id="dlg-win" tabindex="-1" role="dialog" data-backdrop="">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <span data-dismiss="modal" class="close"></span>
+                            <button id="next"></button>
+                            <button id="rewards"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade simple imgdlg" id="dlg-win-card" tabindex="-1" role="dialog" data-backdrop="">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <button id="card-select"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="m5">
+
+    </div>
+    <img class="tree-preload" src="~/content/ActivityMobile/A20161224/Assets/images/m41.gif" />
+    <div id="winbg">
+        <div class="wb1"></div>
+        <div class="wb2"></div>
+        <div class="wb3"></div>
+        <div class="wb4"></div>
+        <div class="wb5"></div>
+    </div>
+    <script>
+        ws.height = w.clientHeight*(ww/640)+"px";
+        ws.width = ww+"px";
+    </script>
+    <div id="snow-container"></div>
+
+</div>
+</div>
+
+    <div class="modal fade simple imgdlg" id="dlg-win-card-select" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button id="card-select-ok"></button>
+                    <ul id="card-items"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade simple imgdlg" id="dlg-no-more" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <span data-dismiss="modal" class="close"></span>
+                    <a href="/m/"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade simple imgdlg" id="dlg-required" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <span data-dismiss="modal" class="close"></span>
+                    <a href="/m/"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade simple imgdlg" id="dlg-no-rewards" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <span data-dismiss="modal" class="close"></span>
+                    <a class="more" href="/m/"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade simple imgdlg" id="dlg-rewards" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <span data-dismiss="modal" class="close"></span>
+                    <a href="/m/user/objectprize-record"></a>
+                    <div id="reward-items"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts{
+        @Html.CDNScript("~/bundles/desktop/js")
+        <script>
+        var timeRange={begin:@TimeRange.Begin.Value.ToJsTime(),end:@TimeRange.End.Value.ToJsTime()};
+        var grantStatus=@(Html.Raw(ServiceProtocol.Json.Encode(GrantStatus)));
+        var itemCount=10;
+        </script>
+        <script src="~/content/ActivityPC/A20161224/Assets/js/js.js"></script>
+        <script src="~/content/ActivityPC/A20161224/Assets/js/snow.min.js"></script>
+        <script>
+        snow.addSnow('sscontainer','snow-container', 40);
+        </script>
+    }

@@ -1,0 +1,86 @@
+﻿@{
+    Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+<div class="tabs" id="recharge-history">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="javascript:;" data-action="tab" data-tab="detail" role="tab">充值记录</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active">
+            <div v-if="false" class="loading">正在载入... </div>
+            <div class="filter-panel" v-cloak>
+                @*<div class="row">
+                        <div class="col-sm-1 label">时间：</div>
+                        <div class="col-sm-11">
+                            <ul class="options">
+                                <li v-for="tr in timeRanges" v-on:click="setTimeRange(tr)" v-bind:class="{active:tr==curTimeRange}">{{tr.name}}</li>
+                            </ul>
+                        </div>
+                    </div>*@
+                <div class="row">
+                    <div class="col-sm-1 label">来源：</div>
+                    <div class="col-sm-2">
+                        <select class="form-control input-sm" v-model="platform">
+                            <option v-for="o in platforms" v-bind:value="o.Id">{{o.Name}}</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-1 label">状态：</div>
+                    <div class="col-sm-2">
+                        <select class="form-control input-sm" v-model="state">
+                            <option value="AfterProcessing">全部</option>
+                            <option value="Completed">充值成功</option>
+                            <option value="Failed">充值失败</option>
+                            <option value="Refunding">退款中</option>
+                            <option value="Refunded">已退款</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-2 label">
+                        交易号：
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" v-model="ident" class="form-control input-sm" debounce="1000" />
+                    </div>
+                </div>
+            </div>
+            <data-table v-cloak :version="version" :total="total">
+                <table class="grid">
+                    <tr>
+                        <th>交易号</th>
+                        <th>购买时间</th>
+                        <th>金额</th>
+                        <th>充值通道</th>
+                        <th>获得云币</th>
+                        <th width="200">充值状态</th>
+                    </tr>
+                    <tr v-for="r in recs">
+                        <td>{{r.Ident}}</td>
+                        <td>{{r.CreatedTime}}</td>
+                        <td>{{r.Amount}}</td>
+                        <td>{{r.PaymentPlatform}}</td>
+                        <td>{{r.Amount}}</td>
+                        <td>
+                            {{r.State}}<br />
+                            {{r.LastRefundReason}}
+                            @*<button v-if="r.State=='未完成'" v-bind:disabled="refreshing" type="button" v-on:click="refresh(r)" class="btn btn-default btn-xs">刷新</button>*@
+                        </td>
+                    </tr>
+                    <tr v-if="!recs.length">
+                        <td colspan="6">您还没有充值记录！</td>
+                    </tr>
+                </table>
+            </data-table>
+            <div>
+               <br/>
+                <br />
+                注：退款或充值失败的款项预计3-15个工作日后到账。
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section scripts{
+    <script>
+        window.boot("account-recharge-history");
+    </script>
+}

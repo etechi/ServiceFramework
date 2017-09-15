@@ -1,0 +1,93 @@
+﻿@{
+    var Setting = Html.Setting<CrowdMallSetting>();
+    var SysSetting = Html.Setting<SystemSetting>();
+}
+<div class="recharge container" id="recharge">
+
+    <ol class="breadcrumb">
+        <li><a href="/">首页</a></li>
+        <li><a href="/user/">个人中心</a></li>
+        <li class="active">立即充值</li>
+    </ol>
+    <div v-if="false" class="loading">
+        载入中...
+    </div>
+    <div class="panel" v-cloak>
+        <div class="amount">
+            <label>选择金额：</label>
+            <ul class="options">
+                <li v-for="a in amounts" v-bind:class="{active:a==curAmount}" v-on:click="setAmount(a)">{{a.value}}元</li>
+                <li class="other-amount-tips" v-bind:class="{hidden:!curAmount}" v-on:click="setAmount(null)">
+                    其他金额
+                </li>
+                <li class="other-amount-input" v-bind:class="{hidden:curAmount}">
+                    <input type="text" v-model="otherAmount" maxlength="6" number />元
+                </li>
+            </ul>
+        </div>
+
+        <div class="platforms">
+            <label>支付方式：</label>
+            <ul class="options">
+                <li v-for="p in platforms" v-bind:class="{active:p==curPlatform}" v-on:click="setPlatform(p)"><img v-bind:src="'/r/'+p.Icon" />{{p.Name}}</li>
+            </ul>
+        </div>
+        <div class="final-amount">
+            <label>网盘空间：</label>
+            <div style="display:inline-block">
+                <span class="text-primary">{{rechargeAmount}}</span>M（1个月内有效)<br />
+            </div>
+        </div>
+        <div class="activity"  v-if="activities.length">
+            <label>当前活动：</label>
+            <ul class="activity-result-list">
+                <li v-for="a in activities" class="activity-result">
+                    <div class="end" v-show="a.end">活动截止：{{a.end}}</div>
+                    <h4>{{a.name}}</h4>
+                    <div>
+                        <div>活动说明:</div>
+                        <div class="desc">{{a.desc}}</div>
+                    </div>
+                    <ul>
+                        <li v-for="r in a.results">{{r.name}} x {{r.count}}</li>
+                        <li v-if="!a.results.length">多充一些，就可以参加活动哦！</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="final-amount">
+            <label>获赠云币：</label>
+            <div style="display:inline-block">
+                <span class="text-primary">{{finalAmount}}</span>个
+                <span class="text-danger">(当前参与活动在支付期间可能发生变化，实际获得好云币以充值记录为准.)</span>
+            </div>
+        </div>
+        <div class="submit">
+            <div>
+                <input type="checkbox" v-model="termsAccepted" />
+                我已阅读并同意<a href="/help/doc/pc-terms" target="_blank" id="termsLink">《服务协议》</a>
+            </div>
+            <div class="text-danger">{{message}}</div>
+            <button class="btn btn-primary" v-bind:disabled="executing" v-on:click="submit">立即充值</button>
+        </div>
+        <div class="help">
+            <div class="title">温馨提示：</div>
+            <div class="body">
+                <p>
+                    若您在充值过程中遇到问题，可点此<a href="javascript:;" data-action="chat">联系客服</a>进行人工处理。
+                </p>
+                <p>用户须知：</p>
+                <p>1. 每日的充值限额依据各银行限额为准；</p>
+                <p>2. 由于产品性质特殊，一旦充值后不能退款，请根据实际需要来购买空间，以免产生不必要的浪费；</p>
+                <p>3. 每充值1元将获赠云币1个，可以在<a href="@SysSetting.HttpRoot" target="_blank">云币商城</a>中使用；</p>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("../Shared/_Dialog");
+
+@section scripts{
+    <script>
+        window.boot("account-recharge");
+    </script>
+}

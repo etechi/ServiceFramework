@@ -1,0 +1,57 @@
+﻿@model CrowdMall.Bizness.CrowdFounding.Models.CFWinShared
+@{
+    Layout = "../Shared/_OtherUserLayout.cshtml";
+    var round = (CrowdMall.Bizness.CrowdFounding.Models.CFRound)ViewBag.Round;
+    var images = ServiceProtocol.Json.Decode<CrowdMall.Bizness.CrowdFounding.Models.CFWinSharedImage[]>(Model.Images);
+}
+
+<div class="share-detail">
+    <h3>晒单详情</h3>
+    <div class="head">
+        <div>@Model.Title</div>
+        <div>晒单时间: @Model.CreatedTime.ToString("yyyy-MM-dd HH:mm:ss")</div>
+    </div>
+    <div class="user-win-status clearfix">
+        <img class="user" src="@Html.Media(round.WinSummary.User.Image,"c80")" />
+        <div class="user">
+            <dl class="status">
+                <dt>获奖者</dt>
+                <dd>@round.WinSummary.User.NickName</dd>
+                <dt>总共参与</dt>
+                <dd><b>@round.WinSummary.Quantity</b>人次</dd>
+                <dt>幸运号码</dt>
+                <dd><b>@round.WinSummary.Code</b></dd>
+                <dt>揭晓时间</dt>
+                <dd>@round.OpenTime.Value.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+            </dl>
+        </div>
+        <img class="product" src="@Html.Media(@round.Image,"c80")" />
+        <div class="product">
+            <div>(第@(round.Round)期)@round.Title</div>
+            <div>总需@(round.Total)人次</div>
+            <div><a target="_blank" href="/product/@round.ProductId">最新一期正在进行中...</a></div>
+        </div>
+        <button data-action="buy" data-item="@round.ProductId" class="btn btn-primary btn-product-buy">立即夺宝</button>
+    </div>
+    <div class="quote clearfix">
+        <i class="open">“</i>
+        <div>
+            @foreach (var p in @Model.Content.Split('\n'))
+            {
+                <p>@p</p>
+            }
+        </div>
+        <i class="close">”</i>
+    </div>
+    <ul class="clearfix">
+        @foreach (var img in images)
+        {
+            <li>
+                <img src="@Html.Media(img.image,"c450")" />
+            </li>}
+    </ul>
+    <div></div>
+</div>
+
+@section scripts{
+}

@@ -1,0 +1,15 @@
+﻿@model CrowdMall.Bizness.Products.IItem
+@{ 
+    var item = Model;
+}
+<div class="product-item">
+    <a href="/m/item/@item.ItemId"><img width="100" src="@Html.Media(item.Image,"c200")" /></a>
+    <h4><a href="/m/item/@item.ItemId">(第@(item.CurRound.Round)期)@(item.Title)</a></h4>
+    <div class='note'>开奖进度: <span class="selled">@(item.CurRound.Selled * 100 / item.CurRound.Total)%</span></div>
+    <div class='tail'>
+        <a href="/m/home/cart/@item.ItemId"><span class="fa fa-cart-plus"></span></a>
+        <div class="progress">
+            <div class="progress-bar" style="width:@(item.CurRound.Selled * 100 / item.CurRound.Total)%"></div>
+        </div>
+    </div>
+</div>

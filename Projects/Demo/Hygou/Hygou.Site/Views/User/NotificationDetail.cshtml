@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+@model ServiceProtocol.Biz.Notifications.UserNotification
+
+<div class="tabs">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="javascript:;" data-action="tab" data-tab="detail" role="tab">我的通知</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active notification-detail">
+            <h1 class="text-center">@Model.Title</h1>
+            <br/><br />
+            <section>
+                @Html.Raw(ViewBag.Body)
+            </section>
+            <br/>
+            <br />
+            <div class="text-center">
+                <button class="btn btn-primary" style="width:100px" onclick="history.back()">返回</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section scripts{
+    <script>
+		window.boot("user-notification-detail");
+    </script>
+}

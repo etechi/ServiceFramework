@@ -1,0 +1,35 @@
+﻿@{ 
+	Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+
+<div class="addresses" id="user-addresses" >
+	<div class="alert alert-warning">您最多可以保存5条地址</div>
+	<ul v-cloak class="clearfix">
+		<li v-for="a in addrs">
+			<div class="cmds">
+				<span class="default" v-if="a.IsDefaultAddress">默认地址</span>
+				<span class="fa fa-edit pointer" v-on:click="edit(a)"></span>
+				<span class="fa fa-remove pointer" v-on:click="remove(a)"></span>
+			</div>
+			<div class="name">{{a.ContactName}} ({{a.ContactPhoneNumber}})</div>
+			<div class="loc">{{a.LocationName}}</div>
+			<div class="addr">{{a.Address}}</div>
+		</li>
+		<li class="add" v-on:click="add()" v-if="addrs.length<5">
+			<span class="fa fa-plus"></span>
+			<div>添加地址</div>
+		</li>
+	</ul>
+
+    <div v-cloak class="alert alert-info">
+        <h4>注意：</h4>
+        <p>1.	点击上方添加地址按钮，填写您的收货人、收货地址和收货人联系方式。</p>
+        <p>2.	中奖后选择您已保存的收货地址即可确认信息。</p>
+    </div>
+</div>
+@Html.Partial("AddrEditModal")
+@section scripts{
+<script>
+	window.boot("user-address");
+</script>
+}

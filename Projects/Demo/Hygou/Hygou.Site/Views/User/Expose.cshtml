@@ -1,0 +1,79 @@
+﻿@{
+	Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+<div class="tabs" id="user-expose">
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a href="#shared" aria-controls="shared" role="tab" data-toggle="tab">已晒单</a></li>
+		<li role="presentation"><a href="#unshared" aria-controls="unshared" id="unshared-link" role="tab" data-toggle="tab">未晒单</a></li>
+	</ul>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="shared">
+            <data-table v-cloak :version="version" :total="total" >
+                <table v-cloak class="grid">
+                    <tr>
+                        <th>奖品图片</th>
+                        <th style="min-width:240px">奖品名称</th>
+                        <th width="120">晒单时间</th>
+                        <th>分享内容</th>
+                        <th width="100">操作</th>
+                    </tr>
+                    <tr v-for="r in recs">
+                        <td><a href="/item/{{r.TargetId}}-{{r.Round}}" target="_blank"><img v-bind:src="'/r/'+r.Item.Image+'?format=c90'" /></a></td>
+                        <td><a href="/item/{{r.TargetId}}-{{r.Round}}" target="_blank">{{r.Item.Title}}</a></td>
+                        <td>{{r.CreatedTime}}</td>
+                        <td>
+                            <div>{{r.Title}}</div>
+                            <div>{{r.Content}}</div>
+                        </td>
+                        <td>
+                            <a href="/other/shareddetail/{{r.Id}}" target="_blank">查看详细</a><br/>
+                            <a href="/user/share/{{r.Id}}">修改</a>
+                        </td>
+                    </tr>
+                    <tr v-if="!recs.length">
+                        <td colspan="5">还没有获奖记录！</td>
+                    </tr>
+                </table>
+            </data-table>
+        </div>
+		<div role="tabpanel" class="tab-pane active" id="unshared">
+            <data-table v-cloak :version="version" :total="total">
+                <table v-cloak class="grid">
+                    <tr>
+                        <th>商品图片</th>
+                        <th style="text-align:left">商品名称</th>
+                        <th>幸运号码</th>
+                        <th>夺宝时间</th>
+                        <th>揭晓时间</th>
+                        <th>操作</th>
+                    </tr>
+                    <tr v-for="r in recs">
+                        <td><a href="/item/{{r.ProductId}}-{{r.Round}}" target="_blank"><img v-bind:src="'/r/'+r.Image+'?format=c90'" /></a></td>
+                        <td style="text-align:left">
+                            <div><a href="/item/{{r.ProductId}}-{{r.Round}}" target="_blank">(第{{r.Round}}期){{r.Title}}</a></div>
+                            <div>共需：{{r.Total}}人次</div>
+                        </td>
+                        <td>
+                            <div>{{r.WinSummary.Code}}</div>
+                            <div>总共参与了{{r.WinSummary.Quantity}}人次</div>
+                        </td>
+                        <td>{{r.WinSummary.TradeTime}}</td>
+                        <td>{{r.OpenTime}}</td>
+                        <td>
+                            <a href="/user/share/{{r.ProductId}}-{{r.Round}}" class="btn btn-primary btn-xs">马上晒单</a>
+                        </td>
+                    </tr>
+                    <tr v-if="!recs.length">
+                        <td colspan="6">还没有获奖记录！</td>
+                    </tr>
+                </table>
+            </data-table>
+        </div>
+	</div>
+</div>
+
+@section scripts{
+	<script>
+		window.boot("user-expose");
+	</script>
+}

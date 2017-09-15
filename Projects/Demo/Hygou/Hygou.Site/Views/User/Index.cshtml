@@ -1,0 +1,37 @@
+﻿@{ 
+	Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+<div id="user-home">
+	<div class="header">
+		<ul class="clearfix">
+			<li>
+				<dl>
+					<dt>云币可用余额</dt>
+					<dd class="balance">@ViewBag.Balance.ToString("0")</dd>
+				</dl>
+			</li>
+            <li>
+                <dl>
+                    <dt>红包(个)</dt>
+                    <dd class="balance"><a href="/promotion/coupon">@ViewBag.CouponCount</a></dd>
+                </dl>
+            </li>
+            @*<li>
+                <dl>
+                    <dt>积分</dt>
+                    <dd class="balance">@ViewBag.BonusPointStatus.CurValue</dd>
+                </dl>
+            </li>*@
+			<li>
+				<a class="btn btn-primary" href="/account/recharge">充值</a>
+			</li>
+		</ul>
+	</div>
+	@{Html.RenderPartial("../Trade/HistoryPartial");}
+</div>
+@section scripts{
+<script>
+	window.boot("user-index",{uid:@ViewBag.CurrentUser.Id});
+	window.boot("trade-history");
+</script>
+}

@@ -1,0 +1,33 @@
+﻿<script id="tmpl-product" type="text/x-handlebars-template">
+    <li class="product-item list-item">
+        {{#if tag10}}
+        <img class="product-tag10" src="@Html.ResBase()Content/desktop/images/tag10.png" />
+        {{/if}}
+        <a href="/item/{{ItemId}}" target="_blank">
+            <img src="@Html.ResBase()r/{{Image}}?format=c200" />
+            <h5>(第{{CurRound.Round}}期){{Title}}</h5>
+        </a>
+        <span class="price">价值：￥{{MarketPrice}}</span>
+        <div class="product-status">
+            <div>
+                <div style="width:{{CurRound.SelledPercent}}%"></div>
+            </div>
+            <ul>
+                <li>
+                    <div>{{CurRound.Selled}}</div>
+                    <div>已夺宝人次</div>
+                </li>
+                <li>
+                    <div>{{CurRound.Total}}</div>
+                    <div>总需人次</div>
+                </li>
+                <li>
+                    <div>{{CurRound.Left}}</div>
+                    <div>剩余人次</div>
+                </li>
+            </ul>
+        </div>
+        <a href="/item/{{ItemId}}" target="_blank" class="btn btn-primary btn-product-buy">立即夺宝</a>
+        <button data-action="addToCart" data-item="{{ItemId}}" class="btn btn-default btn-add"><span class="fa fa-cart-plus"></span></button>
+    </li>
+</script>

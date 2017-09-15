@@ -1,0 +1,38 @@
+﻿@{ 
+	var Setting = Html.Setting<CrowdMallSetting>();
+	var id = ViewBag.id;
+	var amount = ViewBag.amount;
+	var callback = ViewBag.callback;
+}
+<div class="container">
+	<div class="panel" style="padding:20px;margin:0 auto">
+		<h3>测试支付页，直接完成充值即可</h3>
+		<form action="@callback" style="width:400px">
+			<div class="form-group">
+				<label>ID</label>
+				<input readonly="readonly" class="form-control" name="pid" value="@id" /><br />
+			</div>
+			<div class="form-group">
+				<label>Amount</label>
+				<input readonly="readonly" class="form-control" name="amount" value="@amount" /><br />
+			</div>
+			<div class="form-group">
+				<label>UserID</label>
+				<input readonly="readonly" class="form-control" name="user-id" value="user1" /><br />
+			</div>
+			<div class="form-group">
+				<label>UserName</label>
+				<input readonly="readonly" class="form-control" name="user-name" value="user1name" /><br />
+			</div>
+			<div class="form-group">
+				<label>UserAccount</label>
+				<input readonly="readonly" class="form-control" name="user-account" value="user1account" /><br />
+			</div>
+			<button class="btn btn-primary" id="submit" type="submit">完成充值</button>
+		</form>
+	</div>
+</div>
+@section scripts{
+	<script>
+	</script>
+}

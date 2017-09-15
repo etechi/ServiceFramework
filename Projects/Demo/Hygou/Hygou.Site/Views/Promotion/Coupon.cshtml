@@ -1,0 +1,119 @@
+﻿@{
+    Layout = "../Shared/_UserAdminLayout.cshtml";
+    var CouponSetting = Html.Setting<ServiceProtocol.Biz.Promotion.Coupons.CouponSetting>();
+}
+
+<div class="tabs" id="user-expose">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#available" aria-controls="available" role="tab" data-toggle="tab">我的红包</a></li>
+        <li role="presentation"><a href="#all" aria-controls="all" id="all-link" role="tab" data-toggle="tab">所有红包</a></li>
+        <li role="presentation"><a href="#records" aria-controls="records" id="records-link" role="tab" data-toggle="tab">使用记录</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="available">
+            <div id="coupon-list">
+                <div v-if="!coupons.length"  class="empty" v-cloak>
+                    还没有红包记录！
+                </div>
+                <data-table v-cloak :version="version" :total="total" :items-per-page="9">
+                    <ul v-cloak class="coupon-list clearfix">
+                        <li v-for="p in coupons" class="coupon">
+                            <div class="body">
+                                <img src="~/Content/desktop/images/redpacket.jpg" />
+                                <div class="info">
+                                    <div>&nbsp;
+                                        <span class="value">{{p.name}}x{{p.left}}</span>
+                                        @*<span class="prefix">{{p.prefix}}</span>
+                                        <span class="value">{{p.value}}</span>
+                                        <span class="postfix">{{p.postfix}}</span>*@
+                                    </div>
+                                    <div class="desc">@*{{p.name}}x{{p.left}}*@</div>
+                                </div>
+                            </div>
+                            <div class="tail">
+                                <span class="expires">{{p.expire}}到期</span>
+                                <span class="type">&nbsp;@*{{p.type}}*@</span>
+                            </div>
+                        </li>
+                    </ul>
+                </data-table>
+                <div v-cloak class="alert alert-info">
+                    <h4>注意:</h4>
+                    <p>1.	您单次充值所获得的红包可以叠加使用，多次充值所获得的红包，即使面额相同，也不能叠加使用。</p>
+                    <p>2.	红包使用规则：单笔订单支付必须超过@(Math.Ceiling(100/CouponSetting.MaxDiscountPercent)-1)元才能使用红包，且红包使用的总额不能超过订单支付总额的@(CouponSetting.MaxDiscountPercent)%。若红包使用超过订单总额80%，超出部分不做退还。
+                        当订单总额@(CouponSetting.MaxDiscountPercent)%出现小数点时，抵用额度默认向下取整。
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane " id="all">
+            <div id="all-coupons">
+                <div class="filter-panel" v-cloak>
+                    <div class="row">
+                        <div class="col-sm-1 label">红包状态：</div>
+                        <div class="col-sm-11">
+                            <ul class="options">
+                                <li v-for="tr in states" v-on:click="setState(tr)" v-bind:class="{active:tr==curState}">{{tr.name}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <data-table v-cloak :version="version" :total="total">
+                    <table v-cloak class="grid small">
+                        <tr>
+                            <th>红包</th>
+                            <th>获得时间</th>
+                            <th>生效时间</th>
+                            <th>过期时间</th>
+                            <th>最后使用</th>
+                            <th>来源</th>
+                            <th>剩余/总数</th>
+                        </tr>
+                        <tr v-for="i in recs">
+                            <td>{{i.name}}</td>
+                            <td>{{i.created}}</td>
+                            <td>{{i.begin}}</td> 
+                            <td>{{i.expire}}</td>
+                            <td>{{i.lastUsed}}</td>
+                            <td>{{i.srcDesc}}</td>
+                            <td>{{i.left}}/{{i.count}}</td>
+                        </tr>
+                        <tr v-if="!recs.length">
+                            <td colspan="7">还没有红包哦！</td>
+                        </tr>
+                    </table>
+                </data-table>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane " id="records">
+            <div id="coupon-records">
+                <data-table v-cloak :version="version" :total="total">
+                    <table v-cloak class="grid small">
+                        <tr>
+                            <th>红包</th>
+                            <th>使用时间</th>
+                            <th>使用数量</th>
+                            <th>用途</th>
+                        </tr>
+                        <tr v-for="i in recs">
+                            <td>{{i.name}} </td>
+                            <td>{{i.time}}</td>
+                            <td>{{i.count}}</td>
+                           <td>{{i.dstDesc}}</td>
+                        </tr>
+                        <tr v-if="!recs.length">
+                            <td colspan="4">还没有红包使用记录！</td>
+                        </tr>
+                    </table>
+                </data-table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+    <script>
+		window.boot("promotion-coupon");
+    </script>
+}

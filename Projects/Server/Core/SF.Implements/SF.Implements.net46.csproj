@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{DC7AF484-4386-4CB8-AE4C-0F33B18C4ADD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SF.Implements</RootNamespace>
+    <AssemblyName>SF.Implements</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Clients\ClientDIExtensions.cs" />
+    <Compile Include="Clients\LocalClientService.cs" />
+    <Compile Include="Core\Caching\LocalFileCache.cs" />
+    <Compile Include="Core\Caching\CachingDIServiceCollectionExtension.cs" />
+    <Compile Include="Core\CallGuarantors\CallGuarantorDIServoceCollectionExtension.cs" />
+    <Compile Include="Core\CallGuarantors\Runtime\CallableFactory.cs" />
+    <Compile Include="Core\CallGuarantors\Runtime\CallDispatcher.cs" />
+    <Compile Include="Core\CallGuarantors\Runtime\CallGuarantor.cs" />
+    <Compile Include="Core\CallGuarantors\Runtime\CallScheduler.cs" />
+    <Compile Include="Core\CallGuarantors\Runtime\ConstantTimes.cs" />
+    <Compile Include="Core\CallGuarantors\Runtime\ExceptionFactory.cs" />
+    <Compile Include="Core\CallGuarantors\Storage\CallGuarantorStorage.cs" />
+    <Compile Include="Core\CallGuarantors\Storage\DataModels\CallExpired.cs" />
+    <Compile Include="Core\CallGuarantors\Storage\DataModels\CallInstance.cs" />
+    <Compile Include="Core\Hosting\AppInstanceBuilder.cs" />
+    <Compile Include="Core\Hosting\ConsoleDefaultFilePathStructure.cs" />
+    <Compile Include="Core\Hosting\FilePathResolver.cs" />
+    <Compile Include="Core\Hosting\HostingDIServiceCollectionExtension.cs" />
+    <Compile Include="Core\Logging\Logger.cs" />
+    <Compile Include="Core\Logging\LoggerDIServiceCollectionExtension.cs" />
+    <Compile Include="Core\Logging\DefaultLogMessageFactory.cs" />
+    <Compile Include="Core\Logging\LogService.cs" />
+    <Compile Include="Core\Logging\LoggerCollection.cs" />
+    <Compile Include="Core\Serialization\Newtonsoft\FixedContractResolver.cs" />
+    <Compile Include="Core\Serialization\Newtonsoft\JsonSerializer.cs" />
+    <Compile Include="Core\Serialization\Newtonsoft\NewtonsoftJsonDICollectionExtension.cs" />
+    <Compile Include="Core\ServiceFeatures\ServiceFeatureControlDICollectionExtension.cs" />
+    <Compile Include="Core\ServiceFeatures\ServiceFeatureControlService.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ServiceCreatorCache.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ManagedServiceFactoryManager.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ServiceMetadataExtension.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\UnmanagedServiceFactoryManager.cs" />
+    <Compile Include="Core\ServiceManagement\ScopedServiceProvider.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceResolver.cs" />
+    <Compile Include="Core\ServiceManagement\AppInstanceBuilderExtension.cs" />
+    <Compile Include="Core\ServiceManagement\Types.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceScopeFactory.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceScopeBase.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceScope.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ServiceFactory.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceProvider.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceProviderBuilder.cs" />
+    <Compile Include="Core\ServiceManagement\Storages\DBServiceSource.cs" />
+    <Compile Include="Core\TaskServices\TaskServiceManager.cs" />
+    <Compile Include="Core\TaskServices\TaskService.cs" />
+    <Compile Include="Core\TaskServices\TaskServiceManagerDIServiceCollectionExtension.cs" />
+    <Compile Include="Core\Times\TimesDIServiceCollectionExtension.cs" />
+    <Compile Include="Core\Times\TimeService.cs" />
+    <Compile Include="Data\AttributeValidators\ValidatorDICollectionExtension.cs" />
+    <Compile Include="Data\AttributeValidators\ObjectAttributeValidator.cs" />
+    <Compile Include="Data\AttributeValidators\Validators\RangeValidator.cs" />
+    <Compile Include="Data\AttributeValidators\Validators\RequiredValidator.cs" />
+    <Compile Include="Data\AttributeValidators\Validators\MinLengthValidator.cs" />
+    <Compile Include="Data\AttributeValidators\Validators\MaxLengthValidator.cs" />
+    <Compile Include="Data\DefaultDataSource.cs" />
+    <Compile Include="Data\Entity\DataEntity.cs" />
+    <Compile Include="Data\Entity\DataEntityConfig.cs" />
+    <Compile Include="Data\Entity\DataEntityResolverDICollectionExtension.cs" />
+    <Compile Include="Data\Entity\DataEntityResolver.cs" />
+    <Compile Include="Data\IdentGenerator\StorageIdentGenerator.cs" />
+    <Compile Include="Data\IdentGenerator\IdentGeneratorDIExtension.cs" />
+    <Compile Include="Data\IdentGenerator\IdentSeed.cs" />
+    <Compile Include="Data\Storage\DataSet.cs" />
+    <Compile Include="Data\Storage\DataContext.cs" />
+    <Compile Include="Data\Storage\DataContextDICollectionExtension.cs" />
+    <Compile Include="Data\Storage\TransactionScopeManager.cs" />
+    <Compile Include="KB\Mime\DefaultMimeResolver.cs" />
+    <Compile Include="KB\KBDIServiceCollection.cs" />
+    <Compile Include="KB\PhoneNumber\DefaultPhoneNumberValidator.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Core\ServiceManagement\Management\DataModels\ServiceInstance.cs" />
+    <Compile Include="Core\ServiceManagement\Management\ServiceDeclarationManager.cs" />
+    <Compile Include="Core\ServiceManagement\Management\ServiceImplementManager.cs" />
+    <Compile Include="Core\ServiceManagement\Management\ServiceInstanceManager.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\DefaultServiceImplementTypeResolver.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\IServiceCreateParameterTemplate.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ServiceFactoryManager.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ServiceCreateParameterTemplate.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ServiceCreatorBuilder.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\ServiceMetadata.cs" />
+    <Compile Include="Core\ServiceManagement\Internals\TypeExtension.cs" />
+    <Compile Include="Core\ServiceManagement\ServiceCollection.cs" />
+    <Compile Include="Core\ServiceManagement\ImplementConfigTypeSource.cs" />
+    <Compile Include="Core\ServiceManagement\Storages\MemoryServiceSource.cs" />
+    <Compile Include="Core\ServiceManagement\ServicveManagementDIServiceCollectionExtension.cs" />
+    <Compile Include="Services\Media\Managers\MediaManager.cs" />
+    <Compile Include="Services\Media\Managers\MediaMetaCache.cs" />
+    <Compile Include="Services\Media\MediaDIServiceCollection.cs" />
+    <Compile Include="Services\Security\SecurityServiceCollection.cs" />
+    <Compile Include="Services\Security\PasswordHasher.cs" />
+    <Compile Include="Services\Security\DataProtector.cs" />
+    <Compile Include="Services\Test\TestService.cs" />
+    <Compile Include="Services\Media\Storages\FileSystemMediaStorage.cs" />
+    <Compile Include="Services\Media\MediaService.cs" />
+    <Compile Include="Services\Media\Storages\StaticFileMediaStorage.cs" />
+    <Compile Include="Core\NetworkService\DefaultServiceBuildRuleProvider.cs" />
+    <Compile Include="Core\NetworkService\DefaultServiceMetadataService.cs" />
+    <Compile Include="Core\NetworkService\NetworkServiceDICollectionExtension.cs" />
+    <Compile Include="Core\NetworkService\ServiceTypeCollection.cs" />
+    <Compile Include="Core\NetworkService\ServiceMetadataBuilder.cs" />
+    <Compile Include="Core\NetworkService\TypeScriptProxyBuilder.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="project.json" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

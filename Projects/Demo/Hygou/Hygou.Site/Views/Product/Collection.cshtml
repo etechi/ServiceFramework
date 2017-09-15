@@ -1,0 +1,72 @@
+﻿@model ServiceProtocol.ObjectManager.QueryResult<CrowdMall.Bizness.Products.IItem>
+@{
+    var Category = (CrowdMall.Bizness.Products.ICategory)ViewBag.Collection;
+}
+<div class="product-collection">
+	<div class="head" style="background-image:url(@Html.Media(Category.Image))">
+		<div class="desc">
+			@foreach (var line in (Category.Description ?? "").Split('\n'))
+			{
+				<p>@line</p>
+			}
+		</div>
+	</div>
+	<div class="container body-content">
+		<div class="products">
+			<div class="toolbar">
+				<span>排序：</span>
+				<button class="btn btn-default active" data-action="sort" data-method="hot">人气商品</button>
+				<button class="btn btn-default" data-action="sort" data-method="left">剩余人次</button>
+                <button class="btn btn-default" data-action="sort" data-method="new">最新商品</button>
+				<button class="btn btn-default" data-action="sort" data-method="price-up">总需人次<span class="fa fa-arrow-up"></span></button>
+                <button class="btn btn-default" data-action="sort" data-method="price-down">总需人次<span class="fa fa-arrow-down"></span></button>
+			</div>
+			<ul class="items clearfix" id="list">
+				@foreach (var item in Model.Items)
+			    {
+                    @Html.Partial("_Item",item)
+					@*<li class="product-item list-item">
+						<a href="/item/@item.ItemId" target="_blank">
+							<img src="~/Content/desktop/images/empty.gif" data-src="/r/@item.Image?format=c200" width="200" height="200" class="lazy" />
+							<h5>(第@(item.CurRound.Round)期)@item.Title</h5>
+						</a>
+						<span class="price">价值：￥@(Math.Round(item.MarketPrice))</span>
+						<div class="product-status">
+							<div >
+								<div style="width:@(item.CurRound.Selled * 100 / item.CurRound.Total)%"></div>
+							</div>
+							<ul>
+								<li>
+									<div>@item.CurRound.Selled</div>
+									<div>已夺宝人次</div>
+								</li>
+								<li>
+									<div>@item.CurRound.Total</div>
+									<div>总需人次</div>
+								</li>
+								<li>
+									<div>@(item.CurRound.Total - item.CurRound.Selled)</div>
+									<div>剩余人次</div>
+								</li>
+							</ul>
+						</div>
+                        <a href="/item/@item.ItemId" target="_blank" class="btn btn-primary btn-product-buy">立即夺宝</a>
+                        <button data-action="addToCart" data-item="@item.ItemId" class="btn btn-default btn-add"><span class="fa fa-cart-plus"></span></button>
+					</li>*@
+			}
+			</ul>
+			<div class="more  @(Model.Items.Count()<40?"hidden":"")" data-action="more" id="more">
+				更多...
+			</div>
+			<div class="loading hidden" id="loading">
+				加载中...
+			</div>
+		</div>
+	</div>
+</div>
+@section scripts{
+	@Html.Partial("_ItemHBTemplate")
+	<script>
+		window.boot("product-collection",{cid:@Category.Id, loaded:@Model.Items.Count()});
+	</script>
+}

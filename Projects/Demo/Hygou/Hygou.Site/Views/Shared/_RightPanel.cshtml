@@ -1,0 +1,31 @@
+﻿	
+	<div id="right_panel">
+        <a class="head" href="/"></a>
+        <div class="cart" id="shopping-cart-panel" v-on:mouseover="show()" v-cloak>
+            <a href="/cart"></a>
+            @Html.Partial("_ShoppingCartPanel")
+        </div>
+        <div class="chat">
+            @Html.Partial("_RightChatPanel")
+        </div>
+        <a class="feedback" href="/help/feedback"></a>
+        <a class="go-top" href="javascript:;" data-action="gotop"></a>
+
+		@*<a class="chat" href="javascript:;" data-action="chat">
+            <img src="~/Content/desktop/images/coca.png"/>
+            <span>在线客服</span>            
+        </a>
+        <a class="feedback" href="/help/feedback">
+            <img src="~/Content/desktop/images/edit.png"/>
+            <span>用户反馈</span>
+        </a>
+        <a class="go-top" href="javascript:;" data-action="gotop">
+            <span>
+                <span class="fa fa-angle-up"></span>
+                TOP
+            </span>
+            <span>
+                返回顶部
+            </span>
+        </a>*@
+	</div>

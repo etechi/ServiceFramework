@@ -1,0 +1,42 @@
+﻿@model CrowdMall.Bizness.Accounting.Models.DepositRecord
+@{
+    var Setting = Html.Setting<CrowdMallSetting>();
+}
+<div class="recharge container" id="recharge">
+
+    <ol class="breadcrumb">
+        <li><a href="/">首页</a></li>
+        <li><a href="/user/">个人中心</a></li>
+        <li class="active">充值成功</li>
+    </ol>
+    <div class="panel result-panel">
+        <div class="result-content">
+            <h3><span class="glyphicon glyphicon-ok"></span> 充值成功</h3>
+            <dl>
+                <dt>充值时间</dt>
+                <dd>@(Model.CompletedTime?.ToString("yyyy-MM-dd HH:mm"))</dd>
+                <dt>充值金额</dt>
+                <dd>@Model.Amount</dd>
+                <dt>剩余云币</dt>
+                <dd>@ViewBag.Balance</dd>
+                <dt>交易号</dt>
+                <dd>@Model.Ident</dd>
+                <dt>备注</dt>
+                <dd>@Model.PaymentDesc</dd>
+            </dl>
+            @if (!string.IsNullOrEmpty(Request.QueryString["jump"]))
+            {
+            <a class="btn btn-primary" href="@Request.QueryString["jump"]"> @(string.IsNullOrEmpty(Request.QueryString["title"])?"确定": Request.QueryString["title"])<span id="timeleft"></span></a>
+            }
+            else
+            {
+            <a class="btn btn-primary" href="/">返回首页 <span id="timeleft"></span></a>
+            }
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        window.boot("account-recharge-completed");
+    </script>
+}

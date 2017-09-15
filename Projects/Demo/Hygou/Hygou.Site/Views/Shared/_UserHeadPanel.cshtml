@@ -1,0 +1,65 @@
+﻿@{
+    var setting = Html.Setting<CrowdMallSetting>();
+    var user = (CrowdMall.DataModels.User)ViewBag.CurrentUser;
+    string id = user.Id.ToString("000000");
+    string nick = user.NickName;
+    string phone = user.PhoneNumber;
+    string image = Html.Media(user.Image ?? setting.DefaultUserImage, "c100");
+}
+<div class="user-admin-head">
+    <div class="container">
+        <div class="icon">
+            <img src="@image" />
+            <span data-action="userIconUpdate">上传头像</span>
+            <input id="userIconUpload" type="file" name="file">
+        </div>
+        <div class="info">
+            <div class="line1">你好，@nick </div>
+            <div class="line2">
+                <span>ID：@id</span> | <span>手机：@phone</span> | <span>昵称：<span id="nick-edit" class="nick-edit" data-action="nickEdit"><span>@nick</span><span class="fa fa-edit"></span></span></span> | @*<span>会员等级： @ViewBag.BonusPointStatus.LevelName</span> |*@ <a href="/user/notification" id="user-head-notification">我的通知</a>
+            </div>
+        </div>
+        <div class="actions">
+            @*@if (ViewBag.IsDailyAttanded)
+            {
+                <a href="javascript:;">
+                    <img src="~/Content/desktop/images/usermenu/icon-dailyattand.png" />
+                    <span>已签到</span>
+                </a>
+            }
+            else
+            {
+                <a href="javascript:;" data-action="dailySign">
+                    <img src="~/Content/desktop/images/usermenu/icon-dailyattand.png" />
+                    <span>每日签到</span>
+                </a>
+            }*@
+            <a href="/user/security">
+                <img src="~/Content/desktop/images/usermenu/icon-security.png" />
+                登录密码
+            </a>
+            <a href="/user/address">
+                <img src="~/Content/desktop/images/usermenu/icon-address.png" />
+                收货地址
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="dlgIconUpdate" tabindex="-1" role="dialog" aria-labelledby="dlgIconUpdate">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">上传头像</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,52 @@
+﻿@{
+    ViewBag.Title = "新手福利";
+}
+@section header{
+    <link href="~/content/ActivityPC/Register/Assets/css/style.css" rel="stylesheet" type="text/css" />
+}
+
+<!--顶部横条-->
+<div class="xtop">
+    <div class="t-main">
+        <!--好云购logo-->
+        <h1 class="logo"><a href="/" title="返回首页"><img src="~/content/ActivityPC/Register/Assets/images/logo.jpg" /></a></h1>
+        <span class="t-right"><a href="/">&lt;&lt;&nbsp;返回首页</a></span>
+    </div>
+</div>
+<div class="wrapper">
+    <div class="s1"></div>
+    <div class="s2">
+        <button onclick="show()" id="b1"></button>
+    </div>
+    <div class="s3"></div>
+    <div class="s4"></div>
+    <div class="s5"></div>
+    <div class="s6">
+        <button onclick="show()" id="b2"></button>
+    </div>
+</div>
+@Html.Partial("../User/_SignupModal")
+<div class="modal fade simple" id="dlg-notice" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" id="dialog-body">
+                <span data-dismiss="modal" class="close fa fa-remove"></span>
+                <h2>注册成功</h2>
+                <h4 id="c-title">恭喜您！</h4>
+                <p id="c-desc">获得<b>3</b>个红包，已放入您的账户</p>
+                <img src="~/Content/desktop/images/redpacket.jpg"/>
+                <a href="/" class="btn btn-primary">立即去夺宝</a>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        window.boot("user-signup", {jump:false});
+        function show() {
+            if (window.user) { $("#c-title").html("您已领取过红包！"); $("#c-desc").hide(); $("#dlg-notice").modal(); }
+            else $("#dlg-signup").modal();
+        }
+        $(document).on("signin", function () {$("#dlg-signup").modal("hide");$("#dlg-notice").modal();});
+    </script>
+}

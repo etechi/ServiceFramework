@@ -1,0 +1,54 @@
+﻿@{
+    Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+<div class="tabs " id="user-notification">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="javascript:;" data-action="tab" data-tab="detail" role="tab">我的通知</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active">
+            <div v-if="false" class="loading">正在载入... </div>
+            <data-table v-cloak :version="version" :total="total">
+                <table v-cloak class="grid">
+                    <tr>
+                        <th>时间</th>
+                        <th style="text-align:left">通知</th>
+                        <th></th>
+                    </tr>
+                    <tr v-for="r in sysRecs">
+                        <td>{{r.Time}}</td>
+                        <td style="text-align:left;" v-bind:class="{system:true,new:!r.ReadTime}">
+                            <img v-if="r.Image" v-bind:src="'/r/'+r.Image+'?format=c100'" />
+                            <a v-if="r.Link || r.HasBody" href="{{r.HasBody?'/user/notificationdetail/B'+r.Id:r.Link}}">【系统公告】 {{r.Title}} &gt;&gt;</a>
+                            <div v-if="!r.Link && !r.HasBody">【系统公告】 {{r.Title}}</div>
+                       </td>
+                        <td>
+                            <button type="button" class="btn btn-default" v-on:click="remove(r,true)"><span class="fa fa-remove"></span></button>
+                        </td>
+                    </tr>
+                    <tr v-for="r in recs">
+                        <td>{{r.Time}} {{r.Link}}</td>
+                        <td style="text-align:left;"  v-bind:class="{new:!r.ReadTime}">
+                            <img v-if="r.Image" v-bind:src="'/r/'+r.Image+'?format=c100'" />
+                            <a v-if="r.Link || r.HasBody" href="{{r.HasBody?'/user/notificationdetail/N'+r.Id:r.Link}}">{{r.Title}}  &gt;&gt;</a>
+                            <div v-if="!r.Link && !r.HasBody">{{r.Title}}</div>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-default" v-on:click="remove(r,false)"><span class="fa fa-remove"></span></button>
+                        </td>
+                    </tr>
+                    <tr v-if="!sysRecs.length && !recs.length">
+                        <td colspan="5">目前没有通知！</td>
+                    </tr>
+                </table>
+            </data-table>
+        </div>
+    </div>
+
+</div>
+
+@section scripts{
+    <script>
+		window.boot("user-notification");
+    </script>
+}

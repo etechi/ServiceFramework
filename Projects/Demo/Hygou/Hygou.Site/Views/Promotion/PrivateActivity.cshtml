@@ -1,0 +1,94 @@
+﻿@{
+    Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+
+<div class="tabs" id="user-expose">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#available" aria-controls="available" role="tab" data-toggle="tab">专属活动</a></li>
+        <li role="presentation"><a href="#records" aria-controls="records" id="records-link" role="tab" data-toggle="tab">活动记录</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="available">
+            <div id="activity-list">
+                <div v-if="!grants.length"  class="empty" v-cloak>
+                    还没有专属活动记录！
+                </div>
+                <data-table v-cloak :version="version" :total="total" :items-per-page="6">
+
+                    <ul v-cloak class="activity-grant-list clearfix">
+                        <li v-for="g in grants" class="activity-grant">
+                            <div class="body">
+                                <img v-bind:src="g.image" />
+                                <div class="info">
+                                    <div class="name">{{g.name}} <span>x {{g.left}}</span></div>
+                                    <div class="desc">{{g.desc}}</div>
+                                    <button v-if="!g.url" class="btn btn-primary" v-on:click="open(g)">马上开奖！</button>
+                                    <a v-if="g.url" class="btn btn-primary" v-bind:href="g.url">马上参加！</a>
+                                </div>
+                            </div>
+                            <div class="tail">
+                                <span class="end">{{g.expire}}到期</span>
+                            </div>
+                        </li>
+                    </ul>
+                </data-table>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="records">
+            <div id="activity-records">
+                <div class="filter-panel" v-cloak>
+                    <div class="row">
+                        <div class="col-sm-1 label">状态：</div>
+                        <div class="col-sm-11">
+                            <ul class="options">
+                                <li v-for="tr in states" v-on:click="setState(tr)" v-bind:class="{active:tr==curState}">{{tr.name}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-1 label">时间：</div>
+                        <div class="col-sm-11">
+                            <ul class="options">
+                                <li v-for="tr in timeRanges" v-on:click="setTimeRange(tr)" v-bind:class="{active:tr==curTimeRange}">{{tr.name}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <data-table v-cloak :version="version" :total="total">
+
+                    <table v-cloak class="grid small">
+                        <tr>
+                            <th>活动</th>
+                            <th>参加时间</th>
+                            <th>获得奖品</th>
+                            <th>备注</th>
+                        </tr>
+                        <tr v-for="i in recs">
+                            <td>{{i.name}}</td>
+                            <td>{{i.time}}</td>
+                            <td>
+                                <div v-if="!i.results">未获奖</div>
+                                <ul v-if="i.results">
+                                    <li v-for="r in i.results">{{r.n}}: {{r.t}} x {{r.c}}</li>
+                                </ul>
+                            </td>
+                            <td>{{i.desc}}</td>
+
+                        </tr>
+                        <tr v-if="!recs.length">
+                            <td colspan="4">还没有活动记录！</td>
+                        </tr>
+                    </table>
+                </data-table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("../Shared/_Dialog");
+
+@section scripts{
+    <script>
+		window.boot("promotion-private-activity");
+    </script>
+}

@@ -1,0 +1,70 @@
+﻿@{ 
+	Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+<div class="tabs" id="user-win-share">
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a href="javascript:;" data-action="tab" data-tab="detail" role="tab">我来晒单</a></li>
+	</ul>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active">
+			<div v-if="false" class="loading">正在载入... </div>
+			<div class="user-win-status clearfix" v-cloak>
+				<img class="user" v-bind:src="'/r/'+round.WinSummary.User.Image+'?format=c80'" />
+				<div class="user">
+					<dl class="status">
+						<dt>获奖者</dt>
+						<dd>{{round.WinSummary.User.NickName}}</dd>
+						<dt>总共参与</dt>
+						<dd><b>{{round.WinSummary.Quantity}}</b>人次</dd>
+						<dt>幸运号码</dt>
+						<dd><b>{{round.WinSummary.Code}}</b></dd>
+						<dt>揭晓时间</dt>
+						<dd>{{round.OpenTime}}</dd>
+					</dl>
+				</div>
+				<img class="product" v-bind:src="'/r/'+round.Image+'?format=c80'" />
+				<div class="product">
+					<div>(第{{round.Round}}期){{round.Title}}</div>
+					<div>总需{{round.Total}}人次</div>
+					<div><a target="_blank" href="/product/{{round.ProductId}}">最新一期正在进行中...</a></div>
+				</div>
+			</div>
+			<div class="form" v-cloak>
+				<div class="form-group">
+					<label class="control-label" for="title">标题: <span class="msg">{{title_message}}</span></label>
+					<input class="form-control" placeholder="请输入标题" maxlength="50" v-model="title" type="text" />
+				</div>
+				<div class="form-group">
+					<label class="control-label" for="content">分享心得: <span class="msg">{{content_message}}</span></label>
+					<textarea class="form-control" placeholder="请输入内容" v-model="content" maxlength="100" ></textarea>
+				</div>
+				<div class="form-group">
+					<label class="control-label">照片: <span v-bind:class="{msg:pic_alert,info:!pic_alert}">(请上传最少2张照片)</span> </label>
+					<ul class="clearfix">
+						<li v-for="i in images">
+							<span class="glyphicon glyphicon-remove" v-on:click="remove(i)"></span>
+							<img v-bind:src="'/r/'+i.image+'?format=c160'" />
+						</li>
+						<li v-show="images.length<5">
+							<div v-on:click="upload()">
+								<span class="glyphicon glyphicon-plus"></span>
+								<span>上传照片</span>
+								<input id="shareImageUpload" type="file" name="file" title="上传图片">
+							</div>
+						</li>
+					</ul>
+				</div>
+				<div>
+                    <div class="text-danger">{{message}}</div>
+					<button class="btn btn-primary " v-bind:disabled="disabled" v-on:click="submit()">立即晒单!</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div>
+@section scripts{
+<script>
+	window.boot("user-share",{id:@ViewBag.Id,product:@ViewBag.ProductId,round:@ViewBag.Round});
+</script>
+}

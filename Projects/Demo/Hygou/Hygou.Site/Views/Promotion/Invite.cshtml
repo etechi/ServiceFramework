@@ -1,0 +1,107 @@
+﻿@{
+    Layout = "../Shared/_UserAdminLayout.cshtml";
+    var Setting = Html.Setting<CrowdMallSetting>();
+    var SysSetting = Html.Setting<SystemSetting>();
+    var user = (CrowdMall.DataModels.User)ViewBag.CurrentUser;
+    var shareLink = new Uri("http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?").WithQueryString(
+            Tuple.Create("title", Setting.SiteName),
+            Tuple.Create("summary", Setting.UserInviteQQShareDesc),
+            Tuple.Create("url", $"http://{SysSetting.Domain}/?_ui={user.Id}"),
+            Tuple.Create("pics", $"http://{SysSetting.Domain}/r/{Setting.UserInviteQQShareImage}")
+        );
+}
+<div class="tabs" id="user-invite">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#invite" aria-controls="invite" role="tab" data-toggle="tab">邀请好友</a></li>
+        <li role="presentation"><a href="#records" aria-controls="records" id="records-link" role="tab" data-toggle="tab">好友邀请记录</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="invite">
+            <div class="invite-link">
+                <label>您的邀请链接：</label>
+                <input class="form-control input-lg" type="text" readonly="readonly" value="@($"http://{SysSetting.Domain}/user/signup?_ui={user.Id}")" />
+            </div>
+
+            <div class="invite-panel clearfix"  v-cloak>
+                <div class="user_invite_qq">
+                    <a href="@shareLink" class="btn btn-default btn-lg" target="_blank" title="分享到QQ空间">QQ 分享</a>
+                </div>
+                <div class="user_invite_weichat">
+                    <button type="button" class="btn btn-default btn-lg" v-on:click="showWeiChatPanel">
+                        微信分享
+                    </button>
+                    <div v-bind:style="{display:weichatPanelVisible?'block':'none'}" class="weichatPanel">
+                        <img v-bind:src="weichatQrCodeImage" />
+                    </div>
+                </div>
+                @*<div class="user_invite_sms">
+                    <button type="button" class="btn btn-default btn-lg" v-on:click="showSmsPanel">
+                        短信分享
+                    </button>
+                    <div v-bind:style="{display:smsPanelVisible?'block':'none'}" class="smsPanel">
+                        <div class="content">{{smsContent}}</div>
+                        <div class="phonenumber">
+                            <input class="form-control" type="text" v-model="smsPhoneNumber" placeholder="对方手机号" maxlength="20" />
+                        </div>
+                        <div class="verifycode">
+                            <input class="form-control" type="text" v-model="smsCaptchaCode" placeholder="验证码" maxlength="6" />
+                            <img v-on:click="refreshCaptchaCode" v-bind:src="smsCaptchaImage" />
+                        </div>
+                        <div class="error">{{smsError}}</div>
+                        <div class="submit"><button type="button" v-bind:disabled="smsSending" class="btn btn-primary" v-on:click="smsSend">发送</button></div>
+                    </div>
+                </div>*@
+            </div>
+            <div v-cloak class="activities" v-if="activities.length">
+                邀请好友可以参加活动：
+                <div id="activity-result-list" v-cloak>
+                    <ul class="activity-result-list" >
+                        <li v-for="a in activities" class="activity-result">
+                            <div class="end" v-show="a.end">活动截止：{{a.end}}</div>
+                            <h4>{{a.name}}</h4>
+                            <div>
+                                <div>活动说明:</div>
+                                <div class="desc">{{a.desc}}</div>
+                            </div>
+                            <ul>
+                                <li v-for="r in a.results">{{r.name}} x {{r.count}}</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+               注：
+                <ol>
+                   <li>1. 好友需通过电话认证后邀请才算成功。</li> 
+                   <li>2. 活动可能随时发生调整，最终活动结果可以到专属活动历史查看。</li> 
+                </ol>
+            </div>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="records">
+            <data-table v-cloak :version="version" :total="total">
+                <table v-cloak class="grid">
+                    <tr>
+                        <th>好友ID</th>
+                        <th>好友</th>
+                        <th>注册时间</th>
+                        <th>注册设备</th>
+                    </tr>
+                    <tr v-for="u in recs">
+                        <td>{{u.Id}}</td>
+                        <td>{{u.NickName}}</td>
+                        <td>{{u.CreatedTime}}</td>
+                        <td>{{u.SignupDeviceType}}</td>
+                    </tr>
+                    <tr v-if="!recs.length">
+                        <td colspan="4">还没有成功邀请记录！</td>
+                    </tr>
+                </table>
+            </data-table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        window.boot("promotion-invite");
+    </script>
+}

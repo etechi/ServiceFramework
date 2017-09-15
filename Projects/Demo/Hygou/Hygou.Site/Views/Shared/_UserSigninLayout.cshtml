@@ -1,0 +1,37 @@
+﻿@{
+    var setting = Html.Setting<CrowdMallSetting>();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>@ViewBag.Title - @setting.SiteName</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+
+	@Html.CDNStyle("~/bundles/desktop/css")
+	<link rel="shortcut icon" href="/favicon.ico" />
+</head>
+<body class="preload">
+
+	<div class="user-page">
+		<div class="head">
+			@Html.Partial("_Logo")
+		</div>
+		<div class="container">
+			@RenderBody()
+		</div>
+	</div>
+
+	<footer>
+        @*@Html.Partial("_TailerArticles")*@
+        @Html.Partial("_TailerFooter")
+		@*@Html.Partial("_TailerLinks")*@
+	</footer>
+	@Html.CDNScript("~/bundles/desktop/js")
+
+	@RenderSection("scripts", required: false)
+
+    @Html.Partial("_SystemTailer")
+</body>
+</html>

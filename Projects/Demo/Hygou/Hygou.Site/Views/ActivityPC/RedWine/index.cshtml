@@ -1,0 +1,93 @@
+﻿
+@model CrowdMall.Bizness.Products.IItem[]
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "红酒";
+    var Category = (CrowdMall.Bizness.Products.ICategory)ViewBag.Collection;
+    var ItemArg = new Func<int, ViewDataDictionary>(s =>
+    {
+        return new ViewDataDictionary {
+            { "HideAddToCart", true },
+            { "HideRound", true },
+            { "ImageSize", s },
+            { "HideBuyText", true },
+            { "NoDelayImage",true }
+        };
+    });
+}
+@section header{
+    <link href="~/content/ActivityPC/RedWine/css/style.min.css" rel="stylesheet" type="text/css" />
+}
+<!--内容区域-->
+<div class="main">
+    <div class="banner" style="background-image:url(@Html.Media(Category.BannerImage))">
+        <a href="@(Category.BannerUrl ?? "#")" target="_blank">
+        </a>
+    </div>
+    @if (Model.Length >= 2)
+    {
+    <div class="s1">
+        <div class="container">
+            <div class="title"></div>
+            <ul class="clearfix">
+                @Html.Partial("../Product/_Item", Model[0], ItemArg(270))
+                @Html.Partial("../Product/_Item", Model[1], ItemArg(270))
+            </ul>
+        </div>
+    </div>
+    }
+    @if (Model.Length >= 3)
+    {
+    <div class="s2">
+        <div class="container">
+            <div class="title"></div>
+            <ul>
+                @Html.Partial("../Product/_Item", Model[2], ItemArg(470))
+            </ul>
+        </div>
+    </div>
+    }
+    @if (Model.Length >= 5)
+    {
+    <div class="s3">
+        <div class="container">
+            <div class="title"></div>
+            <ul class="clearfix">
+                @Html.Partial("../Product/_Item", Model[3], ItemArg(400))
+                @Html.Partial("../Product/_Item", Model[4], ItemArg(400))
+            </ul>
+        </div>
+    </div>
+    }
+    @if (Model.Length >= 6)
+    {
+    <div class="s4">
+        <div class="container">
+            <div class="title"></div>
+            <ul>
+                @Html.Partial("../Product/_Item", Model[5], ItemArg(660))
+            </ul>
+        </div>
+    </div>
+    }
+    @if (Model.Length >= 9)
+    {
+    <div class="s5">
+        <div class="container">
+            <div class="title"></div>
+            <ul class="clearfix">
+                    @Html.Partial("../Product/_Item", Model[6], ItemArg(400))
+                    @Html.Partial("../Product/_Item", Model[7], ItemArg(400))
+            </ul>
+            <ul class="tail">
+                @Html.Partial("../Product/_Item", Model[8], ItemArg(400))
+            </ul>
+        </div>
+    </div>
+    }
+
+</div>
+
+@section scripts{
+   
+}

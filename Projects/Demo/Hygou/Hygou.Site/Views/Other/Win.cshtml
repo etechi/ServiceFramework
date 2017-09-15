@@ -1,0 +1,46 @@
+﻿@{ 
+	Layout = "../Shared/_OtherUserLayout.cshtml";
+}
+<div class="tabs" id="win-records">
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a href="javascript:;" data-action="tab" data-tab="detail" role="tab">中奖记录</a></li>
+	</ul>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active">
+			<div v-if="false" class="loading">正在载入... </div>
+			
+			<table v-cloak class="grid">
+				<tr>
+					<th>商品图片</th>
+					<th style="text-align:left">商品名称</th>
+					<th>幸运号码</th>
+					<th>夺宝时间</th>
+					<th>揭晓时间</th>
+				</tr>
+				<tr v-for="r in recs">
+					<td><img v-bind:src="'@Html.ResBase()r/'+r.Image+'?format=c90'" /></td>
+					<td style="text-align:left">
+						<div>(第{{r.Round}}期){{r.Title}}</div>
+						<div>共需：{{r.Total}}人次</div>
+					</td>
+					<td>
+						<div>{{r.WinSummary.Code}}</div>
+						<div>总共参与了{{r.WinSummary.Quantity}}人次</div>
+					</td>
+					<td>{{r.WinSummary.TradeTime}}</td>
+					<td>{{r.OpenTime}}</td>
+				</tr>
+				<tr v-if="!recs.length">
+					<td colspan="5">还没有获奖记录！</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+</div>
+
+@section scripts{
+	<script>
+		window.boot("other-win-records",{user:@ViewBag.User.Id});
+	</script>
+}

@@ -1,0 +1,10 @@
+﻿@model ServiceProtocol.Biz.UIManager.Mvc.RenderModel
+@foreach (var item in Model.Content.Items)
+{
+	<dl>
+		<dt>@item.Title1</dt>
+		@foreach (var chd in item.Items){
+		<dd><a href="@chd.Uri" target="@chd.UriTarget">@chd.Title1</a></dd>
+		}
+	</dl>
+}

@@ -1,0 +1,18 @@
+﻿@{
+	var setting = Html.Setting<CrowdMallSetting>();
+}
+<div class="site-logo">
+	<a href="/">
+		<!--<b>夺宝商城</b>
+		<i>WWW.DBSC.COM</i>
+		-->
+		@if (setting.SiteLogoLink.Contains('/'))
+		{
+			<img src="@setting.SiteLogoLink" />
+		}
+		else
+		{
+			<img src="@Html.Media(setting.SiteLogoLink)" />
+		}
+	</a>
+</div>
