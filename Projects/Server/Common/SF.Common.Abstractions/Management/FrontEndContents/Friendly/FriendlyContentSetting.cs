@@ -53,8 +53,5 @@ namespace SF.Management.FrontEndContents.Friendly
 		[Comment(Name = "移动端广告位分类", GroupName = "移动端")]
 		public string MobileAdCategory { get; set; }
 	}
-	public interface IFriendlyContentSettingService
-	{
-		FriendlyContentSetting Setting { get; }
-	}
+	
 }

@@ -79,7 +79,8 @@ namespace SF.Common.Documents.Management
 		protected override IContextQueryable<TCategory> OnBuildQuery(IContextQueryable<TCategory> Query, DocumentCategoryQueryArgument Arg, Paging paging)
 		{
 			var q = Query.WithScope(ServiceInstanceDescriptor)
-				.Filter(Arg.ParentId, c => c.ContainerId);
+				.Filter(Arg.ParentId, c => c.ContainerId)
+				.FilterContains(Arg.Name,c=>c.Name);
 			return q;
 
 		}

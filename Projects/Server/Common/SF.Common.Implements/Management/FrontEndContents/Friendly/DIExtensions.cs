@@ -26,7 +26,6 @@ namespace SF.Core.ServiceManagement
 			sc.AddManagedScoped<IPCAdManager, PCAdManager>();
 			sc.AddManagedScoped<IMobileAdManager, MobileAdManager>();
 
-			sc.AddManagedScoped<IFriendlyContentSettingService, FriendlyContentSettingService>();
 
 			return sc;
 		}

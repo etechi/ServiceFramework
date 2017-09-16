@@ -61,7 +61,8 @@ namespace SF.Biz.Products.Entity
 		{
 			return Query.Filter(Arg.SellerId, c => c.OwnerUserId)
 				.Filter(Arg.ParentId,c=>c.ParentId)
-				.Filter(Arg.ObjectState, c => c.ObjectState);
+				.Filter(Arg.ObjectState, c => c.ObjectState)
+				.Filter(Arg.Name,c=>c.Name);
 		}
 		
 
@@ -86,7 +87,7 @@ namespace SF.Biz.Products.Entity
 				Children=MapEditableToModel(c.Children.Cast<TEditable>()).ToArray()
 			});
 		}
-		protected virtual void OnUpdateModel(TCategory Model,TEditable Editable,DateTime  time)
+		protected virtual void OnUpdateModel(TCategory Model,CategoryEditable Editable,DateTime  time)
 		{
 			
 			Model.Tag = Editable.Tag;
@@ -105,13 +106,17 @@ namespace SF.Biz.Products.Entity
 			Model.ObjectState = Editable.ObjectState;
 			
 		}
-		public async Task<TEditable[]> BatchUpdate(long SellerId, TEditable[] Items)
+		async Task UpdateChildren(TCategory Parent, CategoryEditable[] Items)
 		{
-			var org_items= DataSet.AsQueryable(false).Where(c => c.OwnerUserId.Equals(SellerId));
-			var time = EntityManager.Now;
+			var org_items = await DataSet.LoadTreeChildren(
+				Parent,
+				false,
+				(q, c) => q.Where(i => i.ParentId == c.Id)
+				);
+			var time = Now;
 			var Removed = new List<TCategory>();
 			var Updated = new List<long>();
-			var re= DataSet.MergeTree<TCategory,TEditable,long>(
+			var re= DataSet.MergeTree(
 				org_items,
 				Items,
 				m => m.Id,
@@ -122,7 +127,7 @@ namespace SF.Biz.Products.Entity
 				{
 					var n = new TCategory
 					{
-						OwnerUserId = SellerId,
+						OwnerUserId = Parent.OwnerUserId,
 						CreatedTime = time,
 						Parent = p,
 						Children=cs
@@ -153,7 +158,7 @@ namespace SF.Biz.Products.Entity
 				Notifier.NotifyCategoryChanged(id);
 				Notifier.NotifyCategoryChildrenChanged(id);
 			}
-			return BatchMapModelToEditable(re.AsQueryable(DataSet.Context.Provider)).ToArray();
+			//return BatchMapModelToEditable(re.AsQueryable(DataSet.Context.Provider)).ToArray();
 		}
         public async Task<long[]> LoadItems(long CategoryId)
         {
@@ -166,28 +171,31 @@ namespace SF.Biz.Products.Entity
                 ).ToArrayAsync();
             return items;
         }
-        public async Task UpdateItems(long CategoryId, long[] Items)
+        async Task UpdateItems(TCategory Category, long[] Items)
 		{
 			Items = Items.Distinct().ToArray();
 			var itemSet = DataContext.Set<TCategoryItem>();
 			var cur_items = await itemSet
 				.AsQueryable(false)
-				.Where(ci => ci.CategoryId == CategoryId)
+				.Where(ci => ci.CategoryId == Category.Id)
 				.ToArrayAsync();
 			itemSet.Merge(
 				cur_items,
 				Items.Select((i, idx) => new { order = idx, id = i }),
 				(o, e) => o.ItemId.Equals(e.id),
-				n => new TCategoryItem { CategoryId=CategoryId,ItemId=n.id,Order=n.order},
+				n => new TCategoryItem { CategoryId=Category.Id,ItemId=n.id,Order=n.order},
 				(o, n) =>
 				{
 					o.Order = n.order;
 				});
-			var c = await DataSet.FindAsync(CategoryId);
-			c.ItemCount = Items.Length;
-			DataSet.Update(c);
-			await DataContext.SaveChangesAsync();
-			Notifier.NotifyCategoryItemsChanged(CategoryId);
+			//var c = await DataSet.FindAsync(CategoryId);
+			Category.ItemCount = Items.Length;
+			//DataSet.Update(c);
+			//await DataContext.SaveChangesAsync();
+			EntityManager.AddPostAction(
+				() =>Notifier.NotifyCategoryItemsChanged(Category.Id),
+				PostActionType.AfterCommit
+				);
 		}
         protected override IContextQueryable<TEditable> OnMapModelToPublic(IContextQueryable<TCategory> Query)
 		{
@@ -236,28 +244,6 @@ namespace SF.Biz.Products.Entity
             },
 			PostActionType.AfterCommit
 			);
-
-			if (obj.Items != null)
-			{
-				var Items = obj.Items.Distinct().ToArray();
-				var itemSet = DataContext.Set<TCategoryItem>();
-				var cur_items = await itemSet
-					.AsQueryable(false)
-					.Where(ci => ci.CategoryId == Model.Id)
-					.ToArrayAsync();
-				itemSet.Merge(
-					cur_items,
-					Items.Select((i, idx) => new { order = idx, id = i }),
-					(o, e) => o.ItemId.Equals(e.id),
-					n => new TCategoryItem { CategoryId = Model.Id, ItemId = n.id, Order = n.order },
-					(o, n) =>
-					{
-						o.Order = n.order;
-					});
-				Model.ItemCount = Items.Length;
-				Notifier.NotifyCategoryItemsChanged(Model.Id);
-			}
-
 			if (npid != opid)
 			{
 				await DataSet.ValidateTreeParent(
@@ -284,6 +270,15 @@ namespace SF.Biz.Products.Entity
 					PostActionType.AfterCommit
 					);
 			OnUpdateModel(Model, obj, EntityManager.Now);
+
+			if(obj.Children!=null)
+				await UpdateChildren(Model, obj.Children);
+
+			if (obj.Items != null)
+				await UpdateItems(Model, obj.Items);
+
+
+
 			Model.OwnerUserId = obj.SellerId;
 		}
 		protected override Task OnNewModel(IModifyContext ctx)

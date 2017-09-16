@@ -411,6 +411,18 @@ namespace SF.Data
 				}
 			);
 		}
+		public static Task<M[]> LoadTreeChildren<M>(
+			this IDataSet<M> set,
+			M cur,
+			bool ReadOnly,
+			Func<IContextQueryable<M>, M, IContextQueryable<M>> Query
+			)where M:class
+
+			=> Tree.LoadAllChildren(
+				cur,
+				i =>
+					Query(set.AsQueryable(ReadOnly), i).ToArrayAsync()
+				);
 
 		static M EnumTree<M,E,K>(
 			this IDataSet<M> set,

@@ -10,7 +10,7 @@ namespace Hygou.Setup
 	public class ProductCategoryInitializer
 	{
 		//public Bizness.Products.Models.ProductCategoryEditable C100 { get; private set; }
-		public CategoryEditable C10 { get; private set; }
+		//public CategoryEditable C10 { get; private set; }
 		//public Bizness.Products.Models.ProductCategoryEditable Limit { get; private set; }
 		//public Bizness.Products.Models.ProductCategoryEditable NewUser { get; private set; }
 
@@ -25,16 +25,14 @@ namespace Hygou.Setup
 			ProductTypeInitializer types
 			)
 		{
-			var cats=await CategoryManager.ProductCategoryEnsure(
-				sellerId,
-				new[]
-				{
-					new CategoryEditable
+			var special = await CategoryManager.EnsureEntity(
+					await CategoryManager.QuerySingleEntityIdent(new CategoryQueryArgument { Name= "特别分类" }),
+					(CategoryEditable c) =>
 					{
-						Name="特别分类",
-						Title="特别分类",
-						ObjectState=EntityLogicState.Enabled,
-						Children=new[]
+						c.Name = "特别分类";
+						c.Title = "特别分类";
+						c.ObjectState = EntityLogicState.Enabled;
+						c.Children = new[]
 						{
 							new CategoryEditable
 							{
@@ -44,13 +42,13 @@ namespace Hygou.Setup
 								Tag = "10",
 								ObjectState=EntityLogicState.Enabled,
 							},
-                            new CategoryEditable
-                            {
-                                Name="上线充值活动",
-                                Title="上线充值活动",
-                                Tag = "recharge-activity",
-                                ObjectState=EntityLogicState.Enabled,
-                            },
+							new CategoryEditable
+							{
+								Name="上线充值活动",
+								Title="上线充值活动",
+								Tag = "recharge-activity",
+								ObjectState=EntityLogicState.Enabled,
+							},
 							//new Bizness.Products.Models.ProductCategoryEditable
 							//{
 							//	Name="百元",
@@ -75,53 +73,56 @@ namespace Hygou.Setup
 							//	Tag = "new",
 							//	ObjectState=ServiceProtocol.ObjectManager.LogicObjectState.Enabled,
 							//}
-						}
-					},
-					new CategoryEditable
-					{
-						Name="标准分类",
-						Title="标准分类",
-						ObjectState=EntityLogicState.Enabled,
-                        Children= new[] {
-                            new CategoryEditable{Order=1, Name="话费充值",Title="话费充值", Description="移动 联通 电信",Icon=StaticRes.File+"-pc-prdcats-recharge18-png",Image=StaticRes.File+"-pc-prdcats-recharge64-png"},
-                            new CategoryEditable{Order=2, Name="手机",Title="手机专区",Description="三星 iPhone 华为", Icon=StaticRes.File+"-pc-prdcats-phone18-png", Image=StaticRes.File+"-pc-prdcats-phone64-png"},
-                            new CategoryEditable{Order=3, Name="数码",Title="数码专区",Description="佳能 尼康 索尼", Icon=StaticRes.File+"-pc-prdcats-camera18-png", Image=StaticRes.File+"-pc-prdcats-camera64-png"},
-                            new CategoryEditable{Order=4, Name="汽车",Title="汽车专区", Description="奔驰 大众 宝马", Icon=StaticRes.File+"-pc-prdcats-car18-png", Image=StaticRes.File+"-pc-prdcats-car64-png"},
-                            new CategoryEditable{Order=5, Name="黄金",Title="黄金专区",Description="金条 金元宝", Icon=StaticRes.File+"-pc-prdcats-gold18-png", Image=StaticRes.File+"-pc-prdcats-gold64-png"},
-                        }
-						//Children=types.Types.Select(
-						//	t=>new Bizness.Products.Models.ProductCategoryEditable
-						//	{
-						//		Name=t.Title,
-						//		Title=t.Title,
-						//		Image=t.Image,
-						//		Icon=t.Icon,
-						//		ObjectState=ServiceProtocol.ObjectManager.LogicObjectState.Enabled,
-						//	}
-						//	).ToArray()
-					}
-                });
-			var special = cats.Where(c => c.Name == "特别分类").Single();
+						};
+					});
+			var standard=await CategoryManager.EnsureEntity(
+				await CategoryManager.QuerySingleEntityIdent(new CategoryQueryArgument { Name = "标准分类" }),
+				(CategoryEditable c) =>
+				{
+					c.Name = "标准分类";
+					c.Title = "标准分类";
+					c.ObjectState = EntityLogicState.Enabled;
+					c.Children = new[] {
+								new CategoryEditable{Order=1, Name="话费充值",Title="话费充值", Description="移动 联通 电信",Icon=StaticRes.File+"-pc-prdcats-recharge18-png",Image=StaticRes.File+"-pc-prdcats-recharge64-png"},
+								new CategoryEditable{Order=2, Name="手机",Title="手机专区",Description="三星 iPhone 华为", Icon=StaticRes.File+"-pc-prdcats-phone18-png", Image=StaticRes.File+"-pc-prdcats-phone64-png"},
+								new CategoryEditable{Order=3, Name="数码",Title="数码专区",Description="佳能 尼康 索尼", Icon=StaticRes.File+"-pc-prdcats-camera18-png", Image=StaticRes.File+"-pc-prdcats-camera64-png"},
+								new CategoryEditable{Order=4, Name="汽车",Title="汽车专区", Description="奔驰 大众 宝马", Icon=StaticRes.File+"-pc-prdcats-car18-png", Image=StaticRes.File+"-pc-prdcats-car64-png"},
+								new CategoryEditable{Order=5, Name="黄金",Title="黄金专区",Description="金条 金元宝", Icon=StaticRes.File+"-pc-prdcats-gold18-png", Image=StaticRes.File+"-pc-prdcats-gold64-png"},
+							};
+							//Children=types.Types.Select(
+							//	t=>new Bizness.Products.Models.ProductCategoryEditable
+							//	{
+							//		Name=t.Title,
+							//		Title=t.Title,
+							//		Image=t.Image,
+							//		Icon=t.Icon,
+							//		ObjectState=ServiceProtocol.ObjectManager.LogicObjectState.Enabled,
+							//	}
+							//	).ToArray()
+					
+				});
+			//var special = cats.Where(c => c.Name == "特别分类").Single();
 			//var c100 = cats.Where(c => c.Name == "百元").Single();
 			//var c10 = cats.Where(c => c.Name == "十元").Single();
-            var recharge = cats.Where(c => c.Name == "上线充值活动").Single();
-            //var climit = cats.Where(c => c.Name == "限购").Single();
-            //var cnew = cats.Where(c => c.Name == "新手").Single();
+			//var recharge = cats.Where(c => c.Name == "上线充值活动").Single();
+			//var climit = cats.Where(c => c.Name == "限购").Single();
+			//var cnew = cats.Where(c => c.Name == "新手").Single();
 
-            var standard = cats.Where(c => c.Name == "标准分类").Single();
-			var ctypes = cats.Where(c => c.ParentId == standard.Id).ToArray();
+			//var standard = cats.Where(c => c.Name == "标准分类").Single();
+			var ctypes = (await CategoryManager.QueryAsync(new CategoryQueryArgument { ParentId = standard.Id },Paging.All)).Items.ToArray();
+				
 
-			var ctx = scope.Resolve<IDataContext>();
+			//var ctx = scope.Resolve<IDataContext>();
 
             var setCatProduct= new Func<string, string,Task>(async (cat,typeName) =>
             {
                 var type = ctypes.First(c => c.Name == cat);
                 var ptype = types.Types.Where(t => t.Name == typeName).Single();
-				var ids = await ItemManager.QueryIdentsAsync(new ItemQueryArgument { TypeId = ptype.Id }, Paging.Default);
+				var ids = await ItemManager.QueryIdentsAsync(new ItemQueryArgument { TypeId = ptype.Id }, Paging.All);
 				//await ctx.ReadOnly<DataModels.ProductItem>()
     //                .Where(i => i.SourceItemId == null && i.Product.TypeId == ptype.Id)
     //                .Select(i => i.Id).ToArrayAsync();
-                await CategoryManager.ProductCategorySetItems(type.Id, ids.Items);
+                await CategoryManager.SetItems(type.Id, ids.Items.ToArray());
             });
             await setCatProduct("话费充值", "话费充值");
             await setCatProduct("手机", "手机");

@@ -80,7 +80,7 @@ namespace SF.Management.FrontEndContents.SiteConfigModels
 		[Display(Name = "显示内容")]
 		[EntityIdent(typeof(IContentManager<>))]
 		[Layout(2)]
-		public int? content { get; set; }
+		public long? content { get; set; }
 
 		[Display(Name = "内容配置")]
 		[StringLength(100)]

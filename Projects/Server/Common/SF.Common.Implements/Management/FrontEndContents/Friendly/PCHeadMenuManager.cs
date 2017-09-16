@@ -5,13 +5,14 @@ using System.ComponentModel.DataAnnotations;
 using SF.Management.FrontEndContents.Friendly;
 using SF.Management.FrontEndContents;
 using SF.Metadata;
+using SF.Services.Settings;
 
 namespace SF.Management.FrontEndContents
 {
 	public class PCHeadMenuManager :
 		PCHeadMenuManager<Content, IContentManager>
 	{
-		public PCHeadMenuManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
+		public PCHeadMenuManager(ISettingService<FriendlyContentSetting> SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
 		}
 	}
@@ -22,16 +23,16 @@ namespace SF.Management.FrontEndContents
 		where TContent : Content
 		where TContentManager : IContentManager<TContent>
 	{
-		IFriendlyContentSettingService SettingService { get; }
+		ISettingService<FriendlyContentSetting> SettingService { get; }
 		public PCHeadMenuManager(
-			IFriendlyContentSettingService SettingService,
+			ISettingService<FriendlyContentSetting> SettingService,
 			IContentManager<TContent> ContentManager
 			) : base(ContentManager)
 		{
 			this.SettingService = SettingService;
 		}
 
-		protected override long EntityId => SettingService.Setting.PCHeadMenuId;
+		protected override long EntityId => SettingService.Value.PCHeadMenuId;
 	}
 
 }

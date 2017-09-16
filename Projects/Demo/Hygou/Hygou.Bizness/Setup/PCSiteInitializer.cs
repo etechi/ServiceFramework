@@ -1,20 +1,31 @@
-﻿using System.Linq;
+﻿using SF.Biz.Products;
+using SF.Core.ServiceManagement.Management;
+using SF.Management.FrontEndContents;
+using SF.Management.FrontEndContents.Friendly;
+using SF.Management.FrontEndContents.SiteConfigModels;
+using SF.Services.Settings;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace CrowdMall.Setup
+namespace Hygou.Setup
 {
 	public static class PCSiteInitializer
 	{
 		public static async Task PCSiteEnsure(
-			this IDIScope scope, 
+			IServiceInstanceManager sim,
+			long? ScopeId,
+			IContentManager<Content> ContentManager,
+			ISiteTemplateManager SiteTemplateManager,
+			ISiteManager SiteManager,
+			IItemService ItemService,
 			ProductContentInitializer prdctns,
 			ProductCategoryInitializer collection,
-			int PageTailDocListContentId,
-            int PageTailLinkListContentId
-
-            )
+			long PageTailDocListContentId,
+            long PageTailLinkListContentId,
+			long MainCategoryId
+			)
 		{
-			var head_carousel=await scope.ContentEnsure(
+			var head_carousel=await ContentManager.ContentEnsure(
 				"PC页面内容",
 				"PC首页幻灯片",
 				null,
@@ -29,47 +40,50 @@ namespace CrowdMall.Setup
 				//new ContentItem{Image=StaticResRoot.Value+"-pc-carousel-8-jpg"},
 				//new ContentItem{Image=StaticResRoot.Value+"-pc-carousel-9-jpg"},
 				});
-            await scope.SettingEnsure<UIManagerSetting>(s =>
-            {
-                s.PCHomePageSliderId = head_carousel.Id;
-            });
+            await sim.UpdateSetting<FriendlyContentSetting>(
+				ScopeId,
+				s =>
+				{
+					s.PCHomePageSliderId = head_carousel.Id;
+				});
 
-			var banner_1 = await scope.ContentEnsure(
+			var banner_1 = await ContentManager.ContentEnsure(
                 "PC广告位",
                 "PC首页广告位1",
                 null,
                 new[] { new ContentItem { Image = StaticRes.File + "-pc-banners-1-gif", Uri = "/activity/register" } },
                 "PC首页广告位，位于第1,第2产品分类之间"
                 );
-			var banner_2 = await scope.ContentEnsure(
+			var banner_2 = await ContentManager.ContentEnsure(
                 "PC广告位",
                 "PC首页广告位2",
                 null,
                 new[] { new ContentItem { Image = StaticRes.File + "-pc-banners-2-jpg", Uri = "/activity/recharge" } },
                 "PC首页广告位，位于第3,第4产品分类之间"
                 );
-			var banner_3 = await scope.ContentEnsure(
+			var banner_3 = await ContentManager.ContentEnsure(
                 "PC广告位",
                 "PC首页广告位3",
                 null,
                 new[] { new ContentItem { Image = StaticRes.File + "-pc-banners-2-jpg", Uri = "/activity/recharge" } },
                 "PC首页广告条，位于第5,第6产品分类之间"
                 );
-			var banner_4 = await scope.ContentEnsure(
+			var banner_4 = await ContentManager.ContentEnsure(
                 "PC广告位",
                 "PC首页广告位4",
                 null,
                 new[] { new ContentItem { Image = StaticRes.File + "-pc-banners-2-jpg", Uri = "/activity/recharge" } },
                 "PC首页广告位，位于第7,第8产品分类之间"
                 );
+			await sim.UpdateSetting<FriendlyContentSetting>(
+			   ScopeId,
+			   s =>
+			   {
+				   s.PCAdCategory = "PC广告位";
+			   });
+			
 
-            await scope.SettingEnsure<UIManagerSetting>(s =>
-            {
-                s.PCAdCategory = "PC广告位";
-            });
-
-			var setting = scope.Resolve<CrowdMall.CrowdMallSetting>();
-			var cats = await scope.Resolve<CrowdMall.Bizness.Products.IItemService>().ListCategories(setting.MainCategoryId, null);
+			var cats = await ItemService.ListCategories(MainCategoryId, null);
 			var items = new[] {
 				//new ContentItem{Title1="奢侈品区", Icon="yg-icons-1-png", Image="yg-icons-1b-png",Uri="/cat/6"},
 				//new ContentItem{Title1="汽车专区", Icon="yg-icons-2-png", Image="yg-icons-2b-png",Uri="/cat/8"},
@@ -87,38 +101,42 @@ namespace CrowdMall.Setup
                 };
 			foreach (var it in items)
 				it.Uri = "/cat/" + cats.Items.Single(c => c.Title == (it.Title1.Length==2?it.Title1+"专区":it.Title1)).Id;
-			var cat_menu = await scope.ContentEnsure(
+			var cat_menu = await ContentManager.ContentEnsure(
 				"PC页面内容",
 				"PC页面头部产品分类菜单",
 				null,
 				items
 				);
 
-            await scope.SettingEnsure<UIManagerSetting>(s =>
-            {
-                s.PCHeadProductCategoryMenuId = cat_menu.Id;
-            });
+            await sim.UpdateSetting<FriendlyContentSetting>(
+				ScopeId,
+				s =>
+				{
+					s.PCHeadProductCategoryMenuId = cat_menu.Id;
+				});
 
-            var main_menu = await scope.ContentEnsure(
+            var main_menu = await ContentManager.ContentEnsure(
 				"PC页面内容",
 				"PC页面头部主菜单",
 				null,
 				new[] {
 				new ContentItem{Title1="首页", Uri="/"},
-				new ContentItem{Title1="十元", Uri="/col/"+collection.C10.Id},
+				//new ContentItem{Title1="十元", Uri="/col/"+collection.C10.Id},
 				//new ContentItem{Title1="百元", Uri="/col/"+collection.C100.Id},
 				//new ContentItem{Title1="限购", Uri="/col/"+collection.Limit.Id},
 				new ContentItem{Title1="揭晓", Uri="/open"},
 				new ContentItem{Title1="晒单", Uri="/shared"},
 				new ContentItem{Title1="新手", Uri="/help/doc/1"}
 				});
+			await sim.UpdateSetting<FriendlyContentSetting>(
+			   ScopeId,
+			   s =>
+			   {
+				   s.PCHeadMenuId = main_menu.Id;
+			   });
+			
 
-            await scope.SettingEnsure<UIManagerSetting>(s =>
-            {
-                s.PCHeadMenuId = main_menu.Id;
-            });
-
-            var tpl = await scope.SiteTemplateEnsure(
+            var tpl = await SiteTemplateManager.SiteTemplateEnsure(
 				"PC网站",
 				new SiteModel
 				{
@@ -662,7 +680,7 @@ namespace CrowdMall.Setup
 					}
 				}
 				);
-			await scope.SiteEnsure("main", "PC主站", tpl.Id);
+			await SiteManager.SiteEnsure("main", "PC主站", tpl.Id);
 
 
 

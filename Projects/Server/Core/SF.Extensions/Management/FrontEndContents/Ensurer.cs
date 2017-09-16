@@ -29,8 +29,8 @@ namespace SF.Management.FrontEndContents
 			SiteConfigModels.SiteModel Site
 			)
 		{
-			return await SiteTemplateManager.EnsureEntityEx(
-				   new SiteTemplateQueryArgument { Name = name },
+			return await SiteTemplateManager.EnsureEntity(
+				   await SiteTemplateManager.QuerySingleEntityIdent(new SiteTemplateQueryArgument { Name = name }),
 				   () => new SiteTemplate
 				   {
 					   Name = name,
@@ -43,19 +43,19 @@ namespace SF.Management.FrontEndContents
 				   );
 
 		}
-		public static async Task<Content> ContentEnsure(
-			this IContentManager ContentManager,
+		public static async Task<TContent> ContentEnsure<TContent>(
+			this IContentManager<TContent> ContentManager,
 			string category,
 			string name,
 			ContentItem Data,
 			ContentItem[] Items = null,
 			string summary = null
-			)
+			) where TContent:Content,new()
 		{
 			return await ContentEnsure(ContentManager, category, name, Data, null, null, Items, summary);
 		}
-		public static async Task<Content> ContentEnsure(
-			this IContentManager ContentManager,
+		public static async Task<TContent> ContentEnsure<TContent>(
+			this IContentManager<TContent> ContentManager,
 			string category,
 			string name,
 			ContentItem Data,
@@ -63,11 +63,11 @@ namespace SF.Management.FrontEndContents
 			string ProviderConfig,
 			ContentItem[] Items = null,
 			string summary = null
-			)
+			) where TContent : Content,new()
 		{
-			return await ContentManager.EnsureEntityEx<IContentManager,Content,ContentQueryArgument>(
-				new ContentQueryArgument { Category = category, Name = name },
-				c =>
+			return await ContentManager.EnsureEntity(
+				await ContentManager.QuerySingleEntityIdent(new ContentQueryArgument { Category = category, Name = name }),
+				(TContent c) =>
 				{
 					c.Name = name;
 					c.Category = category;
@@ -88,13 +88,13 @@ namespace SF.Management.FrontEndContents
 				}
 				);
 		}
-		public static async Task<Content> TitleImageContentEnsure(
-			this IContentManager ContentManager,
+		public static async Task<TContent> TitleImageContentEnsure<TContent>(
+			this IContentManager<TContent> ContentManager,
 			string category,
 			string name,
 			string image,
 			string uri
-			)
+			) where TContent:Content,new()
 		{
 			return await ContentManager.ContentEnsure(
 				category,
@@ -107,14 +107,14 @@ namespace SF.Management.FrontEndContents
 				}
 				);
 		}
-		public static async Task<Content> ProductContentEnsure(
-			this IContentManager ContentManager,
+		public static async Task<TContent> ContentEnsure<TContent>(
+			this IContentManager<TContent> ContentManager,
 			string category,
 			string name,
 			string loader,
 			string config,
 			string uri = null
-			)
+			) where TContent:Content,new()
 		{
 			return await ContentManager.ContentEnsure(
 				category,
