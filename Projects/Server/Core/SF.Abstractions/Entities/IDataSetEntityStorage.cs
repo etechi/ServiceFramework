@@ -46,7 +46,7 @@ namespace SF.Entities
 		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 		DateTime Now { get; }
 	}
-	public interface IEntityManager<TModel>: IEntityManager
+	public interface IModifiableEntityManager<TModel>: IEntityManager
 		where TModel:class
 	{
 		void InitCreateContext<TKey, TEditable>(
@@ -80,7 +80,7 @@ namespace SF.Entities
 		IDataSet DataSet { get; }
 	}
 
-	public interface IDataSetEntityManager<TModel> : IDataSetEntityManager,IEntityManager<TModel>
+	public interface IDataSetEntityManager<TModel> : IDataSetEntityManager,IModifiableEntityManager<TModel>
 		where TModel:class
 	{
 		new IDataSet<TModel> DataSet { get; }

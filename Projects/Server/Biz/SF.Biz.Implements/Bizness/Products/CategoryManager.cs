@@ -197,7 +197,7 @@ namespace SF.Biz.Products.Entity
 				PostActionType.AfterCommit
 				);
 		}
-        protected override IContextQueryable<TEditable> OnMapModelToPublic(IContextQueryable<TCategory> Query)
+        protected override IContextQueryable<TEditable> OnMapModelToInternal(IContextQueryable<TCategory> Query)
 		{
 			return BatchMapModelToEditable(Query);
 		}

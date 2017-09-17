@@ -41,6 +41,10 @@ namespace SF.Data.Models
 		[TableVisible]
 		[ReadOnly(true)]
 		public virtual DateTime UpdatedTime { get; set; }
+
+
+		[Comment("内部备注")]
+		public virtual string InternalRemarks { get; set; }
 	}
 
 	public class ObjectEntityBase : ObjectEntityBase<long>

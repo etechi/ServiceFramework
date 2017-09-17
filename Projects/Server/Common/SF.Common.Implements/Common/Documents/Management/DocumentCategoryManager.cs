@@ -37,7 +37,7 @@ namespace SF.Common.Documents.Management
 		{
 			return await Query.Select(EntityMapper.Map<TCategory, TCategoryInternal>()).SingleOrDefaultAsync();
 		}
-        protected override IContextQueryable<TCategoryInternal> OnMapModelToPublic(IContextQueryable<TCategory> Query)
+        protected override IContextQueryable<TCategoryInternal> OnMapModelToInternal(IContextQueryable<TCategory> Query)
 		{
 			return Query.Select(EntityMapper.Map<TCategory,TCategoryInternal>());
 		}

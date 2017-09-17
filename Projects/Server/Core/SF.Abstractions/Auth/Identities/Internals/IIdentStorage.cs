@@ -33,6 +33,10 @@ namespace SF.Auth.Identities.Internals
 		[Comment("登录凭证提供者")]
 		[MaxLength(100)]
 		public long CredentialProvider { get; set; }
+
+		[Comment("注册附加参数")]
+		[MaxLength(200)]
+		public string ExtraArgument { get; set; }
 	}
 
 	[Comment("用户身份数据")]

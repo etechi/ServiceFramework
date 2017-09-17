@@ -11,3 +11,5 @@ bin
 /Projects/Sites/SF.AdminSiteCore/client
 /Projects/Sites/SF.AdminSiteCore/node_modules
 /Projects/Sites/SF.AdminSiteCore/wwwroot/vender
+/Projects/Browser/node_modules
+bower_components

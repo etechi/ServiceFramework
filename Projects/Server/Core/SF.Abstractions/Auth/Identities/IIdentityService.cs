@@ -77,6 +77,9 @@ namespace SF.Auth.Identities
 
 		[Comment("过期时间")]
 		public int? Expires { get; set; }
+
+		[Comment("附加参数")]
+		public string ExtraArgument{get;set;}
 	}
 
 	public class SendCreateIdentityVerifyCodeArgument

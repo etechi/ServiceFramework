@@ -37,7 +37,7 @@ namespace SF.Biz.Products.Entity
 		{
 			return Query;//.Filter(Arg.CategoryId;
 		}
-		protected override IContextQueryable<TInternal> OnMapModelToPublic(IContextQueryable<TItem> Query)
+		protected override IContextQueryable<TInternal> OnMapModelToInternal(IContextQueryable<TItem> Query)
 		{
 			return from c in Query
 				   select new TInternal

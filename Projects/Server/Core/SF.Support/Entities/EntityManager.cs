@@ -18,7 +18,7 @@ namespace SF.Entities
 		public EntityManager(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
 		}
-		protected override async Task<TPublic[]> OnPreparePublics(TPublic[] Internals)
+		protected override async Task<TPublic[]> OnPrepareInternals(TPublic[] Internals)
 		{
 			await EntityManager.DataEntityResolver.Fill(Internals);
 			return Internals;
@@ -44,7 +44,7 @@ namespace SF.Entities
 		public EntityManager(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
 		}
-		protected override async Task<TPublic[]> OnPreparePublics(TPublic[] Internals)
+		protected override async Task<TPublic[]> OnPrepareInternals(TPublic[] Internals)
 		{
 			await EntityManager.DataEntityResolver.Fill(Internals);
 			return Internals;

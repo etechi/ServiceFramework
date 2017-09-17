@@ -26,6 +26,9 @@ namespace SF.Auth.Identities.Models
 		public string PasswordHash { get; set; }
 		public string SecurityStamp { get; set; }
 		public ICollection<IdentityCredential> Credentials { get; set; }
+
+		[Comment("注册附加参数")]
+		public string SignupExtraArgument { get; set; }
 	}
 }
 
