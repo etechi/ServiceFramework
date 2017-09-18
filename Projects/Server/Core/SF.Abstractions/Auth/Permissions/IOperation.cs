@@ -9,11 +9,11 @@ namespace SF.Auth.Permissions
         string Description { get; }
 	}
   
-    public interface IOperationCollection
-    {
-        void Add(IOperation operation);
-        IOperation Get(string Id);
-    }
+    //public interface IOperationCollection
+    //{
+    //    void Add(IOperation operation);
+    //    IOperation Get(string Id);
+    //}
 	//public class Operation : IOperation
 	//{
 	//	public Operation(string Id, string Name, string Description)

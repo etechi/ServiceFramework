@@ -11,17 +11,18 @@ using SF.Data;
 
 namespace SF.Auth.Permissions.DataModels
 {
-	public class RolePermission : RolePermission<Role, IdentityRole, RolePermission, IdentityPermission>
+	public class RolePermission : RolePermission<Grant, Role, GrantRole, RolePermission, GrantPermission>
 	{
 	}
 	[Table("AuthRolePermission")]
-    [Comment(GroupName = "认证服务", Name = "角色权限")]
-    public class RolePermission<TRole, TIdentityRole, TRolePermission, TIdentityPermission>:
+    [Comment(GroupName = "授权服务", Name = "角色权限")]
+    public class RolePermission<TGrant, TRole, TIdentityRole, TRolePermission, TIdentityPermission>:
 		IPermission
-		where TRole : Role<TRole, TIdentityRole, TRolePermission, TIdentityPermission>
-		where TRolePermission : RolePermission<TRole, TIdentityRole, TRolePermission, TIdentityPermission>
-		where TIdentityRole : IdentityRole<TRole, TIdentityRole, TRolePermission, TIdentityPermission>
-		where TIdentityPermission : IdentityPermission<TRole, TIdentityRole, TRolePermission, TIdentityPermission>
+		where TGrant : Grant<TGrant, TRole, TIdentityRole, TRolePermission, TIdentityPermission>
+		where TRole : Role<TGrant, TRole, TIdentityRole, TRolePermission, TIdentityPermission>
+		where TRolePermission : RolePermission<TGrant, TRole, TIdentityRole, TRolePermission, TIdentityPermission>
+		where TIdentityRole : GrantRole<TGrant, TRole, TIdentityRole, TRolePermission, TIdentityPermission>
+		where TIdentityPermission : GrantPermission<TGrant, TRole, TIdentityRole, TRolePermission, TIdentityPermission>
 	{
         [Key]
 		[Column(Order =1)]

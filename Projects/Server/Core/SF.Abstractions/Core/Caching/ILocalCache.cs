@@ -10,6 +10,7 @@ namespace SF.Core.Caching
 	public interface ILocalCache<T>
 		where T:class
 	{
+		void Clear();
 		T Get(string key);
 		void Set(string key, T value, TimeSpan keepalive);
 		void Set(string key, T value, DateTime expires);

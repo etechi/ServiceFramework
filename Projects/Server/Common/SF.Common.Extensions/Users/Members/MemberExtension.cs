@@ -15,7 +15,7 @@ namespace SF.Users.Members
 {
 	public static class MemberExtension
 	{
-		public static async Task MemberEnsure(
+		public static  Task MemberEnsure(
 		   this IMemberManagementService ManagementService,
 		   string name,
 		   string nick,
@@ -27,32 +27,32 @@ namespace SF.Users.Members
 		   int? userSource = null
 		   )
 			{
-				var um = scope.Resolve<Bizness.Auth.UserManager>();
-				var user = await um.FindByNameAsync(name);
-				if (user != null)
-				{
-					user.NickName = nick;
-					user.PhoneNumber = phoneNumber;
-					user.PhoneNumberConfirmed = phoneConfirmed;
-					await um.UpdateAsync(user);
-					return user;
-				}
-				user = new DataModels.User
-				{
-					UserName = name,
-					NickName = nick,
-					PhoneNumber = phoneNumber,
-					PhoneNumberConfirmed = phoneConfirmed,
-					InviterUserId = inviter ?? 0,
-					SourceId = userSource,
-					Roles = (roles ?? Array.Empty<string>()).Select(r => new DataModels.UserRole { RoleId = r }).ToArray()
-				};
-				var re = await um.CreateAsync(user, password);
-				if (!re.Succeeded)
-					throw new Exception(re.Errors.Join(";"));
-				return user;
+			//var um = scope.Resolve<Bizness.Auth.UserManager>();
+			//var user = await um.FindByNameAsync(name);
+			//if (user != null)
+			//{
+			//	user.NickName = nick;
+			//	user.PhoneNumber = phoneNumber;
+			//	user.PhoneNumberConfirmed = phoneConfirmed;
+			//	await um.UpdateAsync(user);
+			//	return user;
+			//}
+			//user = new DataModels.User
+			//{
+			//	UserName = name,
+			//	NickName = nick,
+			//	PhoneNumber = phoneNumber,
+			//	PhoneNumberConfirmed = phoneConfirmed,
+			//	InviterUserId = inviter ?? 0,
+			//	SourceId = userSource,
+			//	Roles = (roles ?? Array.Empty<string>()).Select(r => new DataModels.UserRole { RoleId = r }).ToArray()
+			//};
+			//var re = await um.CreateAsync(user, password);
+			//if (!re.Succeeded)
+			//	throw new Exception(re.Errors.Join(";"));
+			//return user;
+			return null;
 			}
-		}
 	}
 
 }

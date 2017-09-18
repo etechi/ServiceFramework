@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace SF.Auth
 {
-	public interface IPermission
+	public interface IPermissionProvider
 	{
-		string OperationId { get;}
-		string ResourceId { get; }
+		Task<IPermission[]> GetPermissions(long OperatorId);
 	}
 }

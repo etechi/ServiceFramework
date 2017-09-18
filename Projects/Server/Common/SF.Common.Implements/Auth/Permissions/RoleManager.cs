@@ -4,22 +4,35 @@ using System.Linq;
 using System.Threading.Tasks;
 using SF.Entities;
 using SF.Data;
+using SF.Auth.Permissions.DataModels;
 
 namespace SF.Auth.Permissions
 {
-	public class RoleManager: RoleManager<Models.RoleInternal,RoleQueryArgument,DataModels.Role, DataModels.RolePermission, DataModels.IdentityRole, DataModels.IdentityPermission>
+	public class RoleManager :
+		RoleManager<
+			Models.RoleInternal,
+			RoleQueryArgument,
+			DataModels.Grant, 
+			DataModels.Role, 
+			DataModels.RolePermission, 
+			DataModels.GrantRole, 
+			DataModels.GrantPermission
+			>,
+		IRoleManager
 	{
-
+		public RoleManager(IDataSetEntityManager<Role> EntityManager, Lazy<IOperationManager> OperationManager, Lazy<IResourceManager> ResourceManager) : base(EntityManager, OperationManager, ResourceManager)
+		{
+		}
 	}
 
-	public class RoleManager<TRoleInternal, TQueryArgument, TRole, TRolePermission, TIdentityRole, TIdentityPermission> :
+	public class RoleManager<TRoleInternal, TQueryArgument, TGrant,TRole, TRolePermission, TGrantRole, TGrantPermission> :
         EntityManager<string, TRoleInternal, TQueryArgument, TRoleInternal,TRole>,
         IRoleManager<TRoleInternal, TQueryArgument>
-
-        where TRole : DataModels.Role<TRole, TRolePermission, TIdentityRole, TIdentityPermission>,new()
-		where TRolePermission : DataModels.RolePermission<TRole, TRolePermission, TIdentityRole, TIdentityPermission>,new()
-		where TIdentityRole : DataModels.IdentityRole<TRole, TRolePermission, TIdentityRole, TIdentityPermission>
-		where TIdentityPermission : DataModels.IdentityPermission<TRole, TRolePermission, TIdentityRole, TIdentityPermission>
+		where TGrant : DataModels.Grant<TGrant, TRole, TGrantRole, TRolePermission, TGrantPermission>
+		where TRole : DataModels.Role<TGrant,TRole, TGrantRole, TRolePermission, TGrantPermission>,new()
+		where TRolePermission : DataModels.RolePermission<TGrant, TRole, TGrantRole, TRolePermission, TGrantPermission>,new()
+		where TGrantRole : DataModels.GrantRole<TGrant, TRole,  TGrantRole, TRolePermission, TGrantPermission>
+		where TGrantPermission : DataModels.GrantPermission<TGrant, TRole,  TGrantRole, TRolePermission, TGrantPermission>
 
 		where TRoleInternal:Models.RoleInternal,new()
 		where TQueryArgument : RoleQueryArgument,new()
@@ -36,8 +49,18 @@ namespace SF.Auth.Permissions
             this.ResourceManager = ResourceManager;
         }
 
+		protected override IContextQueryable<TRole> OnBuildQuery(IContextQueryable<TRole> Query, TQueryArgument Arg, Paging paging)
+		{
 
-        protected override IContextQueryable<TRoleInternal> OnMapModelToInternal(IContextQueryable<TRole> Query)
+			return Query.Filter(Arg.Name, r => r.Name)
+				.Filter(Arg.LogicState, r => r.LogicState);
+		}
+		protected override PagingQueryBuilder<TRole> PagingQueryBuilder { get; } = new PagingQueryBuilder<TRole>(
+			"name",
+			b => b.Add("name", r => r.Name)
+			);
+
+		protected override IContextQueryable<TRoleInternal> OnMapModelToInternal(IContextQueryable<TRole> Query)
         {
             return from r in Query
                    select new TRoleInternal
@@ -65,10 +88,6 @@ namespace SF.Auth.Permissions
             re.Grants = (await ResourceManager.Value.QueryAsync(new TQueryArgument(),Paging.All)).Items.Select(r => new Models.ResourceGrantInternal
             {
                 Id = r.Id,
-                CreatedTime = r.CreatedTime,
-				InternalRemarks=r.InternalRemarks,
-				LogicState=r.LogicState,
-				UpdatedTime=r.UpdatedTime,
                 Group=r.Group,
                 Name = r.Name,
                 OperationIds = permissions.Get(r.Id) ?? Array.Empty<string>()
@@ -80,7 +99,7 @@ namespace SF.Auth.Permissions
         {
 			//ctx.Model.IsAdminRole = true;
 			ctx.Model.Id = ctx.Editable.Id;
-			m.CreatedTime = Now;
+			ctx.Model.CreatedTime = Now;
 			return base.OnNewModel(ctx);
         }
         protected override async Task OnUpdateModel(IModifyContext ctx)
