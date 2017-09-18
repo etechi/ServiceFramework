@@ -105,26 +105,26 @@ namespace Hygou.Setup
 			)
 		{
 			var pcSys = await (sim.NewDocumentService()
-				.Ident("pc-sys")
-				.Display("PC系统文档", "PC系统文档，如关于我们等")
+				.WithIdent("pc-sys")
+				.WithDisplay("PC系统文档", "PC系统文档，如关于我们等")
 				.Enabled()
 				).Ensure(ServiceProvider, ScopeId);
 
 			var pcHelp = await (sim.NewDocumentService()
-				.Ident("pc-help")
-				.Display("PC帮助文档")
+				.WithIdent("pc-help")
+				.WithDisplay("PC帮助文档")
 				.Enabled()
 				).Ensure(ServiceProvider, ScopeId);
 
 			var mSys = await (sim.NewDocumentService()
-				.Ident("m-sys")
-				.Display("移动端系统文档","移动端系统文档，如关于我们等")
+				.WithIdent("m-sys")
+				.WithDisplay("移动端系统文档","移动端系统文档，如关于我们等")
 				.Enabled()
 				).Ensure(ServiceProvider, ScopeId);
 
 			var mHelp = await (sim.NewDocumentService()
-				.Ident("m-help")
-				.Display("移动端帮助文档")
+				.WithIdent("m-help")
+				.WithDisplay("移动端帮助文档")
 				.Enabled()
 				).Ensure(ServiceProvider, ScopeId);
 

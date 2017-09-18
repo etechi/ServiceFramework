@@ -1,5 +1,6 @@
 ﻿using SF.Auth.Identities.Models;
 using SF.Metadata;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SF.Auth.Identities
@@ -79,7 +80,7 @@ namespace SF.Auth.Identities
 		public int? Expires { get; set; }
 
 		[Comment("附加参数")]
-		public string ExtraArgument{get;set;}
+		public Dictionary<string,string> ExtraArgument{get;set;}
 	}
 
 	public class SendCreateIdentityVerifyCodeArgument

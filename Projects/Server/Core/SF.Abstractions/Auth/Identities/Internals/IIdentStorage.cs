@@ -1,6 +1,7 @@
 ﻿using SF.Auth.Identities.Models;
 using SF.Metadata;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -36,7 +37,7 @@ namespace SF.Auth.Identities.Internals
 
 		[Comment("注册附加参数")]
 		[MaxLength(200)]
-		public string ExtraArgument { get; set; }
+		public Dictionary<string,string> ExtraArgument { get; set; }
 	}
 
 	[Comment("用户身份数据")]

@@ -14,6 +14,7 @@ using SF.Management.SysAdmins.Entity;
 using SF.Auth.Identities;
 using SF.Auth.Permissions.Models;
 using SF.Auth.Permissions;
+using SF.Auth;
 
 namespace SF.Core.ServiceManagement
 {
@@ -30,6 +31,7 @@ namespace SF.Core.ServiceManagement
 			sc.AddManagedScoped<IRoleManager, RoleManager>();
 			sc.AddManagedScoped<IGrantManager, GrantManager>();
 
+			sc.AddSingleton<IPermissionProvider, PermissionProvider>();
 			return sc;
 		}
 	}

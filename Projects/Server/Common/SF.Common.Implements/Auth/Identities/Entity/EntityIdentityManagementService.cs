@@ -23,7 +23,8 @@ namespace SF.Auth.Identities.Entity
 			>,
 		IIdentityManagementService,
 		IIdentStorage
-		where TIdentity:DataModels.Identity<TIdentity,TIdentityCredential>,new()
+
+		where TIdentity :DataModels.Identity<TIdentity,TIdentityCredential>,new()
 		where TIdentityCredential : DataModels.IdentityCredential<TIdentity, TIdentityCredential>,new()
 	{
 		public EntityIdentityManagementService(
@@ -41,7 +42,9 @@ namespace SF.Auth.Identities.Entity
 			return Query
 				.Where(r=>r.ScopeId==sid)
 				.Filter(Arg.Id, r => r.Id)
-				.FilterContains(Arg.Ident,r=>r.SignupIdentValue);
+				.FilterContains(Arg.Ident,r=>r.SignupIdentValue)
+				.FilterContains(Arg.Name, r => r.Name);
+
 				
 		}
 
@@ -57,7 +60,7 @@ namespace SF.Auth.Identities.Entity
 				CreateCredentialProviderId = Arg.CredentialProvider,
 
 				LogicState = EntityLogicState.Enabled,
-				SignupExtraArgument=Arg.ExtraArgument,
+				SignupExtraArgument=Arg.ExtraArgument==null?null:Json.Stringify(Arg.ExtraArgument),
 				PasswordHash = Arg.PasswordHash,
 				SecurityStamp = Arg.SecurityStamp.Base64(),
 				Entity = Arg.Identity.Entity,
@@ -124,6 +127,15 @@ namespace SF.Auth.Identities.Entity
 			m.SignupIdentValue = e.CreateCredential;
 			m.CreatedTime = Now;
 			m.ScopeId = ServiceInstanceDescriptor.InstanceId;
+			if (e.Credentials == null)
+				e.Credentials = new[]{
+					new IdentityCredential
+					{
+						ProviderId=e.CreateCredentialProviderId,
+						Credential=e.CreateCredential,
+						BindTime=Now
+					}
+				};
 			return base.OnNewModel(ctx);
 		}
 		

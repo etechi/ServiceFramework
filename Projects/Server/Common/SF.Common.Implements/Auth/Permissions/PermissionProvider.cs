@@ -23,7 +23,12 @@ namespace SF.Auth.Permissions
 			   DataModels.GrantPermission
 			   >
 	{
-		public PermissionProvider(Lazy<IServiceScopeFactory> ScopeFactory, ILocalCache<IPermission[]> LocalCache, IEventSubscriber<EntityModified<long, GrantEditable>> GrantModified, IEventSubscriber<EntityModified<long, RoleInternal>> RoleModified) : base(ScopeFactory, LocalCache, GrantModified, RoleModified)
+		public PermissionProvider(
+			Lazy<WithNewScope<IDataSet<GrantPermission>, IDataSet<GrantRole>, IPermission[]>> WithNewScope, 
+			ILocalCache<IPermission[]> LocalCache, 
+			IEventSubscriber<EntityModified<long, GrantEditable>> GrantModified, 
+			IEventSubscriber<EntityModified<long, RoleInternal>> RoleModified) : 
+			base(WithNewScope, LocalCache, GrantModified, RoleModified)
 		{
 		}
 	}
@@ -39,16 +44,16 @@ namespace SF.Auth.Permissions
 		where TGrantPermission : DataModels.GrantPermission<TGrant, TRole, TGrantRole, TRolePermission, TGrantPermission>
 	{
 		ILocalCache<IPermission[]> LocalCache { get; }
-		Lazy<IServiceScopeFactory> ScopeFactory { get; }
+		Lazy<WithNewScope<IDataSet<TGrantPermission>,IDataSet<TGrantRole>,IPermission[]>> WithNewScope { get; }
 		public PermissionProvider(
-			Lazy<IServiceScopeFactory> ScopeFactory, 
+			Lazy<WithNewScope<IDataSet<TGrantPermission>, IDataSet<TGrantRole>, IPermission[]>> WithNewScope, 
 			ILocalCache<IPermission[]> LocalCache,
-			IEventSubscriber<EntityModified<long,TGrantEditable>> GrantModified,
+			IEventSubscriber<EntityModified<long, TGrantEditable>> GrantModified,
 			IEventSubscriber<EntityModified<long, TRoleEditable>> RoleModified
 			)
 		{
 			this.LocalCache = LocalCache;
-			this.ScopeFactory = ScopeFactory;
+			this.WithNewScope = WithNewScope;
 			GrantModified.Wait(e =>
 			{
 				LocalCache.Remove(e.Id.ToString());
@@ -69,19 +74,17 @@ namespace SF.Auth.Permissions
 			if (re != null)
 				return re;
 
-			using (var s = ScopeFactory.Value.CreateServiceScope())
+			re = await WithNewScope.Value(async (Grants,Roles)=>
 			{
-				var ctx = s.ServiceProvider.Resolve<IDataContext>();
-				re = await ctx.Set<TGrantPermission>()
-					.AsQueryable()
-					.Where(p => p.GrantId == OperatorId)
-					.Select(p => new Permission { OperationId = p.OperationId, ResourceId = p.ResourceId })
-					.Union(
-						ctx.Set<TGrantRole>().AsQueryable().Where(gr => gr.GrantId == OperatorId).SelectMany(gr => gr.Role.Permissions)
-						.Select(p => new Permission { OperationId = p.OperationId, ResourceId = p.ResourceId })
-					).ToArrayAsync();
-
-			}
+				 return await Grants
+					 .AsQueryable()
+					 .Where(p => p.GrantId == OperatorId)
+					 .Select(p => new Permission { OperationId = p.OperationId, ResourceId = p.ResourceId })
+					 .Union(
+						 Roles.AsQueryable().Where(gr => gr.GrantId == OperatorId).SelectMany(gr => gr.Role.Permissions)
+						 .Select(p => new Permission { OperationId = p.OperationId, ResourceId = p.ResourceId })
+					 ).ToArrayAsync();
+			 });
 			return LocalCache.AddOrGetExisting(id, re, TimeSpan.FromMinutes(30));
 			
 		}

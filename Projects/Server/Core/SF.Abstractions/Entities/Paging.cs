@@ -22,6 +22,10 @@ namespace SF.Entities
 		public bool TotalRequired { get; set; }
         public bool SummaryRequired { get; set; }
 
+		public static Paging Single => new Paging
+		{
+			Count = 1
+		};
 		public static Paging Default => new Paging
 		{
 			Count = 100

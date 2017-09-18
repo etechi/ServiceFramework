@@ -11,13 +11,15 @@ using System.Collections.Generic;
 
 namespace SF.Entities
 {
-	public abstract class BaseEntityManager
+	public abstract class BaseEntityManager: IManagedServiceWithId
 	{
 		protected IEntityManager EntityManager { get; }
 		public IServiceInstanceDescriptor ServiceInstanceDescriptor => EntityManager.ServiceInstanceDescroptor;
 		public DateTime Now => EntityManager.Now;
 		public ILogger Logger => EntityManager.Logger;
 		public IIdentGenerator IdentGenerator => EntityManager.IdentGenerator;
+		
+		long IManagedServiceWithId.ServiceInstanceId => EntityManager.ServiceInstanceDescroptor.InstanceId;
 
 		public BaseEntityManager(IEntityManager EntityManager)
 		{

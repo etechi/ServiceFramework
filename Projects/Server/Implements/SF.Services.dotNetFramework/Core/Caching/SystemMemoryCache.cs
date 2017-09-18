@@ -9,51 +9,55 @@ namespace SF.Core.Caching
 	public class SystemMemoryCache<T> : ILocalCache<T>
 		where T:class
 	{
-		readonly System.Runtime.Caching.MemoryCache cache;
+		System.Runtime.Caching.MemoryCache _cache;
 		public SystemMemoryCache()
 		{
-			cache = new System.Runtime.Caching.MemoryCache(typeof(T).FullName);
+			_cache = new System.Runtime.Caching.MemoryCache(typeof(T).FullName);
 		}
 		public T AddOrGetExisting(string key, T value, DateTime expires)
 		{
-			return (T)cache.AddOrGetExisting(key, value, expires);
+			return (T)_cache.AddOrGetExisting(key, value, expires);
 		}
 
 		public T AddOrGetExisting(string key, T value, TimeSpan keepalive)
 		{
-			return (T)cache.AddOrGetExisting(
+			return (T)_cache.AddOrGetExisting(
 				key, 
 				value, 
 				new System.Runtime.Caching.CacheItemPolicy { SlidingExpiration = keepalive }
 				);
 		}
 
+		public void Clear()
+		{
+			_cache = new System.Runtime.Caching.MemoryCache(typeof(T).FullName);
+		}
 
 		public bool Contains(string key)
 		{
-			return cache.Contains(key);
+			return _cache.Contains(key);
 		}
 
 
 		public T Get(string key)
 		{
-			return (T)cache.Get(key);
+			return (T)_cache.Get(key);
 		}
 
 		public bool Remove(string key)
 		{
-			return cache.Remove(key)!=null;
+			return _cache.Remove(key)!=null;
 		}
 
 
 		public void Set(string key, T value, DateTime expires)
 		{
-			cache.Set(key, value, expires);
+			_cache.Set(key, value, expires);
 		}
 
 		public void Set(string key, T value, TimeSpan keepalive)
 		{
-			cache.Set(key, value, new System.Runtime.Caching.CacheItemPolicy { SlidingExpiration = keepalive });
+			_cache.Set(key, value, new System.Runtime.Caching.CacheItemPolicy { SlidingExpiration = keepalive });
 		}
 
 	}

@@ -87,11 +87,12 @@ namespace SF.Core.ServiceManagement
 				{
 					ConfirmMessageSetting= Template??new ConfirmMessageTemplateSetting()
 				}
-				);
+				).WithIdent("手机号认证");
 		public static IServiceInstanceInitializer<IIdentityCredentialProvider> NewAuthUserAccountIdentityCredentialProvider(
 			this IServiceInstanceManager sim
 			)
-			=> sim.Service<IIdentityCredentialProvider, UserAccountIdentityCredentialProvider>(null);
+			=> sim.Service<IIdentityCredentialProvider, UserAccountIdentityCredentialProvider>(null)
+			.WithIdent("账号认证");
 
 		public static IServiceInstanceInitializer<IIdentityService> NewAuthIdentityServive(
 			this IServiceInstanceManager sim,

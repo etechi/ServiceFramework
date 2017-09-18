@@ -14,10 +14,14 @@ namespace SF.Auth.Permissions.Models
         public override string Id { get; set; }
 
         [Display(Name="名称",Description ="角色的名称")]
+		
         public override string Name { get; set; }
 
+		[Display(Name = "说明", Description = "角色的说明")]
+		[MaxLength(100)]
+		public string Description { get; set; }
 
-        [TableVisible]
+		[TableVisible]
         [Comment(Name = "角色状态",Description ="当角色无效时，角色相关的用户不会得到授权")]
         public override EntityLogicState LogicState { get; set; }
 

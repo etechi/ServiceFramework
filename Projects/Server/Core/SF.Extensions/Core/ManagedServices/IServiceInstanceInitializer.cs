@@ -96,12 +96,14 @@ namespace SF.Core.ServiceManagement
 				dic[prop.Name] = await ConfigResolve(prop.GetValue(config), ServiceProvider, ParentId, Children, Level + 1);
 			return dic;
 		}
-		public static IServiceInstanceInitializer Config(this IServiceInstanceInitializer sii, Action<ServiceInstanceConfig> edit)
+		public static T Config<T>(this T sii, Action<ServiceInstanceConfig> edit)
+			where T: IServiceInstanceInitializer
 		{
 			edit(sii.Config);
 			return sii;
 		}
-		public static IServiceInstanceInitializer Display(this IServiceInstanceInitializer sii, string Name,string Description=null, string Title = null)
+		public static T WithDisplay<T>(this T sii, string Name,string Description=null, string Title = null)
+			where T: IServiceInstanceInitializer
 		{
 			sii.Config.Name = Name;
 			sii.Config.Title = Title??Name;
@@ -109,17 +111,20 @@ namespace SF.Core.ServiceManagement
 			return sii;
 		}
 		
-		public static IServiceInstanceInitializer Ident(this IServiceInstanceInitializer sii, string Ident)
+		public static T WithIdent<T>(this T sii, string Ident)
+			where T: IServiceInstanceInitializer
 		{
 			sii.Config.Ident = Ident;
 			return sii;
 		}
-		public static IServiceInstanceInitializer LogicState(this IServiceInstanceInitializer sii, EntityLogicState State)
+		public static T WithLogicState<T>(this T sii, EntityLogicState State)
+			where T : IServiceInstanceInitializer
 		{
 			sii.Config.LogicState = State;
 			return sii;
 		}
-		public static IServiceInstanceInitializer Enabled(this IServiceInstanceInitializer sii)
+		public static T Enabled<T>(this T sii)
+			where T: IServiceInstanceInitializer
 		{
 			sii.Config.LogicState = EntityLogicState.Enabled;
 			return sii;

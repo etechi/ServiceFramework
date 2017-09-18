@@ -16,7 +16,7 @@ namespace SF.Core.Caching.MicrosoftExtensions
 	public class LocalCache<T> : ILocalCache<T> where T : class
 	{
 		IMemoryCache Cache { get; }
-		static ConcurrentDictionary<Type, CancellationTokenSource> CancellationChangeTokens { get; } = new ConcurrentDictionary<Type, CancellationTokenSource>();
+		static ConcurrentDictionary<Type, (CancellationChangeToken,CancellationTokenSource)> CancellationChangeTokens { get; } = new ConcurrentDictionary<Type, (CancellationChangeToken,CancellationTokenSource)>();
 
 		static string ItemTypeName { get; } = typeof(T).FullName + ":";
 		static string GetKey(string key) =>
@@ -27,18 +27,21 @@ namespace SF.Core.Caching.MicrosoftExtensions
 			this.Cache = cache;
 		}
 
-		static CancellationTokenSource GetChangeToken()
+		static (CancellationChangeToken,CancellationTokenSource) GetChangeToken()
 		{
 			return CancellationChangeTokens.GetOrAdd(typeof(T), type =>
-				 new CancellationTokenSource()
+				 {
+					 var cts = new CancellationTokenSource();
+					 return (new CancellationChangeToken(cts.Token), cts);
+				 }
 				);
 		}
 		public void Clear()
 		{
 			if (CancellationChangeTokens.TryRemove(typeof(T), out var cts))
 			{
-				cts.Cancel();
-				cts.Dispose();
+				cts.Item2.Cancel();
+				cts.Item2.Dispose();
 			}
 		}
 		public T AddOrGetExisting(string key, T value, TimeSpan keepalive)
@@ -46,7 +49,7 @@ namespace SF.Core.Caching.MicrosoftExtensions
 			 return Cache.GetOrCreate(GetKey(key), e =>
 			 {
 				 e.SetSlidingExpiration(keepalive);
-				 e.AddExpirationToken(new CancellationChangeToken(GetChangeToken().Token));
+				 e.AddExpirationToken(GetChangeToken().Item1);
 				 return value;
 			 });
 		}
@@ -56,7 +59,7 @@ namespace SF.Core.Caching.MicrosoftExtensions
 			return Cache.GetOrCreate(GetKey(key), e =>
 			{
 				e.SetAbsoluteExpiration(expires);
-				e.AddExpirationToken(new CancellationChangeToken(GetChangeToken().Token));
+				e.AddExpirationToken(GetChangeToken().Item1);
 				return value;
 			});
 		}
