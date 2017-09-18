@@ -60,7 +60,7 @@ namespace SF.Management.FrontEndContents
 			return re.content;
 		}
 
-        protected override IContextQueryable<TContentPublic> OnMapModelToPublic(IContextQueryable<TContent> Query)
+        protected override IContextQueryable<TContentPublic> OnMapModelToInternal(IContextQueryable<TContent> Query)
 		{
 			return Query.Select(m => new TContentPublic
 			{

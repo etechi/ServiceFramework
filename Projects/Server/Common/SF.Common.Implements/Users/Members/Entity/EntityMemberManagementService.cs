@@ -119,7 +119,8 @@ namespace SF.Users.Members.Entity
 						ReturnToken= CreateArgument.ReturnToken,
 						CaptchaCode= CreateArgument.CaptchaCode,
 						VerifyCode= CreateArgument.VerifyCode,
-						Expires= CreateArgument.Expires
+						Expires= CreateArgument.Expires,
+						ExtraArgument=CreateArgument.ExtraArgument
 					}, 
 					false
 					);

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using SF.Management.FrontEndContents.Friendly;
 using SF.Management.FrontEndContents;
 using SF.Metadata;
+using SF.Services.Settings;
 
 namespace SF.Management.FrontEndContents
 {
@@ -12,7 +13,7 @@ namespace SF.Management.FrontEndContents
 	public class MobileHomeSilderManager :
 		MobileHomeSilderManager<Content, IContentManager>
 	{
-		public MobileHomeSilderManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
+		public MobileHomeSilderManager(ISettingService<FriendlyContentSetting> SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
 		}
 	}
@@ -23,16 +24,16 @@ namespace SF.Management.FrontEndContents
 		where TContent : Content
 		where TContentManager : IContentManager<TContent>
 	{
-		IFriendlyContentSettingService SettingService { get; }
+		ISettingService<FriendlyContentSetting> SettingService { get; }
 		public MobileHomeSilderManager(
-			IFriendlyContentSettingService SettingService,
+			ISettingService<FriendlyContentSetting> SettingService,
 			IContentManager<TContent> ContentManager
 			) : base(ContentManager)
 		{
 			this.SettingService = SettingService;
 		}
 
-		protected override long EntityId => SettingService.Setting.MobileHomePageSliderId;
+		protected override long EntityId => SettingService.Value.MobileHomePageSliderId;
 	}
 
 	

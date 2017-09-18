@@ -13,55 +13,55 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{71A662FA-F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sites", "Sites", "{8E28520B-F54B-4C69-A62D-D5C7195031C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.AdminSite", "SF\Sites\SF.AdminSite\SF.AdminSite.csproj", "{CE536CE6-D560-4A97-AB5D-B4AB8763CCF7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.AdminSite", "Server\Sites\SF.AdminSite\SF.AdminSite.csproj", "{CE536CE6-D560-4A97-AB5D-B4AB8763CCF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.AspNet", "SF\Core\SF.AspNet\SF.AspNet.csproj", "{18684B2F-39E2-46A0-8528-754660B8577B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.AspNet", "Server\Core\SF.AspNet\SF.AspNet.csproj", "{18684B2F-39E2-46A0-8528-754660B8577B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Data.Storage.EF6", "SF\Implements\SF.Data.Storage.EF6\SF.Data.Storage.EF6.csproj", "{0BACD331-8E70-451B-B290-06DCC35324BF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Data.Storage.EF6", "Server\Implements\SF.Data.Storage.EF6\SF.Data.Storage.EF6.csproj", "{0BACD331-8E70-451B-B290-06DCC35324BF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{21ADA552-95B6-443B-BEDB-8A420182B2E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Services.dotNetFramework", "SF\Implements\SF.Services.dotNetFramework\SF.Services.dotNetFramework.csproj", "{1111E437-2D49-4773-83DF-BA42F6CA20F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.Services.dotNetFramework", "Server\Implements\SF.Services.dotNetFramework\SF.Services.dotNetFramework.csproj", "{1111E437-2D49-4773-83DF-BA42F6CA20F8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Biz", "Biz", "{7FB34344-E354-4075-8F29-A0AAD2EF72D4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Abstractions", "SF\Core\SF.Abstractions\SF.Abstractions.csproj", "{8880140E-8868-4B08-880E-DC3E0BC10D76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Abstractions", "Server\Core\SF.Abstractions\SF.Abstractions.csproj", "{8880140E-8868-4B08-880E-DC3E0BC10D76}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Extensions", "SF\Core\SF.Extensions\SF.Extensions.csproj", "{D6AD9C64-CCA3-45BF-890C-54309E1455FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Extensions", "Server\Core\SF.Extensions\SF.Extensions.csproj", "{D6AD9C64-CCA3-45BF-890C-54309E1455FC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Implements", "SF\Core\SF.Implements\SF.Implements.csproj", "{F2624E1E-8C78-4E8C-B684-735BA3DCF68E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Implements", "Server\Core\SF.Implements\SF.Implements.csproj", "{F2624E1E-8C78-4E8C-B684-735BA3DCF68E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Interception", "SF\Core\SF.Interception\SF.Interception.csproj", "{A3E878CD-9E52-4B9B-BD74-BADBCD45DBBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Interception", "Server\Core\SF.Interception\SF.Interception.csproj", "{A3E878CD-9E52-4B9B-BD74-BADBCD45DBBB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{C2963F98-E3FB-4444-A4CE-3A7FA00225AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Data.Storage.EFCore", "SF\Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.csproj", "{FE8C6E9C-53DF-4B21-9459-485A37D4CEA7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Data.Storage.EFCore", "Server\Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.csproj", "{FE8C6E9C-53DF-4B21-9459-485A37D4CEA7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Core.MicrosoftExtensions", "SF\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj", "{BD3BBEBD-3653-43B0-A467-9B295496F86E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Core.MicrosoftExtensions", "Server\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj", "{BD3BBEBD-3653-43B0-A467-9B295496F86E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Support", "SF\Core\SF.Support\SF.Support.csproj", "{C3A9CF66-0C47-4EA9-8DC5-FB58769221B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Support", "Server\Core\SF.Support\SF.Support.csproj", "{C3A9CF66-0C47-4EA9-8DC5-FB58769221B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Common.Abstractions", "SF\Common\SF.Common.Abstractions\SF.Common.Abstractions.csproj", "{540ED117-F2EA-4841-90F5-19F81F65E8C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Common.Abstractions", "Server\Common\SF.Common.Abstractions\SF.Common.Abstractions.csproj", "{540ED117-F2EA-4841-90F5-19F81F65E8C5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Common.Extensions", "SF\Common\SF.Common.Extensions\SF.Common.Extensions.csproj", "{BD66425A-7F2E-4446-851A-D9AF29F32627}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Common.Extensions", "Server\Common\SF.Common.Extensions\SF.Common.Extensions.csproj", "{BD66425A-7F2E-4446-851A-D9AF29F32627}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Common.Implements", "SF\Common\SF.Common.Implements\SF.Common.Implements.csproj", "{10C167E0-D74E-458D-A245-C118483D6939}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Common.Implements", "Server\Common\SF.Common.Implements\SF.Common.Implements.csproj", "{10C167E0-D74E-458D-A245-C118483D6939}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.App.net46", "SF\Applications\SF.App.net46\SF.App.net46.csproj", "{094850BB-29F4-41A5-B586-97804A302BE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.App.net46", "Server\Applications\SF.App.net46\SF.App.net46.csproj", "{094850BB-29F4-41A5-B586-97804A302BE0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.App.Core", "SF\Applications\SF.App.Core\SF.App.Core.csproj", "{CF20FA89-703F-4A75-98C8-35DE47115E7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.App.Core", "Server\Applications\SF.App.Core\SF.App.Core.csproj", "{CF20FA89-703F-4A75-98C8-35DE47115E7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.UT.Core", "SF\Test\SF.UT.Core\SF.UT.Core.csproj", "{AA81972D-0F60-4A52-BBE8-63EB8831F5A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF.UT.Core", "Server\Test\SF.UT.Core\SF.UT.Core.csproj", "{AA81972D-0F60-4A52-BBE8-63EB8831F5A6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Implements", "SF\Biz\SF.Biz.Implements\SF.Biz.Implements.csproj", "{B0B411B0-E59C-4593-A83C-7819974F874B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Implements", "Server\Biz\SF.Biz.Implements\SF.Biz.Implements.csproj", "{B0B411B0-E59C-4593-A83C-7819974F874B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Extensions", "SF\Biz\SF.Biz.Extensions\SF.Biz.Extensions.csproj", "{042C3B6A-AC1F-48A3-8936-F0C3CF942EB9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Extensions", "Server\Biz\SF.Biz.Extensions\SF.Biz.Extensions.csproj", "{042C3B6A-AC1F-48A3-8936-F0C3CF942EB9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Abstractions", "SF\Biz\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj", "{7ABD734C-FCEE-4CE0-A126-3D9816B37731}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Abstractions", "Server\Biz\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj", "{7ABD734C-FCEE-4CE0-A126-3D9816B37731}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.AdminSiteCore2", "SF\Sites\SF.AdminSiteCore2\SF.AdminSiteCore2.csproj", "{17148021-8D02-488E-8392-A27BD42CAFF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.AdminSiteCore2", "Server\Sites\SF.AdminSiteCore2\SF.AdminSiteCore2.csproj", "{17148021-8D02-488E-8392-A27BD42CAFF3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.AspNetCore", "SF\Core\SF.AspNetCore\SF.AspNetCore.csproj", "{567EA1F7-CC6F-4B0D-9F3F-5AA11B8EBE0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.AspNetCore", "Server\Core\SF.AspNetCore\SF.AspNetCore.csproj", "{567EA1F7-CC6F-4B0D-9F3F-5AA11B8EBE0E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demo", "Demo", "{2EB92F6A-F55C-4B5C-9BB1-A74CFEE13C84}"
 EndProject

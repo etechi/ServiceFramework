@@ -18,12 +18,9 @@ namespace SF.Biz.Products
 			IEntityCreator<long, ProductTypeEditable>,
 			IEntityUpdator<long, ProductTypeEditable>
 		{
-			return await ProductTypeManager.EnsureEntityEx<TProductTypeManager, ProductTypeEditable,ProductTypeQueryArgument>(
-				new ProductTypeQueryArgument
-				{
-					Name=e.Name
-				},
-				o =>
+			return await ProductTypeManager.EnsureEntity(
+				await ProductTypeManager.QuerySingleEntityIdent(new ProductTypeQueryArgument{Name=e.Name}),
+				(ProductTypeEditable o) =>
 				{
 					o.ObjectState = e.ObjectState;
 					o.Icon = e.Icon;
@@ -67,16 +64,20 @@ namespace SF.Biz.Products
 		//	var re = await CategoryManager.BatchUpdate(SellerId, cats);
 		//	return re;
 		//}
-		//public static async Task ProductCategorySetItems(
-		//	this IDIScope scope,
-		//	int CategoryId,
-		//	int[] Items
-		//	)
-		//{
-		//	var m = scope.Resolve<IProductCategoryManager>();
-
-		//	await m.UpdateItems(CategoryId, Items);
-		//}
+		public static async Task SetItems<TEditable>(
+			this ICategoryManager<TEditable> CategoryManager,
+			long CategoryId,
+			long[] Items
+			) where TEditable:CategoryEditable
+		{
+			await CategoryManager.UpdateEntity(
+				CategoryManager,
+				CategoryId,
+				(TEditable e) =>
+				{
+					e.Items = Items;
+				});
+		}
 		//public static async Task ProductEnable(this IDIScope scope, int ProductId)
 		//{
 		//	var m = scope.Resolve<IProductManager>();
@@ -115,12 +116,9 @@ namespace SF.Biz.Products
 								IEntityUpdator<long, ProductEditable>,
 								IEntityCreator<long, ProductEditable>
 		{
-			return await ProductManager.EnsureEntityEx<TProductManager, ProductEditable, ProductInternalQueryArgument>(
-				new ProductInternalQueryArgument
-				{
-					Name = e.Name,
-				},
-				o =>
+			return await ProductManager.EnsureEntity(
+				await ProductManager.QuerySingleEntityIdent(new ProductInternalQueryArgument{Name = e.Name}),
+				(ProductEditable o) =>
 				{
 					o.Content = e.Content;
 					o.Image = e.Image;
@@ -156,13 +154,9 @@ namespace SF.Biz.Products
 								IEntityUpdator<long,ProductEditable>,
 								IEntityCreator<long,ProductEditable>
 		{
-			return await ProductManager.EnsureEntityEx<TProductManager,ProductEditable,ProductInternalQueryArgument>(
-				new ProductInternalQueryArgument
-				{
-					Name = name,
-					ProductTypeId = type
-				},
-				o =>
+			return await ProductManager.EnsureEntity(
+				await ProductManager.QuerySingleEntityIdent(new ProductInternalQueryArgument{Name = name,ProductTypeId = type}),
+				(ProductEditable o) =>
 				{
 					o.Name = name;
 					o.Title = name;

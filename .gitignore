@@ -12,6 +12,7 @@ bin
 /Projects/Sites/SF.AdminSiteCore/node_modules
 /Projects/Sites/SF.AdminSiteCore/wwwroot/vender
 /Projects/Browser/node_modules
-project.lock.json
+bower_componentsproject.lock.json
 *.bak
+
 *.ide

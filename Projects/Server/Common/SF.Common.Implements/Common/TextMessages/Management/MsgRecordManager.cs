@@ -25,7 +25,7 @@ namespace SF.Common.TextMessages.Management
 			PagingQueryBuilder<DataModels.TextMessageRecord>.Simple("time", b => b.Time, true);
 
 	
-		protected override IContextQueryable<MsgRecord> OnMapModelToPublic(IContextQueryable<DataModels.TextMessageRecord> Query)
+		protected override IContextQueryable<MsgRecord> OnMapModelToInternal(IContextQueryable<DataModels.TextMessageRecord> Query)
 		{
 			return Query.SelectEventEntity(m => new MsgRecord
 			{

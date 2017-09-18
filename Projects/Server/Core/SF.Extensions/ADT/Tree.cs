@@ -4,11 +4,39 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Reactive.Linq;
 namespace SF.ADT
 {
 	public static class Tree
 	{
+		public static IObservable<T> AsObservable<T>(
+			T Node,
+			Func<T,IObservable<T>> GetChildren)
+		{
+			var cs = GetChildren(Node);
+			if (cs == null)
+				return Observable.FromAsync(() => Task.FromResult(Node));
+			else
+				return (from o in cs
+						from c in AsObservable(o, GetChildren)
+						select c).StartWith(Node);
+		}
+		static async Task LoadAllChildren<T>(T Node, Func<T, Task<T[]>> GetChildren,List<T> Result)
+		{
+			var cs = await GetChildren(Node);
+			if (cs != null)
+				foreach (var c in cs)
+				{
+					Result.Add(Node);
+					await LoadAllChildren(c, GetChildren, Result);
+				}
+		}
+		public static async Task<T[]> LoadAllChildren<T>(T Node,Func<T, Task<T[]>> GetChildren)
+		{
+			var re = new List<T>();
+			await LoadAllChildren(Node, GetChildren, re);
+			return re.ToArray();
+		}
 		public static IEnumerable<T> AsEnumerable<T>(
 			T Node,
 			Func<T,IEnumerable<T>> GetChildren

@@ -24,7 +24,10 @@ namespace SF.Biz.Products
 
         [Display(Name = "对象状态")]
         public EntityLogicState? ObjectState { get; set; }
-    }
+
+		[Display(Name = "名称")]
+		public string Name { get; set; }
+	}
 
 	public interface ICategoryManager : ICategoryManager<CategoryEditable>
 	{ }
@@ -34,8 +37,8 @@ namespace SF.Biz.Products
 		IEntitySource<long,TEditable, CategoryQueryArgument>
 		where TEditable : CategoryEditable
 	{
-		Task<TEditable[]> BatchUpdate(long SellerId, TEditable[] Items);
-		Task UpdateItems(long CategoryId, long[] Items);
-        Task<long[]> LoadItems(long CategoryId);
+		//Task<TEditable[]> BatchUpdate(long SellerId, TEditable[] Items);
+		//Task UpdateItems(long CategoryId, long[] Items);
+  //      Task<long[]> LoadItems(long CategoryId);
 	}
 }

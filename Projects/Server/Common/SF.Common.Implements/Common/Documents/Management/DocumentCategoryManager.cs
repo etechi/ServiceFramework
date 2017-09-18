@@ -37,7 +37,7 @@ namespace SF.Common.Documents.Management
 		{
 			return await Query.Select(EntityMapper.Map<TCategory, TCategoryInternal>()).SingleOrDefaultAsync();
 		}
-        protected override IContextQueryable<TCategoryInternal> OnMapModelToPublic(IContextQueryable<TCategory> Query)
+        protected override IContextQueryable<TCategoryInternal> OnMapModelToInternal(IContextQueryable<TCategory> Query)
 		{
 			return Query.Select(EntityMapper.Map<TCategory,TCategoryInternal>());
 		}
@@ -79,7 +79,8 @@ namespace SF.Common.Documents.Management
 		protected override IContextQueryable<TCategory> OnBuildQuery(IContextQueryable<TCategory> Query, DocumentCategoryQueryArgument Arg, Paging paging)
 		{
 			var q = Query.WithScope(ServiceInstanceDescriptor)
-				.Filter(Arg.ParentId, c => c.ContainerId);
+				.Filter(Arg.ParentId, c => c.ContainerId)
+				.FilterContains(Arg.Name,c=>c.Name);
 			return q;
 
 		}

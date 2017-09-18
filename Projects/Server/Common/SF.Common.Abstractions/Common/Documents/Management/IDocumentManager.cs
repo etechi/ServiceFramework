@@ -1,6 +1,8 @@
 ﻿using SF.Entities;
 using SF.Metadata;
 using System.ComponentModel.DataAnnotations;
+using System;
+using System.Threading.Tasks;
 
 namespace SF.Common.Documents.Management
 {

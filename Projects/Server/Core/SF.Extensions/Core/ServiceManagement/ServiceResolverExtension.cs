@@ -155,21 +155,22 @@ namespace SF.Core.ServiceManagement
 			typeof(Action<,,,,,,,,,,,,,,>),
 			typeof(Action<,,,,,,,,,,,,,,,>),
 		};
-		static Action<IServiceResolver> GetDelegateInvoker(Delegate Delegate)
+		static Action<IServiceResolver,long?> GetDelegateInvoker(Delegate Delegate)
 		{
 			var typeResolver = typeof(IServiceResolver);
 			var ArgServiceProvider = Expression.Parameter(typeResolver);
-			var MethodResolve = typeResolver.GetMethod("ResolveDescriptorByType", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Public);
+			var ArgScopeId = Expression.Parameter(typeof(long?));
+			var MethodResolve = typeResolver.GetMethod("ResolveServiceByType", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Public);
 			var ps = Delegate.Method.GetParameters();
 			var args = ps.Select(p =>
 				ArgServiceProvider.CallMethod(
 					MethodResolve,
-					Expression.Constant(null, typeof(long?)),
+					ArgScopeId,
 					Expression.Constant(p.ParameterType),
 					Expression.Constant(null, typeof(string))
 					)
 				);
-			var func = Expression.Lambda<Action<IServiceResolver>>(
+			var func = Expression.Lambda<Action<IServiceResolver,long?>>(
 				Expression.Invoke(
 					Expression.Constant(
 						Delegate,
@@ -180,102 +181,111 @@ namespace SF.Core.ServiceManagement
 					),
 					args
 					),
-				ArgServiceProvider
+				ArgServiceProvider,
+				ArgScopeId
 				).Compile();
 			return func;
 		}
-		static System.Collections.Concurrent.ConcurrentDictionary<MethodInfo, Lazy<Action<IServiceResolver>>> Invokers = new System.Collections.Concurrent.ConcurrentDictionary<MethodInfo, Lazy<Action<IServiceResolver>>>();
-		public static void RawInvoke(this IServiceProvider ServiceProvider, Delegate Delegate)
+		static System.Collections.Concurrent.ConcurrentDictionary<MethodInfo, Lazy<Action<IServiceResolver,long?>>> Invokers = new System.Collections.Concurrent.ConcurrentDictionary<MethodInfo, Lazy<Action<IServiceResolver,long?>>>();
+		public static void RawInvoke(this IServiceProvider ServiceProvider, Delegate Delegate,long? ScopeId)
 		{
 			if (!Invokers.TryGetValue(Delegate.Method, out var l))
-				l = Invokers.GetOrAdd(Delegate.Method, new Lazy<Action<IServiceResolver>>(() => GetDelegateInvoker(Delegate)));
-			l.Value(ServiceProvider.Resolver());
+				l = Invokers.GetOrAdd(Delegate.Method, new Lazy<Action<IServiceResolver,long?>>(() => GetDelegateInvoker(Delegate)));
+			l.Value(ServiceProvider.Resolver(),ScopeId);
 		}
-		public static void Invoke<I0, I1, I2, I3, I4, I5, I6, I7>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4, I5, I6, I7> callback) =>
-			ServiceProvider.RawInvoke((Delegate)callback);
-		public static void Invoke<I0, I1, I2, I3, I4, I5, I6>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4, I5, I6> callback) =>
-			ServiceProvider.RawInvoke((Delegate)callback);
-		public static void Invoke<I0, I1, I2, I3, I4, I5>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4, I5> callback) =>
-			ServiceProvider.RawInvoke((Delegate)callback);
-		public static void Invoke<I0, I1, I2, I3, I4>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4> callback) =>
-			ServiceProvider.RawInvoke((Delegate)callback);
-		public static void Invoke<I0, I1, I2, I3>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3> callback) =>
-			ServiceProvider.RawInvoke((Delegate)callback);
-		public static void Invoke<I0, I1, I2>(this IServiceProvider ServiceProvider, Action<I0, I1, I2> callback) =>
-			ServiceProvider.RawInvoke((Delegate)callback);
-		public static void Invoke<I0, I1>(this IServiceProvider ServiceProvider, Action<I0, I1> callback) =>
-			ServiceProvider.RawInvoke((Delegate)callback);
-		public static void Invoke<I0>(this IServiceProvider ServiceProvider, Action<I0> callback) =>
-			ServiceProvider.RawInvoke((Delegate)callback);
+		public static void Invoke<I0, I1, I2, I3, I4, I5, I6, I7>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4, I5, I6, I7> callback,long? ScopeId=null) =>
+			ServiceProvider.RawInvoke((Delegate)callback,ScopeId);
+		public static void Invoke<I0, I1, I2, I3, I4, I5, I6>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4, I5, I6> callback, long? ScopeId = null) =>
+			ServiceProvider.RawInvoke((Delegate)callback, ScopeId);
+		public static void Invoke<I0, I1, I2, I3, I4, I5>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4, I5> callback, long? ScopeId = null) =>
+			ServiceProvider.RawInvoke((Delegate)callback, ScopeId);
+		public static void Invoke<I0, I1, I2, I3, I4>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3, I4> callback, long? ScopeId = null) =>
+			ServiceProvider.RawInvoke((Delegate)callback, ScopeId);
+		public static void Invoke<I0, I1, I2, I3>(this IServiceProvider ServiceProvider, Action<I0, I1, I2, I3> callback, long? ScopeId = null) =>
+			ServiceProvider.RawInvoke((Delegate)callback, ScopeId);
+		public static void Invoke<I0, I1, I2>(this IServiceProvider ServiceProvider, Action<I0, I1, I2> callback, long? ScopeId = null) =>
+			ServiceProvider.RawInvoke((Delegate)callback, ScopeId);
+		public static void Invoke<I0, I1>(this IServiceProvider ServiceProvider, Action<I0, I1> callback, long? ScopeId = null) =>
+			ServiceProvider.RawInvoke((Delegate)callback, ScopeId);
+		public static void Invoke<I0>(this IServiceProvider ServiceProvider, Action<I0> callback, long? ScopeId = null) =>
+			ServiceProvider.RawInvoke((Delegate)callback, ScopeId);
 
-		public static R Invoke<I0, I1, I2, I3, I4, I5, I6, I7, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, I5, I6, I7, R> callback)
+		public static R Invoke<I0, I1, I2, I3, I4, I5, I6, I7, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, I5, I6, I7, R> callback, long? ScopeId = null)
 		{
 			R re=default(R);
 			ServiceProvider.Invoke<I0, I1, I2, I3, I4, I5, I6, I7>((i0, i1, i2, i3, i4, i5, i6, i7)=>{
-				re =callback(i0, i1, i2, i3, i4, i5, i6, i7); }
+				re =callback(i0, i1, i2, i3, i4, i5, i6, i7); },
+				ScopeId
 			);
 			return re;
 		}
-		public static R Invoke<I0, I1, I2, I3, I4, I5, I6, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, I5, I6, R> callback)
+		public static R Invoke<I0, I1, I2, I3, I4, I5, I6, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, I5, I6, R> callback, long? ScopeId = null)
 		{
 			R re = default(R);
 			ServiceProvider.Invoke<I0, I1, I2, I3, I4, I5, I6>((i0, i1, i2, i3, i4, i5, i6) => {
 				re = callback(i0, i1, i2, i3, i4, i5, i6);
-			}
+			},
+				ScopeId
 			);
 			return re;
 		}
-		public static R Invoke<I0, I1, I2, I3, I4, I5, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, I5, R> callback)
+		public static R Invoke<I0, I1, I2, I3, I4, I5, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, I5, R> callback, long? ScopeId = null)
 		{
 			R re = default(R);
 			ServiceProvider.Invoke<I0, I1, I2, I3, I4, I5>((i0, i1, i2, i3, i4, i5) => {
 				re = callback(i0, i1, i2, i3, i4, i5);
-			}
+			},
+				ScopeId
 			);
 			return re;
 		}
-		public static R Invoke<I0, I1, I2, I3, I4, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, R> callback)
+		public static R Invoke<I0, I1, I2, I3, I4, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, I4, R> callback, long? ScopeId = null)
 		{
 			R re = default(R);
 			ServiceProvider.Invoke<I0, I1, I2, I3, I4>((i0, i1, i2, i3, i4) => {
 				re = callback(i0, i1, i2, i3, i4);
-			}
+			},
+				ScopeId
 			);
 			return re;
 		}
-		public static R Invoke<I0, I1, I2, I3, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, R> callback)
+		public static R Invoke<I0, I1, I2, I3, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, I3, R> callback, long? ScopeId = null)
 		{
 			R re = default(R);
 			ServiceProvider.Invoke<I0, I1, I2, I3>((i0, i1, i2, i3) => {
 				re = callback(i0, i1, i2, i3);
-			}
+			},
+				ScopeId
 			);
 			return re;
 		}
-		public static R Invoke<I0, I1, I2, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, R> callback)
+		public static R Invoke<I0, I1, I2, R>(this IServiceProvider ServiceProvider, Func<I0, I1, I2, R> callback, long? ScopeId = null)
 		{
 			R re = default(R);
 			ServiceProvider.Invoke<I0, I1, I2>((i0, i1, i2) => {
 				re = callback(i0, i1, i2);
-			}
+			},
+				ScopeId
 			);
 			return re;
 		}
-		public static R Invoke<I0, I1, R>(this IServiceProvider ServiceProvider, Func<I0, I1, R> callback)
+		public static R Invoke<I0, I1, R>(this IServiceProvider ServiceProvider, Func<I0, I1, R> callback, long? ScopeId = null)
 		{
 			R re = default(R);
 			ServiceProvider.Invoke<I0, I1>((i0, i1) => {
 				re = callback(i0, i1);
-			}
+			},
+				ScopeId
 			);
 			return re;
 		}
-		public static R Invoke<I0, R>(this IServiceProvider ServiceProvider, Func<I0, R> callback)
+		public static R Invoke<I0, R>(this IServiceProvider ServiceProvider, Func<I0, R> callback, long? ScopeId = null)
 		{
 			R re = default(R);
 			ServiceProvider.Invoke<I0>((i0) => {
 				re = callback(i0);
-			}
+			},
+				ScopeId
 			);
 			return re;
 		}

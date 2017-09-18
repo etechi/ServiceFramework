@@ -9,7 +9,7 @@ namespace SF.Management.FrontEndContents.Runtime
 
 	class BlockContent
 	{
-		public int ContentId { get; private set; }
+		public long ContentId { get; private set; }
 		public string ContentConfig { get; private set; }
 		public string Image { get; private set; }
 		public string Icon { get; private set; }

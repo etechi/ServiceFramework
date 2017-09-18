@@ -74,7 +74,7 @@ namespace SF.Core.ServiceManagement
 
 			var menuService = sp.Resolve<IMenuService>();
 			await menuService.EnsureEntity(
-				await menuService.ResolveEntity(new MenuQueryArgument { Ident = "admin" }),
+				await menuService.QuerySingleEntityIdent(new MenuQueryArgument { Ident = "admin" }),
 				() => new MenuEditable(),
 				e => {
 					e.Name = "管理菜单";
@@ -109,7 +109,7 @@ namespace SF.Core.ServiceManagement
 
 			var menuService = sp.Resolve<IMenuService>();
 			await menuService.EnsureEntity(
-				await menuService.ResolveEntity(new MenuQueryArgument { Ident = Ident }),
+				await menuService.QuerySingleEntityIdent(new MenuQueryArgument { Ident = Ident }),
 				() => new MenuEditable(),
 				e => {
 					e.Name = Name;

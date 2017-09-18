@@ -8,8 +8,8 @@ namespace SF.Entities
 {
 	public static class EntityManagerExtension
 	{
-		public static async Task<TKey> ResolveEntity<TKey,  TQueryArgument>(
-			this IEntityIdentQueryable<TKey,TQueryArgument> EntityQueryable,
+		public static async Task<TKey> QuerySingleEntityIdent<TKey, TQueryArgument>(
+			this IEntityIdentQueryable<TKey, TQueryArgument> EntityQueryable,
 			TQueryArgument QueryArgument
 			)
 			where TKey : IEquatable<TKey>
@@ -23,62 +23,95 @@ namespace SF.Entities
 				throw new InvalidOperationException("查询条件返回多条记录");
 			return res[0];
 		}
-		public static async Task UpdateEntity<TManager,TKey, TEditable>(
-			this TManager Manager,
+
+		public static Task UpdateEntity<TKey, TEditable>(
+			this IEntityManager<TKey, TEditable> manager,
 			TKey Id,
-			Action<TEditable> Updater
+			Action<TEditable> Editor
 			)
 			where TKey : IEquatable<TKey>
 			where TEditable : class, IEntityWithId<TKey>
-			where TManager : IEntityEditableLoader<TKey, TEditable>,
-				IEntityUpdator<TKey, TEditable>
+			=> manager.UpdateEntity(manager, Id, Editor);
+
+		public static async Task UpdateEntity<TKey, TEditable>(
+			this IEntityUpdator<TKey, TEditable> Updator,
+			IEntityEditableLoader<TKey, TEditable> Loader,
+			TKey Id,
+			Action<TEditable> Editor
+			)
+			where TKey : IEquatable<TKey>
+			where TEditable : class, IEntityWithId<TKey>
 		{
-			var ins = await Manager.LoadForEdit(Id);
+			var ins = await Loader.LoadForEdit(Id);
 			if (ins == null)
 				throw new ArgumentException($"找不到对象:{typeof(TEditable)}:{Id}");
-			Updater(ins);
-			await Manager.UpdateAsync(ins);
+			Editor(ins);
+			await Updator.UpdateAsync(ins);
 		}
 
-		public static async Task SetEntityState<TManager,TKey, TEditable>(
-			this TManager Manager,
+		public static Task SetEntityState< TKey, TEditable>(
+			this IEntityManager<TKey, TEditable> manager,
+			TKey Id,
+			EntityLogicState State
+			) 
+			where TKey : IEquatable<TKey>
+			where TEditable : class, IEntityWithId<TKey>, IObjectEntity
+			=> manager.SetEntityState(manager, Id, State);
+
+		public static async Task SetEntityState<TKey, TEditable>(
+			this IEntityUpdator<TKey, TEditable> Updator,
+			IEntityEditableLoader<TKey, TEditable> Loader,
 			TKey Id,
 			EntityLogicState State
 			) where TKey : IEquatable<TKey>
 			where TEditable : class, IEntityWithId<TKey>,IObjectEntity
-			where TManager : IEntityEditableLoader<TKey, TEditable>,
-				IEntityUpdator<TKey, TEditable>
-		=> await Manager.UpdateEntity<TManager,TKey, TEditable>(
-			Id,
-			e => e.LogicState = State
-			);
+			=> await Updator.UpdateEntity(
+				Loader,
+				Id,
+				e => e.LogicState = State
+				);
 
-		public static async Task SetEntityName<TManager, TKey, TEditable>(
-			this TManager Manager,
+		public static Task SetEntityName<TKey, TEditable>(
+			this IEntityManager<TKey, TEditable> Manager,
 			TKey Id,
 			string Name
 			) where TKey : IEquatable<TKey>
 			where TEditable : class, IEntityWithId<TKey>, IObjectEntity
-			where TManager : IEntityEditableLoader<TKey, TEditable>,
-				IEntityUpdator<TKey, TEditable>,
-				IEntityCreator<TKey, TEditable>
-			=> await Manager.UpdateEntity<TManager,TKey, TEditable>(
-				Id,
-				e => e.Name = Name
-				);
+			=> Manager.SetEntityName(Manager, Id, Name);
 
-		public static async Task SetEntityParent<TManager,TKey, TEditable>(
-			this TManager Manager,
+		public static async Task SetEntityName< TKey, TEditable>(
+			this IEntityUpdator<TKey, TEditable> Updator,
+			IEntityEditableLoader<TKey, TEditable> Loader,
+			TKey Id,
+			string Name
+			) where TKey : IEquatable<TKey>
+			where TEditable : class, IEntityWithId<TKey>, IObjectEntity
+			=> await Updator.UpdateEntity(
+				Loader,
+				Id,
+				(TEditable e) => e.Name = Name
+				);
+		public static Task SetEntityParent<TKey, TEditable>(
+			this IEntityManager<TKey, TEditable> Manager,
+			TKey Id,
+			TKey? ParentId
+			) 
+				where TKey : struct, IEquatable<TKey>
+				where TEditable : class, IEntityWithId<TKey>, IItemEntity<TKey?>
+			
+				=> Manager.SetEntityParent(Manager, Id, ParentId);
+
+		public static async Task SetEntityParent<TKey, TEditable>(
+			this IEntityUpdator<TKey, TEditable> Updator,
+			IEntityEditableLoader<TKey, TEditable> Loader,
 			TKey Id,
 			TKey? ParentId
 			) where TKey : struct,IEquatable<TKey>
 			where TEditable : class, IEntityWithId<TKey>, IItemEntity<TKey?>
-			where TManager : IEntityEditableLoader<TKey, TEditable>,
-				IEntityUpdator<TKey, TEditable>,
-				IEntityCreator<TKey, TEditable>
-			=> await Manager.UpdateEntity<TManager,TKey, TEditable>(
+			=> await Updator.UpdateEntity(
+				Loader,
 				Id,
-				e => e.ContainerId=ParentId
+				(TEditable e) => e.ContainerId=ParentId
 				);
 
 		public static async Task<TEditable> EnsureEntity<TManager,TKey, TEditable>(
@@ -112,19 +145,16 @@ namespace SF.Entities
 				Id = await Manager.CreateAsync(ins);
 			return await Manager.LoadForEdit(Id);
 		}
-		public static Task<TEditable> EnsureEntity<TManager,TEditable>(
-			this TManager Manager,
-			long Id,
+		public static Task<TEditable> EnsureEntity<TKey, TEditable>(
+			this IEntityManager<TKey, TEditable> Manager,
+			TKey Id,
 			Action<TEditable> Updater = null
 			)
-			where TEditable : class, IEntityWithId<long>, new()
-			where TManager : IEntityEditableLoader<long, TEditable>,
-							IEntityUpdator<long, TEditable>,
-							IEntityCreator<long, TEditable>
-		{
-			return EnsureEntity<TManager,long, TEditable>(Manager, Id, Updater);
-		}
-		public static Task<TEditable> EnsureEntity<TManager,TKey, TEditable>(
+			where TKey : IEquatable<TKey>
+			where TEditable : class, IEntityWithId<TKey>, new()
+			=> Manager.EnsureEntity<IEntityManager<TKey, TEditable>,TKey,TEditable>(Id, Updater);
+
+			public static Task<TEditable> EnsureEntity<TManager,TKey, TEditable>(
 			this TManager Manager,
 			TKey Id,
 			Action<TEditable> Updater = null
@@ -145,83 +175,7 @@ namespace SF.Entities
 				Updater);
 		}
 
-		public static async Task<TEditable> EnsureEntityEx<TManager, TEditable, TQueryArgument>(
-			this TManager Manager,
-			TQueryArgument QueryArgument,
-			Func<TEditable> Creator,
-			Action<TEditable> Updater = null
-			)
-			where TEditable : class, IEntityWithId<long>
-			where TQueryArgument : class, IQueryArgument<long>
-			where TManager : IEntityIdentQueryable<long, TQueryArgument>,
-							IEntityEditableLoader<long,TEditable>,
-							IEntityUpdator<long, TEditable>,
-							IEntityCreator<long, TEditable>
-		{
-			return await Manager.EnsureEntity<TManager,long,TEditable>(
-				await Manager.ResolveEntity(QueryArgument),
-				Creator,
-				Updater
-				);
-		}
-		public static async Task<TEditable> EnsureEntityEx<TManager, TKey, TEditable,TQueryArgument>(
-			this TManager Manager,
-			TQueryArgument QueryArgument,
-			Func<TEditable> Creator,
-			Action<TEditable> Updater = null
-			)
-			where TKey : IEquatable<TKey>
-			where TEditable : class, IEntityWithId<TKey>
-			where TQueryArgument:class,IQueryArgument<TKey>
-			where TManager : IEntityIdentQueryable<TKey, TQueryArgument>,
-							IEntityEditableLoader<TKey, TEditable>,
-							IEntityUpdator<TKey, TEditable>,
-							IEntityCreator<TKey, TEditable>
-		{
-			return await Manager.EnsureEntity<TManager,TKey, TEditable>(
-				await Manager.ResolveEntity(QueryArgument),
-				Creator,
-				Updater
-				);
-		}
-		public static Task<TEditable> EnsureEntityEx<TManager,  TEditable, TQueryArgument>(
-		   this TManager Manager,
-		   TQueryArgument QueryArgument,
-		   Action<TEditable> Updater
-		   )
-		   where TEditable : class, IEntityWithId<long>, new()
-		   where TQueryArgument : class, IQueryArgument<long>
-			where TManager : IEntityIdentQueryable<long, TQueryArgument>,
-							IEntityEditableLoader<long, TEditable>,
-							IEntityUpdator<long, TEditable>,
-							IEntityCreator<long, TEditable>
-		{
-			return EnsureEntityEx<TManager,long,TEditable,TQueryArgument>(Manager, QueryArgument, Updater);
-		}
-		public static async Task<TEditable> EnsureEntityEx<TManager, TKey, TEditable,  TQueryArgument>(
-		   this TManager Manager,
-		   TQueryArgument QueryArgument,
-		   Action<TEditable> Updater 
-		   )
-		   where TKey : IEquatable<TKey>
-		   where TEditable : class, IEntityWithId<TKey>,new()
-		   where TQueryArgument : class, IQueryArgument<TKey>
-			where TManager : IEntityIdentQueryable<TKey, TQueryArgument>,
-							IEntityEditableLoader<TKey, TEditable>,
-							IEntityUpdator<TKey, TEditable>,
-							IEntityCreator<TKey, TEditable>
-		{
-			return await Manager.EnsureEntity<TManager,TKey, TEditable>(
-				await Manager.ResolveEntity(QueryArgument),
-				()=>
-				{
-					var o = new TEditable();
-					Updater(o);
-					return o;
-				},
-				Updater
-				);
-		}
+		
 		public static async Task QueryAndRemoveAsync<TManager, TKey, TQueryArgument>(
 			this TManager Manager,
 			ITransactionScopeManager transScopeManager,

@@ -32,7 +32,7 @@ namespace SF.Biz.Products.Entity
 		{
 			this.ItemNotifier = ItemNotifier;
 		}
-        protected override IContextQueryable<TInternal> OnMapModelToPublic(IContextQueryable<TProduct> Query)
+        protected override IContextQueryable<TInternal> OnMapModelToInternal(IContextQueryable<TProduct> Query)
 		{
 			return from c in Query
 				   select new TInternal

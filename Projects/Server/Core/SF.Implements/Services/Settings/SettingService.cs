@@ -8,12 +8,5 @@ using System.Security.Cryptography;
 
 namespace SF.Services.Settings
 {
-	public class SettingService<T> : ISettingService<T>
-	{
-		public T Value { get; }
-		public SettingService(T Value)
-		{
-			this.Value = Value;
-		}
-	}
+	
 }

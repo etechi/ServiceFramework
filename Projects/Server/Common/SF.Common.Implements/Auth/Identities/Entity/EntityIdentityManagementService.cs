@@ -1,5 +1,6 @@
 ﻿using SF.Auth.Identities.Internals;
 using SF.Auth.Identities.Models;
+using SF.Core;
 using SF.Core.ServiceManagement;
 using SF.Core.Times;
 using SF.Data;
@@ -56,7 +57,7 @@ namespace SF.Auth.Identities.Entity
 				CreateCredentialProviderId = Arg.CredentialProvider,
 
 				LogicState = EntityLogicState.Enabled,
-
+				SignupExtraArgument=Arg.ExtraArgument,
 				PasswordHash = Arg.PasswordHash,
 				SecurityStamp = Arg.SecurityStamp.Base64(),
 				Entity = Arg.Identity.Entity,
@@ -132,6 +133,15 @@ namespace SF.Auth.Identities.Entity
 			var m = ctx.Model;
 			m.Name = e.Name;
 			m.Icon = e.Icon;
+			m.SignupExtraArgument = e.SignupExtraArgument;
+			try
+			{
+				Json.Parse<Dictionary<string, string>>(e.SignupExtraArgument);
+			}
+			catch
+			{
+				throw new ArgumentException($"注册附加参数格式错误：{e.SignupExtraArgument}");
+			}
 
 			m.ObjectState = e.LogicState;
 			var time = Now;

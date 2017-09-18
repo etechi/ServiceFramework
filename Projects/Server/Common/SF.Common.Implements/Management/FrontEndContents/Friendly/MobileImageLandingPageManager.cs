@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using SF.Management.FrontEndContents.Friendly;
 using SF.Management.FrontEndContents;
 using SF.Metadata;
+using SF.Services.Settings;
 
 namespace SF.Management.FrontEndContents
 {
@@ -12,7 +13,7 @@ namespace SF.Management.FrontEndContents
 	public class MobileImageLandingPageManager :
 		MobileImageLandingPageManager<Content, IContentManager>
 	{
-		public MobileImageLandingPageManager(IFriendlyContentSettingService SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
+		public MobileImageLandingPageManager(ISettingService<FriendlyContentSetting> SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
 		}
 	}
@@ -23,16 +24,16 @@ namespace SF.Management.FrontEndContents
 		where TContent : Content
 		where TContentManager : IContentManager<TContent>
 	{
-		IFriendlyContentSettingService SettingService { get; }
+		ISettingService<FriendlyContentSetting> SettingService { get; }
 		public MobileImageLandingPageManager(
-			IFriendlyContentSettingService SettingService,
+			ISettingService<FriendlyContentSetting> SettingService,
 			IContentManager<TContent> ContentManager
 			) : base(ContentManager)
 		{
 			this.SettingService = SettingService;
 		}
 
-		protected override long EntityId => SettingService.Setting.MobileLandingPageImagesId;
+		protected override long EntityId => SettingService.Value.MobileLandingPageImagesId;
 	}
 
 }

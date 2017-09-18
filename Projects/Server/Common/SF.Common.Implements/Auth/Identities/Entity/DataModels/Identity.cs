@@ -69,6 +69,9 @@ namespace SF.Auth.Identities.Entity.DataModels
 		[Required]
 		public string SignupIdentValue { get; set; }
 
+		[MaxLength(200)]
+		[Comment("注册附加参数")]
+		public string SignupExtraArgument { get; set; }
 
 
 		[InverseProperty(nameof(IdentityCredential<TIdentity,TIdentityCredential>.Identity))]

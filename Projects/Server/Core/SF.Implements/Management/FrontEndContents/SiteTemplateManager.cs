@@ -43,7 +43,7 @@ namespace SF.Management.FrontEndContents
 			return re.tmpl;
 		}
 
-        protected override IContextQueryable<TSiteTemplatePublic> OnMapModelToPublic(IContextQueryable<TSiteTemplate> Query)
+        protected override IContextQueryable<TSiteTemplatePublic> OnMapModelToInternal(IContextQueryable<TSiteTemplate> Query)
 		{
 			return Query.Select(s => new TSiteTemplatePublic
 			{

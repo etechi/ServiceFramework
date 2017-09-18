@@ -25,7 +25,14 @@ namespace SF.Biz.Products
 		[Display(Name = "产品类型")]
 		public long? TypeId { get; set; }
     }
-    public interface IItemService<TItem, TCategory>:
+
+
+	public interface IItemService :
+		IItemService<IItem, ICategoryCached>
+	{ }
+
+
+	public interface IItemService<TItem, TCategory>:
 		IEntityQueryable<long,TItem,ItemQueryArgument>
 		where TItem: IItem
 		where TCategory: ICategoryCached

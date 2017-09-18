@@ -1,5 +1,6 @@
 ﻿using SF.Entities;
 using SF.Metadata;
+using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Documents.Management
 {
@@ -8,6 +9,10 @@ namespace SF.Common.Documents.Management
 		[Comment(Name = "父分类")]
 		[EntityIdent(typeof(IDocumentCategoryManager))]
 		public int? ParentId { get; set; }
+
+		[Comment(Name = "名称")]
+		[MaxLength(100)]
+		public string Name { get; set; }
 	}
 	[NetworkService]
 	public interface IDocumentCategoryManager<TInternal> :

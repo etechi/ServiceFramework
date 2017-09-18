@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CrowdMall.Setup
+namespace Hygou.Setup
 {
 	public class ProductContentInitializer
 	{
@@ -16,11 +16,11 @@ namespace CrowdMall.Setup
 		public IContent OpenedRounds { get; private set; }
 
 		public static async Task<ProductContentInitializer> Create(
-			IDIScope scope,
+			IContentManager<Content> ContentManager,
 			ProductCategoryInitializer collections
 			)
 		{
-			var prd_all = await scope.ProductContentEnsure(
+			var prd_all = await ContentManager.ContentEnsure(
 				"产品内容",
 				"所有产品",
 				"WebApi",
@@ -28,7 +28,7 @@ namespace CrowdMall.Setup
 				$"/cat"
 				);
 
-			var round_all = await scope.ProductContentEnsure(
+			var round_all = await ContentManager.ContentEnsure(
 				"夺宝内容",
 				"所有夺宝轮次",
 				"WebApi",
@@ -36,14 +36,14 @@ namespace CrowdMall.Setup
 				$"/open"
 				);
 
-			var round_open_waiting = await scope.ProductContentEnsure(
+			var round_open_waiting = await ContentManager.ContentEnsure(
 				"夺宝内容",
 				"即将揭晓产品",
 				"WebApi",
 				"{\"controller\":\"Round\",\"action\":\"List\",\"State\":\"OpenWaiting\"}",
 				$"/open"
 				);
-			var round_opened= await scope.ProductContentEnsure(
+			var round_opened= await ContentManager.ContentEnsure(
 				"夺宝内容",
 				"最新揭晓产品",
 				"WebApi",
@@ -53,7 +53,7 @@ namespace CrowdMall.Setup
 
 			var cats = new List<IContent>();
 			foreach(var t in collections.TypedCategorys)
-				cats.Add(await scope.ProductContentEnsure(
+				cats.Add(await ContentManager.ContentEnsure(
 					"分类产品内容",
 					t.Title,
 					"WebApi",

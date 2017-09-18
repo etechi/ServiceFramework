@@ -15,12 +15,12 @@ namespace SF.Core.ServiceManagement
 
 		class ServiceBuilder<I,T> : IServiceInstanceInitializer<I>
 		{
-			public string Name { get; }
-			public Func<IServiceProvider, long?, Task<long>> Builder { get; }
+			public ServiceInstanceConfig Config { get; } = new ServiceInstanceConfig();
+			public Func<IServiceProvider, long?, ServiceInstanceConfig, Task<long>> Builder { get; }
 			long _ServiceId;
-			public ServiceBuilder(string Name, Func<IServiceProvider, long?, Task<long>> builder)
+			public ServiceBuilder(Func<IServiceProvider, long?, ServiceInstanceConfig, Task<long>> builder)
 			{
-				this.Name = Name;
+				Config.Name = typeof(T).Comment().Name;
 				this.Builder = builder;
 			}
 			public async Task<long> Ensure(IServiceProvider ServiceProvider, long? ParentId)
@@ -37,14 +37,14 @@ namespace SF.Core.ServiceManagement
 				if(!impl.IsManagedService)
 					throw new ArgumentException($"指定服务实现不是托管服务实现:{typeof(T)}");
 
-				_ServiceId = await Builder(ServiceProvider, ParentId);
+				_ServiceId = await Builder(ServiceProvider, ParentId, Config);
 				return _ServiceId;
 			}
 		}
 		
-		static IServiceInstanceInitializer<I> CreateBuilder<I,T>(string Name, Func<IServiceProvider, long?, Task<long>> builder)
+		static IServiceInstanceInitializer<I> CreateBuilder<I,T>(Func<IServiceProvider, long?, ServiceInstanceConfig,Task<long>> builder)
 		{
-			return new ServiceBuilder<I,T>(Name, builder);
+			return new ServiceBuilder<I,T>(builder);
 		}
 
 		static async Task<object> ConfigResolve(
@@ -96,15 +96,51 @@ namespace SF.Core.ServiceManagement
 				dic[prop.Name] = await ConfigResolve(prop.GetValue(config), ServiceProvider, ParentId, Children, Level + 1);
 			return dic;
 		}
+		public static IServiceInstanceInitializer Config(this IServiceInstanceInitializer sii, Action<ServiceInstanceConfig> edit)
+		{
+			edit(sii.Config);
+			return sii;
+		}
+		public static IServiceInstanceInitializer Display(this IServiceInstanceInitializer sii, string Name,string Description=null, string Title = null)
+		{
+			sii.Config.Name = Name;
+			sii.Config.Title = Title??Name;
+			sii.Config.Description = Description;
+			return sii;
+		}
+		
+		public static IServiceInstanceInitializer Ident(this IServiceInstanceInitializer sii, string Ident)
+		{
+			sii.Config.Ident = Ident;
+			return sii;
+		}
+		public static IServiceInstanceInitializer LogicState(this IServiceInstanceInitializer sii, EntityLogicState State)
+		{
+			sii.Config.LogicState = State;
+			return sii;
+		}
+		public static IServiceInstanceInitializer Enabled(this IServiceInstanceInitializer sii)
+		{
+			sii.Config.LogicState = EntityLogicState.Enabled;
+			return sii;
+		}
 		public static IServiceInstanceInitializer<I> DefaultService<I, T>(
 			this IServiceInstanceManager manager,
 			object cfg,
 			params IServiceInstanceInitializer[] childServices
-			)
+			) where T : I
 			=>
 			manager.CreateService<I, T>(
 				 parent => manager.TryGetDefaultService<I>(parent),
-				(parent, rcfg) => manager.EnsureDefaultService<I, T>(parent, rcfg, State: EntityLogicState.Disabled),
+				(parent, rcfg,scfg) => manager.EnsureDefaultService<I, T>(
+					parent, 
+					rcfg, 
+					Name:scfg.Name,
+					Title:scfg.Title,
+					Description:scfg.Description,
+					ServiceIdent:scfg.Ident,
+					State: scfg.LogicState
+					),
 				cfg,
 				childServices
 				);
@@ -112,11 +148,19 @@ namespace SF.Core.ServiceManagement
 			this IServiceInstanceManager manager,
 			object cfg,
 			params IServiceInstanceInitializer[] childServices
-			)
+			) where T:I
 			=>
 			manager.CreateService<I, T>(
 				parent => manager.TryGetService<I, T>(parent),
-				(parent, rcfg) => manager.TryAddService<I, T>(parent, rcfg,State: EntityLogicState.Disabled),
+				(parent, rcfg,scfg) => manager.TryAddService<I, T>(
+					parent, 
+					rcfg,
+					State: EntityLogicState.Disabled,
+					Name:scfg.Name,
+					Description:scfg.Description,
+					ServiceIdent:scfg.Ident,
+					Title:scfg.Title
+					),
 				cfg,
 				childServices
 				);
@@ -124,26 +168,25 @@ namespace SF.Core.ServiceManagement
 		static IServiceInstanceInitializer<I> CreateService<I, T>(
 			this IServiceInstanceManager manager,
 			Func<long?, Task<long>> FindService,
-			Func<long?, object, Task<Models.ServiceInstanceEditable>> ServiceCreator,
+			Func<long?, object, ServiceInstanceConfig, Task<Models.ServiceInstanceEditable>> ServiceCreator,
 			object cfg,
 			IServiceInstanceInitializer[] childServices
-			)
+			) where T : I
 		{
 			return CreateBuilder<I,T>(
-				typeof(T).Comment().Name,
-				async (sp, parent) =>
+				async (sp, parent,scfg) =>
 				{
 
 					var svcId = await FindService(parent);
 					if(svcId==0)
-						svcId = (await ServiceCreator(parent, new { })).Id;
+						svcId = (await ServiceCreator(parent, new { }, scfg)).Id;
 
 					var children = new HashSet<IServiceInstanceInitializer>(childServices);
 					foreach (var chd in children)
 						await chd.Ensure(sp, svcId);
 
 					var rcfg = await ConfigResolve(cfg, sp, svcId, children,0);
-					var nsvcId = (await ServiceCreator(parent, cfg)).Id;
+					var nsvcId = (await ServiceCreator(parent, cfg, scfg)).Id;
 					if (nsvcId != svcId)
 						throw new InvalidOperationException($"服务初始化{typeof(T)}@{typeof(I)}返回ID不一致：第一次：{svcId},第二次：{nsvcId}");
 
@@ -207,7 +250,7 @@ namespace SF.Core.ServiceManagement
 			string Name,
 			object Config,
 			long? ParentId=null
-			)=>
+			) where T : I =>
 			sc.InitService(
 				Name ?? "初始化"+typeof(T).Comment().Name,
 				(sp, sim) =>
@@ -218,7 +261,7 @@ namespace SF.Core.ServiceManagement
 			this IServiceCollection sc,
 			object Config,
 			long? ParentId=null
-			) => sc.InitDefaultService<I, T>(null, Config,ParentId);
+			) where T : I => sc.InitDefaultService<I, T>(null, Config,ParentId);
 
 		public static async Task<T> TestService<I,T>(
 			this IServiceProvider ServiceProvider,

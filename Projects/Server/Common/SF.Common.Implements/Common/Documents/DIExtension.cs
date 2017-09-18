@@ -8,7 +8,7 @@ using SF.Entities;
 using SF.Core.ServiceManagement;
 using SF.Common.Documents.Management;
 using SF.Common.Documents;
-
+using SF.Core.ServiceManagement.Management;
 
 namespace SF.Core.ServiceManagement
 {
@@ -31,6 +31,37 @@ namespace SF.Core.ServiceManagement
 				>(TablePrefix);
 
 			return sc;
+		}
+
+		public static IServiceInstanceInitializer<IDocumentManager> NewDocumentManager(
+			this IServiceInstanceManager manager
+			)
+		{
+			return manager.Service<IDocumentManager, DocumentManager>(null);
+		}
+		public static IServiceInstanceInitializer<IDocumentCategoryManager> NewDocumentCategoryManager(
+		   this IServiceInstanceManager manager
+		   )
+		{
+			return manager.Service<IDocumentCategoryManager, DocumentCategoryManager>(null);
+		}
+		public static IServiceInstanceInitializer NewDocumentService(
+			this IServiceInstanceManager manager,
+			IServiceInstanceInitializer<IDocumentManager> docManager = null,
+			IServiceInstanceInitializer<IDocumentCategoryManager> catManager = null
+			)
+		{
+			if (docManager == null)
+				docManager = manager.NewDocumentManager();
+			if (catManager == null)
+				catManager = manager.NewDocumentCategoryManager();
+
+			var svc = manager.DefaultService<IDocumentService, DocumentService>(
+				null,
+				docManager,
+				catManager
+				);
+			return svc;
 		}
 	}
 }

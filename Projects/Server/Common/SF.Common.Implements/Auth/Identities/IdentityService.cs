@@ -308,6 +308,7 @@ namespace SF.Auth.Identities
 					SecurityStamp = stamp,
 					CredentialValue=Arg.Credential,
 					CredentialProvider= CredentialProvider.Id,
+					ExtraArgument=Arg.ExtraArgument,
 					Identity =new Identity
 					{
 						Id = uid,
