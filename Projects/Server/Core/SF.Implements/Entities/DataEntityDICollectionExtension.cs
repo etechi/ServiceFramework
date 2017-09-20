@@ -28,7 +28,8 @@ namespace SF.Core.ServiceManagement
 					select (DataEntityConfigItem)Activator.CreateInstance(
 						typeof(DataEntityConfigItem<,>).MakeGenericType(
 						targs[0],
-						targs[1]
+						targs[1],
+						el
 						),
 						svcResolver.GetTypeIdent(type)
 						)

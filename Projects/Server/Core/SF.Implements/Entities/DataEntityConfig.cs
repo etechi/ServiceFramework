@@ -32,7 +32,9 @@ namespace SF.Entities
 		public string GetIdent(object Instance) => Instance==null?null:Name+"-"+String.Join("-", GetIdentFunc.Value(Instance));
 		public string GetName(object Instance) => Instance == null ? null : GetNameFunc.Value?.Invoke(Instance);
 	}
-	class DataEntityConfigItem<TKey,TEntity> : DataEntityConfigItem
+	class DataEntityConfigItem<TKey,TEntity,TManager> : 
+		DataEntityConfigItem
+		where TManager:class
 	{
 		public DataEntityConfigItem(string Name) : base(Name, typeof(TEntity))
 		{
@@ -42,15 +44,16 @@ namespace SF.Entities
 		{
 			if (Idents == null || Idents.Length == 0)
 				return Array.Empty<IDataEntity>();
+			var manager = sp.Resolve<TManager>();
 			if (Idents.Length == 1)
 			{
-				var el = sp.Resolve<IEntityLoadable<TKey, TEntity>>();
+				var el = (IEntityLoadable < TKey, TEntity > )manager;
 				var ins = await el.GetAsync((TKey)Convert.ChangeType(Idents[0], typeof(TKey)));
 				return new[] { new DataEntity(ins, this) };
 			}
 			else
 			{
-				var mel = sp.TryResolve<IEntityBatchLoadable<TKey, TEntity>>();
+				var mel = manager as IEntityBatchLoadable < TKey, TEntity>;
 				if (mel != null)
 					return (await mel.GetAsync(
 						Idents.Select(id => (TKey)Convert.ChangeType(id, typeof(TKey))).ToArray()

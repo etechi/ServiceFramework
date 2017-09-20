@@ -1,4 +1,6 @@
-﻿using SF.Biz.Products;
+﻿using SF.Auth.Identities;
+using SF.Biz.Products;
+using SF.Core;
 using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
 using SF.Core.ServiceManagement.Management;
@@ -13,9 +15,18 @@ namespace Hygou.Setup
 {
 	public class SystemInitializer
 	{
-		public static async Task<DataModels.User> EnsureSysSeller(IDIScope scope)
+		public static async Task<DataModels.User> EnsureSysSeller(IServiceProvider sp)
 		{
-			var u = await scope.UserEnsure("sysseller", "系统卖家", "13011110002", "system", new[] { "admin", "seller", "provider" });
+			var svc = sp.Resolve<IIdentityService>();
+			var u = await svc.IdentityEnsure(
+					sp,
+					"sysseller",
+					"系统卖家",
+					"13011110002",
+					"system",
+					"member",
+					new[]{"admin", "seller", "provider" }
+					);
 			return u;
 		}
 		public static async Task Initialize(IServiceProvider ServiceProvider, EnvironmentType EnvType)
