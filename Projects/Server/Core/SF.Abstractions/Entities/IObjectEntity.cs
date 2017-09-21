@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace SF.Entities
 {
-	public interface IObjectEntity
+	public interface IObjectEntity :
+		IEntityWithName,
+		IEntityWithLogicState
 	{
-		string Name { get; set; }
-
-		EntityLogicState LogicState { get; set; }
 
 		DateTime CreatedTime { get; set; }
 

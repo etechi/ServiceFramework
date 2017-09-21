@@ -7,6 +7,7 @@ using SF.Core.Serialization;
 using System.Collections.Generic;
 using SF.Metadata.Models;
 using System.ComponentModel.DataAnnotations;
+using SF.Core.ServiceManagement.Management.DataModels;
 
 namespace SF.Core.ServiceManagement
 {
@@ -74,7 +75,7 @@ namespace SF.Core.ServiceManagement
 					Attributes.Cast<System.Attribute>().Union(
 						new System.Attribute[]
 						{
-								new SF.Metadata.EntityIdentAttribute(typeof(Management.IServiceInstanceManager)) {
+								new SF.Metadata.EntityIdentAttribute(typeof(ServiceInstance)) {
 									
 									ScopeField =nameof(Models.ServiceInstanceInternal.ServiceType),
 									ScopeValue=realType.GetFullName()

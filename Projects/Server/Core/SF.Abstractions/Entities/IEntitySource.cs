@@ -2,22 +2,29 @@
 using System;
 namespace SF.Entities
 {
+	
+	public interface IEntitySource<TKey, TEntitySummary,TEntityDetail, TQueryArgument> :
+		IEntityLoadable<TKey, TEntityDetail>,
+		IEntityBatchLoadable<TKey, TEntityDetail>,
+		IEntityQueryable<TKey, TEntitySummary, TQueryArgument>
+		where TQueryArgument: class,IQueryArgument<TKey>
+		where TEntitySummary: class,IEntityWithId<TKey>
+		where TEntityDetail : class, IEntityWithId<TKey>
+		where TKey:IEquatable<TKey>
+	{
+	}
+	public interface IEntitySource<TKey, TEntity, TQueryArgument> :
+		IEntitySource<TKey, TEntity, TEntity, TQueryArgument>
+		where TQueryArgument : class, IQueryArgument<TKey>
+		where TEntity : class, IEntityWithId<TKey>
+		where TKey : IEquatable<TKey>
+	{
+	}
 	public interface IEntitySource<TKey, TEntity> :
-		IEntityLoadable<TKey, TEntity>,
-		IEntityBatchLoadable<TKey, TEntity>,
-		IEntityQueryable<TKey, TEntity, QueryArgument<TKey>>
+		IEntitySource<TKey,TEntity,QueryArgument<TKey>>
 		where TEntity : class, IEntityWithId<TKey>
 		where TKey : IEquatable<TKey>
 	{
 	}
 
-	public interface IEntitySource<TKey, TEntity, TQueryArgument> :
-		IEntityLoadable<TKey, TEntity>,
-		IEntityBatchLoadable<TKey, TEntity>,
-		IEntityQueryable<TKey, TEntity, TQueryArgument>
-		where TQueryArgument: class,IQueryArgument<TKey>
-		where TEntity: class,IEntityWithId<TKey>
-		where TKey:IEquatable<TKey>
-	{
-	}
 }

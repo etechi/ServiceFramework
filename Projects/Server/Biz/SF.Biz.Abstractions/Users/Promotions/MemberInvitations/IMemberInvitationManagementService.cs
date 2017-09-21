@@ -21,7 +21,7 @@ namespace SF.Users.Promotions.MemberInvitations
 	}
 
 	
-	[EntityManager]
+	[EntityManager("会员邀请")]
 	[Authorize("admin")]
 	[NetworkService]
 	[Comment("会员邀请")]

@@ -9,7 +9,7 @@ namespace SF.Metadata
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = true)]
 	public class EntityIdentAttribute : Attribute
 	{
-		public Type EntityManagementType { get; }
+		public Type EntityType { get; }
 		public string NameField { get; }
 		public int Column { get; }
 		public string ScopeField { get; set; }
@@ -17,7 +17,7 @@ namespace SF.Metadata
 		public bool IsTreeParentId { get; set; }
 		public string MultipleKeyField { get; set; }
 
-		public EntityIdentAttribute(Type EntityManagementType = null, string NameField = null, int Column = 0, string MultipleKeyField = null)
+		public EntityIdentAttribute(Type EntityType = null, string NameField = null, int Column = 0, string MultipleKeyField = null)
 		{
 			//if(EntityManagementType != null)
 			//{
@@ -38,7 +38,7 @@ namespace SF.Metadata
 			//	this.EntityManagementType = EntityManagementType;
 			//}
 
-			this.EntityManagementType = EntityManagementType;
+			this.EntityType = EntityType;
 			this.NameField = NameField;
 			this.Column = Column;
 			this.MultipleKeyField = MultipleKeyField;

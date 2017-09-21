@@ -6,29 +6,14 @@ using SF.Data;
 
 namespace SF.Entities
 {
-	public abstract class QuerableEntitySource<TKey, TPublic, TQueryArgument, TModel> :
-		QuerableEntitySource<TKey, TPublic, TPublic, TQueryArgument, TModel>
-		where TPublic : class, IEntityWithId<TKey>
-		where TKey : IEquatable<TKey>
-		where TModel : class, IEntityWithId<TKey>
-		where TQueryArgument : class, IQueryArgument<TKey>
-	{
-		public QuerableEntitySource(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
-		{
-		}
-		protected override async Task<TPublic[]> OnPrepareInternals(TPublic[] Internals)
-		{
-			await EntityManager.DataEntityResolver.Fill(Internals);
-			return Internals;
-		}
-	}
-	public abstract class QuerableEntitySource<TKey, TPublic, TTemp, TQueryArgument, TModel> :
-		EntitySource<TKey, TPublic, TTemp, TModel>,
-		IEntitySource<TKey, TPublic, TQueryArgument>
-		where TPublic : class, IEntityWithId<TKey>
-		where TKey : IEquatable<TKey>
-		where TModel : class, IEntityWithId<TKey>
-		where TQueryArgument : class, IQueryArgument<TKey>
+	public abstract class QuerableEntitySource<TKey, TEntityDetail, TDetailTemp, TEntitySummary, TSummaryTemp, TQueryArgument, TModel> :
+		   EntitySource<TKey, TEntityDetail, TDetailTemp, TModel>,
+		   IEntitySource<TKey, TEntitySummary, TEntityDetail, TQueryArgument>
+		   where TEntityDetail : class, IEntityWithId<TKey>
+			where TEntitySummary : class, IEntityWithId<TKey>
+		   where TKey : IEquatable<TKey>
+		   where TModel : class, IEntityWithId<TKey>
+		   where TQueryArgument : class, IQueryArgument<TKey>
 	{
 		public QuerableEntitySource(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
@@ -41,18 +26,56 @@ namespace SF.Entities
 		{
 			return EntityManager.QueryIdentsAsync<TKey, TQueryArgument, TModel>(Arg, paging, OnBuildQuery, PagingQueryBuilder);
 		}
-		public Task<QueryResult<TPublic>> QueryAsync(TQueryArgument Arg, Paging paging)
+		protected virtual IContextQueryable<TSummaryTemp> OnMapModelToSummary(IContextQueryable<TModel> Query)
 		{
-			return EntityManager.QueryAsync<TKey,TTemp,TPublic, TQueryArgument, TModel>(
-				Arg, 
+			return Query.Select(EntityMapper.Map<TModel, TSummaryTemp>());
+		}
+		protected abstract Task<TEntitySummary[]> OnPrepareSummaries(TSummaryTemp[] Internals);
+
+		public Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg, Paging paging)
+		{
+			return EntityManager.QueryAsync<TKey, TSummaryTemp, TEntitySummary, TQueryArgument, TModel>(
+				Arg,
 				paging,
-				OnBuildQuery, 
+				OnBuildQuery,
 				PagingQueryBuilder,
-				OnMapModelToInternal,
-				OnPrepareInternals
+				OnMapModelToSummary,
+				OnPrepareSummaries
 				);
 		}
 	}
+	public abstract class QuerableEntitySource<TKey, TEntityDetail, TDetailTemp, TQueryArgument, TModel> :
+		   QuerableEntitySource<TKey, TEntityDetail, TDetailTemp, TEntityDetail, TDetailTemp, TQueryArgument, TModel>,
+		   IEntitySource<TKey, TEntityDetail, TEntityDetail, TQueryArgument>
+		   where TEntityDetail : class, IEntityWithId<TKey>
+		   where TKey : IEquatable<TKey>
+		   where TModel : class, IEntityWithId<TKey>
+		   where TQueryArgument : class, IQueryArgument<TKey>
+	{
+		public QuerableEntitySource(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		{
+		}
+		protected override Task<TEntityDetail[]> OnPrepareSummaries(TDetailTemp[] Internals)
+			=> OnPrepareDetails(Internals);
+
+	}
+	public abstract class QuerableEntitySource<TKey, TPublic, TQueryArgument, TModel> :
+		QuerableEntitySource<TKey, TPublic, TPublic, TQueryArgument, TModel>
+		where TPublic : class, IEntityWithId<TKey>
+		where TKey : IEquatable<TKey>
+		where TModel : class, IEntityWithId<TKey>
+		where TQueryArgument : class, IQueryArgument<TKey>
+	{
+		public QuerableEntitySource(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		{
+		}
+		protected override async Task<TPublic[]> OnPrepareDetails(TPublic[] Internals)
+		{
+			await EntityManager.DataEntityResolver.Fill(Internals);
+			return Internals;
+		}
+	}
+	
 	public abstract class ConstantQueryableEntitySource<TKey, TInternal> :
 		 ConstantQueryableEntitySource<TKey, TInternal, TInternal, QueryArgument<TKey>, TInternal>
 		 where TInternal : class, IEntityWithId<TKey>

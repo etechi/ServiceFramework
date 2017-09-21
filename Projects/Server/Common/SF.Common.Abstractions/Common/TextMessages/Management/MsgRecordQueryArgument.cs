@@ -1,4 +1,6 @@
-﻿using SF.Entities;
+﻿using SF.Auth.Identities.Models;
+using SF.Core.ServiceManagement.Models;
+using SF.Entities;
 using SF.Metadata;
 using System;
 
@@ -11,12 +13,12 @@ namespace SF.Common.TextMessages.Management
 		public SendStatus? Status { get; set; }
 
 		[Comment( "目标用户")]
-		[EntityIdent(typeof(Auth.Identities.IIdentityManagementService))]
+		[EntityIdent(typeof(Identity))]
 		public long? TargeUserId { get; set; }
 
 
 		[Comment( "发送服务")]
-		[EntityIdent(typeof(Core.ServiceManagement.Management.IServiceInstanceManager))]
+		[EntityIdent(typeof(ServiceInstance))]
 		public long? ServiceId { get; set; }
 
 		[Comment( "发送时间")]

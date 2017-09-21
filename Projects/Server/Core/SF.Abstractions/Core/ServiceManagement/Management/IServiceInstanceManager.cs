@@ -15,15 +15,15 @@ namespace SF.Core.ServiceManagement.Management
 		public string Name { get; set; }
 
 
-		[EntityIdent(typeof(IServiceDeclarationManager))]
+		[EntityIdent(typeof(Models.ServiceDeclaration))]
 		[Comment("服务定义")]
 		public string ServiceType { get; set; }
 
-		[EntityIdent(typeof(IServiceImplementManager))]
+		[EntityIdent(typeof(Models.ServiceImplement))]
 		[Comment("服务实现")]
 		public string ImplementId { get; set; }
 
-		[EntityIdent(typeof(IServiceInstanceManager))]
+		[EntityIdent(typeof(Models.ServiceInstance))]
 		[Comment("父服务实现")]
 		public long? ContainerId { get; set; }
 
@@ -35,7 +35,7 @@ namespace SF.Core.ServiceManagement.Management
 		public bool? IsDefaultService { get; set; }
 	}
 
-	[EntityManager]
+	[EntityManager("系统服务实例")]
 	[Authorize("sysadmin")]
 	[NetworkService]
 	[Comment("服务实例管理", "系统内置服务实例")]

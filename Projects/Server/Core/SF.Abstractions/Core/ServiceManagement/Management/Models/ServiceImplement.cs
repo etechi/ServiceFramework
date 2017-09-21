@@ -35,7 +35,7 @@ namespace SF.Core.ServiceManagement.Models
 		public bool Disabled { get; set; }
 
 		[Comment("服务定义")]
-		[EntityIdent(typeof(IServiceDeclarationManager), nameof(DeclarationName))]
+		[EntityIdent(typeof(ServiceDeclaration), nameof(DeclarationName))]
 		[ReadOnly(true)]
 		public string DeclarationId { get; set; }
 

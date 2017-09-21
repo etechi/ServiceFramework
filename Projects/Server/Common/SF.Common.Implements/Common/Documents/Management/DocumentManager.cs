@@ -40,7 +40,7 @@ namespace SF.Common.Documents.Management
 				).SingleOrDefaultAsync();
 		}
 
-		protected override IContextQueryable<TInternal> OnMapModelToInternal(IContextQueryable<TDocument> Query)
+		protected override IContextQueryable<TInternal> OnMapModelToDetail(IContextQueryable<TDocument> Query)
 		{
 			return Query.Select(EntityMapper.Map<TDocument,TInternal>());
 		}

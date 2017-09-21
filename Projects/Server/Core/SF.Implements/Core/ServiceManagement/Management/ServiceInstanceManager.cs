@@ -75,7 +75,7 @@ namespace SF.Core.ServiceManagement.Management
 			return re;
 		}
 
-		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToInternal(IContextQueryable<DataModels.ServiceInstance> Query)
+		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToDetail(IContextQueryable<DataModels.ServiceInstance> Query)
 		{
 			return Query.SelectUIObjectEntity(i => new Models.ServiceInstanceInternal
 			{

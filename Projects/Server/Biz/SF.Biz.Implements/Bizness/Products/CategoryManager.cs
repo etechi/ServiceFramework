@@ -12,7 +12,7 @@ namespace SF.Biz.Products.Entity
 	public class CategoryManager<TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem,TItem,TProductSpec> :
 		EntityManager<long,TEditable, CategoryQueryArgument, TEditable, TCategory>,
 		ICategoryManager<TEditable>
-		where TEditable : CategoryEditable,  new()
+		where TEditable : CategoryInternal,  new()
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
 		where TProductDetail : ProductDetail<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
 		where TProductType : ProductType<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -87,7 +87,7 @@ namespace SF.Biz.Products.Entity
 				Children=MapEditableToModel(c.Children.Cast<TEditable>()).ToArray()
 			});
 		}
-		protected virtual void OnUpdateModel(TCategory Model,CategoryEditable Editable,DateTime  time)
+		protected virtual void OnUpdateModel(TCategory Model,CategoryInternal Editable,DateTime  time)
 		{
 			
 			Model.Tag = Editable.Tag;
@@ -106,7 +106,7 @@ namespace SF.Biz.Products.Entity
 			Model.ObjectState = Editable.ObjectState;
 			
 		}
-		async Task UpdateChildren(TCategory Parent, CategoryEditable[] Items)
+		async Task UpdateChildren(TCategory Parent, CategoryInternal[] Items)
 		{
 			var org_items = await DataSet.LoadTreeChildren(
 				Parent,
@@ -197,7 +197,7 @@ namespace SF.Biz.Products.Entity
 				PostActionType.AfterCommit
 				);
 		}
-        protected override IContextQueryable<TEditable> OnMapModelToInternal(IContextQueryable<TCategory> Query)
+        protected override IContextQueryable<TEditable> OnMapModelToDetail(IContextQueryable<TCategory> Query)
 		{
 			return BatchMapModelToEditable(Query);
 		}

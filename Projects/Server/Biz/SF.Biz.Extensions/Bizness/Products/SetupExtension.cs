@@ -35,7 +35,7 @@ namespace SF.Biz.Products
 		}
 
 
-		static void UpdateCategories(IEnumerable<CategoryEditable> cats, Dictionary<string, CategoryEditable> exists, long? parent)
+		static void UpdateCategories(IEnumerable<CategoryInternal> cats, Dictionary<string, CategoryInternal> exists, long? parent)
 		{
 			foreach (var c in cats)
 			{
@@ -45,7 +45,7 @@ namespace SF.Biz.Products
 					continue;
 				c.Id = e.Id;
 				if (c.Children != null)
-					UpdateCategories(c.Children.Cast<CategoryEditable>(), exists, c.Id);
+					UpdateCategories(c.Children.Cast<CategoryInternal>(), exists, c.Id);
 			}
 		}
 		//public static async Task<CategoryEditable[]> ProductCategoryEnsure<TCategoryManager>(
@@ -68,7 +68,7 @@ namespace SF.Biz.Products
 			this ICategoryManager<TEditable> CategoryManager,
 			long CategoryId,
 			long[] Items
-			) where TEditable:CategoryEditable
+			) where TEditable:CategoryInternal
 		{
 			await CategoryManager.UpdateEntity(
 				CategoryManager,

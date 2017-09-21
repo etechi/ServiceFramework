@@ -26,7 +26,7 @@ namespace SF.Biz.Products.Entity
 		public ProductTypeManager(IDataSetEntityManager<TProductType> EntityManager) : base(EntityManager)
 		{
 		}
-        protected override IContextQueryable<TInternal> OnMapModelToInternal(IContextQueryable<TProductType> Query)
+        protected override IContextQueryable<TInternal> OnMapModelToDetail(IContextQueryable<TProductType> Query)
 		{
 			return from c in Query
 				   select new TInternal

@@ -60,7 +60,7 @@ namespace SF.Auth.Permissions
 			b => b.Add("name", r => r.Name)
 			);
 
-		protected override IContextQueryable<TRoleInternal> OnMapModelToInternal(IContextQueryable<TRole> Query)
+		protected override IContextQueryable<TRoleInternal> OnMapModelToDetail(IContextQueryable<TRole> Query)
         {
             return from r in Query
                    select new TRoleInternal
@@ -76,7 +76,7 @@ namespace SF.Auth.Permissions
 		}
         protected override async Task<TRoleInternal> OnMapModelToEditable(IContextQueryable<TRole> Query)
         {
-            var re = await OnMapModelToInternal(Query).SingleOrDefaultAsync();
+            var re = await OnMapModelToDetail(Query).SingleOrDefaultAsync();
             if (re == null)
                 return null;
 

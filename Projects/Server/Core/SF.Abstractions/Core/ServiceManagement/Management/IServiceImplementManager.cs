@@ -1,4 +1,5 @@
 using SF.Auth;
+using SF.Core.ServiceManagement.Models;
 using SF.Entities;
 using SF.Metadata;
 using System;
@@ -15,12 +16,12 @@ namespace SF.Core.ServiceManagement.Management
 		[Comment("服务实现分类")]
 		public string Group { get; set; }
 
-		[EntityIdent(typeof(IServiceDeclarationManager))]
+		[EntityIdent(typeof(ServiceDeclaration))]
 		[Comment("服务定义")]
 		public string DeclarationId { get; set; }
 	}
 
-	[EntityManager]
+	[EntityManager("系统服务实现")]
 	[Authorize("sysadmin")]
 	[NetworkService]
 	[Comment("服务实现管理", "系统内置服务实现")]

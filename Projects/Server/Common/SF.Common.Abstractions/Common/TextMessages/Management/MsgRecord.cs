@@ -1,4 +1,5 @@
-﻿using SF.Data;
+﻿using SF.Core.ServiceManagement.Models;
+using SF.Data;
 using SF.Data.Models;
 using SF.Metadata;
 using System;
@@ -22,7 +23,7 @@ namespace SF.Common.TextMessages.Management
 		[TableVisible]
 		public string Target { get; set; }
 
-		[EntityIdent(typeof(Core.ServiceManagement.Management.IServiceInstanceManager), nameof(ServiceName))]
+		[EntityIdent(typeof(ServiceInstance), nameof(ServiceName))]
 		[Comment( "发送服务")]
 		public long ServiceId { get; set; }
 

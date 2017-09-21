@@ -19,7 +19,7 @@ namespace SF.Core.ServiceManagement
 		public object GetValues(Attribute Attribute,object AttrSource)
 		{
 			var attr = (SF.Metadata.EntityIdentAttribute)Attribute;
-			var EntityManagementType = attr.EntityManagementType;
+			var EntityManagementType = attr.EntityType;
 			EntityManagerAttributeMetadataValuesProvider.VerifyEntityManagementType(EntityManagementType);
 			var entity = ServiceDeclarationTypeResolver.GetTypeIdent(EntityManagementType);
 			return new

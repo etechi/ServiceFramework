@@ -17,7 +17,7 @@ namespace SF.Management.MenuServices
 	}
 
 	[NetworkService]
-	[EntityManager]
+	[EntityManager("系统菜单")]
 	[Comment("菜单管理")]
 	[Category("系统管理", "系统菜单")]
 	public interface IMenuService :

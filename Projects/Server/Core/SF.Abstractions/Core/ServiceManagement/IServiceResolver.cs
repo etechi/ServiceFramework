@@ -21,8 +21,9 @@ namespace SF.Core.ServiceManagement
 		long? CurrentServiceId { get; }
 		IDisposable WithScopeService(long? ServiceId);
 		object ResolveServiceByIdent(long ServiceId, Type ServiceType);
-		object ResolveServiceByIdent(long ServiceId); 
+		object ResolveServiceByIdent(long ServiceId);
 		IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId, Type ServiceType);
+		IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId);
 
 		object ResolveServiceByType(long? ScopeServiceId, Type ChildServiceType,string Name);
 		IServiceInstanceDescriptor ResolveDescriptorByType(long? ScopeServiceId, Type ChildServiceType, string Name);

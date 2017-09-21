@@ -14,9 +14,9 @@ namespace Hygou.Setup
 		//public Bizness.Products.Models.ProductCategoryEditable Limit { get; private set; }
 		//public Bizness.Products.Models.ProductCategoryEditable NewUser { get; private set; }
 
-		public CategoryEditable SpecialCategoryRoot { get; private set; }
-		public CategoryEditable TypedCategoryRoot { get; private set; }
-		public CategoryEditable[] TypedCategorys { get; private set; }
+		public CategoryInternal SpecialCategoryRoot { get; private set; }
+		public CategoryInternal TypedCategoryRoot { get; private set; }
+		public CategoryInternal[] TypedCategorys { get; private set; }
 
 		public static async Task<ProductCategoryInitializer> Create(
 			ICategoryManager CategoryManager,
@@ -27,14 +27,14 @@ namespace Hygou.Setup
 		{
 			var special = await CategoryManager.EnsureEntity(
 					await CategoryManager.QuerySingleEntityIdent(new CategoryQueryArgument { Name= "特别分类" }),
-					(CategoryEditable c) =>
+					(CategoryInternal c) =>
 					{
 						c.Name = "特别分类";
 						c.Title = "特别分类";
 						c.ObjectState = EntityLogicState.Enabled;
 						c.Children = new[]
 						{
-							new CategoryEditable
+							new CategoryInternal
 							{
 								Name="十元",
 								Title="十元",
@@ -42,7 +42,7 @@ namespace Hygou.Setup
 								Tag = "10",
 								ObjectState=EntityLogicState.Enabled,
 							},
-							new CategoryEditable
+							new CategoryInternal
 							{
 								Name="上线充值活动",
 								Title="上线充值活动",
@@ -77,17 +77,17 @@ namespace Hygou.Setup
 					});
 			var standard=await CategoryManager.EnsureEntity(
 				await CategoryManager.QuerySingleEntityIdent(new CategoryQueryArgument { Name = "标准分类" }),
-				(CategoryEditable c) =>
+				(CategoryInternal c) =>
 				{
 					c.Name = "标准分类";
 					c.Title = "标准分类";
 					c.ObjectState = EntityLogicState.Enabled;
 					c.Children = new[] {
-								new CategoryEditable{Order=1, Name="话费充值",Title="话费充值", Description="移动 联通 电信",Icon=StaticRes.File+"-pc-prdcats-recharge18-png",Image=StaticRes.File+"-pc-prdcats-recharge64-png"},
-								new CategoryEditable{Order=2, Name="手机",Title="手机专区",Description="三星 iPhone 华为", Icon=StaticRes.File+"-pc-prdcats-phone18-png", Image=StaticRes.File+"-pc-prdcats-phone64-png"},
-								new CategoryEditable{Order=3, Name="数码",Title="数码专区",Description="佳能 尼康 索尼", Icon=StaticRes.File+"-pc-prdcats-camera18-png", Image=StaticRes.File+"-pc-prdcats-camera64-png"},
-								new CategoryEditable{Order=4, Name="汽车",Title="汽车专区", Description="奔驰 大众 宝马", Icon=StaticRes.File+"-pc-prdcats-car18-png", Image=StaticRes.File+"-pc-prdcats-car64-png"},
-								new CategoryEditable{Order=5, Name="黄金",Title="黄金专区",Description="金条 金元宝", Icon=StaticRes.File+"-pc-prdcats-gold18-png", Image=StaticRes.File+"-pc-prdcats-gold64-png"},
+								new CategoryInternal{Order=1, Name="话费充值",Title="话费充值", Description="移动 联通 电信",Icon=StaticRes.File+"-pc-prdcats-recharge18-png",Image=StaticRes.File+"-pc-prdcats-recharge64-png"},
+								new CategoryInternal{Order=2, Name="手机",Title="手机专区",Description="三星 iPhone 华为", Icon=StaticRes.File+"-pc-prdcats-phone18-png", Image=StaticRes.File+"-pc-prdcats-phone64-png"},
+								new CategoryInternal{Order=3, Name="数码",Title="数码专区",Description="佳能 尼康 索尼", Icon=StaticRes.File+"-pc-prdcats-camera18-png", Image=StaticRes.File+"-pc-prdcats-camera64-png"},
+								new CategoryInternal{Order=4, Name="汽车",Title="汽车专区", Description="奔驰 大众 宝马", Icon=StaticRes.File+"-pc-prdcats-car18-png", Image=StaticRes.File+"-pc-prdcats-car64-png"},
+								new CategoryInternal{Order=5, Name="黄金",Title="黄金专区",Description="金条 金元宝", Icon=StaticRes.File+"-pc-prdcats-gold18-png", Image=StaticRes.File+"-pc-prdcats-gold64-png"},
 							};
 							//Children=types.Types.Select(
 							//	t=>new Bizness.Products.Models.ProductCategoryEditable

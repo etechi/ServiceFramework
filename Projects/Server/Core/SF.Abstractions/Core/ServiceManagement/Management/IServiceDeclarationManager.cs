@@ -17,7 +17,7 @@ namespace SF.Core.ServiceManagement.Management
 		public string Group { get; set; }
 	}
 
-	[EntityManager]
+	[EntityManager("系统服务定义")]
 	[Authorize("sysadmin")]
 	[NetworkService]
 	[Comment("服务定义管理", "定义系统内置服务")]

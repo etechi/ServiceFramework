@@ -11,46 +11,82 @@ namespace SF.Entities
 {
     public static class EntityResolver
     {
-        public static async Task<IDataEntity> Resolve(this IDataEntityResolver Resolver, string Ident)
+        public static async Task<IEntityReference> Resolve(this IEntityReferenceResolver Resolver, string Ident,long? ScopeId)
         {
-            if (string.IsNullOrWhiteSpace(Ident))
-                return null;
-            var id = Ident.Split2('-');
-            var re = await Resolver.Resolve(id.Item1, new string[]{ id.Item2});
-            return re == null ? null : re.Length == 0 ? null : re[0];
-        }
-        public static Task<IDataEntity[]> Resolve(this IDataEntityResolver Resolver, params string[] Idents)
-            =>Resolve(Resolver, (IEnumerable<string>)Idents);
-        public static async Task<IDataEntity[]> Resolve(this IDataEntityResolver Resolver, IEnumerable<string> Idents)
+			if (Ident.IsNullOrWhiteSpace())
+				return null;
+
+			var ei = EntityIdents.Parse(Ident);
+			if (ei.Type == "i")
+			{
+				if (ei.KeyCount != 2)
+					throw new NotSupportedException($"实体ID格式错误:{Ident}");
+				var re = await Resolver.Resolve(
+					Convert.ToInt64(ei.Keys[0]),
+					new[] { Convert.ToString(ei.Keys[1]) }
+					);
+				return re == null ? null : re.Length == 0 ? null : re[0];
+			}
+			else
+			{
+				if (ei.KeyCount != 1)
+					throw new NotSupportedException($"实体ID格式错误:{Ident}");
+				var re = await Resolver.Resolve(
+					ScopeId,
+					ei.Type,
+					new[] { Convert.ToString(ei.Keys[0]) }
+					);
+				return re == null ? null : re.Length == 0 ? null : re[0];
+			}
+		}
+        public static Task<IEntityReference[]> Resolve(this IEntityReferenceResolver Resolver,long? ScopeId,params string[] Idents)
+            =>Resolve(Resolver, ScopeId, (IEnumerable<string>)Idents);
+        public static async Task<IEntityReference[]> Resolve(this IEntityReferenceResolver Resolver, long? ScopeId,IEnumerable<string> Idents)
         {
 			var idGroups = Idents
 				.Where(id => !string.IsNullOrWhiteSpace(id))
 				.Distinct()
-				.Select(id => id.Split2('-'))
-                .GroupBy(id => id.Item1, g => g.Item2);
+				.Select(id => EntityIdents.Parse(id))
+				.GroupBy(id => id.Type);
 
-            var re = new List<IDataEntity>();
-            foreach(var g in idGroups)
-                re.AddRange(await Resolver.Resolve(g.Key, g.ToArray()));
+            var re = new List<IEntityReference>();
+			foreach (var g in idGroups)
+			{
+				if(g.Key=="i")
+				{
+					if(g.Any(i=>i.KeyCount!=2))
+						throw new NotSupportedException($"实体ID格式错误:{g.Where(i => i.KeyCount != 2).Select(i=>i.ToIdentString())}");
+					foreach (var gi in g.GroupBy(i => i.Keys[0]))
+						re.AddRange(
+							(await Resolver.Resolve(
+								Convert.ToInt64(gi.Key),
+								gi.Select(gii => Convert.ToString(gii.Keys[1]))
+						   )).Where(a => a != null)
+						   );
+				}
+				else
+					re.AddRange(await Resolver.Resolve(ScopeId, g.Key, g.Select(gi=>Convert.ToString(gi.Keys[0]))));
+			}
             return re.ToArray();
         }
 
 
-		public static async Task<Dictionary<string, IDataEntity>> ResolveToDictionary(
-			this IDataEntityResolver Resolver,
+		public static async Task<Dictionary<string, IEntityReference>> ResolveToDictionary(
+			this IEntityReferenceResolver Resolver,
+			long? ScopeId,
 			IEnumerable<string> Idents)
 		{
-			var re = await Resolver.Resolve(Idents);
+			var re = await Resolver.Resolve(ScopeId,Idents);
 			return re.ToDictionary(o => o.Ident);
 		}
 
-        public static Task<IDataEntity[]> ResolveWithOrder(this IDataEntityResolver Resolver, params string[] Idents)
-            => ResolveWithOrder(Resolver, (IEnumerable<string>)Idents);
+        public static Task<IEntityReference[]> ResolveWithOrder(this IEntityReferenceResolver Resolver,long? ScopeId ,params string[] Idents)
+            => ResolveWithOrder(Resolver, ScopeId, (IEnumerable<string>)Idents);
 
-        public static async Task<IDataEntity[]> ResolveWithOrder(this IDataEntityResolver Resolver, IEnumerable<string> Idents)
+        public static async Task<IEntityReference[]> ResolveWithOrder(this IEntityReferenceResolver Resolver, long? ScopeId, IEnumerable<string> Idents)
         {
-            var dic = await Resolver.ResolveToDictionary(Idents);
-            var re = new List<IDataEntity>();
+            var dic = await Resolver.ResolveToDictionary(ScopeId, Idents);
+            var re = new List<IEntityReference>();
 			foreach (var id in Idents)
 			{
 				if (string.IsNullOrWhiteSpace(id))
@@ -66,15 +102,16 @@ namespace SF.Entities
 
 
         public static async Task Fill<TItem,TResult>(
-            this IDataEntityResolver Resolver,
+            this IEntityReferenceResolver Resolver,
+			long? ScopeId,
             IEnumerable<TItem> items,
             Func<TItem, IEnumerable<string>> IdSelector,
-            Func<IDataEntity, TResult> ResultSelector,
+            Func<IEntityReference, TResult> ResultSelector,
             Action<TItem, IReadOnlyList<TResult>> action
             )
         {
             var keys = items.Select(it => new { item = it, keys = IdSelector(it).ToArray() }).ToArray();
-            var dic = await Resolver.ResolveToDictionary(keys.SelectMany(k => k.keys));
+            var dic = await Resolver.ResolveToDictionary(ScopeId,keys.SelectMany(k => k.keys));
             var rs = new List<TResult>();
             foreach (var r in keys)
             {
@@ -91,24 +128,25 @@ namespace SF.Entities
             }
         }
         public static Task Fill<TItem>(
-           this IDataEntityResolver Resolver,
+           this IEntityReferenceResolver Resolver,
            IEnumerable<TItem> items,
            Func<TItem, IEnumerable<string>> IdSelector,
-           Func<IDataEntity, IDataEntity> ResultSelector,
-           Action<TItem, IReadOnlyList<IDataEntity>> action
+           Func<IEntityReference, IEntityReference> ResultSelector,
+           Action<TItem, IReadOnlyList<IEntityReference>> action
            ) =>
             Resolver.Fill(items, IdSelector, i => i, action);
 
         public static async Task Fill<TItem,TResult>(
-            this IDataEntityResolver Resolver,
-            IEnumerable<TItem> items,
+            this IEntityReferenceResolver Resolver,
+  			long? ScopeId,
+			IEnumerable<TItem> items,
             Func<TItem, string> IdSelector,
-            Func<IDataEntity,TResult> ResultSelector,
+            Func<IEntityReference,TResult> ResultSelector,
             Action<TItem, TResult> action            
             )
         {
             var keys = items.Select(it => new { item = it, key = IdSelector(it) }).ToArray();
-            var objs = await Resolver.ResolveToDictionary(keys.Select(k => k.key));
+            var objs = await Resolver.ResolveToDictionary(ScopeId,keys.Select(k => k.key));
             foreach (var r in keys)
             {
                 TResult result;
@@ -123,27 +161,30 @@ namespace SF.Entities
             }
         }
         public static Task Fill<TItem>(
-           this IDataEntityResolver Resolver,
-           IEnumerable<TItem> items,
+           this IEntityReferenceResolver Resolver,
+   			long? ScopeId,
+			IEnumerable<TItem> items,
            Func<TItem, string> IdSelector,
-           Action<TItem, IDataEntity> action
-           ) => Resolver.Fill(items, IdSelector, i => i, action);
+           Action<TItem, IEntityReference> action
+           ) => Resolver.Fill(ScopeId, items, IdSelector, i => i, action);
 
         public static Task Fill<TItem>(
-           this IDataEntityResolver Resolver,
-           IEnumerable<TItem> items,
-           Func<TItem, IEnumerable<string>> IdSelector,
-           Action<TItem, IReadOnlyList<string>> action
+			this IEntityReferenceResolver Resolver,
+			long? ScopeId,
+			IEnumerable<TItem> items,
+			Func<TItem, IEnumerable<string>> IdSelector,
+			Action<TItem, IReadOnlyList<string>> action
            )
-            => Resolver.Fill(items, IdSelector, i => i.Name, action);
+            => Resolver.Fill(ScopeId,items, IdSelector, i => i.Name, action);
 
         public static Task Fill<TItem>(
-           this IDataEntityResolver Resolver,
-           IEnumerable<TItem> items,
+           this IEntityReferenceResolver Resolver,
+ 			long? ScopeId,
+		  IEnumerable<TItem> items,
            Func<TItem, string> IdSelector,
            Action<TItem, string> action
            )
-            => Resolver.Fill(items, IdSelector, i => i.Name, action);
+            => Resolver.Fill(ScopeId, items, IdSelector, i => i.Name, action);
 
 		class Filler {
 			protected static string ToIdent<T>(string Type, T Id)
@@ -178,7 +219,7 @@ namespace SF.Entities
 						Expression.Call(
 							 null,
 							 ToIdentMethod.MakeGenericMethod(p.id.PropertyType),
-							 Expression.Constant(p.attr.EntityManagementType.FullName),
+							 Expression.Constant(p.attr.EntityType.FullName),
 							 Expression.Property(ArgItem, p.id)
 							 )
 						).ToArray()
@@ -206,10 +247,11 @@ namespace SF.Entities
 					ArgNames
 					).Compile();
 
-			public static async Task Fill(IDataEntityResolver Resolver,IEnumerable<TItem> items)
+			public static async Task Fill(IEntityReferenceResolver Resolver,long? ScopeId,IEnumerable<TItem> items)
 			{
 				if(FillRequired)
 					await Resolver.Fill(
+						ScopeId,
 						items,
 						GetIdents,
 						FillIdents
@@ -217,11 +259,12 @@ namespace SF.Entities
 			}
 		}
 		public static Task Fill<TItem>(
-			this IDataEntityResolver Resolver,
-		   IEnumerable<TItem> items
+			this IEntityReferenceResolver Resolver,
+			long? ScopeId,
+			IEnumerable<TItem> items
 			)
 		{
-			return Filler<TItem>.Fill(Resolver, items);
+			return Filler<TItem>.Fill(Resolver, ScopeId, items);
 		}
     }
    

@@ -8,13 +8,15 @@ using SF.Core.ServiceManagement;
 
 namespace SF.Entities
 {
-	public interface IDataEntity
+	public interface IEntityReference:
+		IEntityWithId<string>,
+		IEntityWithName
 	{
-		string Ident { get; }
-		string Name { get; }
+		Task<object> Resolve();
 	}
-	public interface IDataEntityResolver
+	public interface IEntityReferenceResolver
 	{
-        Task<IDataEntity[]> Resolve(string Type,string[] Keys);
-    }
+        Task<IEntityReference[]> Resolve(long ServiceId, IEnumerable<string> Keys);
+		Task<IEntityReference[]> Resolve(long? ScopeId, string Type, IEnumerable<string> Keys);
+	}
 }

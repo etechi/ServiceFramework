@@ -16,7 +16,7 @@ namespace SF.Auth.Permissions.Models
     {
 
 
-		[EntityIdent(typeof(IRoleManager<,>))]
+		[EntityIdent(typeof(RoleInternal))]
 		[Comment(Name = "角色", Description = "管理员的角色，重新登录后生效")]
 		public IEnumerable<string> Roles { get; set; }
 

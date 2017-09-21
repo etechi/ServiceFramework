@@ -1,4 +1,5 @@
-﻿using SF.Entities;
+﻿using SF.Auth.Identities.Models;
+using SF.Entities;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,12 @@ namespace SF.Biz.Products
 		public Option<long> Id { get; set; }
 
         [Display(Name = "卖家")]
-        [EntityIdent(typeof(SF.Auth.Identities.IIdentityManagementService))]
+        [EntityIdent(typeof(Identity))]
         [Ignore]
         public long? SellerId { get; set; }
 
         [Display(Name = "父目录")]
-        [EntityIdent(typeof(ICategoryManager<>))]
+        [EntityIdent(typeof(CategoryInternal))]
         public long? ParentId { get; set; }
 
         [Display(Name = "对象状态")]
@@ -29,13 +30,13 @@ namespace SF.Biz.Products
 		public string Name { get; set; }
 	}
 
-	public interface ICategoryManager : ICategoryManager<CategoryEditable>
+	public interface ICategoryManager : ICategoryManager<CategoryInternal>
 	{ }
 
 	public interface ICategoryManager<TEditable> :
 		IEntityManager<long, TEditable>,
 		IEntitySource<long,TEditable, CategoryQueryArgument>
-		where TEditable : CategoryEditable
+		where TEditable : CategoryInternal
 	{
 		//Task<TEditable[]> BatchUpdate(long SellerId, TEditable[] Items);
 		//Task UpdateItems(long CategoryId, long[] Items);

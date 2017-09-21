@@ -26,7 +26,7 @@ namespace SF.Management.FrontEndContents
 		public string Name { get; set; }
 
 		[Display(Name = "站点模板")]
-		[EntityIdent(typeof(ISiteTemplateManager<>), nameof(TemplateName))]
+		[EntityIdent(typeof(SiteTemplate), nameof(TemplateName))]
 		[Required]
 		public long TemplateId { get; set; }
 

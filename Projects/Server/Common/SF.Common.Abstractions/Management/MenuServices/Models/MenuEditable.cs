@@ -4,6 +4,7 @@ using SF.Metadata;
 using System.ComponentModel.DataAnnotations;
 using System;
 using System.Collections.Generic;
+using SF.Core.ServiceManagement.Models;
 
 namespace SF.Management.MenuServices.Models
 {
@@ -40,7 +41,7 @@ namespace SF.Management.MenuServices.Models
 		public string ActionArgument { get; set; }
 
 		[Comment("服务")]
-		[EntityIdent(typeof(Core.ServiceManagement.Management.IServiceInstanceManager))]
+		[EntityIdent(typeof(ServiceInstance))]
 		public long? ServiceId { get; set; }
 
 		[Comment("子菜单")]

@@ -63,7 +63,7 @@ namespace SF.Management.MenuServices.Entity
 				);
 			return menu;
 		}
-		protected override IContextQueryable<Menu> OnMapModelToInternal(IContextQueryable<TMenu> Query)
+		protected override IContextQueryable<Menu> OnMapModelToDetail(IContextQueryable<TMenu> Query)
 		{
 			return Query.SelectObjectEntity(m => new Menu
 			{

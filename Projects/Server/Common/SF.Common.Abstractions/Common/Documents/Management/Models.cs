@@ -13,7 +13,7 @@ namespace SF.Common.Documents.Management
 	[EntityObject("文档目录")]
 	public class CategoryInternal : UITreeContainerEntityBase<CategoryInternal,DocumentInternal>
 	{
-		[EntityIdent(typeof(IDocumentCategoryManager), nameof(ContainerName), IsTreeParentId = true)]
+		[EntityIdent(typeof(Category), nameof(ContainerName), IsTreeParentId = true)]
 		[Comment("父分类")]
 		[Layout(1, 2)]
 		public override long? ContainerId { get => base.ContainerId; set => base.ContainerId = value; }
@@ -26,7 +26,7 @@ namespace SF.Common.Documents.Management
 	public class DocumentBase : UIItemEntityBase<CategoryInternal>
 	{
 
-		[EntityIdent(typeof(IDocumentCategoryManager), nameof(DocumentInternal.ContainerName))]
+		[EntityIdent(typeof(Category), nameof(DocumentInternal.ContainerName))]
 		[Comment(Name = "文档分类")]
 		[Layout(1, 2)]
 		public override long? ContainerId { get => base.ContainerId; set => base.ContainerId = value; }

@@ -64,7 +64,7 @@ namespace SF.Auth.Permissions
 			b => b.Add("id", r => r.Name )
 			);
 
-		protected override IContextQueryable<TGrantEditable> OnMapModelToInternal(IContextQueryable<TGrant> Query)
+		protected override IContextQueryable<TGrantEditable> OnMapModelToDetail(IContextQueryable<TGrant> Query)
         {
             return from r in Query
                    select new TGrantEditable

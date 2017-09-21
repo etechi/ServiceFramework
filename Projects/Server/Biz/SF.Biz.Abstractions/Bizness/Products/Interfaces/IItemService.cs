@@ -15,7 +15,7 @@ namespace SF.Biz.Products
         [Display(Name = "产品标题")]
         public string Title { get; set; }
 
-        [EntityIdent(typeof(ICategoryManager<>))]
+        [EntityIdent(typeof(CategoryInternal))]
         [Display(Name = "产品目录")]
         public long? CategoryId { get; set; }
 

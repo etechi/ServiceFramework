@@ -17,7 +17,7 @@ namespace SF.Entities
 		IServiceProvider ServiceProvider { get; }
 		IDataSet<T> _DataSet;
 		ITimeService _TimeService;
-		IDataEntityResolver _DataEntityResolver;
+		IEntityReferenceResolver _DataEntityResolver;
 		ILogger<T> _Logger;
 		IIdentGenerator _IdentGenerator;
 		IEventEmitter _EventEmitter;
@@ -42,7 +42,7 @@ namespace SF.Entities
 		}
 		public IDataSet<T> DataSet => Resolve(ref _DataSet);
 		public IIdentGenerator IdentGenerator => Resolve(ref _IdentGenerator);
-		public IDataEntityResolver DataEntityResolver => Resolve(ref _DataEntityResolver);
+		public IEntityReferenceResolver DataEntityResolver => Resolve(ref _DataEntityResolver);
 		public ITimeService TimeService => Resolve(ref _TimeService);
 		public ILogger Logger => Resolve(ref _Logger);
 		public IEventEmitter EventEmitter => Resolve(ref _EventEmitter);

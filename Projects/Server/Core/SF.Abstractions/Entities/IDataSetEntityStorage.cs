@@ -39,7 +39,7 @@ namespace SF.Entities
 	public interface IEntityManager
 	{
 		IIdentGenerator IdentGenerator { get; }
-		IDataEntityResolver DataEntityResolver { get; }
+		IEntityReferenceResolver DataEntityResolver { get; }
 		ITimeService TimeService { get; }
 		ILogger Logger { get; }
 		IEventEmitter EventEmitter { get; }

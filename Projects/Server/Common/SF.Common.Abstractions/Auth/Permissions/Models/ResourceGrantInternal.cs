@@ -32,7 +32,7 @@ namespace SF.Auth.Permissions.Models
 
         [Display(Name = "授权")]
         [Layout(25)]
-        [EntityIdent(typeof(IOperationManager),ScopeField=nameof(Id))]
+        [EntityIdent(typeof(OperationInternal),ScopeField=nameof(Id))]
         public string[] OperationIds { get; set; }
 
 

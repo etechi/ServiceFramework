@@ -23,7 +23,7 @@ namespace SF.Core.ServiceManagement.Models
 	public class ServiceInstanceInternal : ServiceInstance,IItemEntity<long?>,ITreeNodeEntity<ServiceInstanceInternal>
 	{
 		[Comment("服务定义")]
-		[EntityIdent(typeof(IServiceDeclarationManager), nameof(ServiceName))]
+		[EntityIdent(typeof(ServiceDeclaration), nameof(ServiceName))]
 		[Required]
 		public string ServiceType { get; set; }
 
@@ -33,7 +33,7 @@ namespace SF.Core.ServiceManagement.Models
 		public string ServiceName { get; set; }
 
 		[Comment("服务实现")]
-		[EntityIdent(typeof(IServiceImplementManager), nameof(ImplementName), ScopeField = nameof(ServiceType))]
+		[EntityIdent(typeof(ServiceImplement), nameof(ImplementName), ScopeField = nameof(ServiceType))]
 		[Required]
 		public string ImplementType { get; set; }
 
@@ -44,7 +44,7 @@ namespace SF.Core.ServiceManagement.Models
 		public string ImplementName { get; set; }
 
 		[Comment("父服务实例")]
-		[EntityIdent(typeof(IServiceImplementManager), nameof(ContainerName))]
+		[EntityIdent(typeof(ServiceInstance), nameof(ContainerName))]
 		public long? ContainerId { get; set; }
 
 		[Ignore]

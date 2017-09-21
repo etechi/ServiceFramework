@@ -111,7 +111,7 @@ namespace SF.Users.Members.Entity
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity
 						{
-							Entity="svc-"+ServiceInstanceDescriptor.InstanceId+"-"+m.Id,
+							Entity=ServiceEntityIdent.Create(ServiceInstanceDescriptor.InstanceId,m.Id),
 							Icon = e.Icon,
 							Id = m.Id,
 							Name=m.Name

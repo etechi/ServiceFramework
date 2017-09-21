@@ -18,9 +18,9 @@ namespace SF.Entities
 		public EntityManager(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
 		}
-		protected override async Task<TPublic[]> OnPrepareInternals(TPublic[] Internals)
+		protected override async Task<TPublic[]> OnPrepareDetails(TPublic[] Internals)
 		{
-			await EntityManager.DataEntityResolver.Fill(Internals);
+			await EntityManager.DataEntityResolver.Fill(ServiceInstanceDescriptor.InstanceId, Internals);
 			return Internals;
 		}
 		protected override PagingQueryBuilder<TModel> PagingQueryBuilder => new PagingQueryBuilder<TModel>(
@@ -44,7 +44,7 @@ namespace SF.Entities
 		public EntityManager(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
 		}
-		protected override async Task<TPublic[]> OnPrepareInternals(TPublic[] Internals)
+		protected override async Task<TPublic[]> OnPrepareDetails(TPublic[] Internals)
 		{
 			await EntityManager.DataEntityResolver.Fill(Internals);
 			return Internals;

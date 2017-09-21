@@ -78,7 +78,7 @@ namespace SF.Management.FrontEndContents.SiteConfigModels
 		public string name { get; set; }
 
 		[Display(Name = "显示内容")]
-		[EntityIdent(typeof(IContentManager<>))]
+		[EntityIdent(typeof(Content))]
 		[Layout(2)]
 		public long? content { get; set; }
 

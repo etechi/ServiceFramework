@@ -176,5 +176,41 @@ namespace System
 		public static DateTime? TryToDateTime(this string str, string Format, System.Globalization.DateTimeStyles Styles = Globalization.DateTimeStyles.AssumeLocal)
 					=> DateTime.TryParseExact(str, Format, null, Styles,out var re)?(DateTime?)re:null;
 
+
+		public static void Escape(this string s,int offset,int length,bool[] escChars,Func<char,string> charEscaper,StringBuilder output)
+		{
+			var lastIndex = offset;
+			var endIndex = offset + length;
+			for (int i = offset ; i < endIndex; i++)
+			{
+				var c = s[i];
+				if (c > 0 && c < 256 && escChars[c])
+				{
+					if (i > lastIndex)
+						output.Append(s, lastIndex, i - lastIndex);
+					output.Append(charEscaper(c));
+					lastIndex = i + 1;
+				}
+			}
+			if (lastIndex < endIndex)
+				output.Append(s, lastIndex, endIndex - lastIndex);
+		}
+		public static void Unescape(this string s,int offset,int length,char escChar,Func<string,int,(int,char)> charUnescaper,StringBuilder output)
+		{
+			var i = offset;
+			var end = offset + length;
+			for(; ; )
+			{
+				var t = s.IndexOf(escChar, i, end - i);
+				var l = t == -1 ? end - i : t - i;
+				if (l > 0)
+					output.Append(s, i, l);
+				if (t == -1)
+					break;
+				var (r, c) = charUnescaper(s, t + 1);
+				output.Append(c);
+				i = t + 1 + r;
+			}
+		}
 	}
 }

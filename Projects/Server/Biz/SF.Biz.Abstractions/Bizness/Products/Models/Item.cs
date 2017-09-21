@@ -20,7 +20,7 @@ namespace SF.Biz.Products
 
         [Ignore]
         [Display(Name ="产品")]
-        [EntityIdent(typeof(IProductManager<,>),"Title")]
+        [EntityIdent(typeof(ProductInternal),"Title")]
         [TableVisible]
         public long ProductId { get; set; }
 

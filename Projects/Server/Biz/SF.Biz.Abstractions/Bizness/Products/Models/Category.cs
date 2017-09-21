@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Biz.Products
 {
 	[EntityObject("产品目录")]
-    public class CategoryEditable:
+    public class CategoryInternal:
 		IEntityWithId<long>
 	{
 		[Key]
@@ -38,7 +38,7 @@ namespace SF.Biz.Products
         [Layout(4)]
         public long SellerId { get; set; }
 
-        [EntityIdent(typeof(ICategoryManager<>), nameof(ParentName), IsTreeParentId = true, ScopeField = nameof(SellerId))]
+        [EntityIdent(typeof(CategoryInternal), nameof(ParentName), IsTreeParentId = true, ScopeField = nameof(SellerId))]
 		[Display(Name = "父目录")]
         [Layout(5)]
         public long? ParentId { get; set; }
@@ -105,7 +105,7 @@ namespace SF.Biz.Products
 		public EntityLogicState ObjectState { get; set; }
 
 		[Ignore]
-		public CategoryEditable[] Children { get; set; }
+		public CategoryInternal[] Children { get; set; }
 
 		[Ignore]
 		public long[] Items { get; set; }

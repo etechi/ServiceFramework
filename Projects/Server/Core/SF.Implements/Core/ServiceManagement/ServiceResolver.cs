@@ -9,6 +9,7 @@ namespace SF.Core.ServiceManagement
 {
 	class ServiceResolver : HashSet<Type>, IServiceResolver, IServiceProvider
 	{
+
 		IServiceFactoryManager FactoryManager { get; }
 		ServiceScopeBase ScopeBase { get; }
 
@@ -43,6 +44,14 @@ namespace SF.Core.ServiceManagement
 			{
 				Remove(ServiceType);
 			}
+		}
+		public IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId)
+		{
+			var ServiceType = ScopeBase.FactoryManager.GetServiceTypeByIdent(
+				   this,
+				   ServiceId
+				   );
+			return ResolveDescriptorByIdent(ServiceId, ServiceType);
 		}
 		public IServiceInstanceDescriptor ResolveDescriptorByType(long? ScopeServiceId, Type ServiceType, string Name)
 		{

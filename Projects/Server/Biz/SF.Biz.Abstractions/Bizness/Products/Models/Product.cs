@@ -181,7 +181,7 @@ namespace SF.Biz.Products
 	{
 		[Required]
 		[Display(Name="产品类型",Order =1,Description ="产品类型主要用于决定产品单位等基本信息，内部管理使用，按实际产品属性选择。")]
-		[EntityIdent(typeof(IProductTypeManager<,>))]
+		[EntityIdent(typeof(ProductType))]
 		[Layout(1, 1, 1)]
 		public long TypeId { get; set; }
 
@@ -191,7 +191,7 @@ namespace SF.Biz.Products
 		[Required]
 		public long OwnerUserId { get; set; }
 
-		[EntityIdent(typeof(ICategoryManager<>))]
+		[EntityIdent(typeof(CategoryInternal))]
 		[Layout(1,1, 75)]
 		[Display(Name="商品分类",Description ="支持多选，用于前端将商品展示在不同区域。")]
 		public IEnumerable<long> CategoryIds { get; set; }
@@ -220,7 +220,7 @@ namespace SF.Biz.Products
 
 		public DateTime CreatedTime { get; set; }
 
-		[EntityIdent(typeof(IProductTypeManager<,>),nameof(ProductTypeName))]
+		[EntityIdent(typeof(ProductType),nameof(ProductTypeName))]
 		public long ProductTypeId { get; set; }
 
 		[Display(Name = "产品类型")]
@@ -234,7 +234,7 @@ namespace SF.Biz.Products
 		public Option<long> Id { get; set; }
 
 		[Display(Name = "产品类型")]
-		[EntityIdent(typeof(IProductTypeManager<,>))]
+		[EntityIdent(typeof(ProductType))]
 		public long? ProductTypeId{get;set;}
 
 		[Display(Name = "更新时间")]

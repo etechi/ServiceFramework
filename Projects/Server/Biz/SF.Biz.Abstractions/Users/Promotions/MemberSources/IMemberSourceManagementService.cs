@@ -21,7 +21,7 @@ namespace SF.Users.Promotions.MemberSources
 	}
 
 	
-	[EntityManager]
+	[EntityManager("会员渠道")]
 	[Authorize("admin")]
 	[NetworkService]
 	[Comment("会员渠道")]

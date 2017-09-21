@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SF.Common.TextMessages.Management
 {
-	[EntityManager]
+	[EntityManager("文本消息记录")]
 	[Authorize("admin")]
 	[NetworkService]
 	[Comment("文本消息记录")]

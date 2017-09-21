@@ -36,7 +36,7 @@ namespace SF.Management.FrontEndContents
 				}).SingleOrDefaultAsync();
 		}
 
-        protected override IContextQueryable<TSitePublic> OnMapModelToInternal(IContextQueryable<TSite> Query)
+        protected override IContextQueryable<TSitePublic> OnMapModelToDetail(IContextQueryable<TSite> Query)
 		{
 			return Query.Select(s => new TSitePublic
 			{
@@ -76,7 +76,7 @@ namespace SF.Management.FrontEndContents
 
 		public async Task<TSitePublic[]> List()
 		{
-			return await OnMapModelToInternal(DataSet.AsQueryable()).ToArrayAsync();
+			return await OnMapModelToDetail(DataSet.AsQueryable()).ToArrayAsync();
 		}
 
     }
