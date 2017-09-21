@@ -48,9 +48,22 @@ namespace SF.Entities
 			if (str.Length > 0)
 				throw new ArgumentException(str);
 		}
-		void ValidateEntity(IEntityMetadata meta)
+		void ValidateEntityType(Type type)
 		{
+			foreach (var p in type.AllPublicInstanceProperties())
+			{
+				var eia = p.GetCustomAttribute<EntityIdentAttribute>();
+			}
 
+		}
+		void ValidateMetadata(IEntityMetadata meta)
+		{
+			if (meta.EntityDetailType != null)
+				ValidateEntityType(meta.EntityDetailType);
+			if(meta.EntityDetailType!=null)
+				ValidateEntityType(meta.EntityDetailType);
+			if (meta.EntityEditableType != null)
+				ValidateEntityType(meta.EntityEditableType);
 		}
 
 		public EntityMetadataCollection(IEnumerable<IEntityMetadata> Metadatas)
@@ -65,7 +78,7 @@ namespace SF.Entities
 			this.EntityDict = this.Metadatas.ToDictionary(d => d.EntityDetailType);
 
 			foreach (var m in this.Metadatas)
-				ValidateEntity(m);
+				ValidateMetadata(m);
 		}
 
 		public IEntityMetadata FindByDetailType(Type EntityDetailType)
