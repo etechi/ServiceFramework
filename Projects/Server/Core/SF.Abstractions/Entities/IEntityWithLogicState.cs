@@ -8,6 +8,6 @@ namespace SF.Entities
 {
 	public interface IEntityWithLogicState 
 	{
-		EntityLogicState LogicState { get; }
+		EntityLogicState LogicState { get; set; }
 	}
 }

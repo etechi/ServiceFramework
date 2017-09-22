@@ -11,6 +11,7 @@ using System.Linq.Expressions;
 using SF.Metadata;
 using SF.Core.ServiceManagement;
 using System.Collections;
+using SF.ADT;
 
 namespace SF.Entities
 {
@@ -33,6 +34,7 @@ namespace SF.Entities
 
 		public EntityCapability EntityManagerCapability { get; set; }
 	}
+	
 	class EntityMetadataCollection : IEntityMetadataCollection
 	{
 		IEntityMetadata[] Metadatas { get; }
@@ -48,24 +50,46 @@ namespace SF.Entities
 			if (str.Length > 0)
 				throw new ArgumentException(str);
 		}
-		void ValidateEntityType(Type type)
+		void ValidateEntityType(Type type,Action<Type> entityValidater)
 		{
 			foreach (var p in type.AllPublicInstanceProperties())
 			{
 				var eia = p.GetCustomAttribute<EntityIdentAttribute>();
+				if (eia != null && eia.EntityType != null)
+					entityValidater(eia.EntityType);
 			}
 
 		}
-		void ValidateMetadata(IEntityMetadata meta)
+		void ValidateMetadata(IEntityMetadata meta,Action<Type> entityValidator)
 		{
 			if (meta.EntityDetailType != null)
-				ValidateEntityType(meta.EntityDetailType);
+				ValidateEntityType(meta.EntityDetailType,entityValidator);
 			if(meta.EntityDetailType!=null)
-				ValidateEntityType(meta.EntityDetailType);
+				ValidateEntityType(meta.EntityDetailType,entityValidator);
 			if (meta.EntityEditableType != null)
-				ValidateEntityType(meta.EntityEditableType);
+				ValidateEntityType(meta.EntityEditableType,entityValidator);
 		}
 
+		Action<PropertyInfo,Type > GetEntityIndentValidator()
+		{
+			var allType = (from meta in Metadatas
+						   let declareType =meta.EntityDetailType
+						   from at in Link.ToEnumerable(declareType, t => t.BaseType)
+						   select at).Distinct();
+			var typeTrees = Tree.Build(allType, t => t.BaseType);
+			var typeNodeDict = typeTrees.AsEnumerable().ToDictionary(n => n.Item);
+			return (p, ot) =>
+			{
+				if (!typeNodeDict.TryGetValue(ot, out var n))
+					throw new ArgumentException($"{p.DeclaringType}属性{p.Name}找不到实体{ot}");
+				while(n.Count>0)
+				{
+					if(n.Count>1)
+						throw new ArgumentException($"{p.DeclaringType}属性{p.Name}的实体{ot}或子类{n.Item}有多个子类{n.Select(c=>c.Item).Join(",")}");
+					n = n[0];
+				}
+			};
+		}
 		public EntityMetadataCollection(IEnumerable<IEntityMetadata> Metadatas)
 		{
 			this.Metadatas = Metadatas.ToArray();
@@ -77,8 +101,21 @@ namespace SF.Entities
 			this.ManagerDict = this.Metadatas.ToDictionary(d => d.EntityManagerType);
 			this.EntityDict = this.Metadatas.ToDictionary(d => d.EntityDetailType);
 
-			foreach (var m in this.Metadatas)
-				ValidateMetadata(m);
+
+			var validator = GetEntityIndentValidator();
+			
+			(from m in this.Metadatas
+			 from type in new[] { m.EntityDetailType, m.EntityEditableType, m.EntitySummaryType, m.QueryArgumentType }
+			 where type != null
+			 from prop in type.AllPublicInstanceProperties()
+			 let ea = prop.GetCustomAttribute<EntityIdentAttribute>()
+			 where ea != null && ea.EntityType != null
+			 select (prop, ea.EntityType)
+			 ).ForEach(p =>
+				validator(
+					p.prop, p.EntityType
+					)
+				);
 		}
 
 		public IEntityMetadata FindByDetailType(Type EntityDetailType)

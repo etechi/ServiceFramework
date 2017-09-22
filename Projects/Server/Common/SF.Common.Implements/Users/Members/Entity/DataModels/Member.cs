@@ -20,7 +20,8 @@ namespace SF.Users.Members.Entity.DataModels
 		[MaxLength(100)]
 		public string Icon { get; set; }
 
-	
+		[Comment("注册用户描述")]
+		public long SignupIdentityId { get; set; }
 	}
 }
 

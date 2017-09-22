@@ -161,7 +161,7 @@ namespace SF.Auth.Identities
 					ExtraArgument = extArgs.Count > 0 ? extArgs : null,
 					Identity = new Identity
 					{
-						Entity = entity,
+						OwnerId = entity,
 						Icon = null,
 						Name = nick
 					},

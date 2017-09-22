@@ -63,7 +63,7 @@ namespace SF.Auth.Identities.Entity
 				SignupExtraArgument=Arg.ExtraArgument==null?null:Json.Stringify(Arg.ExtraArgument),
 				PasswordHash = Arg.PasswordHash,
 				SecurityStamp = Arg.SecurityStamp.Base64(),
-				Entity = Arg.Identity.Entity,
+				OwnerId = Arg.Identity.OwnerId,
 				Credentials=new List<IdentityCredential>
 				{
 					new IdentityCredential
@@ -118,11 +118,11 @@ namespace SF.Auth.Identities.Entity
 			//await DataSet.Context.SaveChangesAsync();
 			//return Arg.Identity.Id;
 		}
-		protected override Task OnNewModel(IModifyContext ctx)
+		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
-			m.Id = e.Id;
+			m.Id = await IdentGenerator.GenerateAsync("用户标识");
 			m.SignupIdentProviderId = e.CreateCredentialProviderId;
 			m.SignupIdentValue = e.CreateCredential;
 			m.CreatedTime = Now;
@@ -136,7 +136,7 @@ namespace SF.Auth.Identities.Entity
 						BindTime=Now
 					}
 				};
-			return base.OnNewModel(ctx);
+			await base.OnNewModel(ctx);
 		}
 		
 		protected override async Task OnUpdateModel(IModifyContext ctx)
@@ -158,8 +158,8 @@ namespace SF.Auth.Identities.Entity
 			m.ObjectState = e.LogicState;
 			var time = Now;
 			m.UpdatedTime = time;
-			if (e.Entity != null)
-				m.Entity = e.Entity;
+			if (e.OwnerId != null)
+				m.OwnerId = e.OwnerId;
 			if (e.PasswordHash!=null)
 				m.PasswordHash = e.PasswordHash;
 			if(e.SecurityStamp!=null)
@@ -206,7 +206,7 @@ namespace SF.Auth.Identities.Entity
 					Id=i.Id,
 					Icon=i.Icon,
 					Name=i.Name,
-					Entity=i.Entity,
+					Entity=i.OwnerId,
 					IsEnabled=i.ObjectState==EntityLogicState.Enabled,
 					PasswordHash=i.PasswordHash,
 				}

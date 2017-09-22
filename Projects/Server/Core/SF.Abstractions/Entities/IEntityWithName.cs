@@ -9,6 +9,6 @@ namespace SF.Entities
 
 	public interface IEntityWithName
 	{
-		string Name { get;  }
+		string Name { get; set; }
 	}
 }

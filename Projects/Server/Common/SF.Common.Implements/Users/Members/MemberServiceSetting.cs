@@ -15,8 +15,6 @@ namespace SF.Users.Members
 	{
 		public Lazy<IIdentityService> IdentityService { get; set; }
 		public Lazy<IMemberManagementService> ManagementService { get; set; }
-		public Lazy<ITransactionScopeManager> TransactionScopeManager { get; set; }
-		public Lazy<IIdentityCredentialProvider[]> SigninCredentialProviders { get; set; }
 		public Lazy<IIdentityCredentialProvider> SignupCredentialProvider { get; set; }
 
 	}

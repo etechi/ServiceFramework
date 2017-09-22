@@ -77,7 +77,7 @@ namespace SF.Entities
 			IEnumerable<string> Idents)
 		{
 			var re = await Resolver.Resolve(ScopeId,Idents);
-			return re.ToDictionary(o => o.Ident);
+			return re.ToDictionary(o => o.Id);
 		}
 
         public static Task<IEntityReference[]> ResolveWithOrder(this IEntityReferenceResolver Resolver,long? ScopeId ,params string[] Idents)

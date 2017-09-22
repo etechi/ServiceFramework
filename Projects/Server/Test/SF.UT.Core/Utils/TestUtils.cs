@@ -73,7 +73,7 @@ namespace SF.UT.Utils
 					Identity = new SF.Auth.Identities.Models.Identity
 					{
 						Id = id,
-						Entity = entity,
+						OwnerId = entity,
 						Name = name,
 						Icon= icon
 					},
@@ -85,7 +85,7 @@ namespace SF.UT.Utils
 			var ii = await svc.GetIdentity(id);
 			Assert.Equal(name, ii.Name);
 			Assert.Equal(icon, ii.Icon);
-			Assert.Equal(entity, ii.Entity);
+			Assert.Equal(entity, ii.OwnerId);
 			Assert.Equal(id, ii.Id);
 			if (ReturnToken)
 			{
@@ -98,7 +98,7 @@ namespace SF.UT.Utils
 				Assert.Equal(id, uii.Id);
 				Assert.Equal(name, uii.Name);
 				Assert.Equal(icon, uii.Icon);
-				Assert.Equal(entity, uii.Entity);
+				Assert.Equal(entity, uii.OwnerId);
 				Assert.Equal(id, uii.Id);
 			}
 

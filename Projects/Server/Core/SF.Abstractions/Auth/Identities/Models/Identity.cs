@@ -25,11 +25,11 @@ namespace SF.Auth.Identities.Models
 		[MaxLength(100)]
 		public string Icon { get; set; }
 
-		[Comment("身份类型")]
+		[Comment("所属对象")]
 		[MaxLength(100)]
 		[Required]
-		[TableVisible]
-		public string Entity { get; set; }
+		[EntityIdent]
+		public string OwnerId { get; set; }
 
 	}
 }

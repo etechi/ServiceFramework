@@ -32,6 +32,7 @@ namespace SF.Entities
 		Type EntitySummaryType { get; }
 		Type EntityEditableType { get; }
 		Type EntityManagerType { get; }
+		Type QueryArgumentType { get; }
 		EntityCapability EntityManagerCapability { get; }
 	}
 	public interface IEntityMetadataCollection: IEnumerable<IEntityMetadata>

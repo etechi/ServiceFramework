@@ -28,7 +28,7 @@ namespace SF.Auth.Identities
 				Id = data.Id,
 				Icon = data.Icon,
 				Name = data.Name,
-				Entity = data.Entity
+				OwnerId = data.Entity
 			};
 		}
 		public async Task<long?> GetCurIdentityId()
@@ -312,7 +312,7 @@ namespace SF.Auth.Identities
 					Identity =new Identity
 					{
 						Id = uid,
-						Entity = Arg.Identity.Entity,
+						OwnerId = Arg.Identity.OwnerId,
 						Icon = Arg.Identity.Icon,
 						Name = Arg.Identity.Name
 					}

@@ -73,7 +73,7 @@ namespace SF.Management.SysAdmins.Entity
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity
 						{
-							Entity="系统管理员",
+							OwnerId="系统管理员",
 							Icon = e.Icon,
 							Id = m.Id,
 							Name=m.Name

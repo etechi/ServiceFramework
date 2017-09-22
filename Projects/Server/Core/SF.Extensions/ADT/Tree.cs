@@ -71,7 +71,23 @@ namespace SF.ADT
 			Func<T, IEnumerable<T>> GetChildren
 			)
 			=> Nodes.SelectMany(n => AsLastEnumerable(n, GetChildren));
+		public class Node<T> : List<Node<T>>
+		{
+			public T Item { get; set; }
+		}
 
+		public static IEnumerable<Node<T>> Build<T>(
+			this IEnumerable<T> nodes,
+			Func<T, T> GetParent
+			)
+		{
+			return nodes.Build<T,Node<T>,T>(
+				i => new Node<T> { Item = i },
+				i => i,
+				i => GetParent(i),
+				(i, c) => i.Add(c)
+				);
+		}
 		public static IEnumerable<T> Build<I, T, K>(
 			this IEnumerable<I> nodes,
 			Func<I, T> NewTreeItem,
@@ -79,7 +95,6 @@ namespace SF.ADT
 			Func<I, K> GetParentId,
 			Action<T, T> AddChildItem
 			)
-			where K : IEquatable<K>
 		{
 			var dic = nodes.ToDictionary(GetId, i => (TreeItem:NewTreeItem(i), Item:i));
 			var roots = new List<T>();

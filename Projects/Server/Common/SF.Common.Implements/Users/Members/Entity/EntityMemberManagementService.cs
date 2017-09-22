@@ -67,7 +67,7 @@ namespace SF.Users.Members.Entity
 					Name=Arg.Identity?.Name,
 					Icon=Arg.Identity?.Icon,
 					Password=Arg.Password,
-					PhoneNumber=Arg.Credential,
+					PhoneNumber=Arg.Credential
 				},
 				(Arg, CredentialProvider)
 				);
@@ -103,7 +103,7 @@ namespace SF.Users.Members.Entity
 
 
 				UIEnsure.HasContent(e.Password, "需要提供密码");
-				ctx.UserData=await IdentityService.Value.CreateIdentity(
+				var sess=await IdentityService.Value.CreateIdentity(
 					new CreateIdentityArgument
 					{
 						CredentialProviderId= IdentityProvider.Id,
@@ -111,9 +111,8 @@ namespace SF.Users.Members.Entity
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity
 						{
-							Entity=ServiceEntityIdent.Create(ServiceInstanceDescriptor.InstanceId,m.Id),
+							OwnerId=ServiceEntityIdent.Create(ServiceInstanceDescriptor.InstanceId,m.Id),
 							Icon = e.Icon,
-							Id = m.Id,
 							Name=m.Name
 						},
 						ReturnToken= CreateArgument.ReturnToken,
@@ -124,6 +123,9 @@ namespace SF.Users.Members.Entity
 					}, 
 					false
 					);
+				ctx.UserData = sess;
+				var iid = await IdentityService.Value.ParseAccessToken(sess);
+				m.SignupIdentityId = iid;
 
 				EntityManager.AddPostAction(() =>
 					EntityManager.EventEmitter.Emit(new MemberRegisted

@@ -34,10 +34,10 @@ namespace SF.Auth.Identities.Entity.DataModels
 		public virtual string Icon { get; set; }
 
 		[MaxLength(100)]
-		[Comment("身份类别")]
+		[Comment("所属对象")]
 		[Required]
 		[Index]
-		public virtual string Entity { get; set; }
+		public virtual string OwnerId { get; set; }
 
 		[MaxLength(100)]
 		[Comment("密码哈希")]

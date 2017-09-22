@@ -28,7 +28,7 @@ namespace SF.Entities
 				this.Instance = Instance;
 				this.Loader = Loader;
 			}
-			public string Name => Instance.Name;
+			public string Name { get => Instance.Name; set => Instance.Name = value; }
 
 			public string Id => ServiceEntityIdent.Create(ServiceId, Convert.ToString(Instance.Id));
 
