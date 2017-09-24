@@ -73,7 +73,7 @@ namespace SF.ADT
 			=> Nodes.SelectMany(n => AsLastEnumerable(n, GetChildren));
 		public class Node<T> : List<Node<T>>
 		{
-			public T Item { get; set; }
+			public T Value { get; set; }
 		}
 
 		public static IEnumerable<Node<T>> Build<T>(
@@ -82,7 +82,7 @@ namespace SF.ADT
 			)
 		{
 			return nodes.Build<T,Node<T>,T>(
-				i => new Node<T> { Item = i },
+				i => new Node<T> { Value = i },
 				i => i,
 				i => GetParent(i),
 				(i, c) => i.Add(c)

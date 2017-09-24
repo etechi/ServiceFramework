@@ -19,7 +19,7 @@ namespace SF.UT
 	{
 		public static IAppInstanceBuilder Builder(EnvironmentType envType=EnvironmentType.Production)
 		{
-			return Net46App.Setup(envType).
+			return Core2App.Setup(envType).
 				With(sc =>
 				{
 					

@@ -47,7 +47,7 @@ namespace SF.UT.DI
         public void Generic()
         {
 			var sc = new ServiceCollection();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.AddTransient(typeof(IInterface<>), typeof(Implement<>));
 			var sp = sc.BuildServiceResolver();
@@ -79,7 +79,7 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddScoped<IMultipleImplTest,MultipleImplTestScope>();
 			//sc.AddSingleton<IMultipleImplTest,MultipleImplTestGlobal>();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 
 			var sp = sc.BuildServiceResolver();
@@ -103,7 +103,7 @@ namespace SF.UT.DI
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			var sp = sc.BuildServiceResolver();
 			var re = sp.Resolve<Func<IInterface<int>>>();
@@ -116,7 +116,7 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddManagedService();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.AddNewtonsoftJson();
 
@@ -132,7 +132,7 @@ namespace SF.UT.DI
 		{
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			var sp = sc.BuildServiceResolver();
 			var re = sp.Resolve<Lazy<IInterface<int>>>();
@@ -146,7 +146,7 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddTransient<IInterface<int>>((s)=>new Implement<int>());
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			var sp = sc.BuildServiceResolver();
 			var re = sp.Resolve<IEnumerable<IInterface<int>>>();
@@ -162,7 +162,7 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddManagedService();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.AddNewtonsoftJson();
 
@@ -187,7 +187,7 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddManagedService();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.AddNewtonsoftJson();
 
@@ -218,7 +218,7 @@ namespace SF.UT.DI
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
 			sc.AddManagedService();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.AddNewtonsoftJson();
 
@@ -241,7 +241,7 @@ namespace SF.UT.DI
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
 			sc.AddManagedService();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.AddNewtonsoftJson();
 
@@ -264,7 +264,7 @@ namespace SF.UT.DI
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
 			sc.AddTransient<IInterface2<int>, ImplementWithArg<int>>();
 			sc.AddManagedService();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.AddNewtonsoftJson();
 
@@ -286,7 +286,7 @@ namespace SF.UT.DI
 			sc.AddTransient<IInterface<int>, Implement<int>>();
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
 			sc.AddTransient<IInterface2<int>, ImplementWithArg<int>>();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.AddNewtonsoftJson();
 
@@ -307,7 +307,7 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
 			sc.AddManagedService();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.AddNewtonsoftJson();
 
@@ -329,7 +329,7 @@ namespace SF.UT.DI
 			var sc = new ServiceCollection();
 			sc.AddTransient<IInterface<int>, ImplementWithArg<int>>();
 			sc.AddManagedService();
-			sc.AddSystemMemoryCache();
+			sc.AddMicrosoftMemoryCacheAsLocalCache();
 			sc.UseMemoryManagedServiceSource();
 			sc.AddNewtonsoftJson();
 

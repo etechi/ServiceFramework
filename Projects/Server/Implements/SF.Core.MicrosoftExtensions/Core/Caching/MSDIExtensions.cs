@@ -7,7 +7,7 @@ namespace SF.Core.DI
 {
 	public static class MSCachingExtensions
 	{
-		public static IServiceCollection UseMicrosoftMemoryCacheAsLocalCache(this IServiceCollection sc)
+		public static IServiceCollection AddMicrosoftMemoryCacheAsLocalCache(this IServiceCollection sc)
 		{
 			return sc.AddSingleton(
 				typeof(SF.Core.Caching.ILocalCache<>),

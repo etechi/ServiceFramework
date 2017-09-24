@@ -206,6 +206,9 @@ namespace SF.Biz.Products
             if (pi.Length == 0)
                 return QueryResult<TItem>.Empty;
             var ii = await GetItems(new[] { pi[0].MainItemId });
+			if (Args.SellerId.HasValue)
+				ii = ii.Where(i => i.SellerId == Args.SellerId.Value).ToArray();
+
             if(ii==null || ii.Length==0)
                  return QueryResult<TItem>.Empty;
             return new QueryResult<TItem>

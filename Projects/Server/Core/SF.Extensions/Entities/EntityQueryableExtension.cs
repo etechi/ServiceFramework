@@ -14,6 +14,8 @@ namespace SF.Entities
 			var sid = ServiceInstanceDescriptor?.InstanceId;
 			return q.Where(i => i.ScopeId == sid);
 		}
+
+		
 		public static IContextQueryable<T> IsEnabled<T>(this IContextQueryable<T> q)
 			where T : IEntityWithLogicState
 		{
@@ -33,5 +35,29 @@ namespace SF.Entities
 			where T : IEntityWithId<TKey>, IEntityWithLogicState, IEntityWithScope
 			where TKey : IEquatable<TKey>
 			=> q.WithId(Id).WithScope(ServiceInstanceDescriptor).IsEnabled();
+
+
+		public static async Task<IEnumerable<TEntity>> QueryAllAsync<TKey,TEntity, TQueryArgument>(
+			this IEntityQueryable<TKey,TEntity,TQueryArgument> Queryable
+			)
+			where TKey:IEquatable<TKey>
+			where TEntity:class,IEntityWithId<TKey>
+			where TQueryArgument : IQueryArgument<TKey>, new()
+		{
+			var re = await Queryable.QueryAsync(new TQueryArgument(), Paging.All);
+			return re.Items;
+		}
+		public static async Task<TEntity> QuerySingleAsync<TKey, TEntity, TQueryArgument>(
+			this IEntityQueryable<TKey, TEntity, TQueryArgument> Queryable,
+			TQueryArgument Arg
+			)
+			where TKey : IEquatable<TKey>
+			where TEntity : class, IEntityWithId<TKey>
+			where TQueryArgument : IQueryArgument<TKey>, new()
+		{
+			var re = await Queryable.QueryAsync(Arg, Paging.Single);
+			return re.Items.FirstOrDefault();
+		}
+
 	}
 }

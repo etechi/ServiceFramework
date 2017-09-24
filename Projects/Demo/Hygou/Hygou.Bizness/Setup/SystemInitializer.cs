@@ -5,6 +5,8 @@ using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
 using SF.Core.ServiceManagement.Management;
 using SF.Management.FrontEndContents;
+using SF.Users.Members;
+using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,16 +17,15 @@ namespace Hygou.Setup
 {
 	public class SystemInitializer
 	{
-		public static async Task<DataModels.User> EnsureSysSeller(IServiceProvider sp)
+		public static async Task<MemberInternal> EnsureSysSeller(IServiceProvider sp)
 		{
-			var svc = sp.Resolve<IIdentityService>();
-			var u = await svc.IdentityEnsure(
+			var svc = sp.Resolve<IMemberService>();
+			var u = await svc.MemberEnsure(
 					sp,
 					"sysseller",
 					"系统卖家",
 					"13011110002",
 					"system",
-					"member",
 					new[]{"admin", "seller", "provider" }
 					);
 			return u;
@@ -35,7 +36,7 @@ namespace Hygou.Setup
 
 			//await InitRoles(scope);
 			//var sysadmin = await EnsureSysAdmin(scope);
-			var sysseller = await EnsureSysSeller(scope);
+			var sysseller = await EnsureSysSeller(ServiceProvider);
 			//await InitAccounting(scope);
 			//await SysServiceInitializer.Initialize(scope, EnvType);
 
@@ -48,7 +49,8 @@ namespace Hygou.Setup
 			var tailDocContents = await ServiceProvider.Invoke((IServiceInstanceManager sim)=>DocInitializer.DocEnsure(ServiceProvider,sim,ScopeId));
 			
 			var prdtypes = await ServiceProvider.Invoke((IProductTypeManager m)=>ProductTypeInitializer.Create(m));
-			var colls = await ServiceProvider.Invoke((ICategoryManager cm,IItemManager im)=> ProductCategoryInitializer.Create(cm, im, sysseller.Id, prdtypes));
+			var colls = await ServiceProvider.Invoke((ICategoryManager cm,IItemManager im, IServiceInstanceManager sim) => 
+				ProductCategoryInitializer.Create(sim, cm, im, sysseller.Id, ScopeId, prdtypes));
 
 			var prdctns = await ServiceProvider.Invoke((IContentManager cm)=> ProductContentInitializer.Create(cm, colls));
 
@@ -68,7 +70,8 @@ namespace Hygou.Setup
 					prdctns, 
 					colls, 
 					tailDocContents.Item1, 
-					tailDocContents.Item2
+					tailDocContents.Item2,
+					colls.MainProductCategoryId
 					));
 			//await scope.MobileSiteEnsure(prdctns, colls);
 

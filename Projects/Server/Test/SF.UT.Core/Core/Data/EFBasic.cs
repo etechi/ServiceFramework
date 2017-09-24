@@ -24,36 +24,35 @@ using System.Threading.Tasks;
 namespace SF.UT.Data
 {
 #if !NETCORE
+	using System;
+namespace SF.UT.Data
+{
 	public class AppContext : SF.Data.DbContext
 	{
-		public AppContext():this(new EFStartup().ConfigureService())
+		public AppContext() : this(new EFStartup().ConfigureService())
 		{
 
 		}
-		public AppContext(IServiceProvider sp) : base(sp,"name = default")
+		public AppContext(IServiceProvider sp) : base(sp, "name = default")
 		{
 
 		}
 	}
+}
+
 #endif
 	class EFStartup {
 		public IServiceProvider ConfigureService()
 		{
-			var isc = new ServiceCollection();
-			isc.AddSystemMemoryCache();
+			var isc = new SF.Core.ServiceManagement.ServiceCollection();
+			isc.AddMicrosoftMemoryCacheAsLocalCache();
 			isc.UseMemoryManagedServiceSource();
 			isc.AddDataModules<DataModels.User, DataModels.Post>();
 #if NETCORE
-			sc.AddEntityFrameworkInMemoryDatabase();
-			sc.AddDbContext<DbContext>((asp,op) =>
-				{
-					op.UseInMemoryDatabase().LoadDataModels(asp);
-
-					//((IDbContextOptionsBuilderInfrastructure)op).AddOrUpdateExtension(new DataExtension());
-					//op.Options.WithExtension();
-				},Microsoft.Extensions.DependencyInjection.ServiceLifetime.Transient
-				);
-			isc.UseEFCoreDataEntity<DbContext>();
+			isc.AddEFCoreDataEntity<DbContext>();
+			//Services.AddTransient(tsp => new AppContext(tsp));
+			//Services.AddEF6DataEntity<AppContext>();
+			
 #else
 			isc.AddTransient<AppContext>(tsp => new AppContext(tsp));
 			isc.AddEF6DataEntity<AppContext>();
@@ -68,46 +67,46 @@ namespace SF.UT.Data
 
 	public class EFBasicTest
     {
-		class TestDBContext:System.Data.Entity.DbContext
-		{
-			public TestDBContext(DbConnection conn) : base(conn, contextOwnsConnection: false)
-			{
+		//class TestDBContext:System.Data.Entity.DbContext
+		//{
+		//	public TestDBContext(DbConnection conn) : base(conn, contextOwnsConnection: false)
+		//	{
 
-			}
-			public DbSet<SF.Data.IdentGenerator.DataModels.IdentSeed> IdentSeeds { get; set; }
-		}
+		//	}
+		//	public DbSet<SF.Data.IdentGenerator.DataModels.IdentSeed> IdentSeeds { get; set; }
+		//}
 
-		[Fact]
-		public async Task DBContextTransactionTest()
-		{
-			using (var conn = new SqlConnection("data source=.\\SQLEXPRESS;initial catalog=sfadmin;user id=sa;pwd=system;MultipleActiveResultSets=True;"))
-			{
-				using (var context = new TestDBContext(conn))
-				{
-					await context.IdentSeeds.ToArrayAsync();
+		//[Fact]
+		//public async Task DBContextTransactionTest()
+		//{
+		//	using (var conn = new SqlConnection("data source=.\\SQLEXPRESS;initial catalog=sfadmin;user id=sa;pwd=system;MultipleActiveResultSets=True;"))
+		//	{
+		//		using (var context = new TestDBContext(conn))
+		//		{
+		//			await context.IdentSeeds.ToArrayAsync();
 
-					await conn.OpenAsync();
-					using (var tran = conn.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
-					{
+		//			await conn.OpenAsync();
+		//			using (var tran = conn.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+		//			{
 						
-						context.Database.UseTransaction(tran);
-						await context.IdentSeeds.ToArrayAsync();
+		//				context.Database.UseTransaction(tran);
+		//				await context.IdentSeeds.ToArrayAsync();
 
-						context.Database.UseTransaction(null);
+		//				context.Database.UseTransaction(null);
 
-						context.Database.UseTransaction(tran);
-						var a = await context.IdentSeeds.FirstAsync();
-						a.NextValue++;
-						context.Entry(a).State = EntityState.Modified;
-						await context.SaveChangesAsync();
-						context.Database.UseTransaction(null);
+		//				context.Database.UseTransaction(tran);
+		//				var a = await context.IdentSeeds.FirstAsync();
+		//				a.NextValue++;
+		//				context.Entry(a).State = EntityState.Modified;
+		//				await context.SaveChangesAsync();
+		//				context.Database.UseTransaction(null);
 
-						tran.Commit();
+		//				tran.Commit();
 						
-					}
-				}
-			}
-		}
+		//			}
+		//		}
+		//	}
+		//}
 		[Fact]
 		public void Test()
 		{

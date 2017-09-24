@@ -9,7 +9,7 @@ using SF.Entities;
 
 namespace SF.Core.ServiceManagement
 {
-	public static class DataEntityDICollectionExtension
+	public static class EntityDICollectionExtension
 	{
 		
 		static IEntityMetadata CreateMetadata(string Ident,Type ManagerType)

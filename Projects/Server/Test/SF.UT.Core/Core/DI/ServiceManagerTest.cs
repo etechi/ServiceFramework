@@ -70,7 +70,7 @@ namespace SF.UT
 			//var isc = sc.GetDIServiceCollection();
 			isc.AddManagedService();
 			isc.UseMemoryManagedServiceSource();
-			isc.AddSystemMemoryCache();
+			isc.AddMicrosoftMemoryCacheAsLocalCache();
 			isc.AddNewtonsoftJson();
 			var msc = isc.AddManagedService();
 			msc.AddScoped<IOperator, Add>();

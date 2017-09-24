@@ -11,7 +11,7 @@ namespace Hygou
     public class StaticRes
     {
         public static string File { get; } = "s0";
-        public static string Product { get; } = "p2";
+        public static string Product { get; } = "p0";
     }
 
 

@@ -78,36 +78,37 @@ namespace SF.Biz.Products
 					e.Items = Items;
 				});
 		}
-		//public static async Task ProductEnable(this IDIScope scope, int ProductId)
-		//{
-		//	var m = scope.Resolve<IProductManager>();
-		//	await m.SetObjectState(ProductId, LogicObjectState.Enabled);
-		//}
+		public static async Task ProductEnable(this IProductManager ProductManager, long ProductId)
+		{
+			await ProductManager.SetLogicState(ProductId, EntityLogicState.Enabled);
+		}
 
-		//public static async Task<ProductItemEditable> ProductItemEnsure<TProductItemManager>(
-		//	this TProductItemManager scope, 
-		//	int SellerId, 
-		//	int ProductId
-		//	) where TProductItemManager : IEntityIdentQueryable<long, ProductInternalQueryArgument>,
-		//					IEntityEditableLoader<long, ProductEditable>,
-		//					IEntityUpdator<long, ProductItemEditable>,
-		//					IEntityCreator<long, ProductEditable>
-		//{
-		//	var im = scope.Resolve<IItemManager>();
+		public static async Task<ItemEditable> ItemEnsure<TProductItemManager>(
+			this TProductItemManager Manager,
+			long SellerId,
+			long ProductId
+			) where TProductItemManager :
+				IEntityIdentQueryable<long, ItemQueryArgument>,
+				IEntityEditableLoader<long, ItemEditable>,
+				IEntityUpdator<long, ItemEditable>,
+				IEntityCreator<long, ItemEditable>
+		{
 
-		//	var ctx = scope.Resolve<IDataContext>();
-		//	var iid = await ctx.ReadOnly<CrowdMall.DataModels.ProductItem>()
-		//		.Where(i => i.ProductId == ProductId && i.SellerId == SellerId)
-		//		.Select(i => i.Id)
-		//		.FirstOrDefaultAsync();
-		//	if (iid == 0)
-		//		iid = await im.CreateAsync(new ProductItemEditable
-		//		{
-		//			ProductId = ProductId,
-		//			SellerId = SellerId,
-		//		});
-		//	return await im.LoadForEditAsync(iid);
-		//}
+			var re=await Manager.QueryIdentsAsync(new ItemQueryArgument
+			{
+				ProductId = ProductId,
+				SellerId = SellerId
+			}, Paging.Single
+			);
+			var id = re.Items.SingleOrDefault();
+			if (id== 0)
+				id = await Manager.CreateAsync(new ItemEditable
+				{
+					ProductId = ProductId,
+					SellerId = SellerId
+				});
+			return await Manager.LoadForEdit(id);
+		}
 		public static async Task<ProductEditable> ProductEnsure<TProductManager>(
 				  this TProductManager ProductManager,
 				  ProductEditable e

@@ -77,7 +77,7 @@ namespace SF.Entities
 						   from at in Link.ToEnumerable(declareType, t => t.BaseType)
 						   select at).Distinct();
 			var typeTrees = Tree.Build(allType, t => t.BaseType);
-			var typeNodeDict = typeTrees.AsEnumerable().ToDictionary(n => n.Item);
+			var typeNodeDict = typeTrees.AsEnumerable().ToDictionary(n => n.Value);
 			return (p, ot) =>
 			{
 				if (!typeNodeDict.TryGetValue(ot, out var n))
@@ -85,7 +85,7 @@ namespace SF.Entities
 				while(n.Count>0)
 				{
 					if(n.Count>1)
-						throw new ArgumentException($"{p.DeclaringType}属性{p.Name}的实体{ot}或子类{n.Item}有多个子类{n.Select(c=>c.Item).Join(",")}");
+						throw new ArgumentException($"{p.DeclaringType}属性{p.Name}的实体{ot}或子类{n.Value}有多个子类{n.Select(c=>c.Value).Join(",")}");
 					n = n[0];
 				}
 			};

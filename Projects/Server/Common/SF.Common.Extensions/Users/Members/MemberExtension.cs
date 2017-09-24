@@ -10,49 +10,54 @@ using System.Threading.Tasks;
 using SF.Auth.Identities.Models;
 using SF.Entities;
 using SF.Data;
+using SF.Core.ServiceManagement;
+using SF.Core;
 
 namespace SF.Users.Members
 {
 	public static class MemberExtension
 	{
-		public static  Task MemberEnsure(
-		   this IMemberManagementService ManagementService,
-		   string name,
-		   string nick,
-		   string phoneNumber,
-		   string password,
-		   string[] roles = null,
-		   bool phoneConfirmed = false,
-		   int? inviter = null,
-		   int? userSource = null
-		   )
+		public static async Task<MemberInternal> MemberEnsure(
+			this IMemberService Service,
+			IServiceProvider ServiceProvider,
+			string name,
+			string nick,
+			string phoneNumber,
+			string password,
+			string[] roles = null,
+			Dictionary<string, string> extArgs = null
+			)
+		{
+			var sid = ((IManagedServiceWithId)Service).ServiceInstanceId;
+			var ims = ServiceProvider.Resolve<IMemberManagementService>(null, sid);
+
+			if (roles != null && roles.Length > 0)
 			{
-			//var um = scope.Resolve<Bizness.Auth.UserManager>();
-			//var user = await um.FindByNameAsync(name);
-			//if (user != null)
-			//{
-			//	user.NickName = nick;
-			//	user.PhoneNumber = phoneNumber;
-			//	user.PhoneNumberConfirmed = phoneConfirmed;
-			//	await um.UpdateAsync(user);
-			//	return user;
-			//}
-			//user = new DataModels.User
-			//{
-			//	UserName = name,
-			//	NickName = nick,
-			//	PhoneNumber = phoneNumber,
-			//	PhoneNumberConfirmed = phoneConfirmed,
-			//	InviterUserId = inviter ?? 0,
-			//	SourceId = userSource,
-			//	Roles = (roles ?? Array.Empty<string>()).Select(r => new DataModels.UserRole { RoleId = r }).ToArray()
-			//};
-			//var re = await um.CreateAsync(user, password);
-			//if (!re.Succeeded)
-			//	throw new Exception(re.Errors.Join(";"));
-			//return user;
-			return null;
+				if (extArgs == null)
+					extArgs = new Dictionary<string, string>();
+				extArgs["roles"] = Json.Stringify(roles);
 			}
+
+			var sess = await Service.Signup(
+				new CreateMemberArgument
+				{
+					Credential = phoneNumber,					
+					ExtraArgument = extArgs.Count > 0 ? extArgs : null,
+					Identity = new Identity
+					{
+						Icon = null,
+						Name = nick
+					},
+					Password = password,
+					ReturnToken = true,
+				}
+				);
+
+			var identityService = ServiceProvider.Resolve<IIdentityService>();
+			var id=await identityService.ParseAccessToken(sess);
+			return await ims.GetAsync(id);
+
+		}
 	}
 
 }

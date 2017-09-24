@@ -12,7 +12,7 @@ namespace SF.Biz.Products
 		where TInternal : ProductInternal
 		where TEditable : ProductEditable
 	{
-		Task SetObjectState(long Id, EntityLogicState State);
+		Task SetLogicState(long Id, EntityLogicState State);
 
         Task<ProductSpec> GetSpec(long Id);
         Task<ProductSpec[]> ListSpec(long Id);

@@ -106,7 +106,7 @@ namespace SF.Users.Members.Entity
 				var sess=await IdentityService.Value.CreateIdentity(
 					new CreateIdentityArgument
 					{
-						CredentialProviderId= IdentityProvider.Id,
+						CredentialProviderId= IdentityProvider?.Id,
 						Credential = m.PhoneNumber,
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity

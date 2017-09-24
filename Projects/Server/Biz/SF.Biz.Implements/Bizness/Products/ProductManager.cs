@@ -337,7 +337,7 @@ namespace SF.Biz.Products.Entity
 		{
 			return Task.CompletedTask;
 		}
-		public virtual async Task SetObjectState(long Id, EntityLogicState State)
+		public virtual async Task SetLogicState(long Id, EntityLogicState State)
 		{
 			var e = await DataSet.FindAsync(Id);
 			var orgState = e.ObjectState;
@@ -417,12 +417,12 @@ namespace SF.Biz.Products.Entity
 			//if (args.ProductId != null)
 			//	return query.Where(q => q.Id == args.ProductId.Value);
 
-            query = query
-                .Filter(args.State, p => p.ObjectState)
-                .Filter(args.ProductTypeId, p => p.TypeId)
-                .Filter(args.UpdateTime, p => p.UpdatedTime)
-                .Filter(args.Price, p => p.Price)
-                .FilterContains(args.Name, p => p.Name);
+			query = query
+				.Filter(args.State, p => p.ObjectState)
+				.Filter(args.ProductTypeId, p => p.TypeId)
+				.Filter(args.UpdateTime, p => p.UpdatedTime)
+				.Filter(args.Price, p => p.Price)
+				.FilterContains(args.Name, p => p.Name);
 
 			return query;
 		}

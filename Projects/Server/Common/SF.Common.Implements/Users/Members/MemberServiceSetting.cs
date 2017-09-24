@@ -13,7 +13,6 @@ namespace SF.Users.Members
 {
 	public class MemberServiceSetting 
 	{
-		public Lazy<IIdentityService> IdentityService { get; set; }
 		public Lazy<IMemberManagementService> ManagementService { get; set; }
 		public Lazy<IIdentityCredentialProvider> SignupCredentialProvider { get; set; }
 

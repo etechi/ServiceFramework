@@ -6,6 +6,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Users.Members.Entity.DataModels
 {
+	public class Member: Member<Member> 
+	{
+
+	}
 	[Table("UserMember")]
 	public class Member<TMember> : ObjectEntityBase
 		where TMember: Member<TMember>

@@ -9,10 +9,16 @@ namespace SF.Biz.Products
 	public class ItemQueryArgument : IQueryArgument<long>
     {
 		public Option<long> Id { get; set; }
-        [Display(Name = "产品ID")]
-        public long? ProductId { get; set; }
 
-        [Display(Name = "产品标题")]
+        [Display(Name = "产品")]
+		[EntityIdent(typeof(ProductInternal))]
+		public long? ProductId { get; set; }
+
+		[Display(Name = "卖家")]
+		[EntityIdent(typeof(SF.Users.Members.Models.MemberInternal))]
+		public long? SellerId { get; set; }
+
+		[Display(Name = "产品标题")]
         public string Title { get; set; }
 
         [EntityIdent(typeof(CategoryInternal))]

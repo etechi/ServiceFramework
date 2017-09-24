@@ -237,6 +237,7 @@ namespace SF.Biz.Products
 		[EntityIdent(typeof(ProductType))]
 		public long? ProductTypeId{get;set;}
 
+
 		[Display(Name = "更新时间")]
 		public DateQueryRange UpdateTime { get; set; }
 

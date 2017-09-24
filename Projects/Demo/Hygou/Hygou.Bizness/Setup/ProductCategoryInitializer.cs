@@ -1,5 +1,7 @@
 ﻿using SF.Biz.Products;
+using SF.Core.ServiceManagement.Management;
 using SF.Entities;
+using SF.Services.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +19,13 @@ namespace Hygou.Setup
 		public CategoryInternal SpecialCategoryRoot { get; private set; }
 		public CategoryInternal TypedCategoryRoot { get; private set; }
 		public CategoryInternal[] TypedCategorys { get; private set; }
-
+		public long MainProductCategoryId { get; private set; }
 		public static async Task<ProductCategoryInitializer> Create(
+			IServiceInstanceManager ServiceInstanceManager,
 			ICategoryManager CategoryManager,
 			IItemManager ItemManager,
-			int sellerId,
+			long sellerId,
+			long? ScopeId,
 			ProductTypeInitializer types
 			)
 		{
@@ -131,17 +135,17 @@ namespace Hygou.Setup
             await setCatProduct("黄金", "黄金");
 
 
-            //         foreach (var type in ctypes)
-            //{
-            //	var ptype = types.Types.Where(t => t.Name == type.Name).Single();
-            //	var ids = await ctx.ReadOnly<DataModels.ProductItem>()
-            //		.Where(i => i.SourceItemId == null && i.Product.TypeId == ptype.Id)
-            //		.Select(i => i.Id).ToArrayAsync();
-            //	await scope.ProductCategorySetItems(type.Id, ids);
-            //}
+			//         foreach (var type in ctypes)
+			//{
+			//	var ptype = types.Types.Where(t => t.Name == type.Name).Single();
+			//	var ids = await ctx.ReadOnly<DataModels.ProductItem>()
+			//		.Where(i => i.SourceItemId == null && i.Product.TypeId == ptype.Id)
+			//		.Select(i => i.Id).ToArrayAsync();
+			//	await scope.ProductCategorySetItems(type.Id, ids);
+			//}
 
 
-   //         var pids100=await ctx.ReadOnly<DataModels.ProductItem>()
+			//         var pids100=await ctx.ReadOnly<DataModels.ProductItem>()
 			//	.Where(p => p.SourceItemId==null && p.Product.CFPriceUnitExpect == 100)
 			//	.Select(p => p.Id).ToArrayAsync();
 
@@ -154,55 +158,57 @@ namespace Hygou.Setup
 
 			//await scope.ProductCategorySetItems(c10.Id, pids10);
 
-            //var activityProducts = new[]
-            //{
-            //    "中国移动50元话费充值卡",
-            //    "中国移动100元话费充值卡",
-            //    "中国移动500元话费充值卡",
-            //    "中国电信500元话费充值卡",
-            //    "OPPO R9s 全网通4G+64GB 双卡双待手机 玫瑰金",
-            //    "华为P9 全网通 4GB+64GB版 玫瑰金 移动联通电信4G手机 双卡双待",
-            //    "iPhone 7 128GB 土豪金 移动联通电信4G手机",
-            //    "iPhone 7 128GB 玫瑰金 移动联通电信4G手机",
-            //    "凯迪拉克ATS-L 2016款 28T 精英型",
-            //    "奥迪A4L 2017款40TFSI 时尚型",
-            //    "奔驰C200 2016款C200L4MATIC 运动版",
-            //    "斯巴鲁  傲虎 2.5运动导航版"
-            //};
-
-            //var pidsRecharge = await ctx.ReadOnly<DataModels.ProductItem>()
-            //    .Where(p => activityProducts.Contains(p.Product.Title))
-            //    .Select(p=>new { name = p.Product.Title, id = p.Id })
-            //    .Take(12).ToDictionaryAsync(p => p.name, p => p.id);
-
-            //await scope.ProductCategorySetItems(recharge.Id, activityProducts.Select(p=>pidsRecharge.Get(p)).Where(i=>i>0).ToArray());
-
-            //var pids_limit = await ctx.ReadOnly<DataModels.ProductItem>()
-            //	.OrderByDescending(p=>p.Id)
-            //	.Take(100)
-            //	.Select(p => p.Id).ToArrayAsync();
-
-            //await scope.ProductCategorySetItems(climit.Id, pids_limit);
-
-
-            //var pids_newuser = await ctx.ReadOnly<DataModels.ProductItem>()
-            //	.OrderByDescending(p => p.Price)
-            //	.Take(100)
-            //	.Select(p => p.Id).ToArrayAsync();
-            //await scope.ProductCategorySetItems(cnew.Id, pids_newuser);
-
-
-   //         await scope.SettingEnsure<CrowdMallSetting>(setting =>
+			//var activityProducts = new[]
 			//{
-			//	setting.MainCategoryId = standard.Id;
-			//});
+			//    "中国移动50元话费充值卡",
+			//    "中国移动100元话费充值卡",
+			//    "中国移动500元话费充值卡",
+			//    "中国电信500元话费充值卡",
+			//    "OPPO R9s 全网通4G+64GB 双卡双待手机 玫瑰金",
+			//    "华为P9 全网通 4GB+64GB版 玫瑰金 移动联通电信4G手机 双卡双待",
+			//    "iPhone 7 128GB 土豪金 移动联通电信4G手机",
+			//    "iPhone 7 128GB 玫瑰金 移动联通电信4G手机",
+			//    "凯迪拉克ATS-L 2016款 28T 精英型",
+			//    "奥迪A4L 2017款40TFSI 时尚型",
+			//    "奔驰C200 2016款C200L4MATIC 运动版",
+			//    "斯巴鲁  傲虎 2.5运动导航版"
+			//};
 
+			//var pidsRecharge = await ctx.ReadOnly<DataModels.ProductItem>()
+			//    .Where(p => activityProducts.Contains(p.Product.Title))
+			//    .Select(p=>new { name = p.Product.Title, id = p.Id })
+			//    .Take(12).ToDictionaryAsync(p => p.name, p => p.id);
+
+			//await scope.ProductCategorySetItems(recharge.Id, activityProducts.Select(p=>pidsRecharge.Get(p)).Where(i=>i>0).ToArray());
+
+			//var pids_limit = await ctx.ReadOnly<DataModels.ProductItem>()
+			//	.OrderByDescending(p=>p.Id)
+			//	.Take(100)
+			//	.Select(p => p.Id).ToArrayAsync();
+
+			//await scope.ProductCategorySetItems(climit.Id, pids_limit);
+
+
+			//var pids_newuser = await ctx.ReadOnly<DataModels.ProductItem>()
+			//	.OrderByDescending(p => p.Price)
+			//	.Take(100)
+			//	.Select(p => p.Id).ToArrayAsync();
+			//await scope.ProductCategorySetItems(cnew.Id, pids_newuser);
+
+
+			await ServiceInstanceManager.UpdateSetting<HygouSetting>(
+			   ScopeId,
+			   s =>
+			   {
+				   s.MainProductCategoryId = standard.Id;
+			   });
 			return new ProductCategoryInitializer
 			{
 				//C10 = c10,
 				//C100 = c100,
 				//Limit = climit,
 				//NewUser = cnew,
+				MainProductCategoryId= standard.Id,
 				SpecialCategoryRoot =special,
 				TypedCategoryRoot= standard,
 				TypedCategorys=ctypes
