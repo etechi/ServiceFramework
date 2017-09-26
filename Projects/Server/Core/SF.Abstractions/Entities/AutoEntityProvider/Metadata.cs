@@ -1,19 +1,8 @@
 using System;
-using System.Reflection;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SF.Data;
-using Xunit;
-using SF.Applications;
-using SF.Core.Hosting;
-using SF.Core.ServiceManagement;
-using SF.Core.ServiceFeatures;
-using System.Threading.Tasks;
-
-namespace SF.Entities.Smart
+namespace SF.Entities.AutoEntityProvider
 {
 	public interface IAttribute
 	{
@@ -33,6 +22,7 @@ namespace SF.Entities.Smart
 	}
 	public interface IProperty : IMetaItem
 	{
+
 		IType Type { get; }
 		PropertyMode Mode{ get; }
 	}
@@ -62,16 +52,17 @@ namespace SF.Entities.Smart
 	public interface IValueType : IType
 	{
 		IValueTypeProvider Provider { get; }
+		Type SysType { get; }
 	}
 	
 	public interface IEntityType : IType
 	{
-		IEntityType BaseType { get; }
+		string FullName { get; }
+
 		IReadOnlyList<IProperty> Properties { get; }
 	}
 	public interface IMetadataCollection 
 	{
-		IReadOnlyList<IEntityType> Entities { get; }
-		IReadOnlyDictionary<string, IType> Types { get; }
+		IReadOnlyDictionary<string, IEntityType> EntityTypes { get; }
 	}
 }

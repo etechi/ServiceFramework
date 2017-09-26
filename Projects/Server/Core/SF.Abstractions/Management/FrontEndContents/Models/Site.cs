@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SF.Management.FrontEndContents
 {
-	[EntityObject("界面站点")]
+	[EntityObject]
     public class Site : IEntityWithId<string>
 	{
 		[Key]

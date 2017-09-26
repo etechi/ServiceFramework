@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Users.Members.Models
 {
-	[EntityObject("会员")]
+	[EntityObject("Member")]
 	public class MemberDesc : IEntityWithId<long>
 	{
 		[Comment("ID")]

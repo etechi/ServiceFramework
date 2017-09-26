@@ -10,19 +10,19 @@ using System.Threading.Tasks;
 
 namespace SF.Common.Documents.Management
 {
-	[EntityObject("文档目录")]
+	[EntityObject("Category")]
 	public class CategoryInternal : UITreeContainerEntityBase<CategoryInternal,DocumentInternal>
 	{
 		[EntityIdent(typeof(Category), nameof(ContainerName), IsTreeParentId = true)]
 		[Comment("父分类")]
 		[Layout(1, 2)]
-		public override long? ContainerId { get => base.ContainerId; set => base.ContainerId = value; }
+		public override long? ContainerId { get; set; }
 
 		[Comment(Name = "父分类")]
-		public override string ContainerName { get => base.ContainerName; set => base.ContainerName = value; }
+		public override string ContainerName { get; set; }
 	}
 
-	[EntityObject("文档")]
+	[EntityObject("Document")]
 	public class DocumentBase : UIItemEntityBase<CategoryInternal>
 	{
 

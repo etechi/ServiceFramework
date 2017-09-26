@@ -7,10 +7,10 @@ namespace SF.Metadata
 	[AttributeUsage(AttributeTargets.Class)]
 	public class EntityObjectAttribute : Attribute
 	{
-		public string Entity { get; }
-		public EntityObjectAttribute(string Entity)
+		public string Id { get; }
+		public EntityObjectAttribute(string Id=null)
 		{
-			this.Entity = Entity;
+			this.Id = Id;
 		}
 	}
 

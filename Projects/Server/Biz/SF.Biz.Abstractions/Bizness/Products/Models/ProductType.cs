@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Biz.Products
 {
-	[EntityObject("产品类型")]
+	[EntityObject]
     public class ProductType :
 		IEntityWithId<long>
 	{

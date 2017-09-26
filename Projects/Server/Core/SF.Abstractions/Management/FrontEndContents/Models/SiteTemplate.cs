@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SF.Management.FrontEndContents
 {
-	[EntityObject("界面站点模板")]
+	[EntityObject]
     public class SiteTemplate:IEntityWithId<long>
     {
 		[Key]

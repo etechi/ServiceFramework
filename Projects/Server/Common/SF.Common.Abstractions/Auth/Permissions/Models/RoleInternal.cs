@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Auth.Permissions.Models
 {
 
-	[EntityObject("用户角色")]
+	[EntityObject("Role")]
     public class RoleInternal : ObjectEntityBase<string>
     {
         [Comment(Name="Id",Description ="角色创建以后，ID不能再修改")]

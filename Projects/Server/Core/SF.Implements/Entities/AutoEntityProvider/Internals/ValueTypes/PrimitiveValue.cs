@@ -1,20 +1,8 @@
 using System;
-using System.Reflection;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SF.Data;
-using Xunit;
-using SF.Applications;
-using SF.Core.Hosting;
-using SF.Core.ServiceManagement;
-using SF.Core.ServiceFeatures;
-using System.Threading.Tasks;
-using System.Linq;
-
-namespace SF.Entities.Smart.Internals.ValueTypes
+namespace SF.Entities.AutoEntityProvider.Internals.ValueTypes
 {
 	public class PrimitiveType : IValueType
 	{
@@ -32,6 +20,10 @@ namespace SF.Entities.Smart.Internals.ValueTypes
 		public string Name => ModelType.FullName;
 
 		public IReadOnlyList<IAttribute> Attributes => Array.Empty<IAttribute>();
+
+		public IValueTypeProvider Provider => throw new NotImplementedException();
+
+		public Type SysType => throw new NotImplementedException();
 
 		public Expression DataValueToTempValue(Expression DataValue)
 		{

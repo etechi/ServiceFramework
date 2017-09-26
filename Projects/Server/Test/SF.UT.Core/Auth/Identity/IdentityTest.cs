@@ -108,7 +108,7 @@ namespace SF.UT.Auth
 										  OldPassword = re.password
 									  });
 							  await svc.Signout();
-							  Assert.Equal(null, await svc.GetCurIdentityId());
+							  Assert.False((await svc.GetCurIdentityId()).HasValue);
 							  return (identity: re.identity, account: re.account, password: re.password, newPassword: newPassword);
 						  });
 						  await Scope(async (IServiceProvider sp) =>

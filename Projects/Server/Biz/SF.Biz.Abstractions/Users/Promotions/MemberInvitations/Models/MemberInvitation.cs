@@ -7,8 +7,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Users.Promotions.MemberInvitations.Models
 {
-	[EntityObject("会员邀请")]
-	public class MemberInvitations : ObjectEntityBase
+	[EntityObject]
+	public class MemberInvitation : ObjectEntityBase
 	{
 
 	}

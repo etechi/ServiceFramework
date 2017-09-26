@@ -48,6 +48,7 @@ namespace SF.Data.Models
 		[Ignore]
 		[Comment("容器")]
 		public virtual TContainer Container { get; set; }
+
 		[Comment("排位")]
 		[TableVisible]
 		[Optional]

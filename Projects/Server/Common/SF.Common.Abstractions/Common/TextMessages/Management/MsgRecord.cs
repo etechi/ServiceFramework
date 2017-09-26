@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SF.Common.TextMessages.Management
 {
-	[EntityObject("文本消息记录")]
+	[EntityObject]
 	public class MsgRecord : EventEntityBase
 	{
 

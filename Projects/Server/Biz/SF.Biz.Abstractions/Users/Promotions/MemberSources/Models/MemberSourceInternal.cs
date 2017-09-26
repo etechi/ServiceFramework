@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Users.Promotions.MemberSources.Models
 {
-	[EntityObject("会员渠道")]
+	[EntityObject("MemberSource")]
 	public class MemberSourceInternal : ObjectEntityBase
 	{
 

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Core.ServiceManagement.Models
 {
-	[EntityObject("系统服务实现")]
+	[EntityObject]
 	public class ServiceImplement: IEntityWithId<string>
 	{
 		[Key]

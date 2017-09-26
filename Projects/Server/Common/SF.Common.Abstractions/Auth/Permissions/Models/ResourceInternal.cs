@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace SF.Auth.Permissions.Models
 {
 
-    [EntityObject("用户授权资源")]
+    [EntityObject("Resource")]
     public class ResourceInternal : ObjectEntityBase<string>
     {
         [Display(Name = "资源分组")]

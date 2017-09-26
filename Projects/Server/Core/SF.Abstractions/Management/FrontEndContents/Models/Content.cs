@@ -82,7 +82,7 @@ namespace SF.Management.FrontEndContents
 		[TreeNodes]
 		public ContentItem[] Items { get; set; }
 	}
-    [EntityObject("界面内容")]
+    [EntityObject]
     public class Content:ContentItem, IContent,IEntityWithId<long>
 	{
 		[Key]

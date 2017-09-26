@@ -22,8 +22,6 @@ namespace SF.UT
 			return Core2App.Setup(envType).
 				With(sc =>
 				{
-					
-
 					sc.AddConsoleDefaultFilePathStructure();
 					sc.AddSingleton(new Moq.Mock<IInvokeContext>().Object);
 					sc.AddSingleton(new Moq.Mock<IUploadedFileCollection>().Object);

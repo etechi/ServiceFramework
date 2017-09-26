@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Core.ServiceManagement.Models
 {
-	[EntityObject("系统服务实例")]
+	[EntityObject]
 	public class ServiceInstance : 
 		SF.Data.Models.UIObjectEntityBase<long>
 	{

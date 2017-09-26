@@ -39,7 +39,7 @@ namespace SF.Core.ServiceManagement
 			Services.AddIdentGenerator();
 
 			Services.AddDefaultKBServices();
-
+			Services.AddSettingService();
 			Services.AddFrontEndServices();
 
 			Services.InitServices("系统服务", async (sp, sim, ParentId) =>

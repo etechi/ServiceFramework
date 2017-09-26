@@ -23,7 +23,7 @@ namespace SF.Core.ServiceManagement
 
 	public static class SettingDIServiceCollectionExtension
 	{
-		public static IServiceCollection AddMediaService(
+		public static IServiceCollection AddSettingService(
 			this IServiceCollection sc
 			)
 		{

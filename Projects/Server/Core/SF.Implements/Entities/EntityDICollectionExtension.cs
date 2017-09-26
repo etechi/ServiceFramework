@@ -101,7 +101,7 @@ namespace SF.Core.ServiceManagement
 		{
 			sc.AddSingleton<IMetadataAttributeValuesProvider<EntityIdentAttribute>, EntityIdentAttributeMetadataValuesProvider>();
 			sc.AddSingleton<IMetadataAttributeValuesProvider<EntityManagerAttribute>, EntityManagerAttributeMetadataValuesProvider>();
-			sc.AddSingleton(sp =>
+			sc.AddSingleton<IEntityMetadataCollection>(sp =>
 			{
 				var svcResolver = sp.Resolve<IServiceDeclarationTypeResolver>();
 				return new EntityMetadataCollection(

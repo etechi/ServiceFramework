@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace SF.Auth.Permissions.Models
 {
    
-    [EntityObject("资源授权")]
+    [EntityObject("ResourceGrant")]
     public class ResourceGrantInternal : IEntityWithId<string>
 	{
 		[Comment(Name = "资源ID")]

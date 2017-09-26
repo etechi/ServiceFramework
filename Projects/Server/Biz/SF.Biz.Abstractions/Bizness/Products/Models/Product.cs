@@ -60,7 +60,7 @@ namespace SF.Biz.Products
 		[Layout(2)]
 		public IEnumerable<ProductDescItem> Descs { get; set; }
 	}
-    [EntityObject("产品规格")]
+    [EntityObject]
     public class ProductSpec : IEntityWithId<long>
     {
         [Key]
@@ -110,7 +110,7 @@ namespace SF.Biz.Products
         public DateTime UpdatedTime { get; set; }
 
     }
-    [EntityObject("产品")]
+    [EntityObject("Product")]
     public class ProductBase :
 		IEntityWithId<long>
 	{

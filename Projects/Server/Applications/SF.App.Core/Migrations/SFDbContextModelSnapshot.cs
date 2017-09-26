@@ -29,10 +29,6 @@ namespace SF.App.Core.Migrations
 
                     b.Property<DateTime>("CreatedTime");
 
-                    b.Property<string>("Entity")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
                     b.Property<string>("Icon")
                         .HasMaxLength(100);
 
@@ -41,6 +37,10 @@ namespace SF.App.Core.Migrations
                         .HasMaxLength(100);
 
                     b.Property<byte>("ObjectState");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasMaxLength(100);
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -51,6 +51,9 @@ namespace SF.App.Core.Migrations
                     b.Property<string>("SecurityStamp")
                         .IsRequired()
                         .HasMaxLength(100);
+
+                    b.Property<string>("SignupExtraArgument")
+                        .HasMaxLength(200);
 
                     b.Property<long>("SignupIdentProviderId");
 
@@ -64,7 +67,7 @@ namespace SF.App.Core.Migrations
 
                     b.HasIndex("CreatedTime");
 
-                    b.HasIndex("Entity");
+                    b.HasIndex("OwnerId");
 
                     b.HasIndex("ScopeId");
 

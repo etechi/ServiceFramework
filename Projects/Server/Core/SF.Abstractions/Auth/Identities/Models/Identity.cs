@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Auth.Identities.Models
 {
-	[EntityObject("身份标识")]
+	[EntityObject]
 	[Comment("身份标识")]
 	public class Identity : IEntityWithId<long>
     {
