@@ -48,10 +48,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				new AssemblyName("SFAutoEntityProviderDynamicClass"), 
 				AssemblyBuilderAccess.Run
 				);
+		static ModuleBuilder ModuleBuilder { get; } = AssemblyBuilder.DefineDynamicModule(new Guid().ToString("N"));
 
-		Dictionary<string, TypeBuilder> TypeBuilders = new Dictionary<string, TypeBuilder>();
+		Dictionary<string, Type> TypeBuilders = new Dictionary<string, Type>();
 		Dictionary<MemberInfo, List<SystemAttributeBuilder>> MemberAttributes { get; } = new Dictionary<MemberInfo, List<SystemAttributeBuilder>>();
-		ModuleBuilder ModuleBuilder { get; } = AssemblyBuilder.DefineDynamicModule(new Guid().ToString("N"));
 		NamedServiceResolver<IDataModelAttributeGenerator> DataModelAttributeGeneratorResolver { get; }
 
 		public DataModelTypeBuilder(
@@ -293,10 +293,26 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		{
 			//throw new ArgumentException(metas.ToString());
 
+			var ExistTypes = new HashSet<string>();
 			foreach (var et in metas.EntityTypes)
-				TypeBuilders.Add(et.Key, ModuleBuilder.DefineType(et.Key, TypeAttributes.Public, typeof(BaseDataModel)));
+			{
+				var type = ModuleBuilder.GetType(et.Key);
+				if (type != null)
+				{
+					ExistTypes.Add(et.Key);
+					TypeBuilders.Add(et.Key, type);
+				}
+				else
+					TypeBuilders.Add(et.Key, ModuleBuilder.DefineType(et.Key, TypeAttributes.Public, typeof(BaseDataModel)));
+			}
 
-			return metas.EntityTypes.Values.Select(et => BuildType(TypeBuilders[et.FullName], et)).ToArray();
+			return metas.EntityTypes.Values
+				.Select(et =>
+					ExistTypes.Contains(et.FullName)? 
+						TypeBuilders[et.FullName]:
+						BuildType((TypeBuilder)TypeBuilders[et.FullName], et)
+				)
+				.ToArray();
 			
 		}
 	}
