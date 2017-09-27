@@ -64,5 +64,6 @@ namespace SF.Entities.AutoEntityProvider
 	public interface IMetadataCollection 
 	{
 		IReadOnlyDictionary<string, IEntityType> EntityTypes { get; }
+		IReadOnlyDictionary<Type,IEntityType> EntityTypesByType { get; }
 	}
 }

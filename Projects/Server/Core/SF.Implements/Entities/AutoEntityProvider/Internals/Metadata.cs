@@ -67,15 +67,16 @@ namespace SF.Entities.AutoEntityProvider.Internals
 	}
 	public class MetadataCollection : IMetadataCollection
 	{
-		IReadOnlyDictionary<string, EntityType> EntityTypes { get; }
 
-		IReadOnlyDictionary<string, IEntityType> InterfaceEntityTypes { get; }
+		public IReadOnlyDictionary<string, IEntityType> EntityTypes { get; }
+		public IReadOnlyDictionary<Type, IEntityType> EntityTypesByType { get; }
 
-		IReadOnlyDictionary<string, IEntityType> IMetadataCollection.EntityTypes => InterfaceEntityTypes;
-		public MetadataCollection( IReadOnlyDictionary<string, EntityType> EntityTypes)
+
+
+		public MetadataCollection( IReadOnlyDictionary<string, EntityType> EntityTypes,IReadOnlyDictionary<Type,EntityType> TypedEntities)
 		{
-			this.EntityTypes = EntityTypes;
-			InterfaceEntityTypes = EntityTypes.ToDictionary(p=>p.Key,p=>p.Value as IEntityType);
+			this.EntityTypes = EntityTypes.ToDictionary(p=>p.Key,p=>p.Value as IEntityType);
+			this.EntityTypesByType = TypedEntities.ToDictionary(p => p.Key, p => p.Value as IEntityType);
 		}
 	}
 }

@@ -4,8 +4,10 @@ using SF.Core.CallPlans;
 using SF.Core.Times;
 using SF.Data;
 using SF.Entities;
+using SF.Entities.AutoEntityProvider;
 using SF.Users.Members.Models;
 using SF.Users.Promotions.MemberInvitations.Entity.DataModels;
+using SF.Users.Promotions.MemberInvitations.Models;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
@@ -13,51 +15,12 @@ using System.Threading.Tasks;
 
 namespace SF.Users.Promotions.MemberInvitations.Entity
 {
-	public class EntityMemberInvitationManagementService<TMemberInvitation> :
-		EntityManager<long, Models.MemberInvitationInternal, MemberInvitationQueryArgument, Models.MemberInvitationInternal, TMemberInvitation>,
+	public class EntityMemberInvitationManagementService :
+		AutoEntityManager<long, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationQueryArgument>,
 		IMemberInvitationManagementService
-		where TMemberInvitation : MemberInvatation<TMemberInvitation>, new()
 	{
-		public EntityMemberInvitationManagementService(
-			IDataSetEntityManager<TMemberInvitation> Manager
-			) : base(Manager)
+		public EntityMemberInvitationManagementService(IDataSetAutoEntityProvider<long, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationQueryArgument> AutoEntityProvider) : base(AutoEntityProvider)
 		{
-			//CallPlanProvider.DelayCall(
-			//	typeof(IMemberManagementService).FullName + "-" + Manager.ServiceInstanceDescroptor.InstanceId,
-			//	"0",
-			//	null,
-			//	null,
-			//	""
-			//	);
-		}
-
-		protected override PagingQueryBuilder<TMemberInvitation> PagingQueryBuilder =>
-			PagingQueryBuilder<TMemberInvitation>.Simple("time", b => b.CreatedTime, true);
-
-		protected override IContextQueryable<TMemberInvitation> OnBuildQuery(IContextQueryable<TMemberInvitation> Query, MemberInvitationQueryArgument Arg, Paging paging)
-		{
-			var q = Query.Filter(Arg.Id, r => r.Id)
-				.FilterContains(Arg.Name, r => r.Name)
-				;
-			return q;
-		}
-		
-		protected override async Task OnNewModel(IModifyContext ctx)
-		{
-			var m = ctx.Model;
-			m.Id = await IdentGenerator.GenerateAsync("会员邀请",0);
-			m.CreatedTime = Now;
-			await base.OnNewModel(ctx);
-		}
-		protected override Task OnUpdateModel(IModifyContext ctx)
-		{
-			var e = ctx.Editable;
-			var m = ctx.Model;
-
-			UIEnsure.HasContent(e.Name, "请输入会员邀请");
-			m.Update(e, Now);
-
-			return Task.CompletedTask;
 		}
 	}
 

@@ -149,7 +149,7 @@ namespace SF.Data.EntityFrameworkCore
 			((IDbContextOptionsBuilderInfrastructure)Builder).AddOrUpdateExtension(
 				new DataModalLoaderExtension(
 					(
-					from ems in sp.GetService<IEnumerable<SF.Data.EntityModels>>()
+					from ems in sp.GetService<IEnumerable<SF.Data.EntityDataModels>>()
 					from et in ems.Types
 					select new EntityItem { Prefix = ems.Prefix, Type = et }
 					).ToArray()

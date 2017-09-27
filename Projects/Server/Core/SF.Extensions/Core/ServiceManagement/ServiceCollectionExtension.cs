@@ -114,6 +114,9 @@ namespace SF.Core.ServiceManagement
 			sc.Add(new ServiceDescriptor(ServiceType,ImplementCreator, Lifetime,Name));
 			return sc;
 		}
+		public static IServiceCollection AddSingleton<TService>(this IServiceCollection sc, string Name = null)
+			=> sc.AddSingleton<TService, TService>(Name);
+
 		public static IServiceCollection AddSingleton<TService, TImplement>(this IServiceCollection sc,string Name=null)
 			where TImplement : TService
 		{
@@ -216,6 +219,11 @@ namespace SF.Core.ServiceManagement
 			where TImplement:TService
 		{
 			sc.Add(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped,Name);
+			return sc;
+		}
+		public static IServiceCollection AddScoped(this IServiceCollection sc, Type Service, System.Reflection.MethodInfo Method)
+		{
+			sc.Add(Service, Method, ServiceImplementLifetime.Scoped);
 			return sc;
 		}
 		public static IServiceCollection AddScoped<TService>(this IServiceCollection sc,string Name=null)

@@ -7,11 +7,15 @@ using SF.Core.ServiceManagement;
 
 namespace SF.Data
 {
-	public class EntityModels
+	public interface IEntityDataModelSource
+	{
+		EntityDataModels DataModels { get; }
+	}
+	public class EntityDataModels
 	{
 		public string Prefix { get; }
 		public Type[] Types { get; }
-		public EntityModels(Type[] Types,string Prefix)
+		public EntityDataModels(Type[] Types,string Prefix)
 		{
 			this.Types = Types;
 			this.Prefix = Prefix; 

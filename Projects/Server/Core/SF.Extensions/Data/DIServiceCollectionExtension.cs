@@ -10,7 +10,7 @@ namespace SF.Core.ServiceManagement
 	{
 		public static void AddDataModules(this IServiceCollection sc,string Prefix,params Type[] Types)
 		{
-			sc.AddSingleton(new Data.EntityModels(Types, Prefix));
+			sc.AddSingleton(new Data.EntityDataModels(Types, Prefix));
 		}
 		public static void AddDataModules<T1>(this IServiceCollection sc,string Prefix=null) 
 			where T1 : class 

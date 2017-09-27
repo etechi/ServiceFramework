@@ -16,13 +16,16 @@ namespace SF.Entities.AutoEntityProvider.Internals
 	{
 		CustomAttributeBuilder Generate(IAttribute Attr);
 	}
-	
+	public class BaseDataModel
+	{
+
+	}
 	public class DataModelTypeBuilder
 	{
 		IMetadataCollection metas { get; }
 		
 		static AssemblyBuilder AssemblyBuilder { get; }= 
-			System.Reflection.Emit.AssemblyBuilder.DefineDynamicAssembly(
+			AssemblyBuilder.DefineDynamicAssembly(
 				new AssemblyName("SFAutoEntityProviderDynamicClass"), 
 				AssemblyBuilderAccess.Run
 				);
@@ -51,16 +54,39 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					)
 				);
 		}
-	
 
+		PropertyBuilder BuildProperty(TypeBuilder typeBuilder, string name, Type type)
+		{
+			var field = typeBuilder.DefineField("_" + name, type, FieldAttributes.Private);
+			var propertyBuilder = typeBuilder.DefineProperty(name, PropertyAttributes.None, type, null);
+
+			var getSetAttr = MethodAttributes.Public |
+							MethodAttributes.HideBySig | 
+							MethodAttributes.SpecialName | 
+							MethodAttributes.Virtual;
+
+			var getter = typeBuilder.DefineMethod("get_" + name, getSetAttr, type, Type.EmptyTypes);
+			var getIL = getter.GetILGenerator();
+			getIL.Emit(OpCodes.Ldarg_0);
+			getIL.Emit(OpCodes.Ldfld, field);
+			getIL.Emit(OpCodes.Ret);
+
+			var setter = typeBuilder.DefineMethod("set_" + name, getSetAttr, null, new Type[] { type });
+
+			var setIL = setter.GetILGenerator();
+			setIL.Emit(OpCodes.Ldarg_0);
+			setIL.Emit(OpCodes.Ldarg_1);
+			setIL.Emit(OpCodes.Stfld, field);
+			setIL.Emit(OpCodes.Ret);
+
+			propertyBuilder.SetGetMethod(getter);
+			propertyBuilder.SetSetMethod(setter);
+			return propertyBuilder;
+		}
 		PropertyBuilder DefineProperty(TypeBuilder typeBuilder, string Name,IEnumerable<IAttribute> Attributes, Type type)
 		{
-			var pb = typeBuilder.DefineProperty(
-				Name,
-				PropertyAttributes.HasDefault,
-				type,
-				Array.Empty<Type>()
-				);
+			var pb = BuildProperty(typeBuilder, Name, type);
+
 			if(Attributes!=null)
 				foreach (var a in Attributes)
 				{
@@ -167,6 +193,21 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 		Type BuildType(TypeBuilder typeBuilder,IEntityType type)
 		{
+			var keys = type.Properties.Where(p => p.Attributes.Any(a => a.Name == typeof(KeyAttribute).FullName)).ToArray();
+			if (keys.Length == 0)
+				throw new ArgumentException($"实体{type.FullName}未定义主键");
+			else
+			{
+				var nks = keys.Where(k => !(k.Type is IValueType)).ToArray();
+				if(nks.Length>0)
+					throw new ArgumentException($"实体{type.FullName}的主键字段不为原子类型{nks.Select(n=>n.Name+":"+n.Type.Name).Join(",")}");
+				if (keys.Length == 1)
+				{
+					typeBuilder.AddInterfaceImplementation(
+						typeof(IEntityWithId<>).MakeGenericType(((IValueType)keys[0].Type).SysType)
+					);
+				}
+			}
 			foreach (var a in type.Attributes)
 			{
 				var g = DataModelAttributeGeneratorResolver(a.Name);
@@ -195,7 +236,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		public Type[] Build()
 		{
 			foreach (var et in metas.EntityTypes)
-				TypeBuilders.Add(et.Key, ModuleBuilder.DefineType(et.Key, TypeAttributes.Public));
+				TypeBuilders.Add(et.Key, ModuleBuilder.DefineType(et.Key, TypeAttributes.Public, typeof(BaseDataModel)));
 
 			return metas.EntityTypes.Values.Select(et => BuildType(TypeBuilders[et.FullName], et)).ToArray();
 			

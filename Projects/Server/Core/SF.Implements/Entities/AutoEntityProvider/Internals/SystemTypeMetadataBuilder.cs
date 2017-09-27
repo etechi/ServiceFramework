@@ -7,7 +7,7 @@ using SF.Metadata;
 
 namespace SF.Entities.AutoEntityProvider.Internals
 {
-	
+
 	/*
 	 * 将所有类型根据实体分类
 	 * 按实体分析所有相关类型的属性
@@ -75,9 +75,12 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				attrs
 				);
 		}
-		public SystemTypeMetadataBuilder(IEnumerable<(string ns, Type type)> EntityTypes, IValueTypeResolver ValueTypeResolver)
+		public SystemTypeMetadataBuilder(
+			IEnumerable<AutoEntityType> EntityTypes, 
+			IValueTypeResolver ValueTypeResolver
+			)
 		{
-			this.EntitySysTypes = EntityTypes.ToDictionary(p => p.type);
+			this.EntitySysTypes = EntityTypes.ToDictionary(p => p.Type,p=>(p.Namespace,p.Type));
 			this.ValueTypeResolver = ValueTypeResolver;
 		}
 		
@@ -123,6 +126,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					 select BuildProperty(e.id,g.Select(i=>i.prop).ToArray())
 					).ToArray();
 
+
 			//entities.ForEach(e =>
 			//	Types.Add(
 			//		e.Key,
@@ -156,7 +160,14 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			//	var et = (EntityType)Types[t];
 			//	et.Properties = t.AllPublicInstanceProperties().Select(BuildProperty).ToArray();
 			//}
-			return new MetadataCollection(IdToEntityTypes);
+			return new MetadataCollection(
+				IdToEntityTypes,
+				(from e in entities
+				from t in e.types
+				let ex= IdToEntityTypes[e.id]
+				 select (t,ex))
+				.ToDictionary(p=>p.t,p=>p.ex)
+				);
 		}
 	}
 }
