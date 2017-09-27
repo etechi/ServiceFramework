@@ -20,6 +20,7 @@ namespace SF.Data
 			using(var scope =await ScopeManager.CreateScope(Message,Mode,IsolationLevel))
 			{
 				var re=await Callback(scope);
+				await scope.Commit();
 				return re;
 			}
 		}
@@ -34,6 +35,7 @@ namespace SF.Data
 			using (var scope = await ScopeManager.CreateScope(Message, Mode, IsolationLevel))
 			{
 				await Callback(scope);
+				await scope.Commit();
 			}
 		}
 	}

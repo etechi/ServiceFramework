@@ -44,7 +44,12 @@ namespace SF.Data
 				var provider = Context.Provider;
 				var orgTran = provider.Transaction;
 				if (orgTran == tran)
-					return await Action(tran);
+				{
+					var re = await Action(tran);
+					await ts.Commit();
+					return re;
+				}
+
 				provider.Transaction = tran;
 				try
 				{

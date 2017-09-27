@@ -652,8 +652,6 @@ namespace SF.Entities
 					if (Condition != null)
 						q = q.Where(Condition);
 					var ids = await q.Select(i => i.Id).Take(BatchCount).ToArrayAsync();
-					if (ids.Length == 0)
-						break;
 					foreach (var id in ids)
 						await Remove(id);
 					await scope.Commit();
