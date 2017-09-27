@@ -7,12 +7,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Entities.AutoEntityProvider.Internals.DataModelAttributeGenerators
 {
-	public class KeyAttributeGenerator : IDataModelAttributeGenerator
+	public class RequiredAttributeGenerator : IDataModelAttributeGenerator
 	{
 		public SystemAttributeBuilder Generate(IAttribute Attr)
 		{
 			return new SystemAttributeBuilder(
-				typeof(KeyAttribute).GetConstructor(Array.Empty<Type>())
+				typeof(RequiredAttribute).GetConstructor(Array.Empty<Type>()),
+				Array.Empty<object>()
 				);
 		}
 	}

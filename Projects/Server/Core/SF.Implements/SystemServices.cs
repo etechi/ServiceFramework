@@ -27,7 +27,7 @@ namespace SF.Core.ServiceManagement
 			Services.AddLocalFileCache();
 
 			Services.AddDefaultSecurityServices();
-
+			Services.AddAutoEntityService();
 			Services.AddEventServices();
 
 			Services.AddCallPlans();

@@ -4,18 +4,14 @@ using System.Collections.Generic;
 
 namespace SF.Entities.AutoEntityProvider.Internals.ValueTypes
 {
-	public class PrimitiveType : IValueType
+	public class PrimitiveValueType<T> : IValueType
 	{
-		public PrimitiveType(Type Type)
-		{
-			ModelType = Type;
-		}
 
 		public Type DataType => ModelType;
 
 		public Type TempType => ModelType;
 
-		public Type ModelType { get; }
+		public Type ModelType { get; } = typeof(T);
 
 		public string Name => ModelType.FullName;
 
@@ -23,7 +19,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.ValueTypes
 
 		public IValueTypeProvider Provider => throw new NotImplementedException();
 
-		public Type SysType => throw new NotImplementedException();
+		public Type SysType => ModelType;
 
 		public Expression DataValueToTempValue(Expression DataValue)
 		{

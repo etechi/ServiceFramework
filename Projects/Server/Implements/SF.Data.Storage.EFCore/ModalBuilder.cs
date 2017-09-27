@@ -144,12 +144,16 @@ namespace SF.Data.EntityFrameworkCore
 	{
 		public static DbContextOptionsBuilder LoadDataModels(this DbContextOptionsBuilder Builder,IServiceProvider sp)
 		{
-			Builder.ReplaceService<IModelCustomizer, DataModelCustomizer>();
 
+			//System.Diagnostics.Debugger.Launch();
+			Builder.ReplaceService<IModelCustomizer, DataModelCustomizer>();
+			var models = sp.GetService<IEnumerable<IEntityDataModelSource>>().Select(ms => ms.DataModels)
+							.Concat(sp.GetService<IEnumerable<SF.Data.EntityDataModels>>())
+							.ToArray();
 			((IDbContextOptionsBuilderInfrastructure)Builder).AddOrUpdateExtension(
 				new DataModalLoaderExtension(
 					(
-					from ems in sp.GetService<IEnumerable<SF.Data.EntityDataModels>>()
+					from ems in models
 					from et in ems.Types
 					select new EntityItem { Prefix = ems.Prefix, Type = et }
 					).ToArray()

@@ -13,17 +13,23 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			this.Name = Name;
 			this.Values = Values;
 		}
+		public override string ToString()
+		{
+			return Name + "(" + Values?.Select(p => p.Key + "=" + p.Value).Join(";") + ")";
+		}
 	}
 	public abstract class EntityMetaItem:IMetaItem
 	{
 		public string Name { get; }
-		IReadOnlyList<EntityAttribute> Attributes { get; }
+		public IReadOnlyList<EntityAttribute> Attributes { get; }
 		IReadOnlyList<IAttribute> IMetaItem.Attributes => Attributes;
 		public EntityMetaItem(string Name, IReadOnlyList<EntityAttribute> Attributes)
 		{
 			this.Name = Name;
 			this.Attributes = Attributes;
 		}
+
+		
 	}
 	public class EntityProperty : EntityMetaItem,IProperty
 	{
@@ -34,6 +40,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			base(name,Attributes)
 		{
 			this.Type = Type;
+		}
+		public override string ToString()
+		{
+			return Name + "/" + Type.Name + "/" + Mode + " " + Attributes?.Join(" ");
 		}
 	}
 	public class BaseEntityType : EntityMetaItem,IType
@@ -50,7 +60,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		{
 			this.SysType = SysType;
 		}
-
+		public override string ToString()
+		{
+			return Name + "/" + SysType.FullName+ " " + Attributes?.Join(" ");
+		}
 		public IValueTypeProvider Provider => throw new NotImplementedException();
 	}
 	public class EntityType : BaseEntityType, IEntityType
@@ -64,15 +77,24 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		public IReadOnlyList<EntityProperty> Properties { get; set; }
 
 		IReadOnlyList<IProperty> IEntityType.Properties => Properties;
+
+		public override string ToString()
+		{
+			return Name + "/" + FullName + "\n" + Properties.Select(p => "\t" + p.ToString() ).Join("\n") + "\n";
+		}
 	}
 	public class MetadataCollection : IMetadataCollection
 	{
 
 		public IReadOnlyDictionary<string, IEntityType> EntityTypes { get; }
 		public IReadOnlyDictionary<Type, IEntityType> EntityTypesByType { get; }
-
-
-
+		public override string ToString()
+		{
+			return EntityTypesByType
+				.GroupBy(t => t.Value,t=>t.Key)
+				.Select(g => g.Key.ToString() + "From :" + g.Select(i=>i.ToString()).Join(";") + "\n")
+				.Join("\n");
+		}
 		public MetadataCollection( IReadOnlyDictionary<string, EntityType> EntityTypes,IReadOnlyDictionary<Type,EntityType> TypedEntities)
 		{
 			this.EntityTypes = EntityTypes.ToDictionary(p=>p.Key,p=>p.Value as IEntityType);

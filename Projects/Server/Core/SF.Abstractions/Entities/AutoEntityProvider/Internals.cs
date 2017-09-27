@@ -26,6 +26,6 @@ namespace SF.Entities.AutoEntityProvider
 
 	public interface IValueTypeResolver
 	{
-		IValueType Resolve(string PropName, Type SystemType, IReadOnlyList<IAttribute> Attributes);
+		IValueType Resolve(string TypeName,string PropName, Type SystemType, IReadOnlyList<IAttribute> Attributes);
 	}
 }

@@ -10,18 +10,18 @@ namespace SF.Entities.AutoEntityProvider.Internals.DataModelAttributeGenerators
 {
 	public class ColumnAttributeGenerator : IDataModelAttributeGenerator
 	{
-		public CustomAttributeBuilder Generate(IAttribute Attr)
+		public SystemAttributeBuilder Generate(IAttribute Attr)
 		{
 			var name = Attr.Values.Get("Name");
 			if(name==null)
-				return new CustomAttributeBuilder(
+				return new SystemAttributeBuilder(
 					typeof(ColumnAttribute).GetConstructor(Array.Empty<Type>()),
 					Array.Empty<object>(),
 					new[] { typeof(ColumnAttribute).GetProperty("Order") },
 					new[] { (object)Convert.ToInt32(Attr.Values.Get("Order")) }
 					);
 			else
-				return new CustomAttributeBuilder(
+				return new SystemAttributeBuilder(
 					typeof(ColumnAttribute).GetConstructor(new[] { typeof(string) }),
 					new[] { (object)name },
 					new[] { typeof(ColumnAttribute).GetProperty("Order") },

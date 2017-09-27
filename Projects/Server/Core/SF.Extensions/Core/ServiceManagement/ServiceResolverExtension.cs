@@ -26,7 +26,7 @@ namespace SF.Core.ServiceManagement
 		{
 			var re = (T)ServiceResolver.ResolveServiceByType(ScopeId, typeof(T), Name);
 			if (re == null)
-				throw new InvalidOperationException("找不到服务:" + typeof(T));
+				throw new InvalidOperationException($"找不到服务:{typeof(T)},名称:{Name},范围:{ScopeId}");
 			return re;
 		}
 		public static T Resolve<T>(this IServiceProvider ServiceProvider, string Name = null, long? ScopeId = null)

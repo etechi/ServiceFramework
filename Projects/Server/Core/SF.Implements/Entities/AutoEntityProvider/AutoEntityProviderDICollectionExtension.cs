@@ -9,6 +9,11 @@ using SF.Entities;
 using SF.Entities.AutoEntityProvider;
 using SF.Entities.AutoEntityProvider.Internals;
 using SF.Data;
+using SF.Entities.AutoEntityProvider.Internals.DataModelAttributeGenerators;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using SF.Entities.AutoEntityProvider.Internals.ValueTypes;
+using System.ComponentModel;
 
 namespace SF.Core.ServiceManagement
 {
@@ -31,8 +36,46 @@ namespace SF.Core.ServiceManagement
 			return f.Create<TKey,TEntityDetail,TEntitySummary,TEntityEditable,TQueryArgument>(sp);
 		}
 
+		static void AddPrimitiveValueType<T>(this IServiceCollection sc)
+		{
+			sc.AddSingleton<IValueType, PrimitiveValueType<T>>();
+		}
 		public static IServiceCollection AddAutoEntityService(this IServiceCollection sc)
 		{
+			sc.AddPrimitiveValueType<char>();
+			sc.AddPrimitiveValueType<byte>();
+			sc.AddPrimitiveValueType<sbyte>();
+			sc.AddPrimitiveValueType<bool>();
+			sc.AddPrimitiveValueType<short>();
+			sc.AddPrimitiveValueType<ushort>();
+			sc.AddPrimitiveValueType<int>();
+			sc.AddPrimitiveValueType<uint>();
+			sc.AddPrimitiveValueType<long>();
+			sc.AddPrimitiveValueType<ulong>();
+			sc.AddPrimitiveValueType<float>();
+			sc.AddPrimitiveValueType<double>();
+			sc.AddPrimitiveValueType<decimal>();
+			sc.AddPrimitiveValueType<DateTime>();
+			sc.AddPrimitiveValueType<string>();
+
+
+			sc.AddSingleton<IDataModelAttributeGenerator, KeyAttributeGenerator>(typeof(KeyAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, ColumnAttributeGenerator>(typeof(ColumnAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(EntityObjectAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(EntityIdentAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, StringLengthAttributeGenerator>(typeof(StringLengthAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, RequiredAttributeGenerator>(typeof(RequiredAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, MaxLengthAttributeGenerator>(typeof(MaxLengthAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, MinLengthAttributeGenerator>(typeof(MinLengthAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, DatabaseGeneratedAttributeGenerator>(typeof(DatabaseGeneratedAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(CommentAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(ReadOnlyAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(TableVisibleAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(HiddenAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(TableRowsAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(EntityTitleAttribute).FullName);
+			sc.AddSingleton<IDataModelAttributeGenerator, IndexAttributeGenerator>(typeof(IndexAttribute).FullName);
+
 			sc.AddTransient<SystemTypeMetadataBuilder>();
 			sc.AddTransient<DataModelTypeBuilder>();
 			sc.AddSingleton<DataSetAutoEntityProviderFactory>();

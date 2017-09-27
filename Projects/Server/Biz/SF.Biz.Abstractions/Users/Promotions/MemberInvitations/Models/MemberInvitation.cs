@@ -7,10 +7,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Users.Promotions.MemberInvitations.Models
 {
-	[EntityObject]
-	public class MemberInvitation : ObjectEntityBase
+	[EntityObject(nameof(MemberInvitation))]
+	public class MemberInvitation : EventEntityBase
 	{
-
+		[Comment("被邀请人ID")]
+		public override long Id { get; set; }
 	}
 }
 

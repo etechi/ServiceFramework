@@ -54,8 +54,8 @@ namespace SF.Users.Promotions.MemberInvitations.Entity
 			var e = ctx.Editable;
 			var m = ctx.Model;
 
-			UIEnsure.HasContent(e.Name, "请输入会员邀请");
-			m.Update(e, Now);
+			//UIEnsure.HasContent(e.Name, "请输入会员邀请");
+			//m.Update(e, Now);
 
 			return Task.CompletedTask;
 		}

@@ -12,9 +12,28 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Entities.AutoEntityProvider.Internals
 {
+	public class SystemAttributeBuilder
+	{
+		public ConstructorInfo Constructor { get; }
+		public object[] Arguments { get; }
+		public PropertyInfo[] InitProperties { get; }
+		public object[] InitPropertyValues { get; }
+		public SystemAttributeBuilder(
+			ConstructorInfo Constructor,
+			object[] Arguments =null,
+			PropertyInfo[] InitProperties=null,
+			object[] InitPropertyValues=null
+		)
+		{
+			this.Constructor = Constructor;
+			this.Arguments = Arguments ?? Array.Empty<object>();
+			this.InitProperties = InitProperties ?? Array.Empty<PropertyInfo>();
+			this.InitPropertyValues = InitPropertyValues ?? Array.Empty<object>();
+		}
+	}
 	public interface IDataModelAttributeGenerator
 	{
-		CustomAttributeBuilder Generate(IAttribute Attr);
+		SystemAttributeBuilder Generate(IAttribute Attr);
 	}
 	public class BaseDataModel
 	{
@@ -31,6 +50,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				);
 
 		Dictionary<string, TypeBuilder> TypeBuilders = new Dictionary<string, TypeBuilder>();
+		Dictionary<MemberInfo, List<SystemAttributeBuilder>> MemberAttributes { get; } = new Dictionary<MemberInfo, List<SystemAttributeBuilder>>();
 		ModuleBuilder ModuleBuilder { get; } = AssemblyBuilder.DefineDynamicModule(new Guid().ToString("N"));
 		NamedServiceResolver<IDataModelAttributeGenerator> DataModelAttributeGeneratorResolver { get; }
 
@@ -42,17 +62,33 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			this.metas = metas;
 			this.DataModelAttributeGeneratorResolver = DataModelAttributeGeneratorResolver;
 		}
-		void EnsureIndex(PropertyBuilder propBuilder)
+		void EnsureSingleFieldIndex(IEntityType type, IProperty prop, PropertyBuilder propBuilder)
 		{
-			var idxs = propBuilder.GetCustomAttributes<IndexAttribute>();
-			if (idxs.Any(a => a.Name == null))
-				return;
+			if (MemberAttributes.TryGetValue(propBuilder, out var attrs))
+			{
+				//已经有索引
+				if (attrs.Any(a =>
+					 a.Constructor.ReflectedType == typeof(IndexAttribute) &&
+					 (a.Arguments?.Length ?? 0) == 0 &&
+					 (a.InitProperties?.Length ?? 0) == 0 &&
+					 (a.InitPropertyValues?.Length ?? 0) == 0
+					))
+					return;
+
+				//当前字段是主键
+				if (prop.Attributes.Any(a =>
+						 a.Name == typeof(KeyAttribute).FullName &&
+						 type.Properties.Count(p => p.Attributes.Any(aa => aa.Name == typeof(KeyAttribute).FullName)) == 1
+						))
+					return;
+			}
+
 			propBuilder.SetCustomAttribute(
-				new CustomAttributeBuilder(
-					typeof(IndexAttribute).GetConstructor(Array.Empty<Type>()),
-					Array.Empty<object>()
-					)
-				);
+				AddAttribute(
+					propBuilder,
+					new SystemAttributeBuilder(typeof(IndexAttribute).GetConstructor(Array.Empty<Type>()))
+				)
+			);
 		}
 
 		PropertyBuilder BuildProperty(TypeBuilder typeBuilder, string name, Type type)
@@ -83,6 +119,18 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			propertyBuilder.SetSetMethod(setter);
 			return propertyBuilder;
 		}
+		CustomAttributeBuilder AddAttribute(MemberInfo member,SystemAttributeBuilder attr)
+		{
+			if (!MemberAttributes.TryGetValue(member, out var attrs))
+				MemberAttributes.Add(member, attrs = new List<SystemAttributeBuilder>());
+			attrs.Add(attr);
+			return new CustomAttributeBuilder(
+				attr.Constructor,
+				attr.Arguments,
+				attr.InitProperties,
+				attr.InitPropertyValues
+				);
+		}
 		PropertyBuilder DefineProperty(TypeBuilder typeBuilder, string Name,IEnumerable<IAttribute> Attributes, Type type)
 		{
 			var pb = BuildProperty(typeBuilder, Name, type);
@@ -93,7 +141,9 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					var g = DataModelAttributeGeneratorResolver(a.Name);
 					if (g == null)
 						throw new ArgumentException($"不支持生成特性{a.Name}的数据类特性，实体类型:{typeBuilder.Name} 属性{Name}");
-					pb.SetCustomAttribute(g.Generate(a));
+					var aa = g.Generate(a);
+					if(aa!=null)
+						pb.SetCustomAttribute(AddAttribute(pb,aa));
 				}
 			return pb;
 		}
@@ -127,7 +177,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 			//确保外键字段有索引
 			if (pb != null)
-				EnsureIndex(pb);
+				EnsureSingleFieldIndex(curEntity,prop, pb);
 		}
 		void EnsureForginRelationField(TypeBuilder typeBuilder, IEntityType curEntity, IEntityType foreignEntity, string name)
 		{
@@ -163,6 +213,9 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			if (foreignProp != null)
 				EnsureForginKeyField(typeBuilder, type, (IEntityType)foreignProp.Type, prop.Name);
 
+			//如果是实体标识，需要创建索引
+			if (prop.Attributes.Any(a=>a.Name==typeof(EntityIdentAttribute).FullName))
+				EnsureSingleFieldIndex(type,prop,pb);
 		}
 		void BuildSingleRelationProperty(TypeBuilder typeBuilder, IEntityType type, IProperty prop)
 		{
@@ -213,7 +266,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				var g = DataModelAttributeGeneratorResolver(a.Name);
 				if (g == null)
 					throw new ArgumentException($"不支持生成特性{a.Name}的数据类特性，实体类型:{typeBuilder.Name}");
-				typeBuilder.SetCustomAttribute(g.Generate(a));
+				var aa = g.Generate(a);
+				if (aa != null)
+					typeBuilder.SetCustomAttribute(AddAttribute(typeBuilder, aa));
+				
 			}
 
 			foreach (var prop in type.Properties)
@@ -235,6 +291,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		}
 		public Type[] Build()
 		{
+			//throw new ArgumentException(metas.ToString());
+
 			foreach (var et in metas.EntityTypes)
 				TypeBuilders.Add(et.Key, ModuleBuilder.DefineType(et.Key, TypeAttributes.Public, typeof(BaseDataModel)));
 

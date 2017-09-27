@@ -24,7 +24,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 		IEnumerable<EntityAttribute> GetAttributes(MemberInfo prop)
 		{
-			return prop.GetCustomAttributes(false).Cast<Attribute>().Select(a => 
+			return prop.GetCustomAttributes().Cast<Attribute>().Select(a => 
 				new EntityAttribute(
 				a.GetType().FullName,
 				(from p in a.GetType().AllPublicInstanceProperties()
@@ -33,6 +33,54 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				).ToDictionary(p=>p.name,p=>p.value)
 				)
 			);
+		}
+
+		class EntityComparer : IEqualityComparer<(MemberInfo, EntityAttribute[], string[])>
+		{
+			public static EntityComparer Instance { get; } = new EntityComparer();
+			public bool Equals((MemberInfo, EntityAttribute[], string[]) x, (MemberInfo, EntityAttribute[], string[]) y)
+			{
+				if (x.Item3.Length != y.Item3.Length)
+					return false;
+				return x.Item3.Zip(y.Item3, (i, j) => i == j).All(i=>i);
+			}
+
+			public int GetHashCode((MemberInfo, EntityAttribute[], string[]) obj)
+			{
+				return obj.Item3.Aggregate(0, (s, i) => s ^ i.GetHashCode());
+			}
+		}
+
+		EntityAttribute[] MergeAttributes(IGrouping<string,(MemberInfo,EntityAttribute)> Members)
+		{
+			var gs= Members.GroupBy(a => a.Item1, a => a.Item2)
+				.Select(g=>(g.Key,g.ToArray(),g.Select(i=>i.ToString()).OrderBy(i=>i).ToArray()))
+				.Distinct(EntityComparer.Instance)
+				.ToArray();
+			if (gs.Length != 1)
+			{
+				if (gs[0].Item1 is PropertyInfo)
+					throw new InvalidOperationException(
+						"不同属性定义的特性不一致：\n" +
+						gs.Select(i => i.Item1.DeclaringType.FullName + "." + i.Item1.Name + ":" + i.Item3.Join(";")).Join("\n")
+						);
+				else
+					throw new InvalidOperationException(
+						"不同类型定义的特性不一致：\n" +
+						gs.Select(i => ((Type)i.Item1).FullName + ":" + i.Item3.Join(";")).Join("\n")
+						);
+			}
+			return gs[0].Item2;
+		}
+		EntityAttribute[] MergeMemberAttributes(IEnumerable<MemberInfo> Members)
+		{
+			return (
+			from m in Members
+			 from ea in GetAttributes(m)
+			 group (m, ea) by ea.Name into g
+			 from a in MergeAttributes(g)
+			 select a
+			 ).ToArray();
 		}
 
 		EntityProperty BuildProperty(string Entity,PropertyInfo[] props)
@@ -45,22 +93,23 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			if (propType.IsGeneric())
 			{
 				var ptd = propType.GetGenericTypeDefinition();
-				if (ptd == typeof(IEnumerable<>) || ptd == typeof(ICollection<>))
+				if (ptd == typeof(IEnumerable<>) || ptd == typeof(ICollection<>) )
 					realType = propType.GetGenericArguments()[0];
 			}
 			else if (propType.IsArray)
 				realType = propType.GetElementType();
 
 			var name = props[0].Name;
-			var attrs = props.SelectMany(p=>GetAttributes(p)).ToArray();
+			//if (name == "Id")
+			//	throw new ArgumentException(props.Select(p => p.DeclaringType.Name+"."+p.Name+":"+ p.GetCustomAttributes().Select(a => a.GetType().Name).Join(",")).Join(";"));
+			var attrs = MergeMemberAttributes(props);
 
 			var et = SysTypeToEntityTypes.Get(realType) as IType;
-
 			
 			if(et==null)
 			{
 				//如果不是实体类，则查找数据类型
-				et = ValueTypeResolver.Resolve(name, propType, attrs);
+				et = ValueTypeResolver.Resolve(Entity, name, propType, attrs);
 				if (et == null)
 					throw new ArgumentException($"找不到属性类型:{propType} {props[0].DeclaringType}.{name}");
 			}
@@ -105,10 +154,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			foreach (var e in entities)
 			{
 				var et = new EntityType(
-						e.id,
 						e.n,
+						e.id,
 						null,
-						e.types.SelectMany(t => GetAttributes(t)).ToArray()
+						MergeMemberAttributes(e.types)
 					);
 				IdToEntityTypes.Add(e.id,et);
 				foreach (var t in e.types)
@@ -117,15 +166,26 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			}
 
 			foreach (var e in entities)
+			{
+				var ignoreProps = new HashSet<string>(
+					from t in e.types
+					from p in t.AllPublicInstanceProperties()
+					let ei = p.GetCustomAttribute<EntityIdentAttribute>()
+					where ei?.NameField != null
+					select ei.NameField
+					);
+
 				IdToEntityTypes[e.id].Properties =
 					(from t in e.types
-					 from p in t.AllPublicInstanceProperties().Select((p,idx)=>(prop:p,idx:idx))
+					 from p in t.AllPublicInstanceProperties()
+								.Where(p=> !ignoreProps.Contains(p.Name))
+								.Select((p, idx) => (prop: p, idx: idx))
 					 group p by p.prop.Name into g
-					 let idx=g.Select(i=>i.idx).Average()
+					 let idx = g.Select(i => i.idx).Average()
 					 orderby idx
-					 select BuildProperty(e.id,g.Select(i=>i.prop).ToArray())
+					 select BuildProperty(e.id, g.Select(i => i.prop).ToArray())
 					).ToArray();
-
+			}
 
 			//entities.ForEach(e =>
 			//	Types.Add(

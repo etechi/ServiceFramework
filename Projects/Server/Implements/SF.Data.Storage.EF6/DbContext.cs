@@ -95,9 +95,10 @@ namespace SF.Data
 
 			modelBuilder.Conventions.Add<IndexAttributeConvention>();
 			//System.Diagnostics.Debugger.Launch();
-			var types = from ems in 
-							ServiceProvider.Resolve<IEnumerable<IEntityDataModelSource>>().Select(ms=>ms.DataModels)
+			var models = ServiceProvider.Resolve<IEnumerable<IEntityDataModelSource>>().Select(ms => ms.DataModels)
 							.Concat(ServiceProvider.Resolve<IEnumerable<SF.Data.EntityDataModels>>())
+							.ToArray();
+			var types = from ems in models							
 						from et in ems.Types
 						select et;
 			foreach (var type in types.Distinct())

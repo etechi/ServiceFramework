@@ -18,7 +18,7 @@ namespace SF.Data
 		}
 		public virtual bool IsClustered { get; set; }
 		public virtual bool IsUnique { get; set; }
-		public virtual string Name { get;  }
+		public virtual string Name { get; set; }
 		public virtual int Order { get; set; }
 	}
 
