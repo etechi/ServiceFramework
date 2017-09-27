@@ -61,7 +61,7 @@ namespace SF.Core.ServiceManagement.Internals
 				return _ManagedServiceCache;
 			lock (this)
 			{
-				if (_ManagedServiceCache != null)
+				if (_ManagedServiceCache != null || ServiceResolver==null)
 					return _ManagedServiceCache;
 
 				//var cacheType = typeof(Caching.ILocalCache<IServiceEntry>);
@@ -133,7 +133,7 @@ namespace SF.Core.ServiceManagement.Internals
 
 			factory =  ServiceFactory.Create(
 				cfg.Id,
-				cfg.ParentId,
+				cfg.ContainerId,
 				decl,
 				impl,
 				decl.ServiceType,
@@ -147,7 +147,16 @@ namespace SF.Core.ServiceManagement.Internals
 		{
 			var curEntry = GetManagedServiceEntry(ServiceResolver, ServiceId, true);
 			var TypeResolver = ServiceResolver.Resolve<IServiceDeclarationTypeResolver>();
-			return TypeResolver.Resolve(curEntry.Config.ServiceType);
+			var cfg = curEntry.Config;
+			if (cfg == null)
+				cfg = ServiceResolver.Provider.WithScope(sp =>
+					  EnsureManagedConfig(
+					  sp.Resolve<IServiceConfigLoader>(),
+					  curEntry,
+					  ServiceId
+					  )
+					);
+			return TypeResolver.Resolve(cfg.ServiceType);
 		}
 		public IServiceFactory GetServiceFactoryByIdent(
 			IServiceResolver ServiceResolver,
@@ -222,7 +231,7 @@ namespace SF.Core.ServiceManagement.Internals
 						configLoader = scope.ServiceProvider.Resolve<IServiceConfigLoader>();
 					}
 					var cfg = EnsureManagedConfig(configLoader, curEntry, ScopeServiceId.Value);
-					ScopeServiceId = cfg?.ParentId;
+					ScopeServiceId = cfg?.ContainerId;
 				}
 				return TryGetManagedScopedInternalServiceData(
 					ServiceResolver,

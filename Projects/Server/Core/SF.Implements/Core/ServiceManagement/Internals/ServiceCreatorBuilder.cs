@@ -701,13 +701,16 @@ namespace SF.Core.ServiceManagement.Internals
 			HashSet<string> CopyRequiredPaths = null;
 			if (IsManagedService)
 			{
-				new InitCopyRequiredPathsHelper
+				var helper = new InitCopyRequiredPathsHelper
 				{
 					constructorInfo = constructorInfo,
-					CopyRequiredPaths = CopyRequiredPaths,
+					CopyRequiredPaths = new HashSet<string>(),
 					ImplementType = ImplementType,
 					ServiceMetadata = ServiceMetadata
-				}.InitCopyRequiredPaths();
+				};
+				helper.InitCopyRequiredPaths();
+				if (helper.CopyRequiredPaths.Count > 0)
+					CopyRequiredPaths = helper.CopyRequiredPaths;
 			}
 			return new Builder
 			{

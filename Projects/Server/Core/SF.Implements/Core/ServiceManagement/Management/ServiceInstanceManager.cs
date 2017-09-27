@@ -23,7 +23,6 @@ namespace SF.Core.ServiceManagement.Management
 	{
 		Lazy<IServiceProvider> ServiceProvider { get; }
 		IServiceMetadata Metadata { get; }
-		IDataSetEntityManager<DataModels.ServiceInstance> Manager { get; }
 
 		public ServiceInstanceManager(
 			Lazy<IServiceProvider> ServiceProvider,
@@ -71,7 +70,7 @@ namespace SF.Core.ServiceManagement.Management
 
 			re.SettingType = implType + "SettingType";
 
-			Manager.Logger.Info("Load ServiceInstance for Edit: {0}",Json.Stringify(re));
+			Logger.Info("Load ServiceInstance for Edit: {0}",Json.Stringify(re));
 			return re;
 		}
 
@@ -111,31 +110,32 @@ namespace SF.Core.ServiceManagement.Management
 		{
 			var (implTypeName, svcTypeName) = ImplementId.Split2('@');
 			var ServiceResolver = this.ServiceProvider.Value.Resolver();
+			using (ServiceResolver.WithScopeService(Id))
+			{
+				var (decl, impl) = ServiceFactory.ResolveMetadata(
+					ServiceResolver,
+					Id,
+					svcTypeName,
+					implTypeName,
+					null
+					);
 
-			var (decl, impl) = ServiceFactory.ResolveMetadata(
-				ServiceResolver,
-				Id,
-				svcTypeName,
-				implTypeName,
-				null
-				);
+				var factory = ServiceFactory.Create(
+					Id,
+					ParentId,
+					decl,
+					impl,
+					decl.ServiceType,
+					null,
+					ServiceResolver.Resolve<IServiceMetadata>(),
+					string.IsNullOrWhiteSpace(CreateArguments) ? "{}" : CreateArguments
+					);
 
-			var factory=ServiceFactory.Create(
-				Id,
-				ParentId,
-				decl,
-				impl,
-				decl.ServiceType,
-				null,
-				ServiceResolver.Resolve<IServiceMetadata>(),
-				string.IsNullOrWhiteSpace(CreateArguments) ? "{}":CreateArguments
-				);
-
-			var svr = factory.Create(ServiceResolver);
-			if (svr == null)
-				throw new PublicArgumentException("创建服务失败,请检查配置是否有误");
-			return factory;		
-
+				var svr = factory.Create(ServiceResolver);
+				if (svr == null)
+					throw new PublicArgumentException("创建服务失败,请检查配置是否有误");
+				return factory;
+			}
 		}
 		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
@@ -158,7 +158,7 @@ namespace SF.Core.ServiceManagement.Management
 				UIEnsure.Equal(m.ImplementType, e.ImplementType, "服务实现类型不能修改");
 			}
 
-			m.Update(e, Manager.Now);
+			m.Update(e, Now);
 
 			m.Setting = e.Setting;
 
@@ -192,15 +192,15 @@ namespace SF.Core.ServiceManagement.Management
 			{
 				var orgParentId = m.ContainerId;
 				m.ContainerId = e.ContainerId;
-				Manager.AddPostAction(async () =>
+				EntityManager.AddPostAction(async () =>
 				{
-					await Manager.EventEmitter.Emit(
+					await EntityManager.EventEmitter.Emit(
 						new InternalServiceChanged
 						{
 							ScopeId = orgParentId,
 							ServiceType = m.ServiceType
 						});
-					await Manager.EventEmitter.Emit(
+					await EntityManager.EventEmitter.Emit(
 						new InternalServiceChanged
 						{
 							ScopeId = e.ContainerId,
@@ -213,7 +213,7 @@ namespace SF.Core.ServiceManagement.Management
 			}
 			
 
-			if (await Manager.DataSet.ModifyPosition(
+			if (await DataSet.ModifyPosition(
 				m,
 				PositionModifyAction.Insert,
 				i => i.ContainerId == m.ContainerId && i.ServiceType==m.ServiceType,
@@ -221,8 +221,8 @@ namespace SF.Core.ServiceManagement.Management
 				i => i.ItemOrder,
 				(i, p) => i.ItemOrder = p
 				) || m.ServiceIdent != e.ServiceIdent)
-				Manager.AddPostAction(async () =>
-					await Manager.EventEmitter.Emit(
+				EntityManager.AddPostAction(async () =>
+					await EntityManager.EventEmitter.Emit(
 						new InternalServiceChanged
 						{
 							ScopeId = m.ContainerId,
@@ -232,23 +232,23 @@ namespace SF.Core.ServiceManagement.Management
 					PostActionType.AfterCommit);
 			m.ServiceIdent = e.ServiceIdent;
 
-			Manager.AddPostAction(async () =>
+			EntityManager.AddPostAction(async () =>
 			{
-				await Manager.EventEmitter.Emit(
+				await EntityManager.EventEmitter.Emit(
 					new ServiceInstanceChanged
 					{
 						Id = m.Id
 					}
 				);
-				Manager.Logger.Info("ServiceInstance Saved:{0}", Json.Stringify(m));
+				Logger.Info("ServiceInstance Saved:{0}", Json.Stringify(m));
 			},
 			PostActionType.AfterCommit);
 		}
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			//UIEnsure.NotNull(ctx.Model.Id, "未设置服务实例ID");
-			ctx.Model.Id = await Manager.IdentGenerator.GenerateAsync("系统服务", 0);
-			ctx.Model.Create(Manager.Now);
+			ctx.Model.Id = await IdentGenerator.GenerateAsync("系统服务", 0);
+			ctx.Model.Create(Now);
 		}
 
 		class InstanceDescriptor : IServiceInstanceDescriptor
@@ -268,7 +268,7 @@ namespace SF.Core.ServiceManagement.Management
 			//if (ctx.Model.IsDefaultService)
 			//throw new PublicInvalidOperationException("不能删除默认服务");
 
-			await Manager.RemoveAllAsync<long,DataModels.ServiceInstance>(
+			await EntityManager.RemoveAllAsync<long,DataModels.ServiceInstance>(
 				RemoveAsync,
 				q => q.ContainerId == ctx.Model.Id
 				);

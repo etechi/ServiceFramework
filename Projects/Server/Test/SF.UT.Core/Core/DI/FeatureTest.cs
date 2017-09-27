@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
 using SF.Core.ServiceManagement;
-using SF.Core.DI;
 using SF.Core.ServiceManagement.Storages;
 
 namespace SF.UT.DI

@@ -564,8 +564,9 @@ namespace System.Linq.Expressions
 		public static Expression Replace(this Expression expr, Func<Expression, Expression> Mapper)
 		{
 			var e = Mapper(expr);
-			if (e == null)
-				return null;
+			if (e == null || e!=expr)
+				return e;
+
 			switch (e.NodeType)
 			{
 				case ExpressionType.Lambda:
@@ -662,6 +663,9 @@ namespace System.Linq.Expressions
 							ue.Method
 							);
 					}
+					if (e is ParameterExpression)
+						return e;
+
 					throw new NotSupportedException();
 			}
 		}

@@ -50,9 +50,8 @@ namespace SF.Auth.Identities.Entity
 
 		async Task<long> IIdentStorage.Create(IdentityCreateArgument Arg)
 		{
-			await CreateAsync(new IdentityEditable
+			var uid=await CreateAsync(new IdentityEditable
 			{
-				Id = Arg.Identity.Id,
 				Name = Arg.Identity.Name,
 				Icon = Arg.Identity.Icon,
 
@@ -73,7 +72,7 @@ namespace SF.Auth.Identities.Entity
 					}
 				}
 			});
-			return Arg.Identity.Id;
+			return uid;
 
 			//Ensure.NotNull(Arg.Identity, "身份标识");
 			//Ensure.HasContent(Arg.Identity.Name, "身份标识名称");
@@ -146,14 +145,15 @@ namespace SF.Auth.Identities.Entity
 			m.Name = e.Name;
 			m.Icon = e.Icon;
 			m.SignupExtraArgument = e.SignupExtraArgument;
-			try
-			{
-				Json.Parse<Dictionary<string, string>>(e.SignupExtraArgument);
-			}
-			catch
-			{
-				throw new ArgumentException($"注册附加参数格式错误：{e.SignupExtraArgument}");
-			}
+			if(e.SignupExtraArgument!=null)
+				try
+				{
+					Json.Parse<Dictionary<string, string>>(e.SignupExtraArgument);
+				}
+				catch
+				{
+					throw new ArgumentException($"注册附加参数格式错误：{e.SignupExtraArgument}");
+				}
 
 			m.ObjectState = e.LogicState;
 			var time = Now;

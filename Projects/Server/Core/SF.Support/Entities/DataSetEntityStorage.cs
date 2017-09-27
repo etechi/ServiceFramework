@@ -412,6 +412,7 @@ namespace SF.Entities
 				async (trans) =>
 				{
 					Storage.InitCreateContext<TKey, TEditableEntity>(Context,Entity, ExtraArgument);
+					
 					await InitModel(Context);
 					await UpdateModel(Context);
 					Storage.DataSet.Add(Context.Model);

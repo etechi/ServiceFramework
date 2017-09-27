@@ -13,7 +13,6 @@ using System.Data.Entity;
 
 #endif
 
-using SF.Core.DI;
 using SF.Data;
 using System.Linq;
 using SF.Core.ServiceManagement;

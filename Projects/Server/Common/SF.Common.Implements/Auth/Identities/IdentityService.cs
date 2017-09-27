@@ -284,7 +284,6 @@ namespace SF.Auth.Identities
 			if (ui != null)
 				throw new PublicArgumentException($"您输入的{CredentialProvider.Name}已被注册");
 
-			var uid = Arg.Identity.Id;
 
 			//ui = await CredentialProvider.FindOrBind(
 			//	Arg.Credential,
@@ -300,7 +299,7 @@ namespace SF.Auth.Identities
 			var stamp = Bytes.Random(16);
 			var passwordHash = Setting.PasswordHasher.Value.Hash(Arg.Password,stamp);
 			var client = Setting.ClientService.Value;
-			await Setting.IdentStorage.Value.Create(
+			var uid = await Setting.IdentStorage.Value.Create(
 				new IdentityCreateArgument
 				{
 					AccessSource = client.AccessSource,
@@ -311,7 +310,6 @@ namespace SF.Auth.Identities
 					ExtraArgument=Arg.ExtraArgument,
 					Identity =new Identity
 					{
-						Id = uid,
 						OwnerId = Arg.Identity.OwnerId,
 						Icon = Arg.Identity.Icon,
 						Name = Arg.Identity.Name

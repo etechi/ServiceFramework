@@ -16,7 +16,7 @@ namespace SF.Core.ServiceManagement.Storages
 		{
 			public long Id { get; set; }
 
-			public long? ParentId { get; set; }
+			public long? ContainerId { get; set; }
 
 			public string ServiceType { get; set; }
 
@@ -47,7 +47,7 @@ namespace SF.Core.ServiceManagement.Storages
 		public void SetDefaultService<I>(long Id)
 		{
 			var cfg = GetConfig(Id);
-			SetConfig(cfg.ServiceType, cfg.ImplementType, cfg.Id, cfg.Setting, 0, cfg.ParentId,cfg.Name);
+			SetConfig(cfg.ServiceType, cfg.ImplementType, cfg.Id, cfg.Setting, 0, cfg.ContainerId,cfg.Name);
 		}
 		Config SetConfig(
 			string ServiceType,
@@ -64,10 +64,10 @@ namespace SF.Core.ServiceManagement.Storages
 
 			if (cfg == null)
 				cfg = new Config();
-			else if (cfg.ParentId != ParentId)
+			else if (cfg.ContainerId != ParentId)
 				throw new ArgumentException();
 
-			cfg.ParentId = ParentId;
+			cfg.ContainerId = ParentId;
 			cfg.ImplementType = ImplementType;
 			cfg.ServiceType = ServiceType;
 			if(Priority!=-1)

@@ -87,7 +87,7 @@ namespace SF.Entities
 		{
 			var ctx = NewModifyContext();
 			await InternalCreateAsync(ctx, obj, null);
-			return ctx.Id;
+			return ctx.Model.Id;
 		}
 		protected virtual Task InternalCreateAsync(IModifyContext Context, TEditable obj,object ExtraArgument)
 		{

@@ -11,7 +11,7 @@ namespace SF.Core.ServiceManagement.Internals
 	{
 		long Id { get; }
 		string Name { get; }
-		long? ParentId { get; }
+		long? ContainerId { get; }
 		string ServiceType { get; }
 		string ImplementType { get; }
 		string Setting { get; }

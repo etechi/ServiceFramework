@@ -1,9 +1,6 @@
 ﻿using System;
 
-using System.Collections.Generic;
-using SF.Core.ServiceManagement;
-
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public static class MSCachingExtensions
 	{

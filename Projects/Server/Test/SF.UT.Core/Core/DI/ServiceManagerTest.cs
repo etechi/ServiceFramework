@@ -4,7 +4,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
-using SF.Core.DI;
 using SF.Core.ServiceManagement.Storages;
 using SF.Core.ServiceManagement.Internals;
 using SF.Core.ServiceManagement;

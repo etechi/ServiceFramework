@@ -22,7 +22,7 @@ namespace SF.Core.ServiceManagement.Storages
 		{
 			public long Id { get; set; }
 
-			public long? ParentId { get; set; }
+			public long? ContainerId { get; set; }
 
 			public string ServiceType { get; set; }
 
@@ -34,7 +34,7 @@ namespace SF.Core.ServiceManagement.Storages
 		public IServiceConfig GetConfig(long Id)
 		{
 			var re = Connection.Query<Config>(
-				"select Id,ServiceType,ImplementType,Setting,ParentId " +
+				"select Id,ServiceType,ImplementType,Setting,ContainerId " +
 				"from SysServiceInstance " +
 				"where Id=@Id", 
 				new { Id = Id }
@@ -60,8 +60,8 @@ namespace SF.Core.ServiceManagement.Storages
 				var re = Connection.Query<ServiceReference>(
 				"select top " + Limit + " Id,ServiceIdent " +
 				"from SysServiceInstance " +
-				"where ParentId=@ParentId and ServiceType=@ServiceType " +
-				"order by Priority", new { ParentId = ScopeId, ServiceType = ServiceType }
+				"where ContainerId=@ContainerId and ServiceType=@ServiceType " +
+				"order by ItemOrder", new { ContainerId = ScopeId, ServiceType = ServiceType }
 				).ToArray();
 				return re;
 			}
@@ -70,8 +70,8 @@ namespace SF.Core.ServiceManagement.Storages
 				var re = Connection.Query<ServiceReference>(
 				"select top " + Limit + " Id,ServiceIdent " +
 				"from SysServiceInstance " +
-				"where ParentId is null and ServiceType=@ServiceType " +
-				"order by Priority", new { ServiceType = ServiceType }
+				"where ContainerId is null and ServiceType=@ServiceType " +
+				"order by ItemOrder", new { ServiceType = ServiceType }
 				).ToArray();
 				return re;
 			}

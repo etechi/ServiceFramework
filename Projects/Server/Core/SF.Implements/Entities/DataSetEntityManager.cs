@@ -12,7 +12,7 @@ using SF.Core.Events;
 namespace SF.Entities
 {
 	class DataSetEntityManager<T> : IDataSetEntityManager<T>
-		where T : class
+		where T : class,new()
 	{
 		IServiceProvider ServiceProvider { get; }
 		IDataSet<T> _DataSet;
@@ -21,8 +21,16 @@ namespace SF.Entities
 		ILogger<T> _Logger;
 		IIdentGenerator _IdentGenerator;
 		IEventEmitter _EventEmitter;
-		IServiceInstanceDescriptor _ServiceInstanceDescroptor;
+		public IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 		DateTime _Now;
+
+		public DataSetEntityManager(IServiceProvider ServiceProvider)
+		{
+			this.ServiceProvider = ServiceProvider;
+			var resolver = ServiceProvider.Resolver();
+			if (resolver.CurrentServiceId.HasValue)
+				this.ServiceInstanceDescroptor = resolver.ResolveDescriptorByIdent(resolver.CurrentServiceId.Value);
+		}
 
 		I Resolve<I>(ref I value)
 			where I:class
@@ -46,7 +54,6 @@ namespace SF.Entities
 		public ITimeService TimeService => Resolve(ref _TimeService);
 		public ILogger Logger => Resolve(ref _Logger);
 		public IEventEmitter EventEmitter => Resolve(ref _EventEmitter);
-		public IServiceInstanceDescriptor ServiceInstanceDescroptor=> Resolve(ref _ServiceInstanceDescroptor);
 		IDataSet IDataSetEntityManager.DataSet => DataSet;
 
 		
@@ -55,6 +62,7 @@ namespace SF.Entities
 			where TKey : IEquatable<TKey>
 			where TEditable : IEntityWithId<TKey>
 		{
+			Context.Model = new T();
 			Context.Action = ModifyAction.Create;
 			Context.Editable = Editable;
 			Context.ExtraArgument = ExtraArguments;

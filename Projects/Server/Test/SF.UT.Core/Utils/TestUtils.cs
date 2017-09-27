@@ -81,29 +81,23 @@ namespace SF.UT.Utils
 				}, true
 				);
 
-
-			var ii = await svc.GetIdentity(id);
+			var uid = ReturnToken ? await svc.ParseAccessToken(accessToken) : (await svc.GetCurIdentity()).Id;
+			var ii = await svc.GetIdentity(uid);
 			Assert.Equal(name, ii.Name);
 			Assert.Equal(icon, ii.Icon);
 			Assert.Equal(entity, ii.OwnerId);
-			Assert.Equal(id, ii.Id);
-			if (ReturnToken)
-			{
-				var uid = await svc.ParseAccessToken(accessToken);
-				Assert.Equal(id, uid);
-			}
-			else
+			Assert.Equal(uid, ii.Id);
+			if (!ReturnToken)
 			{
 				var uii = await svc.GetCurIdentity();
-				Assert.Equal(id, uii.Id);
+				Assert.Equal(uid, uii.Id);
 				Assert.Equal(name, uii.Name);
 				Assert.Equal(icon, uii.Icon);
 				Assert.Equal(entity, uii.OwnerId);
-				Assert.Equal(id, uii.Id);
 			}
 
 			var uid2 = await sp.IdentitySignin(account, password);
-			Assert.Equal(id, uid2);
+			Assert.Equal(uid, uid2);
 			return (ii,account,password);
 		}
 	}
