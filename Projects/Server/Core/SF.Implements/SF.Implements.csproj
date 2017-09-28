@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="dapper" Version="1.50.2" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

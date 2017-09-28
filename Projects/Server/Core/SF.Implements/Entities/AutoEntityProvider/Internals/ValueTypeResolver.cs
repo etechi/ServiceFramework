@@ -10,6 +10,7 @@ using SF.Entities.AutoEntityProvider.Internals.ValueTypes;
 namespace SF.Entities.AutoEntityProvider.Internals
 {
 	
+	
 	public class ValueTypeResolver : IValueTypeResolver
 	{
 		System.Collections.Concurrent.ConcurrentDictionary<string, IValueType> Types = new System.Collections.Concurrent.ConcurrentDictionary<string, IValueType>();

@@ -81,6 +81,10 @@ namespace SF.Core.ServiceManagement
 		}
 		public ServiceDescriptor(Type InterfaceType, Func<IServiceProvider, object> ImplementCreator, ServiceImplementLifetime Lifetime,string Name=null)
 		{
+			if (InterfaceType == null)
+				throw new ArgumentNullException(nameof(InterfaceType));
+			if (ImplementCreator == null)
+				throw new ArgumentNullException(nameof(ImplementCreator));
 			this.ServiceImplementType = ServiceImplementType.Creator;
 			this.InterfaceType = InterfaceType;
 			this.ImplementCreator = ImplementCreator;
@@ -89,6 +93,8 @@ namespace SF.Core.ServiceManagement
 		}
 		public ServiceDescriptor(Type InterfaceType, MethodInfo ImplementMethod, ServiceImplementLifetime Lifetime,string Name=null)
 		{
+			if (ImplementMethod == null)
+				throw new ArgumentNullException(nameof(ImplementMethod));
 			this.ServiceImplementType = ServiceImplementType.Method;
 			this.InterfaceType = InterfaceType;
 			this.ImplementMethod = ImplementMethod;

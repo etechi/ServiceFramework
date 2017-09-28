@@ -24,7 +24,7 @@ namespace SF.Users.Promotions.MemberInvitations.Models
 
 		[Comment("邀请人ID")]
 		[EntityIdent(typeof(Identity), nameof(InvitorName))]
-		public long InvitorId { get; }
+		public long InvitorId { get; set; }
 
 		[Comment("邀请人")]
 		[Hidden]

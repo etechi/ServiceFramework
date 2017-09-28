@@ -93,7 +93,13 @@ namespace SF.Core.ServiceManagement
 			
 			sc.AddTransient(
 				typeof(IDataSetAutoEntityProvider<, , , , >), 
-				typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateEntityProvider), typeof(IServiceProvider))
+				typeof(AutoEntityProviderDICollectionExtension).GetMethodExt(
+					nameof(CreateEntityProvider),
+					BindingFlags.Static | BindingFlags.NonPublic |  BindingFlags.InvokeMethod,
+					typeof(IServiceProvider))
+				);
+			sc.AddSingleton(
+				sp => sp.Resolve<DataModelTypeBuilder>().Build(string.Empty)
 				);
 
 			sc.AddSingleton<SF.Data.IEntityDataModelSource>(
@@ -101,8 +107,8 @@ namespace SF.Core.ServiceManagement
 					new DataModuleSource
 					{
 						DataModels = new EntityDataModels(
-							sp.Resolve<DataModelTypeBuilder>().Build(Prefix),
-							string.Empty
+							sp.Resolve<IDataModelTypeCollection>().Values.ToArray(),
+							Prefix
 							)
 					}
 				);

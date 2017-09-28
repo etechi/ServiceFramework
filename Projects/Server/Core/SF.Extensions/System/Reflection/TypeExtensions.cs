@@ -383,23 +383,28 @@ namespace System.Reflection
 			}
 			return l;
 		}
-		public static PropertyInfo[] AllPublicInstanceProperties(this Type type, bool WithHiddenProperty = true)
-			=> WithHiddenProperty ?
-				type.GetProperties(
-				System.Reflection.BindingFlags.FlattenHierarchy |
+		public static PropertyInfo[] AllPublicInstanceProperties(this Type type)
+			=> type.GetProperties(
 				System.Reflection.BindingFlags.Public |
 				System.Reflection.BindingFlags.Instance
-				) :
-			(from p in type.AllPublicInstanceProperties(true).Select((p, idx) => (idx: idx, prop: p))
-			group p by p.prop.Name into g
-			let p = (from gi in g
-					let lev= gi.prop.DeclaringType.GetInheritLevel()
-					orderby lev descending
-					select gi
-					).First()
-			orderby p.idx
-			select p.prop
-			).ToArray();
+			);
+
+			//=> WithHiddenProperty ?
+			//	type.GetProperties(
+			//	System.Reflection.BindingFlags.FlattenHierarchy |
+			//	System.Reflection.BindingFlags.Public |
+			//	System.Reflection.BindingFlags.Instance
+			//	) :
+			//(from p in type.AllPublicInstanceProperties(true).Select((p, idx) => (idx: idx, prop: p))
+			//group p by p.prop.Name into g
+			//let p = (from gi in g
+			//		let lev= gi.prop.DeclaringType.GetInheritLevel()
+			//		orderby lev descending
+			//		select gi
+			//		).First()
+			//orderby p.idx
+			//select p.prop
+			//).ToArray();
 
 
 		static IEnumerable<Type> _AllInterfaces(Type type)

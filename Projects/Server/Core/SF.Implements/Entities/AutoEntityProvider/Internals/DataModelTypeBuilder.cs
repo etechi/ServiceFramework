@@ -39,13 +39,21 @@ namespace SF.Entities.AutoEntityProvider.Internals
 	{
 
 	}
+	public interface IDataModelTypeCollection: IReadOnlyDictionary<string, Type>
+	{
+
+	}
+	public class DataModelTypeCollection: Dictionary<string,Type>, IDataModelTypeCollection
+	{
+
+	}
 	public class DataModelTypeBuilder
 	{
 		IMetadataCollection metas { get; }
 		
 		static AssemblyBuilder AssemblyBuilder { get; }= 
 			AssemblyBuilder.DefineDynamicAssembly(
-				new AssemblyName("SFAutoEntityProviderDynamicClass"), 
+				new AssemblyName("SFAutoEntityProviderDataModelClasses"), 
 				AssemblyBuilderAccess.Run
 				);
 		static ModuleBuilder ModuleBuilder { get; } = AssemblyBuilder.DefineDynamicModule(new Guid().ToString("N"));
@@ -306,7 +314,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		{
 			return System.Threading.Interlocked.Increment(ref TypeIdSeed);
 		}
-		public Type[] Build(string Prefix)
+		public IDataModelTypeCollection Build(string Prefix)
 		{
 			//throw new ArgumentException(metas.ToString());
 			foreach (var et in metas.EntityTypes)
@@ -321,10 +329,13 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					);
 			}
 
-			return metas.EntityTypes.Values
-				.Select(et =>BuildType((TypeBuilder)TypeBuilders[et.FullName], et, Prefix))
-				.ToArray();
-			
+			var re = new DataModelTypeCollection();
+			foreach (var et in metas.EntityTypes.Values)
+			{
+				var mt = BuildType((TypeBuilder)TypeBuilders[et.FullName], et, Prefix);
+				re.Add(et.FullName, mt);
+			}
+			return re;
 		}
 	}
 }
