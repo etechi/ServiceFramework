@@ -197,7 +197,7 @@ namespace SF.Entities
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
-			PagingQueryBuilder<TModel> PagingQueryBuilder
+			IPagingQueryBuilder<TModel> PagingQueryBuilder
 			)
 			where TKey : IEquatable<TKey>
 			where TModel : class, IEntityWithId<TKey>
@@ -229,7 +229,7 @@ namespace SF.Entities
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
-			PagingQueryBuilder<TModel> PagingQueryBuilder
+			IPagingQueryBuilder<TModel> PagingQueryBuilder
 			)
 			where TModel : class, IEntityWithId<long>
 			where TQueryArgument : IQueryArgument<long>
@@ -242,7 +242,7 @@ namespace SF.Entities
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
-			PagingQueryBuilder<TModel> PagingQueryBuilder,
+			IPagingQueryBuilder<TModel> PagingQueryBuilder,
 			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 			)
@@ -275,7 +275,7 @@ namespace SF.Entities
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
-			PagingQueryBuilder<TModel> PagingQueryBuilder,
+			IPagingQueryBuilder<TModel> PagingQueryBuilder,
 			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 			)
@@ -288,7 +288,7 @@ namespace SF.Entities
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
-			PagingQueryBuilder<TModel> PagingQueryBuilder,
+			IPagingQueryBuilder<TModel> PagingQueryBuilder,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly,
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 			)
@@ -309,7 +309,7 @@ namespace SF.Entities
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
-			PagingQueryBuilder<TModel> PagingQueryBuilder,
+			IPagingQueryBuilder<TModel> PagingQueryBuilder,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly,
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 			)
@@ -330,7 +330,7 @@ namespace SF.Entities
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
-			PagingQueryBuilder<TModel> PagingQueryBuilder,
+			IPagingQueryBuilder<TModel> PagingQueryBuilder,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
 			)
 			where TKey : IEquatable<TKey>
@@ -351,7 +351,7 @@ namespace SF.Entities
 			TQueryArgument Arg,
 			Paging paging,
 			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
-			PagingQueryBuilder<TModel> PagingQueryBuilder,
+			IPagingQueryBuilder<TModel> PagingQueryBuilder,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
 			)
 			where TModel : class, IEntityWithId<long>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace System.Reflection
 {
-	public static class TypeExtensions
+	public static class TypeExtension
 	{
 		static Dictionary<Type, TypeCode> codes { get; } = new Dictionary<Type, System.TypeCode>
 		{
@@ -166,7 +166,7 @@ namespace System.Reflection
 		{
 			return default(T);
 		}
-		static MethodInfo GetDefaultValueMethod { get; } = typeof(TypeExtensions).GetMethodExt(
+		static MethodInfo GetDefaultValueMethod { get; } = typeof(TypeExtension).GetMethodExt(
 			nameof(GetDefaultValue)
 			);
 		public static object GetDefaultValue(this Type type)
@@ -417,6 +417,38 @@ namespace System.Reflection
 		public static IEnumerable<Type> AllInterfaces(this Type type)
 		{
 			return _AllInterfaces(type).Distinct();
+		}
+
+		public static bool IsNumberLikeType(this Type type)
+		{
+			switch (type.GetTypeCode())
+			{
+				case TypeCode.Boolean:
+				case TypeCode.Byte:
+				case TypeCode.Char:
+				case TypeCode.Decimal:
+				case TypeCode.Double:
+				case TypeCode.Int16:
+				case TypeCode.Int32:
+				case TypeCode.Int64:
+				case TypeCode.SByte:
+				case TypeCode.Single:
+				case TypeCode.UInt16:
+				case TypeCode.UInt32:
+				case TypeCode.UInt64:
+					return true;
+			}
+			if (type.IsEnumType())
+				return true;
+			return false;
+		}
+		public static bool CanSimpleConvertTo(this Type src,Type dest)
+		{
+			if (src == dest) return true;
+			if (dest.IsAssignableFrom(src)) return true;
+			var srcIsNumber = src.IsNumberLikeType();
+			var dstIsNumber = dest.IsNumberLikeType();
+			return srcIsNumber == dstIsNumber;
 		}
 
 	}

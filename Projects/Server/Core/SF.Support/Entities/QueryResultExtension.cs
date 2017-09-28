@@ -2,16 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SF.Entities
 {
 	
-	public interface ISummaryWithCount : ISummary
-    {
-        int Count { get;  }
-    }
+	
 
     public static class QueryResultExtension
 	{
@@ -19,7 +17,7 @@ namespace SF.Entities
 			   this IQueryable<E> query,
 			   Func<IQueryable<E>, IQueryable<T>> mapper,
 			   Func<T, R> resultMapper,
-			   PagingQueryBuilder<E> pagingBuilder,
+			   IPagingQueryBuilder<E> pagingBuilder,
 			   Paging paging,
 			   bool? totalRequired = null
 			   )
@@ -37,7 +35,7 @@ namespace SF.Entities
 			this IContextQueryable<E> query,
 			Func<IContextQueryable<E>, IContextQueryable<T>> mapper,
 			Func<T, R> resultMapper,
-			PagingQueryBuilder<E> pagingBuilder,
+			IPagingQueryBuilder<E> pagingBuilder,
 			Paging paging,
 			bool? totalRequired = null
 			)
@@ -62,7 +60,7 @@ namespace SF.Entities
         public static async Task<QueryResult<T>> ToQueryResultAsync<E, T>(
             this IContextQueryable<E> query,
             Func<IContextQueryable<E>, IContextQueryable<T>> mapper,
-            PagingQueryBuilder<E> pagingBuilder,
+			IPagingQueryBuilder<E> pagingBuilder,
             Paging paging,
             bool? totalRequired = null
             )
@@ -84,12 +82,14 @@ namespace SF.Entities
                 Items = result
             };
         }
-        
-        public static async Task<QueryResult<R>> ToQueryResultAsync<E, T, R>(
+
+		
+
+		public static async Task<QueryResult<R>> ToQueryResultAsync<E, T, R>(
 			this IContextQueryable<E> query,
 			Func<IContextQueryable<E>, IContextQueryable<T>> mapper,
 			Func<T, R> resultMapper,
-			PagingQueryBuilder<E> pagingBuilder,
+			IPagingQueryBuilder<E> pagingBuilder,
 			Paging paging,
 			System.Linq.Expressions.Expression<Func<IGrouping<int,E>,ISummaryWithCount>> Summary=null
 			)
@@ -119,11 +119,26 @@ namespace SF.Entities
 				Items = mappedResult
 			};
 		}
+
+		public static Task<QueryResult<R>> ToQueryResultAsync<E, T, R>(
+			this IContextQueryable<E> query,
+			IQueryResultBuildHelper<E, T, R> mapper,
+			Paging paging
+			)
+			where E : class
+			=> query.ToQueryResultAsync<E,T,R>(
+				e => e.Select(mapper.EntityMapper),
+				mapper.ResultMapper,
+				mapper.PagingBuilder,
+				paging,
+				mapper.Summary
+				);
+
 		public static async Task<QueryResult<R>> ToQueryResultAsync<E, T, R>(
 			this IContextQueryable<E> query,
 			Func<IContextQueryable<E>, IContextQueryable<T>> mapper,
 			Func<T[], Task<R[]>> resultMapper,
-			PagingQueryBuilder<E> pagingBuilder,
+			IPagingQueryBuilder<E> pagingBuilder,
 			Paging paging,
             System.Linq.Expressions.Expression<Func<IGrouping<int, E>, ISummaryWithCount>> Summary = null
             )

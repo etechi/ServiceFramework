@@ -129,7 +129,7 @@ namespace SF.Core.ServiceManagement
 			return new NamedServiceResolver<I>((name) =>
 			{
 				using (sr.WithScopeService(curScopeId))
-					return sp.Resolve<I>(name);
+					return sp.TryResolve<I>(name);
 			});
 		}
 		static IEnumerable<I> NewEnumerableReal<I>(IServiceProvider sp,long? scopeId) where I : class

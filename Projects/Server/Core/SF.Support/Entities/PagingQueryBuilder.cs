@@ -24,7 +24,7 @@ namespace SF.Entities
 			return initializer.Add(name, (q, desc) => desc ? q.OrderByDescending(expr) : q.OrderBy(expr), defaultOrderDesc);
 		}
 	}
-	public class PagingQueryBuilder<T>
+	public class PagingQueryBuilder<T>: IPagingQueryBuilder<T>
 	{
 		class SortField
 		{

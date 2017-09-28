@@ -1,48 +1,43 @@
-﻿using SF.Entities.AutoEntityProvider.Internals;
+﻿using SF.Core.ServiceManagement;
+using SF.Entities.AutoEntityProvider.Internals;
 using System;
 using System.Collections.Generic;
 namespace SF.Entities.AutoEntityProvider
 {
 	public class DataSetAutoEntityProviderFactory
 	{
-		System.Collections.Concurrent.ConcurrentDictionary<Type, DataSetAutoEntityProviderSetting> Creators = 
-			new System.Collections.Concurrent.ConcurrentDictionary<Type, DataSetAutoEntityProviderSetting>(); 
+		System.Collections.Concurrent.ConcurrentDictionary<Type, Lazy<IDataSetAutoEntityProviderSetting>> Creators =
+			new System.Collections.Concurrent.ConcurrentDictionary<Type, Lazy<IDataSetAutoEntityProviderSetting>>();
 		IMetadataCollection Metas { get; }
 		IDataModelTypeCollection DataModelTypeCollection { get; }
-		public DataSetAutoEntityProviderFactory(IMetadataCollection Metas, IDataModelTypeCollection DataModelTypeCollection)
+		NamedServiceResolver<IValueConverter> ValueConverterResolver { get;}
+		NamedServiceResolver<IEntityModifierValueConverter> EntityModifierValueConverterResolver { get; }
+		public DataSetAutoEntityProviderFactory(
+			IMetadataCollection Metas, 
+			IDataModelTypeCollection DataModelTypeCollection, 
+			NamedServiceResolver<IValueConverter> ValueConverterResolver,
+			NamedServiceResolver<IEntityModifierValueConverter> EntityModifierValueConverterResolver
+			)
 		{
 			this.Metas = Metas;
 			this.DataModelTypeCollection = DataModelTypeCollection;
+			this.ValueConverterResolver = ValueConverterResolver;
+			this.EntityModifierValueConverterResolver = EntityModifierValueConverterResolver;
 		}
 
-		void ValidateEntityTypes(IEntityType entity, params Type[] types)
+		void ValidateEntityTypes(Type TEntityDetail,IEntityType entity, params Type[] types)
 		{
 			foreach (var type in types)
 			{
-				var ne = metas.EntityTypesByType.Get(type);
+				var ne = Metas.EntityTypesByType.Get(type);
 				if (ne == null)
 					throw new ArgumentException($"自动化实体类型库中找不到类型{type}对应的实体");
 
 				if (ne != entity)
-					throw new ArgumentException($"类型{type}对应的实体{ne.FullName}和类型{typeof(TEntityDetail)}对应的实体{entity.FullName}不一致");
+					throw new ArgumentException($"类型{type}对应的实体{ne.FullName}和类型{TEntityDetail}对应的实体{entity.FullName}不一致");
 			}
 		}
-		
 
-		(Type TempDetail, Type TempSummary, Type DataModel) TempTypeDetect(
-			Type TKey, Type TEntityDetail, Type TEntitySummary, Type TEntityEditable, Type TQueryArgument
-			)
-		{
-			var entity = Metas.EntityTypesByType.Get(TEntityDetail);
-			if (entity == null)
-				throw new ArgumentException($"自动化实体类型库中找不到类型{TEntityDetail}对应的实体");
-				ValidateEntityTypes(
-					entity,
-					TEntitySummary,
-					TEntityEditable
-					);
-				this.DataModelTypeCollection.TryGetValue()
-		}
 		public IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>  
 			Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(IServiceProvider sp)
 			where TEntityDetail : class, IEntityWithId<TKey>
@@ -54,28 +49,52 @@ namespace SF.Entities.AutoEntityProvider
 			var tDetail = typeof(TEntityDetail);
 			if (!Creators.TryGetValue(tDetail, out var setting))
 			{
-				var tKey = typeof(TKey);
-				var tSummary = typeof(TEntitySummary);
-				var tEditable = typeof(TEntityEditable);
-				var tQueryArg = typeof(TQueryArgument);
-				var tmpTypes = TempTypeDetect(tKey, tDetail, tSummary, tEditable, tQueryArg);
-				setting = Creators.GetOrAdd(
-					tDetail,
-					(DataSetAutoEntityProviderSetting)Activator.CreateInstance(
-						typeof(DataSetAutoEntityProviderSetting<,,,,,,,>).MakeGenericType(
-						tKey, 
+				setting = new Lazy<IDataSetAutoEntityProviderSetting>(() =>
+				  {
+					  var tKey = typeof(TKey);
+					  var tSummary = typeof(TEntitySummary);
+					  var tEditable = typeof(TEntityEditable);
+					  var tQueryArg = typeof(TQueryArgument);
+
+					  var entity = Metas.EntityTypesByType.Get(tDetail);
+					  if (entity == null)
+						  throw new ArgumentException($"自动化实体类型库中找不到类型{tDetail}对应的实体");
+					  ValidateEntityTypes(
+						  tDetail,
+						  entity,
+						  tSummary,
+						  tEditable
+						  );
+					  var dataType = DataModelTypeCollection.Get(entity.FullName);
+
+					  var detailHelper = new QueryResultBuildHelperCreator(dataType, tDetail, ValueConverterResolver).Build();
+					  var summaryHelper = new QueryResultBuildHelperCreator(dataType, tSummary, ValueConverterResolver).Build();
+					  var editableHelper = new QueryResultBuildHelperCreator(dataType, tEditable, ValueConverterResolver).Build();
+					  var initModifier = new EntityModifierCreator(dataType, tEditable, EntityModifierValueConverterResolver, "Init");
+					  var updateModifier = new EntityModifierCreator(dataType, tEditable, EntityModifierValueConverterResolver, "Update");
+
+					  return (IDataSetAutoEntityProviderSetting)Activator.CreateInstance(
+						typeof(DataSetAutoEntityProviderSetting<,,,,,,,,>).MakeGenericType(
+						tKey,
 						tDetail,
-						tmpTypes.TempDetail,
+						detailHelper.TempType,
 						tSummary,
-						tmpTypes.TempSummary,
+						summaryHelper.TempType,
 						tEditable,
+						editableHelper.TempType,
 						tQueryArg
 						),
-						Metas
-					)
-				);
+						detailHelper,
+						summaryHelper,
+						editableHelper,
+						initModifier,
+						updateModifier
+					);
+				  });
+				
+				setting = Creators.GetOrAdd(tDetail,setting);
 			}
-			return (IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>)setting.FuncCreateProvider.Value(sp);
+			return (IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>)setting.Value.FuncCreateProvider.Value(sp);
 		}
 	}
 

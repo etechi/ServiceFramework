@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,5 +29,23 @@ namespace SF.Entities
             Items = Enumerable.Empty<T>()
         };
 		IEnumerable IQueryResult.Items { get { return Items; } set { Items = (IEnumerable<T>)value; } }
+	}
+
+	public interface ISummaryWithCount : ISummary
+	{
+		int Count { get; }
+	}
+
+	public interface IPagingQueryBuilder<T>
+	{
+		IContextQueryable<T> Build(IContextQueryable<T> query, Paging paging);
+	}
+
+	public interface IQueryResultBuildHelper<E, T, R>
+	{
+		Expression<Func<E, T>> EntityMapper { get; }
+		Func<T[],Task<R[]>> ResultMapper { get; }
+		IPagingQueryBuilder<E> PagingBuilder { get; }
+		Expression<Func<IGrouping<int, E>, ISummaryWithCount>> Summary { get; }
 	}
 }

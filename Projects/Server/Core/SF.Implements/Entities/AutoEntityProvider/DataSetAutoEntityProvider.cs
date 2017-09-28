@@ -4,25 +4,23 @@ using SF.Core.ServiceManagement;
 
 namespace SF.Entities.AutoEntityProvider
 {
-	
-
-	class DataSetAutoEntityProvider<TKey, TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TQueryArgument,TDataModel>:
+	class DataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>:
 		IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		where TEntityDetail : class, IEntityWithId<TKey>
 		where TEntitySummary : class, IEntityWithId<TKey>
 		where TEntityEditable : class, IEntityWithId<TKey>
 		where TKey : IEquatable<TKey>
 		where TQueryArgument : IQueryArgument<TKey>
-		where TDataModel : class,IEntityWithId<TKey>,new()
 	{
 	
 
-		public IDataSetEntityManager<TDataModel> EntityManager { get; }
+		public IDataSetEntityManager EntityManager { get; }
 		IDataSetEntityManager IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>.EntityManager => EntityManager;
-		DataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TQueryArgument, TDataModel> Setting { get; }
-		public DataSetAutoEntityProvider(IServiceProvider sp, DataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TQueryArgument, TDataModel> Setting)
+		IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument> Setting { get; }
+
+		public DataSetAutoEntityProvider(IDataSetEntityManager EntityManager, IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument> Setting)
 		{
-			EntityManager = sp.Resolve<IDataSetEntityManager<TDataModel>>();
+			this.EntityManager = EntityManager;
 			this.Setting = Setting;
 
 		}
@@ -31,86 +29,47 @@ namespace SF.Entities.AutoEntityProvider
 
 		public Task<TKey> CreateAsync( TEntityEditable Entity)
 		{
-			return EntityManager.CreateAsync<TKey, TEntityEditable, TDataModel>(
-				Entity,
-				ctx => Setting.FuncInitModel.Value(EntityManager, ctx),
-				ctx => Setting.FuncUpdateModel.Value(EntityManager, ctx),
-				null
-				);
+			return Setting.CreateAsync(EntityManager, Entity);
 		}
 
 		public Task<TEntityDetail> GetAsync(TKey Id)
 		{
-			return EntityManager.GetAsync(
-				Id,
-				ctx=> Setting.FuncMapModelToDetailTemp.Value(EntityManager,ctx),
-				items=> Setting.FuncMapDetailTempToDetail.Value(EntityManager, items)
-				);
+			return Setting.GetAsync(EntityManager, Id);
 		}
 
 		public Task<TEntityDetail[]> GetAsync( TKey[] Ids)
 		{
-			return EntityManager.GetAsync(
-				Ids,
-				ctx=> Setting.FuncMapModelToDetailTemp.Value(EntityManager,ctx),
-				items=> Setting.FuncMapDetailTempToDetail.Value(EntityManager,items)
-				);
+			return Setting.GetAsync(EntityManager, Ids);
 		}
 
 		public Task<TEntityEditable> LoadForEdit(TKey Id)
 		{
-			return EntityManager.LoadForEdit(
-				Id, 
-				(ctx)=> Setting.FuncLoadEditable.Value(EntityManager,ctx)
-				);
+			return Setting.LoadForEdit(EntityManager, Id);
 		}
 
 		public Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg, Paging paging)
 		{
-			return EntityManager.QueryAsync<TKey,TEntitySummaryTemp, TEntitySummary, TQueryArgument, TDataModel>(
-				Arg,
-				paging,
-				(ctx, args, pg) => Setting.FuncBuildQuery.Value(EntityManager,ctx,args,pg),
-				Setting.PagingQueryBuilder.Value,
-				(ctx)=> Setting.FuncMapModelToSummaryTemp.Value(EntityManager,ctx),
-				(items)=> Setting.FuncMapSummaryTempToSummary.Value(EntityManager,items)
-				);
+			return Setting.QueryAsync(EntityManager, Arg, paging);
 		}
 
 		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
 		{
-			return EntityManager.QueryIdentsAsync<TKey,TQueryArgument,TDataModel>(
-				Arg,
-				paging,
-				(ctx, args, pg) => Setting.FuncBuildQuery.Value(EntityManager, ctx, args, pg),
-				Setting.PagingQueryBuilder.Value
-				);
+			return Setting.QueryIdentsAsync(EntityManager, Arg, paging); 
 		}
 
-		public async Task RemoveAllAsync()
+		public Task RemoveAllAsync()
 		{
-			await EntityManager.RemoveAllAsync<TKey,TDataModel>(
-				async id=>
-					await RemoveAsync(id)
-				);
+			return Setting.RemoveAllAsync(EntityManager);
 		}
 
-		public async Task RemoveAsync(TKey Key)
+		public Task RemoveAsync(TKey Key)
 		{
-			await EntityManager.RemoveAsync<TKey, TDataModel, TEntityEditable>(
-				Key,
-				(ctx) => Setting.FuncRemoveModel.Value(EntityManager,ctx),
-				(key,ctx)=> Setting.FuncLoadModelForModify.Value(EntityManager,key,ctx)
-				);
+			return Setting.RemoveAsync(EntityManager, Key);
 		}
 
-		public async Task UpdateAsync(TEntityEditable Entity)
+		public Task UpdateAsync(TEntityEditable Entity)
 		{
-			await EntityManager.UpdateAsync<TKey,TEntityEditable,TDataModel>(
-				Entity,
-				ctx=> Setting.FuncUpdateModel.Value(EntityManager,ctx),
-				(key,ctx)=> Setting.FuncLoadModelForModify.Value(EntityManager,key,ctx)
-				);
+			return Setting.UpdateAsync(EntityManager, Entity);
 		}
 	}
 
