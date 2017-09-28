@@ -244,8 +244,9 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 		}
 
-		Type BuildType(TypeBuilder typeBuilder,IEntityType type)
+		Type BuildType(TypeBuilder typeBuilder,IEntityType type,string TablePrefix)
 		{
+			
 			var keys = type.Properties.Where(p => p.Attributes.Any(a => a.Name == typeof(KeyAttribute).FullName)).ToArray();
 			if (keys.Length == 0)
 				throw new ArgumentException($"实体{type.FullName}未定义主键");
@@ -261,7 +262,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					);
 				}
 			}
-			foreach (var a in type.Attributes)
+
+			foreach (var a in type.Attributes.Where(a=>a.Name!=typeof(TableAttribute).FullName))
 			{
 				var g = DataModelAttributeGeneratorResolver(a.Name);
 				if (g == null)
@@ -271,6 +273,16 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					typeBuilder.SetCustomAttribute(AddAttribute(typeBuilder, aa));
 				
 			}
+			var tableName = type.Name;
+			var tableAttr = type.Attributes.FirstOrDefault(a => a.Name == typeof(TableAttribute).FullName);
+			if (tableAttr != null)
+				tableName = tableAttr.Values?.Get("Name") as string ?? tableName;
+
+			typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
+				typeof(TableAttribute).GetConstructor(new[] { typeof(string) }),
+				new object[] { (TablePrefix??"")+( type.Namespace ??"")+tableName }
+				));
+
 
 			foreach (var prop in type.Properties)
 				switch (prop.Mode)
@@ -289,29 +301,28 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				}
 			return typeBuilder.CreateTypeInfo().AsType();
 		}
-		public Type[] Build()
+		static volatile int TypeIdSeed = 1;
+		static int NextTypeId()
+		{
+			return System.Threading.Interlocked.Increment(ref TypeIdSeed);
+		}
+		public Type[] Build(string Prefix)
 		{
 			//throw new ArgumentException(metas.ToString());
-
-			var ExistTypes = new HashSet<string>();
 			foreach (var et in metas.EntityTypes)
 			{
-				var type = ModuleBuilder.GetType(et.Key);
-				if (type != null)
-				{
-					ExistTypes.Add(et.Key);
-					TypeBuilders.Add(et.Key, type);
-				}
-				else
-					TypeBuilders.Add(et.Key, ModuleBuilder.DefineType(et.Key, TypeAttributes.Public, typeof(BaseDataModel)));
+				TypeBuilders.Add(
+					et.Key, 
+					ModuleBuilder.DefineType(
+						et.Key+"_"+ NextTypeId(), 
+						TypeAttributes.Public, 
+						typeof(BaseDataModel)
+						)
+					);
 			}
 
 			return metas.EntityTypes.Values
-				.Select(et =>
-					ExistTypes.Contains(et.FullName)? 
-						TypeBuilders[et.FullName]:
-						BuildType((TypeBuilder)TypeBuilders[et.FullName], et)
-				)
+				.Select(et =>BuildType((TypeBuilder)TypeBuilders[et.FullName], et, Prefix))
 				.ToArray();
 			
 		}

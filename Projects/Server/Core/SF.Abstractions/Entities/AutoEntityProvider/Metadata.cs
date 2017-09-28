@@ -58,7 +58,7 @@ namespace SF.Entities.AutoEntityProvider
 	public interface IEntityType : IType
 	{
 		string FullName { get; }
-
+		string Namespace{ get; }
 		IReadOnlyList<IProperty> Properties { get; }
 	}
 	public interface IMetadataCollection 

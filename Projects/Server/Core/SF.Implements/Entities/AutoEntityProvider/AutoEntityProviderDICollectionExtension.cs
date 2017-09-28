@@ -40,7 +40,12 @@ namespace SF.Core.ServiceManagement
 		{
 			sc.AddSingleton<IValueType, PrimitiveValueType<T>>();
 		}
-		public static IServiceCollection AddAutoEntityService(this IServiceCollection sc)
+		static void AddAttributeGenerator<G,A>(this IServiceCollection sc)
+			where G:IDataModelAttributeGenerator
+		{
+			sc.AddSingleton<IDataModelAttributeGenerator, G>(typeof(A).FullName);
+		}
+		public static IServiceCollection AddAutoEntityService(this IServiceCollection sc,string Prefix=null)
 		{
 			sc.AddPrimitiveValueType<char>();
 			sc.AddPrimitiveValueType<byte>();
@@ -59,22 +64,23 @@ namespace SF.Core.ServiceManagement
 			sc.AddPrimitiveValueType<string>();
 
 
-			sc.AddSingleton<IDataModelAttributeGenerator, KeyAttributeGenerator>(typeof(KeyAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, ColumnAttributeGenerator>(typeof(ColumnAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(EntityObjectAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(EntityIdentAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, StringLengthAttributeGenerator>(typeof(StringLengthAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, RequiredAttributeGenerator>(typeof(RequiredAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, MaxLengthAttributeGenerator>(typeof(MaxLengthAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, MinLengthAttributeGenerator>(typeof(MinLengthAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, DatabaseGeneratedAttributeGenerator>(typeof(DatabaseGeneratedAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(CommentAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(ReadOnlyAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(TableVisibleAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(HiddenAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(TableRowsAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, NoneAttributeGenerator>(typeof(EntityTitleAttribute).FullName);
-			sc.AddSingleton<IDataModelAttributeGenerator, IndexAttributeGenerator>(typeof(IndexAttribute).FullName);
+			sc.AddAttributeGenerator<KeyAttributeGenerator,KeyAttribute>();
+			sc.AddAttributeGenerator<ColumnAttributeGenerator,ColumnAttribute> ();
+			sc.AddAttributeGenerator<NoneAttributeGenerator,EntityObjectAttribute> ();
+			sc.AddAttributeGenerator<NoneAttributeGenerator,EntityIdentAttribute> ();
+			sc.AddAttributeGenerator<StringLengthAttributeGenerator,StringLengthAttribute> ();
+			sc.AddAttributeGenerator<RequiredAttributeGenerator,RequiredAttribute> ();
+			sc.AddAttributeGenerator<MaxLengthAttributeGenerator,MaxLengthAttribute> ();
+			sc.AddAttributeGenerator<MinLengthAttributeGenerator,MinLengthAttribute> ();
+			sc.AddAttributeGenerator<DatabaseGeneratedAttributeGenerator,DatabaseGeneratedAttribute> ();
+			sc.AddAttributeGenerator<NoneAttributeGenerator,CommentAttribute> ();
+			sc.AddAttributeGenerator<NoneAttributeGenerator,ReadOnlyAttribute> ();
+			sc.AddAttributeGenerator<NoneAttributeGenerator,TableVisibleAttribute> ();
+			sc.AddAttributeGenerator<NoneAttributeGenerator,HiddenAttribute> ();
+			sc.AddAttributeGenerator<NoneAttributeGenerator,TableRowsAttribute> ();
+			sc.AddAttributeGenerator<NoneAttributeGenerator,EntityTitleAttribute> ();
+			sc.AddAttributeGenerator<IndexAttributeGenerator,IndexAttribute> ();
+			sc.AddAttributeGenerator<TableAttributeGenerator,TableAttribute> ();
 
 			sc.AddTransient<SystemTypeMetadataBuilder>();
 			sc.AddTransient<DataModelTypeBuilder>();
@@ -95,7 +101,7 @@ namespace SF.Core.ServiceManagement
 					new DataModuleSource
 					{
 						DataModels = new EntityDataModels(
-							sp.Resolve<DataModelTypeBuilder>().Build(),
+							sp.Resolve<DataModelTypeBuilder>().Build(Prefix),
 							string.Empty
 							)
 					}

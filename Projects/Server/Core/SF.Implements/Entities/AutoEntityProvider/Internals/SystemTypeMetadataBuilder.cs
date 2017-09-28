@@ -149,17 +149,17 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			 let name = eo.Id ?? sysType.type.Name
 			 let entity = sysType.ns + name
 			 group (name,sysType) by entity into g
-			 select (id:g.Key,n:g.First().name, types: g.Select(i => i.sysType.type).ToArray())).ToArray();
+			 select (id:g.Key,name:g.First().name,ns:g.First().sysType.ns, types: g.Select(i => i.sysType.type).ToArray())).ToArray();
 
 			foreach (var e in entities)
 			{
 				var et = new EntityType(
-						e.n,
-						e.id,
+						e.name,
+						e.ns,
 						null,
 						MergeMemberAttributes(e.types)
 					);
-				IdToEntityTypes.Add(e.id,et);
+				IdToEntityTypes.Add(et.FullName,et);
 				foreach (var t in e.types)
 					SysTypeToEntityTypes.Add(t, et);
 

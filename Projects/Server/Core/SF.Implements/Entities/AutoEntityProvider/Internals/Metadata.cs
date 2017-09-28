@@ -69,9 +69,11 @@ namespace SF.Entities.AutoEntityProvider.Internals
 	public class EntityType : BaseEntityType, IEntityType
 	{
 		public string FullName { get; }
-		public EntityType(string Name, string FullName ,IReadOnlyList<EntityProperty> Properties, EntityAttribute[] Attributes) : base(Name, Attributes)
+		public string Namespace { get; }
+		public EntityType(string Name, string Namespace,IReadOnlyList<EntityProperty> Properties, EntityAttribute[] Attributes) : base(Name, Attributes)
 		{
-			this.FullName = FullName;
+			this.Namespace = Namespace;
+			this.FullName = Namespace + Name;
 			this.Properties = Properties;
 		}
 		public IReadOnlyList<EntityProperty> Properties { get; set; }
