@@ -15,8 +15,8 @@ namespace SF.Management.FrontEndContents
 	public interface IContentManager : IContentManager<Content>
 	{ }
 	public interface IContentManager<TContent> :
-		IEntityManager<long,TContent>,
-		IEntitySource<long,TContent, ContentQueryArgument>,
+		IEntityManager<TContent>,
+		IEntitySource<TContent, ContentQueryArgument>,
 		IContentLoader
 		where TContent:Content
 	{

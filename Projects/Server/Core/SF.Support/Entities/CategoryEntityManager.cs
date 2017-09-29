@@ -8,7 +8,6 @@ namespace SF.Entities
 {
 
 	public abstract class CategoryEntityManager<
-		TCategoryKey,
 		TCategoryPublic,
 		TCategoryTemp,
 		TQueryArgument,
@@ -18,17 +17,16 @@ namespace SF.Entities
 		TItemKey,
 		TItemModel
 		> :
-		EntityManager<TCategoryKey, TCategoryPublic, TCategoryTemp, TQueryArgument, TCategoryEditable, TCategoryModel>
-		where TCategoryPublic : class, IEntityWithId<TCategoryKey>
-		where TCategoryKey : IEquatable<TCategoryKey>
-		where TCategoryModel : class, IEntityWithId<TCategoryKey>, new()
-		where TQueryArgument : class, IQueryArgument<TCategoryKey>, new()
-		where TCategoryEditable : class, IEntityWithId<TCategoryKey>
+		ModidifiableEntityManager< TCategoryPublic, TCategoryTemp, TQueryArgument, TCategoryEditable, TCategoryModel>
+		where TCategoryPublic : class
+		where TCategoryModel : class, new()
+		where TQueryArgument : class,new()
+		where TCategoryEditable : class
 		where TItemKey : IEquatable<TItemKey>
 		where TItemModel : class, IEntityWithId<TItemKey>, new()
 	{
 		public CategoryEntityManager(
-			IDataSetEntityManager<TCategoryModel> EntityManager
+			IDataSetEntityManager<TCategoryEditable, TCategoryModel> EntityManager
 			) : base(EntityManager)
 		{
 		}

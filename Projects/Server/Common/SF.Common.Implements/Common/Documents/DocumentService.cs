@@ -41,11 +41,11 @@ namespace SF.Common.Documents
 		}
 		protected virtual IContextQueryable<TDocumentPublic> MapModelToPublic(IContextQueryable<TDocument> query, bool detail)
 		{
-			return query.Select(EntityMapper.Map<TDocument, TDocumentPublic>());
+			return query.Select(ADT.Poco.Map<TDocument, TDocumentPublic>());
 		}
 		protected virtual IContextQueryable<TCategoryPublic> MapModelToPublic(IContextQueryable<TCategory> query, bool detail)
 		{
-			return query.Select(EntityMapper.Map<TCategory, TCategoryPublic>());
+			return query.Select(ADT.Poco.Map<TCategory, TCategoryPublic>());
 		}
 		
 

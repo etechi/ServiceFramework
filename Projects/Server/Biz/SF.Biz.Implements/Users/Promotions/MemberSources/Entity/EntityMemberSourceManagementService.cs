@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 namespace SF.Users.Promotions.MemberSources.Entity
 {
 	public class EntityMemberSourceManagementService<TMemberSource, TSourceMember> :
-		EntityManager<long, MemberSourceInternal,  MemberSourceQueryArgument, Models.MemberSourceInternal, TMemberSource>,
+		ModidifiableEntityManager< MemberSourceInternal,  MemberSourceQueryArgument, Models.MemberSourceInternal, TMemberSource>,
 		IMemberSourceManagementService
 		where TMemberSource: DataModels.MemberSource<TMemberSource, TSourceMember>, new()
 		where TSourceMember : DataModels.SourceMember<TMemberSource,TSourceMember>,new()
 	{
 		public EntityMemberSourceManagementService(
-			IDataSetEntityManager<TMemberSource> Manager
+			IDataSetEntityManager<MemberSourceInternal, TMemberSource> Manager
 			) : base(Manager)
 		{
 			//CallPlanProvider.DelayCall(

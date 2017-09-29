@@ -23,8 +23,8 @@ namespace SF.Management.SysAdmins
 	[Comment("系统管理员")]
 	[Category("系统管理", "系统管理员管理")]
 	public interface ISysAdminManagementService : 
-		Entities.IEntitySource<long,SysAdminInternal,SysAdminQueryArgument>,
-		Entities.IEntityManager<long,SysAdminEditable>
+		Entities.IEntitySource<SysAdminInternal,SysAdminQueryArgument>,
+		Entities.IEntityManager<SysAdminEditable>
     {
     }
 

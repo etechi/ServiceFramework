@@ -14,12 +14,12 @@ namespace SF.Entities.AutoEntityProvider
 		IMetadataCollection Metas { get; }
 		IDataModelTypeCollection DataModelTypeCollection { get; }
 		NamedServiceResolver<IValueConverter> ValueConverterResolver { get; }
-		NamedServiceResolver<IEntityModifierValueConverter> EntityModifierValueConverterResolver { get; }
+		NamedServiceResolver<IEntityPropertyModifier> EntityModifierValueConverterResolver { get; }
 		public DataSetAutoEntityProviderFactory(
 			IMetadataCollection Metas,
 			IDataModelTypeCollection DataModelTypeCollection,
 			NamedServiceResolver<IValueConverter> ValueConverterResolver,
-			NamedServiceResolver<IEntityModifierValueConverter> EntityModifierValueConverterResolver
+			NamedServiceResolver<IEntityPropertyModifier> EntityModifierValueConverterResolver
 			)
 		{
 			this.Metas = Metas;
@@ -42,22 +42,20 @@ namespace SF.Entities.AutoEntityProvider
 		}
 
 		static IDataSetAutoEntityProviderSetting
-			NewSetting<TKey, TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TEntityEditableTemp, TQueryArgument, TDataModel>(
+			NewSetting<TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TEntityEditableTemp, TQueryArgument, TDataModel>(
 			QueryResultBuildHelper DetailQueryResultBuildHelper,
 			QueryResultBuildHelper SummaryQueryResultBuildHelper,
 			QueryResultBuildHelper EditableQueryResultBuildHelper,
 			EntityModifier InitModifier,
 			EntityModifier UpdateModifier
 			)
-			where TEntityDetail : class, IEntityWithId<TKey>
-			where TEntitySummary : class, IEntityWithId<TKey>
-			where TEntityEditable : class, IEntityWithId<TKey>
-			where TKey : IEquatable<TKey>
-			where TQueryArgument : IQueryArgument<TKey>
-			where TDataModel : class,IEntityWithId<TKey>,new()
+			where TEntityDetail : class
+			where TEntitySummary : class
+			where TEntityEditable : class
+			where TQueryArgument : class
+			where TDataModel : class,new()
 			{
 			return new DataSetAutoEntityProviderSetting<
-				TKey, 
 				TEntityDetail, 
 				TEntityDetailTemp, 
 				TEntitySummary, 
@@ -74,20 +72,18 @@ namespace SF.Entities.AutoEntityProvider
 				(IEntityModifier<TEntityEditable, TDataModel>)UpdateModifier
 				);
 			}
-		public IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>  
-			Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(IServiceProvider sp)
-			where TEntityDetail : class, IEntityWithId<TKey>
-			where TEntitySummary : class, IEntityWithId<TKey>
-			where TEntityEditable : class, IEntityWithId<TKey>
-			where TKey : IEquatable<TKey>
-			where TQueryArgument : IQueryArgument<TKey>
+		public IDataSetAutoEntityProvider<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>  
+			Create<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(IServiceProvider sp)
+			where TEntityDetail : class
+			where TEntitySummary : class
+			where TEntityEditable : class
+			where TQueryArgument : class
 		{
 			var tDetail = typeof(TEntityDetail);
 			if (!Creators.TryGetValue(tDetail, out var setting))
 			{
 				setting = new Lazy<IDataSetAutoEntityProviderSetting>(() =>
 				  {
-					  var tKey = typeof(TKey);
 					  var tSummary = typeof(TEntitySummary);
 					  var tEditable = typeof(TEntityEditable);
 					  var tQueryArg = typeof(TQueryArgument);
@@ -115,7 +111,6 @@ namespace SF.Entities.AutoEntityProvider
 						  ).Single();
 
 					  return (IDataSetAutoEntityProviderSetting)newSetting.MakeGenericMethod(
-						tKey,
 						tDetail,
 						detailHelper.TempType,
 						tSummary,
@@ -138,7 +133,7 @@ namespace SF.Entities.AutoEntityProvider
 				
 				setting = Creators.GetOrAdd(tDetail,setting);
 			}
-			return (IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>)setting.Value.FuncCreateProvider.Value(sp);
+			return (IDataSetAutoEntityProvider<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>)setting.Value.FuncCreateProvider.Value(sp);
 		}
 	}
 

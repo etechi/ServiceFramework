@@ -34,8 +34,8 @@ namespace SF.Biz.Products
 	{ }
 
 	public interface ICategoryManager<TEditable> :
-		IEntityManager<long, TEditable>,
-		IEntitySource<long,TEditable, CategoryQueryArgument>
+		IEntityManager< TEditable>,
+		IEntitySource<TEditable, CategoryQueryArgument>
 		where TEditable : CategoryInternal
 	{
 		//Task<TEditable[]> BatchUpdate(long SellerId, TEditable[] Items);

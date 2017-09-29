@@ -55,7 +55,7 @@ namespace SF.Users.Members
 
 			var identityService = ServiceProvider.Resolve<IIdentityService>();
 			var id=await identityService.ParseAccessToken(sess);
-			return await ims.GetAsync(id);
+			return await ims.GetAsync(Entity<MemberInternal>.WithKey(id));
 
 		}
 	}

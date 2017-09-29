@@ -13,12 +13,12 @@ namespace SF.Management.FrontEndContents
 		SiteTemplateManager<SiteTemplate, DataModels.Site, DataModels.SiteTemplate>,
 		ISiteTemplateManager
 	{
-		public SiteTemplateManager(IDataSetEntityManager<DataModels.SiteTemplate> EntityManager) : base(EntityManager)
+		public SiteTemplateManager(IDataSetEntityManager<SiteTemplate, DataModels.SiteTemplate> EntityManager) : base(EntityManager)
 		{
 		}
 	}
 	public class SiteTemplateManager<TSiteTemplatePublic,TSite,TSiteTemplate> :
-		EntityManager<long, TSiteTemplatePublic, SiteTemplateQueryArgument, TSiteTemplatePublic, TSiteTemplate>,
+		ModidifiableEntityManager< TSiteTemplatePublic, SiteTemplateQueryArgument, TSiteTemplatePublic, TSiteTemplate>,
 		ISiteTemplateManager<TSiteTemplatePublic>
 		where TSiteTemplatePublic : SiteTemplate, new()
 		where TSite : DataModels.Site<TSite,TSiteTemplate>
@@ -71,7 +71,7 @@ namespace SF.Management.FrontEndContents
 			return Task.CompletedTask;
 		}
 
-        public SiteTemplateManager(IDataSetEntityManager<TSiteTemplate> EntityManager) : base(EntityManager)
+        public SiteTemplateManager(IDataSetEntityManager<TSiteTemplatePublic, TSiteTemplate> EntityManager) : base(EntityManager)
 		{
         }
 

@@ -14,8 +14,7 @@ namespace SF.Auth.Identities.Entity
 {
 	public class EntityIdentityManagementService<TIdentity,TIdentityCredential> :
 		//QuerableEntitySource<long, Models.IdentityInternal, IdentityQueryArgument, TIdentity>,
-		EntityManager<
-			long,
+		ModidifiableEntityManager<
 			Models.IdentityInternal,
 			IdentityQueryArgument,
 			Models.IdentityEditable,
@@ -28,7 +27,7 @@ namespace SF.Auth.Identities.Entity
 		where TIdentityCredential : DataModels.IdentityCredential<TIdentity, TIdentityCredential>,new()
 	{
 		public EntityIdentityManagementService(
-			IDataSetEntityManager<TIdentity> EntityManager
+			IDataSetEntityManager<Models.IdentityEditable, TIdentity> EntityManager
 			) : base(EntityManager)
 		{
 		}
@@ -72,7 +71,7 @@ namespace SF.Auth.Identities.Entity
 					}
 				}
 			});
-			return uid;
+			return uid.Id;
 
 			//Ensure.NotNull(Arg.Identity, "身份标识");
 			//Ensure.HasContent(Arg.Identity.Name, "身份标识名称");

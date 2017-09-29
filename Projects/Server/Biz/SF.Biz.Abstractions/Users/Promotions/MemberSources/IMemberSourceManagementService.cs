@@ -27,8 +27,8 @@ namespace SF.Users.Promotions.MemberSources
 	[Comment("会员渠道")]
 	[Category("用户管理", "会员渠道管理")]
 	public interface IMemberSourceManagementService : 
-		Entities.IEntitySource<long,MemberSourceInternal,MemberSourceQueryArgument>,
-		Entities.IEntityManager<long,MemberSourceInternal>
+		Entities.IEntitySource<MemberSourceInternal,MemberSourceQueryArgument>,
+		Entities.IEntityManager<MemberSourceInternal>
     {
 		Task AddSourceMember(long SourceId, long MemberId);
 	}

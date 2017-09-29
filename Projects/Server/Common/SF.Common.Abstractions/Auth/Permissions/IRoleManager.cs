@@ -7,8 +7,8 @@ namespace SF.Auth.Permissions
 	{
 	}
 	public interface IRoleManager<TRoleInternal,TQueryArgument>
-        : IEntityManager<string, TRoleInternal>,
-		IEntitySource<string,TRoleInternal, TQueryArgument>
+        : IEntityManager<TRoleInternal>,
+		IEntitySource<TRoleInternal, TQueryArgument>
 		where TRoleInternal: Models.RoleInternal
 		where TQueryArgument: RoleQueryArgument
 	{

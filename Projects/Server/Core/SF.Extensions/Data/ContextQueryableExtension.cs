@@ -99,8 +99,9 @@ namespace SF.Data
                    Expression.Equal(prop, Expression.Constant(value.Value)),
                    o
                 ));
-        }
-        class NullableProps<T>
+		}
+		
+		class NullableProps<T>
             where T:struct
         {
             public static PropertyInfo HasValue { get; } = typeof(T?).GetProperty("HasValue");

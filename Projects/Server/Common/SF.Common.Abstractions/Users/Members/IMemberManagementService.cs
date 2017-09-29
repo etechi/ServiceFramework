@@ -44,8 +44,8 @@ namespace SF.Users.Members
 	[Comment("会员")]
 	[Category("用户管理", "会员管理")]
 	public interface IMemberManagementService : 
-		Entities.IEntitySource<long,MemberInternal,MemberQueryArgument>,
-		Entities.IEntityManager<long,MemberEditable>
+		Entities.IEntitySource<MemberInternal,MemberQueryArgument>,
+		Entities.IEntityManager<MemberEditable>
     {
 		Task<string> CreateMemberAsync(
 			CreateMemberArgument Arg,

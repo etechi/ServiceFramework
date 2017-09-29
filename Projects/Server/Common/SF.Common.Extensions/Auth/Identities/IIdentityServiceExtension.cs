@@ -117,13 +117,13 @@ namespace SF.Auth.Identities
 				iid = (await ims.QueryIdentsAsync(new IdentityQueryArgument
 				{
 					Ident = phoneNumber,
-				}, Paging.Single)).Items.FirstOrDefault();
+				}, Paging.Single)).Items.FirstOrDefault().Id;
 
 			if(iid==0 && name!=null)
 				iid = (await ims.QueryIdentsAsync(new IdentityQueryArgument
 				{
 					Ident = name
-				}, Paging.Single)).Items.FirstOrDefault();
+				}, Paging.Single)).Items.FirstOrDefault().Id;
 
 			if (iid > 0)
 			{

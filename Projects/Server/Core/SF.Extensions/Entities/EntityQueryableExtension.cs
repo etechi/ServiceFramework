@@ -38,7 +38,7 @@ namespace SF.Entities
 
 
 		public static async Task<IEnumerable<TEntity>> QueryAllAsync<TKey,TEntity, TQueryArgument>(
-			this IEntityQueryable<TKey,TEntity,TQueryArgument> Queryable
+			this IEntityQueryable<TEntity,TQueryArgument> Queryable
 			)
 			where TKey:IEquatable<TKey>
 			where TEntity:class,IEntityWithId<TKey>
@@ -48,7 +48,7 @@ namespace SF.Entities
 			return re.Items;
 		}
 		public static async Task<TEntity> QuerySingleAsync<TKey, TEntity, TQueryArgument>(
-			this IEntityQueryable<TKey, TEntity, TQueryArgument> Queryable,
+			this IEntityQueryable<TEntity, TQueryArgument> Queryable,
 			TQueryArgument Arg
 			)
 			where TKey : IEquatable<TKey>

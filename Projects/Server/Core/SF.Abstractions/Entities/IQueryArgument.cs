@@ -8,7 +8,8 @@ using System.Text;
 
 namespace SF.Entities
 {
-	public interface IQueryArgument<TKey>
+	public interface IQueryArgument { }
+	public interface IQueryArgument<TKey>: IQueryArgument
 	{
 		Option<TKey> Id { get; }
 	}

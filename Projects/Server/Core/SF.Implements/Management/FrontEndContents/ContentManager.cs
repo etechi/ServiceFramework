@@ -14,7 +14,7 @@ namespace SF.Management.FrontEndContents
 		ContentManager<Content, DataModels.Content>,
 		IContentManager
 	{
-		public ContentManager(IDataSetEntityManager<DataModels.Content> EntityManager) : base(EntityManager)
+		public ContentManager(IDataSetEntityManager<Content, DataModels.Content> EntityManager) : base(EntityManager)
 		{
 		}
 	}
@@ -23,7 +23,7 @@ namespace SF.Management.FrontEndContents
 
 
 	public class ContentManager<TContentPublic,TContent> :
-		EntityManager<long,TContentPublic, ContentQueryArgument, TContentPublic,TContent>,
+		ModidifiableEntityManager<TContentPublic, ContentQueryArgument, TContentPublic,TContent>,
 		IContentManager<TContentPublic>
 		where TContentPublic : Content,new()
 		where TContent: DataModels.Content, new() 
@@ -116,10 +116,10 @@ namespace SF.Management.FrontEndContents
 
 		public async Task<IContent> LoadContent(long contentId)
 		{
-			return await GetAsync(contentId);
+			return await GetAsync(Entity<TContentPublic>.WithKey(contentId));
 		}
 
-		public ContentManager(IDataSetEntityManager<TContent> EntityManager) : base(EntityManager)
+		public ContentManager(IDataSetEntityManager<TContentPublic,TContent> EntityManager) : base(EntityManager)
 		{
 
         }

@@ -23,6 +23,7 @@ namespace SF.ADT
 		}
 		static async Task LoadAllChildren<T>(T Node, Func<T, Task<T[]>> GetChildren,List<T> Result)
 		{
+			
 			var cs = await GetChildren(Node);
 			if (cs != null)
 				foreach (var c in cs)

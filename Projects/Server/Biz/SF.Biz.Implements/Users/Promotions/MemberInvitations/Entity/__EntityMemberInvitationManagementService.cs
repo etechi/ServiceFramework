@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace SF.Users.Promotions.MemberInvitations.Entity
 {
 	public class __EntityMemberInvitationManagementService<TMemberInvitation> :
-		EntityManager<long, Models.MemberInvitationInternal, MemberInvitationQueryArgument, Models.MemberInvitationInternal, TMemberInvitation>,
+		ModidifiableEntityManager<long, Models.MemberInvitationInternal, MemberInvitationQueryArgument, Models.MemberInvitationInternal, TMemberInvitation>,
 		IMemberInvitationManagementService
 		where TMemberInvitation : MemberInvatation<TMemberInvitation>, new()
 	{

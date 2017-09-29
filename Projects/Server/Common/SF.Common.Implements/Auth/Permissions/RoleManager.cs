@@ -20,13 +20,13 @@ namespace SF.Auth.Permissions
 			>,
 		IRoleManager
 	{
-		public RoleManager(IDataSetEntityManager<Role> EntityManager, Lazy<IOperationManager> OperationManager, Lazy<IResourceManager> ResourceManager) : base(EntityManager, OperationManager, ResourceManager)
+		public RoleManager(IDataSetEntityManager<Models.RoleInternal,Role> EntityManager, Lazy<IOperationManager> OperationManager, Lazy<IResourceManager> ResourceManager) : base(EntityManager, OperationManager, ResourceManager)
 		{
 		}
 	}
 
 	public class RoleManager<TRoleInternal, TQueryArgument, TGrant,TRole, TRolePermission, TGrantRole, TGrantPermission> :
-        EntityManager<string, TRoleInternal, TQueryArgument, TRoleInternal,TRole>,
+        ModidifiableEntityManager<TRoleInternal, TQueryArgument, TRoleInternal,TRole>,
         IRoleManager<TRoleInternal, TQueryArgument>
 		where TGrant : DataModels.Grant<TGrant, TRole, TGrantRole, TRolePermission, TGrantPermission>
 		where TRole : DataModels.Role<TGrant,TRole, TGrantRole, TRolePermission, TGrantPermission>,new()
@@ -40,7 +40,7 @@ namespace SF.Auth.Permissions
 		public Lazy<IOperationManager> OperationManager { get; }
         public Lazy<IResourceManager> ResourceManager { get; }
         public RoleManager(
-            IDataSetEntityManager<TRole> EntityManager,
+            IDataSetEntityManager<TRoleInternal,TRole> EntityManager,
             Lazy<IOperationManager> OperationManager,
             Lazy<IResourceManager> ResourceManager
             ) : base(EntityManager)
@@ -145,7 +145,7 @@ namespace SF.Auth.Permissions
             DataContext.Set<TRolePermission>().RemoveRange(ctx.Model.Permissions);
             return base.OnRemoveModel(ctx);
         }
-        protected override IContextQueryable<TRole> OnLoadChildObjectsForUpdate(string Id, IContextQueryable<TRole> query)
+        protected override IContextQueryable<TRole> OnLoadChildObjectsForUpdate(TRoleInternal Id, IContextQueryable<TRole> query)
         {
             return query.Include(u => u.Permissions);
         }

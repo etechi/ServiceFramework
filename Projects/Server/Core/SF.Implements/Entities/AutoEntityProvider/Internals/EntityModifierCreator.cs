@@ -18,52 +18,55 @@ namespace SF.Entities.AutoEntityProvider.Internals
 	{
 
 	}
-	public class EntityModifier<TSource, TTarget> :
+	public class EntityModifier<TEntity, TDataModel> :
 		EntityModifier,
-		IEntityModifier<TSource, TTarget>
+		IEntityModifier<TEntity, TDataModel>
+		where TEntity:class
+		where TDataModel:class
 	{
-		public Lazy<Func<TSource, TTarget, Task>> Modifier { get; }
-		public EntityModifier(Lazy<Func<TSource, TTarget, Task>> Modifier)
+		public Lazy<Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>> Modifier { get; }
+		public EntityModifier(Lazy<Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>> Modifier)
 		{
 			this.Modifier = Modifier;
 		}
-		Func<TSource, TTarget, Task> IEntityModifier<TSource, TTarget>.Modifier => Modifier.Value;
+		Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>
+			IEntityModifier<TEntity, TDataModel>.Modifier => Modifier.Value;
 	}
 
 	public class EntityModifierCreator
 	{
 		Type DataModelType { get; }
 		Type EntityType { get; }
-		NamedServiceResolver<IEntityModifierValueConverter> EntityModifierValueConverter { get; }
+		NamedServiceResolver<IEntityPropertyModifier> PropModifierResolver { get; }
 		ParameterExpression ArgModel { get; }
 		ParameterExpression ArgEntity { get; }
 		string ConvertMode { get; }
-		List<(PropertyInfo prop, PropertyInfo srcProp, IEntityModifierValueConverter conv)> Converters { get; } = new List<(PropertyInfo prop, PropertyInfo srcProp,IEntityModifierValueConverter conv)>();
+		List<(PropertyInfo prop, PropertyInfo srcProp, IEntityPropertyModifier conv)> Converters { get; } = new List<(PropertyInfo prop, PropertyInfo srcProp,IEntityPropertyModifier conv)>();
 		List<Expression> Assigns { get; } = new List<Expression>();
 
 		public EntityModifierCreator(
 			Type DataModelType, 
 			Type EntityType, 
-			NamedServiceResolver<IEntityModifierValueConverter> EntityModifierValueConverter,
+			NamedServiceResolver<IEntityPropertyModifier> PropModifierResolver,
 			string ConvertMode
 			)
 		{
 			this.ConvertMode = ConvertMode;
 			this.DataModelType = DataModelType;
 			this.EntityType = EntityType;
-			this.EntityModifierValueConverter = EntityModifierValueConverter;
+			this.PropModifierResolver = PropModifierResolver;
 			this.ArgModel = Expression.Parameter(DataModelType);
 			this.ArgEntity = Expression.Parameter(EntityType);
 		}
 
-		IEntityModifierValueConverter FindValueConverter(PropertyInfo srcProp, PropertyInfo dstProp)
+		IEntityPropertyModifier FindPropModifier(PropertyInfo srcProp, PropertyInfo dstProp)
 		{
-			if (EntityModifierValueConverter == null)
+			if (PropModifierResolver == null)
 				return null;
 
-			IEntityModifierValueConverter re = null;
+			IEntityPropertyModifier re = null;
 
-			if (srcProp != null && null != (re = EntityModifierValueConverter(
+			if (srcProp != null && null != (re = PropModifierResolver(
 				$"{ConvertMode}/{srcProp.DeclaringType.FullName}:{srcProp.Name}->{dstProp.DeclaringType.FullName}:{dstProp.Name}"
 				)))
 				return re;
@@ -71,7 +74,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			if (srcProp != null)
 			{
 				var ivo = srcProp.GetCustomAttribute<IsValueOfAttribute>();
-				if (ivo != null && null != (re = EntityModifierValueConverter($"{ConvertMode}/{ivo.Type.FullName}")))
+				if (ivo != null && null != (re = PropModifierResolver($"{ConvertMode}/{ivo.Type.FullName}")))
 				{
 					var ivoDataType = ivo.ValueType;
 					if (!ivoDataType.CanSimpleConvertTo(dstProp.PropertyType))
@@ -80,10 +83,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				}
 			}
 
-			if (srcProp!=null && null != (re = EntityModifierValueConverter($"{ConvertMode}/{srcProp.PropertyType.FullName}->{dstProp.PropertyType.FullName}")))
+			if (srcProp!=null && null != (re = PropModifierResolver($"{ConvertMode}/{srcProp.PropertyType.FullName}->{dstProp.PropertyType.FullName}")))
 				return re;
 
-			if (srcProp != null && null != (re = EntityModifierValueConverter($"{ConvertMode}/{dstProp.PropertyType.FullName}")))
+			if (srcProp != null && null != (re = PropModifierResolver($"{ConvertMode}/{dstProp.PropertyType.FullName}")))
 				return re;
 
 			return null;
@@ -92,7 +95,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		void BuildPropSetter(PropertyInfo dstProp)
 		{
 			var srcProp = EntityType.GetProperty(dstProp.Name, BindingFlags.Instance | BindingFlags.Public);
-			var vc = FindValueConverter(srcProp, dstProp);
+			var vc = FindPropModifier(srcProp, dstProp);
 			if (vc != null)
 			{
 				Converters.Add((dstProp, srcProp, vc));
@@ -127,18 +130,20 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		static EntityModifier CreateModifier<TDataModel, TResult>(
 			Func<(object,object)> Assign
 			)
+			where TDataModel:class
+			where TResult:class
 		{
 			return new EntityModifier<TResult, TDataModel>(
-				new Lazy<Func<TResult, TDataModel,  Task>>(
+				new Lazy<Func<IDataSetEntityManager<TResult, TDataModel>, IEntityModifyContext<TResult, TDataModel>, Task>> (
 					()=>
 					{
 						var re = Assign();
 						var sa = (Action<TDataModel, TResult>)re.Item1 ?? EmptyAssign<TDataModel,TResult>.SyncAssign;
 						var aa = ((Func<TDataModel, TResult, Task[]>)re.Item2)?? EmptyAssign<TDataModel, TResult>.AsyncAssign;
-						return async (e, m) =>
+						return async (em, ctx) =>
 						{
-							sa(m, e);
-							await Task.WhenAll(aa(m, e));
+							sa(ctx.Model, ctx.Editable);
+							await Task.WhenAll(aa(ctx.Model, ctx.Editable));
 						};
 					})
 				);

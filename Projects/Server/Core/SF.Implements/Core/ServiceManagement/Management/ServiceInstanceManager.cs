@@ -16,7 +16,7 @@ namespace SF.Core.ServiceManagement.Management
 {
 	[Comment("默认服务实例管理")]
 	public class ServiceInstanceManager :
-		EntityManager<long, ServiceInstanceInternal, ServiceInstanceQueryArgument, ServiceInstanceEditable, DataModels.ServiceInstance>,
+		ModidifiableEntityManager<ServiceInstanceInternal, ServiceInstanceQueryArgument, ServiceInstanceEditable, DataModels.ServiceInstance>,
 		IServiceInstanceManager
 	// IServiceConfigLoader,
 	//IServiceInstanceLister
@@ -27,7 +27,7 @@ namespace SF.Core.ServiceManagement.Management
 		public ServiceInstanceManager(
 			Lazy<IServiceProvider> ServiceProvider,
 			IServiceMetadata Metadata,
-			IDataSetEntityManager<DataModels.ServiceInstance> Manager
+			IDataSetEntityManager<ServiceInstanceEditable,DataModels.ServiceInstance> Manager
 			):base(Manager)
 		{
 			this.ServiceProvider = ServiceProvider;
@@ -268,7 +268,7 @@ namespace SF.Core.ServiceManagement.Management
 			//if (ctx.Model.IsDefaultService)
 			//throw new PublicInvalidOperationException("不能删除默认服务");
 
-			await EntityManager.RemoveAllAsync<long,DataModels.ServiceInstance>(
+			await EntityManager.RemoveAllAsync<ServiceInstanceEditable, DataModels.ServiceInstance>(
 				RemoveAsync,
 				q => q.ContainerId == ctx.Model.Id
 				);

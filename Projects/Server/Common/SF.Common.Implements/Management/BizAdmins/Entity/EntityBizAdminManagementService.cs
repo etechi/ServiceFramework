@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SF.Management.BizAdmins.Entity
 {
 	public class EntityBizAdminManagementService<TBizAdmin> :
-		EntityManager<long, Models.BizAdminInternal,  BizAdminQueryArgument, Models.BizAdminEditable, TBizAdmin>,
+		ModidifiableEntityManager<Models.BizAdminInternal,  BizAdminQueryArgument, Models.BizAdminEditable, TBizAdmin>,
 		IBizAdminManagementService
 		where TBizAdmin: DataModels.BizAdmin<TBizAdmin>,new()
 	{
@@ -17,7 +17,7 @@ namespace SF.Management.BizAdmins.Entity
 		public Lazy<IIdentityCredentialProvider> SignupCredentialProvider { get; }
 
 		public EntityBizAdminManagementService(
-			IDataSetEntityManager<TBizAdmin> EntityManager,
+			IDataSetEntityManager<Models.BizAdminEditable,TBizAdmin> EntityManager,
 			Lazy<IIdentityService> IdentityService,
 			Lazy<IIdentityCredentialProvider> SignupCredentialProvider
 			) : base(EntityManager)

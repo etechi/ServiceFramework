@@ -12,9 +12,9 @@ namespace SF.Entities
 		Deletable=4,
 		All=7
 	}
-	public interface IEntityRemover<TKey>
+	public interface IEntityRemover<TEditable>
 	{
-		Task RemoveAsync(TKey Key);
+		Task<TEditable> RemoveAsync(TEditable Key);
 	}
 	public interface IEntityAllRemover
 	{
@@ -24,33 +24,29 @@ namespace SF.Entities
 	{
 		EntityManagerCapability Capabilities { get; }
 	}
-	public interface IEntityEditableLoader<TKey, TEntity>
-		where TKey : IEquatable<TKey>
-		where TEntity : class, IEntityWithId<TKey>
+	public interface IEntityEditableLoader<TEntity>
+		where TEntity : class
 	{
-		Task<TEntity> LoadForEdit(TKey Id);
+		Task<TEntity> LoadForEdit(TEntity Key);
 	}
-	public interface IEntityUpdator<TKey, TEntity>
-		where TKey : IEquatable<TKey>
-		where TEntity : class, IEntityWithId<TKey>
+	public interface IEntityUpdator<TEntity>
+		where TEntity : class
 	{
-		Task UpdateAsync(TEntity Entity);
+		Task<TEntity> UpdateAsync(TEntity Entity);
 	}
-	public interface IEntityCreator<TKey, TEntity>
-		where TKey : IEquatable<TKey>
-		where TEntity : class, IEntityWithId<TKey>
+	public interface IEntityCreator<TEntity>
+		where TEntity : class
 	{
-		Task<TKey> CreateAsync(TEntity Entity);
+		Task<TEntity> CreateAsync(TEntity Entity);
 	}
-	public interface IEntityManager<TKey, TEntity>:
+	public interface IEntityManager<TEntity>:
 		IEntityManagerCapabilities,
-		IEntityRemover<TKey>,
+		IEntityRemover<TEntity>,
 		IEntityAllRemover,
-		IEntityEditableLoader<TKey,TEntity>,
-		IEntityCreator<TKey,TEntity>,
-		IEntityUpdator<TKey, TEntity>
-		where TKey:IEquatable<TKey>
-		where TEntity:class,IEntityWithId<TKey>
+		IEntityEditableLoader<TEntity>,
+		IEntityCreator<TEntity>,
+		IEntityUpdator<TEntity>
+		where TEntity:class
 	{
 		
 		

@@ -33,8 +33,8 @@ namespace SF.Services.Settings
 			Action<T> Edit
 			) where T:new()
 		{
-			var id = await Manager.TryGetDefaultService<ISettingService<T>>(ParentId);
-			if (id == 0)
+			var si = await Manager.TryGetDefaultService<ISettingService<T>>(ParentId);
+			if (si == null)
 			{
 				var setting = new Data<T> { Value = new T() };
 				Edit(setting.Value);
@@ -48,7 +48,7 @@ namespace SF.Services.Settings
 			}
 			else
 				await Manager.UpdateEntity(
-				id,
+				si,
 				(ServiceInstanceEditable e) => {
 					var cfg = e.Setting.IsNullOrEmpty() ? new Data<T> {  } : Json.Parse<Data<T>>(e.Setting);
 					if (cfg.Value == null)

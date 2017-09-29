@@ -8,6 +8,7 @@ using SF.Core.Times;
 using SF.Core.Logging;
 using SF.Core.ServiceManagement;
 using System.Collections.Generic;
+using SF.ADT;
 
 namespace SF.Entities
 {
@@ -31,22 +32,21 @@ namespace SF.Entities
 		BaseEntityManager
 		where TModel:class
 	{
-		protected new IDataSetEntityManager<TModel> EntityManager => (IDataSetEntityManager<TModel>)base.EntityManager;
+		protected new IReadOnlyDataSetEntityManager<TModel> EntityManager => (IReadOnlyDataSetEntityManager<TModel>)base.EntityManager;
 		public IDataSet<TModel> DataSet => EntityManager.DataSet;
 		public IDataContext DataContext => DataSet.Context;
 
-		public BaseDataSetEntityManager(IDataSetEntityManager<TModel> EntityManager):base(EntityManager)
+		public BaseDataSetEntityManager(IReadOnlyDataSetEntityManager<TModel> EntityManager):base(EntityManager)
 		{
 		}
 	}
 
-	public abstract class EntitySource<TKey, TEntityDetail, TModel> :
-		EntitySource<TKey, TEntityDetail, TEntityDetail, TModel>
-		where TEntityDetail : class, IEntityWithId<TKey>
-		where TKey : IEquatable<TKey>
-		where TModel : class, IEntityWithId<TKey>
+	public abstract class EntitySource<TEntityDetail, TModel> :
+		EntitySource<TEntityDetail, TEntityDetail, TModel>
+		where TEntityDetail : class
+		where TModel : class
 	{
-		public EntitySource(IDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		public EntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
 		}
 		protected override async Task<TEntityDetail[]> OnPrepareDetails(TEntityDetail[] Internals)
@@ -56,31 +56,30 @@ namespace SF.Entities
 		}
 	}
 	
-	public abstract class EntitySource<TKey, TEntityDetail, TDetailTemp, TModel> :
+	public abstract class EntitySource<TDetail, TDetailTemp, TModel> :
 		BaseDataSetEntityManager<TModel>,
-		IEntityLoadable<TKey, TEntityDetail>,
-		IEntityBatchLoadable<TKey, TEntityDetail>
-		where TEntityDetail : class, IEntityWithId<TKey>
-		where TKey : IEquatable<TKey>
-		where TModel: class,IEntityWithId<TKey>
+		IEntityLoadable<TDetail>,
+		IEntityBatchLoadable<TDetail>
+		where TDetail : class
+		where TModel: class
 	{
-		public EntitySource(IDataSetEntityManager<TModel> EntityManager):base(EntityManager)
+		public EntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager):base(EntityManager)
 		{
 		}
 		protected virtual IContextQueryable<TDetailTemp> OnMapModelToDetail(IContextQueryable<TModel> Query)
 		{
-			return Query.Select(EntityMapper.Map<TModel, TDetailTemp>());
+			return Query.Select(Poco.Map<TModel, TDetailTemp>());
 		}
-		protected abstract Task<TEntityDetail[]> OnPrepareDetails(TDetailTemp[] Internals);
+		protected abstract Task<TDetail[]> OnPrepareDetails(TDetailTemp[] Internals);
 
-		public Task<TEntityDetail[]> GetAsync(TKey[] Ids)
+		public Task<TDetail[]> GetAsync(TDetail[] Ids)
 		{
-			return EntityManager.GetAsync<TKey,TDetailTemp,TEntityDetail,TModel>(Ids, OnMapModelToDetail,OnPrepareDetails);
+			return EntityManager.BatchGetAsync<TDetailTemp,TDetail,TModel>(Ids, OnMapModelToDetail,OnPrepareDetails);
 		}
 
-		public Task<TEntityDetail> GetAsync(TKey Id)
+		public Task<TDetail> GetAsync(TDetail Id)
 		{
-			return EntityManager.GetAsync<TKey, TDetailTemp, TEntityDetail, TModel>(Id, OnMapModelToDetail, OnPrepareDetails);
+			return EntityManager.GetAsync<TDetailTemp, TDetail, TModel>(Id, OnMapModelToDetail, OnPrepareDetails);
 		}
 	}
 	public abstract class ConstantEntitySource<TKey, TEntityDetail> :
@@ -112,10 +111,10 @@ namespace SF.Entities
 			return Task.FromResult(Internals);
 		}
 	}
-	public abstract class ConstantEntitySource<TKey, TEntityDetail,TTemp,TModel> :
+	public abstract class ConstantEntitySource<TKey,TEntityDetail,TTemp,TModel> :
 		BaseEntityManager,
-		IEntityLoadable<TKey, TEntityDetail>,
-		IEntityBatchLoadable<TKey, TEntityDetail>
+		IEntityLoadable< TEntityDetail>,
+		IEntityBatchLoadable<TEntityDetail>
 		where TEntityDetail : class, IEntityWithId<TKey>
 		where TModel:class,IEntityWithId<TKey>
 		where TKey : IEquatable<TKey>
@@ -128,12 +127,12 @@ namespace SF.Entities
 		}
 		protected virtual IContextQueryable<TTemp> OnMapModelToInternal(IContextQueryable<TModel> Query)
 		{
-			return Query.Select(EntityMapper.Map<TModel, TTemp>());
+			return Query.Select(ADT.Poco.Map<TModel, TTemp>());
 		}
 		protected abstract Task<TEntityDetail[]> OnPrepareInternals(TTemp[] Internals);
-		public async Task<TEntityDetail> GetAsync(TKey Id)
+		public async Task<TEntityDetail> GetAsync(TEntityDetail Id)
 		{
-			if (Models.TryGetValue(Id, out var m))
+			if (Models.TryGetValue(Entity<TEntityDetail>.GetSingleKey<TKey>(Id), out var m))
 			{
 				var re = await OnPrepareInternals(OnMapModelToInternal(new[] { m }.AsContextQueryable()).ToArray());
 				if (re == null || re.Length == 0)
@@ -144,9 +143,14 @@ namespace SF.Entities
 				return null;
 		}
 
-		public async Task<TEntityDetail[]> GetAsync(TKey[] Ids)
+		public async Task<TEntityDetail[]> GetAsync(TEntityDetail[] Ids)
 		{
-			var re = await OnPrepareInternals(OnMapModelToInternal(Ids.Select(id => Models.Get(id)).Where(m => m != null).AsContextQueryable()).ToArray());
+			var re = await OnPrepareInternals(
+				OnMapModelToInternal(
+					Ids.Select(id => Models.Get(Entity<TEntityDetail>.GetSingleKey<TKey>(id)))
+					.Where(m => m != null)
+					.AsContextQueryable()
+					).ToArray());
 			return re;
 		}
 	}

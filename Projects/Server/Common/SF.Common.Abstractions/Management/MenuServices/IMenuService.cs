@@ -21,8 +21,8 @@ namespace SF.Management.MenuServices
 	[Comment("菜单管理")]
 	[Category("系统管理", "系统菜单")]
 	public interface IMenuService :
-		Entities.IEntitySource<long, Models.Menu, MenuQueryArgument>,
-		Entities.IEntityManager<long, Models.MenuEditable>
+		Entities.IEntitySource<Models.Menu, MenuQueryArgument>,
+		Entities.IEntityManager<Models.MenuEditable>
 	{
 		Task<Models.MenuItem[]> GetMenu(string Ident);
 	}

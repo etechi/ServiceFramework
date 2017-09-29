@@ -6,6 +6,8 @@ using SF.Users.Promotions.MemberInvitations;
 using SF.Core.ServiceManagement;
 using SF.Entities;
 using System.Linq;
+using SF.Users.Promotions.MemberInvitations.Models;
+using SF.ADT;
 
 namespace SF.UT.Promotions.Invitations
 {
@@ -27,80 +29,50 @@ namespace SF.UT.Promotions.Invitations
 				await InvitationTest(sp,
 					async (svc) =>
 					{
-						var time = DateTime.Now;
-						var UserId = 20;
-						var InvitorId = 20;
-						var Invitors = "[20]";
-
-						var re = await svc.CreateAsync(
-							new Users.Promotions.MemberInvitations.Models.MemberInvitationInternal
+						var dst = new MemberInvitationInternal
 						{
-							Id = id,
-							Time = time,
-							UserId = UserId,
-							InvitorId= InvitorId,
-							Invitors= Invitors
-							});
-						Assert.Equal(id, re);
+							Id=id,
+							Time = DateTime.Now,
+							UserId = 20,
+							InvitorId = 20,
+							Invitors = "[20]"
+						};
 
-						var o = await svc.GetAsync(id);
-						Assert.NotNull(o);
-						Assert.Equal(Invitors, o.Invitors);
-						Assert.Equal(InvitorId, o.InvitorId);
-						Assert.Equal(UserId, o.UserId);
-						Assert.Equal(time, o.Time);
-						Assert.Equal(id, o.Id);
+						var re = await svc.CreateAsync(dst);
+						Assert.Equal(dst, re);
 
-						var oss = await svc.GetAsync(new long[] { id });
+						var o = await svc.GetAsync(dst);
+						Assert.True(Poco.DeepEquals(dst, o));
+
+						var oss = await svc.GetAsync(new [] { dst});
 						Assert.Equal(1, oss.Length);
-						o = oss[0];
-						Assert.NotNull(o);
-						Assert.Equal(Invitors, o.Invitors);
-						Assert.Equal(InvitorId, o.InvitorId);
-						Assert.Equal(UserId, o.UserId);
-						Assert.Equal(time, o.Time);
-						Assert.Equal(id, o.Id);
+						Assert.True(Poco.DeepEquals(dst, oss[0]));
 
 						var ids = await svc.QueryIdentsAsync(new MemberInvitationQueryArgument(), Paging.All);
-						Assert.Equal(id, ids.Items.Single());
+						Assert.Equal(dst.Id, ids.Items.Single().Id);
 
 
 						var os = await svc.QueryAsync(new MemberInvitationQueryArgument(), Paging.All);
 						o = os.Items.Single();
-						Assert.NotNull(o);
-						Assert.Equal(Invitors, o.Invitors);
-						Assert.Equal(InvitorId, o.InvitorId);
-						Assert.Equal(UserId, o.UserId);
-						Assert.Equal(time, o.Time);
-						Assert.Equal(id, o.Id);
+						Assert.True(Poco.DeepEquals(dst, o));
 
 
-						var e = await svc.LoadForEdit(id);
-						Assert.NotNull(e);
-						Assert.Equal(Invitors, e.Invitors);
-						Assert.Equal(InvitorId, e.InvitorId);
-						Assert.Equal(UserId, e.UserId);
-						Assert.Equal(time, e.Time);
-						Assert.Equal(id, e.Id);
+						var e = await svc.LoadForEdit(dst);
+						Assert.True(Poco.DeepEquals(dst, e));
 
 						e.Invitors += "1";
 						e.InvitorId += 1;
 						e.UserId += 1;
-						var newTime = time.AddDays(1);
+						var newTime = dst.Time.AddDays(1);
 						e.Time = newTime;
 						await svc.UpdateAsync(e);
 
-						o = await svc.GetAsync(id);
-						Assert.NotNull(o);
-						Assert.Equal(Invitors+"1", o.Invitors);
-						Assert.Equal(InvitorId+1, o.InvitorId);
-						Assert.Equal(UserId+1, o.UserId);
-						Assert.Equal(newTime, o.Time);
-						Assert.Equal(id, o.Id);
+						o = await svc.GetAsync(dst);
+						Assert.True(Poco.DeepEquals(o, e));
 
 
-						await svc.RemoveAsync(id);
-						Assert.Null(await svc.GetAsync(id));
+						await svc.RemoveAsync(dst);
+						Assert.Null(await svc.GetAsync(dst));
 
 						return re;
 

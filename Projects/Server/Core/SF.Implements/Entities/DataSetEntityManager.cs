@@ -11,14 +11,15 @@ using SF.Core.Events;
 
 namespace SF.Entities
 {
-	class DataSetEntityManager<T> : IDataSetEntityManager<T>
-		where T : class,new()
+	class DataSetEntityManager<TEditable, TDataModel> : IDataSetEntityManager<TEditable, TDataModel>
+		where TDataModel : class,new()
+		where TEditable:class,new()
 	{
 		IServiceProvider ServiceProvider { get; }
-		IDataSet<T> _DataSet;
+		IDataSet<TDataModel> _DataSet;
 		ITimeService _TimeService;
 		IEntityReferenceResolver _DataEntityResolver;
-		ILogger<T> _Logger;
+		ILogger<TDataModel> _Logger;
 		IIdentGenerator _IdentGenerator;
 		IEventEmitter _EventEmitter;
 		public IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
@@ -48,7 +49,7 @@ namespace SF.Entities
 				return _Now;
 			}
 		}
-		public IDataSet<T> DataSet => Resolve(ref _DataSet);
+		public IDataSet<TDataModel> DataSet => Resolve(ref _DataSet);
 		public IIdentGenerator IdentGenerator => Resolve(ref _IdentGenerator);
 		public IEntityReferenceResolver DataEntityResolver => Resolve(ref _DataEntityResolver);
 		public ITimeService TimeService => Resolve(ref _TimeService);
@@ -58,30 +59,25 @@ namespace SF.Entities
 
 		
 
-		public void InitCreateContext<TKey, TEditable>(IEntityModifyContext<TKey, TEditable, T> Context,TEditable Editable, object ExtraArguments)
-			where TKey : IEquatable<TKey>
-			where TEditable : IEntityWithId<TKey>
+		public void InitCreateContext(IEntityModifyContext<TEditable, TDataModel> Context,TEditable Editable, object ExtraArguments)
 		{
-			Context.Model = new T();
+			Context.Model = new TDataModel();
 			Context.Action = ModifyAction.Create;
 			Context.Editable = Editable;
 			Context.ExtraArgument = ExtraArguments;
 		}
 
-		public void InitRemoveContext<TKey>(IEntityModifyContext<TKey, T> Context, TKey Id, T Model, object ExtraArguments) where TKey : IEquatable<TKey>
+		public void InitRemoveContext(IEntityModifyContext<TEditable, TDataModel> Context, TEditable Editable, TDataModel Model, object ExtraArguments)
 		{
 			Context.Action = ModifyAction.Delete;
-			Context.Id = Id;
+			Context.Editable=Editable;
 			Context.Model = Model;
 			Context.ExtraArgument = ExtraArguments;
 		}
 
-		public void InitUpdateContext<TKey, TEditable>(IEntityModifyContext<TKey, TEditable, T> Context,TKey Id, TEditable Editable, T Model, object ExtraArguments)
-			where TKey : IEquatable<TKey>
-			where TEditable : IEntityWithId<TKey>
+		public void InitUpdateContext(IEntityModifyContext<TEditable, TDataModel> Context,TEditable Editable, TDataModel Model, object ExtraArguments)
 		{
 			Context.Action = ModifyAction.Update;
-			Context.Id = Id;
 			Context.Editable = Editable;
 			Context.Model = Model;
 			Context.ExtraArgument = ExtraArguments;

@@ -27,8 +27,8 @@ namespace SF.Users.Promotions.MemberInvitations
 	[Comment("会员邀请")]
 	[Category("用户管理", "会员邀请管理")]
 	public interface IMemberInvitationManagementService : 
-		Entities.IEntitySource<long,MemberInvitationInternal, MemberInvitationQueryArgument>,
-		Entities.IEntityManager<long, MemberInvitationInternal>
+		Entities.IEntitySource<MemberInvitationInternal, MemberInvitationQueryArgument>,
+		Entities.IEntityManager<MemberInvitationInternal>
     {
 	}
 

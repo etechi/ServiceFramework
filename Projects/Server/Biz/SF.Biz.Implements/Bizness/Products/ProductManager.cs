@@ -9,7 +9,7 @@ using SF.Data;
 namespace SF.Biz.Products.Entity
 {
 	public class ProductManager<TInternal, TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec> :
-		EntityManager<long,TInternal, ProductInternalQueryArgument, TEditable, TProduct>,
+		ModidifiableEntityManager<TInternal, ProductInternalQueryArgument, TEditable, TProduct>,
 		IProductManager<TInternal, TEditable>
         where TInternal : ProductInternal, new()
 		where TEditable : ProductEditable, new()
@@ -26,7 +26,7 @@ namespace SF.Biz.Products.Entity
     {
 		public Lazy<IItemNotifier> ItemNotifier { get; }
         public ProductManager(
-			IDataSetEntityManager<TProduct> EntityManager, 
+			IDataSetEntityManager<TEditable,TProduct> EntityManager, 
 			Lazy<IItemNotifier> ItemNotifier
             ) : base(EntityManager)
 		{
@@ -259,7 +259,7 @@ namespace SF.Biz.Products.Entity
 			};
             var notifier = this.ItemNotifier.Value;
             if(obj.CategoryIds!=null)
-                EntityManager.AddPostAction(() =>
+				EntityManager.AddPostAction(() =>
                 {
                     foreach (var cid in obj.CategoryIds)
                             notifier.NotifyCategoryItemsChanged(cid);
@@ -268,7 +268,7 @@ namespace SF.Biz.Products.Entity
 				);
             return Task.CompletedTask;
 		}
-		protected override IContextQueryable<TProduct> OnLoadChildObjectsForUpdate(long Id, IContextQueryable<TProduct> query)
+		protected override IContextQueryable<TProduct> OnLoadChildObjectsForUpdate(TEditable Id, IContextQueryable<TProduct> query)
 		{
 			return query.Include(p => p.Detail).Include(p => p.Specs);
 		}
@@ -284,7 +284,7 @@ namespace SF.Biz.Products.Entity
 		}
 		protected override async Task OnRemoveModel(IModifyContext ctx)
 		{
-			var Id = ctx.Id;
+			var Id = ctx.Editable.Id;
 			var prd = await DataSet.AsQueryable(false).Where(p => p.Id.Equals(Id))
 				.Include(p => p.Detail)
 				.Include(p => p.PropertyItems)

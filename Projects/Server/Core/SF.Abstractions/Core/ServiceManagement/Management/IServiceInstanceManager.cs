@@ -41,8 +41,8 @@ namespace SF.Core.ServiceManagement.Management
 	[Comment("服务实例管理", "系统内置服务实例")]
 	[Category("系统管理","系统服务管理")]
 	public interface IServiceInstanceManager :
-		IEntityManager<long, Models.ServiceInstanceEditable>,
-		IEntitySource<long, Models.ServiceInstanceInternal, ServiceInstanceQueryArgument>
+		IEntityManager<Models.ServiceInstanceEditable>,
+		IEntitySource<Models.ServiceInstanceInternal, ServiceInstanceQueryArgument>
 	{
 
 	}

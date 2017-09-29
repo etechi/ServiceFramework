@@ -13,13 +13,13 @@ namespace SF.Management.FrontEndContents
 		SiteManager<Site, DataModels.Site, DataModels.SiteTemplate>,
 		ISiteManager
 	{
-		public SiteManager(IDataSetEntityManager<DataModels.Site> EntityManager) : base(EntityManager)
+		public SiteManager(IDataSetEntityManager<Site,DataModels.Site> EntityManager) : base(EntityManager)
 		{
 		}
 	}
 
 	public class SiteManager<TSitePublic,TSite,TSiteTemplate> :
-		EntityManager<string,TSitePublic, TSitePublic,TSite>,
+		ModidifiableEntityManager<TSitePublic, TSitePublic,TSite>,
 		ISiteManager<TSitePublic>
 		where TSitePublic:Site,new()
 		where TSite : DataModels.Site<TSite,TSiteTemplate>, new() 
@@ -62,7 +62,7 @@ namespace SF.Management.FrontEndContents
             return base.OnRemoveModel(ctx);
         }
 
-        public SiteManager(IDataSetEntityManager<TSite> EntityManager) : base(EntityManager)
+        public SiteManager(IDataSetEntityManager<TSitePublic,TSite> EntityManager) : base(EntityManager)
 		{
 		}
 

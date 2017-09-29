@@ -17,8 +17,8 @@ namespace SF.Management.BizAdmins
 	[Comment("业务管理员")]
 	[Category("系统管理", "业务管理员管理")]
 	public interface IBizAdminManagementService : 
-		IEntitySource<long,BizAdminInternal,BizAdminQueryArgument>,
-		IEntityManager<long,BizAdminEditable>
+		IEntitySource<BizAdminInternal,BizAdminQueryArgument>,
+		IEntityManager<BizAdminEditable>
     {
     }
 

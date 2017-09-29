@@ -12,8 +12,8 @@ namespace SF.Auth.Permissions
 		public long? IdentityId { get; set; }
 	}
 	public interface IGrantManager<TGrantEditable>
-        : IEntitySource<long, TGrantEditable, GrantQueryArgument>,
-		IEntityManager<long,TGrantEditable>
+        : IEntitySource< TGrantEditable, GrantQueryArgument>,
+		IEntityManager<TGrantEditable>
 		where TGrantEditable : Models.GrantEditable
 	{
 	}

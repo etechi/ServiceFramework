@@ -12,7 +12,7 @@ using SF.Core.ServiceManagement;
 namespace SF.Management.MenuServices.Entity
 {
 	public class EntityMenuService<TMenu,TMenuItem> :
-		EntityManager<long, Models.Menu,  MenuQueryArgument, Models.MenuEditable, TMenu>,
+		ModidifiableEntityManager< Models.Menu,  MenuQueryArgument, Models.MenuEditable, TMenu>,
 		IMenuService
 		where TMenu: DataModels.Menu<TMenu,TMenuItem>,new()
 		where TMenuItem : DataModels.MenuItem<TMenu, TMenuItem>, new()
@@ -20,7 +20,7 @@ namespace SF.Management.MenuServices.Entity
 		public Lazy<IDataSet<TMenuItem>> MenuItemSet { get; }
 		
 		public EntityMenuService(
-			IDataSetEntityManager<TMenu> Manager,
+			IDataSetEntityManager<Models.MenuEditable, TMenu> Manager,
 			Lazy<IDataSet<TMenuItem>> MenuItemSet
 			) : base(Manager)
 		{

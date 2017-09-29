@@ -13,14 +13,14 @@ using System.Threading.Tasks;
 namespace SF.Users.Members.Entity
 {
 	public class EntityMemberManagementService<TMember> :
-		EntityManager<long, Models.MemberInternal,  MemberQueryArgument, Models.MemberEditable, TMember>,
+		ModidifiableEntityManager<Models.MemberInternal,  MemberQueryArgument, Models.MemberEditable, TMember>,
 		IMemberManagementService,
 		ICallable
 		where TMember: DataModels.Member<TMember>,new()
 	{
 		public Lazy<IIdentityService> IdentityService { get; }
 		public EntityMemberManagementService(
-			IDataSetEntityManager<TMember> Manager,
+			IDataSetEntityManager<Models.MemberEditable,TMember> Manager,
 			Lazy<IIdentityService> IdentityService,
 			ICallPlanProvider CallPlanProvider
 			) : base(Manager)

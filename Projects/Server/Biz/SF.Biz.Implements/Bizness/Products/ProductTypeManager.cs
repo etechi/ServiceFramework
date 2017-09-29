@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SF.Biz.Products.Entity
 {
 	public class ProductTypeManager<TInternal, TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec> :
-		EntityManager<long, TInternal,ProductTypeQueryArgument,  TEditable, TProductType>,
+		ModidifiableEntityManager<TInternal,ProductTypeQueryArgument,  TEditable, TProductType>,
 		IProductTypeManager<TInternal, TEditable>
 		where TInternal : ProductTypeInternal, new()
 		where TEditable : ProductTypeEditable, new()
@@ -23,7 +23,7 @@ namespace SF.Biz.Products.Entity
 		where TItem : DataModels.Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : DataModels.ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>
     {
-		public ProductTypeManager(IDataSetEntityManager<TProductType> EntityManager) : base(EntityManager)
+		public ProductTypeManager(IDataSetEntityManager<TEditable,TProductType> EntityManager) : base(EntityManager)
 		{
 		}
         protected override IContextQueryable<TInternal> OnMapModelToDetail(IContextQueryable<TProductType> Query)
@@ -79,10 +79,10 @@ namespace SF.Biz.Products.Entity
 			Model.CreatedTime = Now;
 			return Task.CompletedTask;
 		}
-		protected override Task<TProductType> OnLoadModelForUpdate(long Id, IContextQueryable<TProductType> ctx)
+		protected override Task<TProductType> OnLoadModelForUpdate(TEditable Id, IContextQueryable<TProductType> ctx)
 		{
 			return ctx
-				.Where(s => s.Id == Id)
+				.Where(s => s.Id == Id.Id)
 				//.Include(s => s.Items)
 				.SingleOrDefaultAsync();
 		}

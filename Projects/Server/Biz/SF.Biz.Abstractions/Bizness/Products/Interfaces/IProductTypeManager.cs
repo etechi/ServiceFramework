@@ -24,8 +24,8 @@ namespace SF.Biz.Products
 	}
 
 	public interface IProductTypeManager<TInternal, TEditable> :
-		IEntityManager<long, TEditable>,
-		IEntitySource<long, TInternal,ProductTypeQueryArgument>
+		IEntityManager<TEditable>,
+		IEntitySource<TInternal,ProductTypeQueryArgument>
 		where TInternal : ProductTypeInternal
 		where TEditable : ProductTypeEditable
 	{

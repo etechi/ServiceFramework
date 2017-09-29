@@ -15,7 +15,7 @@ namespace SF.Common.TextMessages.Management
 	[NetworkService]
 	[Comment("文本消息记录")]
 	public interface IMsgRecordManager : 
-		Entities.IEntitySource<long,MsgRecord,MsgRecordQueryArgument>
+		Entities.IEntitySource<MsgRecord,MsgRecordQueryArgument>
 	{
 	}
 }

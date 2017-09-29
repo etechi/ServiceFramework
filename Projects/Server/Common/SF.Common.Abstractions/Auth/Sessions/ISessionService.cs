@@ -19,7 +19,7 @@ namespace SF.Auth.Sessions
 	public delegate Task<string> SessionCreator(long UserId);
 	[NetworkService]
 	public interface ISessionService : 
-		Entities.IEntitySource<long,UserSessionInternal,UserSessionQueryArgument>
+		Entities.IEntitySource<UserSessionInternal,UserSessionQueryArgument>
 	{
 		Task<T> Create<T>(
 			int ScopeId,

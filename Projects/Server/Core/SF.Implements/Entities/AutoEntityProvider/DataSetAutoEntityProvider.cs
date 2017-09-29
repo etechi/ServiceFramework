@@ -4,21 +4,20 @@ using SF.Core.ServiceManagement;
 
 namespace SF.Entities.AutoEntityProvider
 {
-	class DataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>:
-		IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
-		where TEntityDetail : class, IEntityWithId<TKey>
-		where TEntitySummary : class, IEntityWithId<TKey>
-		where TEntityEditable : class, IEntityWithId<TKey>
-		where TKey : IEquatable<TKey>
-		where TQueryArgument : IQueryArgument<TKey>
+	class DataSetAutoEntityProvider<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>:
+		IDataSetAutoEntityProvider<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
+		where TEntityDetail : class
+		where TEntitySummary : class
+		where TEntityEditable : class
+		where TQueryArgument : class
 	{
 	
 
 		public IDataSetEntityManager EntityManager { get; }
-		IDataSetEntityManager IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>.EntityManager => EntityManager;
-		IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument> Setting { get; }
+		IDataSetEntityManager IDataSetAutoEntityProvider<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>.EntityManager => EntityManager;
+		IDataSetAutoEntityProviderSetting<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument> Setting { get; }
 
-		public DataSetAutoEntityProvider(IDataSetEntityManager EntityManager, IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument> Setting)
+		public DataSetAutoEntityProvider(IDataSetEntityManager EntityManager, IDataSetAutoEntityProviderSetting<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument> Setting)
 		{
 			this.EntityManager = EntityManager;
 			this.Setting = Setting;
@@ -27,22 +26,22 @@ namespace SF.Entities.AutoEntityProvider
 		public EntityManagerCapability Capabilities { get; } = EntityManagerCapability.All;
 
 
-		public Task<TKey> CreateAsync( TEntityEditable Entity)
+		public Task<TEntityEditable> CreateAsync( TEntityEditable Entity)
 		{
 			return Setting.CreateAsync(EntityManager, Entity);
 		}
 
-		public Task<TEntityDetail> GetAsync(TKey Id)
+		public Task<TEntityDetail> GetAsync(TEntityDetail Id)
 		{
 			return Setting.GetAsync(EntityManager, Id);
 		}
 
-		public Task<TEntityDetail[]> GetAsync( TKey[] Ids)
+		public Task<TEntityDetail[]> GetAsync(TEntityDetail[] Ids)
 		{
 			return Setting.GetAsync(EntityManager, Ids);
 		}
 
-		public Task<TEntityEditable> LoadForEdit(TKey Id)
+		public Task<TEntityEditable> LoadForEdit(TEntityEditable Id)
 		{
 			return Setting.LoadForEdit(EntityManager, Id);
 		}
@@ -52,7 +51,7 @@ namespace SF.Entities.AutoEntityProvider
 			return Setting.QueryAsync(EntityManager, Arg, paging);
 		}
 
-		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TEntitySummary>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
 		{
 			return Setting.QueryIdentsAsync(EntityManager, Arg, paging); 
 		}
@@ -62,12 +61,12 @@ namespace SF.Entities.AutoEntityProvider
 			return Setting.RemoveAllAsync(EntityManager);
 		}
 
-		public Task RemoveAsync(TKey Key)
+		public Task<TEntityEditable> RemoveAsync(TEntityEditable Key)
 		{
 			return Setting.RemoveAsync(EntityManager, Key);
 		}
 
-		public Task UpdateAsync(TEntityEditable Entity)
+		public Task<TEntityEditable> UpdateAsync(TEntityEditable Entity)
 		{
 			return Setting.UpdateAsync(EntityManager, Entity);
 		}

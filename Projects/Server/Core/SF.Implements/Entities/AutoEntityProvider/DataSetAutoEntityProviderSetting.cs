@@ -13,53 +13,51 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		Lazy<Func<IServiceProvider, object>> FuncCreateProvider { get; }
 	}
-	public interface IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
+	public interface IDataSetAutoEntityProviderSetting<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		: IDataSetAutoEntityProviderSetting
-		where TEntityDetail : class, IEntityWithId<TKey>
-		where TEntitySummary : class, IEntityWithId<TKey>
-		where TEntityEditable : class, IEntityWithId<TKey>
-		where TKey : IEquatable<TKey>
-		where TQueryArgument : IQueryArgument<TKey>
+		where TEntityDetail : class
+		where TEntitySummary : class
+		where TEntityEditable : class
+		where TQueryArgument : class
 	{
-		Task<TKey> CreateAsync(IDataSetEntityManager EntityManager, TEntityEditable Entity);
-		Task<TEntityDetail> GetAsync(IDataSetEntityManager EntityManager, TKey Id);
+		Task<TEntityEditable> CreateAsync(IDataSetEntityManager EntityManager, TEntityEditable Entity);
+		Task<TEntityDetail> GetAsync(IDataSetEntityManager EntityManager, TEntityDetail Id);
 
-		Task<TEntityDetail[]> GetAsync(IDataSetEntityManager EntityManager, TKey[] Ids);
+		Task<TEntityDetail[]> GetAsync(IDataSetEntityManager EntityManager, TEntityDetail[] Ids);
 
-		Task<TEntityEditable> LoadForEdit(IDataSetEntityManager EntityManager, TKey Id);
+		Task<TEntityEditable> LoadForEdit(IDataSetEntityManager EntityManager, TEntityEditable Id);
 
 		Task<QueryResult<TEntitySummary>> QueryAsync(IDataSetEntityManager EntityManager, TQueryArgument Arg, Paging paging);
 
-		Task<QueryResult<TKey>> QueryIdentsAsync(IDataSetEntityManager EntityManager, TQueryArgument Arg, Paging paging);
+		Task<QueryResult<TEntitySummary>> QueryIdentsAsync(IDataSetEntityManager EntityManager, TQueryArgument Arg, Paging paging);
 
 		Task RemoveAllAsync(IDataSetEntityManager EntityManager);
 
-		Task RemoveAsync(IDataSetEntityManager EntityManager, TKey Key);
+		Task<TEntityEditable> RemoveAsync(IDataSetEntityManager EntityManager, TEntityEditable Key);
 
-		Task UpdateAsync(IDataSetEntityManager EntityManager, TEntityEditable Entity);
+		Task<TEntityEditable> UpdateAsync(IDataSetEntityManager EntityManager, TEntityEditable Entity);
 	}
-	class DataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TEntityEditableTemp, TQueryArgument,TDataModel>
-		: IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
-		where TEntityDetail : class, IEntityWithId<TKey>
-		where TEntitySummary : class, IEntityWithId<TKey>
-		where TEntityEditable : class, IEntityWithId<TKey>
-		where TKey : IEquatable<TKey>
-		where TQueryArgument : IQueryArgument<TKey>
-		where TDataModel : class,IEntityWithId<TKey>,new()
+	class DataSetAutoEntityProviderSetting<TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TEntityEditableTemp, TQueryArgument,TDataModel>
+		: IDataSetAutoEntityProviderSetting<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
+		where TEntityDetail : class
+		where TEntitySummary : class
+		where TEntityEditable : class
+		where TQueryArgument : class
+		where TDataModel : class,new()
 	{
-		Lazy<Func<IDataSetEntityManager<TDataModel>, IContextQueryable<TDataModel>, IContextQueryable<TEntityDetailTemp>>> FuncMapModelToDetailTemp { get; }
-		Lazy<Func<IDataSetEntityManager<TDataModel>, TEntityDetailTemp[], Task<TEntityDetail[]>>> FuncMapDetailTempToDetail { get; }
+		Lazy<Func<IDataSetEntityManager<TEntityEditable,TDataModel>, IContextQueryable<TDataModel>, IContextQueryable<TEntityDetailTemp>>> FuncMapModelToDetailTemp { get; }
+		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, TEntityDetailTemp[], Task<TEntityDetail[]>>> FuncMapDetailTempToDetail { get; }
 
-		Lazy<Func<IDataSetEntityManager<TDataModel>, IContextQueryable<TDataModel>, IContextQueryable<TEntitySummaryTemp>>> FuncMapModelToSummaryTemp { get; }
-		Lazy<Func<IDataSetEntityManager<TDataModel>, TEntitySummaryTemp[], Task<TEntitySummary[]>>> FuncMapSummaryTempToSummary { get; }
+		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, IContextQueryable<TEntitySummaryTemp>>> FuncMapModelToSummaryTemp { get; }
+		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, TEntitySummaryTemp[], Task<TEntitySummary[]>>> FuncMapSummaryTempToSummary { get; }
 
-		Lazy<Func<IDataSetEntityManager<TDataModel>, IContextQueryable<TDataModel>, TQueryArgument, Paging, IContextQueryable<TDataModel>>> FuncBuildQuery { get; }
+		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, TQueryArgument, Paging, IContextQueryable<TDataModel>>> FuncBuildQuery { get; }
 
-		Lazy<Func<IDataSetEntityManager<TDataModel>, IContextQueryable<TDataModel>, Task<TEntityEditable>>> FuncLoadEditable { get; }
-		Lazy<Func<IDataSetEntityManager<TDataModel>, TKey, IContextQueryable<TDataModel>, Task<TDataModel>>> FuncLoadModelForModify { get; }
-		Lazy<Func<IDataSetEntityManager<TDataModel>, IEntityModifyContext<TKey, TEntityEditable, TDataModel>, Task>> FuncInitModel { get; }
-		Lazy<Func<IDataSetEntityManager<TDataModel>, IEntityModifyContext<TKey, TEntityEditable, TDataModel>, Task>> FuncUpdateModel { get; }
-		Lazy<Func<IDataSetEntityManager<TDataModel>, IEntityModifyContext<TKey, TDataModel>, Task>> FuncRemoveModel { get; }
+		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, Task<TEntityEditable>>> FuncLoadEditable { get; }
+		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, TEntityEditable, IContextQueryable<TDataModel>, Task<TDataModel>>> FuncLoadModelForModify { get; }
+		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>> FuncInitModel { get; }
+		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>> FuncUpdateModel { get; }
+		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>> FuncRemoveModel { get; }
 		Lazy<IPagingQueryBuilder<TDataModel>> PagingQueryBuilder { get; }
 
 		IQueryResultBuildHelper<TDataModel, TEntityDetailTemp, TEntityDetail> DetailQueryResultBuildHelper { get; }
@@ -83,10 +81,10 @@ namespace SF.Entities.AutoEntityProvider
 			}
 		}
 
-		public Task<TKey> CreateAsync(IDataSetEntityManager EntityManager,TEntityEditable Entity)
+		public Task<TEntityEditable> CreateAsync(IDataSetEntityManager EntityManager,TEntityEditable Entity)
 		{
-			var em = (IDataSetEntityManager<TDataModel>)EntityManager;
-			return em.CreateAsync<TKey, TEntityEditable, TDataModel>(
+			var em = (IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager;
+			return em.CreateAsync<TEntityEditable, TDataModel>(
 				Entity,
 				ctx => FuncInitModel.Value(em, ctx),
 				ctx => FuncUpdateModel.Value(em, ctx),
@@ -94,9 +92,9 @@ namespace SF.Entities.AutoEntityProvider
 				);
 		}
 
-		public Task<TEntityDetail> GetAsync(IDataSetEntityManager EntityManager, TKey Id)
+		public Task<TEntityDetail> GetAsync(IDataSetEntityManager EntityManager, TEntityDetail Id)
 		{
-			var em = (IDataSetEntityManager<TDataModel>)EntityManager;
+			var em = (IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager;
 			return em.GetAsync(
 				Id,
 				ctx => FuncMapModelToDetailTemp.Value(em, ctx),
@@ -104,19 +102,19 @@ namespace SF.Entities.AutoEntityProvider
 				);
 		}
 
-		public Task<TEntityDetail[]> GetAsync(IDataSetEntityManager EntityManager, TKey[] Ids)
+		public Task<TEntityDetail[]> GetAsync(IDataSetEntityManager EntityManager, TEntityDetail[] Ids)
 		{
-			var em = (IDataSetEntityManager<TDataModel>)EntityManager;
-			return em.GetAsync(
+			var em = (IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager;
+			return em.BatchGetAsync(
 				Ids,
 				ctx => FuncMapModelToDetailTemp.Value(em, ctx),
 				items => FuncMapDetailTempToDetail.Value(em, items)
 				);
 		}
 
-		public Task<TEntityEditable> LoadForEdit(IDataSetEntityManager EntityManager, TKey Id)
+		public Task<TEntityEditable> LoadForEdit(IDataSetEntityManager EntityManager, TEntityEditable Id)
 		{
-			var em = ((IDataSetEntityManager<TDataModel>)EntityManager);
+			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
 			return em.LoadForEdit(
 				Id,
 				(ctx) => FuncLoadEditable.Value(em, ctx)
@@ -125,8 +123,8 @@ namespace SF.Entities.AutoEntityProvider
 
 		public Task<QueryResult<TEntitySummary>> QueryAsync(IDataSetEntityManager EntityManager, TQueryArgument Arg, Paging paging)
 		{
-			var em = ((IDataSetEntityManager<TDataModel>)EntityManager);
-			return em.QueryAsync<TKey, TEntitySummaryTemp, TEntitySummary, TQueryArgument, TDataModel>(
+			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
+			return em.QueryAsync<TEntitySummaryTemp, TEntitySummary, TQueryArgument, TDataModel>(
 				Arg,
 				paging,
 				(ctx, args, pg) => FuncBuildQuery.Value(em, ctx, args, pg),
@@ -136,10 +134,10 @@ namespace SF.Entities.AutoEntityProvider
 				);
 		}
 
-		public Task<QueryResult<TKey>> QueryIdentsAsync(IDataSetEntityManager EntityManager, TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TEntitySummary>> QueryIdentsAsync(IDataSetEntityManager EntityManager, TQueryArgument Arg, Paging paging)
 		{
-			var em = ((IDataSetEntityManager<TDataModel>)EntityManager);
-			return em.QueryIdentsAsync<TKey, TQueryArgument, TDataModel>(
+			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
+			return em.QueryIdentsAsync<TEntitySummary, TQueryArgument, TDataModel>(
 				Arg,
 				paging,
 				(ctx, args, pg) => FuncBuildQuery.Value(em, ctx, args, pg),
@@ -149,27 +147,27 @@ namespace SF.Entities.AutoEntityProvider
 
 		public async Task RemoveAllAsync(IDataSetEntityManager EntityManager)
 		{
-			var em = ((IDataSetEntityManager<TDataModel>)EntityManager);
-			await em.RemoveAllAsync<TKey, TDataModel>(
+			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
+			await em.RemoveAllAsync<TEntityEditable, TDataModel>(
 				async id =>
 					await RemoveAsync(em,id)
 				);
 		}
 
-		public async Task RemoveAsync(IDataSetEntityManager EntityManager, TKey Key)
+		public async Task<TEntityEditable> RemoveAsync(IDataSetEntityManager EntityManager, TEntityEditable Key)
 		{
-			var em = ((IDataSetEntityManager<TDataModel>)EntityManager);
-			await em.RemoveAsync<TKey, TDataModel, TEntityEditable>(
+			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
+			return await em.RemoveAsync< TDataModel, TEntityEditable>(
 				Key,
 				(ctx) => FuncRemoveModel.Value(em, ctx),
 				(key, ctx) => FuncLoadModelForModify.Value(em, key, ctx)
 				);
 		}
 
-		public async Task UpdateAsync(IDataSetEntityManager EntityManager, TEntityEditable Entity)
+		public async Task<TEntityEditable> UpdateAsync(IDataSetEntityManager EntityManager, TEntityEditable Entity)
 		{
-			var em = ((IDataSetEntityManager<TDataModel>)EntityManager);
-			await em.UpdateAsync<TKey, TEntityEditable, TDataModel>(
+			var em = ((IDataSetEntityManager<TEntityEditable,TDataModel>)EntityManager);
+			return await em.UpdateAsync<TEntityEditable, TDataModel>(
 				Entity,
 				ctx => FuncUpdateModel.Value(em, ctx),
 				(key, ctx) => FuncLoadModelForModify.Value(em, key, ctx)
@@ -192,36 +190,36 @@ namespace SF.Entities.AutoEntityProvider
 
 			 FuncCreateProvider = new Lazy<Func<IServiceProvider, object>>(() =>
 				new Func<IServiceProvider, object>(
-					sp=>new DataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(
-							sp.Resolve<IDataSetEntityManager<TDataModel>>(),
+					sp=>new DataSetAutoEntityProvider<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(
+							sp.Resolve<IDataSetEntityManager<TEntityDetail,TDataModel>>(),
 							this
 						)
 				)
 			 );
 
-			FuncMapModelToDetailTemp = new Lazy<Func<IDataSetEntityManager<TDataModel>, IContextQueryable<TDataModel>, IContextQueryable<TEntityDetailTemp>>>(() =>
+			FuncMapModelToDetailTemp = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, IContextQueryable<TEntityDetailTemp>>>(() =>
 			{
 				return (em, ctx) => ctx.Select(DetailQueryResultBuildHelper.EntityMapper);
 			});
-			FuncMapDetailTempToDetail = new Lazy<Func<IDataSetEntityManager<TDataModel>, TEntityDetailTemp[], Task<TEntityDetail[]>>>(() =>
+			FuncMapDetailTempToDetail = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, TEntityDetailTemp[], Task<TEntityDetail[]>>>(() =>
 			{
 				return (em, tmps) => DetailQueryResultBuildHelper.ResultMapper(tmps);
 			});
-			FuncMapModelToSummaryTemp = new Lazy<Func<IDataSetEntityManager<TDataModel>, IContextQueryable<TDataModel>, IContextQueryable<TEntitySummaryTemp>>>(() =>
+			FuncMapModelToSummaryTemp = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, IContextQueryable<TEntitySummaryTemp>>>(() =>
 			{
 				return (em, ctx) => ctx.Select(SummaryQueryResultBuildHelper.EntityMapper);
 			});
-			FuncMapSummaryTempToSummary = new Lazy<Func<IDataSetEntityManager<TDataModel>, TEntitySummaryTemp[], Task<TEntitySummary[]>>>(() =>
+			FuncMapSummaryTempToSummary = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, TEntitySummaryTemp[], Task<TEntitySummary[]>>>(() =>
 			{
 				return (em, tmps) => SummaryQueryResultBuildHelper.ResultMapper(tmps);
 			});
 
-			FuncBuildQuery = new Lazy<Func<IDataSetEntityManager<TDataModel>, IContextQueryable<TDataModel>, TQueryArgument, Paging, IContextQueryable<TDataModel>>>(() =>
+			FuncBuildQuery = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, TQueryArgument, Paging, IContextQueryable<TDataModel>>>(() =>
 			{
 				return (em, q, arg, pg) => q;
 			});
 
-			FuncLoadEditable = new Lazy<Func<IDataSetEntityManager<TDataModel>, IContextQueryable<TDataModel>, Task<TEntityEditable>>>(() =>
+			FuncLoadEditable = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, Task<TEntityEditable>>>(() =>
 			{
 				return async (em, q) =>
 				{
@@ -235,19 +233,19 @@ namespace SF.Entities.AutoEntityProvider
 				};
 			});
 
-			FuncLoadModelForModify = new Lazy<Func<IDataSetEntityManager<TDataModel>, TKey, IContextQueryable<TDataModel>, Task<TDataModel>>>(() =>
+			FuncLoadModelForModify = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, TEntityEditable, IContextQueryable<TDataModel>, Task<TDataModel>>>(() =>
 			{
-				return (em, id, q) => q.SingleOrDefaultAsync();
+				return (em,e, q) => q.SingleOrDefaultAsync();
 			});
 
-			FuncInitModel = new Lazy<Func<IDataSetEntityManager<TDataModel>, IEntityModifyContext<TKey, TEntityEditable, TDataModel>, Task>>(() =>
+			FuncInitModel = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>>(() =>
 			{
-				return (em,ctx)=>InitModifier.Modifier(ctx.Editable,ctx.Model);
+				return (em,ctx)=>InitModifier.Modifier(em,ctx);
 			});
 
-			FuncUpdateModel = new Lazy<Func<IDataSetEntityManager<TDataModel>, IEntityModifyContext<TKey, TEntityEditable, TDataModel>, Task>>(() =>
+			FuncUpdateModel = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>>(() =>
 			{
-				return (em, ctx) => UpdateModifier.Modifier(ctx.Editable, ctx.Model);
+				return (em, ctx) => UpdateModifier.Modifier(em,ctx);
 
 				//var ArgModel = Expression.Parameter(typeof(TDataModel));
 				//var ArgEditable = Expression.Parameter(typeof(TEntityEditable));
@@ -274,7 +272,7 @@ namespace SF.Entities.AutoEntityProvider
 				//};
 			});
 
-			FuncRemoveModel = new Lazy<Func<IDataSetEntityManager<TDataModel>, IEntityModifyContext<TKey, TDataModel>, Task>>(() =>
+			FuncRemoveModel = new Lazy<Func<IDataSetEntityManager<TEntityEditable,TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>>(() =>
 			{
 				return (em, ctx) => Task.CompletedTask;
 			});

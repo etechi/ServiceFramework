@@ -5,11 +5,11 @@ using SF.Metadata;
 namespace SF.Entities
 {
 	
-	public class EntityModified<TKey,TModel>
+	public class EntityModified<TEntity>
 	{
 		public DataActionType Action { get; set; }
 		public long? ServiceId { get; set; }
-		public TKey Id { get; set; }
+		public TEntity Entity { get; set; }
 		public DateTime Time { get; set; }
 		public Data.PostActionType PostActionType { get; set; }
 	}

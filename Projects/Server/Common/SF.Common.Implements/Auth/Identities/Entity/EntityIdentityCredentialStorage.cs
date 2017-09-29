@@ -59,7 +59,7 @@ namespace SF.Auth.Identities.Entity
 				});
 				await DataSet.Context.SaveChangesAsync();
 			}
-			return EntityMapper.Map<TIdentityCredential, IdentityCredential>(exist);
+			return ADT.Poco.Map<TIdentityCredential, IdentityCredential>(exist);
 
 		}
 
@@ -68,12 +68,12 @@ namespace SF.Auth.Identities.Entity
 			if (UnionIdent != null)
 				return await DataSet.FirstOrDefaultAsync(
 					i => i.ProviderId == Provider && i.UnionIdent == UnionIdent && i.Credential == Credential,
-					EntityMapper.Map<TIdentityCredential, IdentityCredential>()
+					ADT.Poco.Map<TIdentityCredential, IdentityCredential>()
 					);
 			else
 				return await DataSet.FirstOrDefaultAsync(
 					i => i.ProviderId == Provider && i.Credential == Credential,
-					EntityMapper.Map<TIdentityCredential, IdentityCredential>()
+					ADT.Poco.Map<TIdentityCredential, IdentityCredential>()
 					);
 		}
 
@@ -111,7 +111,7 @@ namespace SF.Auth.Identities.Entity
 		{
 			return await DataSet.QueryAsync(
 				i => i.ProviderId == Provider && i.IdentityId == UserId,
-				EntityMapper.Map<TIdentityCredential, IdentityCredential>()
+				ADT.Poco.Map<TIdentityCredential, IdentityCredential>()
 				);
 		}
 

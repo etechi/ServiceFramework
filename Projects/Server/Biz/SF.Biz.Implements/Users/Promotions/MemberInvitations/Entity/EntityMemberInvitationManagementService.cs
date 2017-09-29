@@ -16,10 +16,10 @@ using System.Threading.Tasks;
 namespace SF.Users.Promotions.MemberInvitations.Entity
 {
 	public class EntityMemberInvitationManagementService :
-		AutoEntityManager<long, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationQueryArgument>,
+		AutoEntityManager< MemberInvitationInternal, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationQueryArgument>,
 		IMemberInvitationManagementService
 	{
-		public EntityMemberInvitationManagementService(IDataSetAutoEntityProvider<long, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationQueryArgument> AutoEntityProvider) : base(AutoEntityProvider)
+		public EntityMemberInvitationManagementService(IDataSetAutoEntityProvider<MemberInvitationInternal, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationQueryArgument> AutoEntityProvider) : base(AutoEntityProvider)
 		{
 		}
 	}

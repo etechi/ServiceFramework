@@ -14,12 +14,12 @@ namespace SF.Common.Documents.Management
 		DocumentManager<DocumentInternal, DocumentEditable, DataModels.Document, DataModels.DocumentAuthor, DataModels.DocumentCategory, DataModels.DocumentTag, DataModels.DocumentTagReference>,
 		IDocumentManager
 	{
-		public DocumentManager(IDataSetEntityManager<DataModels.Document> EntityManager) : base(EntityManager)
+		public DocumentManager(IDataSetEntityManager<DocumentEditable, DataModels.Document> EntityManager) : base(EntityManager)
 		{
 		}
 	}
 	public class DocumentManager<TInternal,TEditable,TDocument, TAuthor, TCategory, TTag, TTagReference> :
-		EntityManager<long,TInternal, DocumentQueryArguments,TEditable,TDocument>,
+		ModidifiableEntityManager<TInternal, DocumentQueryArguments,TEditable,TDocument>,
 		IDocumentManager<TInternal,TEditable>
 		where TInternal: DocumentInternal,new()
 		where TEditable: DocumentEditable, new()
@@ -30,19 +30,19 @@ namespace SF.Common.Documents.Management
 		where TTagReference : DataModels.DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{
 		
-		public DocumentManager(IDataSetEntityManager<TDocument> Manager) : base(Manager)
+		public DocumentManager(IDataSetEntityManager<TEditable,TDocument> Manager) : base(Manager)
 		{
 		}
 		protected override async Task<TEditable> OnMapModelToEditable(IContextQueryable<TDocument> Query)
 		{
 			return await Query.Select(
-				EntityMapper.Map<TDocument,TEditable>()
+				ADT.Poco.Map<TDocument,TEditable>()
 				).SingleOrDefaultAsync();
 		}
 
 		protected override IContextQueryable<TInternal> OnMapModelToDetail(IContextQueryable<TDocument> Query)
 		{
-			return Query.Select(EntityMapper.Map<TDocument,TInternal>());
+			return Query.Select(ADT.Poco.Map<TDocument,TInternal>());
 		}
 
 		protected override Task OnUpdateModel(IModifyContext ctx)

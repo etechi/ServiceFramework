@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace SF.Entities
 {
-	public interface IEntityListable<TKey, TEntity>
+	public interface IEntityListable<TEntity>
 	{
 		Task<TEntity[]> ListAsync();
 	}

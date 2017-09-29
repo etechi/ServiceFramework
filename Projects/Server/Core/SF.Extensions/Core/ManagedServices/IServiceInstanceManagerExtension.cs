@@ -9,7 +9,7 @@ namespace SF.Core.ServiceManagement.Management
 {
 	public static class IServiceInstanceManagerExtension
 	{
-		public static async Task<long> ResolveDefaultService<I>(
+		public static async Task<ServiceInstanceInternal> ResolveDefaultService<I>(
 			this IServiceInstanceManager Manager
 			)
 		{
@@ -46,12 +46,12 @@ namespace SF.Core.ServiceManagement.Management
 			e.Description = Description ?? comment.Description;
 			e.Setting = Json.Stringify(Setting);
 		}
-		public static Task<long> TryGetDefaultService<I>(
+		public static Task<ServiceInstanceInternal> TryGetDefaultService<I>(
 			this IServiceInstanceManager Manager,
 			long? ParentId = null
 			) => Manager.TryGetDefaultService(typeof(I), ParentId);
 
-		public static async Task<long> TryGetDefaultService(
+		public static async Task<ServiceInstanceInternal> TryGetDefaultService(
 			this IServiceInstanceManager Manager,
 			Type InterfaceType,
 			long? ParentId = null
@@ -102,14 +102,14 @@ namespace SF.Core.ServiceManagement.Management
 			)
 		{
 			var id = await TryGetDefaultService<I>(Manager, ParentId);
-			if (id == 0)
+			if (id == null)
 				throw new ArgumentException($"找不到默认服务{typeof(I)},当前区域:{ParentId}");
 			await Manager.UpdateEntity(
-				id,
+				id.Id,
 				(ServiceInstanceEditable e) => { e.Setting = Edit(e.Setting); }
 				);
 		}
-		public static async Task<long> TryGetService<I,T>(
+		public static async Task<ServiceInstanceInternal> TryGetService<I,T>(
 			this IServiceInstanceManager Manager,
 			long? ParentId = null
 			) => await Manager.QuerySingleEntityIdent(

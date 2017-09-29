@@ -21,7 +21,7 @@ namespace SF.Auth.Permissions
 		IGrantManager
 	{
 		public GrantManager(
-			IDataSetEntityManager<DataModels.Grant> EntityManager, 
+			IDataSetEntityManager<Models.GrantEditable, DataModels.Grant> EntityManager, 
 			Lazy<IOperationManager> OperationManager, 
 			Lazy<IResourceManager> ResourceManager) 
 			: base(EntityManager, OperationManager, ResourceManager)
@@ -30,7 +30,7 @@ namespace SF.Auth.Permissions
 	}
 
 	public class GrantManager<TGrantEditable, TGrant,TRole, TRolePermission, TGrantRole, TGrantPermission> :
-        EntityManager<long, TGrantEditable, GrantQueryArgument, TGrantEditable, TGrant>,
+        ModidifiableEntityManager< TGrantEditable, GrantQueryArgument, TGrantEditable, TGrant>,
         IGrantManager<TGrantEditable>
 
 		where TGrant: DataModels.Grant<TGrant,TRole, TGrantRole, TRolePermission, TGrantPermission>, new()
@@ -44,7 +44,7 @@ namespace SF.Auth.Permissions
 		public Lazy<IOperationManager> OperationManager { get; }
         public Lazy<IResourceManager> ResourceManager { get; }
         public GrantManager(
-            IDataSetEntityManager<TGrant> EntityManager,
+            IDataSetEntityManager<TGrantEditable,TGrant> EntityManager,
             Lazy<IOperationManager> OperationManager,
             Lazy<IResourceManager> ResourceManager
             ) : base(EntityManager)
@@ -78,7 +78,7 @@ namespace SF.Auth.Permissions
 				   };
 		}
 
-		protected override IContextQueryable<TGrant> OnLoadChildObjectsForUpdate(long Id, IContextQueryable<TGrant> query)
+		protected override IContextQueryable<TGrant> OnLoadChildObjectsForUpdate(TGrantEditable Id, IContextQueryable<TGrant> query)
 		{
 			return base.OnLoadChildObjectsForUpdate(
 				Id, 
@@ -106,7 +106,7 @@ namespace SF.Auth.Permissions
 			re.grant.ResGrants = re.permissions.GroupBy(p => p.res).Select(
 				g =>
 				{
-					var res = ResourceManager.Value.GetAsync(g.Key).Result;
+					var res = ResourceManager.Value.GetAsync(Entity<ResourceInternal>.WithKey(g.Key)).Result;
 					return new ResourceGrantInternal
 					{
 						Id = g.Key,

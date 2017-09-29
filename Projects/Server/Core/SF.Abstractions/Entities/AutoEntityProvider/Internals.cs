@@ -15,36 +15,36 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		Task<D> TempToDest(object src, T value);
 	}
-	public interface IEntityModifierValueConverter
+	public interface IEntityPropertyModifier
 	{ }
-	public interface IEntityModifierValueConverter<T, D> : IEntityModifierValueConverter
+	public interface IEntityModifierValueConverter<T, D> : IEntityPropertyModifier
 	{
 		Task<D> Convert(object src, T value,bool existValue);
 	}
 
 	
-	public interface IEntityModifier<TSource,TTarget>
+	public interface IEntityModifier<TEntity,TDataModel> 
+		where TDataModel:class
 	{
-		Func<TSource,TTarget,Task> Modifier { get; }
+		Func<IDataSetEntityManager<TEntity,TDataModel>,IEntityModifyContext<TEntity,TDataModel>,Task> Modifier { get; }
 	}
-	public interface IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
-		   where TEntityDetail : class, IEntityWithId<TKey>
-		   where TEntitySummary : class, IEntityWithId<TKey>
-		   where TEntityEditable : class, IEntityWithId<TKey>
-		   where TKey : IEquatable<TKey>
-		   where TQueryArgument : IQueryArgument<TKey>
+	public interface IDataSetAutoEntityProvider<TDetail, TSummary, TEditable, TQueryArgument>
+		   where TDetail : class
+		   where TSummary : class
+		   where TEditable : class
+		   where TQueryArgument : class
 	{
 		EntityManagerCapability Capabilities { get; }
 		IDataSetEntityManager EntityManager { get; }
-		Task<TEntityDetail> GetAsync(TKey Id);
-		Task<TEntityDetail[]> GetAsync(TKey[] Ids);
-		Task<TKey> CreateAsync(TEntityEditable Entity);
-		Task<TEntityEditable> LoadForEdit(TKey Id);
-		Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg, Paging paging);
-		Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging);
+		Task<TDetail> GetAsync(TDetail Id);
+		Task<TDetail[]> GetAsync(TDetail[] Ids);
+		Task<TEditable> CreateAsync(TEditable Entity);
+		Task<TEditable> LoadForEdit(TEditable Id);
+		Task<QueryResult<TSummary>> QueryAsync(TQueryArgument Arg, Paging paging);
+		Task<QueryResult<TSummary>> QueryIdentsAsync(TQueryArgument Arg, Paging paging);
 		Task RemoveAllAsync();
-		Task RemoveAsync(TKey Key);
-		Task UpdateAsync(TEntityEditable Entity);
+		Task<TEditable> RemoveAsync(TEditable Key);
+		Task<TEditable> UpdateAsync(TEditable Entity);
 	}
 
 	public interface IValueTypeResolver

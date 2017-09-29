@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using SF.Data;
 using System.Linq.Expressions;
 using System.Reflection;
-namespace SF.Entities
+namespace SF.ADT
 {
-	public static class EntityMapper
+	public  static partial class Poco
 	{
-
 		class Mapper<S, T>
 		{
 			static Type SrcType { get; } = typeof(S);

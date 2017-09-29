@@ -15,13 +15,13 @@ namespace SF.Common.Documents.Management
 		DocumentCategoryManager<CategoryInternal, DataModels.Document, DataModels.DocumentAuthor, DataModels.DocumentCategory, DataModels.DocumentTag, DataModels.DocumentTagReference>,
 		IDocumentCategoryManager
 	{
-		public DocumentCategoryManager(IDataSetEntityManager<DocumentCategory> EntityManager) : base(EntityManager)
+		public DocumentCategoryManager(IDataSetEntityManager<CategoryInternal,DocumentCategory> EntityManager) : base(EntityManager)
 		{
 		}
 	}
 
 	public class DocumentCategoryManager<TCategoryInternal, TDocument, TAuthor, TCategory, TTag, TTagReference> :
-		EntityManager<long, TCategoryInternal, DocumentCategoryQueryArgument,TCategoryInternal, TCategory>,
+		ModidifiableEntityManager< TCategoryInternal, DocumentCategoryQueryArgument,TCategoryInternal, TCategory>,
 		IDocumentCategoryManager<TCategoryInternal>
 		where TCategoryInternal:CategoryInternal,new()
 		where TDocument : DataModels.Document<TDocument, TAuthor, TCategory, TTag, TTagReference>
@@ -35,11 +35,11 @@ namespace SF.Common.Documents.Management
 
 		protected override async Task<TCategoryInternal> OnMapModelToEditable (IContextQueryable<TCategory> Query)
 		{
-			return await Query.Select(EntityMapper.Map<TCategory, TCategoryInternal>()).SingleOrDefaultAsync();
+			return await Query.Select(ADT.Poco.Map<TCategory, TCategoryInternal>()).SingleOrDefaultAsync();
 		}
         protected override IContextQueryable<TCategoryInternal> OnMapModelToDetail(IContextQueryable<TCategory> Query)
 		{
-			return Query.Select(EntityMapper.Map<TCategory,TCategoryInternal>());
+			return Query.Select(ADT.Poco.Map<TCategory,TCategoryInternal>());
 		}
 
 		protected override async Task OnUpdateModel(IModifyContext ctx)
@@ -67,7 +67,7 @@ namespace SF.Common.Documents.Management
 		}
 
 		public DocumentCategoryManager(
-			IDataSetEntityManager<TCategory> EntityManager
+			IDataSetEntityManager<TCategoryInternal,TCategory> EntityManager
 			) : base(EntityManager)
 		{
 

@@ -14,8 +14,8 @@ namespace SF.Management.FrontEndContents
 	public interface ISiteTemplateManager : ISiteTemplateManager<SiteTemplate>
 	{ }
 	public interface ISiteTemplateManager<TSiteTemplate> :
-		IEntityManager<long, TSiteTemplate>,
-		IEntitySource<long,TSiteTemplate, SiteTemplateQueryArgument>,
+		IEntityManager<TSiteTemplate>,
+		IEntitySource<TSiteTemplate, SiteTemplateQueryArgument>,
 		ISiteConfigLoader
 		where TSiteTemplate : SiteTemplate
 	{

@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 namespace SF.Common.TextMessages.Management
 {
 	public class EntityMsgRecordManager :
-		QuerableEntitySource<long,MsgRecord,MsgRecordQueryArgument,DataModels.TextMessageRecord>,
+		QuerableEntitySource<MsgRecord,MsgRecordQueryArgument,DataModels.TextMessageRecord>,
 		IMsgRecordManager,
 		ITextMessageLogger
 	{
 		
 		public EntityMsgRecordManager(
-			IDataSetEntityManager<DataModels.TextMessageRecord> Manager
+			IDataSetEntityManager<MsgRecord, DataModels.TextMessageRecord> Manager
 			) : base(Manager)
 		{
 		}

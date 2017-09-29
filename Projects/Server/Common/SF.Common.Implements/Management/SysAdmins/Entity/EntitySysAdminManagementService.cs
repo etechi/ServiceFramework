@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SF.Management.SysAdmins.Entity
 {
 	public class EntitySysAdminManagementService<TSysAdmin> :
-		EntityManager<long, Models.SysAdminInternal,  SysAdminQueryArgument, Models.SysAdminEditable, TSysAdmin>,
+		ModidifiableEntityManager< Models.SysAdminInternal,  SysAdminQueryArgument, Models.SysAdminEditable, TSysAdmin>,
 		ISysAdminManagementService
 		where TSysAdmin: DataModels.SysAdmin<TSysAdmin>,new()
 	{
@@ -17,7 +17,7 @@ namespace SF.Management.SysAdmins.Entity
 		public Lazy<IIdentityCredentialProvider> SignupCredentialProvider { get; }
 
 		public EntitySysAdminManagementService(
-			IDataSetEntityManager<TSysAdmin> Manager,
+			IDataSetEntityManager<Models.SysAdminEditable,TSysAdmin> Manager,
 			Lazy<IIdentityService> IdentityService,
 			Lazy<IIdentityCredentialProvider> SignupCredentialProvider
 			) : base(Manager)
