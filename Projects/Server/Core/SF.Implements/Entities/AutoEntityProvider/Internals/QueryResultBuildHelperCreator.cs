@@ -304,8 +304,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					Expression.Call(
 						null,
 						MethodOrderByDescending.MakeGenericMethod(
-							typeof(IContextQueryable<>).MakeGenericType<T>(),
-							KeySelectorType
+							typeof(T),
+							id.PropertyType
 							),
 						argQueryable,
 						Expression.Constant(
@@ -316,8 +316,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					Expression.Call(
 						null,
 						MethodOrderBy.MakeGenericMethod(
-							typeof(IContextQueryable<>).MakeGenericType<T>(),
-							KeySelectorType
+							typeof(T),
+							id.PropertyType
 							),
 						argQueryable,
 						Expression.Constant(
