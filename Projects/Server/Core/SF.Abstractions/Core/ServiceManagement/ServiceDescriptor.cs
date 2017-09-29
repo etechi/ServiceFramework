@@ -64,7 +64,7 @@ namespace SF.Core.ServiceManagement
 			this.ImplementType = ImplementType;
 			this.Lifetime = Lifetime;
 			this.IsManagedService = IsManagedService;
-			this.ManagedServiceInitializer = this.ManagedServiceInitializer;
+			this.ManagedServiceInitializer = ManagedServiceInitializer;
 		}
 		public ServiceDescriptor(Type InterfaceType, object Implement,string Name=null)
 		{

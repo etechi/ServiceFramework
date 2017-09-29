@@ -53,7 +53,7 @@ namespace SF.Core.ServiceManagement.Internals
 
 			var declType = ServiceResolver.Resolve<IServiceDeclarationTypeResolver>()
 				.Resolve(svcTypeName)
-				.AssertNotNull(
+				.IsNotNull(
 					() => $"找不到服务类型({svcTypeName}),服务ID:{Id}"
 					)
 				.Assert(
@@ -63,19 +63,19 @@ namespace SF.Core.ServiceManagement.Internals
 
 			var decl = ServiceMetadata.Services
 				.Get(declType)
-				.AssertNotNull(
+				.IsNotNull(
 					() => $"找不到服务描述({declType}),服务:{Id}"
 					);
 
 			var implType = ServiceResolver.Resolve<IServiceImplementTypeResolver>()
 				.Resolve(implTypeName)
-				.AssertNotNull(
+				.IsNotNull(
 					() => $"找不到服务配置({Id})指定的服务实现类型({implTypeName}),服务:{declType}"
 					);
 
 			var impl = decl.Implements
 				.Last(i => i.ServiceImplementType == ServiceImplementType.Type && i.ImplementType == implType)
-				.AssertNotNull(
+				.IsNotNull(
 					() => $"找不到服务配置({Id})指定的服务实现类型({implType}),服务:{declType}"
 					);
 			return (decl, impl);

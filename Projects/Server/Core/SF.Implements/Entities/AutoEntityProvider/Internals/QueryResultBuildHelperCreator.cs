@@ -77,26 +77,30 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 		static QueryResultBuildHelperCreator()
 		{
+			//var methods = typeof(QueryResultBuildHelperCreator).GetMethods(BindingFlags.Static | BindingFlags.NonPublic);
+
 			MethodOrderByDescending = typeof(ContextQueryable).GetMethodExt(
 				  "OrderByDescending",
 				  typeof(IContextQueryable<>).MakeGenericType<TypeExtension.T>(),
 				  typeof(Expression<>).MakeGenericType<Func<TypeExtension.T, TypeExtension.T>>()
-				  );
+				  ).IsNotNull();
 			MethodOrderBy = typeof(ContextQueryable).GetMethodExt(
 				"OrderBy",
 				typeof(IContextQueryable<>).MakeGenericType<TypeExtension.T>(),
 				typeof(Expression<>).MakeGenericType<Func<TypeExtension.T, TypeExtension.T>>()
-				);
+				).IsNotNull();
 			MethodCreateQueryResultBuildHelper3 = typeof(QueryResultBuildHelperCreator).GetMethodExt(
 				 "CreateQueryResultBuildHelper3",
-				 typeof(Expression),
-				 typeof(IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IValueConverter conv)>)
-				 );
+				 BindingFlags.Static | BindingFlags.NonPublic,
+				 typeof(Func<Expression>),
+				 typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IValueConverter conv)>>)
+				 ).IsNotNull();
 			MethodCreateQueryResultBuildHelper2= typeof(QueryResultBuildHelperCreator).GetMethodExt(
 				"CreateQueryResultBuildHelper2",
-				typeof(Expression),
-				typeof(IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IValueConverter conv)>)
-				);
+				BindingFlags.Static | BindingFlags.NonPublic,
+				typeof(Func<Expression>),
+				typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IValueConverter conv)>>)
+				).IsNotNull();
 
 		}
 		Type SrcType { get; }
@@ -421,7 +425,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					null,
 					new object[] {
 						new Func<Expression>(
-							()=>Expression.Lambda(
+							()=>
 								Expression.Lambda(
 									Expression.MemberInit(
 										Expression.New(DstType),
@@ -429,7 +433,6 @@ namespace SF.Entities.AutoEntityProvider.Internals
 									),
 									ArgSource
 								)
-							)
 						),
 						new Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IValueConverter conv)>>(
 							()=>Converters.Select(p => (prop:p.prop,propTemp: p.prop, conv:p.conv))

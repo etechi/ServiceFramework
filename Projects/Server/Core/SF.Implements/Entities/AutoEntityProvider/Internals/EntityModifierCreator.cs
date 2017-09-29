@@ -91,7 +91,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 		void BuildPropSetter(PropertyInfo dstProp)
 		{
-			var srcProp = DataModelType.GetProperty(dstProp.Name, BindingFlags.Instance | BindingFlags.Public);
+			var srcProp = EntityType.GetProperty(dstProp.Name, BindingFlags.Instance | BindingFlags.Public);
 			var vc = FindValueConverter(srcProp, dstProp);
 			if (vc != null)
 			{
@@ -128,14 +128,14 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			Func<(object,object)> Assign
 			)
 		{
-			return new EntityModifier<TDataModel, TResult>(
-				new Lazy<Func<TDataModel, TResult, Task>>(
+			return new EntityModifier<TResult, TDataModel>(
+				new Lazy<Func<TResult, TDataModel,  Task>>(
 					()=>
 					{
 						var re = Assign();
 						var sa = (Action<TDataModel, TResult>)re.Item1 ?? EmptyAssign<TDataModel,TResult>.SyncAssign;
 						var aa = ((Func<TDataModel, TResult, Task[]>)re.Item2)?? EmptyAssign<TDataModel, TResult>.AsyncAssign;
-						return async (m, e) =>
+						return async (e, m) =>
 						{
 							sa(m, e);
 							await Task.WhenAll(aa(m, e));
@@ -145,9 +145,9 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		}
 		static MethodInfo MethodCreateModifier { get; } = typeof(EntityModifierCreator).GetMethodExt(
 			"CreateModifier",
-			typeof(Expression),
-			typeof(IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IValueConverter conv)>)
-			);
+			BindingFlags.Static | BindingFlags.NonPublic,
+			typeof(Func<(object,object)>)
+			).IsNotNull();
 		public EntityModifier Build()
 		{
 			return (EntityModifier)MethodCreateModifier.MakeGenericMethod(DataModelType, EntityType).Invoke(

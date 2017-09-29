@@ -80,10 +80,15 @@ namespace SF
 				throw new InvalidOperationException(Message(value));
 			return value;
 		}
-		public static T AssertNotNull<T>(this T value, Func< string> Message) where T : class
+		public static T IsNotNull<T>(this T value, Func< string> Message=null) where T : class
 		{
-			if (value==null)
-				throw new InvalidOperationException(Message());
+			if (value == null)
+			{
+				if(Message==null)
+					throw new InvalidOperationException("监测到异常的空对象");
+				else
+					throw new InvalidOperationException(Message());
+			}
 			return value;
 		}
 		public static void NotEqual<T>(T value, T unexcept, string name)

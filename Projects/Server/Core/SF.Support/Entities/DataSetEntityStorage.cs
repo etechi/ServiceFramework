@@ -467,7 +467,7 @@ namespace SF.Entities
 				InitModel,
 				ExtraArgument
 				);
-			return ctx.Id;
+			return ctx.Model.Id;
 		}
 		public static Task<long> CreateAsync<TEditableEntity, TModel>(
 			this IDataSetEntityManager<TModel> Storage,

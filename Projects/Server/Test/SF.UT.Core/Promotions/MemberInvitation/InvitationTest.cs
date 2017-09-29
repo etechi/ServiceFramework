@@ -19,20 +19,34 @@ namespace SF.UT.Promotions.Invitations
 		[Fact]
 		public async Task 创建_成功()
 		{
+			var id = 21;
 			await Scope(async (IServiceProvider sp) =>
 				await InvitationTest(sp,
 					async (svc) =>
 					{
+						var time = DateTime.Now;
+						var UserId = 20;
+						var InvitorId = 20;
+						var Invitors = "[20]";
+
 						var re = await svc.CreateAsync(
 							new Users.Promotions.MemberInvitations.Models.MemberInvitationInternal
 						{
-							Id = 12,
-							Time = DateTime.Now,
-							UserId = 20,
-							InvitorId=20,
-							Invitors= $"[{20}]"
+							Id = id,
+							Time = time,
+							UserId = UserId,
+							InvitorId= InvitorId,
+							Invitors= Invitors
 							});
-						Assert.Equal(12, re);
+						Assert.Equal(id, re);
+
+						var e = await svc.GetAsync(id);
+						Assert.NotNull(e);
+						Assert.Equal(Invitors, e.Invitors);
+						Assert.Equal(InvitorId, e.InvitorId);
+						Assert.Equal(UserId, e.UserId);
+						Assert.Equal(id, e.Id);
+
 						return re;
 
 					}

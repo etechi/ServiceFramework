@@ -24,7 +24,7 @@ namespace SF.Core.ServiceManagement
 
 			public async Task Uninit(IServiceProvider ServiceProvider, IServiceInstanceDescriptor Descriptor)
 			{
-				if (FuncInit != null)
+				if (FuncUninit != null)
 					await FuncUninit(ServiceProvider, Descriptor);
 			}
 		}
@@ -197,7 +197,11 @@ namespace SF.Core.ServiceManagement
 			where TService:class
 			=> sc.AddManagedScoped<TService, TImplement>(
 				null,
-				FuncUninit == null ?null : new Func<IServiceProvider, IServiceInstanceDescriptor, Task>((sp, sd) => FuncUninit(sp, sp.Resolve<TService>(sd.InstanceId)))
+				FuncUninit == null ?null :
+				new Func<IServiceProvider, IServiceInstanceDescriptor, Task>(
+					(sp, sd) => 
+						FuncUninit(sp, sp.Resolve<TService>(sd.InstanceId))
+					)
 				);
 
 		public static IServiceCollection AddManagedScoped<TService, TImplement>(

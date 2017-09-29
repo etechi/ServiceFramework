@@ -133,7 +133,7 @@ namespace SF.Entities
 			{
 				ins = await Manager
 					.LoadForEdit(Id)
-					.AssertNotNull(() => $"不存在实体{typeof(TEditable)}实例:{Id} ");
+					.IsNotNull(() => $"不存在实体{typeof(TEditable)}实例:{Id} ");
 			}
 			else
 				ins = Creator();

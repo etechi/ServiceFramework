@@ -119,7 +119,7 @@ namespace SF.Core.ServiceManagement.Internals
 			var cfg = (Entry.Config ?? ServiceResolver.Provider.WithScope(sp =>
 				   EnsureManagedConfig(sp.Resolve<IServiceConfigLoader>(), Entry, ServiceId)
 				   ))
-				   .AssertNotNull(
+				   .IsNotNull(
 					() => $"找不到服务实例({ServiceId})的配置数据，服务类型:{ServiceType}"
 					);
 

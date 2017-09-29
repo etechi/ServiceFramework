@@ -220,6 +220,10 @@ namespace System.Reflection
 			return (null,null);
 		}
 
+		public static IEnumerable<MethodInfo> GetMethods(this Type type,string Name,BindingFlags BindingFlags)
+		{
+			return type.GetMember(Name, BindingFlags | BindingFlags.InvokeMethod).Cast<MethodInfo>();
+		}
 		/// <summary>
 		/// Search for a method by name and parameter types.  
 		/// Unlike GetMethod(), does 'loose' matching on generic
