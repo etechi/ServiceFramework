@@ -124,7 +124,16 @@ namespace SF.Entities
 		static MethodInfo MethodProperty { get; } = TypeExpression.GetMethod(nameof(Expression.Property), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(PropertyInfo) }, null);
 		static MethodInfo MethodAnd { get; } = TypeExpression.GetMethod(nameof(Expression.And), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(Expression) }, null);
 		static MethodInfo MethodEquals { get; } = TypeExpression.GetMethod(nameof(Expression.Equals), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(Expression) }, null);
-		static MethodInfo MethodLambda { get; } = TypeExpression.GetMethods(nameof(Expression.Lambda), BindingFlags.Public | BindingFlags.Static).Single(m => m.IsGenericMethodDefinition);
+		static MethodInfo MethodLambda { get; } = TypeExpression.GetMethods(
+			nameof(Expression.Lambda),
+			BindingFlags.Public | BindingFlags.Static
+			).Single(m =>
+			{
+				if (!m.IsGenericMethodDefinition)
+					return false;
+				var ps = m.GetParameters();
+				return ps.Length == 2 && ps[0].ParameterType == typeof(Expression) && ps[1].ParameterType == typeof(IEnumerable<ParameterExpression>);
+			});
 
 		
 		static class ObjectFilterCreator<TObject>
@@ -187,10 +196,12 @@ namespace SF.Entities
 		public static Expression<Func<T,bool>> ObjectFilter<TObj>(TObj Obj)
 			=>ObjectFilterCreator<TObj>.Instance.Value(Obj);
 
+		static MethodInfo MethodObjectFilter { get; } = typeof(Entity<T>).GetMethods("ObjectFilter", BindingFlags.Static | BindingFlags.Public).Single();
+
 		public static MethodInfo MethodContains { get; } = 
-			typeof(IEnumerable<>)
+			typeof(Enumerable)
 			.GetMethods("Contains", BindingFlags.Public | BindingFlags.Static)
-			.Single(m => m.IsGenericMethodDefinition && m.GetParameters().Length == 1);
+			.Single(m => m.IsGenericMethodDefinition && m.GetParameters().Length == 2);
 
 
 
@@ -260,40 +271,76 @@ namespace SF.Entities
 				ArgModel
 				);
 
-		static IContextQueryable<T> QueryIdentFilter<TKey, TQueryArgument>(IContextQueryable<T> q,TQueryArgument a)
-			where TQueryArgument:IQueryArgument<TKey>
-			where TKey:class
-		{
-			if (a.Id!=null)
-				return q.Where(ObjectFilter<TKey>(a.Id));
-			return q;
-		}
+		static MethodInfo MethodWhere { get; } = typeof(ContextQueryable).GetMethods("Where", BindingFlags.Static | BindingFlags.Instance).Single(m => m.GetParameters().Length == 2);
 
-		static MethodInfo MethodQueryIdentFilter { get; } = typeof(Entity<T>).GetMethods("QueryIdentFilter", BindingFlags.Static | BindingFlags.NonPublic).Single();
-
-		static class IdentFilter<TQueryArgument>
+		static class QueryArgumentIdent<QueryArgument>
 		{
-			public static Lazy<Func<IContextQueryable<T>, TQueryArgument, IContextQueryable<T>>> Instance { get; } = 
-				new Lazy<Func<IContextQueryable<T>, TQueryArgument, IContextQueryable<T>>>(
-				() =>
+			public static Lazy<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>> Func = new Lazy<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>>(() =>
 				{
-					var iqa = typeof(TQueryArgument)
-						.GetInterfaces()
-						.FirstOrDefault(i => i.IsGeneric() && i.GetGenericTypeDefinition() == typeof(IQueryArgument<>));
-					if (iqa == null)
+					var re = typeof(QueryArgument).AllPublicInstanceProperties().Where(
+						qap =>
+						{
+							if (!qap.PropertyType.IsClass)
+								return false;
+							var ks = qap.PropertyType.AllPublicInstanceProperties().Where(ip => ip.PropertyType.IsDefined(typeof(KeyAttribute))).ToArray();
+							if (ks.Length != KeyProperties.Count) return false;
+							return ks.Zip(KeyProperties, (x, y) => x.Name == y.Name && x.PropertyType == y.PropertyType).All(a=>a);
+						}).ToArray();
+					if (re.Length == 0)
 						return (q, a) => q;
-					if (iqa.GenericTypeArguments[0] != KeyProperties.Single().PropertyType)
-						throw new InvalidOperationException($"指定查询参数{typeof(TQueryArgument)}的主键类型{iqa.GenericTypeArguments[0]}和模型{typeof(T)}主键{KeyProperties[0].Name}字段类型{KeyProperties[0].PropertyType}不符");
-					var func = MethodQueryIdentFilter
-						.MakeGenericMethod(iqa.GenericTypeArguments[0], typeof(TQueryArgument))
-						.CreateDelegate<Func<IContextQueryable<T>, TQueryArgument, IContextQueryable<T>>>();
-					return func;
+					var p = re.Length == 1 ? re[0] : re.FirstOrDefault(ip => ip.Name == "Id") ?? re[0];
+
+					var ArgQueryable = Expression.Parameter(typeof(IContextQueryable<T>));
+					var ArgQA = Expression.Parameter(typeof(QueryArgument));
+					return Expression.Lambda<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>>(
+						Expression.Condition(
+							ArgQA.GetMember(p).Equal(Expression.Constant(null, p.PropertyType)),
+							ArgQueryable,
+							Expression.Call(
+								null,
+								MethodWhere.MakeGenericMethod(typeof(T)),
+								Expression.Call(
+									null,
+									MethodObjectFilter.MakeGenericMethod(p.PropertyType),
+									ArgQA.GetMember(p)
+									)
+							)
+						),
+						ArgQueryable,
+						ArgQA
+						).Compile();
 				});
 		}
-		public static IContextQueryable<T> TryFilterIdent<TQueryArgument>(IContextQueryable<T> q,TQueryArgument arg)
+		public static IContextQueryable<T> QueryIdentFilter<TQueryArgument>(IContextQueryable<T> q,TQueryArgument a)
 		{
-			return IdentFilter<TQueryArgument>.Instance.Value(q, arg);
+			return QueryArgumentIdent<TQueryArgument>.Func.Value(q, a);
 		}
+
+		//static MethodInfo MethodQueryIdentFilter { get; } = typeof(Entity<T>).GetMethods("QueryIdentFilter", BindingFlags.Static | BindingFlags.NonPublic).Single();
+
+		//static class IdentFilter<TQueryArgument>
+		//{
+		//	public static Lazy<Func<IContextQueryable<T>, TQueryArgument, IContextQueryable<T>>> Instance { get; } = 
+		//		new Lazy<Func<IContextQueryable<T>, TQueryArgument, IContextQueryable<T>>>(
+		//		() =>
+		//		{
+		//			var iqa = typeof(TQueryArgument)
+		//				.GetInterfaces()
+		//				.FirstOrDefault(i => i.IsGeneric() && i.GetGenericTypeDefinition() == typeof(IQueryArgument<>));
+		//			if (iqa == null)
+		//				return (q, a) => q;
+		//			if (iqa.GenericTypeArguments[0] != KeyProperties.Single().PropertyType)
+		//				throw new InvalidOperationException($"指定查询参数{typeof(TQueryArgument)}的主键类型{iqa.GenericTypeArguments[0]}和模型{typeof(T)}主键{KeyProperties[0].Name}字段类型{KeyProperties[0].PropertyType}不符");
+		//			var func = MethodQueryIdentFilter
+		//				.MakeGenericMethod(iqa.GenericTypeArguments[0], typeof(TQueryArgument))
+		//				.CreateDelegate<Func<IContextQueryable<T>, TQueryArgument, IContextQueryable<T>>>();
+		//			return func;
+		//		});
+		//}
+		//public static IContextQueryable<T> TryFilterIdent<TQueryArgument>(IContextQueryable<T> q,TQueryArgument arg)
+		//{
+		//	return IdentFilter<TQueryArgument>.Instance.Value(q, arg);
+		//}
 
 
 	}

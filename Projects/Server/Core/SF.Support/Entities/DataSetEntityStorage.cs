@@ -192,13 +192,15 @@ namespace SF.Entities
 			IPagingQueryBuilder<TModel> PagingQueryBuilder
 			)
 			where TModel : class
+			where TKey:class
+			where TQueryArgument:IQueryArgument<TKey>
 		{
 			return await Storage.UseTransaction(
 				$"查询实体主键：{typeof(TModel).Comment().Name}",
 				async (trans) =>
 				{
 					var q = Storage.DataSet.AsQueryable(true);
-					q = Entity<TModel>.TryFilterIdent(q, Arg);
+					q = Entity<TModel>.QueryIdentFilter<TKey,TQueryArgument>(q, Arg);
 					q = BuildQuery(q, Arg, paging);
 					var re = await q.ToQueryResultAsync(
 						qs => qs.Select(Entity<TModel>.KeySelector<TKey>()),
@@ -213,7 +215,7 @@ namespace SF.Entities
 		#endregion
 
 		#region Query
-		public static async Task<QueryResult<TReadOnlyEntity>> QueryAsync<TTempReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
+		public static async Task<QueryResult<TReadOnlyEntity>> QueryAsync<TKey,TTempReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
 			this IReadOnlyDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
 			Paging paging,
@@ -223,13 +225,15 @@ namespace SF.Entities
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 			)
 			where TModel : class
+			where TKey:class
+			where TQueryArgument:IQueryArgument<TKey>
 		{
 			return await Storage.UseTransaction(
 				$"查询实体{typeof(TModel).Comment().Name}",
 				async (trans) =>
 			{
 				var q = Storage.DataSet.AsQueryable(true);
-				q = Entity<TModel>.TryFilterIdent(q,Arg);
+				q = Entity<TModel>.QueryIdentFilter<TKey,TQueryArgument>(q,Arg);
 				q = BuildQuery(q, Arg, paging);
 				var re = await q.ToQueryResultAsync(
 					MapModelToReadOnly,

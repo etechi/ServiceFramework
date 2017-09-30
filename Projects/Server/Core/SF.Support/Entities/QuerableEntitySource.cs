@@ -75,8 +75,8 @@ namespace SF.Entities
 	
 	public abstract class ConstantQueryableEntitySource<TKey, TInternal> :
 		 ConstantQueryableEntitySource<TKey, TInternal, TInternal, QueryArgument<TKey>, TInternal>
-		 where TInternal : class, IEntityWithId<TKey>
-		 where TKey : IEquatable<TKey>
+		 where TInternal : class
+		 where TKey : class
 	{
 		public ConstantQueryableEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TInternal> Models) : base(EntityManager, Models)
 		{
@@ -86,9 +86,10 @@ namespace SF.Entities
 		{
 			return Query;
 		}
-		protected override PagingQueryBuilder<TInternal> PagingQueryBuilder => new PagingQueryBuilder<TInternal>(
-			"id", b => b.Add("id", m => m.Id)
-			);
+		protected override PagingQueryBuilder<TInternal> PagingQueryBuilder => null;
+			//new PagingQueryBuilder<TInternal>(
+			//"id", b => b.Add("id", m => m.Id)
+			//);
 		protected override IContextQueryable<TInternal> OnBuildQuery(IContextQueryable<TInternal> Query, QueryArgument<TKey> Arg, Paging paging)
 		{
 			return Query;
@@ -97,6 +98,7 @@ namespace SF.Entities
 	public abstract class ConstantObjectQueryableEntitySource<TKey, TInternal> :
 		 ConstantQueryableEntitySource<TKey, TInternal, TInternal, ObjectQueryArgument<TKey>, TInternal>
 		 where TInternal : class, IObjectEntity
+		where TKey:class
 	{
 		public ConstantObjectQueryableEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TInternal> Models) : base(EntityManager, Models)
 		{
@@ -122,7 +124,8 @@ namespace SF.Entities
 	public abstract class ConstantQueryableEntitySource<TKey, TInternal, TQueryArgument> :
 		 ConstantQueryableEntitySource<TKey, TInternal, TInternal, TQueryArgument, TInternal>
 		 where TInternal : class
-		 where TQueryArgument : class
+		 where TQueryArgument : class,IQueryArgument<TKey>
+		where TKey:class
 	{
 		public ConstantQueryableEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TInternal> Models) : base(EntityManager, Models)
 		{
@@ -137,7 +140,8 @@ namespace SF.Entities
 		 ConstantQueryableEntitySource<TKey, TInternal, TInternal, TQueryArgument, TModel>
 		 where TInternal : class
 		where TModel : class
-		where TQueryArgument : class
+		where TQueryArgument : class,IQueryArgument<TKey>
+		where TKey:class
 	{
 		public ConstantQueryableEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TModel> Models) : base(EntityManager, Models)
 		{
@@ -153,7 +157,8 @@ namespace SF.Entities
 		 IEntitySource<TKey, TInternal, TQueryArgument>
 		 where TInternal : class
 		where TModel: class
-		where TQueryArgument : class
+		where TQueryArgument : class,IQueryArgument<TKey>
+		where TKey:class
 	{
 		public ConstantQueryableEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TModel> Models) : base(EntityManager, Models)
 		{
@@ -165,7 +170,7 @@ namespace SF.Entities
 		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
 		{
 			var q = Models.Values.AsContextQueryable();
-			q = Entity<TModel>.TryFilterIdent(q, Arg);
+			q = Entity<TModel>.QueryIdentFilter<TKey,TQueryArgument>(q, Arg);
 			q = OnBuildQuery(q, Arg, paging);
 			return q
 				.ToQueryResultAsync(
@@ -178,7 +183,7 @@ namespace SF.Entities
 		public Task<QueryResult<TInternal>> QueryAsync(TQueryArgument Arg, Paging paging)
 		{
 			var q = Models.Values.AsContextQueryable();
-			q = Entity<TModel>.TryFilterIdent(q, Arg);
+			q = Entity<TModel>.QueryIdentFilter<TKey,TQueryArgument>(q, Arg);
 			q = OnBuildQuery(q, Arg, paging);
 			return q
 				.ToQueryResultAsync(
