@@ -40,7 +40,7 @@ namespace SF.Data.Models
 		[TableVisible]
 		[ReadOnly(true)]
 		[Ignore]
-		public virtual long UserName { get; set; }
+		public virtual string UserName { get; set; }
 	}
 
 	public class EventEntityBase : EventEntityBase<long>

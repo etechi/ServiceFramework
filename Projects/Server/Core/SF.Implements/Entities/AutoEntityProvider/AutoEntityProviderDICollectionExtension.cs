@@ -14,6 +14,8 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using SF.Entities.AutoEntityProvider.Internals.ValueTypes;
 using System.ComponentModel;
+using SF.Entities.AutoEntityProvider.Internals.PropertyModifiers;
+using SF.Entities.AutoEntityProvider.Internals.EntityModifiers;
 
 namespace SF.Core.ServiceManagement
 {
@@ -86,7 +88,11 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IMetadataCollection>(sp =>
 				sp.Resolve<SystemTypeMetadataBuilder>().Build()
 				);
-			
+
+
+			sc.AddSingleton<IEntityPropertyModifierProvider, DefaultPropertyModifierProvider>();
+			sc.AddSingleton<IEntityModifierProvider, PropertyEntityModifierProvider>();
+
 			sc.AddTransient(
 				typeof(IDataSetAutoEntityProvider<, , , , >), 
 				typeof(AutoEntityProviderDICollectionExtension).GetMethodExt(

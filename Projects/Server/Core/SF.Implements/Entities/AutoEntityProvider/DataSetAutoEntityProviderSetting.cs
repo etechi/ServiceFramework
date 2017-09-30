@@ -47,16 +47,14 @@ namespace SF.Entities.AutoEntityProvider
 
 		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, Task<TEntityEditable>>> FuncLoadEditable { get; }
 		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, TKey, IContextQueryable<TDataModel>, Task<TDataModel>>> FuncLoadModelForModify { get; }
-		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>> FuncInitModel { get; }
-		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>> FuncUpdateModel { get; }
-		Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>> FuncRemoveModel { get; }
 		Lazy<IPagingQueryBuilder<TDataModel>> PagingQueryBuilder { get; }
 
 		IQueryResultBuildHelper<TDataModel, TEntityDetailTemp, TEntityDetail> DetailQueryResultBuildHelper { get; }
 		IQueryResultBuildHelper<TDataModel, TEntitySummaryTemp, TEntitySummary> SummaryQueryResultBuildHelper { get; }
 		IQueryResultBuildHelper<TDataModel, TEntityEditableTemp,TEntityEditable> EditableQueryResultBuildHelper { get; }
-		IEntityModifier<TEntityEditable,TDataModel> InitModifier { get; }
-		IEntityModifier<TEntityEditable, TDataModel> UpdateModifier { get; }
+		IEntityModifier<TEntityEditable, TDataModel>[] InitModifiers { get; }
+		IEntityModifier<TEntityEditable, TDataModel>[] UpdateModifiers { get; }
+		IEntityModifier<TEntityEditable, TDataModel>[] RemoveModifiers { get; }
 
 		public Lazy<Func<IServiceProvider, object>> FuncCreateProvider { get; }
 
@@ -78,8 +76,15 @@ namespace SF.Entities.AutoEntityProvider
 			var em = (IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager;
 			return em.CreateAsync<TKey,TEntityEditable, TDataModel>(
 				Entity,
-				ctx => FuncInitModel.Value(em, ctx),
-				ctx => FuncUpdateModel.Value(em, ctx),
+				async ctx => {
+					foreach (var m in InitModifiers)
+						await m.Execute(em, ctx);
+				},
+				async ctx =>
+				{
+					foreach (var m in UpdateModifiers)
+						await m.Execute(em, ctx);
+				},
 				null
 				);
 		}
@@ -151,7 +156,10 @@ namespace SF.Entities.AutoEntityProvider
 			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
 			await em.RemoveAsync<TKey, TEntityEditable, TDataModel>(
 				Key,
-				(ctx) => FuncRemoveModel.Value(em, ctx),
+				async ctx => {
+					foreach (var m in RemoveModifiers)
+						await m.Execute(em, ctx);
+				},
 				(key, ctx) => FuncLoadModelForModify.Value(em, key, ctx)
 				);
 		}
@@ -161,7 +169,10 @@ namespace SF.Entities.AutoEntityProvider
 			var em = ((IDataSetEntityManager<TEntityEditable,TDataModel>)EntityManager);
 			await em.UpdateAsync<TKey,TEntityEditable, TDataModel>(
 				Entity,
-				ctx => FuncUpdateModel.Value(em, ctx),
+				async ctx => {
+					foreach (var m in UpdateModifiers)
+						await m.Execute(em, ctx);
+				},
 				(key, ctx) => FuncLoadModelForModify.Value(em, key, ctx)
 				);
 		}
@@ -170,17 +181,19 @@ namespace SF.Entities.AutoEntityProvider
 			IQueryResultBuildHelper<TDataModel,TEntityDetailTemp,TEntityDetail> DetailQueryResultBuildHelper,
 			IQueryResultBuildHelper<TDataModel, TEntitySummaryTemp, TEntitySummary> SummaryQueryResultBuildHelper,
 			IQueryResultBuildHelper<TDataModel, TEntityEditableTemp, TEntityEditable> EditableQueryResultBuildHelper,
-			IEntityModifier<TEntityEditable, TDataModel> InitModifier,
-			IEntityModifier<TEntityEditable, TDataModel> UpdateModifier
-			)
+			IEntityModifier<TEntityEditable, TDataModel>[] InitModifiers,
+			IEntityModifier<TEntityEditable, TDataModel>[] UpdateModifiers,
+			IEntityModifier<TEntityEditable, TDataModel>[] RemoveModifiers
+		)
 		{
 			this.DetailQueryResultBuildHelper = DetailQueryResultBuildHelper;
 			this.SummaryQueryResultBuildHelper = SummaryQueryResultBuildHelper;
 			this.EditableQueryResultBuildHelper = EditableQueryResultBuildHelper;
-			this.InitModifier = InitModifier;
-			this.UpdateModifier = UpdateModifier;
+			this.InitModifiers = InitModifiers;
+			this.UpdateModifiers = UpdateModifiers;
+			this.RemoveModifiers = RemoveModifiers;
 
-			 FuncCreateProvider = new Lazy<Func<IServiceProvider, object>>(() =>
+			FuncCreateProvider = new Lazy<Func<IServiceProvider, object>>(() =>
 				new Func<IServiceProvider, object>(
 					sp=>new DataSetAutoEntityProvider<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(
 							sp.Resolve<IDataSetEntityManager<TEntityDetail,TDataModel>>(),
@@ -195,7 +208,12 @@ namespace SF.Entities.AutoEntityProvider
 			});
 			FuncMapDetailTempToDetail = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, TEntityDetailTemp[], Task<TEntityDetail[]>>>(() =>
 			{
-				return (em, tmps) => DetailQueryResultBuildHelper.ResultMapper(tmps);
+				return async (em, tmps) =>
+				{
+					var re = await DetailQueryResultBuildHelper.ResultMapper(tmps);
+					await EntityResolver.Fill(em.DataEntityResolver, em.ServiceInstanceDescroptor.InstanceId, re);
+					return re;
+				};
 			});
 			FuncMapModelToSummaryTemp = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, IContextQueryable<TEntitySummaryTemp>>>(() =>
 			{
@@ -203,7 +221,12 @@ namespace SF.Entities.AutoEntityProvider
 			});
 			FuncMapSummaryTempToSummary = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, TEntitySummaryTemp[], Task<TEntitySummary[]>>>(() =>
 			{
-				return (em, tmps) => SummaryQueryResultBuildHelper.ResultMapper(tmps);
+				return async (em, tmps) =>
+				{
+					var re = await SummaryQueryResultBuildHelper.ResultMapper(tmps);
+					await EntityResolver.Fill(em.DataEntityResolver, em.ServiceInstanceDescroptor.InstanceId, re);
+					return re;
+				};
 			});
 
 			FuncBuildQuery = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, TQueryArgument, Paging, IContextQueryable<TDataModel>>>(() =>
@@ -231,44 +254,52 @@ namespace SF.Entities.AutoEntityProvider
 				return (em,e, q) => q.SingleOrDefaultAsync();
 			});
 
-			FuncInitModel = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>>(() =>
-			{
-				return (em,ctx)=>InitModifier.Modifier(em,ctx);
-			});
+			//FuncInitModel = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>>(() =>
+			//{
+			//	return async (em, ctx) =>
+			//		{
+			//			foreach (var m in InitModifiers)
+			//				await m.Execute(em, ctx);
+			//		};
+			//});
 
-			FuncUpdateModel = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>>(() =>
-			{
-				return (em, ctx) => UpdateModifier.Modifier(em,ctx);
+			//FuncUpdateModel = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>>(() =>
+			//{
+			//	return async (em, ctx) =>
+			//	{
+			//		foreach (var m in InitModifiers)
+			//			await m.Execute(em, ctx);
+			//	};
 
-				//var ArgModel = Expression.Parameter(typeof(TDataModel));
-				//var ArgEditable = Expression.Parameter(typeof(TEntityEditable));
-				//var update = Expression.Lambda<Action<TDataModel, TEntityEditable>>(
-				//	Expression.Block(
-				//		from dstProp in typeof(TDataModel).AllPublicInstanceProperties()
-				//		where dstProp.CanWrite
-				//		let srcProp = typeof(TEntityEditable).GetProperty(dstProp.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty)
-				//		where srcProp != null
-				//		select Expression.Call(
-				//			ArgModel,
-				//			dstProp.SetMethod,
-				//			Expression.Property(ArgEditable, srcProp)
-				//			)
-				//	),
-				//	ArgModel,
-				//	ArgEditable
-				//	).Compile();
+			//	//var ArgModel = Expression.Parameter(typeof(TDataModel));
+			//	//var ArgEditable = Expression.Parameter(typeof(TEntityEditable));
+			//	//var update = Expression.Lambda<Action<TDataModel, TEntityEditable>>(
+			//	//	Expression.Block(
+			//	//		from dstProp in typeof(TDataModel).AllPublicInstanceProperties()
+			//	//		where dstProp.CanWrite
+			//	//		let srcProp = typeof(TEntityEditable).GetProperty(dstProp.Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty)
+			//	//		where srcProp != null
+			//	//		select Expression.Call(
+			//	//			ArgModel,
+			//	//			dstProp.SetMethod,
+			//	//			Expression.Property(ArgEditable, srcProp)
+			//	//			)
+			//	//	),
+			//	//	ArgModel,
+			//	//	ArgEditable
+			//	//	).Compile();
 
-				//return (em, ctx) =>
-				//{
-				//	update(ctx.Model, ctx.Editable);
-				//	return Task.CompletedTask;
-				//};
-			});
+			//	//return (em, ctx) =>
+			//	//{
+			//	//	update(ctx.Model, ctx.Editable);
+			//	//	return Task.CompletedTask;
+			//	//};
+			//});
 
-			FuncRemoveModel = new Lazy<Func<IDataSetEntityManager<TEntityEditable,TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>>(() =>
-			{
-				return (em, ctx) => Task.CompletedTask;
-			});
+			//FuncRemoveModel = new Lazy<Func<IDataSetEntityManager<TEntityEditable,TDataModel>, IEntityModifyContext<TEntityEditable, TDataModel>, Task>>(() =>
+			//{
+			//	return (em, ctx) => Task.CompletedTask;
+			//});
 
 			PagingQueryBuilder = new Lazy<IPagingQueryBuilder<TDataModel>>(() =>
 				  SummaryQueryResultBuildHelper.PagingBuilder

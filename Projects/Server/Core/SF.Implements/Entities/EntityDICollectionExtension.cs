@@ -45,8 +45,11 @@ namespace SF.Core.ServiceManagement
 
 			if (EntityEditable == null)
 			{
-				EntityEditable = EditableLoaderArgs[1];
-				EntityEditableSource = EditableLoader;
+				if (EditableLoader != null)
+				{
+					EntityEditable = EditableLoaderArgs[1];
+					EntityEditableSource = EditableLoader;
+				}
 			}
 			else if (EntityEditable != EditableLoaderArgs[1])
 				throw new InvalidOperationException($"实体管理类{ManagerType}的{EntityEditableSource}接口和{EntityEditable}接口类实体类型不一致");
@@ -54,15 +57,18 @@ namespace SF.Core.ServiceManagement
 
 			var Updatable = interfaces.Get(typeof(IEntityUpdator<>));
 			var UpdatableArgs = Updatable?.GetGenericArguments();
-			if (UpdatableArgs != null && UpdatableArgs[0] != LoadableArgs[0])
-				throw new InvalidOperationException($"实体管理类{ManagerType}的{Loadable}接口和{Updatable}接口类主键类型不一致");
+			//if (UpdatableArgs != null && UpdatableArgs[0] != LoadableArgs[0])
+			//	throw new InvalidOperationException($"实体管理类{ManagerType}的{Loadable}接口和{Updatable}接口类主键类型不一致");
 
 			if (EntityEditable == null)
 			{
-				EntityEditable = UpdatableArgs[1];
-				EntityEditableSource = Updatable;
+				if (Updatable != null)
+				{
+					EntityEditable = UpdatableArgs[0];
+					EntityEditableSource = Updatable;
+				}
 			}
-			else if (EntityEditable != UpdatableArgs[1])
+			else if (EntityEditable != UpdatableArgs[0])
 				throw new InvalidOperationException($"实体管理类{ManagerType}的{EntityEditableSource}接口和{Updatable}接口类实体类型不一致");
 
 
@@ -84,8 +90,8 @@ namespace SF.Core.ServiceManagement
 				EntityDetailType = LoadableArgs[1],
 				EntityEditableType = EntityEditable,
 				EntityManagerType = ManagerType,
-				EntitySummaryType = QueryableArgs == null ? null : QueryableArgs[1],
-				QueryArgumentType = QueryableArgs == null ? null : QueryableArgs[2],
+				EntitySummaryType = QueryableArgs == null ? null : QueryableArgs[0],
+				QueryArgumentType = QueryableArgs == null ? null : QueryableArgs[1],
 				EntityManagerCapability =
 					EntityCapability.Loadable |
 					(BatchLoadable == null ? EntityCapability.None : EntityCapability.BatchLoadable) |

@@ -63,7 +63,7 @@ namespace SF.Entities
 			{
 				var t = id.IndexOf('-', i, end - i);
 				sb.Length = 0;
-				DecodePart(id, i, t == -1 ? end : t, sb);
+				DecodePart(id, i, (t == -1 ? end : t) - i, sb);
 				partList.Add(sb.ToString());
 				if (t == -1)
 					break;

@@ -273,6 +273,15 @@ namespace System.Linq.Expressions
 		public static Expression Call(this MethodInfo method, params Expression[] args)
 		{
 			return Expression.Call(
+				null,
+				method,
+				args
+				);
+		}
+		public static Expression Call(this Expression instance, MethodInfo method, params Expression[] args)
+		{
+			return Expression.Call(
+				instance,
 				method,
 				args
 				);
@@ -320,6 +329,14 @@ namespace System.Linq.Expressions
 			return left.GetMember(
 				left.Type.Property(member, BindingFlags.Public | BindingFlags.Instance) ??
 				left.Type.Field(member, BindingFlags.Public | BindingFlags.Instance)
+				);
+		}
+		public static Expression SetProperty(this Expression left,PropertyInfo prop,Expression value)
+		{
+			return Expression.Call(
+				left,
+				prop.GetSetMethod(),
+				value
 				);
 		}
 		public static Expression Get(this MemberInfo member)

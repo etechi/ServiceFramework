@@ -76,8 +76,11 @@ namespace SF.Entities
 						   let declareType =meta.EntityDetailType
 						   from at in Link.ToEnumerable(declareType, t => t.BaseType)
 						   select at).Distinct();
-			var typeTrees = Tree.Build(allType, t => t.BaseType);
-			var typeNodeDict = typeTrees.AsEnumerable().ToDictionary(n => n.Value);
+			var typeTrees = Tree.Build(
+				allType, 
+				t => t.BaseType==typeof(object) || t.BaseType==typeof(MarshalByRefObject)?null:t.BaseType
+				);
+			var typeNodeDict =ADT.Tree.AsEnumerable(typeTrees,n=>n).ToDictionary(n => n.Value);
 			return (p, ot) =>
 			{
 				if (!typeNodeDict.TryGetValue(ot, out var n))

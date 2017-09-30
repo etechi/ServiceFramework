@@ -14,82 +14,84 @@ using System.Threading.Tasks;
 namespace SF.Entities.AutoEntityProvider.Internals
 {
 
-	public abstract class EntityModifier
-	{
+	//public abstract class EntityModifier
+	//{
 
-	}
-	public class EntityModifier<TEntity, TDataModel> :
-		EntityModifier,
-		IEntityModifier<TEntity, TDataModel>
-		where TEntity:class
-		where TDataModel:class
-	{
-		public Lazy<Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>> Modifier { get; }
-		public EntityModifier(Lazy<Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>> Modifier)
-		{
-			this.Modifier = Modifier;
-		}
-		Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>
-			IEntityModifier<TEntity, TDataModel>.Modifier => Modifier.Value;
-	}
+	//}
+	//public class EntityModifier<TEntity, TDataModel> :
+	//	EntityModifier,
+	//	IEntityModifier<TEntity, TDataModel>
+	//	where TEntity:class
+	//	where TDataModel:class
+	//{
+	//	public Lazy<Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>> Modifier { get; }
+	//	public EntityModifier(Lazy<Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>> Modifier)
+	//	{
+	//		this.Modifier = Modifier;
+	//	}
+	//	Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>
+	//		IEntityModifier<TEntity, TDataModel>.Modifier => Modifier.Value;
+	//}
 
-	public class EntityModifierCreator
+	public class EntityModifierCreator<TDataModel, TEntity>
 	{
-		Type DataModelType { get; }
-		Type EntityType { get; }
-		NamedServiceResolver<IEntityPropertyModifier> PropModifierResolver { get; }
+		IEnumerable<IEntityPropertyModifierProvider> PropertyModifierProviders { get; }
 		ParameterExpression ArgModel { get; }
 		ParameterExpression ArgEntity { get; }
-		string ConvertMode { get; }
-		List<(PropertyInfo prop, PropertyInfo srcProp, IEntityPropertyModifier conv)> Converters { get; } = new List<(PropertyInfo prop, PropertyInfo srcProp,IEntityPropertyModifier conv)>();
+		DataActionType ActionType { get; }
+		List<(PropertyInfo prop, PropertyInfo srcProp, IEntityPropertyModifier conv)> Converters { get; } = 
+			new List<(PropertyInfo prop, PropertyInfo srcProp,IEntityPropertyModifier conv)>();
+
 		List<Expression> Assigns { get; } = new List<Expression>();
 
 		public EntityModifierCreator(
-			Type DataModelType, 
-			Type EntityType, 
-			NamedServiceResolver<IEntityPropertyModifier> PropModifierResolver,
-			string ConvertMode
+			IEnumerable<IEntityPropertyModifierProvider> PropertyModifierProviders,
+			DataActionType ActionType
 			)
 		{
-			this.ConvertMode = ConvertMode;
-			this.DataModelType = DataModelType;
-			this.EntityType = EntityType;
-			this.PropModifierResolver = PropModifierResolver;
-			this.ArgModel = Expression.Parameter(DataModelType);
-			this.ArgEntity = Expression.Parameter(EntityType);
+			this.ActionType = ActionType;
+			this.PropertyModifierProviders = PropertyModifierProviders;
+			this.ArgModel = Expression.Parameter(typeof(TDataModel));
+			this.ArgEntity = Expression.Parameter(typeof(TEntity));
 		}
 
-		IEntityPropertyModifier FindPropModifier(PropertyInfo srcProp, PropertyInfo dstProp)
+		IEntityPropertyModifier[] FindPropModifiers(PropertyInfo EntityProperty, PropertyInfo DataModelProperty)
 		{
-			if (PropModifierResolver == null)
-				return null;
+			return PropertyModifierProviders
+				.Select(p =>
+					p.GetPropertyModifier(ActionType, typeof(TEntity), EntityProperty, typeof(TDataModel), DataModelProperty)
+				).Where(p => p != null)
+				.OrderBy(p=>p.Priority)
+				.ToArray();
+			//if (PropModifierResolver == null)
+			//	return null;
 
-			IEntityPropertyModifier re = null;
+			//IEntityPropertyModifier re = null;
 
-			if (srcProp != null && null != (re = PropModifierResolver(
-				$"{ConvertMode}/{srcProp.DeclaringType.FullName}:{srcProp.Name}->{dstProp.DeclaringType.FullName}:{dstProp.Name}"
-				)))
-				return re;
+			//if (srcProp != null && null != (re = PropModifierResolver(
+			//	$"{ConvertMode}/{srcProp.DeclaringType.FullName}:{srcProp.Name}->{dstProp.DeclaringType.FullName}:{dstProp.Name}"
+			//	)))
+			//	return re;
 
-			if (srcProp != null)
-			{
-				var ivo = srcProp.GetCustomAttribute<IsValueOfAttribute>();
-				if (ivo != null && null != (re = PropModifierResolver($"{ConvertMode}/{ivo.Type.FullName}")))
-				{
-					var ivoDataType = ivo.ValueType;
-					if (!ivoDataType.CanSimpleConvertTo(dstProp.PropertyType))
-						throw new NotSupportedException($"实体类型{srcProp.DeclaringType}属性{srcProp.Name}细分类型{ivo.Type}的原始类型{ivoDataType}和数据实体{dstProp.DeclaringType}属性{dstProp.Name}数据类型{dstProp.PropertyType}不兼容");
-					return re;
-				}
-			}
+			//if (srcProp != null)
+			//{
+			//	var ivo = srcProp.GetCustomAttribute<IsValueOfAttribute>();
+			//	if (ivo != null && null != (re = PropModifierResolver($"{ConvertMode}/{ivo.Type.FullName}")))
+			//	{
+			//		var ivoDataType = ivo.ValueType;
+			//		if (!ivoDataType.CanSimpleConvertTo(dstProp.PropertyType))
+			//			throw new NotSupportedException($"实体类型{srcProp.DeclaringType}属性{srcProp.Name}细分类型{ivo.Type}的原始类型{ivoDataType}和数据实体{dstProp.DeclaringType}属性{dstProp.Name}数据类型{dstProp.PropertyType}不兼容");
+			//		return re;
+			//	}
+			//}
 
-			if (srcProp!=null && null != (re = PropModifierResolver($"{ConvertMode}/{srcProp.PropertyType.FullName}->{dstProp.PropertyType.FullName}")))
-				return re;
+			//if (srcProp!=null && null != (re = PropModifierResolver($"{ConvertMode}/{srcProp.PropertyType.FullName}->{dstProp.PropertyType.FullName}")))
+			//	return re;
 
-			if (srcProp != null && null != (re = PropModifierResolver($"{ConvertMode}/{dstProp.PropertyType.FullName}")))
-				return re;
+			//if (srcProp != null && null != (re = PropModifierResolver($"{ConvertMode}/{dstProp.PropertyType.FullName}")))
+			//	return re;
 
-			return null;
+			//return null;
 		}
 
 		void BuildPropSetter(PropertyInfo dstProp)
@@ -127,19 +129,19 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			public static Action<TDataModel, TResult> SyncAssign { get; } = (m, e) => { };
 		}
 		
-		static EntityModifier CreateModifier<TDataModel, TResult>(
+		static EntityModifier CreateModifier(
 			Func<(object,object)> Assign
 			)
 			where TDataModel:class
-			where TResult:class
+			where TEntity:class
 		{
-			return new EntityModifier<TResult, TDataModel>(
-				new Lazy<Func<IDataSetEntityManager<TResult, TDataModel>, IEntityModifyContext<TResult, TDataModel>, Task>> (
+			return new EntityModifier<TEntity, TDataModel>(
+				new Lazy<Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>> (
 					()=>
 					{
 						var re = Assign();
-						var sa = (Action<TDataModel, TResult>)re.Item1 ?? EmptyAssign<TDataModel,TResult>.SyncAssign;
-						var aa = ((Func<TDataModel, TResult, Task[]>)re.Item2)?? EmptyAssign<TDataModel, TResult>.AsyncAssign;
+						var sa = (Action<TDataModel, TEntity>)re.Item1 ?? EmptyAssign<TDataModel,TEntity>.SyncAssign;
+						var aa = ((Func<TDataModel, TEntity, Task[]>)re.Item2)?? EmptyAssign<TDataModel, TEntity>.AsyncAssign;
 						return async (em, ctx) =>
 						{
 							sa(ctx.Model, ctx.Editable);
@@ -153,6 +155,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			BindingFlags.Static | BindingFlags.NonPublic,
 			typeof(Func<(object,object)>)
 			).IsNotNull();
+
+		
 		public EntityModifier Build()
 		{
 			return (EntityModifier)MethodCreateModifier.MakeGenericMethod(DataModelType, EntityType).Invoke(

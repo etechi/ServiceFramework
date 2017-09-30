@@ -206,7 +206,9 @@ namespace SF.Entities
 				(from prop in AllProps
 				 let ei = prop.GetCustomAttribute<EntityIdentAttribute>()
 				 where ei != null && ei.NameField != null
-				 let nameProp = AllProps.FirstOrDefault(p => p.Name == ei.NameField) ?? throw new ArgumentException($"实体{typeof(TItem)}没有指定的字段{ei.NameField}")
+				 let nameProp = AllProps.FirstOrDefault(p => p.Name == ei.NameField)
+					.IsNotNull(()=>$"实体{typeof(TItem)}中找不到名字属性{ei.NameField}")
+					.Assert(p=>p.PropertyType==typeof(string),p=> $"实体{typeof(TItem)}的名称字段{ei.NameField}不是字符串类型")
 				 select (prop, nameProp,ei)
 				 ).ToArray();
 			static bool FillRequired { get; } = PropPairs.Length > 0;

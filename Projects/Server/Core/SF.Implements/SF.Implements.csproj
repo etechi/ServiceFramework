@@ -16,6 +16,7 @@
     <Compile Remove="Core\ServiceManagement\Management\DataModels\ServiceCategoryItem.cs" />
     <Compile Remove="Core\ServiceManagement\Management\DataModels\ServiceInstanceInteface.cs" />
     <Compile Remove="Core\ServiceManagement\Management\ServiceInstanceManagerBackup.cs" />
+    <Compile Remove="Entities\AutoEntityProvider\Internals\EntityModifiers\EntityModifierCreator.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 

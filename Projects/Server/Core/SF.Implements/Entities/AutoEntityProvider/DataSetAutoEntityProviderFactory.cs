@@ -15,17 +15,20 @@ namespace SF.Entities.AutoEntityProvider
 		IDataModelTypeCollection DataModelTypeCollection { get; }
 		NamedServiceResolver<IValueConverter> ValueConverterResolver { get; }
 		NamedServiceResolver<IEntityPropertyModifier> EntityModifierValueConverterResolver { get; }
+		IEnumerable<IEntityModifierProvider> EntityModifierProviders { get; }
 		public DataSetAutoEntityProviderFactory(
 			IMetadataCollection Metas,
 			IDataModelTypeCollection DataModelTypeCollection,
 			NamedServiceResolver<IValueConverter> ValueConverterResolver,
-			NamedServiceResolver<IEntityPropertyModifier> EntityModifierValueConverterResolver
+			NamedServiceResolver<IEntityPropertyModifier> EntityModifierValueConverterResolver,
+			IEnumerable<IEntityModifierProvider> EntityModifierProviders
 			)
 		{
 			this.Metas = Metas;
 			this.DataModelTypeCollection = DataModelTypeCollection;
 			this.ValueConverterResolver = ValueConverterResolver;
 			this.EntityModifierValueConverterResolver = EntityModifierValueConverterResolver;
+			this.EntityModifierProviders = EntityModifierProviders;
 		}
 
 		void ValidateEntityTypes(Type TEntityDetail, IEntityType entity, params Type[] types)
@@ -46,8 +49,9 @@ namespace SF.Entities.AutoEntityProvider
 			QueryResultBuildHelper DetailQueryResultBuildHelper,
 			QueryResultBuildHelper SummaryQueryResultBuildHelper,
 			QueryResultBuildHelper EditableQueryResultBuildHelper,
-			EntityModifier InitModifier,
-			EntityModifier UpdateModifier
+			IEntityModifier[] InitModifiers,
+			IEntityModifier[] UpdateModifiers,
+			IEntityModifier[] RemoveModifiers
 			)
 			where TDataModel : class,new()
 			{
@@ -65,10 +69,31 @@ namespace SF.Entities.AutoEntityProvider
 				(IQueryResultBuildHelper<TDataModel, TEntityDetailTemp, TEntityDetail>)DetailQueryResultBuildHelper,
 				(IQueryResultBuildHelper<TDataModel, TEntitySummaryTemp, TEntitySummary>)SummaryQueryResultBuildHelper,
 				(IQueryResultBuildHelper<TDataModel, TEntityEditableTemp, TEntityEditable>)EditableQueryResultBuildHelper,
-				(IEntityModifier<TEntityEditable, TDataModel>)InitModifier,
-				(IEntityModifier<TEntityEditable, TDataModel>)UpdateModifier
+				InitModifiers.Cast<IEntityModifier<TEntityEditable,TDataModel>>().ToArray(),
+				UpdateModifiers.Cast<IEntityModifier<TEntityEditable, TDataModel>>().ToArray(),
+				RemoveModifiers.Cast<IEntityModifier<TEntityEditable, TDataModel>>().ToArray()
 				);
 			}
+		static MethodInfo MethodGetModifier { get; } = typeof(IEntityModifierProvider)
+			.GetMethodExt(
+				nameof(IEntityModifierProvider.GetEntityModifier),
+				typeof(DataActionType)
+			);
+
+		IEntityModifier[] GetEntityModifiers(MethodInfo GetModifier, DataActionType Type)
+		{
+			return EntityModifierProviders
+				.Select(p => 
+					GetModifier.Invoke(
+						p, 
+						new object[] { Type }
+						)
+					)
+				.Where(p => p != null)
+				.Cast<IEntityModifier>()
+				.OrderBy(m=>m.Priority)
+				.ToArray();
+		}
 		public IDataSetAutoEntityProvider<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>  
 			Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(IServiceProvider sp)
 		{
@@ -96,8 +121,13 @@ namespace SF.Entities.AutoEntityProvider
 					  var detailHelper = new QueryResultBuildHelperCreator(dataType, tDetail, ValueConverterResolver).Build();
 					  var summaryHelper = new QueryResultBuildHelperCreator(dataType, tSummary, ValueConverterResolver).Build();
 					  var editableHelper = new QueryResultBuildHelperCreator(dataType, tEditable, ValueConverterResolver).Build();
-					  var initModifier = new EntityModifierCreator(dataType, tEditable, EntityModifierValueConverterResolver, "Init").Build();
-					  var updateModifier = new EntityModifierCreator(dataType, tEditable, EntityModifierValueConverterResolver, "Update").Build();
+
+
+					  var GetModifier = MethodGetModifier.MakeGenericMethod(tEditable, dataType);
+
+					  var initModifiers = GetEntityModifiers(GetModifier, DataActionType.Create);
+					  var updateModifiers = GetEntityModifiers(GetModifier, DataActionType.Update);
+					  var removeModifiers = GetEntityModifiers(GetModifier, DataActionType.Delete);
 
 					  var newSetting = typeof(DataSetAutoEntityProviderFactory).GetMethods(
 						  "NewSetting",
@@ -120,8 +150,9 @@ namespace SF.Entities.AutoEntityProvider
 							detailHelper,
 							summaryHelper,
 							editableHelper,
-							initModifier,
-							updateModifier
+							initModifiers,
+							updateModifiers,
+							removeModifiers
 						  }
 						 );
 				  });
