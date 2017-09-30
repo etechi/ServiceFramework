@@ -17,7 +17,7 @@ namespace SF.Management.FrontEndContents.Runtime
 	public class SiteRenderEngine :
 		SiteRenderEngine<Content, SF.Management.FrontEndContents.Site, SiteTemplate>
 	{
-		public SiteRenderEngine(ILogService LogService, IEventSubscriber<EntityModified<long, Content>> OnContentModified, IEventSubscriber<EntityModified<long, FrontEndContents.Site>> OnSiteTemplateModified, IEventSubscriber<EntityModified<string, SiteTemplate>> OnSiteModified) : base(LogService, OnContentModified, OnSiteTemplateModified, OnSiteModified)
+		public SiteRenderEngine(ILogService LogService, IEventSubscriber<EntityModified<Content>> OnContentModified, IEventSubscriber<EntityModified<FrontEndContents.Site>> OnSiteTemplateModified, IEventSubscriber<EntityModified<SiteTemplate>> OnSiteModified) : base(LogService, OnContentModified, OnSiteTemplateModified, OnSiteModified)
 		{
 		}
 	}
@@ -34,9 +34,9 @@ namespace SF.Management.FrontEndContents.Runtime
 		public ILogger Logger { get; }
 		public SiteRenderEngine(
 			ILogService LogService,
-			IEventSubscriber<EntityModified<long, TContent>> OnContentModified,
-			IEventSubscriber<EntityModified<long, TSite>> OnSiteTemplateModified,
-			IEventSubscriber<EntityModified<string, TSiteTemplate>> OnSiteModified
+			IEventSubscriber<EntityModified< TContent>> OnContentModified,
+			IEventSubscriber<EntityModified<TSite>> OnSiteTemplateModified,
+			IEventSubscriber<EntityModified<TSiteTemplate>> OnSiteModified
 			)
 		{
 			this.Logger = LogService.GetLogger("UI管理器");
@@ -50,18 +50,18 @@ namespace SF.Management.FrontEndContents.Runtime
 
 			OnContentModified.Wait(e =>
 			{
-				Contents.TryRemove(e.Id, out var c);
+				Contents.TryRemove(e.Entity.Id, out var c);
 				return Task.CompletedTask;
 			});
 
 			OnSiteTemplateModified.Wait(e =>
 			{
-				Sites.TryRemove(e.Id, out var s);
+				SiteBinds.TryRemove(e.Entity.Id, out var site);
 				return Task.CompletedTask;
 			});
 			OnSiteModified.Wait(e =>
 			{
-				SiteBinds.TryRemove(e.Id, out var site);
+				Sites.TryRemove(e.Entity.Id, out var s);
 				return Task.CompletedTask;
 			});
 

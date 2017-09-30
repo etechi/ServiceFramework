@@ -15,6 +15,7 @@ namespace SF.Auth.Identities.Entity
 	public class EntityIdentityManagementService<TIdentity,TIdentityCredential> :
 		//QuerableEntitySource<long, Models.IdentityInternal, IdentityQueryArgument, TIdentity>,
 		ModidifiableEntityManager<
+			ObjectKey<long>,
 			Models.IdentityInternal,
 			IdentityQueryArgument,
 			Models.IdentityEditable,

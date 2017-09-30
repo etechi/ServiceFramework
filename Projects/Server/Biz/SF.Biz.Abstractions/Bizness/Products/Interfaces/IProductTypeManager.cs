@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace SF.Biz.Products
 {
-    public class ProductTypeQueryArgument : IQueryArgument<long>
+    public class ProductTypeQueryArgument : IQueryArgument<ObjectKey<long>>
     {
-		public Option<long> Id { get; set; }
+		public ObjectKey<long> Id { get; set; }
 
         [Display(Name = "对象状态")]
         public EntityLogicState? ObjectState { get; set; }
@@ -24,8 +24,8 @@ namespace SF.Biz.Products
 	}
 
 	public interface IProductTypeManager<TInternal, TEditable> :
-		IEntityManager<TEditable>,
-		IEntitySource<TInternal,ProductTypeQueryArgument>
+		IEntityManager<ObjectKey<long>, TEditable>,
+		IEntitySource<ObjectKey<long>, TInternal,ProductTypeQueryArgument>
 		where TInternal : ProductTypeInternal
 		where TEditable : ProductTypeEditable
 	{

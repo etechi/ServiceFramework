@@ -33,7 +33,7 @@ namespace SF.Management.FrontEndContents.Friendly
 	[EntityManager]
 	[NetworkService]
 	public interface IItemGroupListManager<T> :
-		IEntityLoadable<ItemGroup<T>>,
+		IEntityLoadable<ObjectKey<long>, ItemGroup<T>>,
 		IEntityUpdator<ItemGroup<T>>,
 		IEntityListable<ItemGroup<T>>
 		where T : LinkItemBase

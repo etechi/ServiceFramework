@@ -9,16 +9,16 @@ namespace SF.Core.ServiceManagement.Management
 {
 	public static class IServiceInstanceManagerExtension
 	{
-		public static async Task<ServiceInstanceInternal> ResolveDefaultService<I>(
+		public static async Task<long?> ResolveDefaultService<I>(
 			this IServiceInstanceManager Manager
 			)
 		{
-			return await Manager.QuerySingleEntityIdent(
+			return (await Manager.QuerySingleEntityIdent(
 					new ServiceInstanceQueryArgument
 					{
 						ServiceType = typeof(I).GetFullName(),
 						IsDefaultService = true
-					});
+					}))?.Id;
 		}
 
 		static void UpdateServiceModel(Models.ServiceInstanceEditable e,
@@ -46,12 +46,12 @@ namespace SF.Core.ServiceManagement.Management
 			e.Description = Description ?? comment.Description;
 			e.Setting = Json.Stringify(Setting);
 		}
-		public static Task<ServiceInstanceInternal> TryGetDefaultService<I>(
+		public static Task<ObjectKey<long>> TryGetDefaultService<I>(
 			this IServiceInstanceManager Manager,
 			long? ParentId = null
 			) => Manager.TryGetDefaultService(typeof(I), ParentId);
 
-		public static async Task<ServiceInstanceInternal> TryGetDefaultService(
+		public static async Task<ObjectKey<long>> TryGetDefaultService(
 			this IServiceInstanceManager Manager,
 			Type InterfaceType,
 			long? ParentId = null
@@ -105,14 +105,14 @@ namespace SF.Core.ServiceManagement.Management
 			if (id == null)
 				throw new ArgumentException($"找不到默认服务{typeof(I)},当前区域:{ParentId}");
 			await Manager.UpdateEntity(
-				id.Id,
+				ObjectKey.From(id.Id),
 				(ServiceInstanceEditable e) => { e.Setting = Edit(e.Setting); }
 				);
 		}
-		public static async Task<ServiceInstanceInternal> TryGetService<I,T>(
+		public static async Task<ObjectKey<long>> TryGetService<I,T>(
 			this IServiceInstanceManager Manager,
 			long? ParentId = null
-			) => await Manager.QuerySingleEntityIdent(
+			) =>await Manager.QuerySingleEntityIdent(
 				new ServiceInstanceQueryArgument
 				{
 					ServiceType = typeof(I).GetFullName(),
@@ -132,7 +132,6 @@ namespace SF.Core.ServiceManagement.Management
 			)
 		{
 			var re = await Manager.TryGetService<I, T>(ParentId);
-			
 			return await Manager.EnsureEntity(
 				re,
 				() => new Models.ServiceInstanceEditable { },
@@ -147,7 +146,7 @@ namespace SF.Core.ServiceManagement.Management
 			)
 		=> await Manager.UpdateEntity(
 				Manager,
-				ServiceId,
+				ObjectKey.From(ServiceId),
 				(ServiceInstanceEditable e) =>e.ContainerId = ParentServiceId
 				);
 

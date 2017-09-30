@@ -30,7 +30,7 @@ namespace SF.Core.ServiceManagement
 		   where TEntitySummary : class, IEntityWithId<TKey>
 		   where TEntityEditable : class, IEntityWithId<TKey>
 		   where TKey : IEquatable<TKey>
-		   where TQueryArgument : IQueryArgument<TKey>
+		   where TQueryArgument :class
 		{
 			var f = sp.Resolve<DataSetAutoEntityProviderFactory>();
 			return f.Create<TKey,TEntityDetail,TEntitySummary,TEntityEditable,TQueryArgument>(sp);

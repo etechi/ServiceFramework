@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace SF.Auth.Permissions
 {
 	public interface IOperationManager :
-        IEntitySource<string,Models.OperationInternal,ObjectQueryArgument<string>>
+        IEntitySource<ObjectKey<string>, Models.OperationInternal,ObjectQueryArgument<ObjectKey<string>>>
     {
         
     }

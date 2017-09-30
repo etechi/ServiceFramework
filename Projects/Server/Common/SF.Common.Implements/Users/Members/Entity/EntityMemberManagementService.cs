@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace SF.Users.Members.Entity
 {
 	public class EntityMemberManagementService<TMember> :
-		ModidifiableEntityManager<Models.MemberInternal,  MemberQueryArgument, Models.MemberEditable, TMember>,
+		ModidifiableEntityManager<ObjectKey<long>, Models.MemberInternal,  MemberQueryArgument, Models.MemberEditable, TMember>,
 		IMemberManagementService,
 		ICallable
 		where TMember: DataModels.Member<TMember>,new()

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace SF.Biz.Products
 {
-    public class CategoryQueryArgument : IQueryArgument<long>
+    public class CategoryQueryArgument : IQueryArgument<ObjectKey<long>>
     {
-		public Option<long> Id { get; set; }
+		public ObjectKey<long> Id { get; set; }
 
         [Display(Name = "卖家")]
         [EntityIdent(typeof(Identity))]
@@ -34,8 +34,8 @@ namespace SF.Biz.Products
 	{ }
 
 	public interface ICategoryManager<TEditable> :
-		IEntityManager< TEditable>,
-		IEntitySource<TEditable, CategoryQueryArgument>
+		IEntityManager<ObjectKey<long>, TEditable>,
+		IEntitySource<ObjectKey<long>, TEditable, CategoryQueryArgument>
 		where TEditable : CategoryInternal
 	{
 		//Task<TEditable[]> BatchUpdate(long SellerId, TEditable[] Items);

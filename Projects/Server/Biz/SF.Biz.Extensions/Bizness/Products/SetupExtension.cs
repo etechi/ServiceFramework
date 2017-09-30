@@ -13,9 +13,9 @@ namespace SF.Biz.Products
 			ProductTypeEditable e
 			)
 			where TProductTypeManager:
-			IEntityIdentQueryable<ProductTypeInternal, ProductTypeQueryArgument>,
-			IEntityEditableLoader<ProductTypeEditable>,
-			IEntityCreator<ProductTypeEditable>,
+			IEntityIdentQueryable<ObjectKey<long>, ProductTypeQueryArgument>,
+			IEntityEditableLoader<ObjectKey<long>,ProductTypeEditable>,
+			IEntityCreator<ObjectKey<long>, ProductTypeEditable>,
 			IEntityUpdator<ProductTypeEditable>
 		{
 			return await ProductTypeManager.EnsureEntity(
@@ -70,9 +70,9 @@ namespace SF.Biz.Products
 			long[] Items
 			) where TEditable:CategoryInternal
 		{
-			await CategoryManager.UpdateEntity(
+			await CategoryManager.UpdateEntity< ObjectKey<long>,TEditable>(
 				CategoryManager,
-				CategoryId,
+				ObjectKey.From(CategoryId),
 				(TEditable e) =>
 				{
 					e.Items = Items;
@@ -88,10 +88,10 @@ namespace SF.Biz.Products
 			long SellerId,
 			long ProductId
 			) where TProductItemManager :
-				IEntityIdentQueryable<ItemEditable, ItemQueryArgument>,
-				IEntityEditableLoader<ItemEditable>,
+				IEntityIdentQueryable<ObjectKey<long>, ItemQueryArgument>,
+				IEntityEditableLoader<ObjectKey<long>,ItemEditable>,
 				IEntityUpdator<ItemEditable>,
-				IEntityCreator<ItemEditable>
+				IEntityCreator<ObjectKey<long>,ItemEditable>
 		{
 
 			var re=await Manager.QueryIdentsAsync(new ItemQueryArgument
@@ -112,10 +112,10 @@ namespace SF.Biz.Products
 		public static async Task<ProductEditable> ProductEnsure<TProductManager>(
 				  this TProductManager ProductManager,
 				  ProductEditable e
-			) where TProductManager : IEntityIdentQueryable<ProductDescItem, ProductInternalQueryArgument>,
-									IEntityEditableLoader< ProductEditable>,
+			) where TProductManager : IEntityIdentQueryable<ObjectKey<long>, ProductInternalQueryArgument>,
+									IEntityEditableLoader<ObjectKey<long>,ProductEditable>,
 								IEntityUpdator< ProductEditable>,
-								IEntityCreator<ProductEditable>
+								IEntityCreator<ObjectKey<long>,ProductEditable>
 		{
 			return await ProductManager.EnsureEntity(
 				await ProductManager.QuerySingleEntityIdent(new ProductInternalQueryArgument{Name = e.Name}),
@@ -150,10 +150,10 @@ namespace SF.Biz.Products
 				string[] images,
 				string[] contentImages,
 				bool isVirtual = false
-			)where TProductManager:IEntityIdentQueryable<ProductEditable, ProductInternalQueryArgument>,
-									IEntityEditableLoader<ProductEditable>,
+			)where TProductManager:IEntityIdentQueryable<ObjectKey<long>,ProductInternalQueryArgument>,
+									IEntityEditableLoader<ObjectKey<long>,ProductEditable>,
 								IEntityUpdator<ProductEditable>,
-								IEntityCreator<ProductEditable>
+								IEntityCreator<ObjectKey<long>,ProductEditable>
 		{
 			return await ProductManager.EnsureEntity(
 				await ProductManager.QuerySingleEntityIdent(new ProductInternalQueryArgument{Name = name,ProductTypeId = type}),

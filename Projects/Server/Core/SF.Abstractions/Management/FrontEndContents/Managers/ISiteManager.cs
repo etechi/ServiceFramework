@@ -10,8 +10,8 @@ namespace SF.Management.FrontEndContents
 		ISiteManager<Site>
 	{ }
 	public interface ISiteManager<TSite>:
-		IEntityManager<TSite>,
-		IEntitySource<TSite>,
+		IEntityManager<ObjectKey<string>, TSite>,
+		IEntitySource<ObjectKey<string>, TSite>,
 		ISiteResolver
 		where TSite:Site
 	{

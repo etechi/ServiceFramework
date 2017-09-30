@@ -5,10 +5,10 @@ using SF.Metadata;
 using System;
 namespace SF.Core.ServiceManagement.Management
 {
-	public class ServiceImplementQueryArgument : IQueryArgument<string>
+	public class ServiceImplementQueryArgument : IQueryArgument<ObjectKey<string>>
 	{
 		[Comment("ID")]
-		public Option<string> Id { get; set; }
+		public ObjectKey<string> Id { get; set; }
 
 		[Comment("服务实现名称")]
 		public string Name { get; set; }

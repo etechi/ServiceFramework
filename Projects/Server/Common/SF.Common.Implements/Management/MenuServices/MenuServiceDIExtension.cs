@@ -177,7 +177,7 @@ namespace SF.Core.ServiceManagement
 		public static async Task<MenuItem[]> GetServiceMenuItems(this IServiceInstanceManager sim,IServiceProvider sp, long ServiceId)
 		{
 			var svcTypeResolver = sp.Resolve<IServiceDeclarationTypeResolver>();
-			var svc=await sim.GetAsync(ServiceId);
+			var svc=await sim.GetAsync(ObjectKey.From(ServiceId));
 			var items = new List<MenuItem>();
 			await CollectMenuItem(svc, sim, svcTypeResolver, items);
 			return items.ToArray();

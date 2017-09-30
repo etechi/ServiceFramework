@@ -26,8 +26,8 @@ namespace SF.Auth.Permissions
 		public PermissionProvider(
 			Lazy<WithNewScope<IDataSet<GrantPermission>, IDataSet<GrantRole>, IPermission[]>> WithNewScope, 
 			ILocalCache<IPermission[]> LocalCache, 
-			IEventSubscriber<EntityModified<long, GrantEditable>> GrantModified, 
-			IEventSubscriber<EntityModified<long, RoleInternal>> RoleModified) : 
+			IEventSubscriber<EntityModified<GrantEditable>> GrantModified, 
+			IEventSubscriber<EntityModified<RoleInternal>> RoleModified) : 
 			base(WithNewScope, LocalCache, GrantModified, RoleModified)
 		{
 		}
@@ -48,15 +48,15 @@ namespace SF.Auth.Permissions
 		public PermissionProvider(
 			Lazy<WithNewScope<IDataSet<TGrantPermission>, IDataSet<TGrantRole>, IPermission[]>> WithNewScope, 
 			ILocalCache<IPermission[]> LocalCache,
-			IEventSubscriber<EntityModified<long, TGrantEditable>> GrantModified,
-			IEventSubscriber<EntityModified<long, TRoleEditable>> RoleModified
+			IEventSubscriber<EntityModified< TGrantEditable>> GrantModified,
+			IEventSubscriber<EntityModified<TRoleEditable>> RoleModified
 			)
 		{
 			this.LocalCache = LocalCache;
 			this.WithNewScope = WithNewScope;
 			GrantModified.Wait(e =>
 			{
-				LocalCache.Remove(e.Id.ToString());
+				LocalCache.Remove(e.Entity.Id.ToString());
 				return Task.CompletedTask;
 			});
 			RoleModified.Wait(e =>

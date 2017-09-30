@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SF.Management.BizAdmins.Entity
 {
 	public class EntityBizAdminManagementService<TBizAdmin> :
-		ModidifiableEntityManager<Models.BizAdminInternal,  BizAdminQueryArgument, Models.BizAdminEditable, TBizAdmin>,
+		ModidifiableEntityManager<ObjectKey<long>, Models.BizAdminInternal,  BizAdminQueryArgument, Models.BizAdminEditable, TBizAdmin>,
 		IBizAdminManagementService
 		where TBizAdmin: DataModels.BizAdmin<TBizAdmin>,new()
 	{

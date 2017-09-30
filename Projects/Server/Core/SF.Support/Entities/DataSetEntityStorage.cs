@@ -66,10 +66,10 @@ namespace SF.Entities
 
 		#region GetAsync
 
-		public static async Task<TReadOnlyEntity> GetAsync<TTempReadOnlyEntity, TReadOnlyEntity, TModel>
+		public static async Task<TReadOnlyEntity> GetAsync<TKey,TTempReadOnlyEntity, TReadOnlyEntity, TModel>
 		(
 			this IReadOnlyDataSetEntityManager<TModel> Storage,
-			TReadOnlyEntity Id,
+			TKey Id,
 			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
@@ -90,16 +90,16 @@ namespace SF.Entities
 				});
 		}
 
-		public static Task<TReadOnlyEntity> GetAsync<TReadOnlyEntity, TModel>
+		public static Task<TReadOnlyEntity> GetAsync<TKey, TReadOnlyEntity, TModel>
 		(
 			this IReadOnlyDataSetEntityManager<TModel> Storage,
-			TReadOnlyEntity Id,
+			TKey Id,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly,
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
 			where TModel : class
 			where TReadOnlyEntity : class
-			=> GetAsync<TReadOnlyEntity, TReadOnlyEntity, TModel>(
+			=> GetAsync<TKey, TReadOnlyEntity, TReadOnlyEntity, TModel>(
 				Storage,
 				Id,
 				MapModelToReadOnly,
@@ -109,12 +109,12 @@ namespace SF.Entities
 		public static Task<TReadOnlyEntity> GetAsync<TKey, TReadOnlyEntity, TModel>
 		(
 			this IReadOnlyDataSetEntityManager<TModel> Storage,
-			TReadOnlyEntity Id,
+			TKey Id,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
 		)
 			where TModel : class
 			where TReadOnlyEntity : class
-			=> GetAsync<TReadOnlyEntity, TReadOnlyEntity, TModel>(
+			=> GetAsync<TKey,TReadOnlyEntity, TReadOnlyEntity, TModel>(
 				Storage,
 				Id,
 				MapModelToReadOnly,
@@ -124,10 +124,10 @@ namespace SF.Entities
 
 		#region Batch Get
 
-		public static async Task<TReadOnlyEntity[]> BatchGetAsync< TTempReadOnlyEntity, TReadOnlyEntity, TModel>
+		public static async Task<TReadOnlyEntity[]> BatchGetAsync<TKey, TTempReadOnlyEntity, TReadOnlyEntity, TModel>
 		(
 			this IReadOnlyDataSetEntityManager<TModel> Storage,
-			TReadOnlyEntity[] Ids,
+			TKey[] Ids,
 			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
@@ -148,31 +148,31 @@ namespace SF.Entities
 			});
 		}
 
-		public static Task<TReadOnlyEntity[]> BatchGetAsync<TReadOnlyEntity, TModel>
+		public static Task<TReadOnlyEntity[]> BatchGetAsync<TKey,TReadOnlyEntity, TModel>
 		(
 			this IReadOnlyDataSetEntityManager<TModel> Storage,
-			TReadOnlyEntity[] Ids,
+			TKey[] Ids,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly,
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
 			where TModel : class
 			where TReadOnlyEntity : class
-			=> BatchGetAsync<TReadOnlyEntity, TReadOnlyEntity, TModel>(
+			=> BatchGetAsync<TKey, TReadOnlyEntity, TReadOnlyEntity, TModel>(
 				Storage,
 				Ids,
 				MapModelToReadOnly,
 				PrepareReadOnly
 				);
 
-		public static Task<TReadOnlyEntity[]> BatchGetAsync<TReadOnlyEntity, TModel>
+		public static Task<TReadOnlyEntity[]> BatchGetAsync<TKey,TReadOnlyEntity, TModel>
 		(
 			this IReadOnlyDataSetEntityManager<TModel> Storage,
-			TReadOnlyEntity[] Ids,
+			TKey[] Ids,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
 		)
 			where TModel : class
 			where TReadOnlyEntity : class
-			=> BatchGetAsync<TReadOnlyEntity, TReadOnlyEntity, TModel>(
+			=> BatchGetAsync<TKey,TReadOnlyEntity, TReadOnlyEntity, TModel>(
 				Storage,
 				Ids,
 				MapModelToReadOnly,
@@ -240,34 +240,7 @@ namespace SF.Entities
 				return re;
 			});
 		}
-		public static async Task<QueryResult<TReadOnlyEntity>> QueryAsync<TKey, TTempReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
-			this IReadOnlyDataSetEntityManager<TModel> Storage,
-			TQueryArgument Arg,
-			Paging paging,
-			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
-			IPagingQueryBuilder<TModel> PagingQueryBuilder,
-			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
-			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
-			)
-			where TModel:class
-		{
-			return await Storage.UseTransaction(
-				$"查询实体{typeof(TModel).Comment().Name}",
-				async (trans) =>
-				{
-					var q = Storage.DataSet.AsQueryable(true);
-					q = Entity<TModel>.TryFilterIdent(q, Arg);
-					q = BuildQuery(q, Arg, paging);
-					var re = await q.ToQueryResultAsync(
-						MapModelToReadOnly,
-						PrepareReadOnly,
-						PagingQueryBuilder,
-						paging
-						);
-					return re;
-				});
-		}
-
+	
 		public static Task<QueryResult<TReadOnlyEntity>> QueryAsync<TReadOnlyEntity, TQueryArgument, TModel>(
 			this IReadOnlyDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
@@ -311,16 +284,16 @@ namespace SF.Entities
 		#endregion
 
 		#region LoadForEdit
-		public static async Task<TEditable> LoadForEdit<TEditable, TModel>(
+		public static async Task<TEditable> LoadForEdit<TKey,TEditable, TModel>(
 			this IDataSetEntityManager<TEditable,TModel> Storage,
-			TEditable Key,
+			TKey Key,
 			Func<IContextQueryable<TModel>, Task<TEditable>> MapModelToEditable
 			)
 			where TModel:class
 			where TEditable:class
 		{
 			return await Storage.UseTransaction(
-				$"载入编辑实体{typeof(TModel).Comment().Name}:{Entity<TEditable>.GetIdents(Key).Join(",")}",
+				$"载入编辑实体{typeof(TModel).Comment().Name}:{Entity<TKey>.GetIdents(Key).Join(",")}",
 				async (trans) =>
 				{
 					return await MapModelToEditable(Storage.DataSet.AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Key)));
@@ -333,7 +306,7 @@ namespace SF.Entities
 
 
 		#region Create
-		public static async Task InternalCreateAsync<TEditable, TModel,TModifyContext>(
+		public static async Task<TKey> InternalCreateAsync<TKey,TEditable, TModel,TModifyContext>(
 			this IDataSetEntityManager<TEditable,TModel> Storage,
 			TModifyContext Context,
 			TEditable Entity,
@@ -345,7 +318,7 @@ namespace SF.Entities
 			where TEditable : class
 			where TModifyContext: IEntityModifyContext<TEditable, TModel>
 		{
-			await Storage.UseTransaction(
+			return await Storage.UseTransaction(
 				$"新建实体{typeof(TModel).Comment().Name}",
 				async (trans) =>
 				{
@@ -382,10 +355,10 @@ namespace SF.Entities
 							PostActionType.AfterCommit
 						);
 					await Storage.DataSet.Context.SaveChangesAsync();
-					return 0;
+					return Entity<TModel>.GetKey<TKey>(Context.Model);
 				});
 		}
-		public static async Task<TEditable> CreateAsync<TEditable,TModel>(
+		public static async Task<TKey> CreateAsync<TKey, TEditable,TModel>(
 			this IDataSetEntityManager<TEditable,TModel> Storage,
 			TEditable Entity,
 			Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel,
@@ -396,7 +369,7 @@ namespace SF.Entities
 			where TEditable:class
 		{
 			var ctx =new EntityModifyContext<TEditable, TModel>();
-			await InternalCreateAsync<TEditable,TModel,IEntityModifyContext<TEditable, TModel>>(
+			return await InternalCreateAsync<TKey, TEditable,TModel,IEntityModifyContext<TEditable, TModel>>(
 				Storage, 
 				ctx,
 				Entity,
@@ -404,18 +377,17 @@ namespace SF.Entities
 				InitModel,
 				ExtraArgument
 				);
-			return ctx.Editable;
 		}
 
 		#endregion
 
 		#region Update
-		public static async Task<TEditable> InternalUpdateAsync<TEditable, TModel,TModifyContext>(
+		public static async Task<bool> InternalUpdateAsync<TKey,TEditable, TModel,TModifyContext>(
 			this IDataSetEntityManager<TEditable,TModel> Storage,
 			TModifyContext Context,
 			TEditable Entity,
 			Func<TModifyContext, Task> UpdateModel,
-			Func<TEditable,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
+			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
 			)
 			where TModel : class
 			where TEditable : class
@@ -426,9 +398,11 @@ namespace SF.Entities
 				async (trans) =>
 				{
 					var q = Storage.DataSet.AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Entity));
-					var model = LoadModelForEdit == null ? await q.SingleOrDefaultAsync() : await LoadModelForEdit(Entity,q);
+					var model = LoadModelForEdit == null ? 
+						await q.SingleOrDefaultAsync() : 
+						await LoadModelForEdit(Entity<TEditable>.GetKey<TKey>(Entity),q);
 					if (model == null)
-						return null;
+						return false;
 					Storage.InitUpdateContext(Context,Entity, model, null);
 					await UpdateModel(Context);
 					Storage.DataSet.Update(Context.Model);
@@ -462,14 +436,14 @@ namespace SF.Entities
 						);
 
 					await Storage.DataSet.Context.SaveChangesAsync();
-					return Entity;
+					return true;
 				});
 		}
-		public static async Task<TEditable> UpdateAsync< TEditable,TModel>(
+		public static async Task<bool> UpdateAsync<TKey, TEditable,TModel>(
 			this IDataSetEntityManager<TEditable,TModel> Storage,
 			TEditable Entity,
 			Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel,
-			Func<TEditable,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+			Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
 			)
 			where TModel : class
 			where TEditable :class
@@ -480,12 +454,12 @@ namespace SF.Entities
 		
 		#endregion
 
-		public static async Task<TEditable> InternalRemoveAsync<TModel,TEditable,TModifyContext>(
-			this IDataSetEntityManager<TEditable,TModel> Storage,
+		public static async Task<bool> InternalRemoveAsync<TKey,TEditable, TModel,TModifyContext>(
+			this IDataSetEntityManager<TEditable, TModel> Storage,
 			TModifyContext Context,
-			TEditable Id,
+			TKey Id,
 			Func<TModifyContext, Task> RemoveModel = null,
-			Func<TEditable,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
+			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
 			)
 			where TModel : class
 			where TEditable:class
@@ -498,8 +472,9 @@ namespace SF.Entities
 					var q = Storage.DataSet.AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Id));
 					var model = LoadModelForEdit == null ? await q.SingleOrDefaultAsync() : await LoadModelForEdit(Id,q);
 					if (model == null)
-						return null;
-					Storage.InitRemoveContext(Context,Id, model, null);
+						return false;
+					var editable = Entity<TEditable>.WithKey(Id);
+					Storage.InitRemoveContext(Context,editable, model, null);
 					if (RemoveModel != null)
 						await RemoveModel(Context);
 					Storage.DataSet.Remove(Context.Model);
@@ -508,7 +483,7 @@ namespace SF.Entities
 						Storage.EventEmitter.Emit(
 							new EntityModified<TEditable>()
 							{
-								Entity=Id,
+								Entity= editable,
 								Action = DataActionType.Delete,
 								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
 								Time = Storage.Now,
@@ -521,7 +496,7 @@ namespace SF.Entities
 						Storage.EventEmitter.Emit(
 							new EntityModified<TEditable>()
 							{
-								Entity = Id,
+								Entity = editable,
 								Action = DataActionType.Delete,
 								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
 								Time = Storage.Now,
@@ -533,24 +508,30 @@ namespace SF.Entities
 						);
 
 					await Storage.DataSet.Context.SaveChangesAsync();
-					return Context.Editable;
+					return true;
 				});
 		}
-		public static async Task<TEditable> RemoveAsync<TModel, TEditable>(
+		public static async Task<bool> RemoveAsync<TKey, TEditable, TModel>(
 			this IDataSetEntityManager<TEditable, TModel> Storage,
-			TEditable Id,
+			TKey Id,
 			Func<IEntityModifyContext<TEditable, TModel>, Task> RemoveModel=null,
-			Func<TEditable, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
 			)
 			where TModel : class
 			where TEditable: class
 		{
 			var ctx =(IEntityModifyContext < TEditable, TModel >) new EntityModifyContext<TEditable, TModel>();
-			return await InternalRemoveAsync<TModel,TEditable, IEntityModifyContext<TEditable, TModel>>(Storage, ctx, Id, RemoveModel, LoadModelForEdit);
+			return await InternalRemoveAsync<TKey,TEditable, TModel, IEntityModifyContext<TEditable, TModel>>(
+				Storage, 
+				ctx, 
+				Id, 
+				RemoveModel, 
+				LoadModelForEdit
+				);
 		}
-		public static async Task RemoveAllAsync<TEditable,TModel>(
+		public static async Task RemoveAllAsync<TKey,TEditable,TModel>(
 			this IDataSetEntityManager<TEditable,TModel> Storage,
-			Func<TEditable, Task> Remove,
+			Func<TKey, Task> Remove,
 			Expression<Func<TModel,bool>> Condition=null,
 			int BatchCount=100
 			)
@@ -566,7 +547,7 @@ namespace SF.Entities
 					var q = Storage.DataSet.AsQueryable();
 					if (Condition != null)
 						q = q.Where(Condition);
-					var ids = await q.Select(Entity<TModel>.KeySelector<TEditable>()).Take(BatchCount).ToArrayAsync();
+					var ids = await q.Select(Entity<TModel>.KeySelector<TKey>()).Take(BatchCount).ToArrayAsync();
 					foreach (var id in ids)
 						await Remove(id);
 					await scope.Commit();
@@ -587,17 +568,17 @@ namespace SF.Entities
 			=> Storage.RemoveAllAsync(Remove, m => m.ScopeId == ScopeId, BatchCount);
  
 	}
-	public interface IReadOnlyEntityHelper<TReadOnlyTemp, TReadOnly, TQueryArgument, TModel>
+	public interface IReadOnlyEntityHelper<TKey,TReadOnlyTemp, TReadOnly, TQueryArgument, TModel>
 		where TModel : class
 	{
 		Task<TReadOnly> GetAsync(
-			TReadOnly Key,
+			TKey Key,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyTemp>> MapModelToReadOnly,
 			Func<TReadOnlyTemp[], Task<TReadOnly[]>> PrepareReadOnly
 		);
 
 		Task<TReadOnly[]> GetAsync(
-			TReadOnly[] Key,
+			TKey[] Key,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyTemp>> MapModelToReadOnly,
 			Func<TReadOnlyTemp[], Task<TReadOnly[]>> PrepareReadOnly
 			);
@@ -616,28 +597,28 @@ namespace SF.Entities
 			);
 	}
 
-	public interface IEntityHelper<TReadOnlyTemp, TReadOnly, TQueryArgument, TEditable, TModel>:
-		IReadOnlyEntityHelper<TReadOnlyTemp, TReadOnly, TQueryArgument, TModel>
+	public interface IEntityHelper<TKey, TReadOnlyTemp, TReadOnly, TQueryArgument, TEditable, TModel>:
+		IReadOnlyEntityHelper<TKey,TReadOnlyTemp, TReadOnly, TQueryArgument, TModel>
 		where TModel:class
 	{
 		Task<TEditable> LoadForEdit(
-			TEditable Id, 
+			TKey Id, 
 			Func<IContextQueryable<TModel>, Task<TEditable>> MapModelToEditable
 			);
 
-		Task<TEditable> CreateAsync(
+		Task<TKey> CreateAsync(
 			TEditable Entity,
 			Func<IEntityModifyContext< TEditable, TModel>, Task> UpdateModel,
 			Func<IEntityModifyContext<TEditable,TModel>, Task> InitModel
 			);
-		Task UpdateAsync(
+		Task<bool> UpdateAsync(
 			TEditable Entity,
 			Func<IEntityModifyContext<TEditable, TModel>, Task<TModel>> LoadModelForEdit,
 			Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel
 			);
 
-		Task RemoveAsync(
-			TEditable Entity,
+		Task<bool> RemoveAsync(
+			TKey Entity,
 			Func<IEntityModifyContext<TEditable, TModel>, Task<TModel>> LoadModelForEdit,
 			Func<IEntityModifyContext<TEditable, TModel>, Task> RemoveModel
 			);

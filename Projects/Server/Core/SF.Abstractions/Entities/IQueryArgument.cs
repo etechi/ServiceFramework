@@ -11,17 +11,17 @@ namespace SF.Entities
 	public interface IQueryArgument { }
 	public interface IQueryArgument<TKey>: IQueryArgument
 	{
-		Option<TKey> Id { get; }
+		TKey Id { get; }
 	}
 	public class QueryArgument<TKey> :
 		IQueryArgument<TKey>
 	{
 		[Comment("ID")]
-		public Option<TKey> Id { get; set; }
+		public TKey Id { get; set; }
 
 	}
 	public class QueryArgument :
-		QueryArgument<long>
+		QueryArgument<ObjectKey<long>>
 	{
 	}
 	public class ObjectQueryArgument<TKey> : QueryArgument<TKey>

@@ -7,8 +7,8 @@ namespace SF.Biz.Products
 	{
 	}
 	public interface IProductManager<TInternal, TEditable> :
-		IEntityManager<TEditable>,
-		IEntitySource<TInternal , ProductInternalQueryArgument>
+		IEntityManager<ObjectKey<long>, TEditable>,
+		IEntitySource<ObjectKey<long>, TInternal , ProductInternalQueryArgument>
 		where TInternal : ProductInternal
 		where TEditable : ProductEditable
 	{

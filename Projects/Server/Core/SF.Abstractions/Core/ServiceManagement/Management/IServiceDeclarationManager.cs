@@ -5,10 +5,10 @@ using SF.Auth;
 
 namespace SF.Core.ServiceManagement.Management
 {
-	public class ServiceDeclarationQueryArgument : IQueryArgument<string>
+	public class ServiceDeclarationQueryArgument : IQueryArgument<ObjectKey<string>>
 	{
 		[Comment("ID")]
-		public Option<string> Id { get; set; }
+		public ObjectKey<string> Id { get; set; }
 
 		[Comment("服务定义名称")]
 		public string Name { get; set; }

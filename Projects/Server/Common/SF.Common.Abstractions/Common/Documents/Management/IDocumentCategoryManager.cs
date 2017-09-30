@@ -16,8 +16,8 @@ namespace SF.Common.Documents.Management
 	}
 	[NetworkService]
 	public interface IDocumentCategoryManager<TInternal> :
-		IEntitySource<TInternal, DocumentCategoryQueryArgument>,
-		IEntityManager<TInternal>
+		IEntitySource<ObjectKey<long>, TInternal, DocumentCategoryQueryArgument>,
+		IEntityManager<ObjectKey<long>, TInternal>
 		where TInternal : CategoryInternal
 	{
 	}

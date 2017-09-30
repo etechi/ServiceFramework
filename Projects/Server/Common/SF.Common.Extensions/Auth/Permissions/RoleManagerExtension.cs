@@ -31,7 +31,7 @@ namespace SF.Auth.Permissions
 			where TRoleQueryArgument:RoleQueryArgument
 		{
 			return await RoleManager.EnsureEntity(
-				id,
+				ObjectKey.From(id),
 				(TRole r) =>
 				{
 					r.Id = id;

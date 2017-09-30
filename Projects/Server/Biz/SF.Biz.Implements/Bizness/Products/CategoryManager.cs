@@ -10,7 +10,7 @@ using SF.Data;
 namespace SF.Biz.Products.Entity
 {
 	public class CategoryManager<TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem,TItem,TProductSpec> :
-		ModidifiableEntityManager<TEditable, CategoryQueryArgument, TEditable, TCategory>,
+		ModidifiableEntityManager<ObjectKey<long>,TEditable, CategoryQueryArgument, TEditable, TCategory>,
 		ICategoryManager<TEditable>
 		where TEditable : CategoryInternal,  new()
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -288,7 +288,7 @@ namespace SF.Biz.Products.Entity
 			
 			return Task.CompletedTask;
 		}
-		protected override Task<TCategory> OnLoadModelForUpdate(TEditable Id, IContextQueryable<TCategory> ctx)
+		protected override Task<TCategory> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TCategory> ctx)
 		{
 			return DataSet.AsQueryable(false)
 				.Where(s => s.Id.Equals(Id.Id))

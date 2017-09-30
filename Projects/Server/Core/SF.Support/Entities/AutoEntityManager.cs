@@ -4,25 +4,25 @@ using System.Threading.Tasks;
 namespace SF.Entities.AutoEntityProvider
 {
 
-	public class AutoEntityManager<TDetail, TSummary,TEditable, TQueryArgument> :
-		IEntityLoadable<TDetail>,
-		IEntityBatchLoadable<TDetail>,
+	public class AutoEntityManager<TKey,TDetail, TSummary,TEditable, TQueryArgument> :
+		IEntityLoadable<TKey, TDetail>,
+		IEntityBatchLoadable<TKey, TDetail>,
 		IEntityQueryable<TSummary, TQueryArgument>,
 		IEntityManagerCapabilities,
-		IEntityEditableLoader<TEditable>,
-		IEntityCreator<TEditable>,
+		IEntityEditableLoader<TKey, TEditable>,
+		IEntityCreator<TKey, TEditable>,
 		IEntityUpdator<TEditable>,
-		IEntityRemover<TEditable>,
+		IEntityRemover<TKey>,
 		IEntityAllRemover
 		where TDetail : class
 		where TSummary : class
 		where TEditable : class
 		where TQueryArgument : class
 	{
-		protected IDataSetAutoEntityProvider<TDetail, TSummary, TEditable, TQueryArgument> AutoEntityProvider { get; }
+		protected IDataSetAutoEntityProvider<TKey,TDetail, TSummary, TEditable, TQueryArgument> AutoEntityProvider { get; }
 		protected IDataSetEntityManager EntityManager => AutoEntityProvider.EntityManager;
 		public AutoEntityManager(
-			IDataSetAutoEntityProvider<TDetail, TSummary, TEditable, TQueryArgument> AutoEntityProvider
+			IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> AutoEntityProvider
 			)
 		{
 			this.AutoEntityProvider = AutoEntityProvider;
@@ -30,22 +30,22 @@ namespace SF.Entities.AutoEntityProvider
 
 		public EntityManagerCapability Capabilities => AutoEntityProvider.Capabilities;
 
-		public Task<TEditable> CreateAsync(TEditable Entity)
+		public Task<TKey> CreateAsync(TEditable Entity)
 		{
 			return AutoEntityProvider.CreateAsync( Entity);
 		}
 
-		public Task<TDetail> GetAsync(TDetail Id)
+		public Task<TDetail> GetAsync(TKey Id)
 		{
 			return AutoEntityProvider.GetAsync(Id);
 		}
 
-		public Task<TDetail[]> GetAsync(TDetail[] Ids)
+		public Task<TDetail[]> GetAsync(TKey[] Ids)
 		{
 			return AutoEntityProvider.GetAsync(Ids);
 		}
 
-		public Task<TEditable> LoadForEdit(TEditable Id)
+		public Task<TEditable> LoadForEdit(TKey Id)
 		{
 			return AutoEntityProvider.LoadForEdit(Id);
 		}
@@ -55,7 +55,7 @@ namespace SF.Entities.AutoEntityProvider
 			return AutoEntityProvider.QueryAsync(Arg, paging);
 		}
 
-		public Task<QueryResult<TSummary>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
 		{
 			return AutoEntityProvider.QueryIdentsAsync(Arg, paging);
 		}
@@ -65,12 +65,12 @@ namespace SF.Entities.AutoEntityProvider
 			return AutoEntityProvider.RemoveAllAsync();
 		}
 
-		public Task<TEditable> RemoveAsync(TEditable Key)
+		public Task RemoveAsync(TKey Key)
 		{
 			return AutoEntityProvider.RemoveAsync(Key);
 		}
 
-		public Task<TEditable> UpdateAsync(TEditable Entity)
+		public Task UpdateAsync(TEditable Entity)
 		{
 			return AutoEntityProvider.UpdateAsync(Entity);
 		}

@@ -7,16 +7,16 @@ using SF.Entities;
 namespace SF.Auth.Permissions
 {
 	public class ResourceManager :
-		ConstantObjectQueryableEntitySource<string,Models.ResourceInternal>,
+		ConstantObjectQueryableEntitySource<ObjectKey<string>, Models.ResourceInternal>,
         IResourceManager
     {
-		public ResourceManager(IEntityManager EntityManager, IReadOnlyDictionary<string, ResourceInternal> Models) : base(EntityManager, Models)
+		public ResourceManager(IEntityManager EntityManager, IReadOnlyDictionary<ObjectKey<string>, ResourceInternal> Models) : base(EntityManager, Models)
 		{
 		}
 
 		public Task<OperationInternal[]> GetResourceOperations(string Id)
         {
-            var re = Models.Get(Id);
+            var re = Models.Get(ObjectKey.From(Id));
             if (re == null)
                 return Task.FromResult(Array.Empty<OperationInternal>());
             return Task.FromResult(re.AvailableOperations.Select(o => new OperationInternal

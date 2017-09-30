@@ -7,10 +7,13 @@ using SF.Entities;
 namespace SF.Auth.Permissions
 {
 	public class OperationManager :
-		ConstantObjectQueryableEntitySource<string, Models.OperationInternal>,
+		ConstantObjectQueryableEntitySource<ObjectKey<string>, Models.OperationInternal>,
 		IOperationManager
 	{
-		public OperationManager(IEntityManager EntityManager, IReadOnlyDictionary<string, OperationInternal> Models) : base(EntityManager, Models)
+		public OperationManager(
+			IEntityManager EntityManager, 
+			IReadOnlyDictionary<ObjectKey<string>, OperationInternal> Models
+			) : base(EntityManager, Models)
 		{
 		}
 	}

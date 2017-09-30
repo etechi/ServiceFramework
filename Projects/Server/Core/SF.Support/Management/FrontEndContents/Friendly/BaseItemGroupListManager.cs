@@ -26,9 +26,9 @@ namespace SF.Management.FrontEndContents.Friendly
 		protected abstract ContentItem ItemToContent(TItem Item);
 
 
-		public async Task<ItemGroup<TItem>> GetAsync(ItemGroup<TItem> Id)
+		public async Task<ItemGroup<TItem>> GetAsync(ObjectKey<long> Id)
 		{
-			var re = await ContentManager.LoadForEdit(Entity<TContent>.WithKey(Id.Id));
+			var re = await ContentManager.LoadForEdit(Id);
 			if (re == null)
 				throw new PublicArgumentException($"找不到{GetType().Comment()}");
 
@@ -41,15 +41,15 @@ namespace SF.Management.FrontEndContents.Friendly
 			};
 		}
 
-		public async Task<ItemGroup<TItem>> UpdateAsync(ItemGroup<TItem> Entity)
+		public async Task UpdateAsync(ItemGroup<TItem> Entity)
 		{
-			var re = await ContentManager.LoadForEdit(Entity<TContent>.WithKey(Entity.Id));
+			var re = await ContentManager.LoadForEdit(ObjectKey.From(Entity.Id));
 			if (re == null)
 				throw new PublicArgumentException($"找不到{GetType().Comment()}");
 
 			re.Items = Entity.Items.Select(ItemToContent).ToArray();
 			await ContentManager.UpdateAsync(re);
-			return Entity;
+			
 		}
 
 		public async Task<ItemGroup<TItem>[]> ListAsync()

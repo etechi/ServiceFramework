@@ -65,10 +65,10 @@ namespace SF.Common.Documents
 				.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
-		public async Task<TDocumentPublic> GetAsync(long Id)
+		public async Task<TDocumentPublic> GetAsync(ObjectKey<long> Id)
 		{
 			var q = Documents.Value.AsQueryable()
-				.EnabledScopedById(Id, ServiceInstanceDescriptor);
+				.EnabledScopedById(Id.Id, ServiceInstanceDescriptor);
 
 			return await MapModelToPublic(q, true)
 				.SingleOrDefaultAsync();

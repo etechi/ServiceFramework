@@ -7,7 +7,7 @@ using SF.Entities;
 namespace SF.Auth.Permissions
 {
 	public interface IResourceManager :
-      IEntitySource<Models.ResourceInternal,ObjectQueryArgument<string>>
+      IEntitySource<ObjectKey<string>, Models.ResourceInternal,ObjectQueryArgument<ObjectKey<string>>>
     {
         Task<Models.OperationInternal[]> GetResourceOperations(string Id);
     }

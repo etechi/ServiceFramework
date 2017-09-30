@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace SF.Biz.Products.Entity
 {
 	public class ProductTypeManager<TInternal, TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec> :
-		ModidifiableEntityManager<TInternal,ProductTypeQueryArgument,  TEditable, TProductType>,
+		ModidifiableEntityManager<ObjectKey<long>, TInternal,ProductTypeQueryArgument,  TEditable, TProductType>,
 		IProductTypeManager<TInternal, TEditable>
 		where TInternal : ProductTypeInternal, new()
 		where TEditable : ProductTypeEditable, new()
@@ -79,7 +79,7 @@ namespace SF.Biz.Products.Entity
 			Model.CreatedTime = Now;
 			return Task.CompletedTask;
 		}
-		protected override Task<TProductType> OnLoadModelForUpdate(TEditable Id, IContextQueryable<TProductType> ctx)
+		protected override Task<TProductType> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TProductType> ctx)
 		{
 			return ctx
 				.Where(s => s.Id == Id.Id)

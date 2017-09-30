@@ -22,8 +22,8 @@ namespace SF.Common.Documents.Management
 
 	[NetworkService]
 	public interface IDocumentManager<TInternal, TEditable> :
-		IEntitySource<TInternal, DocumentQueryArguments>,
-		IEntityManager<TEditable>
+		IEntitySource<ObjectKey<long>, TInternal, DocumentQueryArguments>,
+		IEntityManager<ObjectKey<long>, TEditable>
 		where TInternal : DocumentInternal
 		where TEditable : DocumentEditable
 	{

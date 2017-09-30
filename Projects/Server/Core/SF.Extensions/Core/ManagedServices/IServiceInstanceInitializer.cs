@@ -136,7 +136,7 @@ namespace SF.Core.ServiceManagement
 			) where T : I
 			=>
 			manager.CreateService<I, T>(
-				 parent => manager.TryGetDefaultService<I>(parent),
+				 async parent => (await manager.TryGetDefaultService<I>(parent)).Id,
 				(parent, rcfg,scfg) => manager.EnsureDefaultService<I, T>(
 					parent, 
 					rcfg, 
@@ -156,7 +156,7 @@ namespace SF.Core.ServiceManagement
 			) where T:I
 			=>
 			manager.CreateService<I, T>(
-				parent => manager.TryGetService<I, T>(parent),
+				async parent => (await manager.TryGetService<I, T>(parent)).Id,
 				(parent, rcfg,scfg) => manager.TryAddService<I, T>(
 					parent, 
 					rcfg,
@@ -195,7 +195,7 @@ namespace SF.Core.ServiceManagement
 					if (nsvcId != svcId)
 						throw new InvalidOperationException($"服务初始化{typeof(T)}@{typeof(I)}返回ID不一致：第一次：{svcId},第二次：{nsvcId}");
 
-					await manager.SetEntityState(svcId, EntityLogicState.Enabled);
+					await manager.SetEntityState(ObjectKey.From(svcId), EntityLogicState.Enabled);
 					return svcId;
 
 
@@ -283,7 +283,7 @@ namespace SF.Core.ServiceManagement
 				await SetupService(ServiceProvider, sim, sid);
 			var svc=ServiceProvider.Resolve<I>(sid);
 			var re=await Action(svc);
-			await sim.RemoveAsync(sid);
+			await sim.RemoveAsync(ObjectKey.From(sid));
 			return re;
 		}
 	}

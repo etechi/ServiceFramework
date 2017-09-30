@@ -1,4 +1,5 @@
 ﻿
+using SF.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,7 @@ namespace SF.Management.FrontEndContents.Friendly
 		{
 			if (EntityId == 0)
 				throw new PublicArgumentException($"未设置{GetType().Comment()}");
-			var re = await ContentManager.LoadForEdit(EntityId);
+			var re = await ContentManager.LoadForEdit(ObjectKey.From(EntityId));
 			if (re == null)
 				throw new PublicArgumentException($"找不到{GetType().Comment()}");
 
@@ -41,7 +42,7 @@ namespace SF.Management.FrontEndContents.Friendly
 		{
 			if (EntityId == 0)
 				throw new PublicArgumentException($"未设置{GetType().Comment()}");
-			var re = await ContentManager.LoadForEdit(EntityId);
+			var re = await ContentManager.LoadForEdit(ObjectKey.From(EntityId));
 			if (re == null)
 				throw new PublicArgumentException($"找不到{GetType().Comment()}");
 

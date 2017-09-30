@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SF.Biz.Products
 {
-	public class ItemQueryArgument : IQueryArgument<long>
+	public class ItemQueryArgument : IQueryArgument<ObjectKey<long>>
     {
-		public Option<long> Id { get; set; }
+		public ObjectKey<long> Id { get; set; }
 
         [Display(Name = "产品")]
 		[EntityIdent(typeof(ProductInternal))]
@@ -39,7 +39,7 @@ namespace SF.Biz.Products
 
 
 	public interface IItemService<TItem, TCategory>:
-		IEntityQueryable<long,TItem,ItemQueryArgument>
+		IEntityQueryable<TItem,ItemQueryArgument>
 		where TItem: IItem
 		where TCategory: ICategoryCached
 	{

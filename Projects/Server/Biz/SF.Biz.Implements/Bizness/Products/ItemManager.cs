@@ -8,7 +8,7 @@ using SF.Data;
 namespace SF.Biz.Products.Entity
 {
 	public class ItemManager<TInternal, TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem,TItem,TProductSpec> :
-		ModidifiableEntityManager<TInternal,ItemQueryArgument, TEditable,TItem>,
+		ModidifiableEntityManager<ObjectKey<long>, TInternal,ItemQueryArgument, TEditable,TItem>,
 		IItemManager<TInternal,TEditable>
 		where TInternal : ItemInternal,  new()
 		where TEditable : ItemEditable, new()

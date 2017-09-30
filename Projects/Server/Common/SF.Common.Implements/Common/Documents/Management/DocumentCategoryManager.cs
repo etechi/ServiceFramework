@@ -21,7 +21,7 @@ namespace SF.Common.Documents.Management
 	}
 
 	public class DocumentCategoryManager<TCategoryInternal, TDocument, TAuthor, TCategory, TTag, TTagReference> :
-		ModidifiableEntityManager< TCategoryInternal, DocumentCategoryQueryArgument,TCategoryInternal, TCategory>,
+		ModidifiableEntityManager<ObjectKey<long>, TCategoryInternal, DocumentCategoryQueryArgument,TCategoryInternal, TCategory>,
 		IDocumentCategoryManager<TCategoryInternal>
 		where TCategoryInternal:CategoryInternal,new()
 		where TDocument : DataModels.Document<TDocument, TAuthor, TCategory, TTag, TTagReference>

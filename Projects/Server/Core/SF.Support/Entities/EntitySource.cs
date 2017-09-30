@@ -41,8 +41,8 @@ namespace SF.Entities
 		}
 	}
 
-	public abstract class EntitySource<TEntityDetail, TModel> :
-		EntitySource<TEntityDetail, TEntityDetail, TModel>
+	public abstract class EntitySource<TKey, TEntityDetail, TModel> :
+		EntitySource<TKey, TEntityDetail, TEntityDetail, TModel>
 		where TEntityDetail : class
 		where TModel : class
 	{
@@ -56,10 +56,10 @@ namespace SF.Entities
 		}
 	}
 	
-	public abstract class EntitySource<TDetail, TDetailTemp, TModel> :
+	public abstract class EntitySource<TKey,TDetail, TDetailTemp, TModel> :
 		BaseDataSetEntityManager<TModel>,
-		IEntityLoadable<TDetail>,
-		IEntityBatchLoadable<TDetail>
+		IEntityLoadable<TKey, TDetail>,
+		IEntityBatchLoadable<TKey, TDetail>
 		where TDetail : class
 		where TModel: class
 	{
@@ -72,14 +72,14 @@ namespace SF.Entities
 		}
 		protected abstract Task<TDetail[]> OnPrepareDetails(TDetailTemp[] Internals);
 
-		public Task<TDetail[]> GetAsync(TDetail[] Ids)
+		public Task<TDetail[]> GetAsync(TKey[] Ids)
 		{
-			return EntityManager.BatchGetAsync<TDetailTemp,TDetail,TModel>(Ids, OnMapModelToDetail,OnPrepareDetails);
+			return EntityManager.BatchGetAsync<TKey, TDetailTemp,TDetail,TModel>(Ids, OnMapModelToDetail,OnPrepareDetails);
 		}
 
-		public Task<TDetail> GetAsync(TDetail Id)
+		public Task<TDetail> GetAsync(TKey Id)
 		{
-			return EntityManager.GetAsync<TDetailTemp, TDetail, TModel>(Id, OnMapModelToDetail, OnPrepareDetails);
+			return EntityManager.GetAsync<TKey, TDetailTemp, TDetail, TModel>(Id, OnMapModelToDetail, OnPrepareDetails);
 		}
 	}
 	public abstract class ConstantEntitySource<TKey, TEntityDetail> :
@@ -113,11 +113,10 @@ namespace SF.Entities
 	}
 	public abstract class ConstantEntitySource<TKey,TEntityDetail,TTemp,TModel> :
 		BaseEntityManager,
-		IEntityLoadable< TEntityDetail>,
-		IEntityBatchLoadable<TEntityDetail>
-		where TEntityDetail : class, IEntityWithId<TKey>
-		where TModel:class,IEntityWithId<TKey>
-		where TKey : IEquatable<TKey>
+		IEntityLoadable<TKey, TEntityDetail>,
+		IEntityBatchLoadable<TKey, TEntityDetail>
+		where TEntityDetail : class
+		where TModel:class
 	{
 
 		protected IReadOnlyDictionary<TKey, TModel> Models { get; }
@@ -130,9 +129,9 @@ namespace SF.Entities
 			return Query.Select(ADT.Poco.Map<TModel, TTemp>());
 		}
 		protected abstract Task<TEntityDetail[]> OnPrepareInternals(TTemp[] Internals);
-		public async Task<TEntityDetail> GetAsync(TEntityDetail Id)
+		public async Task<TEntityDetail> GetAsync(TKey Id)
 		{
-			if (Models.TryGetValue(Entity<TEntityDetail>.GetSingleKey<TKey>(Id), out var m))
+			if (Models.TryGetValue(Id, out var m))
 			{
 				var re = await OnPrepareInternals(OnMapModelToInternal(new[] { m }.AsContextQueryable()).ToArray());
 				if (re == null || re.Length == 0)
@@ -143,11 +142,11 @@ namespace SF.Entities
 				return null;
 		}
 
-		public async Task<TEntityDetail[]> GetAsync(TEntityDetail[] Ids)
+		public async Task<TEntityDetail[]> GetAsync(TKey[] Ids)
 		{
 			var re = await OnPrepareInternals(
 				OnMapModelToInternal(
-					Ids.Select(id => Models.Get(Entity<TEntityDetail>.GetSingleKey<TKey>(id)))
+					Ids.Select(id => Models.Get(id))
 					.Where(m => m != null)
 					.AsContextQueryable()
 					).ToArray());

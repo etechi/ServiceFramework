@@ -42,7 +42,7 @@ namespace SF.Entities.AutoEntityProvider
 		}
 
 		static IDataSetAutoEntityProviderSetting
-			NewSetting<TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TEntityEditableTemp, TQueryArgument, TDataModel>(
+			NewSetting<TKey, TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TEntityEditableTemp, TQueryArgument, TDataModel>(
 			QueryResultBuildHelper DetailQueryResultBuildHelper,
 			QueryResultBuildHelper SummaryQueryResultBuildHelper,
 			QueryResultBuildHelper EditableQueryResultBuildHelper,
@@ -56,6 +56,7 @@ namespace SF.Entities.AutoEntityProvider
 			where TDataModel : class,new()
 			{
 			return new DataSetAutoEntityProviderSetting<
+				TKey,
 				TEntityDetail, 
 				TEntityDetailTemp, 
 				TEntitySummary, 
@@ -72,8 +73,8 @@ namespace SF.Entities.AutoEntityProvider
 				(IEntityModifier<TEntityEditable, TDataModel>)UpdateModifier
 				);
 			}
-		public IDataSetAutoEntityProvider<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>  
-			Create<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(IServiceProvider sp)
+		public IDataSetAutoEntityProvider<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>  
+			Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(IServiceProvider sp)
 			where TEntityDetail : class
 			where TEntitySummary : class
 			where TEntityEditable : class
@@ -133,7 +134,7 @@ namespace SF.Entities.AutoEntityProvider
 				
 				setting = Creators.GetOrAdd(tDetail,setting);
 			}
-			return (IDataSetAutoEntityProvider<TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>)setting.Value.FuncCreateProvider.Value(sp);
+			return (IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>)setting.Value.FuncCreateProvider.Value(sp);
 		}
 	}
 

@@ -19,7 +19,7 @@ namespace SF.Common.Documents.Management
 		}
 	}
 	public class DocumentManager<TInternal,TEditable,TDocument, TAuthor, TCategory, TTag, TTagReference> :
-		ModidifiableEntityManager<TInternal, DocumentQueryArguments,TEditable,TDocument>,
+		ModidifiableEntityManager<ObjectKey<long>, TInternal, DocumentQueryArguments,TEditable,TDocument>,
 		IDocumentManager<TInternal,TEditable>
 		where TInternal: DocumentInternal,new()
 		where TEditable: DocumentEditable, new()

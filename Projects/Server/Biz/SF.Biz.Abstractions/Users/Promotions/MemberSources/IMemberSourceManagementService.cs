@@ -1,6 +1,7 @@
 ﻿using SF.Auth;
 using SF.Auth.Identities;
 using SF.Auth.Identities.Models;
+using SF.Entities;
 using SF.Metadata;
 using SF.Users.Promotions.MemberSources.Models;
 using System;
@@ -11,10 +12,10 @@ using System.Threading.Tasks;
 
 namespace SF.Users.Promotions.MemberSources
 {
-	public class MemberSourceQueryArgument : Entities.IQueryArgument<long>
+	public class MemberSourceQueryArgument : Entities.IQueryArgument<ObjectKey<long>>
 	{
 		[Comment("Id")]
-		public Option<long> Id { get; set; }
+		public ObjectKey<long> Id { get; set; }
 
 		[Comment("名称")]
 		public string Name { get; set; }
@@ -27,8 +28,8 @@ namespace SF.Users.Promotions.MemberSources
 	[Comment("会员渠道")]
 	[Category("用户管理", "会员渠道管理")]
 	public interface IMemberSourceManagementService : 
-		Entities.IEntitySource<MemberSourceInternal,MemberSourceQueryArgument>,
-		Entities.IEntityManager<MemberSourceInternal>
+		Entities.IEntitySource<ObjectKey<long>,MemberSourceInternal,MemberSourceQueryArgument>,
+		Entities.IEntityManager<ObjectKey<long>, MemberSourceInternal>
     {
 		Task AddSourceMember(long SourceId, long MemberId);
 	}

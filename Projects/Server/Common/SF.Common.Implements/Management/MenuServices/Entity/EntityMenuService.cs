@@ -12,7 +12,7 @@ using SF.Core.ServiceManagement;
 namespace SF.Management.MenuServices.Entity
 {
 	public class EntityMenuService<TMenu,TMenuItem> :
-		ModidifiableEntityManager< Models.Menu,  MenuQueryArgument, Models.MenuEditable, TMenu>,
+		ModidifiableEntityManager<ObjectKey<long>, Models.Menu,  MenuQueryArgument, Models.MenuEditable, TMenu>,
 		IMenuService
 		where TMenu: DataModels.Menu<TMenu,TMenuItem>,new()
 		where TMenuItem : DataModels.MenuItem<TMenu, TMenuItem>, new()

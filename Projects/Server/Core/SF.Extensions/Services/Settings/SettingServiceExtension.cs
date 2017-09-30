@@ -48,7 +48,7 @@ namespace SF.Services.Settings
 			}
 			else
 				await Manager.UpdateEntity(
-				si,
+				ObjectKey.From(si.Id),
 				(ServiceInstanceEditable e) => {
 					var cfg = e.Setting.IsNullOrEmpty() ? new Data<T> {  } : Json.Parse<Data<T>>(e.Setting);
 					if (cfg.Value == null)

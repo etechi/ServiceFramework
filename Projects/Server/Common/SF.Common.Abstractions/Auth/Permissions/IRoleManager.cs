@@ -3,12 +3,12 @@ using SF.Entities;
 
 namespace SF.Auth.Permissions
 {
-	public class RoleQueryArgument : ObjectQueryArgument<string>
+	public class RoleQueryArgument : ObjectQueryArgument<ObjectKey<string>>
 	{
 	}
 	public interface IRoleManager<TRoleInternal,TQueryArgument>
-        : IEntityManager<TRoleInternal>,
-		IEntitySource<TRoleInternal, TQueryArgument>
+        : IEntityManager<ObjectKey<string>, TRoleInternal>,
+		IEntitySource<ObjectKey<string>, TRoleInternal, TQueryArgument>
 		where TRoleInternal: Models.RoleInternal
 		where TQueryArgument: RoleQueryArgument
 	{

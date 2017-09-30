@@ -38,13 +38,14 @@ namespace SF.UT.Promotions.Invitations
 							Invitors = "[20]"
 						};
 
-						var re = await svc.CreateAsync(dst);
-						Assert.Equal(dst, re);
+						var rid = await svc.CreateAsync(dst);
+						
+						Assert.Equal(dst.Id, rid.Id);
 
-						var o = await svc.GetAsync(dst);
+						var o = await svc.GetAsync(rid);
 						Assert.True(Poco.DeepEquals(dst, o));
 
-						var oss = await svc.GetAsync(new [] { dst});
+						var oss = await svc.GetAsync(new[] { rid });
 						Assert.Equal(1, oss.Length);
 						Assert.True(Poco.DeepEquals(dst, oss[0]));
 
@@ -57,7 +58,7 @@ namespace SF.UT.Promotions.Invitations
 						Assert.True(Poco.DeepEquals(dst, o));
 
 
-						var e = await svc.LoadForEdit(dst);
+						var e = await svc.LoadForEdit(rid);
 						Assert.True(Poco.DeepEquals(dst, e));
 
 						e.Invitors += "1";
@@ -67,14 +68,14 @@ namespace SF.UT.Promotions.Invitations
 						e.Time = newTime;
 						await svc.UpdateAsync(e);
 
-						o = await svc.GetAsync(dst);
+						o = await svc.GetAsync(rid);
 						Assert.True(Poco.DeepEquals(o, e));
 
 
-						await svc.RemoveAsync(dst);
-						Assert.Null(await svc.GetAsync(dst));
+						await svc.RemoveAsync(rid);
+						Assert.Null(await svc.GetAsync(rid));
 
-						return re;
+						return rid;
 
 					}
 				)

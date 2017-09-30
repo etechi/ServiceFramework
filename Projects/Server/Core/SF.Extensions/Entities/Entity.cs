@@ -12,9 +12,7 @@ using System.Collections.Generic;
 namespace SF.Entities
 {
 	public static class Entity<T>
-		where T : class
 	{
-
 		public static IReadOnlyList<PropertyInfo> KeyProperties { get; }
 			= typeof(T).AllPublicInstanceProperties()
 			.Where(p => p.IsDefined(typeof(KeyAttribute)))
@@ -113,6 +111,7 @@ namespace SF.Entities
 		public static TKey[] GetKeys<TKey>(T[] Models) => Models.Select(m => LazyKeySelector<TKey>.Func.Value(m)).ToArray();
 
 		public static TKey[] GetSingleKeys<TKey>(T[] Models) => Models.Select(m => LazySingleKeySelector<TKey>.Func.Value(m)).ToArray();
+		public static TKey GetKey<TKey>(T Model) => Entity<TKey>.WithKey(Model);
 
 		static MethodInfo MethodGetSingleKeys { get; } =
 			typeof(Entity<T>)
@@ -127,6 +126,7 @@ namespace SF.Entities
 		static MethodInfo MethodEquals { get; } = TypeExpression.GetMethod(nameof(Expression.Equals), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(Expression) }, null);
 		static MethodInfo MethodLambda { get; } = TypeExpression.GetMethods(nameof(Expression.Lambda), BindingFlags.Public | BindingFlags.Static).Single(m => m.IsGenericMethodDefinition);
 
+		
 		static class ObjectFilterCreator<TObject>
 		{
 			public static Lazy<Func<TObject, Expression<Func<T, bool>>>> Instance = new Lazy<Func<TObject, Expression<Func<T, bool>>>>(() =>
@@ -262,10 +262,10 @@ namespace SF.Entities
 
 		static IContextQueryable<T> QueryIdentFilter<TKey, TQueryArgument>(IContextQueryable<T> q,TQueryArgument a)
 			where TQueryArgument:IQueryArgument<TKey>
-			where TKey:IEquatable<TKey>
+			where TKey:class
 		{
-			if (a.Id.HasValue)
-				return q.Where(KeyFilter(a.Id.Value));
+			if (a.Id!=null)
+				return q.Where(ObjectFilter<TKey>(a.Id));
 			return q;
 		}
 

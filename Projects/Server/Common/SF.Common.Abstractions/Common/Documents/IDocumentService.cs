@@ -7,7 +7,7 @@ namespace SF.Common.Documents
 	[NetworkService]
 	[Comment("文档服务")]
 	public interface IDocumentService<TDocument, TCategory>:
-		IEntityLoadable<TDocument>,
+		IEntityLoadable<ObjectKey<long>,TDocument>,
 		IEntityLoadableByKey<TDocument>,
 		IContainerLoadable<long,TCategory>,
 		IEntitySearchable<TDocument>,

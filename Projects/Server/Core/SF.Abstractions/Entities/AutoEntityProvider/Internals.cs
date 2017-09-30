@@ -28,7 +28,7 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		Func<IDataSetEntityManager<TEntity,TDataModel>,IEntityModifyContext<TEntity,TDataModel>,Task> Modifier { get; }
 	}
-	public interface IDataSetAutoEntityProvider<TDetail, TSummary, TEditable, TQueryArgument>
+	public interface IDataSetAutoEntityProvider<TKey,TDetail, TSummary, TEditable, TQueryArgument>
 		   where TDetail : class
 		   where TSummary : class
 		   where TEditable : class
@@ -36,15 +36,15 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		EntityManagerCapability Capabilities { get; }
 		IDataSetEntityManager EntityManager { get; }
-		Task<TDetail> GetAsync(TDetail Id);
-		Task<TDetail[]> GetAsync(TDetail[] Ids);
-		Task<TEditable> CreateAsync(TEditable Entity);
-		Task<TEditable> LoadForEdit(TEditable Id);
+		Task<TDetail> GetAsync(TKey Id);
+		Task<TDetail[]> GetAsync(TKey[] Ids);
+		Task<TKey> CreateAsync(TEditable Entity);
+		Task<TEditable> LoadForEdit(TKey Id);
 		Task<QueryResult<TSummary>> QueryAsync(TQueryArgument Arg, Paging paging);
-		Task<QueryResult<TSummary>> QueryIdentsAsync(TQueryArgument Arg, Paging paging);
+		Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging);
 		Task RemoveAllAsync();
-		Task<TEditable> RemoveAsync(TEditable Key);
-		Task<TEditable> UpdateAsync(TEditable Entity);
+		Task RemoveAsync(TKey Key);
+		Task UpdateAsync(TEditable Entity);
 	}
 
 	public interface IValueTypeResolver

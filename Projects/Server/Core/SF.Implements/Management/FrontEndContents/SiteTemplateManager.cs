@@ -18,7 +18,7 @@ namespace SF.Management.FrontEndContents
 		}
 	}
 	public class SiteTemplateManager<TSiteTemplatePublic,TSite,TSiteTemplate> :
-		ModidifiableEntityManager< TSiteTemplatePublic, SiteTemplateQueryArgument, TSiteTemplatePublic, TSiteTemplate>,
+		ModidifiableEntityManager<ObjectKey<long>, TSiteTemplatePublic, SiteTemplateQueryArgument, TSiteTemplatePublic, TSiteTemplate>,
 		ISiteTemplateManager<TSiteTemplatePublic>
 		where TSiteTemplatePublic : SiteTemplate, new()
 		where TSite : DataModels.Site<TSite,TSiteTemplate>

@@ -9,6 +9,24 @@ namespace SF.Data
 
 	public static class ContextQueryableExtension
 	{
+		public static IContextQueryable<O> Filter<O, V>(
+			   this IContextQueryable<O> q,
+			   ObjectKey<V> state,
+			   System.Linq.Expressions.Expression<Func<O, V>> propExpr
+			   )
+			   where O : class
+				where V : IEquatable<V>
+		{
+			if (state==null)
+				return q;
+			var o = propExpr.Parameters[0];
+			var prop = propExpr.Body;
+			return q.Where(
+				Expression.Lambda<Func<O, bool>>(
+				   Expression.Equal(prop, Expression.Constant(state.Id)),
+				   o
+				));
+		}
 		public static IContextQueryable<O> Filter<O,V>(
 			   this IContextQueryable<O> q,
 			   Option<V> state,

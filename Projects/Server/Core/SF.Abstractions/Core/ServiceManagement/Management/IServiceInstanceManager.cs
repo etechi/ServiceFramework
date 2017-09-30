@@ -6,10 +6,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Core.ServiceManagement.Management
 {
-	public class ServiceInstanceQueryArgument : IQueryArgument<long>
+	public class ServiceInstanceQueryArgument : IQueryArgument<ObjectKey<long>>
 	{
 		[Comment("ID")]
-		public Option<long> Id { get; set; }
+		public ObjectKey<long> Id { get; set; }
 
 		[Comment("服务实例名称")]
 		public string Name { get; set; }
@@ -41,8 +41,8 @@ namespace SF.Core.ServiceManagement.Management
 	[Comment("服务实例管理", "系统内置服务实例")]
 	[Category("系统管理","系统服务管理")]
 	public interface IServiceInstanceManager :
-		IEntityManager<Models.ServiceInstanceEditable>,
-		IEntitySource<Models.ServiceInstanceInternal, ServiceInstanceQueryArgument>
+		IEntityManager<ObjectKey<long>, Models.ServiceInstanceEditable>,
+		IEntitySource<ObjectKey<long>, Models.ServiceInstanceInternal, ServiceInstanceQueryArgument>
 	{
 
 	}

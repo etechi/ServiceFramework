@@ -25,10 +25,10 @@ namespace SF.Core.ServiceManagement
 			if(BatchLoadableArgs!=null && (BatchLoadableArgs[0]!=LoadableArgs[0] || BatchLoadableArgs[1]!=LoadableArgs[1]))
 				throw new InvalidOperationException($"实体管理类{ManagerType}的{Loadable}接口和{BatchLoadable}接口类主键或实体类型不一致");
 
-			var Queryable=interfaces.Get(typeof(IEntityQueryable<,,>));
+			var Queryable=interfaces.Get(typeof(IEntityQueryable<,>));
 			var QueryableArgs = Queryable?.GetGenericArguments();
-			if(QueryableArgs!=null && QueryableArgs[0]!=LoadableArgs[0])
-				throw new InvalidOperationException($"实体管理类{ManagerType}的{Loadable}接口和{Queryable}接口类主键类型不一致");
+			//if(QueryableArgs!=null && QueryableArgs[0]!=LoadableArgs[0])
+			//	throw new InvalidOperationException($"实体管理类{ManagerType}的{Loadable}接口和{Queryable}接口类主键类型不一致");
 
 			var Creatable = interfaces.Get(typeof(IEntityCreator<,>));
 			var CreatableArgs = Creatable?.GetGenericArguments();
@@ -52,7 +52,7 @@ namespace SF.Core.ServiceManagement
 				throw new InvalidOperationException($"实体管理类{ManagerType}的{EntityEditableSource}接口和{EntityEditable}接口类实体类型不一致");
 
 
-			var Updatable = interfaces.Get(typeof(IEntityUpdator<,>));
+			var Updatable = interfaces.Get(typeof(IEntityUpdator<>));
 			var UpdatableArgs = Updatable?.GetGenericArguments();
 			if (UpdatableArgs != null && UpdatableArgs[0] != LoadableArgs[0])
 				throw new InvalidOperationException($"实体管理类{ManagerType}的{Loadable}接口和{Updatable}接口类主键类型不一致");
@@ -114,7 +114,7 @@ namespace SF.Core.ServiceManagement
 
 			sc.AddScoped<IEntityReferenceResolver, EntityReferenceResolver>();
 
-			sc.Add(typeof(IDataSetEntityManager<>), typeof(DataSetEntityManager<>),ServiceImplementLifetime.Scoped);
+			sc.Add(typeof(IDataSetEntityManager<,>), typeof(DataSetEntityManager<,>),ServiceImplementLifetime.Scoped);
 			
 			return sc;
 		}

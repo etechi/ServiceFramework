@@ -9,7 +9,7 @@ using SF.Data;
 namespace SF.Biz.Products.Entity
 {
 	public class ProductManager<TInternal, TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec> :
-		ModidifiableEntityManager<TInternal, ProductInternalQueryArgument, TEditable, TProduct>,
+		ModidifiableEntityManager<ObjectKey<long>, TInternal, ProductInternalQueryArgument, TEditable, TProduct>,
 		IProductManager<TInternal, TEditable>
         where TInternal : ProductInternal, new()
 		where TEditable : ProductEditable, new()
@@ -268,7 +268,7 @@ namespace SF.Biz.Products.Entity
 				);
             return Task.CompletedTask;
 		}
-		protected override IContextQueryable<TProduct> OnLoadChildObjectsForUpdate(TEditable Id, IContextQueryable<TProduct> query)
+		protected override IContextQueryable<TProduct> OnLoadChildObjectsForUpdate(ObjectKey<long> Id, IContextQueryable<TProduct> query)
 		{
 			return query.Include(p => p.Detail).Include(p => p.Specs);
 		}

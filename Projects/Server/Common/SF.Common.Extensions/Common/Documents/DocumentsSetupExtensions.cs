@@ -52,7 +52,7 @@ namespace SF.Common.Documents
 			where TEditable : DocumentEditable,new()
 		{
 			return await Manager.EnsureEntity(
-				(await Manager.QuerySingleEntityIdent(new DocumentQueryArguments { Name = name })).Id,
+				await Manager.QuerySingleEntityIdent(new DocumentQueryArguments { Name = name }),
 				s =>
 				{
 					s.Name = name;

@@ -7,7 +7,7 @@ using System;
 namespace SF.Common.TextMessages.Management
 {
 
-	public class MsgRecordQueryArgument : Entities.QueryArgument<long>
+	public class MsgRecordQueryArgument : Entities.QueryArgument<ObjectKey<long>>
 	{
 		[Comment( "状态")]
 		public SendStatus? Status { get; set; }

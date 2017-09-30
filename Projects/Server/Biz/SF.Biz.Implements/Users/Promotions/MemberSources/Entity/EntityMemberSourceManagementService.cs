@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace SF.Users.Promotions.MemberSources.Entity
 {
 	public class EntityMemberSourceManagementService<TMemberSource, TSourceMember> :
-		ModidifiableEntityManager< MemberSourceInternal,  MemberSourceQueryArgument, Models.MemberSourceInternal, TMemberSource>,
+		ModidifiableEntityManager<ObjectKey<long>, MemberSourceInternal,  MemberSourceQueryArgument, Models.MemberSourceInternal, TMemberSource>,
 		IMemberSourceManagementService
 		where TMemberSource: DataModels.MemberSource<TMemberSource, TSourceMember>, new()
 		where TSourceMember : DataModels.SourceMember<TMemberSource,TSourceMember>,new()
@@ -60,7 +60,7 @@ namespace SF.Users.Promotions.MemberSources.Entity
 			});
 			await DataContext.SaveChangesAsync();
 		}
-
+		
 		protected override IContextQueryable<TMemberSource> OnBuildQuery(IContextQueryable<TMemberSource> Query, MemberSourceQueryArgument Arg, Paging paging)
 		{
 			var q = Query.Filter(Arg.Id, r => r.Id)

@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace SF.Entities
 {
-	public interface IEntityBatchLoadable<TEntity>
+	public interface IEntityBatchLoadable<TKey, TEntity>
 	{
-		Task<TEntity[]> GetAsync(TEntity[] Ids);
+		Task<TEntity[]> GetAsync(TKey[] Ids);
 	}
 }

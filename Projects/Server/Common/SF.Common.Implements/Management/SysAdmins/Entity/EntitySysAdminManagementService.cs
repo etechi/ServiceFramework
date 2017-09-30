@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SF.Management.SysAdmins.Entity
 {
 	public class EntitySysAdminManagementService<TSysAdmin> :
-		ModidifiableEntityManager< Models.SysAdminInternal,  SysAdminQueryArgument, Models.SysAdminEditable, TSysAdmin>,
+		ModidifiableEntityManager<ObjectKey<long>, Models.SysAdminInternal,  SysAdminQueryArgument, Models.SysAdminEditable, TSysAdmin>,
 		ISysAdminManagementService
 		where TSysAdmin: DataModels.SysAdmin<TSysAdmin>,new()
 	{

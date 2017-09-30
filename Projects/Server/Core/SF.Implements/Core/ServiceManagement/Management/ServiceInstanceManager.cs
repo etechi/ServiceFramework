@@ -16,7 +16,7 @@ namespace SF.Core.ServiceManagement.Management
 {
 	[Comment("默认服务实例管理")]
 	public class ServiceInstanceManager :
-		ModidifiableEntityManager<ServiceInstanceInternal, ServiceInstanceQueryArgument, ServiceInstanceEditable, DataModels.ServiceInstance>,
+		ModidifiableEntityManager<ObjectKey<long>,ServiceInstanceInternal, ServiceInstanceQueryArgument, ServiceInstanceEditable, DataModels.ServiceInstance>,
 		IServiceInstanceManager
 	// IServiceConfigLoader,
 	//IServiceInstanceLister
@@ -91,7 +91,7 @@ namespace SF.Core.ServiceManagement.Management
 
 		protected override IContextQueryable<DataModels.ServiceInstance> OnBuildQuery(IContextQueryable<DataModels.ServiceInstance> Query, ServiceInstanceQueryArgument Arg, Paging paging)
 		{
-			if (Arg.Id.HasValue)
+			if (Arg.Id!=null)
 				return Query.Filter(Arg.Id, i => i.Id);
 			else
 				return Query
@@ -268,7 +268,7 @@ namespace SF.Core.ServiceManagement.Management
 			//if (ctx.Model.IsDefaultService)
 			//throw new PublicInvalidOperationException("不能删除默认服务");
 
-			await EntityManager.RemoveAllAsync<ServiceInstanceEditable, DataModels.ServiceInstance>(
+			await EntityManager.RemoveAllAsync<ObjectKey<long>,ServiceInstanceEditable, DataModels.ServiceInstance>(
 				RemoveAsync,
 				q => q.ContainerId == ctx.Model.Id
 				);

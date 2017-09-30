@@ -126,7 +126,7 @@ namespace Hygou.Setup
 				//await ctx.ReadOnly<DataModels.ProductItem>()
     //                .Where(i => i.SourceItemId == null && i.Product.TypeId == ptype.Id)
     //                .Select(i => i.Id).ToArrayAsync();
-                await CategoryManager.SetItems(type.Id, ids.Items.ToArray());
+                await CategoryManager.SetItems(type.Id, ids.Items.Select(i=>i.Id).ToArray());
             });
             await setCatProduct("话费充值", "话费充值");
             await setCatProduct("手机", "手机");

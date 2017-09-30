@@ -1,5 +1,6 @@
 ﻿using SF.Auth;
 using SF.Data;
+using SF.Entities;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace SF.Common.TextMessages.Management
 	[NetworkService]
 	[Comment("文本消息记录")]
 	public interface IMsgRecordManager : 
-		Entities.IEntitySource<MsgRecord,MsgRecordQueryArgument>
+		Entities.IEntitySource<ObjectKey<long>,MsgRecord,MsgRecordQueryArgument>
 	{
 	}
 }

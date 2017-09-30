@@ -30,7 +30,7 @@ namespace SF.Auth.Permissions
 	}
 
 	public class GrantManager<TGrantEditable, TGrant,TRole, TRolePermission, TGrantRole, TGrantPermission> :
-        ModidifiableEntityManager< TGrantEditable, GrantQueryArgument, TGrantEditable, TGrant>,
+        ModidifiableEntityManager<ObjectKey<long>, TGrantEditable, GrantQueryArgument, TGrantEditable, TGrant>,
         IGrantManager<TGrantEditable>
 
 		where TGrant: DataModels.Grant<TGrant,TRole, TGrantRole, TRolePermission, TGrantPermission>, new()
@@ -78,7 +78,7 @@ namespace SF.Auth.Permissions
 				   };
 		}
 
-		protected override IContextQueryable<TGrant> OnLoadChildObjectsForUpdate(TGrantEditable Id, IContextQueryable<TGrant> query)
+		protected override IContextQueryable<TGrant> OnLoadChildObjectsForUpdate(ObjectKey<long> Id, IContextQueryable<TGrant> query)
 		{
 			return base.OnLoadChildObjectsForUpdate(
 				Id, 
@@ -106,7 +106,7 @@ namespace SF.Auth.Permissions
 			re.grant.ResGrants = re.permissions.GroupBy(p => p.res).Select(
 				g =>
 				{
-					var res = ResourceManager.Value.GetAsync(Entity<ResourceInternal>.WithKey(g.Key)).Result;
+					var res = ResourceManager.Value.GetAsync(ObjectKey.From(g.Key)).Result;
 					return new ResourceGrantInternal
 					{
 						Id = g.Key,

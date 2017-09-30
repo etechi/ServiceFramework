@@ -110,27 +110,27 @@ namespace SF.Auth.Identities
 			Dictionary<string,string> extArgs=null
 			)
 		{
-			long iid=0;
+			ObjectKey<long> iid=null;
 			var sid = ((IManagedServiceWithId)IdentityService).ServiceInstanceId;
 			var ims = ServiceProvider.Resolve<IIdentityManagementService>(null, sid);
 			if (phoneNumber != null)
 				iid = (await ims.QueryIdentsAsync(new IdentityQueryArgument
 				{
 					Ident = phoneNumber,
-				}, Paging.Single)).Items.FirstOrDefault().Id;
+				}, Paging.Single)).Items.FirstOrDefault();
 
-			if(iid==0 && name!=null)
+			if(iid==null && name!=null)
 				iid = (await ims.QueryIdentsAsync(new IdentityQueryArgument
 				{
 					Ident = name
-				}, Paging.Single)).Items.FirstOrDefault().Id;
+				}, Paging.Single)).Items.FirstOrDefault();
 
-			if (iid > 0)
+			if (iid !=null)
 			{
 				await ims.UpdateEntity(iid, e => {
 					e.Name = nick;
 				});
-				return iid;
+				return iid.Id;
 			}
 			var ics = new List<IdentityCredential>();
 			if (name != null)

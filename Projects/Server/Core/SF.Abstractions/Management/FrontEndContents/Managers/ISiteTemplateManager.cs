@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 using SF.Entities;
 namespace SF.Management.FrontEndContents
 {
-	public class SiteTemplateQueryArgument : IQueryArgument<long>
+	public class SiteTemplateQueryArgument : IQueryArgument<ObjectKey<long>>
 	{
-		public Option<long> Id { get; set; }
+		public ObjectKey<long> Id { get; set; }
 		public string Name { get; set; }
 	}
 	public interface ISiteTemplateManager : ISiteTemplateManager<SiteTemplate>
 	{ }
 	public interface ISiteTemplateManager<TSiteTemplate> :
-		IEntityManager<TSiteTemplate>,
-		IEntitySource<TSiteTemplate, SiteTemplateQueryArgument>,
+		IEntityManager<ObjectKey<long>, TSiteTemplate>,
+		IEntitySource<ObjectKey<long>, TSiteTemplate, SiteTemplateQueryArgument>,
 		ISiteConfigLoader
 		where TSiteTemplate : SiteTemplate
 	{

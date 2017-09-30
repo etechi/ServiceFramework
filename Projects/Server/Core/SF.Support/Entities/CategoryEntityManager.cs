@@ -8,16 +8,16 @@ namespace SF.Entities
 {
 
 	public abstract class CategoryEntityManager<
+		TKey,
 		TCategoryPublic,
 		TCategoryTemp,
 		TQueryArgument,
 		TCategoryEditable,
 		TCategoryModel,
-
 		TItemKey,
 		TItemModel
 		> :
-		ModidifiableEntityManager< TCategoryPublic, TCategoryTemp, TQueryArgument, TCategoryEditable, TCategoryModel>
+		ModidifiableEntityManager<TKey, TCategoryPublic, TCategoryTemp, TQueryArgument, TCategoryEditable, TCategoryModel>
 		where TCategoryPublic : class
 		where TCategoryModel : class, new()
 		where TQueryArgument : class,new()

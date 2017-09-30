@@ -1,5 +1,6 @@
 ﻿using SF.Auth;
 using SF.Auth.Identities.Models;
+using SF.Entities;
 using SF.Management.SysAdmins.Models;
 using SF.Metadata;
 using System;
@@ -10,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace SF.Management.SysAdmins
 {
-	public class SysAdminQueryArgument : Entities.IQueryArgument<long>
+	public class SysAdminQueryArgument : Entities.IQueryArgument<ObjectKey<long>>
 	{
-		public Option<long> Id { get; set; }
+		public ObjectKey<long> Id { get; set; }
 		public string Account { get; set; }
 		public string Name { get; set; }
 	}
@@ -23,8 +24,8 @@ namespace SF.Management.SysAdmins
 	[Comment("系统管理员")]
 	[Category("系统管理", "系统管理员管理")]
 	public interface ISysAdminManagementService : 
-		Entities.IEntitySource<SysAdminInternal,SysAdminQueryArgument>,
-		Entities.IEntityManager<SysAdminEditable>
+		Entities.IEntitySource<ObjectKey<long>, SysAdminInternal,SysAdminQueryArgument>,
+		Entities.IEntityManager<ObjectKey<long>, SysAdminEditable>
     {
     }
 

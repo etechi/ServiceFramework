@@ -3,9 +3,9 @@ using SF.Metadata;
 using System;
 namespace SF.Auth.Identities
 {
-	public class IdentityQueryArgument : IQueryArgument<long>
+	public class IdentityQueryArgument : IQueryArgument<ObjectKey<long>>
 	{
-		public Option<long> Id { get; set; }
+		public ObjectKey<long> Id { get; set; }
 		public string Ident { get; set; }
 		public string Name { get; set; }
 	}
@@ -15,8 +15,8 @@ namespace SF.Auth.Identities
 	[NetworkService]
 	[Comment("身份标识")]
 	public interface IIdentityManagementService :
-		IEntityManager<Models.IdentityEditable>,
-		IEntitySource<Models.IdentityInternal, IdentityQueryArgument>
+		IEntityManager<ObjectKey<long>,Models.IdentityEditable>,
+		IEntitySource<ObjectKey<long>, Models.IdentityInternal, IdentityQueryArgument>
 	{
 	}
 

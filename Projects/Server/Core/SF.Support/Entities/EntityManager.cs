@@ -8,8 +8,8 @@ using System.Reflection;
 namespace SF.Entities
 {
 
-	public abstract class ModidifiableEntityManager<TPublic, TEditable, TModel> :
-		ModidifiableEntityManager<TPublic, TPublic, QueryArgument, TEditable, TModel>
+	public abstract class ModidifiableEntityManager<TKey, TPublic, TEditable, TModel> :
+		ModidifiableEntityManager<TKey, TPublic, TPublic, QueryArgument, TEditable, TModel>
 		where TPublic : class
 		where TModel : class, new()
 		where TEditable : class
@@ -32,8 +32,8 @@ namespace SF.Entities
 		}
 	}
 
-	public abstract class ModidifiableEntityManager<TPublic, TQueryArgument, TEditable, TModel> :
-		ModidifiableEntityManager<TPublic, TPublic, TQueryArgument, TEditable, TModel>
+	public abstract class ModidifiableEntityManager<TKey, TPublic, TQueryArgument, TEditable, TModel> :
+		ModidifiableEntityManager<TKey, TPublic, TPublic, TQueryArgument, TEditable, TModel>
 		where TPublic : class
 		where TModel : class, new()
 		where TQueryArgument : class,new()
@@ -48,9 +48,9 @@ namespace SF.Entities
 			return Internals;
 		}
 	}
-	public abstract class ModidifiableEntityManager<TPublic, TTemp, TQueryArgument, TEditable,TModel> :
-		QuerableEntitySource<TPublic, TTemp, TQueryArgument, TModel>,
-		IEntityManager<TEditable>
+	public abstract class ModidifiableEntityManager<TKey,TPublic, TTemp, TQueryArgument, TEditable,TModel> :
+		QuerableEntitySource<TKey, TPublic, TTemp, TQueryArgument, TModel>,
+		IEntityManager<TKey, TEditable>
 		where TPublic : class
 		where TModel : class,new()
 		where TQueryArgument : class,new()
@@ -81,15 +81,15 @@ namespace SF.Entities
 		}
 		protected IModifyContext NewModifyContext()
 			=> new ModifyContext();
-		public virtual async Task<TEditable> CreateAsync(TEditable obj)
+		public virtual async Task<TKey> CreateAsync(TEditable obj)
 		{
 			var ctx = NewModifyContext();
 			await InternalCreateAsync(ctx, obj, null);
-			return ctx.Editable;
+			return Entity<TModel>.GetKey<TKey>(ctx.Model);
 		}
 		protected virtual Task InternalCreateAsync(IModifyContext Context, TEditable obj,object ExtraArgument)
 		{
-			return EntityManager.InternalCreateAsync<TEditable,TModel,IModifyContext>(
+			return EntityManager.InternalCreateAsync<TKey,TEditable, TModel,IModifyContext>(
 				Context, 
 				obj, 
 				OnUpdateModel, 
@@ -102,17 +102,16 @@ namespace SF.Entities
 
 		#region delete
 
-		public virtual async Task<TEditable> RemoveAsync(TEditable Id)
+		public virtual async Task RemoveAsync(TKey Id)
 		{
 			var ctx = NewModifyContext();
 			var re =await InternalRemoveAsync(ctx,Id);
-			if (re==null)
+			if (!re)
 				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Id}");
-			return re;
 		}
-		protected virtual Task<TEditable> InternalRemoveAsync(IModifyContext Context, TEditable Id)
+		protected virtual Task<bool> InternalRemoveAsync(IModifyContext Context, TKey Id)
 		{
-			return EntityManager.InternalRemoveAsync<TModel,TEditable,IModifyContext>(
+			return EntityManager.InternalRemoveAsync<TKey,TEditable, TModel, IModifyContext>(
 				Context, 
 				Id, 
 				OnRemoveModel,
@@ -128,7 +127,7 @@ namespace SF.Entities
 
 		public virtual async Task RemoveAllAsync()
 		{
-			await EntityManager.RemoveAllAsync<TEditable,TModel>(
+			await EntityManager.RemoveAllAsync<TKey,TEditable,TModel>(
 				RemoveAsync
 				);
 		}
@@ -139,17 +138,16 @@ namespace SF.Entities
 		#region Update
 		protected abstract Task OnUpdateModel(IModifyContext ctx);
 
-		public virtual async Task<TEditable> UpdateAsync(TEditable obj)
+		public virtual async Task UpdateAsync(TEditable obj)
 		{
 			var ctx = NewModifyContext();
 			var re =await InternalUpdateAsync(ctx,obj);
-			if (re==null)
+			if (!re)
 				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Entity<TEditable>.GetIdentString(obj)}");
-			return re;
 		}
-		protected virtual async Task<TEditable> InternalUpdateAsync(IModifyContext Context,TEditable obj)
+		protected virtual async Task<bool> InternalUpdateAsync(IModifyContext Context,TEditable obj)
 		{
-			return await EntityManager.InternalUpdateAsync<TEditable,TModel,IModifyContext>(
+			return await EntityManager.InternalUpdateAsync<TKey,TEditable,TModel,IModifyContext>(
 				Context,
 				obj, 
 				OnUpdateModel, 
@@ -159,11 +157,11 @@ namespace SF.Entities
 
         #endregion
 
-        protected virtual IContextQueryable<TModel> OnLoadChildObjectsForUpdate(TEditable Id,IContextQueryable<TModel> query)
+        protected virtual IContextQueryable<TModel> OnLoadChildObjectsForUpdate(TKey Id,IContextQueryable<TModel> query)
 		{
 			return query;
 		}
-		protected virtual Task<TModel> OnLoadModelForUpdate(TEditable Id,IContextQueryable<TModel> ctx)
+		protected virtual Task<TModel> OnLoadModelForUpdate(TKey Id,IContextQueryable<TModel> ctx)
 		{
 			return OnLoadChildObjectsForUpdate(Id,ctx).SingleOrDefaultAsync();
 		}
@@ -173,7 +171,7 @@ namespace SF.Entities
 			return Query.Select(ADT.Poco.Map<TModel, TEditable>()).SingleOrDefaultAsync();
 		}
 
-		public virtual Task<TEditable> LoadForEdit(TEditable Id)
+		public virtual Task<TEditable> LoadForEdit(TKey Id)
 		{
 			return EntityManager.LoadForEdit(Id, OnMapModelToEditable);
 		}

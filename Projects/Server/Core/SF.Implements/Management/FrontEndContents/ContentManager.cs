@@ -23,7 +23,7 @@ namespace SF.Management.FrontEndContents
 
 
 	public class ContentManager<TContentPublic,TContent> :
-		ModidifiableEntityManager<TContentPublic, ContentQueryArgument, TContentPublic,TContent>,
+		ModidifiableEntityManager<ObjectKey<long>, TContentPublic, ContentQueryArgument, TContentPublic,TContent>,
 		IContentManager<TContentPublic>
 		where TContentPublic : Content,new()
 		where TContent: DataModels.Content, new() 
@@ -116,7 +116,7 @@ namespace SF.Management.FrontEndContents
 
 		public async Task<IContent> LoadContent(long contentId)
 		{
-			return await GetAsync(Entity<TContentPublic>.WithKey(contentId));
+			return await GetAsync(ObjectKey.From(contentId));
 		}
 
 		public ContentManager(IDataSetEntityManager<TContentPublic,TContent> EntityManager) : base(EntityManager)

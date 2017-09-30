@@ -49,8 +49,8 @@ namespace SF.Core.ServiceManagement.Management
 		public Task<QueryResult<ServiceDeclaration>> QueryAsync(ServiceDeclarationQueryArgument Arg, Paging paging)
 		{
 			var q = Items.Values.AsContextQueryable();
-			if (Arg.Id.HasValue)
-				q = q.Where(i => i.Id == Arg.Id.Value);
+			if (Arg.Id!=null)
+				q = q.Where(i => i.Id == Arg.Id.Id);
 			else
 				q = q.Filter(Arg.Name, i => i.Name)
 					.Filter(Arg.Group, i => i.Group)

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace SF.Common.TextMessages.Management
 {
 	public class EntityMsgRecordManager :
-		QuerableEntitySource<MsgRecord,MsgRecordQueryArgument,DataModels.TextMessageRecord>,
+		QuerableEntitySource<ObjectKey<long>,MsgRecord,MsgRecordQueryArgument,DataModels.TextMessageRecord>,
 		IMsgRecordManager,
 		ITextMessageLogger
 	{

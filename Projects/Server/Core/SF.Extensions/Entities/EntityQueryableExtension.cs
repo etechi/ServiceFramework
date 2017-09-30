@@ -37,12 +37,11 @@ namespace SF.Entities
 			=> q.WithId(Id).WithScope(ServiceInstanceDescriptor).IsEnabled();
 
 
-		public static async Task<IEnumerable<TEntity>> QueryAllAsync<TKey,TEntity, TQueryArgument>(
+		public static async Task<IEnumerable<TEntity>> QueryAllAsync<TEntity, TQueryArgument>(
 			this IEntityQueryable<TEntity,TQueryArgument> Queryable
 			)
-			where TKey:IEquatable<TKey>
-			where TEntity:class,IEntityWithId<TKey>
-			where TQueryArgument : IQueryArgument<TKey>, new()
+			where TEntity:class
+			where TQueryArgument :  new()
 		{
 			var re = await Queryable.QueryAsync(new TQueryArgument(), Paging.All);
 			return re.Items;

@@ -26,7 +26,7 @@ namespace SF.Auth.Permissions
 	}
 
 	public class RoleManager<TRoleInternal, TQueryArgument, TGrant,TRole, TRolePermission, TGrantRole, TGrantPermission> :
-        ModidifiableEntityManager<TRoleInternal, TQueryArgument, TRoleInternal,TRole>,
+        ModidifiableEntityManager<ObjectKey<string>, TRoleInternal, TQueryArgument, TRoleInternal,TRole>,
         IRoleManager<TRoleInternal, TQueryArgument>
 		where TGrant : DataModels.Grant<TGrant, TRole, TGrantRole, TRolePermission, TGrantPermission>
 		where TRole : DataModels.Role<TGrant,TRole, TGrantRole, TRolePermission, TGrantPermission>,new()
@@ -145,7 +145,8 @@ namespace SF.Auth.Permissions
             DataContext.Set<TRolePermission>().RemoveRange(ctx.Model.Permissions);
             return base.OnRemoveModel(ctx);
         }
-        protected override IContextQueryable<TRole> OnLoadChildObjectsForUpdate(TRoleInternal Id, IContextQueryable<TRole> query)
+		
+        protected override IContextQueryable<TRole> OnLoadChildObjectsForUpdate(ObjectKey<string> Id, IContextQueryable<TRole> query)
         {
             return query.Include(u => u.Permissions);
         }

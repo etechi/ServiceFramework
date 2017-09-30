@@ -228,10 +228,10 @@ namespace SF.Biz.Products
 		public string ProductTypeName { get; set; }
 	}
 
-	public class ProductInternalQueryArgument : IQueryArgument<long>
+	public class ProductInternalQueryArgument : IQueryArgument<ObjectKey<long>>
 	{
 		[Display(Name = "产品ID")]
-		public Option<long> Id { get; set; }
+		public ObjectKey<long> Id { get; set; }
 
 		[Display(Name = "产品类型")]
 		[EntityIdent(typeof(ProductType))]

@@ -1,13 +1,14 @@
 ﻿using SF.Auth.Sessions.Models;
+using SF.Entities;
 using SF.Metadata;
 using System;
 using System.Threading.Tasks;
 
 namespace SF.Auth.Sessions
 {
-	public class UserSessionQueryArgument : Entities.IQueryArgument<long>
+	public class UserSessionQueryArgument : Entities.IQueryArgument<ObjectKey<long>>
 	{
-		public Option<long> Id { get; set; }
+		public ObjectKey<long> Id { get; set; }
 		public string NickName { get; set; }
 	}
 

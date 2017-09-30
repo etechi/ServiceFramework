@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace SF.Management.FrontEndContents
 {
-	public class ContentQueryArgument : IQueryArgument<long>
+	public class ContentQueryArgument : IQueryArgument<Option<long>>
 	{
 		public Option<long> Id { get; set; }
 		public string Category { get; set; }
@@ -15,8 +15,8 @@ namespace SF.Management.FrontEndContents
 	public interface IContentManager : IContentManager<Content>
 	{ }
 	public interface IContentManager<TContent> :
-		IEntityManager<TContent>,
-		IEntitySource<TContent, ContentQueryArgument>,
+		IEntityManager<ObjectKey<long>, TContent>,
+		IEntitySource<ObjectKey<long>, TContent, ContentQueryArgument>,
 		IContentLoader
 		where TContent:Content
 	{
