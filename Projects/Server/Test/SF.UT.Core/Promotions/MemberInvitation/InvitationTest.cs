@@ -24,7 +24,7 @@ namespace SF.UT.Promotions.Invitations
 		[Fact]
 		public async Task 创建_成功()
 		{
-			var id = 24;
+			var id = -1;
 			await Scope(async (IServiceProvider sp) =>
 				await InvitationTest(sp,
 					async (svc) =>
@@ -39,8 +39,12 @@ namespace SF.UT.Promotions.Invitations
 						};
 
 						var rid = await svc.CreateAsync(dst);
-						
-						Assert.Equal(dst.Id, rid.Id);
+						var nrid = await svc.CreateAsync(dst);
+
+						Assert.NotEqual(dst.Id, rid.Id);
+						Assert.NotEqual(nrid.Id, rid.Id);
+						await svc.RemoveAsync(nrid);
+						dst.Id = rid.Id;
 
 						var o = await svc.GetAsync(rid);
 						Assert.True(Poco.DeepEquals(dst, o));

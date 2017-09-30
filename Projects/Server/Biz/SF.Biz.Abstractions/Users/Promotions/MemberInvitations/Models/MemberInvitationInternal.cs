@@ -14,7 +14,6 @@ namespace SF.Users.Promotions.MemberInvitations.Models
 	{
 		[Comment("被邀请人ID")]
 		[EntityIdent(typeof(Identity),nameof(InviteeName))]
-		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public override long Id { get; set; }
 
 		[Comment("被邀请人")]

@@ -19,6 +19,10 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		int Priority { get; }
 	}
+	public interface INoneEntityPropertyModifier : IEntityPropertyModifier
+	{
+
+	}
 	public interface IAsyncEntityPropertyModifier<TEntityPropertyValue, TDataModelPropertyValue> :
 		IEntityPropertyModifier
 	{

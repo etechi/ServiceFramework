@@ -90,6 +90,7 @@ namespace SF.Core.ServiceManagement
 				);
 
 
+			sc.AddSingleton<IEntityPropertyModifierProvider, AutoKeyPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, DefaultPropertyModifierProvider>();
 			sc.AddSingleton<IEntityModifierProvider, PropertyEntityModifierProvider>();
 

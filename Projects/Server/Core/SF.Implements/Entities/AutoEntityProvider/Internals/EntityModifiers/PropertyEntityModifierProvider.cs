@@ -57,14 +57,16 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 				typeof(IAsyncEntityPropertyModifier<>),
 				typeof(IAsyncEntityPropertyModifier<,>),
 				typeof(IEntityPropertyModifier<>),
-				typeof(IEntityPropertyModifier<,>)
+				typeof(IEntityPropertyModifier<,>),
+				typeof(INoneEntityPropertyModifier)
 			};
 			static Type DetectModifierType(IEntityPropertyModifier Modifier)
 			{
 				var re = (from i in Modifier.GetType().AllInterfaces()
 						  from t in ModifierDefinitions
-						  where i.IsGeneric() && i.GetGenericTypeDefinition() == t
-						  select i).ToArray();
+						  where i==t || i.IsGeneric() && i.GetGenericTypeDefinition() == t
+						  select i
+						  ).ToArray();
 				if (re.Length == 0)
 					throw new NotSupportedException($"属性修改器{Modifier.GetType()}不支持执行函数");
 				else if(re.Length>1)
@@ -98,7 +100,8 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 					(from dp in typeof(TDataModel).AllPublicInstanceProperties()
 					 let ep = typeof(TEntity).GetProperty(dp.Name)
 					 from ms in FindPropModifiers(ep, dp)
-					 select (DataProperty:dp, EntityProperty:ep, Modifier:ms)
+					 group (DataProperty:dp, EntityProperty:ep, Modifier:ms) by dp into g
+					 select g.OrderBy(i=>i.Modifier.Priority).First()
 					).ToArray();
 
 				var ArgManager = Expression.Parameter(typeof(IDataSetEntityManager<TEntity, TDataModel>));
@@ -113,8 +116,10 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 				foreach (var m in modifiers)
 				{
 					var modifierType = DetectModifierType(m.Modifier);
+					if (modifierType == typeof(INoneEntityPropertyModifier))
+						continue;
 					var modifierGenericType = modifierType.GetGenericTypeDefinition();
-					var expr = m.EntityProperty == null ?
+					var expr = modifierType.GenericTypeArguments.Length == 1?
 						Expression.Call(
 							Expression.Constant(m.Modifier, modifierType),
 							modifierType.GetMethod("Execute"),
@@ -153,7 +158,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 								lastDataProperty,
 								ArgTask
 									.To(typeof(Task<>).MakeGenericType(lastDataProperty.PropertyType))
-									.GetMember("Value")
+									.GetMember(nameof(Task<int>.Result))
 								)
 							);
 					exprs.AddRange(g.exprs);
@@ -196,7 +201,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 			{
 				this.Executor = Executor;
 			}
-			public int Priority => 0;
+			public int Priority =>100;
 			public Task Execute(IDataSetEntityManager<TEntity, TDataModel> Manager, IEntityModifyContext<TEntity, TDataModel> Context)
 			{
 				return Executor(Manager, Context);

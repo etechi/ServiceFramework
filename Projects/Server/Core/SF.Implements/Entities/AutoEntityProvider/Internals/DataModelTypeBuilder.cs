@@ -206,11 +206,27 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		}
 		void BuildValueProperty(TypeBuilder typeBuilder,IEntityType type, IProperty prop)
 		{
+			var sysType = ((IValueType)prop.Type).SysType;
 			var pb=DefineProperty(
 				typeBuilder, 
-				prop, 
-				((IValueType)prop.Type).SysType
+				prop,
+				sysType
 				);
+
+			//处理自动生成主键字段
+			if(sysType==typeof(long) && 
+				(prop.Attributes?.Any(a=>a.Name==typeof(KeyAttribute).FullName) ?? false) &&
+				!(prop.Attributes?.Any(a => a.Name == typeof(DatabaseGeneratedAttribute).FullName) ?? false) &&
+				!type.Properties.Any(p=>p!=prop && (p.Attributes?.Any(a => a.Name == typeof(KeyAttribute).FullName)??false))
+				)
+			{
+				pb.SetCustomAttribute(
+					new CustomAttributeBuilder(
+						typeof(DatabaseGeneratedAttribute).GetConstructor(new[] { typeof(DatabaseGeneratedOption) }),
+						new object[] { DatabaseGeneratedOption.None }
+						)
+					);
+			}
 
 			//检查当前如果有使用字段作为外键的字段，则当前字段需要增加索引
 			var foreignProp = type.Properties.Where(p =>
