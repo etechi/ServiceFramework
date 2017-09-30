@@ -15,10 +15,6 @@ namespace SF.Entities.AutoEntityProvider
 	}
 	public interface IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		: IDataSetAutoEntityProviderSetting
-		where TEntityDetail : class
-		where TEntitySummary : class
-		where TEntityEditable : class
-		where TQueryArgument : class
 	{
 		Task<TKey> CreateAsync(IDataSetEntityManager EntityManager, TEntityEditable Entity);
 		Task<TEntityDetail> GetAsync(IDataSetEntityManager EntityManager, TKey Id);
@@ -39,10 +35,6 @@ namespace SF.Entities.AutoEntityProvider
 	}
 	class DataSetAutoEntityProviderSetting<TKey,TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TEntityEditableTemp, TQueryArgument,TDataModel>
 		: IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
-		where TEntityDetail : class
-		where TEntitySummary : class
-		where TEntityEditable : class
-		where TQueryArgument : class
 		where TDataModel : class,new()
 	{
 		Lazy<Func<IDataSetEntityManager<TEntityEditable,TDataModel>, IContextQueryable<TDataModel>, IContextQueryable<TEntityDetailTemp>>> FuncMapModelToDetailTemp { get; }
@@ -221,16 +213,17 @@ namespace SF.Entities.AutoEntityProvider
 
 			FuncLoadEditable = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, Task<TEntityEditable>>>(() =>
 			{
-				return async (em, q) =>
+				return new Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, Task<TEntityEditable>>(
+					async (IDataSetEntityManager<TEntityEditable, TDataModel>  em, IContextQueryable<TDataModel> q) =>
 				{
 					var re = await q.Select(EditableQueryResultBuildHelper.EntityMapper).SingleOrDefaultAsync();
 					if (re == null)
-						return null;
+						return default(TEntityEditable);
 					var re1 = await EditableQueryResultBuildHelper.ResultMapper(new[] { re });
 					if (re1 == null || re1.Length == 0)
-						return null;
+						return default(TEntityEditable);
 					return re1[0];
-				};
+				});
 			});
 
 			FuncLoadModelForModify = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, TKey, IContextQueryable<TDataModel>, Task<TDataModel>>>(() =>

@@ -6,10 +6,6 @@ namespace SF.Entities.AutoEntityProvider
 {
 	class DataSetAutoEntityProvider<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>:
 		IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
-		where TEntityDetail : class
-		where TEntitySummary : class
-		where TEntityEditable : class
-		where TQueryArgument : class
 	{
 	
 

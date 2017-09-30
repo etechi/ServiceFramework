@@ -15,7 +15,6 @@ namespace SF.Entities
 	{
 		
 		public TModel Model { get; set; }
-
 		public ModifyAction Action { get; set; }
 		public object OwnerId { get; set; }
 		public object UserData { get; set; }
@@ -74,8 +73,10 @@ namespace SF.Entities
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
 			where TModel : class
-			where TReadOnlyEntity : class
 		{
+			if (Id.IsDefault())
+				return default(TReadOnlyEntity);
+
 			return await Storage.UseTransaction(
 				$"载入实体{typeof(TModel).Comment().Name}:{Id}",
 				async (trans) =>
@@ -84,7 +85,7 @@ namespace SF.Entities
 						Storage.DataSet.AsQueryable(true).Where(Entity<TModel>.ObjectFilter(Id))
 						).SingleOrDefaultAsync();
 					if (re == null)
-						return null;
+						return default(TReadOnlyEntity);
 					var res = await PrepareReadOnly(new[] { re });
 					return res[0];
 				});
@@ -98,7 +99,6 @@ namespace SF.Entities
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
 			where TModel : class
-			where TReadOnlyEntity : class
 			=> GetAsync<TKey, TReadOnlyEntity, TReadOnlyEntity, TModel>(
 				Storage,
 				Id,
@@ -113,7 +113,6 @@ namespace SF.Entities
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
 		)
 			where TModel : class
-			where TReadOnlyEntity : class
 			=> GetAsync<TKey,TReadOnlyEntity, TReadOnlyEntity, TModel>(
 				Storage,
 				Id,
@@ -132,8 +131,10 @@ namespace SF.Entities
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
 			where TModel : class
-			where TReadOnlyEntity : class
 		{
+			if (Ids == null || Ids.Length == 0)
+				return Array.Empty<TReadOnlyEntity>();
+
 			return await Storage.UseTransaction(
 				$"批量载入实体：{typeof(TModel).Comment().Name}",
 				async (trans) =>
@@ -156,7 +157,6 @@ namespace SF.Entities
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
 			where TModel : class
-			where TReadOnlyEntity : class
 			=> BatchGetAsync<TKey, TReadOnlyEntity, TReadOnlyEntity, TModel>(
 				Storage,
 				Ids,
@@ -192,15 +192,13 @@ namespace SF.Entities
 			IPagingQueryBuilder<TModel> PagingQueryBuilder
 			)
 			where TModel : class
-			where TKey:class
-			where TQueryArgument:IQueryArgument<TKey>
 		{
 			return await Storage.UseTransaction(
 				$"查询实体主键：{typeof(TModel).Comment().Name}",
 				async (trans) =>
 				{
 					var q = Storage.DataSet.AsQueryable(true);
-					q = Entity<TModel>.QueryIdentFilter<TKey,TQueryArgument>(q, Arg);
+					q = Entity<TModel>.QueryIdentFilter(q, Arg);
 					q = BuildQuery(q, Arg, paging);
 					var re = await q.ToQueryResultAsync(
 						qs => qs.Select(Entity<TModel>.KeySelector<TKey>()),
@@ -215,7 +213,7 @@ namespace SF.Entities
 		#endregion
 
 		#region Query
-		public static async Task<QueryResult<TReadOnlyEntity>> QueryAsync<TKey,TTempReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
+		public static async Task<QueryResult<TReadOnlyEntity>> QueryAsync<TTempReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
 			this IReadOnlyDataSetEntityManager<TModel> Storage,
 			TQueryArgument Arg,
 			Paging paging,
@@ -225,15 +223,13 @@ namespace SF.Entities
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 			)
 			where TModel : class
-			where TKey:class
-			where TQueryArgument:IQueryArgument<TKey>
 		{
 			return await Storage.UseTransaction(
 				$"查询实体{typeof(TModel).Comment().Name}",
 				async (trans) =>
 			{
 				var q = Storage.DataSet.AsQueryable(true);
-				q = Entity<TModel>.QueryIdentFilter<TKey,TQueryArgument>(q,Arg);
+				q = Entity<TModel>.QueryIdentFilter(q,Arg);
 				q = BuildQuery(q, Arg, paging);
 				var re = await q.ToQueryResultAsync(
 					MapModelToReadOnly,
@@ -294,10 +290,11 @@ namespace SF.Entities
 			Func<IContextQueryable<TModel>, Task<TEditable>> MapModelToEditable
 			)
 			where TModel:class
-			where TEditable:class
 		{
+			if (Key.IsDefault())
+				return default(TEditable);
 			return await Storage.UseTransaction(
-				$"载入编辑实体{typeof(TModel).Comment().Name}:{Entity<TKey>.GetIdents(Key).Join(",")}",
+				$"载入编辑实体{typeof(TModel).Comment().Name}:{Entity<TKey>.GetIdents(Key)?.Join(",")}",
 				async (trans) =>
 				{
 					return await MapModelToEditable(Storage.DataSet.AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Key)));
@@ -319,9 +316,11 @@ namespace SF.Entities
 			object ExtraArgument = null
 			)
 			where TModel : class, new()
-			where TEditable : class
 			where TModifyContext: IEntityModifyContext<TEditable, TModel>
 		{
+			if (Entity.IsDefault())
+				throw new ArgumentNullException("需要提供实体");
+
 			return await Storage.UseTransaction(
 				$"新建实体{typeof(TModel).Comment().Name}",
 				async (trans) =>
@@ -370,7 +369,6 @@ namespace SF.Entities
 			object ExtraArgument=null
 			) 
 			where TModel:class,new()
-			where TEditable:class
 		{
 			var ctx =new EntityModifyContext<TEditable, TModel>();
 			return await InternalCreateAsync<TKey, TEditable,TModel,IEntityModifyContext<TEditable, TModel>>(
@@ -394,9 +392,11 @@ namespace SF.Entities
 			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
 			)
 			where TModel : class
-			where TEditable : class
 			where TModifyContext:IEntityModifyContext<TEditable, TModel>
 		{
+			if (Entity.IsDefault())
+				throw new ArgumentNullException("需要提供实体");
+
 			return await Storage.UseTransaction(
 				$"编辑实体{typeof(TModel).Comment().Name}:{Entity<TEditable>.GetIdentString(Entity)}",
 				async (trans) =>
@@ -450,7 +450,6 @@ namespace SF.Entities
 			Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
 			)
 			where TModel : class
-			where TEditable :class
 		{
 			var ctx = new EntityModifyContext<TEditable, TModel>();
 			return await InternalUpdateAsync(Storage, ctx, Entity, UpdateModel, LoadModelForEdit);
@@ -466,9 +465,11 @@ namespace SF.Entities
 			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
 			)
 			where TModel : class
-			where TEditable:class
 			where TModifyContext: IEntityModifyContext<TEditable,TModel>
 		{
+			if (Id.IsDefault())
+				throw new ArgumentNullException("需要指定主键");
+
 			return await Storage.UseTransaction(
 				$"删除实体{typeof(TModel).Comment().Name}:{Id}",
 				async (trans) =>
@@ -477,7 +478,7 @@ namespace SF.Entities
 					var model = LoadModelForEdit == null ? await q.SingleOrDefaultAsync() : await LoadModelForEdit(Id,q);
 					if (model == null)
 						return false;
-					var editable = Entity<TEditable>.WithKey(Id);
+					var editable = Entity<TKey>.GetKey<TEditable>(Id);
 					Storage.InitRemoveContext(Context,editable, model, null);
 					if (RemoveModel != null)
 						await RemoveModel(Context);
@@ -522,7 +523,6 @@ namespace SF.Entities
 			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
 			)
 			where TModel : class
-			where TEditable: class
 		{
 			var ctx =(IEntityModifyContext < TEditable, TModel >) new EntityModifyContext<TEditable, TModel>();
 			return await InternalRemoveAsync<TKey,TEditable, TModel, IEntityModifyContext<TEditable, TModel>>(
@@ -539,7 +539,6 @@ namespace SF.Entities
 			Expression<Func<TModel,bool>> Condition=null,
 			int BatchCount=100
 			)
-			where TEditable:class
 			where TModel : class
 		{
 			var tsm = Storage.DataSet.Context.TransactionScopeManager;
@@ -567,7 +566,6 @@ namespace SF.Entities
 			Func<TEditable, Task> Remove,
 			int BatchCount = 100
 			)
-			where TEditable : class
 			where TModel : class, IEntityWithScope
 			=> Storage.RemoveAllAsync(Remove, m => m.ScopeId == ScopeId, BatchCount);
  

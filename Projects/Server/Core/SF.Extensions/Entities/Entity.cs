@@ -18,25 +18,46 @@ namespace SF.Entities
 			.Where(p => p.IsDefined(typeof(KeyAttribute)))
 			.ToArray();
 
+
+		public static class KeyValidator<K>
+		{
+			public static bool HasSameKeys { get; }
+			static KeyValidator()
+			{
+				var kks = Entity<K>.KeyProperties;
+				HasSameKeys = KeyProperties.Count == kks.Count && 
+					KeyProperties
+					.Zip(kks, (x, y) => x.Name == y.Name && x.PropertyType == y.PropertyType)
+					.All(a => a);
+			}
+		}
+		public static bool HasSameKeys<K>() => KeyValidator<K>.HasSameKeys;
+		public static void EnsureSameKeys<K>()
+		{
+			if (!HasSameKeys<K>())
+				throw new NotSupportedException($"类型{typeof(T)}和类型{typeof(K)}主键不同");
+		}
 		public static ParameterExpression ArgModel { get; } = Expression.Parameter(typeof(T));
 
 		static Lazy<Func<T, object[]>> LazyGetIdents { get; } = new Lazy<Func<T, object[]>>(() =>
 			Expression.Lambda<Func<T, object[]>>(
-				Expression.NewArrayInit(
-					typeof(object),
-					KeyProperties.Select(
-						p => Expression.Convert(
-							Expression.Property(ArgModel, p),
-							typeof(object)
+				ArgModel.WithNullDefault(
+					expr=>Expression.NewArrayInit(
+						typeof(object),
+						KeyProperties.Select(
+							p => Expression.Convert(
+								Expression.Property(expr, p),
+								typeof(object)
+								)
 							)
 						)
-					),
+				),
 				ArgModel
 				).Compile()
 		);
 
 		public static object[] GetIdents(T e) => LazyGetIdents.Value(e);
-		public static string GetIdentString(T e) => GetIdents(e).Join(",");
+		public static string GetIdentString(T e) => GetIdents(e)?.Join(",");
 
 
 
@@ -59,7 +80,6 @@ namespace SF.Entities
 					).Compile();
 			});
 		}
-		public static T WithKey<TKey>(TKey id) => LazySingleKeyEntityBuilder<TKey>.Func.Value(id);
 
 
 		static class LazySingleKeySelector<TKey>
@@ -85,7 +105,9 @@ namespace SF.Entities
 		static class LazyKeySelector<TKey>
 		{
 			public static Lazy<Expression<Func<T, TKey>>> Expr { get; } = new Lazy<Expression<Func<T, TKey>>>(() =>
-				Expression.Lambda<Func<T, TKey>>(
+			{
+				EnsureSameKeys<TKey>();
+				return Expression.Lambda<Func<T, TKey>>(
 					Expression.MemberInit(
 						Expression.New(typeof(TKey)),
 						KeyProperties.Select(p =>
@@ -101,8 +123,8 @@ namespace SF.Entities
 							)
 					),
 					ArgModel
-				)
-			);
+				);
+			});
 
 			public static Lazy<Func<T, TKey>> Func { get; } = new Lazy<Func<T, TKey>>(() => Expr.Value.Compile());
 		}
@@ -111,7 +133,8 @@ namespace SF.Entities
 		public static TKey[] GetKeys<TKey>(T[] Models) => Models.Select(m => LazyKeySelector<TKey>.Func.Value(m)).ToArray();
 
 		public static TKey[] GetSingleKeys<TKey>(T[] Models) => Models.Select(m => LazySingleKeySelector<TKey>.Func.Value(m)).ToArray();
-		public static TKey GetKey<TKey>(T Model) => Entity<TKey>.WithKey(Model);
+
+		public static TKey GetKey<TKey>(T Model) => LazyKeySelector<TKey>.Func.Value(Model);
 
 		static MethodInfo MethodGetSingleKeys { get; } =
 			typeof(Entity<T>)
@@ -123,7 +146,7 @@ namespace SF.Entities
 		static MethodInfo MethodConstant { get; } = TypeExpression.GetMethod(nameof(Expression.Constant), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(object), typeof(Type) }, null);
 		static MethodInfo MethodProperty { get; } = TypeExpression.GetMethod(nameof(Expression.Property), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(PropertyInfo) }, null);
 		static MethodInfo MethodAnd { get; } = TypeExpression.GetMethod(nameof(Expression.And), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(Expression) }, null);
-		static MethodInfo MethodEquals { get; } = TypeExpression.GetMethod(nameof(Expression.Equals), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(Expression) }, null);
+		static MethodInfo MethodEqual { get; } = TypeExpression.GetMethod(nameof(Expression.Equal), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(Expression) }, null);
 		static MethodInfo MethodLambda { get; } = TypeExpression.GetMethods(
 			nameof(Expression.Lambda),
 			BindingFlags.Public | BindingFlags.Static
@@ -140,6 +163,7 @@ namespace SF.Entities
 		{
 			public static Lazy<Func<TObject, Expression<Func<T, bool>>>> Instance = new Lazy<Func<TObject, Expression<Func<T, bool>>>>(() =>
 			{
+				EnsureSameKeys<TObject>();
 				var objType = typeof(TObject);
 				var objKeyProps = KeyProperties.Select(p =>
 				{
@@ -158,21 +182,21 @@ namespace SF.Entities
 				return Expression.Lambda<Func<TObject, Expression<Func<T, bool>>>>(
 					Expression.Call(
 						null,
-						MethodLambda.MakeGenericMethod(typeof(Expression<Func<T, bool>>)),
+						MethodLambda.MakeGenericMethod(typeof(Func<T, bool>)),
 						KeyProperties.Zip(objKeyProps, (kp, op) =>
 							Expression.Call(
 								null,
-								MethodEquals,
+								MethodEqual,
 								Expression.Call(
 									null,
 									MethodProperty,
 									Expression.Constant(ArgModel),
-									Expression.Constant(kp.PropertyType)
+									Expression.Constant(kp)
 									),
 								Expression.Call(
 									null,
 									MethodConstant,
-									Expression.Property(argObj, op),
+									Expression.Convert(Expression.Property(argObj, op),typeof(object)),
 									Expression.Constant(op.PropertyType)
 									)
 								)
@@ -209,6 +233,8 @@ namespace SF.Entities
 		{
 			public static Lazy<Func<TObject[], Expression<Func<T, bool>>>> Instance = new Lazy<Func<TObject[], Expression<Func<T, bool>>>>(() =>
 			{
+				EnsureSameKeys<TObject>();
+
 				if (KeyProperties.Count != 1)
 					throw new NotSupportedException($"对象{typeof(T)}有多个主键，不支持批量主键查询");
 
@@ -230,7 +256,7 @@ namespace SF.Entities
 						MethodMultipleKeyFilter.MakeGenericMethod(keyType),
 						Expression.Call(
 							null,
-							MethodGetSingleKeys.MakeGenericMethod(keyType),
+							Entity<TObject>.MethodGetSingleKeys.MakeGenericMethod(keyType),
 							argObjs
 							)
 						),
@@ -271,7 +297,14 @@ namespace SF.Entities
 				ArgModel
 				);
 
-		static MethodInfo MethodWhere { get; } = typeof(ContextQueryable).GetMethods("Where", BindingFlags.Static | BindingFlags.Instance).Single(m => m.GetParameters().Length == 2);
+		static MethodInfo MethodWhere { get; } = typeof(ContextQueryable).GetMethodExt(
+			"Where",
+			BindingFlags.Static | BindingFlags.Public,
+			typeof(IContextQueryable<>).MakeGenericType<System.Reflection.TypeExtension.GenericTypeArgument>(),
+			typeof(Func<,>).MakeGenericType(
+				typeof(IContextQueryable<>).MakeGenericType<System.Reflection.TypeExtension.GenericTypeArgument>(),
+				typeof(bool)
+			));
 
 		static class QueryArgumentIdent<QueryArgument>
 		{

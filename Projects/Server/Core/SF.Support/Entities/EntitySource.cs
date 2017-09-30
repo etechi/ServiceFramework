@@ -43,7 +43,6 @@ namespace SF.Entities
 
 	public abstract class EntitySource<TKey, TEntityDetail, TModel> :
 		EntitySource<TKey, TEntityDetail, TEntityDetail, TModel>
-		where TEntityDetail : class
 		where TModel : class
 	{
 		public EntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
@@ -60,7 +59,6 @@ namespace SF.Entities
 		BaseDataSetEntityManager<TModel>,
 		IEntityLoadable<TKey, TDetail>,
 		IEntityBatchLoadable<TKey, TDetail>
-		where TDetail : class
 		where TModel: class
 	{
 		public EntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager):base(EntityManager)
@@ -115,7 +113,6 @@ namespace SF.Entities
 		BaseEntityManager,
 		IEntityLoadable<TKey, TEntityDetail>,
 		IEntityBatchLoadable<TKey, TEntityDetail>
-		where TEntityDetail : class
 		where TModel:class
 	{
 
@@ -135,11 +132,11 @@ namespace SF.Entities
 			{
 				var re = await OnPrepareInternals(OnMapModelToInternal(new[] { m }.AsContextQueryable()).ToArray());
 				if (re == null || re.Length == 0)
-					return null;
+					return default(TEntityDetail);
 				return re[0];
 			}
 			else
-				return null;
+				return default(TEntityDetail);
 		}
 
 		public async Task<TEntityDetail[]> GetAsync(TKey[] Ids)

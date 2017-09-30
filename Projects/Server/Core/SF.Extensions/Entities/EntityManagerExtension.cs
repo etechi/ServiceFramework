@@ -122,7 +122,7 @@ namespace SF.Entities
 							IEntityCreator<TKey, TEditable>
 		{
 
-			var hasInstance = EqualityComparer<TKey>.Default.Equals(Id, default(TKey));
+			var hasInstance = !Id.IsDefault();
 			TEditable ins;
 			if (hasInstance)
 			{

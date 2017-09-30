@@ -49,10 +49,6 @@ namespace SF.Entities.AutoEntityProvider
 			EntityModifier InitModifier,
 			EntityModifier UpdateModifier
 			)
-			where TEntityDetail : class
-			where TEntitySummary : class
-			where TEntityEditable : class
-			where TQueryArgument : class
 			where TDataModel : class,new()
 			{
 			return new DataSetAutoEntityProviderSetting<
@@ -75,16 +71,13 @@ namespace SF.Entities.AutoEntityProvider
 			}
 		public IDataSetAutoEntityProvider<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>  
 			Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(IServiceProvider sp)
-			where TEntityDetail : class
-			where TEntitySummary : class
-			where TEntityEditable : class
-			where TQueryArgument : class
 		{
 			var tDetail = typeof(TEntityDetail);
 			if (!Creators.TryGetValue(tDetail, out var setting))
 			{
 				setting = new Lazy<IDataSetAutoEntityProviderSetting>(() =>
 				  {
+					  var tKey = typeof(TKey);
 					  var tSummary = typeof(TEntitySummary);
 					  var tEditable = typeof(TEntityEditable);
 					  var tQueryArg = typeof(TQueryArgument);
@@ -112,6 +105,7 @@ namespace SF.Entities.AutoEntityProvider
 						  ).Single();
 
 					  return (IDataSetAutoEntityProviderSetting)newSetting.MakeGenericMethod(
+						 tKey,
 						tDetail,
 						detailHelper.TempType,
 						tSummary,

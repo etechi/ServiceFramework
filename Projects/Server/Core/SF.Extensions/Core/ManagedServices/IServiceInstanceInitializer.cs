@@ -136,7 +136,7 @@ namespace SF.Core.ServiceManagement
 			) where T : I
 			=>
 			manager.CreateService<I, T>(
-				 async parent => (await manager.TryGetDefaultService<I>(parent)).Id,
+				 async parent => (await manager.TryGetDefaultService<I>(parent))?.Id ??0,
 				(parent, rcfg,scfg) => manager.EnsureDefaultService<I, T>(
 					parent, 
 					rcfg, 
@@ -156,7 +156,7 @@ namespace SF.Core.ServiceManagement
 			) where T:I
 			=>
 			manager.CreateService<I, T>(
-				async parent => (await manager.TryGetService<I, T>(parent)).Id,
+				async parent => (await manager.TryGetService<I, T>(parent))?.Id??0,
 				(parent, rcfg,scfg) => manager.TryAddService<I, T>(
 					parent, 
 					rcfg,

@@ -42,6 +42,40 @@ namespace System.Linq.Expressions
 		{
 			return Expression.Assign(left, Expression.Constant(right));
 		}
+		public static Expression WithNullDefault(this Expression expr,Func<Expression,Expression> Mapper=null, Expression defaultValue=null)
+		{
+			if (expr.Type.IsValue())
+				return expr;
+
+			if (expr.NodeType == ExpressionType.Parameter)
+			{
+				var result = Mapper == null ? expr : Mapper(expr);
+				if (defaultValue != null && defaultValue.Type != result.Type)
+					throw new InvalidOperationException($"空值默认值类型{defaultValue.Type}和表达式类型{result.Type}不同");
+				return
+					Expression.Condition(
+						expr.Equal(Expression.Constant(null, expr.Type)),
+						defaultValue ?? Expression.Constant(null, result.Type),
+						result
+						);
+			}
+			else
+			{
+				var v = Expression.Variable(expr.Type);
+				var result = Mapper == null ? v : Mapper(v);
+				if (defaultValue != null && defaultValue.Type != result.Type)
+					throw new InvalidOperationException($"空值默认值类型{defaultValue.Type}和表达式类型{result.Type}不同");
+				return Expression.Block(
+					new[] { v },
+					v.Assign(expr),
+					Expression.Condition(
+						v.Equal(Expression.Constant(null, expr.Type)),
+						defaultValue ?? Expression.Constant(null, result.Type),
+						result
+						)
+					);
+			}
+		}
 		public static Expression CallMethod(this Expression obj, MethodInfo method, params Expression[] args)
 		{
 			return Expression.Call(

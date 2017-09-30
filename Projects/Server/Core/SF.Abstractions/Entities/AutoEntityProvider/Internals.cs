@@ -29,10 +29,6 @@ namespace SF.Entities.AutoEntityProvider
 		Func<IDataSetEntityManager<TEntity,TDataModel>,IEntityModifyContext<TEntity,TDataModel>,Task> Modifier { get; }
 	}
 	public interface IDataSetAutoEntityProvider<TKey,TDetail, TSummary, TEditable, TQueryArgument>
-		   where TDetail : class
-		   where TSummary : class
-		   where TEditable : class
-		   where TQueryArgument : class
 	{
 		EntityManagerCapability Capabilities { get; }
 		IDataSetEntityManager EntityManager { get; }

@@ -81,13 +81,13 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 			MethodOrderByDescending = typeof(ContextQueryable).GetMethodExt(
 				  "OrderByDescending",
-				  typeof(IContextQueryable<>).MakeGenericType<TypeExtension.T>(),
-				  typeof(Expression<>).MakeGenericType<Func<TypeExtension.T, TypeExtension.T>>()
+				  typeof(IContextQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
+				  typeof(Expression<>).MakeGenericType<Func<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>>()
 				  ).IsNotNull();
 			MethodOrderBy = typeof(ContextQueryable).GetMethodExt(
 				"OrderBy",
-				typeof(IContextQueryable<>).MakeGenericType<TypeExtension.T>(),
-				typeof(Expression<>).MakeGenericType<Func<TypeExtension.T, TypeExtension.T>>()
+				typeof(IContextQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
+				typeof(Expression<>).MakeGenericType<Func<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>>()
 				).IsNotNull();
 			MethodCreateQueryResultBuildHelper3 = typeof(QueryResultBuildHelperCreator).GetMethodExt(
 				 "CreateQueryResultBuildHelper3",
