@@ -35,7 +35,7 @@ namespace SF.UT.Promotions.Invitations
 							Time = DateTime.Now,
 							UserId = 20,
 							InvitorId = 20,
-							Invitors = "[20]"
+							Invitors = new long[] { 20 }
 						};
 
 						var rid = await svc.CreateAsync(dst);
@@ -48,10 +48,13 @@ namespace SF.UT.Promotions.Invitations
 
 						var o = await svc.GetAsync(rid);
 						Assert.True(Poco.DeepEquals(dst, o));
+						//Assert.Equal(dst, o);
+
 
 						var oss = await svc.GetAsync(new[] { rid });
 						Assert.Equal(1, oss.Length);
 						Assert.True(Poco.DeepEquals(dst, oss[0]));
+						//Assert.Equal(dst, oss[0]);
 
 						var ids = await svc.QueryIdentsAsync(new MemberInvitationQueryArgument(), Paging.All);
 						Assert.Equal(dst.Id, ids.Items.Single().Id);
@@ -60,12 +63,12 @@ namespace SF.UT.Promotions.Invitations
 						var os = await svc.QueryAsync(new MemberInvitationQueryArgument(), Paging.All);
 						o = os.Items.Single();
 						Assert.True(Poco.DeepEquals(dst, o));
-
+						//Assert.Equal(dst, o);
 
 						var e = await svc.LoadForEdit(rid);
 						Assert.True(Poco.DeepEquals(dst, e));
-
-						e.Invitors += "1";
+						//Assert.Equal(dst, e);
+						e.Invitors[0] += 1;
 						e.InvitorId += 1;
 						e.UserId += 1;
 						var newTime = dst.Time.AddDays(1);
@@ -73,6 +76,7 @@ namespace SF.UT.Promotions.Invitations
 						await svc.UpdateAsync(e);
 
 						o = await svc.GetAsync(rid);
+						//Assert.Equal(o, e);
 						Assert.True(Poco.DeepEquals(o, e));
 
 

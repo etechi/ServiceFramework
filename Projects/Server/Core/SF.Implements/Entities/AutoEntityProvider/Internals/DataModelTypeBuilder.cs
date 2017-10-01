@@ -31,6 +31,16 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			this.InitPropertyValues = InitPropertyValues ?? Array.Empty<object>();
 		}
 	}
+	public class TypeMapResult
+	{
+		public Type Type { get; set; }
+		public IReadOnlyList<IAttribute> Attributes { get; set; }
+	}
+	public interface IDataModelTypeMapper
+	{
+		int Priority { get; }
+		TypeMapResult MapType(IEntityType EntityType, IProperty Property, Type Type);
+	}
 	public interface IDataModelAttributeGenerator
 	{
 		SystemAttributeBuilder Generate(IAttribute Attr);
@@ -61,12 +71,15 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		Dictionary<string, Type> TypeBuilders = new Dictionary<string, Type>();
 		Dictionary<MemberInfo, List<SystemAttributeBuilder>> MemberAttributes { get; } = new Dictionary<MemberInfo, List<SystemAttributeBuilder>>();
 		NamedServiceResolver<IDataModelAttributeGenerator> DataModelAttributeGeneratorResolver { get; }
+		IDataModelTypeMapper[] DataModelTypeMappers { get; }
 
 		public DataModelTypeBuilder(
 			IMetadataCollection metas,
-			NamedServiceResolver<IDataModelAttributeGenerator> DataModelAttributeGeneratorResolver
+			NamedServiceResolver<IDataModelAttributeGenerator> DataModelAttributeGeneratorResolver,
+			IEnumerable<IDataModelTypeMapper> DataModelTypeMappers
 			)
 		{
+			this.DataModelTypeMappers = DataModelTypeMappers.OrderBy(p => p.Priority).ToArray();
 			this.metas = metas;
 			this.DataModelAttributeGeneratorResolver = DataModelAttributeGeneratorResolver;
 		}
@@ -155,8 +168,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				}
 			return pb;
 		}
-		PropertyBuilder DefineProperty(TypeBuilder typeBuilder, IProperty prop, Type type) =>
-			DefineProperty(typeBuilder, prop.Name, prop.Attributes, type);
+		PropertyBuilder DefineProperty(TypeBuilder typeBuilder, IProperty prop, IReadOnlyList<IAttribute> attrs, Type type) =>
+			DefineProperty(typeBuilder, prop.Name, attrs, type);
 
 		void EnsureForginKeyField(TypeBuilder typeBuilder, IEntityType curEntity, IEntityType foreignEntity, string name)
 		{
@@ -204,17 +217,32 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 			EnsureForginKeyField(typeBuilder, curEntity, foreignEntity, idFieldName);
 		}
+
+		TypeMapResult  MapSysPropType(IEntityType type,IProperty prop,Type sysType)
+		{
+			return DataModelTypeMappers
+				.Select(p => p.MapType(type, prop, sysType))
+				.FirstOrDefault(t => t != null) ??
+				new TypeMapResult
+				{
+					Type = sysType,
+					Attributes = prop.Attributes
+				};
+		}
 		void BuildValueProperty(TypeBuilder typeBuilder,IEntityType type, IProperty prop)
 		{
-			var sysType = ((IValueType)prop.Type).SysType;
-			var pb=DefineProperty(
+			var MapTypeResult = MapSysPropType(type,prop,((IValueType)prop.Type).SysType);
+			var sysType = MapTypeResult.Type;
+
+			var pb =DefineProperty(
 				typeBuilder, 
 				prop,
+				MapTypeResult.Attributes,
 				sysType
 				);
 
 			//处理自动生成主键字段
-			if(sysType==typeof(long) && 
+			if (sysType==typeof(long) && 
 				(prop.Attributes?.Any(a=>a.Name==typeof(KeyAttribute).FullName) ?? false) &&
 				!(prop.Attributes?.Any(a => a.Name == typeof(DatabaseGeneratedAttribute).FullName) ?? false) &&
 				!type.Properties.Any(p=>p!=prop && (p.Attributes?.Any(a => a.Name == typeof(KeyAttribute).FullName)??false))
@@ -246,6 +274,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			var pd=DefineProperty(
 				typeBuilder, 
 				prop, 
+				prop.Attributes,
 				TypeBuilders[((IEntityType)prop.Type).FullName]
 				);
 
@@ -257,7 +286,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		{
 			var pd=DefineProperty(
 				typeBuilder, 
-				prop, 
+				prop,
+				prop.Attributes,
 				typeof(ICollection<>).MakeGenericType(TypeBuilders[((IEntityType)prop.Type).FullName])
 				);
 

@@ -30,9 +30,9 @@ namespace SF.Users.Promotions.MemberInvitations.Models
 		[TableVisible]
 		public string InvitorName { get; set; }
 
-		[MaxLength(100000)]
 		[Hidden]
-		public string Invitors { get; set; }
+		[JsonData]
+		public long[] Invitors { get; set; }
 
 	}
 }

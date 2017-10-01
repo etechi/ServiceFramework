@@ -22,19 +22,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		Dictionary<Type, (string ns, Type type)> EntitySysTypes { get; }
 		IValueTypeResolver ValueTypeResolver { get; }
 
-		IEnumerable<EntityAttribute> GetAttributes(MemberInfo prop)
-		{
-			return prop.GetCustomAttributes().Cast<Attribute>().Select(a => 
-				new EntityAttribute(
-				a.GetType().FullName,
-				(from p in a.GetType().AllPublicInstanceProperties()
-				where p.DeclaringType!=typeof(object) && p.DeclaringType!=typeof(Attribute)
-				select (name:p.Name,value:p.GetValue(a))
-				).ToDictionary(p=>p.name,p=>p.value)
-				)
-			);
-		}
-
+	
 		class EntityComparer : IEqualityComparer<(MemberInfo, EntityAttribute[], string[])>
 		{
 			public static EntityComparer Instance { get; } = new EntityComparer();
@@ -76,7 +64,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		{
 			return (
 			from m in Members
-			 from ea in GetAttributes(m)
+			 from ea in EntityAttribute.GetAttributes(m)
 			 group (m, ea) by ea.Name into g
 			 from a in MergeAttributes(g)
 			 select a

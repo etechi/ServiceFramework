@@ -16,6 +16,8 @@ using SF.Entities.AutoEntityProvider.Internals.ValueTypes;
 using System.ComponentModel;
 using SF.Entities.AutoEntityProvider.Internals.PropertyModifiers;
 using SF.Entities.AutoEntityProvider.Internals.EntityModifiers;
+using SF.Entities.AutoEntityProvider.Internals.DataModelTypeMappers;
+using SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters;
 
 namespace SF.Core.ServiceManagement
 {
@@ -34,10 +36,7 @@ namespace SF.Core.ServiceManagement
 			return f.Create<TKey,TEntityDetail,TEntitySummary,TEntityEditable,TQueryArgument>(sp);
 		}
 
-		static void AddPrimitiveValueType<T>(this IServiceCollection sc)
-		{
-			sc.AddSingleton<IValueType, PrimitiveValueType<T>>();
-		}
+		
 		static void AddAttributeGenerator<G,A>(this IServiceCollection sc)
 			where G:IDataModelAttributeGenerator
 		{
@@ -45,24 +44,17 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IServiceCollection AddAutoEntityService(this IServiceCollection sc,string Prefix=null)
 		{
-			sc.AddPrimitiveValueType<char>();
-			sc.AddPrimitiveValueType<byte>();
-			sc.AddPrimitiveValueType<sbyte>();
-			sc.AddPrimitiveValueType<bool>();
-			sc.AddPrimitiveValueType<short>();
-			sc.AddPrimitiveValueType<ushort>();
-			sc.AddPrimitiveValueType<int>();
-			sc.AddPrimitiveValueType<uint>();
-			sc.AddPrimitiveValueType<long>();
-			sc.AddPrimitiveValueType<ulong>();
-			sc.AddPrimitiveValueType<float>();
-			sc.AddPrimitiveValueType<double>();
-			sc.AddPrimitiveValueType<decimal>();
-			sc.AddPrimitiveValueType<DateTime>();
-			sc.AddPrimitiveValueType<string>();
+
+			//Value Type Supports
+			sc.AddSingleton<IValueTypeProvider, PrimitiveValueTypeProvider>();
+			sc.AddSingleton<IValueTypeProvider, JsonDataValueTypeProvider>();
+			sc.AddSingleton<IValueTypeResolver, ValueTypeResolver>();
 
 
+
+			//Data Model Attribute Generator Supports
 			sc.AddAttributeGenerator<KeyAttributeGenerator,KeyAttribute>();
+			sc.AddAttributeGenerator<JsonDataAttributeGenerator, JsonDataAttribute>();
 			sc.AddAttributeGenerator<ColumnAttributeGenerator,ColumnAttribute> ();
 			sc.AddAttributeGenerator<NoneAttributeGenerator,EntityObjectAttribute> ();
 			sc.AddAttributeGenerator<NoneAttributeGenerator,EntityIdentAttribute> ();
@@ -80,19 +72,25 @@ namespace SF.Core.ServiceManagement
 			sc.AddAttributeGenerator<IndexAttributeGenerator,IndexAttribute> ();
 			sc.AddAttributeGenerator<TableAttributeGenerator,TableAttribute> ();
 
+			//Data Model Type Mapper
+			sc.AddSingleton<IDataModelTypeMapper, JsonDataTypeMapper>();
+
 			sc.AddTransient<SystemTypeMetadataBuilder>();
 			sc.AddTransient<DataModelTypeBuilder>();
 			sc.AddSingleton<DataSetAutoEntityProviderFactory>();
-			sc.AddSingleton<IValueTypeResolver, ValueTypeResolver>();
 
-			sc.AddSingleton<IMetadataCollection>(sp =>
-				sp.Resolve<SystemTypeMetadataBuilder>().Build()
-				);
+			sc.AddSingleton<IMetadataCollection>(sp =>sp.Resolve<SystemTypeMetadataBuilder>().Build());
 
 
+			//Entity Modify Support
 			sc.AddSingleton<IEntityPropertyModifierProvider, AutoKeyPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, DefaultPropertyModifierProvider>();
+			sc.AddSingleton<IEntityPropertyModifierProvider, JsonDataPropertyModifierProvider>();
 			sc.AddSingleton<IEntityModifierProvider, PropertyEntityModifierProvider>();
+
+			//Entity Query Support
+			sc.AddSingleton<IEntityPropertyQueryConverterProvider, JsonDataQueryConverterProvider>();
+
 
 			sc.AddTransient(
 				typeof(IDataSetAutoEntityProvider<, , , , >), 

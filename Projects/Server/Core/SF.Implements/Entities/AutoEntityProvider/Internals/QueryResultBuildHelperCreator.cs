@@ -64,9 +64,9 @@ namespace SF.Entities.AutoEntityProvider.Internals
 	//	{
 	//	}
 	//}
-	class BaseTempModel<TResult> 
+	public interface ITempModel<TResult>
 	{
-		public TResult __Result { get; set; }
+		TResult __Result { get; set; }
 	}
 	public class QueryResultBuildHelperCreator
 	{
@@ -93,13 +93,13 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				 "CreateQueryResultBuildHelper3",
 				 BindingFlags.Static | BindingFlags.NonPublic,
 				 typeof(Func<Expression>),
-				 typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IValueConverter conv)>>)
+				 typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>>)
 				 ).IsNotNull();
 			MethodCreateQueryResultBuildHelper2= typeof(QueryResultBuildHelperCreator).GetMethodExt(
 				"CreateQueryResultBuildHelper2",
 				BindingFlags.Static | BindingFlags.NonPublic,
 				typeof(Func<Expression>),
-				typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IValueConverter conv)>>)
+				typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>>)
 				).IsNotNull();
 
 		}
@@ -108,10 +108,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		ParameterExpression ArgSource { get; }
 		List<MemberBinding> DstBindings { get; } = new List<MemberBinding>();
 		List<(string, Expression)> TempBindings { get; } = new List<(string, Expression)>();
-		List<(PropertyInfo prop, IValueConverter conv)> Converters { get; } = new List<(PropertyInfo prop, IValueConverter conv)>();
+		List<(PropertyInfo prop, IEntityPropertyQueryConverter conv)> Converters { get; } = new List<(PropertyInfo prop, IEntityPropertyQueryConverter conv)>();
 		TypeBuilder TempTypeBuilder;
 		Type TempType;
-		NamedServiceResolver<IValueConverter> ValueConverterResolver { get; }
+		IEntityPropertyQueryConverterProvider[] PropertyQueryConverterProviders { get; }
 
 		static AssemblyBuilder AssemblyBuilder { get; } =
 			AssemblyBuilder.DefineDynamicAssembly(
@@ -149,43 +149,38 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			propertyBuilder.SetSetMethod(setter);
 			return propertyBuilder;
 		}
+		static int TempClassIdSeed = 1;
+		static int GetTempClassIdSeed()
+		{
+			return System.Threading.Interlocked.Increment(ref TempClassIdSeed);
+		}
 		void AddTempProperty(string Name,Type Type)
 		{
 			if (TempTypeBuilder == null)
+			{
 				TempTypeBuilder = ModuleBuilder.DefineType(
-					DstType.Name + "_Temp", 
-					TypeAttributes.Public | TypeAttributes.Class, 
-					typeof(BaseTempModel<>).MakeGenericType(DstType)
+					DstType.Name + "_Temp"+ GetTempClassIdSeed(),
+					TypeAttributes.Public | TypeAttributes.Class
 					);
+				TempTypeBuilder.AddInterfaceImplementation(typeof(ITempModel<>).MakeGenericType(DstType));
+				BuildProperty(TempTypeBuilder, "__Result", DstType);
+			}
 			BuildProperty(TempTypeBuilder, Name, Type);
 		}
-		public QueryResultBuildHelperCreator(Type SrcType,Type DstType, NamedServiceResolver<IValueConverter> ValueConverterResolver)
+		public QueryResultBuildHelperCreator(Type SrcType,Type DstType, IEntityPropertyQueryConverterProvider[] PropertyQueryConverterProviders)
 		{
 			this.SrcType = SrcType;
 			this.DstType = DstType;
-			this.ValueConverterResolver = ValueConverterResolver;
+			this.PropertyQueryConverterProviders = PropertyQueryConverterProviders;
 			this.ArgSource = Expression.Parameter(SrcType);
 		}
 		
 		
-		IValueConverter FindValueConverter(PropertyInfo srcProp,PropertyInfo dstProp)
+		IEntityPropertyQueryConverter FindValueConverter(PropertyInfo srcProp,PropertyInfo dstProp)
 		{
-			if (ValueConverterResolver == null)
-				return null;
-			IValueConverter re = null;
-
-			if (srcProp != null && null != (re = ValueConverterResolver(
-				$"{srcProp.DeclaringType.FullName}:{srcProp.Name}->{dstProp.DeclaringType.FullName}:{dstProp.Name}"
-				)))
-				return re;
-
-			if (srcProp != null && null != (re = ValueConverterResolver(
-				$"{srcProp.PropertyType.FullName}->{dstProp.PropertyType.FullName}"
-				)))
-				return re;
-			if (null != (re = ValueConverterResolver($"{dstProp.PropertyType.FullName}")))
-				return re;
-			return null;
+			return PropertyQueryConverterProviders
+				.Select(p => p.GetPropertyConverter(srcProp, dstProp))
+				.FirstOrDefault(c => c != null);
 		}
 
 		void BuildBindings(PropertyInfo dstProp)
@@ -218,7 +213,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		}
 
 		static Func<TTemp, TResult, Task[]> BuildPrepare<TTemp, TResult>(
-			IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IValueConverter conv)> prepares
+			IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)> prepares
 			)
 		{
 			var argTemp = Expression.Parameter(typeof(TTemp));
@@ -229,7 +224,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					typeof(Task),
 					prepares.Select(p =>
 					{
-						var convType = typeof(IValueConverter<,>).MakeGenericType(p.propTemp.PropertyType, p.prop.PropertyType);
+						var convType = typeof(IEntityPropertyQueryConverter<,>).MakeGenericType(p.propTemp.PropertyType, p.prop.PropertyType);
 
 						var converterCall = Expression.Call(
 							Expression.Convert(
@@ -254,7 +249,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 								p.prop.GetSetMethod(),
 								Expression.Property(
 									argTask,
-									argTask.Type.GetProperty("Value")
+									argTask.Type.GetProperty("Result")
 									)
 								),
 							argTask,
@@ -341,8 +336,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 		static QueryResultBuildHelper CreateQueryResultBuildHelper3<TDataModel, TTemp, TResult>(
 			Func<Expression> Expr,
-			Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IValueConverter conv)>> prepares
-			) where TTemp : BaseTempModel<TResult>
+			Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>> prepares
+			) where TTemp : ITempModel<TResult>
 		{
 			return new QueryResultBuildHelper<TDataModel, TTemp, TResult>(
 				new Lazy<Expression<Func<TDataModel, TTemp>>>(() => (Expression<Func<TDataModel, TTemp>>)Expr()),
@@ -350,7 +345,6 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					var prepare = BuildPrepare<TTemp, TResult>(prepares());
 					return async (tmps) =>
 					{
-
 						await Task.WhenAll(tmps.SelectMany(t => prepare(t, t.__Result)));
 						return tmps.Select(t => t.__Result).ToArray();
 					};
@@ -363,7 +357,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 		static QueryResultBuildHelper CreateQueryResultBuildHelper2<TDataModel, TResult>(
 			Func<Expression> Expr,
-			Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IValueConverter conv)>> prepares
+			Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>> prepares
 			) 
 		{
 			return new QueryResultBuildHelper<TDataModel, TResult, TResult>(
@@ -412,7 +406,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 							),
 							ArgSource
 						)),
-						new Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IValueConverter conv)>>(
+						new Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>>(
 							()=>Converters.Select(p => (prop:p.prop,propTemp: TempType.GetProperty(p.prop.Name), conv:p.conv))
 						)
 					}
@@ -434,7 +428,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 									ArgSource
 								)
 						),
-						new Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IValueConverter conv)>>(
+						new Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>>(
 							()=>Converters.Select(p => (prop:p.prop,propTemp: p.prop, conv:p.conv))
 						)
 					}

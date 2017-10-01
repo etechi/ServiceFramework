@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace SF.Entities.AutoEntityProvider.Internals
 {
@@ -16,6 +17,18 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		public override string ToString()
 		{
 			return Name + "(" + Values?.Select(p => p.Key + "=" + p.Value).Join(";") + ")";
+		}
+		public static IEnumerable<EntityAttribute> GetAttributes(MemberInfo member)
+		{
+			return member.GetCustomAttributes().Cast<Attribute>().Select(a =>
+				new EntityAttribute(
+				a.GetType().FullName,
+				(from p in a.GetType().AllPublicInstanceProperties()
+				 where p.DeclaringType != typeof(object) && p.DeclaringType != typeof(Attribute)
+				 select (name: p.Name, value: p.GetValue(a))
+				).ToDictionary(p => p.name, p => p.value)
+				)
+			);
 		}
 	}
 	public abstract class EntityMetaItem:IMetaItem

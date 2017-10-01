@@ -1,37 +1,44 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-		<TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP1_1;NETCORE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;NETCORE;NETCOREAPP2_0</DefineConstants>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RELEASE;NETCOREAPP2_0;NETCORE</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Remove="Migrations\**" />
-    <EmbeddedResource Remove="Migrations\**" />
-    <None Remove="Migrations\**" />
-  </ItemGroup>
-  <ItemGroup>
+    <Compile Remove="AppBuilder.cs" />
+    <Compile Remove="AppInstanceBuilder.cs" />
+    <Compile Remove="Core\Data\AppContext.cs" />
+    <Compile Remove="Core\Data\DataClient.cs" />
+    <Compile Remove="Core\Data\EFCoreBasic.cs" />
+    <Compile Remove="Core\Data\Models.cs" />
+    <Compile Remove="Infrastructure.cs" />
+    <Compile Remove="Initializer.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
+    <Compile Remove="TestBase.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj" />
-    <ProjectReference Include="..\..\Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.csproj" />
-    <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
-    <ProjectReference Include="..\SF.Extensions\SF.Extensions.csproj" />
-    <ProjectReference Include="..\SF.Implements\SF.Implements.csproj" />
-    <ProjectReference Include="..\SF.Interception\SF.Interception.csproj" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="moq" Version="4.7.99" />
+    <PackageReference Include="xunit" Version="2.3.0-beta5-build3769" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Server\Core\SF.Abstractions\SF.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Server\Core\SF.Extensions\SF.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\Server\Core\SF.Support\SF.Support.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="1.1.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="1.1.1" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
-		<PackageReference Include="xunit" Version="2.2.0" />
-		<PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
-	</ItemGroup>
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
+
 </Project>

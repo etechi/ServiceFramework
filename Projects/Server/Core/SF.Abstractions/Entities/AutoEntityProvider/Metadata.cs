@@ -30,28 +30,28 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		
 	}
-	public interface IValueMapper
-	{
-		Type DataType { get; }
-		Type TempType { get; }
-		Type ModelType { get; }
+	//public interface IValueMapper
+	//{
+	//	Type DataType { get; }
+	//	Type TempType { get; }
+	//	Type ModelType { get; }
 
-		Expression DataValueToTempValue(Expression DataValue);
-		Expression TempValueToDataValue(Expression TempValue);
-		Expression TempValueToModelValue(Expression TempValue);
-		Expression ModelValueToTempValue(Expression ModelValue);
-	}
+	//	Expression DataValueToTempValue(Expression DataValue);
+	//	Expression TempValueToDataValue(Expression TempValue);
+	//	Expression TempValueToModelValue(Expression TempValue);
+	//	Expression ModelValueToTempValue(Expression ModelValue);
+	//}
 
-	public interface IValueTypeProvider
-	{
-		IValueMapper DetailValueMapper { get; }
-		IValueMapper SummaryValueMapper { get; }
-		IValueMapper EditableValueMapper { get; }
-	}
+	//public interface IValueTypeProvider
+	//{
+	//	IValueMapper DetailValueMapper { get; }
+	//	IValueMapper SummaryValueMapper { get; }
+	//	IValueMapper EditableValueMapper { get; }
+	//}
 
 	public interface IValueType : IType
 	{
-		IValueTypeProvider Provider { get; }
+		//IValueTypeProvider Provider { get; }
 		Type SysType { get; }
 	}
 	

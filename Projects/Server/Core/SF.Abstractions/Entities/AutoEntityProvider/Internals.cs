@@ -6,14 +6,22 @@ using System.Threading.Tasks;
 
 namespace SF.Entities.AutoEntityProvider
 {
-	public interface IValueConverter
+	public interface IEntityPropertyQueryConverter
 	{
 		Type TempFieldType { get; }
 		Expression SourceToTemp(Expression src, PropertyInfo srcProp);
 	}
-	public interface IValueConverter<T, D> : IValueConverter
+	public interface IEntityPropertyQueryConverter<TTempType, TEntityPropType> : IEntityPropertyQueryConverter
 	{
-		Task<D> TempToDest(object src, T value);
+		Task<TEntityPropType> TempToDest(object src, TTempType value);
+	}
+	public interface IEntityPropertyQueryConverterProvider
+	{
+		int Property { get; }
+		IEntityPropertyQueryConverter GetPropertyConverter(
+			PropertyInfo DataModelProperty,
+			PropertyInfo EntityProperty
+			);
 	}
 	public interface IEntityPropertyModifier
 	{
@@ -100,7 +108,11 @@ namespace SF.Entities.AutoEntityProvider
 		Task RemoveAsync(TKey Key);
 		Task UpdateAsync(TEditable Entity);
 	}
-
+	public interface IValueTypeProvider
+	{
+		int Priority { get; }
+		IValueType DetectValueType(string TypeName, string PropName, Type SystemType, IReadOnlyList<IAttribute> Attributes);
+	}
 	public interface IValueTypeResolver
 	{
 		IValueType Resolve(string TypeName,string PropName, Type SystemType, IReadOnlyList<IAttribute> Attributes);

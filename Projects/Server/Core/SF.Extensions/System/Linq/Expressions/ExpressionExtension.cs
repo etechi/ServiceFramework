@@ -242,7 +242,7 @@ namespace System.Linq.Expressions
 		{
 			return e.UseEnumerator(type, ie => ie.Iterator(type, body));
 		}
-		public static Expression ForEachEach(this Expression e, ParameterExpression arg, Func<Expression, Expression> body)
+		public static Expression ForEach(this Expression e, ParameterExpression arg, Func<Expression, Expression> body)
 		{
 			return e.UseEnumerator(arg.Type, ie => ie.Iterator(arg, body));
 		}

@@ -13,20 +13,19 @@ namespace SF.Entities.AutoEntityProvider
 			new System.Collections.Concurrent.ConcurrentDictionary<Type, Lazy<IDataSetAutoEntityProviderSetting>>();
 		IMetadataCollection Metas { get; }
 		IDataModelTypeCollection DataModelTypeCollection { get; }
-		NamedServiceResolver<IValueConverter> ValueConverterResolver { get; }
+		IEntityPropertyQueryConverterProvider[] PropertyQueryConverterProviders { get; }
 		NamedServiceResolver<IEntityPropertyModifier> EntityModifierValueConverterResolver { get; }
 		IEnumerable<IEntityModifierProvider> EntityModifierProviders { get; }
 		public DataSetAutoEntityProviderFactory(
 			IMetadataCollection Metas,
 			IDataModelTypeCollection DataModelTypeCollection,
-			NamedServiceResolver<IValueConverter> ValueConverterResolver,
-			NamedServiceResolver<IEntityPropertyModifier> EntityModifierValueConverterResolver,
+			IEnumerable<IEntityPropertyQueryConverterProvider> PropertyQueryConverterProviders,
 			IEnumerable<IEntityModifierProvider> EntityModifierProviders
 			)
 		{
 			this.Metas = Metas;
 			this.DataModelTypeCollection = DataModelTypeCollection;
-			this.ValueConverterResolver = ValueConverterResolver;
+			this.PropertyQueryConverterProviders = PropertyQueryConverterProviders.OrderBy(p=>p.Property).ToArray();
 			this.EntityModifierValueConverterResolver = EntityModifierValueConverterResolver;
 			this.EntityModifierProviders = EntityModifierProviders;
 		}
@@ -118,9 +117,9 @@ namespace SF.Entities.AutoEntityProvider
 						  );
 					  var dataType = DataModelTypeCollection.Get(entity.FullName);
 
-					  var detailHelper = new QueryResultBuildHelperCreator(dataType, tDetail, ValueConverterResolver).Build();
-					  var summaryHelper = new QueryResultBuildHelperCreator(dataType, tSummary, ValueConverterResolver).Build();
-					  var editableHelper = new QueryResultBuildHelperCreator(dataType, tEditable, ValueConverterResolver).Build();
+					  var detailHelper = new QueryResultBuildHelperCreator(dataType, tDetail, PropertyQueryConverterProviders).Build();
+					  var summaryHelper = new QueryResultBuildHelperCreator(dataType, tSummary, PropertyQueryConverterProviders).Build();
+					  var editableHelper = new QueryResultBuildHelperCreator(dataType, tEditable, PropertyQueryConverterProviders).Build();
 
 
 					  var GetModifier = MethodGetModifier.MakeGenericMethod(tEditable, dataType);
