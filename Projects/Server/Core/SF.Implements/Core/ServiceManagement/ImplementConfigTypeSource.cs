@@ -214,7 +214,7 @@ namespace SF.Core.ServiceManagement
 				from impl in svc.Value.Implements
 				where impl.IsManagedService
 				let t= impl.ImplementType
-				where t!=null// && IsArgTypeSupportted(t)
+				where t!=null && !t.IsGenericTypeDefinition// && IsArgTypeSupportted(t)
 				select t
 				).Distinct())
 			{

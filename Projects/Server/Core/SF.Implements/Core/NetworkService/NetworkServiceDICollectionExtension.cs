@@ -10,7 +10,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class NetworkServiceDICollectionExtension
 	{
-		public static void UseNetworkService(
+		public static void AddNetworkService(
 					this IServiceCollection sc,
 					IEnumerable<Type> Services=null
 					)

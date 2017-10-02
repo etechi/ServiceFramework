@@ -25,7 +25,7 @@ namespace SF.UT
 					sc.AddConsoleDefaultFilePathStructure();
 					sc.AddSingleton(new Moq.Mock<IInvokeContext>().Object);
 					sc.AddSingleton(new Moq.Mock<IUploadedFileCollection>().Object);
-
+					sc.AddNetworkService();
 					sc.AddLocalClientService();
 				});
 			

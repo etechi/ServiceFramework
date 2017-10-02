@@ -102,7 +102,19 @@ namespace SF.Entities
 
 			this.IdentDict = this.Metadatas.ToDictionary(d => d.Ident);
 			this.ManagerDict = this.Metadatas.ToDictionary(d => d.EntityManagerType);
-			this.EntityDict = this.Metadatas.ToDictionary(d => d.EntityDetailType);
+			this.EntityDict =
+				(from m in this.Metadatas
+				from t in (
+					from ct in EnumerableEx.From(m.EntityDetailType,m.EntityEditableType,m.EntitySummaryType)
+					where ct!=null
+					from t in ADT.Link.ToEnumerable(ct, it => it.BaseType)
+					select t
+					).Distinct()
+				group (t,m) by t into g
+				where g.Count()==1
+				select g.First()
+				)
+				.ToDictionary(i=>i.t,i=>i.m);
 
 
 			var validator = GetEntityIndentValidator();
@@ -121,7 +133,7 @@ namespace SF.Entities
 				);
 		}
 
-		public IEntityMetadata FindByDetailType(Type EntityDetailType)
+		public IEntityMetadata FindByEntityType(Type EntityDetailType)
 		{
 			return EntityDict.Get(EntityDetailType);
 		}

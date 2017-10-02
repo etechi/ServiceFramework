@@ -23,9 +23,9 @@ namespace SF.Core.ServiceFeatures
 					.ToArray();
 				foreach (var bs in bss)
 				{
-					logger.Info("初始化开始:{0}", bs.Title);
+					logger.Info("初始化开始:{0} {1}",Group, bs.Title);
 					await bs.Init(sp);
-					logger.Info("初始化结束:{0}", bs.Title);
+					logger.Info("初始化结束:{0} {1}", Group, bs.Title);
 				}
 			}
 		}

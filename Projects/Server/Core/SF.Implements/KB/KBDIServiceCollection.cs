@@ -17,6 +17,8 @@ using SF.KB.Mime;
 using SF.KB.Mime.Providers;
 using SF.KB.PhoneNumbers;
 using SF.KB.PhoneNumbers.Providers;
+using SF.KB.DeviceDetector.Providers;
+using SF.Clients;
 
 namespace SF.Core.ServiceManagement
 {
@@ -36,10 +38,18 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IPhoneNumberValidator, DefaultPhoneNumberValidator>();
 			return sc;
 		}
+		public static IServiceCollection AddDefaultDeviceDetector(
+		   this IServiceCollection sc
+		   )
+		{
+			sc.AddSingleton<IClientDeviceTypeDetector, DefaultDeviceTypeDetector>();
+			return sc;
+		}
 		public static IServiceCollection AddDefaultKBServices(this IServiceCollection sc)
 		{
 			sc.AddDefaultMimeResolver();
 			sc.AddDefaultPhoneNumberValidator();
+			sc.AddDefaultDeviceDetector();
 			return sc;
 		}
 	}

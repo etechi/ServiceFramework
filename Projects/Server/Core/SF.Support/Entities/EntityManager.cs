@@ -44,7 +44,7 @@ namespace SF.Entities
 		}
 		protected override async Task<TPublic[]> OnPrepareDetails(TPublic[] Internals)
 		{
-			await EntityManager.DataEntityResolver.Fill(ServiceInstanceDescriptor.InstanceId, Internals);
+			await EntityManager.DataEntityResolver.Fill(ServiceInstanceDescriptor?.InstanceId, Internals);
 			return Internals;
 		}
 	}
@@ -171,9 +171,9 @@ namespace SF.Entities
 			return Query.Select(ADT.Poco.Map<TModel, TEditable>()).SingleOrDefaultAsync();
 		}
 
-		public virtual Task<TEditable> LoadForEdit(TKey Id)
+		public virtual Task<TEditable> LoadForEdit(TKey Key)
 		{
-			return EntityManager.LoadForEdit(Id, OnMapModelToEditable);
+			return EntityManager.LoadForEdit(Key, OnMapModelToEditable);
 		}
 	}
     

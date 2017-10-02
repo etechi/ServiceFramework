@@ -266,7 +266,11 @@ namespace SF.Metadata
             bool optional;
 			if (prop_type.IsGeneric() && 
 				(prop_type.GetGenericTypeDefinition() == typeof(Nullable<>) ||
-				prop_type.GetGenericTypeDefinition() == typeof(Option<>)))
+				prop_type.GetGenericTypeDefinition() == typeof(Option<>) ||
+				prop_type.GetGenericTypeDefinition() == typeof(Lazy<>) ||
+				prop_type.GetGenericTypeDefinition() == typeof(Func<>)
+				)
+				)
 			{
 				prop_type = prop_type.GetGenericArguments()[0];
                 optional = true;

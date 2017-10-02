@@ -151,18 +151,20 @@ namespace SF.Core.ServiceManagement
 			Models.ServiceInstanceInternal svc,
 			IServiceInstanceManager sim, 
 			IServiceDeclarationTypeResolver svcTypeResolver,
+			IEntityMetadataCollection EntityMetadataCollection,
 			List<MenuItem> items
 			)
 		{
 			var type = svcTypeResolver.Resolve(svc.ServiceType);
-			var em = type.GetCustomAttribute<EntityManagerAttribute>();
-			if (em != null)
+			var entity=EntityMetadataCollection.FindByManagerType(type);
+			//var em = type.GetCustomAttribute<EntityManagerAttribute>();
+			if (entity != null)
 				items.Add(new MenuItem
 				{
-					Name = svcTypeResolver.GetTypeIdent(type),
+					Name = entity.Ident,//svcTypeResolver.GetTypeIdent(type),
 					Title = type.Comment().Name,
 					Action = MenuItemAction.EntityManager,
-					ActionArgument = svcTypeResolver.GetTypeIdent(type),
+					ActionArgument = entity.Ident,// svcTypeResolver.GetTypeIdent(type),
 					ServiceId=svc.Id
 				});
 			var re=await sim.QueryAsync(
@@ -172,14 +174,15 @@ namespace SF.Core.ServiceManagement
 				},Paging.Default
 				);
 			foreach (var i in re.Items)
-				await CollectMenuItem(i, sim, svcTypeResolver, items);
+				await CollectMenuItem(i, sim, svcTypeResolver, EntityMetadataCollection, items);
 		}
 		public static async Task<MenuItem[]> GetServiceMenuItems(this IServiceInstanceManager sim,IServiceProvider sp, long ServiceId)
 		{
 			var svcTypeResolver = sp.Resolve<IServiceDeclarationTypeResolver>();
+			var EntityMetadataCollection = sp.Resolve<IEntityMetadataCollection>();
 			var svc=await sim.GetAsync(ObjectKey.From(ServiceId));
 			var items = new List<MenuItem>();
-			await CollectMenuItem(svc, sim, svcTypeResolver, items);
+			await CollectMenuItem(svc, sim, svcTypeResolver, EntityMetadataCollection, items);
 			return items.ToArray();
 		}
 	}

@@ -12,4 +12,7 @@ namespace SF.Clients
 		WAP,
 		Console
 	}
+	public interface IClientDeviceTypeDetector{
+		ClientDeviceType Detect(string agent);
+	}
 }

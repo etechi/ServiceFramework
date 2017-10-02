@@ -29,7 +29,7 @@ namespace SF.AdminSiteCore2
 
 			var ins = Core2App.Setup(Core.Hosting.EnvironmentType.Production, services)
 				.With(sc=>
-					sc.AddAspNetCoreFilePathStructure()
+					sc.AddAspNetCoreHostingService()
 					)
 				.Build();
 			return ins.ServiceProvider;

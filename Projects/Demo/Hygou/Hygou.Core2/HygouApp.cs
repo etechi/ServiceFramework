@@ -53,6 +53,7 @@ namespace Hygou
 				.With(sc=>sc.AddLogService(ls))
 				.With((sc,envType)=>sc.AddSystemServices(EnvType))
 				.With((sc, envType) => sc.AddCommonServices(EnvType))
+				.With((sc, envType) => sc.AddPromotionServices(EnvType))
 				.With((sc,envType)=> ConfigServices(sc,envType))
 				.OnEnvType(e => e != EnvironmentType.Utils, (sp)=>
 				{
@@ -66,6 +67,8 @@ namespace Hygou
 
 		static void ConfigServices(SF.Core.ServiceManagement.IServiceCollection Services,EnvironmentType EnvType)
 		{
+			Services.AddMicrosoftMemoryCacheAsLocalCache();
+			Services.AddHygouServices(EnvType);
 			Services.AddEFCoreDataEntity((sp, conn) => sp.Resolve<HygouDbContext>());
 			Services.AddDataContext(new SF.Data.DataSourceConfig
 			{

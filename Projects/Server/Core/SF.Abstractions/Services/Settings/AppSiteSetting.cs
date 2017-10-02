@@ -11,7 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Services.Settings
 {
-	public abstract class AppSiteSetting
+	public  class AppSiteSetting
 	{
 		[Comment(GroupName = "基础信息", Name = "网站名称", Description = "用于网站显示的名称")]
 		[Required]

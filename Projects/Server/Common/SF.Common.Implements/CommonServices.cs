@@ -468,7 +468,7 @@ namespace SF.Core.ServiceManagement
 				}
 			};
 
-			await sp.NewMenu(null, "bizadmin", "业务管理后台", bizMenuItems);
+			await sp.NewMenu(null, "bizness", "业务管理后台", bizMenuItems);
 
 
 			var sysMenuItems = new[]
@@ -538,7 +538,7 @@ namespace SF.Core.ServiceManagement
 				}
 			};
 
-			await sp.NewMenu(null, "sysadmin", "系统管理后台", sysMenuItems);
+			await sp.NewMenu(null, "system", "系统管理后台", sysMenuItems);
 		}
 	}
 }

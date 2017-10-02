@@ -37,7 +37,7 @@ namespace SF.Entities
 	}
 	public interface IEntityMetadataCollection: IEnumerable<IEntityMetadata>
 	{
-		IEntityMetadata FindByDetailType(Type EntityDetailType);
+		IEntityMetadata FindByEntityType(Type EntityEntityType);
 		IEntityMetadata FindByManagerType(Type ManagerType);
 		IEntityMetadata FindByTypeIdent(string Ident);
 	}

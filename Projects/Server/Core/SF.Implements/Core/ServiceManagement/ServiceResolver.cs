@@ -31,19 +31,19 @@ namespace SF.Core.ServiceManagement
 		
 		public IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId, Type ServiceType)
 		{
-			AddType(ServiceType);
-			try
-			{
+			//AddType(ServiceType);
+			//try
+			//{
 				return FactoryManager.GetServiceFactoryByIdent(
 					this,
 					ServiceId,
 					ServiceType
 					);
-			}
-			finally
-			{
-				Remove(ServiceType);
-			}
+			//}
+			//finally
+			//{
+			//	Remove(ServiceType);
+			//}
 		}
 		public IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId)
 		{
@@ -55,20 +55,20 @@ namespace SF.Core.ServiceManagement
 		}
 		public IServiceInstanceDescriptor ResolveDescriptorByType(long? ScopeServiceId, Type ServiceType, string Name)
 		{
-			AddType(ServiceType);
-			try
-			{
+			//AddType(ServiceType);
+			//try
+			//{
 				return FactoryManager.GetServiceFactoryByType(
 					this,
 					ScopeServiceId,
 					ServiceType,
 					Name
 					);
-			}
-			finally
-			{
-				Remove(ServiceType);
-			}
+			//}
+			//finally
+			//{
+			//	Remove(ServiceType);
+			//}
 		}
 
 		static Type IServiceInstanceDescriptorType { get; } = typeof(IServiceInstanceDescriptor);
@@ -116,22 +116,22 @@ namespace SF.Core.ServiceManagement
 			AddType(ServiceType);
 			try
 			{
-				if (CurrentServiceStack == null)
-					CurrentServiceStack = new Stack<long?>();
-				CurrentServiceStack.Push(ServiceId);
-				try
-				{
+				//if (CurrentServiceStack == null)
+				//	CurrentServiceStack = new Stack<long?>();
+				//CurrentServiceStack.Push(ServiceId);
+				//try
+				//{
 					var f = ScopeBase.FactoryManager.GetServiceFactoryByIdent(
 						this,
 						ServiceId,
 						ServiceType
 						);
 					return f == null ? null : GetService(f, ServiceType);
-				}
-				finally
-				{
-					CurrentServiceStack.Pop();
-				}
+				//}
+				//finally
+				//{
+				//	CurrentServiceStack.Pop();
+				//}
 			}
 			finally
 			{

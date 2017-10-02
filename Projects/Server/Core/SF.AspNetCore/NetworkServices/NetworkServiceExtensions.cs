@@ -11,7 +11,7 @@ using SF.AspNetCore.NetworkServices;
 using SF.Metadata;
 using SF.Core.NetworkService;
 
-namespace SF.Core.DI
+namespace SF.Core.ServiceManagement
 {
 	public class NetworkServiceConfig
 	{
@@ -19,7 +19,7 @@ namespace SF.Core.DI
 	}
 	public static class MvcNetworkServiceExtensions
 	{
-		public static void UseAspNetCoreServiceInterface(
+		public static void AddAspNetCoreServiceInterface(
 			this IServiceCollection sc,
 			NetworkServiceConfig cfg=null
 			)

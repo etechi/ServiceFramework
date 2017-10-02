@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace System.Linq
 {
-	public static class IEnumerableExtension
+	public static class EnumerableEx
 	{
 		class SimpleContextQueryable<T> : IContextQueryable<T>, IOrderedContextQueryable<T>
 		{
@@ -106,6 +106,13 @@ namespace System.Linq
 		public static bool AllEquals<T>(this IEnumerable<T> items, IEnumerable<T> other) where T : class
 			=> items.Zip(other, (l, r) => l==r).All(r => r);
 
-		
+		public static IEnumerable<T> From<T>(T value)
+		{
+			yield return value;
+		}
+		public static IEnumerable<T> From<T>(params T[] values)
+		{
+			return values;
+		}
 	}
 }

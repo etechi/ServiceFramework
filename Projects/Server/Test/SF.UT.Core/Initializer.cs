@@ -27,6 +27,16 @@ namespace SF.UT
 				}
 				);
 		}
+		[Fact]
+		public async Task InitData()
+		{
+			await Scope(async (IServiceProvider sp) =>
+			{
+				await sp.InitServices("data");
+				return 0;
+			}
+				);
+		}
 	}
 	
 

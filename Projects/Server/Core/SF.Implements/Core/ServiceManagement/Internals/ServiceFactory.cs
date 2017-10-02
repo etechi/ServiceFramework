@@ -38,6 +38,9 @@ namespace SF.Core.ServiceManagement.Internals
 			IServiceResolver ServiceResolver
 			)
 		{
+			if (IsManaged)
+				using (ServiceResolver.WithScopeService(InstanceId))
+					return Creator(ServiceResolver, this, CreateParameterTemplate);
 			return Creator(ServiceResolver, this, CreateParameterTemplate);
 		}
 

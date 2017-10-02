@@ -12,16 +12,26 @@ namespace SF.Core.ServiceManagement
 	public class EntityIdentAttributeMetadataValuesProvider : IMetadataAttributeValuesProvider<SF.Metadata.EntityIdentAttribute>
 	{
 		IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver { get; }
-		public EntityIdentAttributeMetadataValuesProvider(IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver)
+		IEntityMetadataCollection EntityMetadataCollection { get; }
+		public EntityIdentAttributeMetadataValuesProvider(
+			IServiceDeclarationTypeResolver ServiceDeclarationTypeResolver,
+			IEntityMetadataCollection EntityMetadataCollection
+			)
 		{
 			this.ServiceDeclarationTypeResolver = ServiceDeclarationTypeResolver;
+			this.EntityMetadataCollection = EntityMetadataCollection;
 		}
 		public object GetValues(Attribute Attribute,object AttrSource)
 		{
 			var attr = (SF.Metadata.EntityIdentAttribute)Attribute;
-			var EntityManagementType = attr.EntityType;
-			EntityManagerAttributeMetadataValuesProvider.VerifyEntityManagementType(EntityManagementType);
-			var entity = ServiceDeclarationTypeResolver.GetTypeIdent(EntityManagementType);
+			string entity = null;
+			if (attr.EntityType != null)
+			{
+				var meta = EntityMetadataCollection.FindByEntityType(attr.EntityType);
+				//var EntityManagementType = meta.EntityManagerType;
+				//EntityManagerAttributeMetadataValuesProvider.VerifyEntityManagementType(EntityManagementType);
+				entity = meta.Ident;//ServiceDeclarationTypeResolver.GetTypeIdent(EntityManagementType);
+			}
 			return new
 			{
 				Entity = entity,

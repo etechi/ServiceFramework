@@ -156,6 +156,21 @@ namespace Hygou.Core2.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "InvitationMemberInvitation",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    InvitorId = table.Column<long>(type: "bigint", nullable: false),
+                    Invitors = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Time = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_InvitationMemberInvitation", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MgrBizAdmin",
                 columns: table => new
                 {
@@ -223,13 +238,14 @@ namespace Hygou.Core2.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Entity = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ObjectState = table.Column<byte>(type: "tinyint", nullable: false),
+                    OwnerId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ScopeId = table.Column<long>(type: "bigint", nullable: false),
                     SecurityStamp = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SignupExtraArgument = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     SignupIdentProviderId = table.Column<long>(type: "bigint", nullable: false),
                     SignupIdentValue = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -664,6 +680,16 @@ namespace Hygou.Core2.Migrations
                 column: "TemplateId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_InvitationMemberInvitation_InvitorId",
+                table: "InvitationMemberInvitation",
+                column: "InvitorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InvitationMemberInvitation_UserId",
+                table: "InvitationMemberInvitation",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MgrBizAdmin_Account",
                 table: "MgrBizAdmin",
                 column: "Account");
@@ -794,9 +820,9 @@ namespace Hygou.Core2.Migrations
                 column: "CreatedTime");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthIdentity_Entity",
+                name: "IX_SysAuthIdentity_OwnerId",
                 table: "SysAuthIdentity",
-                column: "Entity");
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthIdentity_ScopeId",
@@ -887,6 +913,9 @@ namespace Hygou.Core2.Migrations
 
             migrationBuilder.DropTable(
                 name: "FrontSite");
+
+            migrationBuilder.DropTable(
+                name: "InvitationMemberInvitation");
 
             migrationBuilder.DropTable(
                 name: "MgrBizAdmin");

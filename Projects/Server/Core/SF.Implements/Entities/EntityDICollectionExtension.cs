@@ -14,6 +14,8 @@ namespace SF.Core.ServiceManagement
 		
 		static IEntityMetadata CreateMetadata(string Ident,Type ManagerType)
 		{
+			if (Ident == null)
+				Ident = null;
 			var interfaces = ManagerType.AllInterfaces().Where(i=>i.IsGeneric()).ToDictionary(i=>i.GetGenericTypeDefinition());
 			var Loadable = interfaces.Get(typeof(IEntityLoadable<,>));
 			if (Loadable == null)
@@ -107,6 +109,7 @@ namespace SF.Core.ServiceManagement
 		{
 			sc.AddSingleton<IMetadataAttributeValuesProvider<EntityIdentAttribute>, EntityIdentAttributeMetadataValuesProvider>();
 			sc.AddSingleton<IMetadataAttributeValuesProvider<EntityManagerAttribute>, EntityManagerAttributeMetadataValuesProvider>();
+			sc.AddSingleton<IMetadataAttributeValuesProvider<EntityObjectAttribute>, EntityObjectAttributeMetadataValuesProvider>();
 			sc.AddSingleton<IEntityMetadataCollection>(sp =>
 			{
 				var svcResolver = sp.Resolve<IServiceDeclarationTypeResolver>();

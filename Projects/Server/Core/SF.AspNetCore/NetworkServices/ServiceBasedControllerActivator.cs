@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Internal;
 using System;
-using SF.Core.DI;
 using SF.Core.NetworkService;
 
 namespace SF.AspNetCore.NetworkServices

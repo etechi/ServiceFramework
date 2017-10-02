@@ -134,7 +134,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			var entities =
 			(from sysType in EntitySysTypes.Values
 			 let eo = sysType.type.GetCustomAttribute<EntityObjectAttribute>() ?? throw new ArgumentException($"{sysType.type}未定义EntityObjectAttribute属性，不是实体对象")
-			 let name = eo.Id ?? sysType.type.Name
+			 let name = eo.Entity ?? sysType.type.Name
 			 let entity = sysType.ns + name
 			 group (name,sysType) by entity into g
 			 select (id:g.Key,name:g.First().name,ns:g.First().sysType.ns, types: g.Select(i => i.sysType.type).ToArray())).ToArray();

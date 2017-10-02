@@ -16,5 +16,8 @@ namespace SF.AspNetCore
 			=> headers[Name].ToString();
 		public static string UserAgent(this IHeaderDictionary headers)
 			=> headers.GetValue("User-Agent");
+
+		public static string RemoteAddress(this IHeaderDictionary headers)
+			=> headers.GetValue("User-Agent");
 	}
 }

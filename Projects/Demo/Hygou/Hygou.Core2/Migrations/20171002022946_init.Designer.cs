@@ -14,7 +14,7 @@ using System;
 namespace Hygou.Core2.Migrations
 {
     [DbContext(typeof(HygouDbContext))]
-    [Migration("20170915034937_init")]
+    [Migration("20171002022946_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,15 +24,32 @@ namespace Hygou.Core2.Migrations
                 .HasAnnotation("ProductVersion", "2.0.0-rtm-26452")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("InvitationMemberInvitation_2", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<long>("InvitorId");
+
+                    b.Property<string>("Invitors");
+
+                    b.Property<DateTime>("Time");
+
+                    b.Property<long?>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvitorId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("InvitationMemberInvitation");
+                });
+
             modelBuilder.Entity("SF.Auth.Identities.Entity.DataModels.Identity", b =>
                 {
                     b.Property<long>("Id");
 
                     b.Property<DateTime>("CreatedTime");
-
-                    b.Property<string>("Entity")
-                        .IsRequired()
-                        .HasMaxLength(100);
 
                     b.Property<string>("Icon")
                         .HasMaxLength(100);
@@ -43,6 +60,10 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<byte>("ObjectState");
 
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(100);
@@ -52,6 +73,9 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("SecurityStamp")
                         .IsRequired()
                         .HasMaxLength(100);
+
+                    b.Property<string>("SignupExtraArgument")
+                        .HasMaxLength(200);
 
                     b.Property<long>("SignupIdentProviderId");
 
@@ -65,7 +89,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("CreatedTime");
 
-                    b.HasIndex("Entity");
+                    b.HasIndex("OwnerId");
 
                     b.HasIndex("ScopeId");
 

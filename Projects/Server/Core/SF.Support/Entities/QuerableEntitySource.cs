@@ -53,6 +53,9 @@ namespace SF.Entities
 		public QuerableEntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
 		{
 		}
+		protected override IContextQueryable<TDetailTemp> OnMapModelToSummary(IContextQueryable<TModel> Query)
+			=> OnMapModelToDetail(Query);
+
 		protected override Task<TEntityDetail[]> OnPrepareSummaries(TDetailTemp[] Internals)
 			=> OnPrepareDetails(Internals);
 
