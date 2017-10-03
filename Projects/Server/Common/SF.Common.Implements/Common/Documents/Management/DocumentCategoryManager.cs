@@ -30,16 +30,24 @@ namespace SF.Common.Documents.Management
 		where TTag : DataModels.DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTagReference : DataModels.DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{
-		protected override PagingQueryBuilder<TCategory> PagingQueryBuilder =>
-			null;
+		protected override PagingQueryBuilder<TCategory> PagingQueryBuilder => new PagingQueryBuilder<TCategory>(
+			"order", b => b.Add("order", c => c.ItemOrder)
+			);
 
 		protected override async Task<TCategoryInternal> OnMapModelToEditable (IContextQueryable<TCategory> Query)
 		{
-			return await Query.Select(ADT.Poco.Map<TCategory, TCategoryInternal>()).SingleOrDefaultAsync();
+			return await OnMapModelToDetail(Query).SingleOrDefaultAsync();
 		}
         protected override IContextQueryable<TCategoryInternal> OnMapModelToDetail(IContextQueryable<TCategory> Query)
 		{
-			return Query.Select(ADT.Poco.Map<TCategory,TCategoryInternal>());
+			return Query.SelectUIObjectEntity<TCategory,TCategoryInternal>(c=>
+				new TCategoryInternal
+				{
+					Id=c.Id,
+					ContainerId=c.ContainerId,
+					ItemOrder=c.ItemOrder
+				}
+				);
 		}
 
 		protected override async Task OnUpdateModel(IModifyContext ctx)
@@ -73,9 +81,10 @@ namespace SF.Common.Documents.Management
 
 		}
 
-		
-       
-
+		protected override Task OnNewModel(IModifyContext ctx)
+		{
+			return base.OnNewModel(ctx);
+		}
 		protected override IContextQueryable<TCategory> OnBuildQuery(IContextQueryable<TCategory> Query, DocumentCategoryQueryArgument Arg, Paging paging)
 		{
 			var q = Query.WithScope(ServiceInstanceDescriptor)

@@ -46,13 +46,11 @@ namespace SF.Entities
 			var re = await Queryable.QueryAsync(new TQueryArgument(), Paging.All);
 			return re.Items;
 		}
-		public static async Task<TEntity> QuerySingleAsync<TKey, TEntity, TQueryArgument>(
+		public static async Task<TEntity> QuerySingleAsync<TEntity, TQueryArgument>(
 			this IEntityQueryable<TEntity, TQueryArgument> Queryable,
 			TQueryArgument Arg
 			)
-			where TKey : IEquatable<TKey>
-			where TEntity : class, IEntityWithId<TKey>
-			where TQueryArgument : IQueryArgument<TKey>, new()
+			where TQueryArgument : new()
 		{
 			var re = await Queryable.QueryAsync(Arg, Paging.Single);
 			return re.Items.FirstOrDefault();

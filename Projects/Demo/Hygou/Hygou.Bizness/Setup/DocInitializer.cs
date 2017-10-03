@@ -24,7 +24,7 @@ namespace Hygou.Setup
 			await DocManager.DocEnsureFromFiles(
 				CatManager,
 				null,
-				FilePathResolver.Resolve($"data://StaticResources/文档/PC/系统"),
+				FilePathResolver.Resolve($"root://StaticResources/文档/PC/系统"),
 				new Dictionary<string, string>
 				{
 					{"服务协议","pc-terms" }
@@ -44,7 +44,7 @@ namespace Hygou.Setup
                 CatManager,
                 //"pc-help",
                 null,
-				FilePathResolver.Resolve($"data://StaticResources/文档/PC/帮助")
+				FilePathResolver.Resolve($"root://StaticResources/文档/PC/帮助")
                 );
 			await sim.UpdateSetting<HygouSetting>(
 			   ScopeId,
@@ -93,7 +93,7 @@ namespace Hygou.Setup
             await DocManager.DocEnsureFromFiles(
 			   CatManager,
 			   null,
- 				FilePathResolver.Resolve($"data://StaticResources/帮助文档/手机文档"),
+ 				FilePathResolver.Resolve($"root://StaticResources/帮助文档/手机文档"),
 			  null
 			   );
         }

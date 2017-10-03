@@ -72,6 +72,7 @@ namespace SF.Common.Documents
 			long? pid, 
 			int order, 
 			string name, 
+			string title=null,
 			string image = null, 
 			string summary = null, 
 			long? author = null
@@ -83,6 +84,7 @@ namespace SF.Common.Documents
 				(TInternal s) =>
 				{
 					s.Name = name;
+					s.Title = title??name;
 					s.ContainerId = pid;
 					s.Image = image;
 					s.LogicState = EntityLogicState.Enabled;

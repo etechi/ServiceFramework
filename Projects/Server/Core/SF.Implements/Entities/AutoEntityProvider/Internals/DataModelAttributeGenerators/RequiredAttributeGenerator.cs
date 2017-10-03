@@ -4,14 +4,15 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.ComponentModel.DataAnnotations;
+using System.Linq.TypeExpressions;
 
 namespace SF.Entities.AutoEntityProvider.Internals.DataModelAttributeGenerators
 {
 	public class RequiredAttributeGenerator : IDataModelAttributeGenerator
 	{
-		public SystemAttributeBuilder Generate(IAttribute Attr)
+		public CustomAttributeExpression Generate(IAttribute Attr)
 		{
-			return new SystemAttributeBuilder(
+			return new CustomAttributeExpression(
 				typeof(RequiredAttribute).GetConstructor(Array.Empty<Type>()),
 				Array.Empty<object>()
 				);

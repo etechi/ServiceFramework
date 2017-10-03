@@ -178,6 +178,8 @@ namespace SF.Core.ServiceManagement
 			IServiceInstanceInitializer[] childServices
 			) where T : I
 		{
+			if (childServices != null && childServices.Any(c => c == null))
+				throw new ArgumentNullException($"{typeof(I)}的服务{typeof(T)}使用的子服务不能为空");
 			return CreateBuilder<I,T>(
 				async (sp, parent,scfg) =>
 				{

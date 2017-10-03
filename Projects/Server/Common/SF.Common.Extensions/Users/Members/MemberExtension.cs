@@ -30,31 +30,44 @@ namespace SF.Users.Members
 		{
 			var sid = ((IManagedServiceWithId)Service).ServiceInstanceId;
 			var ims = ServiceProvider.Resolve<IMemberManagementService>(null, sid);
+			var identityService = ServiceProvider.Resolve<IIdentityService>(null, ((IManagedServiceWithId)ims).ServiceInstanceId);
 
-			if (roles != null && roles.Length > 0)
-			{
-				if (extArgs == null)
-					extArgs = new Dictionary<string, string>();
-				extArgs["roles"] = Json.Stringify(roles);
-			}
 
-			var sess = await Service.Signup(
-				new CreateMemberArgument
+			var member = await ims.QuerySingleAsync(
+				new MemberQueryArgument
 				{
-					Credential = phoneNumber,					
-					ExtraArgument = extArgs.Count > 0 ? extArgs : null,
-					Identity = new Identity
-					{
-						Icon = null,
-						Name = nick
-					},
-					Password = password,
-					ReturnToken = true,
+					PhoneNumber = phoneNumber
+				});
+			long id;
+			if (member != null)
+			{
+				id = member.Id;
+			}
+			else
+			{
+				if (roles != null && roles.Length > 0)
+				{
+					if (extArgs == null)
+						extArgs = new Dictionary<string, string>();
+					extArgs["roles"] = Json.Stringify(roles);
 				}
-				);
 
-			var identityService = ServiceProvider.Resolve<IIdentityService>();
-			var id=await identityService.ParseAccessToken(sess);
+				var sess = await Service.Signup(
+					new CreateMemberArgument
+					{
+						Credential = phoneNumber,
+						ExtraArgument = extArgs.Count > 0 ? extArgs : null,
+						Identity = new Identity
+						{
+							Icon = null,
+							Name = nick
+						},
+						Password = password,
+						ReturnToken = true,
+					}
+					);
+				id = await identityService.ParseAccessToken(sess);
+			}
 			return await ims.GetAsync(ObjectKey.From(id));
 
 		}

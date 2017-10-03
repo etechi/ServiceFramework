@@ -1,4 +1,5 @@
 using SF.Core.Hosting;
+using System.Linq.TypeExpressions;
 
 namespace SF.Core.ServiceManagement
 {
@@ -7,6 +8,19 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection AddConsoleDefaultFilePathStructure(this IServiceCollection sc)
 		{
 			sc.AddSingleton<IDefaultFilePathStructure, ConsoleDefaultFilePathStructure>();
+			return sc;
+		}
+		public static IServiceCollection AddTestFilePathStructure(
+			this IServiceCollection sc,
+			string BinPath,
+			string RootPath
+			)
+		{
+			sc.AddSingleton<IDefaultFilePathStructure>(new TestFilePathStructure
+			{
+				BinaryPath = BinPath,
+				RootPath = RootPath
+			});
 			return sc;
 		}
 		public static IServiceCollection AddFilePathResolver(this IServiceCollection sc)
@@ -19,6 +33,11 @@ namespace SF.Core.ServiceManagement
 					Setting = new FilePathDefination()
 				}
 				);
+			return sc;
+		}
+		public static IServiceCollection AddDynamicTypeBuilder(this IServiceCollection sc)
+		{
+			sc.AddSingleton<IDynamicTypeBuilder, DynamicTypeBuilder>();
 			return sc;
 		}
 	}

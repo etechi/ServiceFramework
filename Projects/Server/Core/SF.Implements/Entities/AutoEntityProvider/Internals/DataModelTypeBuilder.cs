@@ -9,28 +9,11 @@ using SF.Core.ServiceManagement;
 using System.ComponentModel.DataAnnotations.Schema;
 using SF.Data;
 using System.ComponentModel.DataAnnotations;
+using System.Linq.TypeExpressions;
 
 namespace SF.Entities.AutoEntityProvider.Internals
 {
-	public class SystemAttributeBuilder
-	{
-		public ConstructorInfo Constructor { get; }
-		public object[] Arguments { get; }
-		public PropertyInfo[] InitProperties { get; }
-		public object[] InitPropertyValues { get; }
-		public SystemAttributeBuilder(
-			ConstructorInfo Constructor,
-			object[] Arguments =null,
-			PropertyInfo[] InitProperties=null,
-			object[] InitPropertyValues=null
-		)
-		{
-			this.Constructor = Constructor;
-			this.Arguments = Arguments ?? Array.Empty<object>();
-			this.InitProperties = InitProperties ?? Array.Empty<PropertyInfo>();
-			this.InitPropertyValues = InitPropertyValues ?? Array.Empty<object>();
-		}
-	}
+	
 	public class TypeMapResult
 	{
 		public Type Type { get; set; }
@@ -43,7 +26,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 	}
 	public interface IDataModelAttributeGenerator
 	{
-		SystemAttributeBuilder Generate(IAttribute Attr);
+		CustomAttributeExpression Generate(IAttribute Attr);
 	}
 	public class BaseDataModel
 	{
@@ -61,117 +44,86 @@ namespace SF.Entities.AutoEntityProvider.Internals
 	{
 		IMetadataCollection metas { get; }
 		
-		static AssemblyBuilder AssemblyBuilder { get; }= 
-			AssemblyBuilder.DefineDynamicAssembly(
-				new AssemblyName("SFAutoEntityProviderDataModelClasses"), 
-				AssemblyBuilderAccess.Run
-				);
-		static ModuleBuilder ModuleBuilder { get; } = AssemblyBuilder.DefineDynamicModule(new Guid().ToString("N"));
 
-		Dictionary<string, Type> TypeBuilders = new Dictionary<string, Type>();
-		Dictionary<MemberInfo, List<SystemAttributeBuilder>> MemberAttributes { get; } = new Dictionary<MemberInfo, List<SystemAttributeBuilder>>();
+		Dictionary<string, TypeReference> TypeReferences = new Dictionary<string, TypeReference>();
+		//Dictionary<object, List<CustomAttributeExpression>> MemberAttributes { get; } = new Dictionary<object, List<CustomAttributeExpression>>();
 		NamedServiceResolver<IDataModelAttributeGenerator> DataModelAttributeGeneratorResolver { get; }
 		IDataModelTypeMapper[] DataModelTypeMappers { get; }
-
+		IDynamicTypeBuilder DynamicTypeBuilder { get; }
 		public DataModelTypeBuilder(
 			IMetadataCollection metas,
 			NamedServiceResolver<IDataModelAttributeGenerator> DataModelAttributeGeneratorResolver,
-			IEnumerable<IDataModelTypeMapper> DataModelTypeMappers
+			IEnumerable<IDataModelTypeMapper> DataModelTypeMappers,
+			IDynamicTypeBuilder DynamicTypeBuilder
 			)
 		{
+			this.DynamicTypeBuilder = DynamicTypeBuilder;
 			this.DataModelTypeMappers = DataModelTypeMappers.OrderBy(p => p.Priority).ToArray();
 			this.metas = metas;
 			this.DataModelAttributeGeneratorResolver = DataModelAttributeGeneratorResolver;
 		}
-		void EnsureSingleFieldIndex(IEntityType type, IProperty prop, PropertyBuilder propBuilder)
+		//void AddAttribute(object member, CustomAttributeExpression attr)
+		//{
+		//	if (!MemberAttributes.TryGetValue(member, out var attrs))
+		//		MemberAttributes.Add(member, attrs = new List<CustomAttributeExpression>());
+		//	attrs.Add(attr);
+		//}
+		void EnsureSingleFieldIndex(PropertyExpression propExpr, IEntityType type, IProperty prop)
 		{
-			if (MemberAttributes.TryGetValue(propBuilder, out var attrs))
-			{
-				//已经有索引
-				if (attrs.Any(a =>
-					 a.Constructor.ReflectedType == typeof(IndexAttribute) &&
-					 (a.Arguments?.Length ?? 0) == 0 &&
-					 (a.InitProperties?.Length ?? 0) == 0 &&
-					 (a.InitPropertyValues?.Length ?? 0) == 0
-					))
-					return;
+			//已经有索引
+			int idx;
+			if (propExpr.CustomAttributes.Any(a =>
+					a.Constructor.ReflectedType == typeof(IndexAttribute) &&
+					(
+					(a.Arguments.Count() == 0 && a.InitProperties.Count() == 0)//单一索引
+					|| (-1!=(idx=a.InitProperties.IndexOf(p=>p.Name=="Order")) && (1==Convert.ToInt32(a.InitPropertyValues.At(idx)))) //多列索引第一项1
+					|| (a.Arguments.Count()==2 && (1 == Convert.ToInt32(a.Arguments.At(1)))) //多列索引第一项2
+					)
+				))
+				return;
 
-				//当前字段是主键
-				if (prop.Attributes.Any(a =>
-						 a.Name == typeof(KeyAttribute).FullName &&
-						 type.Properties.Count(p => p.Attributes.Any(aa => aa.Name == typeof(KeyAttribute).FullName)) == 1
-						))
-					return;
-			}
-
-			propBuilder.SetCustomAttribute(
-				AddAttribute(
-					propBuilder,
-					new SystemAttributeBuilder(typeof(IndexAttribute).GetConstructor(Array.Empty<Type>()))
-				)
-			);
-		}
-
-		PropertyBuilder BuildProperty(TypeBuilder typeBuilder, string name, Type type)
-		{
-			var field = typeBuilder.DefineField("_" + name, type, FieldAttributes.Private);
-			var propertyBuilder = typeBuilder.DefineProperty(name, PropertyAttributes.None, type, null);
-
-			var getSetAttr = MethodAttributes.Public |
-							MethodAttributes.HideBySig | 
-							MethodAttributes.SpecialName | 
-							MethodAttributes.Virtual;
-
-			var getter = typeBuilder.DefineMethod("get_" + name, getSetAttr, type, Type.EmptyTypes);
-			var getIL = getter.GetILGenerator();
-			getIL.Emit(OpCodes.Ldarg_0);
-			getIL.Emit(OpCodes.Ldfld, field);
-			getIL.Emit(OpCodes.Ret);
-
-			var setter = typeBuilder.DefineMethod("set_" + name, getSetAttr, null, new Type[] { type });
-
-			var setIL = setter.GetILGenerator();
-			setIL.Emit(OpCodes.Ldarg_0);
-			setIL.Emit(OpCodes.Ldarg_1);
-			setIL.Emit(OpCodes.Stfld, field);
-			setIL.Emit(OpCodes.Ret);
-
-			propertyBuilder.SetGetMethod(getter);
-			propertyBuilder.SetSetMethod(setter);
-			return propertyBuilder;
-		}
-		CustomAttributeBuilder AddAttribute(MemberInfo member,SystemAttributeBuilder attr)
-		{
-			if (!MemberAttributes.TryGetValue(member, out var attrs))
-				MemberAttributes.Add(member, attrs = new List<SystemAttributeBuilder>());
-			attrs.Add(attr);
-			return new CustomAttributeBuilder(
-				attr.Constructor,
-				attr.Arguments,
-				attr.InitProperties,
-				attr.InitPropertyValues
+			//当前字段是唯一主键
+			if (prop.Attributes.Any(a =>
+					a.Name == typeof(KeyAttribute).FullName &&
+					type.Properties.Count(p => p.Attributes.Any(aa => aa.Name == typeof(KeyAttribute).FullName)) == 1
+				))
+				return;
+			propExpr.CustomAttributes.Add(
+				new CustomAttributeExpression(typeof(IndexAttribute).GetConstructor(Array.Empty<Type>()))
 				);
 		}
-		PropertyBuilder DefineProperty(TypeBuilder typeBuilder, string Name,IEnumerable<IAttribute> Attributes, Type type)
-		{
-			var pb = BuildProperty(typeBuilder, Name, type);
 
-			if(Attributes!=null)
-				foreach (var a in Attributes)
+		PropertyExpression BuildProperty(string name, TypeReference type,IEnumerable<CustomAttributeExpression> attrs=null)
+		{
+			var pe = new PropertyExpression(name, type, PropertyAttributes.None);
+			if (attrs != null)
+				pe.CustomAttributes.AddRange(attrs);
+			return pe;
+		}
+
+		PropertyExpression DefineProperty(
+			IEntityType entityType,
+			string Name,
+			TypeReference type,
+			IEnumerable<IAttribute> Attributes
+			)
+		{
+			return BuildProperty(
+				Name,
+				type,
+				Attributes?.Select(a =>
 				{
 					var g = DataModelAttributeGeneratorResolver(a.Name);
 					if (g == null)
-						throw new ArgumentException($"不支持生成特性{a.Name}的数据类特性，实体类型:{typeBuilder.Name} 属性{Name}");
-					var aa = g.Generate(a);
-					if(aa!=null)
-						pb.SetCustomAttribute(AddAttribute(pb,aa));
-				}
-			return pb;
+						throw new ArgumentException($"不支持生成特性{a.Name}的数据类特性，实体类型:{entityType.Name} 属性{Name}");
+					return g.Generate(a);
+				})?.Where(a => a != null)
+				);
 		}
-		PropertyBuilder DefineProperty(TypeBuilder typeBuilder, IProperty prop, IReadOnlyList<IAttribute> attrs, Type type) =>
-			DefineProperty(typeBuilder, prop.Name, attrs, type);
+		PropertyExpression DefineProperty(IEntityType entityType, IProperty prop, TypeReference type, IReadOnlyList<IAttribute> attrs) =>
+			DefineProperty(entityType, prop.Name, type, attrs);
 
-		void EnsureForginKeyField(TypeBuilder typeBuilder, IEntityType curEntity, IEntityType foreignEntity, string name)
+		void EnsureForginKeyField(TypeExpression typeExpr, IEntityType curEntity, IEntityType foreignEntity, string name)
 		{
 			var fepk = foreignEntity.Properties.Where(p => p.Attributes.Any(a => a.Name == typeof(KeyAttribute).FullName)).ToArray();
 			if (fepk.Length ==0)
@@ -183,31 +135,31 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				throw new InvalidOperationException($"实体{foreignEntity.FullName}主键{fepk[0].Name}不是数据类型，而是类型{fepk[0].Type.Name}");
 			var propSysType = ((IValueType)propType).SysType;
 
-			PropertyBuilder pb;
+			PropertyExpression pb;
 			var prop = curEntity.Properties.FirstOrDefault(p => p.Name == name);
 			if (prop == null)
-				pb = DefineProperty(typeBuilder, name, null, propSysType);
+				pb = DefineProperty(curEntity, name, new SystemTypeReference(propSysType), null);
 			else
 			{
 				if (prop.Mode != PropertyMode.Value)
 					throw new InvalidOperationException($"实体{curEntity.FullName}的属性{prop.Name}类型为{prop.Type.Name}的关系字段，不是类型为{propSysType}的{foreignEntity.FullName}的外部关系外键");
 				else if (((IValueType)prop.Type).SysType != propSysType)
 					throw new InvalidOperationException($"实体{curEntity.FullName}的外键{fepk[0].Name}类型为{((IValueType)prop.Type).SysType},和外键实体{foreignEntity.FullName}主键{fepk[0].Name}的类型{propSysType}不一致");
-				pb = (PropertyBuilder)typeBuilder.GetProperty(name);
+				pb = typeExpr.Properties.Single(p=>p.Name==name);
 			}
 
 			//确保外键字段有索引
 			if (pb != null)
-				EnsureSingleFieldIndex(curEntity,prop, pb);
+				EnsureSingleFieldIndex(pb,curEntity,prop);
 		}
-		void EnsureForginRelationField(TypeBuilder typeBuilder, IEntityType curEntity, IEntityType foreignEntity, string name)
+		void EnsureForginRelationField(TypeExpression typeExpr, IEntityType curEntity, IEntityType foreignEntity, string name)
 		{
 			var prop = curEntity.Properties.SingleOrDefault(p => p.Name == name);
-			if(prop==null)
-				DefineProperty(typeBuilder, name, null, TypeBuilders[foreignEntity.FullName]);
-			else if(prop.Mode!=PropertyMode.SingleRelation)
+			if (prop == null)
+				typeExpr.Properties.Add(DefineProperty(curEntity, name, TypeReferences[foreignEntity.FullName], null));
+			else if (prop.Mode != PropertyMode.SingleRelation)
 				throw new InvalidOperationException($"实体{curEntity.FullName}的属性{prop.Name}类型为{prop.Type.Name}的数据字段，不是{foreignEntity.FullName}外部关系");
-			else if(prop.Type!=foreignEntity)
+			else if (prop.Type != foreignEntity)
 				throw new InvalidOperationException($"实体{curEntity.FullName}的属性{prop.Name}的关系为{prop.Type.Name}，不是{foreignEntity.FullName}外部关系");
 
 			var idFieldName = prop?.Attributes
@@ -215,7 +167,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				.Values.Get("Name") as string  ??
 				(name + "Id");
 
-			EnsureForginKeyField(typeBuilder, curEntity, foreignEntity, idFieldName);
+			EnsureForginKeyField(typeExpr, curEntity, foreignEntity, idFieldName);
 		}
 
 		TypeMapResult  MapSysPropType(IEntityType type,IProperty prop,Type sysType)
@@ -229,18 +181,18 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					Attributes = prop.Attributes
 				};
 		}
-		void BuildValueProperty(TypeBuilder typeBuilder,IEntityType type, IProperty prop)
+		void BuildValueProperty(TypeExpression typeExpr,IEntityType type, IProperty prop)
 		{
 			var MapTypeResult = MapSysPropType(type,prop,((IValueType)prop.Type).SysType);
 			var sysType = MapTypeResult.Type;
 
 			var pb =DefineProperty(
-				typeBuilder, 
+				type,
 				prop,
-				MapTypeResult.Attributes,
-				sysType
+				new SystemTypeReference(sysType),
+				MapTypeResult.Attributes
 				);
-
+			typeExpr.Properties.Add(pb);
 			//处理自动生成主键字段
 			if (sysType==typeof(long) && 
 				(prop.Attributes?.Any(a=>a.Name==typeof(KeyAttribute).FullName) ?? false) &&
@@ -248,8 +200,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				!type.Properties.Any(p=>p!=prop && (p.Attributes?.Any(a => a.Name == typeof(KeyAttribute).FullName)??false))
 				)
 			{
-				pb.SetCustomAttribute(
-					new CustomAttributeBuilder(
+				pb.CustomAttributes.Add(
+					new CustomAttributeExpression(
 						typeof(DatabaseGeneratedAttribute).GetConstructor(new[] { typeof(DatabaseGeneratedOption) }),
 						new object[] { DatabaseGeneratedOption.None }
 						)
@@ -263,44 +215,49 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				   p.Attributes.Any(a => a.Name == typeof(ForeignKeyAttribute).FullName && a?.Values.Get("Name") as string == prop.Name)
 				   )).SingleOrDefault();
 			if (foreignProp != null)
-				EnsureForginKeyField(typeBuilder, type, (IEntityType)foreignProp.Type, prop.Name);
+				EnsureForginKeyField(typeExpr, type, (IEntityType)foreignProp.Type, prop.Name);
 
 			//如果是实体标识，需要创建索引
 			if (prop.Attributes.Any(a=>a.Name==typeof(EntityIdentAttribute).FullName))
-				EnsureSingleFieldIndex(type,prop,pb);
+				EnsureSingleFieldIndex(pb,type,prop);
 		}
-		void BuildSingleRelationProperty(TypeBuilder typeBuilder, IEntityType type, IProperty prop)
+		void BuildSingleRelationProperty(TypeExpression typeExpr, IEntityType type, IProperty prop)
 		{
 			var pd=DefineProperty(
-				typeBuilder, 
-				prop, 
-				prop.Attributes,
-				TypeBuilders[((IEntityType)prop.Type).FullName]
-				);
-
-			//确保外部关系字段
-			EnsureForginRelationField(typeBuilder, type, (IEntityType)prop.Type, prop.Name);
-
-		}
-		void BuildMultipleRelationProperty(TypeBuilder typeBuilder, IEntityType type, IProperty prop)
-		{
-			var pd=DefineProperty(
-				typeBuilder, 
+				type, 
 				prop,
-				prop.Attributes,
-				typeof(ICollection<>).MakeGenericType(TypeBuilders[((IEntityType)prop.Type).FullName])
+				TypeReferences[((IEntityType)prop.Type).FullName],
+				prop.Attributes
 				);
+			typeExpr.Properties.Add(pd);
+			//确保外部关系字段
+			EnsureForginRelationField(typeExpr, type, (IEntityType)prop.Type, prop.Name);
 
+		}
+		void BuildMultipleRelationProperty(TypeExpression typeExpr, IEntityType type, IProperty prop)
+		{
+			var pd = DefineProperty(
+				type,
+				prop,
+				new GenericTypeReference(
+					new SystemTypeReference(typeof(ICollection<>)),
+					TypeReferences[((IEntityType)prop.Type).FullName]
+					),
+				prop.Attributes
+				);
+			typeExpr.Properties.Add(pd);
 			//确保外键字段
 			var foreignType = (IEntityType)prop.Type;
-			var ForeignRelationPropName = pd.GetCustomAttribute<InversePropertyAttribute>()?.Property ?? type.Name;
-			EnsureForginRelationField(typeBuilder, foreignType, type, ForeignRelationPropName);
+			var ForeignRelationPropName = pd.CustomAttributes
+				.FirstOrDefault(a=>a.Constructor.ReflectedType==typeof(InversePropertyAttribute))
+				?.Arguments
+				.First() as string ?? type.Name;
+			EnsureForginRelationField(typeExpr, foreignType, type, ForeignRelationPropName);
 
 		}
 
-		Type BuildType(TypeBuilder typeBuilder,IEntityType type,string TablePrefix)
+		TypeExpression BuildType(TypeExpression typeExpr,IEntityType type,string TablePrefix)
 		{
-			
 			var keys = type.Properties.Where(p => p.Attributes.Any(a => a.Name == typeof(KeyAttribute).FullName)).ToArray();
 			if (keys.Length == 0)
 				throw new ArgumentException($"实体{type.FullName}未定义主键");
@@ -311,8 +268,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					throw new ArgumentException($"实体{type.FullName}的主键字段不为原子类型{nks.Select(n=>n.Name+":"+n.Type.Name).Join(",")}");
 				if (keys.Length == 1)
 				{
-					typeBuilder.AddInterfaceImplementation(
-						typeof(IEntityWithId<>).MakeGenericType(((IValueType)keys[0].Type).SysType)
+					typeExpr.ImplementInterfaces.Add(
+						new SystemTypeReference(
+							typeof(IEntityWithId<>).MakeGenericType(((IValueType)keys[0].Type).SysType)
+						)
 					);
 				}
 			}
@@ -321,10 +280,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			{
 				var g = DataModelAttributeGeneratorResolver(a.Name);
 				if (g == null)
-					throw new ArgumentException($"不支持生成特性{a.Name}的数据类特性，实体类型:{typeBuilder.Name}");
+					throw new ArgumentException($"不支持生成特性{a.Name}的数据类特性，实体类型:{typeExpr.Name}");
 				var aa = g.Generate(a);
 				if (aa != null)
-					typeBuilder.SetCustomAttribute(AddAttribute(typeBuilder, aa));
+					typeExpr.CustomAttributes.Add(aa);
 				
 			}
 			var tableName = type.Name;
@@ -332,55 +291,65 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			if (tableAttr != null)
 				tableName = tableAttr.Values?.Get("Name") as string ?? tableName;
 
-			typeBuilder.SetCustomAttribute(new CustomAttributeBuilder(
+			typeExpr.CustomAttributes.Add(new CustomAttributeExpression(
 				typeof(TableAttribute).GetConstructor(new[] { typeof(string) }),
 				new object[] { (TablePrefix??"")+( type.Namespace ??"")+tableName }
 				));
-
 
 			foreach (var prop in type.Properties)
 				switch (prop.Mode)
 				{
 					case PropertyMode.Value:
-						BuildValueProperty(typeBuilder, type,prop);
+						BuildValueProperty(typeExpr, type,prop);
 						break;
 					case PropertyMode.MultipleRelation:
-						BuildValueProperty(typeBuilder, type, prop);
+						BuildValueProperty(typeExpr, type, prop);
 						break;
 					case PropertyMode.SingleRelation:
-						BuildValueProperty(typeBuilder, type, prop);
+						BuildValueProperty(typeExpr, type, prop);
 						break;
 					default:
 						throw new NotSupportedException();
 				}
-			return typeBuilder.CreateTypeInfo().AsType();
+			return typeExpr;
 		}
 		static volatile int TypeIdSeed = 1;
 		static int NextTypeId()
 		{
 			return System.Threading.Interlocked.Increment(ref TypeIdSeed);
 		}
+
 		public IDataModelTypeCollection Build(string Prefix)
 		{
 			//throw new ArgumentException(metas.ToString());
 			foreach (var et in metas.EntityTypes)
 			{
-				TypeBuilders.Add(
+				TypeReferences.Add(
 					et.Key, 
-					ModuleBuilder.DefineType(
-						et.Key+"_"+ NextTypeId(), 
-						TypeAttributes.Public, 
-						typeof(BaseDataModel)
+					new TypeExpressionReference(new TypeExpression(
+						et.Key+"_"+ NextTypeId(),
+						new SystemTypeReference(typeof(BaseDataModel)),
+						TypeAttributes.Public
 						)
+					)
 					);
 			}
 
 			var re = new DataModelTypeCollection();
-			foreach (var et in metas.EntityTypes.Values)
-			{
-				var mt = BuildType((TypeBuilder)TypeBuilders[et.FullName], et, Prefix);
-				re.Add(et.FullName, mt);
-			}
+			var exprs = (from entityType in metas.EntityTypes.Values
+						 let typeExpr = BuildType(
+							 (TypeReferences[entityType.FullName] as TypeExpressionReference).Type,
+							 entityType,
+							 Prefix
+							 )
+						 select (entityType.FullName, typeExpr)
+						).ToArray();
+
+			var types = DynamicTypeBuilder.Build(exprs.Select(e => e.typeExpr));
+
+			exprs
+				.Zip(types, (x, type) => (x.FullName,type))
+				.ForEach(p=>re.Add(p.FullName, p.type));
 			return re;
 		}
 	}

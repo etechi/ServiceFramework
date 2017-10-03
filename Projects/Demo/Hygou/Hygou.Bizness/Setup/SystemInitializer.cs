@@ -45,7 +45,7 @@ namespace Hygou.Setup
 			//await InitPayments(scope);
 
 			//await ResetSettings(scope, sysadmin.Id, sysseller.Id, EnvType);
-			long? ScopeId = 0;
+			long? ScopeId = null;
 			var tailDocContents = await ServiceProvider.Invoke((IServiceInstanceManager sim)=>DocInitializer.DocEnsure(ServiceProvider,sim,ScopeId));
 			
 			var prdtypes = await ServiceProvider.Invoke((IProductTypeManager m)=>ProductTypeInitializer.Create(m));

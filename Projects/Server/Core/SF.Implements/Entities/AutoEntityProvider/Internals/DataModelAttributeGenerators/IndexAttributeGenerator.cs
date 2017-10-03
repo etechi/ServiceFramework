@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.ComponentModel.DataAnnotations;
 using SF.Data;
+using System.Linq.TypeExpressions;
 
 namespace SF.Entities.AutoEntityProvider.Internals.DataModelAttributeGenerators
 {
 	public class IndexAttributeGenerator : IDataModelAttributeGenerator
 	{
-		public SystemAttributeBuilder Generate(IAttribute Attr)
+		public CustomAttributeExpression Generate(IAttribute Attr)
 		{
 			var props = new List<PropertyInfo>();
 			var args = new List<object>();
@@ -18,7 +19,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.DataModelAttributeGenerators
 			var IsUnique = Attr.Values?.Get("IsUnique");
 			var Name = Attr.Values?.Get("Name");
 			var Order = Attr.Values?.Get("Order");
-			return new SystemAttributeBuilder(
+			return new CustomAttributeExpression(
 				typeof(IndexAttribute).GetConstructor(Array.Empty<Type>()),
 				Array.Empty<object>(),
 				new[]

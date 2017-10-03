@@ -26,10 +26,10 @@ namespace SF.Common.Documents.Management
 	public class DocumentBase : UIItemEntityBase<CategoryInternal>
 	{
 
-		[EntityIdent(typeof(Category), nameof(DocumentInternal.ContainerName))]
+		[EntityIdent(typeof(Category), nameof(ContainerName))]
 		[Comment(Name = "文档分类")]
 		[Layout(1, 2)]
-		public override long? ContainerId { get => base.ContainerId; set => base.ContainerId = value; }
+		public override long? ContainerId { get; set; }
 
 		[TableVisible]
 		[Comment(Name = "访问标示")]

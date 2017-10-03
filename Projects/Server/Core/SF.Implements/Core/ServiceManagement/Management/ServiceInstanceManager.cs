@@ -283,14 +283,14 @@ namespace SF.Core.ServiceManagement.Management
 				q => q.ContainerId == ctx.Model.Id
 				);
 
-			var (implTypeName, svcTypeName) = ctx.Model.ImplementType.Split2('@');
+			//var (implTypeName, svcTypeName) = ctx.Model.ImplementType.Split2('@');
 			var ServiceResolver = this.ServiceProvider.Value.Resolver();
 
 			var (decl, impl) = ServiceFactory.ResolveMetadata(
 				ServiceResolver,
 				ctx.Model.Id,
-				svcTypeName,
-				implTypeName,
+				ctx.Model.ServiceType,
+				ctx.Model.ImplementType,
 				null
 				);
 			if (impl != null && impl.ManagedServiceInitializer != null)

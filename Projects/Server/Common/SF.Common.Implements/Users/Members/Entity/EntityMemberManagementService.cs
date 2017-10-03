@@ -55,8 +55,7 @@ namespace SF.Users.Members.Entity
 			return q;
 		}
 		public async Task<string> CreateMemberAsync(
-			CreateMemberArgument Arg,
-			IIdentityCredentialProvider CredentialProvider
+			CreateMemberArgument Arg
 			)
 		{
 			var ctx = NewModifyContext();
@@ -69,7 +68,7 @@ namespace SF.Users.Members.Entity
 					Password=Arg.Password,
 					PhoneNumber=Arg.Credential
 				},
-				(Arg, CredentialProvider)
+				Arg
 				);
 			return (string)ctx.UserData;
 		}
@@ -95,18 +94,18 @@ namespace SF.Users.Members.Entity
 			m.PhoneNumber = e.PhoneNumber.Trim();
 			m.LogicState = e.LogicState;
 			m.UpdatedTime = Now;
-			m.UpdatorId = await IdentityService.Value.EnsureCurIdentityId();
+			//m.UpdatorId = await IdentityService.Value.EnsureCurIdentityId();
 
 			if (ctx.Action == ModifyAction.Create)
 			{
-				var (CreateArgument,IdentityProvider)= ((CreateMemberArgument, IIdentityCredentialProvider))ctx.ExtraArgument;
+				var CreateArgument= (CreateMemberArgument)ctx.ExtraArgument;
 
 
 				UIEnsure.HasContent(e.Password, "需要提供密码");
 				var sess=await IdentityService.Value.CreateIdentity(
 					new CreateIdentityArgument
 					{
-						CredentialProviderId= IdentityProvider?.Id,
+						CredentialProviderId= CreateArgument.CredentialProviderId,
 						Credential = m.PhoneNumber,
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity

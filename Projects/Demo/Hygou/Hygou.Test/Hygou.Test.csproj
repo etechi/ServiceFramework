@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;NETCORE;NETCOREAPP2_0</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RELEASE;NETCOREAPP2_0;NETCORE</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Core\Data\AppContext.cs" />
+    <Compile Remove="Core\Data\DataClient.cs" />
+    <Compile Remove="Core\Data\EFCoreBasic.cs" />
+    <Compile Remove="Core\Data\Models.cs" />
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="moq" Version="4.7.99" />
+    <PackageReference Include="xunit" Version="2.3.0-beta5-build3769" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0-beta5-build3769" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Server\Applications\SF.App.Core\SF.App.Core.csproj" />
+    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Extensions\SF.Biz.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Implements\SF.Biz.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Abstractions\SF.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Extensions\SF.Common.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Implements\SF.Common.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Core\SF.Abstractions\SF.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Server\Core\SF.Extensions\SF.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\Server\Core\SF.Implements\SF.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Core\SF.Interception\SF.Interception.csproj" />
+    <ProjectReference Include="..\..\..\Server\Core\SF.Support\SF.Support.csproj" />
+    <ProjectReference Include="..\..\..\Server\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj" />
+    <ProjectReference Include="..\..\..\Server\Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.csproj" />
+    <ProjectReference Include="..\Hygou.Bizness\Hygou.Bizness.csproj" />
+    <ProjectReference Include="..\Hygou.Core2\Hygou.Core2.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>

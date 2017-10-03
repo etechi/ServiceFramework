@@ -10,24 +10,29 @@ using System.Threading.Tasks;
 using SF.Auth.Identities.Models;
 using SF.Entities;
 using SF.Data;
+using SF.Core.ServiceManagement;
 
 namespace SF.Users.Members
 {
 	public class MemberService :
-		IMemberService
+		IMemberService,
+		IManagedServiceWithId
 	{
 		MemberServiceSetting Setting { get; }
-		public MemberService(MemberServiceSetting Setting) 
+		IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
+		public long ServiceInstanceId => ServiceInstanceDescriptor.InstanceId;
+
+		public MemberService(MemberServiceSetting Setting, IServiceInstanceDescriptor ServiceInstanceDescriptor) 
 		{
 			this.Setting = Setting;
+			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
 
 		[TransactionScope("用户注册")]
 		public async Task<string> Signup(CreateMemberArgument Arg)
 		{
 			var token = await Setting.ManagementService.Value.CreateMemberAsync(
-				Arg,
-				Setting.SignupCredentialProvider.Value
+				Arg
 				);
 			return token;
 		}

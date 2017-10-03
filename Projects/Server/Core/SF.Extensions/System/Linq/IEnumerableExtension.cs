@@ -44,6 +44,18 @@ namespace System.Linq
 				Context = SimpleQueryableContext.Instance
 			};
 		}
+		public static T At<T>(this IEnumerable<T> enumerable,int Index)
+		{
+			if (Index < 0)
+				throw new IndexOutOfRangeException();
+			foreach(var e in enumerable)
+			{
+				if (Index == 0)
+					return e;
+				Index--;
+			}
+			throw new IndexOutOfRangeException();
+		}
 		public static int IndexOf<T>(this IEnumerable<T> enumerable, Func<T, bool> Predicate)
 		{
 			var idx = 0;

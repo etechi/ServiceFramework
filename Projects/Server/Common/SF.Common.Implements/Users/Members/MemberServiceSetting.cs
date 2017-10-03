@@ -14,7 +14,6 @@ namespace SF.Users.Members
 	public class MemberServiceSetting 
 	{
 		public Lazy<IMemberManagementService> ManagementService { get; set; }
-		public Lazy<IIdentityCredentialProvider> SignupCredentialProvider { get; set; }
 
 	}
 

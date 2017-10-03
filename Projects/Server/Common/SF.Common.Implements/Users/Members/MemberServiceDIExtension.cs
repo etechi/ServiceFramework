@@ -41,6 +41,7 @@ namespace SF.Core.ServiceManagement
 			)
 		{
 			sc.AddManagedScoped<IMemberService, MemberService>();
+			sc.AddMemberManagementService();
 			return sc;
 		}
 		public static IServiceInstanceInitializer<IMemberManagementService> NewMemberManagementService<TMember>(this IServiceInstanceManager sim)
@@ -58,8 +59,8 @@ namespace SF.Core.ServiceManagement
 		{
 			return sim.DefaultService<IMemberService, MemberService>(
 				new{},
-				MemberManagementService,
-				IdentityService
+				MemberManagementService ?? sim.NewMemberManagementService(),
+				IdentityService ?? sim.NewAuthIdentityServive()
 				);
 		}
 

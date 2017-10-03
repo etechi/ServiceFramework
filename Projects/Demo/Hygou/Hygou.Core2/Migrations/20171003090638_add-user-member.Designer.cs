@@ -14,9 +14,10 @@ using System;
 namespace Hygou.Core2.Migrations
 {
     [DbContext(typeof(HygouDbContext))]
-    partial class HygouDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171003090638_add-user-member")]
+    partial class addusermember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

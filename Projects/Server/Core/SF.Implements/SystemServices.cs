@@ -23,6 +23,7 @@ namespace SF.Core.ServiceManagement
 			Services.AddDataEntityProviders();
 			Services.AddServiceFeatureControl();
 
+			Services.AddDynamicTypeBuilder();
 			Services.AddFilePathResolver();
 			Services.AddLocalFileCache();
 

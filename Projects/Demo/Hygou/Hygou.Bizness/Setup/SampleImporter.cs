@@ -32,7 +32,7 @@ namespace Hygou.Setup
 			long SellerId
 			)
 		{
-            var list = System.IO.File.ReadAllLines(pathResolver.Resolve("data://StaticResources/产品数据/产品清单.csv"),Encoding.GetEncoding("GBK")).Skip(1).Select(l =>
+            var list = System.IO.File.ReadAllLines(pathResolver.Resolve("root://StaticResources/产品数据/产品清单.csv"),Encoding.GetEncoding("GBK")).Skip(1).Select(l =>
                     {
                         var ss = l.Split(',');
                         return new
@@ -53,7 +53,7 @@ namespace Hygou.Setup
             foreach (var item in list)
 			{
                 var images = System.IO.Directory.GetFiles(
-					pathResolver.Resolve($"data://StaticResources/产品数据/产品图片/{item.id}/imgs"),
+					pathResolver.Resolve($"root://StaticResources/产品数据/产品图片/{item.id}/imgs"),
                     "*.*"
                     ).Select(f => new
                     {
@@ -63,7 +63,7 @@ namespace Hygou.Setup
                     }).Where(f=>f.name[0]!='$' && (f.ext=="jpg" || f.ext=="png")).OrderBy(f => f.name).ToArray();
 
                 var intros= System.IO.Directory.GetFiles(
-					pathResolver.Resolve($"data://StaticResources/产品数据/产品图片/{item.id}/intro"),
+					pathResolver.Resolve($"root://StaticResources/产品数据/产品图片/{item.id}/intro"),
                     "*.*"
                     ).Select(f => new
                     {

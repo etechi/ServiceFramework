@@ -168,7 +168,7 @@ namespace SF.Core.ServiceManagement
 					ArgScopeId,
 					Expression.Constant(p.ParameterType),
 					Expression.Constant(null, typeof(string))
-					)
+					).To(p.ParameterType)
 				);
 			var func = Expression.Lambda<Action<IServiceResolver,long?>>(
 				Expression.Invoke(

@@ -13,6 +13,7 @@ namespace SF.Entities
 
     public static class QueryResultExtension
 	{
+
 		public static QueryResult<R> ToQueryResult<E, T, R>(
 			   this IQueryable<E> query,
 			   Func<IQueryable<E>, IQueryable<T>> mapper,
