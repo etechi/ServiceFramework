@@ -10,9 +10,11 @@ using SF.Core.ServiceManagement;
 using SF.Entities;
 using SF.Core;
 using SF.Core.ServiceManagement.Models;
+using SF.Metadata;
 
 namespace SF.Services.Settings
 {
+	[Comment("设置服务")]
 	public class SettingService<T> : ISettingService<T>
 	{
 		public T Value { get; }

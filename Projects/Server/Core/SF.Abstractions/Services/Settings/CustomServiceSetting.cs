@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Services.Settings
 {
+	[Comment("客服设置")]
 	public  class CustomServiceSetting
 	{
 		[Comment(GroupName = "客服", Name = "客服电话", Description = "显示在网页上的客服电话")]

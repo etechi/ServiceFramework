@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Services.Settings
 {
+	[Comment("设置服务")]
 	public interface ISettingService<T>
 	{
 		T Value { get; }

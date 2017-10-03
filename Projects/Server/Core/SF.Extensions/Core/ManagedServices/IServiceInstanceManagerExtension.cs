@@ -33,23 +33,24 @@ namespace SF.Core.ServiceManagement.Management
 			EntityLogicState State=EntityLogicState.Enabled
 			)
 		{
-			var comment = ImplementType.Comment();
 			e.ImplementId = $"{ImplementType.GetFullName()}@{InterfaceType.GetFullName()}".UTF8Bytes().MD5().Hex();
 			e.ImplementType = ImplementType.GetFullName();
-			e.ImplementName = ImplementType.Comment().Name;
+			e.ImplementName = ImplementType.FriendlyName();
 
 			e.ServiceId = InterfaceType.GetFullName().UTF8Bytes().MD5().Hex();
 			e.ServiceType = InterfaceType.GetFullName();
-			e.ServiceName = InterfaceType.Comment().Name;
+			e.ServiceName = InterfaceType.FriendlyName();
 
 			e.ItemOrder = 0;
 			e.LogicState = State;
 			e.ServiceIdent = ServiceIdent;
 			//e.SettingType = typeof(T).FullName + "CreateArguments";
-			e.Name = Name ?? comment.Name;
-			e.Title = Title ?? comment.Name;
+			e.Name = Name ?? e.ImplementName;
+
+			var comment = ImplementType.Comment();
+			e.Title = Title ?? e.Name;
 			e.ContainerId = ParentId;
-			e.Description = Description ?? comment.Description;
+			e.Description = Description ?? comment?.Description;
 			e.Setting = Json.Stringify(Setting);
 		}
 		public static Task<ObjectKey<long>> TryGetDefaultService<I>(

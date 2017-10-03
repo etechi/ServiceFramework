@@ -61,6 +61,18 @@ namespace System
 				return str.Substring(start.Length);
 			return str;
 		}
+		public static string TrimEndTo(this string str, string end, bool trimEnd=true,bool trimToLastEnd=false)
+		{
+			var i = trimToLastEnd ? str.IndexOf(end) : str.LastIndexOf(end);
+			if (i == -1) return str;
+			return str.Substring(0, trimEnd ? i : i + end.Length);
+		}
+		public static string TrimStartTo(this string str, string start, bool trimStart = true,bool trimToLastStart=false)
+		{
+			var i = trimToLastStart ? str.LastIndexOf(start) : str.IndexOf(start);
+			if (i == -1) return str;
+			return str.Substring(trimStart ? i + start.Length : i);
+		}
 		public unsafe static int GetConsistencyHashCode(this string str)
 		{
 			if (str == null)

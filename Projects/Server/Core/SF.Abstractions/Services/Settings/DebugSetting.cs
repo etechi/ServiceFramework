@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SF.Services.Settings
 {
+	[Comment("调试设置")]
 	public class DebugSetting
 	{
 		[Comment(Name = "调试模式", Description = "调试模式")]

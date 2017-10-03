@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SF.Services.Settings
 {
+	[Comment("系统设置")]
 	public class SystemSetting
 	{
 		[Comment(Name = "系统名称", Description = "系统名称")]

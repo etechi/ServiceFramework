@@ -27,7 +27,7 @@ namespace SF.Core.ServiceManagement.Management
 							  Id = pair.Key,
 							  Type=type.GetFullName(),
 							  Description = comment?.Description,
-							  Name = comment?.Name ?? type.Name,
+							  Name = type.FriendlyName(),
 							  Group = comment?.GroupName
 						  }).ToDictionary(t=>t.Id);
 		}

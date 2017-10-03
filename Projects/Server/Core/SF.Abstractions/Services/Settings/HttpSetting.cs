@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SF.Services.Settings
 {
+	[Comment("HTTP设置")]
 	public class HttpSetting
 	{
 

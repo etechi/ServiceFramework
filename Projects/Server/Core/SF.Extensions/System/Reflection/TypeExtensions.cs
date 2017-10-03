@@ -28,13 +28,62 @@ namespace System.Reflection
 			{typeof(string),System.TypeCode.String }
 		};
 
-		public static string GetFullName(this Type type)
+		static System.Collections.Concurrent.ConcurrentDictionary<(Type,bool), string> TypeFullNames { get; } = new Collections.Concurrent.ConcurrentDictionary<(Type,bool), string>();
+		public static string GetFullName(this Type type) => type.GetTypeName(true);
+		public static string GetTypeName(this Type type,bool withNamespace=false)
 		{
-			if (!type.IsGenericType)
-				return type.FullName;
-			return type.GetGenericTypeDefinition().FullName + "<" +
-				type.GetGenericArguments().Select(t=>t.GetFullName()).Join(",")+
-				">";
+			var key = (type, withNamespace);
+			if (TypeFullNames.TryGetValue(key, out var name))
+				return name;
+			return TypeFullNames.GetOrAdd(key, k =>
+			{
+				var (t, ns) = k;
+				if (t.IsArray)
+					return t.GetElementType().GetTypeName(ns) + "[]";
+				
+				switch (Type.GetTypeCode(t))
+				{
+					case TypeCode.Boolean:return "bool";
+					case TypeCode.Byte: return "byte";
+					case TypeCode.Char: return "char";
+					case TypeCode.DateTime: return "DateTime";
+					case TypeCode.DBNull: return "null";
+					case TypeCode.Decimal: return "decimal";
+					case TypeCode.Double: return "double";
+					case TypeCode.Empty: return "empty";
+					case TypeCode.Int16: return "short";
+					case TypeCode.Int32: return "int";
+					case TypeCode.Int64: return "long";
+					case TypeCode.SByte: return "sbyte";
+					case TypeCode.Single: return "float";
+					case TypeCode.String: return "string";
+					case TypeCode.UInt16: return "ushort";
+					case TypeCode.UInt32: return "uint";
+					case TypeCode.UInt64: return "ulong";
+					
+				}
+				if (t == typeof(object)) return "object";
+
+				if (t.IsGenericDefinition())
+				{
+					var p = (ns?t.FullName:t.Name).LastSplit2('`');
+					return $"{p.Item1}<{Enumerable.Repeat("", p.Item2.ToInt32()).Join(",")}>";
+				}
+				if (t.IsGeneric())
+				{
+					var gtd = t.GetGenericTypeDefinition();
+					var gas = t.GetGenericArguments();
+					if (gtd == typeof(Nullable<>))
+						return gas[0].GetTypeName(ns) + "?";
+
+					var fn = (ns?gtd.FullName:gtd.Name).TrimEndTo("`");
+					return fn + "<" +
+						gas.Select(at => at.GetTypeName(ns)).Join(",") +
+						">";
+				}
+				return (ns?t.FullName:t.Name);
+			});
+			
 		}
 		public static IEnumerable<MemberInfo> GetInterfaceMembers(
 			this Type type,
@@ -362,15 +411,60 @@ namespace System.Reflection
 		{
 			SF.Metadata.CommentAttribute attr;
 			if (CommentDict.TryGetValue(Info, out attr)) return attr;
+
+			var c = Info.GetCustomAttribute<SF.Metadata.CommentAttribute>(true) ?? new SF.Metadata.CommentAttribute(Info.ShortName());
+			if(Info is Type t && t.IsGeneric())
+			{
+				var gtd = t.GetGenericTypeDefinition();
+				var gta = t.GenericTypeArguments;
+				var baseName = c.Name.TrimEndTo("<", true, true);
+				c = new SF.Metadata.CommentAttribute(
+					$"{gta.Select(a => a.Comment().Name).Join(" ")} {baseName}",
+					$"{gta.Select(a => a.Comment().Description).Join(" ")} {c.Description}"
+					)
+				{
+					GroupName = $"{gta.Select(a => a.Comment().GroupName).Join(" ")} {c.GroupName}",
+					ShortName = $"{gta.Select(a => a.Comment().ShortName).Join(" ")} {c.ShortName}",
+					Prompt = $"{gta.Select(a => a.Comment().Prompt).Join(" ")} {c.Prompt}"
+				};
+
+			}
+
+
 			return CommentDict.GetOrAdd(
 				Info,
-				Info.GetCustomAttribute<SF.Metadata.CommentAttribute>(true) ??
-				new SF.Metadata.CommentAttribute(Info.Name)
+				c
 				);
+		}
+		public static string ShortName(this Type type) => type.GetTypeName(false);
+
+		public static string ShortName(this MethodInfo method)
+		{
+			if (method.IsGenericMethodDefinition)
+			{
+				var p = method.Name.LastSplit2('`');
+				return $"{p.Item1}<{Enumerable.Repeat("", p.Item2.ToInt32()).Join(",")}>";
+			}
+			else if (method.IsGenericMethod)
+			{
+				return method.Name.TrimEndTo("`") + "<" +
+					method.GetGenericArguments().Select(t => t.GetFullName()).Join(",") +
+					">";
+			}
+			return method.Name;
+		}
+
+		public static string ShortName(this MemberInfo Info)
+		{
+			if (Info is Type type)
+				return type.ShortName();
+			else if (Info is MethodInfo method)
+				return method.ShortName();
+			return Info.Name;
 		}
 		public static string FriendlyName(this MemberInfo Info)
 		{
-			return Info.Comment()?.Name ?? Info.Name;
+			return Info.Comment()?.Name ?? Info.ShortName();
 		}
 #if NETCOREAPP1_1
 		public static SF.Metadata.CommentAttribute Comment(this Type Info)

@@ -12,7 +12,7 @@ function call_webpack(entrys, release, verbose, cb) {
         debug: !release,
         verbose: verbose,
         basePath: __dirname,
-        outputPath: path.resolve(__dirname,"./wwwroot/js") 
+        outputPath: path.resolve(__dirname,"./wwwroot/js/admin") 
     });
     webpack(cfg).run((err, stats) => {
         if (err) {
