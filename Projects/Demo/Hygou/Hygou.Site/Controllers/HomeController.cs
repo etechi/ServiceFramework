@@ -17,7 +17,7 @@ namespace Hygou.Site.Controllers
 
 		ISettingService<HttpSetting> HttpSetting { get; }
 
-		public HomeController(ISettingService<HttpSetting> SystemSetting)
+		public HomeController(ISettingService<HttpSetting> HttpSetting)
         {
             this.HttpSetting = HttpSetting;
         }

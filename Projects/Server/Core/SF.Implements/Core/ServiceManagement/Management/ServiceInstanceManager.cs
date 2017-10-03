@@ -50,25 +50,29 @@ namespace SF.Core.ServiceManagement.Management
 				ServiceIdent=i.ServiceIdent,
 				ContainerId=i.ContainerId,
 				ContainerName=i.ContainerId.HasValue?i.Container.Name:null,
-				ServiceType = i.ServiceType,
-				ImplementType = i.ImplementType,
+				ServiceId = i.ServiceId,
+				ServiceType=i.ServiceType,
+				ImplementId = i.ImplementId,
+				ImplementType=i.ImplementType,
 				Setting= i.Setting
 			}).SingleOrDefaultAsync();
 			if (re == null)
 				return null;
 
-			var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
+			var svcDef = Metadata.ServicesById.Get(re.ServiceId);
 			if (svcDef == null)
-				throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
+				throw new InvalidOperationException($"找不到定义的服务{re.ServiceId}:{re.ServiceType}");
 			re.ServiceName = svcDef.ServiceType.Comment().Name;
-			var (implType, _) = re.ImplementType.Split2('@');
-			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.GetFullName() == implType);
+			re.ServiceType = svcDef.ServiceType.GetFullName();
+
+			var svcImpl = Metadata.ImplementsById.Get(re.ImplementId);
 			if (svcImpl == null)
-				throw new InvalidOperationException($"找不到服务实现{re.ImplementType}");
+				throw new InvalidOperationException($"找不到服务实现{re.ImplementId}:{re.ImplementType},服务:{re.ServiceType}");
+			re.ImplementType = svcImpl.ImplementType.GetFullName();
 			re.ImplementName = svcImpl.ImplementType.Comment().Name;
 
 
-			re.SettingType = implType + "SettingType";
+			re.SettingType = re.ImplementType + "SettingType";
 
 			Logger.Info("Load ServiceInstance for Edit: {0}",Json.Stringify(re));
 			return re;
@@ -79,11 +83,15 @@ namespace SF.Core.ServiceManagement.Management
 			return Query.SelectUIObjectEntity(i => new Models.ServiceInstanceInternal
 			{
 				Id=i.Id,
-				ServiceType = i.ServiceType,
 				ItemOrder = i.ItemOrder,
 				ServiceIdent=i.ServiceIdent,
-				ServiceName = i.ServiceType,
+
+				ServiceId = i.ServiceId,
+				ServiceType = i.ServiceType,
+
+				ImplementId=i.ImplementId,
 				ImplementType = i.ImplementType,
+
 				ContainerId=i.ContainerId,
 				ContainerName = i.ContainerId.HasValue?i.Container.Name:null
 			});
@@ -96,9 +104,11 @@ namespace SF.Core.ServiceManagement.Management
 			else
 				return Query
 					.Filter(Arg.Name, i => i.Name)
-					.Filter(Arg.ServiceType, i => i.ServiceType)
+					.Filter(Arg.ServiceId, i => i.ServiceId)
+					.FilterContains(Arg.ServiceType, i => i.ServiceType)
 					.Filter(Arg.ServiceIdent,i=>i.ServiceIdent)
-					.Filter(Arg.ImplementId, i => i.ImplementType)
+					.Filter(Arg.ImplementId, i => i.ImplementId)
+					.FilterContains(Arg.ImplementType, i => i.ImplementType)
 					.Filter(Arg.ContainerId,i=>i.ContainerId)
 					.Filter(Arg.IsDefaultService.HasValue? (Arg.IsDefaultService.Value?(int?)0:(int?)-1):null,i=>i.ItemOrder)
 				;
@@ -106,17 +116,16 @@ namespace SF.Core.ServiceManagement.Management
 
 		
 		
-		IServiceFactory TestConfig(long Id, long? ParentId, string ImplementId, string CreateArguments)
+		IServiceFactory TestConfig(long Id, long? ParentId,string ServiceType, string ImplementType, string CreateArguments)
 		{
-			var (implTypeName, svcTypeName) = ImplementId.Split2('@');
 			var ServiceResolver = this.ServiceProvider.Value.Resolver();
 			using (ServiceResolver.WithScopeService(Id))
 			{
 				var (decl, impl) = ServiceFactory.ResolveMetadata(
 					ServiceResolver,
 					Id,
-					svcTypeName,
-					implTypeName,
+					ServiceType,
+					ImplementType,
 					null
 					);
 
@@ -148,9 +157,10 @@ namespace SF.Core.ServiceManagement.Management
 
 			if (ctx.Action == ModifyAction.Create)
 			{
+				m.ServiceId = e.ServiceId;
 				m.ServiceType = e.ServiceType;
 				m.ImplementType = e.ImplementType;
-				
+				m.ImplementId = e.ImplementId;
 			}
 			else
 			{
@@ -164,7 +174,7 @@ namespace SF.Core.ServiceManagement.Management
 
 			if (m.LogicState == EntityLogicState.Enabled)
 			{
-				var factory = TestConfig(m.Id, m.ContainerId, m.ImplementType, m.Setting);
+				var factory = TestConfig(m.Id, m.ContainerId, m.ServiceType, m.ImplementType, m.Setting);
 				if (factory.ServiceImplement.ManagedServiceInitializer != null)
 					await factory.ServiceImplement.ManagedServiceInitializer.Init(
 						ServiceProvider.Value,

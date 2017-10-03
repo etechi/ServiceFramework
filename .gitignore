@@ -17,3 +17,6 @@ bower_componentsproject.lock.json
 
 *.ide
 /Projects/Demo/Hygou/Hygou.Site/bower_components
+/Projects/Demo/Hygou/Hygou.Site/client
+/Projects/Demo/Hygou/Hygou.Site/node_modules
+/Projects/Demo/Hygou/Hygou.Site/wwwroot/vender

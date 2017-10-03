@@ -542,9 +542,12 @@ namespace SF.App.Core.Migrations
                     b.Property<string>("Image")
                         .HasMaxLength(100);
 
-                    b.Property<string>("ImplementType")
+                    b.Property<string>("ImplementId")
                         .IsRequired()
-                        .HasMaxLength(300);
+                        .HasMaxLength(40);
+
+                    b.Property<string>("ImplementType")
+                        .IsRequired();
 
                     b.Property<int>("ItemOrder");
 
@@ -564,12 +567,15 @@ namespace SF.App.Core.Migrations
 
                     b.Property<long?>("ScopeId");
 
+                    b.Property<string>("ServiceId")
+                        .IsRequired()
+                        .HasMaxLength(40);
+
                     b.Property<string>("ServiceIdent")
                         .HasMaxLength(200);
 
                     b.Property<string>("ServiceType")
-                        .IsRequired()
-                        .HasMaxLength(100);
+                        .IsRequired();
 
                     b.Property<string>("Setting");
 
@@ -592,7 +598,7 @@ namespace SF.App.Core.Migrations
 
                     b.HasIndex("CreatedTime");
 
-                    b.HasIndex("ImplementType");
+                    b.HasIndex("ImplementId");
 
                     b.HasIndex("Name");
 
@@ -606,7 +612,7 @@ namespace SF.App.Core.Migrations
 
                     b.HasIndex("ContainerId", "ItemOrder");
 
-                    b.HasIndex("ContainerId", "ServiceType");
+                    b.HasIndex("ContainerId", "ServiceId");
 
                     b.ToTable("SysServiceInstance");
                 });

@@ -16,16 +16,16 @@ namespace SF.Core.ServiceManagement.Management
 		public Dictionary<string, ServiceImplement> Items { get; }
 		public ServiceImplementManager(IServiceMetadata ServiceMetadata)
 		{
-			var sis = from svc in ServiceMetadata.Services
-					  from impl in svc.Value.Implements
-					  let svcType = svc.Value.ServiceType
-					  let implType = impl.ImplementType
+			var sis = from impl in ServiceMetadata.ImplementsById
+					  let svcType = impl.Value.ServiceType
+					  let implType = impl.Value.ImplementType
 					  where implType != null
 					  let declComment = svcType.GetCustomAttribute<CommentAttribute>()
 					  let implComment = implType.GetCustomAttribute<CommentAttribute>()
 					  select new ServiceImplement
 					  {
-						  Id = implType.GetFullName() + '@' + svcType.GetFullName(),
+						  Id = impl.Key,
+						  Type=implType.GetFullName(),
 						  Description = implComment?.Description,
 						  Name = implComment?.Name ?? implType.Name,
 						  Group = implComment?.GroupName,

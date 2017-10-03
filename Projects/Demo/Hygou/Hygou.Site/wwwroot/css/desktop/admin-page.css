@@ -1,0 +1,3255 @@
+﻿@charset "UTF-8";
+body {
+  -ms-overflow-style: scrollbar; }
+
+@-ms-viewport {
+  width: device-width; }
+
+[v-cloak] {
+  display: none; }
+
+#browser-alert {
+  color: #fdb31c; }
+  #browser-alert a {
+    font-weight: bold;
+    color: #ffa200 !important; }
+
+#browser-express-mode {
+  position: relative;
+  display: inline-block;
+  cursor: text; }
+  #browser-express-mode img {
+    display: none;
+    position: absolute;
+    border-radius: 50%;
+    border: 4px solid #ddd;
+    z-index: 10000; }
+
+#browser-express-mode:hover img {
+  display: block; }
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  color: #333; }
+
+label {
+  font-weight: normal; }
+
+a, a:visited {
+  color: #333 !important; }
+
+a:hover {
+  color: #888 !important; }
+
+ol.breadcrumb {
+  background: none;
+  margin-top: 8px;
+  height: 20px; }
+
+div.panel {
+  border-radius: 3px;
+  border-color: #ccc; }
+
+input, button, select, textarea {
+  outline: 0 !important;
+  box-shadow: none !important; }
+
+button:focus, button:active {
+  outline: 0 !important;
+  box-shadow: none !important; }
+
+button {
+  border: none; }
+
+li {
+  list-style-type: none; }
+
+.fa {
+  width: 14px; }
+
+ins.rc {
+  display: block;
+  margin: 0;
+  padding: 0; }
+
+.show {
+  display: block !important; }
+
+.stress {
+  color: #ff5200 !important; }
+
+.stress:visited, .stress:hover, .stress:active, .stress:active {
+  color: #ff6922 !important; }
+
+body {
+  padding: 0;
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+  font-family: microsoft Yahei;
+  line-height: 1.5; }
+
+a {
+  color: #333; }
+
+a:visited, a:hover, a:active, a:focus {
+  color: #888;
+  text-decoration: none; }
+
+a.primary {
+  color: #ffa200 !important; }
+
+div.container {
+  width: 1210px;
+  padding: 0; }
+
+.preload * {
+  animation: none !important; }
+
+.btn {
+  border-radius: 2px; }
+
+.btn-primary {
+  background-color: #fdb31c !important;
+  border: none;
+  color: #fff !important; }
+
+.btn-primary:active, .btn-primary:hover, .btn-primary:visited {
+  background-color: #ffa200 !important;
+  color: #fff !important; }
+
+div.tooltip {
+  background-color: transparent !important;
+  border: none !important; }
+  div.tooltip div.tooltip-inner {
+    background-color: #f02000;
+    border-radius: 2px; }
+  div.tooltip div.tooltip-arrow {
+    bottom: 2px !important;
+    border-top-color: #f02000 !important;
+    background-color: transparent !important; }
+
+button.btn-link {
+  color: #333; }
+
+button.btn-link:hover, button.btn-link:active {
+  color: #888;
+  text-decoration: none; }
+
+input[type=text],
+input[type=password],
+select,
+textarea {
+  border: 1px solid #ccc;
+  border-radius: 2px; }
+
+input[type=text]:focus,
+input[type=password]:focus,
+select:focus,
+textarea:focus {
+  border: 1px solid #fdb31c !important; }
+
+form div.message {
+  height: 28px;
+  padding-top: 5px;
+  color: #ff2222;
+  font-size: 14px; }
+
+form span.help-block {
+  position: absolute;
+  top: 1px;
+  left: 100%;
+  width: 100%;
+  padding-left: 0; }
+
+form span.help-block-down {
+  top: 40px;
+  left: 10px;
+  width: 100%;
+  padding-left: 10px; }
+
+form div.form-group {
+  margin-bottom: 26px; }
+
+form div.form-message {
+  height: 0;
+  overflow: visible; }
+  form div.form-message > :first-child {
+    color: #333 !important;
+    display: inline;
+    position: static; }
+
+form div.form-group.has-success input.form-control {
+  border-color: #ccc; }
+
+form div.form-group.has-success input.form-control:focus {
+  border-color: #ffa200; }
+
+form div.form-group.has-error {
+  /*span.input-group-addon{
+             color:$primaryBGColorDark
+         }*/
+  /*span.form-control-feedback{
+             color:$primaryBGColorDark
+         }*/ }
+  form div.form-group.has-error label {
+    color: #ffa200; }
+  form div.form-group.has-error span.help-block {
+    color: #ff2222; }
+  form div.form-group.has-error input.form-control {
+    border-color: #ccc; }
+  form div.form-group.has-error input.form-control:focus {
+    border-color: #ffa200; }
+  form div.form-group.has-error select.form-control {
+    border-color: #ccc; }
+  form div.form-group.has-error select.form-control:focus {
+    border-color: #ffa200; }
+
+form.big div.message {
+  text-align: center; }
+
+form.big button.btn {
+  width: 100%;
+  height: 45px;
+  font-size: 14px; }
+
+form.big button.submit {
+  height: 45px;
+  width: 100%;
+  font-size: 16px;
+  margin: 0;
+  display: block !important; }
+
+form.big div.links {
+  padding: 5px; }
+
+form.big input[type=text], form.big input[type=password] {
+  width: 100%;
+  height: 45px; }
+
+form.big .show-password {
+  cursor: pointer; }
+
+form.big .show-password:hover {
+  color: #888 !important; }
+
+form.big div.form-group {
+  margin: 0 0 25px 0; }
+  form.big div.form-group div.input-group {
+    display: block !important; }
+    form.big div.form-group div.input-group .input-group-addon {
+      height: 25px;
+      float: left;
+      display: block !important;
+      border: none;
+      background-color: transparent;
+      position: relative;
+      z-index: 100;
+      width: 40px;
+      font-size: 18px;
+      margin-top: 10px;
+      color: #ccc; }
+    form.big div.form-group div.input-group .input-group-addon:first-child {
+      padding: 2px 16px;
+      border-right: 1px solid #ccc; }
+    form.big div.form-group div.input-group .input-group-addon:last-child {
+      padding: 2px 16px 2px 8px; }
+    form.big div.form-group div.input-group input.form-control:last-child {
+      float: left;
+      display: block !important;
+      margin: 0 0 0 -40px;
+      padding: 0 0 0 55px;
+      font-size: 14px;
+      border-radius: 2px; }
+    form.big div.form-group div.input-group input.form-control:not(:first-child):not(:last-child) {
+      float: left;
+      display: block !important;
+      margin: 0 -40px 0 -40px;
+      padding: 0 55px 0 55px;
+      font-size: 14px;
+      border-radius: 2px; }
+  form.big div.form-group div.input-group:after {
+    content: " ";
+    clear: both;
+    display: table; }
+  form.big div.form-group span.help-block {
+    position: absolute;
+    top: 7px;
+    left: 100%;
+    width: 100%;
+    padding-left: 10px; }
+  form.big div.form-group span.help-block-down {
+    top: 40px;
+    left: 10px;
+    width: 100%;
+    padding-left: 10px; }
+  form.big div.form-group span.form-control-feedback {
+    visibility: hidden;
+    top: 6px !important;
+    right: 6px; }
+
+form.big div.form-group.has-feedback .form-control {
+  padding-right: 2em; }
+
+.modal-content {
+  border-radius: 3px; }
+
+.loading {
+  text-align: center;
+  padding: 100px;
+  font-size: 20px;
+  color: #ccc; }
+
+div.result-panel {
+  text-align: center; }
+  div.result-panel h3 span {
+    color: #080; }
+  div.result-panel h3 span.text-danger {
+    color: #ffa200 !important; }
+  div.result-panel dl {
+    margin: 0 auto;
+    width: 500px;
+    text-align: left;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: 30px; }
+    div.result-panel dl dt {
+      font-weight: normal; }
+    div.result-panel dl dd {
+      margin-bottom: 20px;
+      font-size: 18px; }
+  div.result-panel a.btn {
+    margin-top: 20px;
+    width: 200px;
+    height: 40px;
+    padding-top: 10px; }
+
+div.tabs ul.nav-tabs {
+  background-color: #fcfcfc;
+  border-bottom-color: #ddd; }
+  div.tabs ul.nav-tabs li a {
+    padding-left: 40px;
+    padding-right: 40px; }
+  div.tabs ul.nav-tabs li.active a {
+    border-left-color: #ddd;
+    border-right-color: #ddd;
+    border-top-width: 2px;
+    border-top-color: #ffa200; }
+
+div.tabs div.tab-content {
+  border: 1px solid #ddd;
+  border-top: none; }
+  div.tabs div.tab-content div.tab-pane {
+    padding: 40px 20px 100px 20px;
+    min-height: 600px; }
+
+ul.options {
+  margin: 0;
+  padding: 0;
+  display: inline-block; }
+  ul.options li {
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    padding: 4px 20px;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    margin-right: 20px; }
+    ul.options li img {
+      margin-right: 10px; }
+  ul.options li.active {
+    border: 1px solid #ffa200; }
+
+table.grid {
+  width: 100%; }
+  table.grid th {
+    color: #888;
+    font-weight: normal;
+    background-color: #f8f8f8;
+    padding: 16px;
+    text-align: center; }
+  table.grid td {
+    padding: 16px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    line-height: 1.8;
+    word-break: break-all; }
+  table.grid tr:hover {
+    background-color: #fcfcfc; }
+
+div.empty {
+  text-align: center;
+  padding: 100px;
+  font-size: 20px;
+  color: #ccc; }
+  div.empty a {
+    color: #888 !important; }
+
+div.product-status > div {
+  height: 6px;
+  background-color: #ddd;
+  border-radius: 1px; }
+  div.product-status > div > div {
+    height: 6px;
+    background-color: #ffa200; }
+
+div.product-status ul {
+  margin: 0;
+  padding: 0;
+  height: 70px; }
+  div.product-status ul li {
+    width: 33%;
+    float: left;
+    display: block;
+    text-align: center;
+    font-size: 12px; }
+    div.product-status ul li div {
+      margin-top: 6px; }
+  div.product-status ul li:first-child {
+    text-align: left; }
+  div.product-status ul li:last-child {
+    text-align: right; }
+
+a.user {
+  color: #8d5000 !important; }
+
+a.user:hover, a.user:visited, a.user:active {
+  color: #906000 !important; }
+
+.pointer {
+  cursor: pointer; }
+
+dl.status {
+  margin-bottom: 0; }
+  dl.status dt {
+    float: left;
+    margin-right: 4px;
+    font-weight: normal; }
+  dl.status dd b {
+    font-weight: normal;
+    color: #ffa200; }
+
+.empty-list {
+  padding: 80px !important;
+  border: 1px solid #f8f8f8;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 18px;
+  color: #ddd; }
+
+.text-primary {
+  font-size: 24px;
+  margin: 3px;
+  color: #ffa200; }
+
+nav.pagination {
+  padding: 0;
+  text-align: center;
+  width: 100%; }
+  nav.pagination > ul {
+    margin: 0;
+    padding: 0; }
+    nav.pagination > ul > li {
+      display: inline-block !important;
+      padding: 4px 8px;
+      margin: 0 8px 0 0; }
+    nav.pagination > ul > li.active {
+      font-weight: bold; }
+    nav.pagination > ul > li.pg {
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-radius: 4px; }
+
+div.modal.simple > div.modal-dialog {
+  position: fixed;
+  left: 50% !important;
+  top: 50% !important;
+  margin: -250px 0 0 -200px;
+  text-align: center; }
+  div.modal.simple > div.modal-dialog > div.modal-content {
+    width: 400px;
+    height: 500px;
+    border-radius: 8px;
+    padding: 40px 20px 20px;
+    border: 1px solid #ddd;
+    box-shadow: #333 0 0 10px; }
+    div.modal.simple > div.modal-dialog > div.modal-content > div.modal-body > span.close {
+      float: right;
+      font-size: 20px;
+      margin-top: -40px;
+      margin-right: -15px;
+      color: #888; }
+
+.alert-info {
+  border-radius: 2px;
+  margin-top: 60px;
+  max-width: 600px;
+  background-color: transparent;
+  border-color: #ccc;
+  color: #888;
+  font-size: 12px; }
+  .alert-info > h4 {
+    font-size: 14px; }
+
+/*
+@import this file directly into your existing Scss files to use these mixins
+*/
+@keyframes ani-head-menu-item-in {
+  from {
+    padding-left: 50px; }
+  to {
+    padding-left: 60px; } }
+
+@keyframes ani-head-menu-item-out {
+  to {
+    padding-left: 50px; }
+  from {
+    padding-left: 60px; } }
+
+div.site-logo b {
+  display: block;
+  font-size: 40px;
+  color: #ff5200; }
+
+div.site-logo i {
+  display: block;
+  color: #ff5200;
+  font-size: 12px;
+  margin-top: -10px;
+  font-style: normal; }
+
+a.qq-chat {
+  margin-right: 8px; }
+  a.qq-chat > img {
+    margin-top: -3px; }
+
+div.head ul {
+  margin: 0;
+  padding: 0; }
+
+div.head div.top {
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #ddd;
+  height: 40px;
+  padding: 10px 0 0 0;
+  font-size: 12px; }
+  div.head div.top ul.left {
+    float: left; }
+    div.head div.top ul.left li {
+      float: left;
+      padding-right: 16px; }
+  div.head div.top ul.right {
+    float: right; }
+    div.head div.top ul.right li {
+      float: left;
+      padding-left: 16px; }
+
+div.head div.brand {
+  height: 130px; }
+  div.head div.brand div.site-logo {
+    padding: 0;
+    margin: 30px 0 0 0;
+    padding-left: 0;
+    float: left; }
+  div.head div.brand img.brcode {
+    margin: 18px 0 0 30px;
+    display: block;
+    float: left; }
+  div.head div.brand div.search {
+    margin: 40px 0 0 0;
+    float: right;
+    width: 330px; }
+    div.head div.brand div.search input {
+      border: 1px solid #ccc;
+      border-radius: 3px 0 0 3px;
+      border-right-style: none;
+      padding: 0 0 0 40px;
+      margin: 0;
+      width: 250px;
+      height: 40px;
+      display: block;
+      float: left; }
+    div.head div.brand div.search input:focus {
+      border-color: #fdb31c; }
+    div.head div.brand div.search span {
+      float: left;
+      margin: 5px 0 0 -245px;
+      display: block;
+      padding: 8px; }
+    div.head div.brand div.search button {
+      display: block;
+      float: left;
+      width: 80px;
+      height: 40px;
+      border-radius: 0 3px 3px 0; }
+  div.head div.brand div.user-menu {
+    margin: 24px 0 0 50px;
+    float: right;
+    width: 200px;
+    overflow: hidden;
+    height: 58px;
+    position: relative; }
+    div.head div.brand div.user-menu > div {
+      position: absolute;
+      z-index: 1000;
+      width: 200px;
+      background: #fff;
+      padding: 16px;
+      border: 1px solid transparent;
+      border-radius: 2px; }
+      div.head div.brand div.user-menu > div > div {
+        padding-bottom: 16px;
+        border-bottom: 1px dashed #ddd; }
+        div.head div.brand div.user-menu > div > div > img {
+          margin-right: 20px;
+          border-radius: 50%; }
+        div.head div.brand div.user-menu > div > div > span {
+          margin-left: 4px; }
+        div.head div.brand div.user-menu > div > div > span:last-child {
+          display: none; }
+      div.head div.brand div.user-menu > div > ul {
+        margin: 0;
+        padding-top: 8px; }
+        div.head div.brand div.user-menu > div > ul > li > a {
+          display: block;
+          padding: 5px;
+          color: #888 !important; }
+        div.head div.brand div.user-menu > div > ul > li > a:hover {
+          color: #ffa200 !important; }
+  div.head div.brand div.user-menu:hover {
+    overflow: visible; }
+    div.head div.brand div.user-menu:hover > div {
+      border: 1px solid #ddd; }
+      div.head div.brand div.user-menu:hover > div > div > a {
+        color: #ffa200 !important; }
+      div.head div.brand div.user-menu:hover > div > div > span {
+        display: none; }
+      div.head div.brand div.user-menu:hover > div > div > span:last-child {
+        display: inline; }
+
+div.fixed-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100; }
+
+div.menu {
+  background-color: #fff;
+  border-bottom: 2px solid #fdb31c;
+  height: 50px; }
+  div.menu div.category {
+    float: left;
+    width: 230px;
+    height: 50px; }
+    div.menu div.category a.btn-primary {
+      background-color: #ffa200;
+      padding: 10px 0 0 20px;
+      width: 230px;
+      height: 50px;
+      color: #fff !important;
+      font-size: 20px;
+      text-align: left; }
+      div.menu div.category a.btn-primary > img {
+        margin: -2px 2px 0 0; }
+    div.menu div.category div.items {
+      display: none;
+      position: relative;
+      z-index: 100;
+      height: 402px;
+      overflow: hidden; }
+      div.menu div.category div.items div.bg {
+        height: 400px;
+        width: 100%;
+        position: absolute;
+        background-color: #0c0c0c;
+        opacity: 0.85; }
+      div.menu div.category div.items ul {
+        padding: 0; }
+        div.menu div.category div.items ul li {
+          display: block; }
+          div.menu div.category div.items ul li a {
+            display: block;
+            padding: 18px 0 17px 15px;
+            color: #fff !important;
+            font-size: 18px;
+            opacity: 0.99;
+            animation: ani-head-menu-item-out 0.3s ease; }
+            div.menu div.category div.items ul li a img {
+              margin-right: 16px;
+              float: left; }
+            div.menu div.category div.items ul li a > div:last-child {
+              font-size: 12px; }
+          div.menu div.category div.items ul li a:active, div.menu div.category div.items ul li a:hover, div.menu div.category div.items ul li a:visited {
+            animation: ani-head-menu-item-in 0.3s ease;
+            background-color: #fdb31c; }
+  div.menu div.list {
+    font-size: 16px;
+    float: left;
+    padding: 0 0 0 50px; }
+    div.menu div.list li {
+      padding: 0 20px;
+      float: left;
+      height: 48px; }
+      div.menu div.list li > a {
+        display: block;
+        padding-top: 15px;
+        position: relative;
+        overflow: visible;
+        z-index: 100;
+        height: 48px; }
+        div.menu div.list li > a > img {
+          display: block;
+          float: left;
+          margin-top: -15px; }
+      div.menu div.list li > a:hover {
+        color: #fdb31c !important; }
+      div.menu div.list li > a.active {
+        color: #fdb31c !important; }
+
+#head-user > a.notice-icon {
+  background-color: red;
+  color: #fff !important;
+  border-radius: 50%;
+  padding: 2px 0;
+  text-align: center;
+  font-size: 9px;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  display: block;
+  float: right;
+  font-weight: normal;
+  line-height: 12px; }
+
+#right_panel {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 35px;
+  background: #000; }
+  #right_panel > a {
+    position: absolute;
+    right: 0; }
+  #right_panel > a.head {
+    top: 40px;
+    width: 35px;
+    height: 159px;
+    display: block;
+    background: url("images/sidebar-right.sprite.jpg") -10px -456px no-repeat; }
+  #right_panel > div#shopping-cart-panel.cart {
+    position: absolute;
+    right: 0;
+    top: 45%; }
+    #right_panel > div#shopping-cart-panel.cart > a {
+      width: 35px;
+      height: 123px;
+      display: block;
+      background: url("images/sidebar-right.sprite.jpg") -10px -143px no-repeat; }
+    #right_panel > div#shopping-cart-panel.cart > div.icon {
+      background-color: #fdb31c;
+      line-height: 16px;
+      min-width: 16px;
+      height: 16px;
+      left: 8px;
+      padding: 0 3px;
+      top: 7px;
+      display: block;
+      border-radius: 10px;
+      position: absolute;
+      font-size: 8px;
+      text-align: center;
+      color: #ffffff; }
+    #right_panel > div#shopping-cart-panel.cart > div.cart-list {
+      display: none;
+      position: absolute;
+      right: 35px;
+      width: 300px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 2px;
+      top: -200px;
+      padding: 40px 0 46px; }
+      #right_panel > div#shopping-cart-panel.cart > div.cart-list h4 {
+        font-size: 12px;
+        margin: 0;
+        padding: 12px;
+        font-weight: bold;
+        margin-top: -40px; }
+      #right_panel > div#shopping-cart-panel.cart > div.cart-list > ul {
+        height: 100%;
+        overflow: auto;
+        margin: 0;
+        padding: 0; }
+        #right_panel > div#shopping-cart-panel.cart > div.cart-list > ul li {
+          padding: 12px;
+          border-bottom: 1px dotted #ddd; }
+          #right_panel > div#shopping-cart-panel.cart > div.cart-list > ul li > a.image {
+            display: block;
+            float: left;
+            margin-right: 8px; }
+          #right_panel > div#shopping-cart-panel.cart > div.cart-list > ul li > a.title {
+            display: block;
+            float: left;
+            width: 140px; }
+          #right_panel > div#shopping-cart-panel.cart > div.cart-list > ul li > div.info {
+            float: right;
+            text-align: right; }
+            #right_panel > div#shopping-cart-panel.cart > div.cart-list > ul li > div.info > button {
+              padding: 0; }
+      #right_panel > div#shopping-cart-panel.cart > div.cart-list div.status {
+        position: absolute;
+        width: 100%;
+        bottom: 0;
+        background: #f8f8f8;
+        padding: 12px; }
+        #right_panel > div#shopping-cart-panel.cart > div.cart-list div.status > a.btn {
+          float: right;
+          margin-top: -3px; }
+  #right_panel > div#shopping-cart-panel.cart:hover > a {
+    width: 35px;
+    height: 123px;
+    display: block;
+    background: url("images/sidebar-right.sprite.jpg") -10px -10px no-repeat; }
+  #right_panel > div#shopping-cart-panel.cart:hover > div.cart-list {
+    display: block; }
+  #right_panel > div.chat {
+    position: absolute;
+    right: 0;
+    bottom: 80px;
+    width: 35px;
+    height: 35px;
+    display: block;
+    background: url("images/sidebar-right.sprite.jpg") -10px -321px no-repeat; }
+    #right_panel > div.chat div.right-chat-panel {
+      display: none;
+      position: absolute;
+      width: 200px;
+      left: -200px;
+      bottom: -60px;
+      z-index: 100000;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 2px; }
+      #right_panel > div.chat div.right-chat-panel h4 {
+        font-size: 12px;
+        margin: 0;
+        padding: 12px;
+        font-weight: bold; }
+      #right_panel > div.chat div.right-chat-panel > ul {
+        height: 100%;
+        overflow: auto;
+        margin: 0;
+        padding: 0; }
+        #right_panel > div.chat div.right-chat-panel > ul li {
+          padding: 12px 32px;
+          border-bottom: 1px dotted #ddd; }
+  #right_panel > div.chat:hover {
+    width: 125px;
+    height: 35px;
+    display: block;
+    background: url("images/sidebar-right.sprite.jpg") -10px -276px no-repeat; }
+    #right_panel > div.chat:hover div.right-chat-panel {
+      display: block;
+      left: -110px; }
+  #right_panel > a.feedback {
+    bottom: 40px;
+    width: 35px;
+    height: 35px;
+    display: block;
+    background: url("images/sidebar-right.sprite.jpg") -10px -411px no-repeat; }
+  #right_panel > a.feedback:hover {
+    width: 125px;
+    height: 35px;
+    display: block;
+    background: url("images/sidebar-right.sprite.jpg") -10px -366px no-repeat; }
+  #right_panel > a.go-top {
+    bottom: 0;
+    width: 35px;
+    height: 35px;
+    display: block;
+    background: url("images/sidebar-right.sprite.jpg") -10px -760px no-repeat; }
+  #right_panel > a.go-top:hover {
+    width: 125px;
+    height: 35px;
+    display: block;
+    background: url("images/sidebar-right.sprite.jpg") -10px -715px no-repeat; }
+
+footer div.features {
+  margin-top: 68px;
+  border-top: 2px solid #ffa200;
+  padding-top: 48px; }
+  footer div.features > div.container > ul {
+    height: 100px;
+    margin: 0;
+    padding: 0 0 36px 0;
+    border-bottom: 2px solid #f8f8f8; }
+    footer div.features > div.container > ul > li {
+      padding: 0;
+      margin: 0;
+      display: block;
+      width: 25%;
+      float: left;
+      font-size: 16px;
+      border-right: 1px solid #ddd; }
+      footer div.features > div.container > ul > li > img {
+        float: left;
+        display: block;
+        margin: 0px 10px 0 20px; }
+      footer div.features > div.container > ul > li > div {
+        margin-top: 10px; }
+      footer div.features > div.container > ul > li > div:last-child {
+        margin-top: 4px;
+        font-size: 12px;
+        color: #ccc; }
+    footer div.features > div.container > ul li:last-child {
+      border-right: none; }
+
+footer > div.articles > div.container {
+  padding: 38px 0; }
+  footer > div.articles > div.container dl {
+    float: left;
+    padding: 0 140px 0 40px; }
+  footer > div.articles > div.container dd {
+    padding: 0 0 8px; }
+    footer > div.articles > div.container dd a {
+      color: #888 !important; }
+    footer > div.articles > div.container dd a:active, footer > div.articles > div.container dd a:hover, footer > div.articles > div.container dd a:visited {
+      color: #888 !important; }
+  footer > div.articles > div.container dt {
+    font-size: 16px;
+    padding: 0 0 12px; }
+
+footer div.footer {
+  border-top: 3px solid #ffa200;
+  background: #000;
+  padding: 30px 0; }
+  footer div.footer div.container div.links {
+    color: #ddd; }
+    footer div.footer div.container div.links > ul {
+      margin: 0;
+      padding: 0; }
+      footer div.footer div.container div.links > ul > li {
+        float: left;
+        margin: 0 16px 16px 0; }
+        footer div.footer div.container div.links > ul > li > a {
+          color: #ccc !important; }
+  footer div.footer div.container div.icp {
+    color: #888; }
+
+.slick-slider {
+  overflow: hidden; }
+
+.carousel {
+  height: 400px;
+  overflow: hidden; }
+  .carousel button.slick-prev {
+    left: 50px;
+    width: 40px;
+    height: 40px;
+    z-index: 200;
+    opacity: 0.3; }
+  .carousel button.slick-prev:hover {
+    opacity: 0.8; }
+  .carousel button.slick-prev:before {
+    font-size: 40px; }
+  .carousel button.slick-next {
+    right: 60px;
+    opacity: 0.3; }
+  .carousel button.slick-next:hover {
+    opacity: 0.8; }
+  .carousel button.slick-next:before {
+    font-size: 40px; }
+  .carousel ul.slick-dots {
+    bottom: 20px; }
+    .carousel ul.slick-dots > li button:before {
+      font-size: 20px;
+      background-color: #444;
+      border-color: #222; }
+    .carousel ul.slick-dots > li.slick-active button:before {
+      font-size: 20px;
+      background-color: #fff; }
+  .carousel div.item {
+    margin: 0;
+    padding: 1px;
+    background-position: center;
+    height: 400px;
+    width: 100%; }
+
+.banner {
+  height: 88px; }
+  .banner div.item {
+    height: 88px; }
+  .banner ul.slick-dots {
+    display: none;
+    bottom: 0; }
+    .banner ul.slick-dots button:before {
+      font-size: 12px; }
+
+#user-head-notification > span {
+  background-color: red;
+  color: #fff;
+  margin: 0 0 0 5px;
+  padding: 0 5px;
+  font-size: 12px;
+  border-radius: 50%;
+  display: inline-block; }
+
+div.user-admin-head {
+	height: 120px;
+	overflow: hidden;
+	background-image: url(/css/desktop/images/userbg.jpg);
+	background-position: center;
+	color: #fff;
+	margin: 0 0 20px 0;
+}
+  div.user-admin-head div.icon {
+    float: left;
+    width: 120px;
+    padding: 20px 0 0 10px; }
+    div.user-admin-head div.icon img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%; }
+    div.user-admin-head div.icon span {
+      position: relative;
+      top: -80px;
+      opacity: 0.6;
+      background-color: #555;
+      border-radius: 50%;
+      font-weight: bold;
+      font-size: 16px;
+      display: block;
+      padding: 30px 0 0 10px;
+      width: 80px;
+      height: 80px;
+      color: #fff;
+      cursor: pointer;
+      display: none; }
+    div.user-admin-head div.icon input {
+      display: none;
+      /*cursor:pointer;
+           position:relative;
+           top:-160px;
+           opacity:0.01;
+           display:none;
+           width:80px;
+           height:80px;*/ }
+  div.user-admin-head div.icon:hover span {
+    display: block; }
+  div.user-admin-head div.icon:hover input {
+    display: block; }
+  div.user-admin-head div.info {
+    float: left;
+    width: 830px;
+    padding: 45px 0 0 0; }
+    div.user-admin-head div.info div.line1 {
+      padding: 0 0 0 20px;
+      margin-bottom: 20px; }
+    div.user-admin-head div.info div.line2 {
+      /*span.nick-edit:hover{
+               .fa{display:block;right:-20px; top:5px; position:absolute}
+           }*/ }
+      div.user-admin-head div.info div.line2 a, div.user-admin-head div.info div.line2 span {
+        display: inline-block;
+        margin: 0 20px;
+        color: #fff !important;
+        position: relative; }
+      div.user-admin-head div.info div.line2 span.nick-edit {
+        margin: 0;
+        cursor: pointer; }
+        div.user-admin-head div.info div.line2 span.nick-edit input {
+          color: #333;
+          border: 1px solid #fff;
+          font-size: 12px; }
+        div.user-admin-head div.info div.line2 span.nick-edit .fa {
+          display: block;
+          right: -20px;
+          top: 5px;
+          position: absolute; }
+  div.user-admin-head div.actions {
+    float: left;
+    width: 240px;
+    padding: 50px 0 0 0; }
+    div.user-admin-head div.actions a {
+      color: #fff !important;
+      display: block;
+      float: left;
+      width: 80px;
+      text-align: center; }
+      div.user-admin-head div.actions a img {
+        display: block;
+        margin: 0 auto; }
+
+div.user-admin-menu {
+  display: block;
+  float: left;
+  width: 230px;
+  background-color: #f8f8f8; }
+  div.user-admin-menu ul {
+    margin: 0;
+    padding: 0; }
+    div.user-admin-menu ul li {
+      border-bottom: 1px solid #ddd;
+      padding: 12px;
+      text-align: center; }
+      div.user-admin-menu ul li img {
+        margin-right: 6px; }
+      div.user-admin-menu ul li a {
+        display: block; }
+    div.user-admin-menu ul li.first {
+      background-color: #ffa200; }
+      div.user-admin-menu ul li.first a, div.user-admin-menu ul li.first a:visited {
+        color: #fff !important; }
+    div.user-admin-menu ul li.active {
+      background-color: #fff;
+      border-left: 2px solid #ffa200; }
+
+div.user-admin-body {
+  float: left;
+  width: 960px;
+  margin: 0 0 0 20px;
+  min-height: 600px; }
+
+#user-home div.header {
+  margin: 0 0 20px;
+  border: 1px solid #ddd;
+  padding: 20px 0;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px RGBA(0, 0, 0, 0.2); }
+  #user-home div.header ul {
+    margin: 0;
+    padding: 0; }
+    #user-home div.header ul li {
+      float: left;
+      padding: 10px 40px;
+      border-right: 1px dotted #ccc;
+      text-align: center; }
+      #user-home div.header ul li dl {
+        padding: 10px; }
+        #user-home div.header ul li dl dt {
+          display: block;
+          font-weight: normal;
+          font-size: 16px;
+          margin-bottom: 20px; }
+        #user-home div.header ul li dl dd {
+          display: block;
+          font-size: 24px;
+          color: #080; }
+          #user-home div.header ul li dl dd > a {
+            color: #080 !important; }
+    #user-home div.header ul li:last-child {
+      border-right: none; }
+      #user-home div.header ul li:last-child a.btn {
+        margin-top: 40px;
+        width: 150px;
+        padding: 10px; }
+
+div.user-security {
+  padding: 40px;
+  border: 1px solid #ccc; }
+  div.user-security div.panel-group div.panel {
+    border: none;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    border-radius: 2px; }
+    div.user-security div.panel-group div.panel div.panel-heading div.panel-title {
+      height: 30px;
+      font-size: 13px; }
+      div.user-security div.panel-group div.panel div.panel-heading div.panel-title div {
+        padding-top: 6px; }
+      div.user-security div.panel-group div.panel div.panel-heading div.panel-title div.item-title {
+        float: left;
+        font-weight: bold;
+        width: 120px;
+        text-align: right;
+        margin-right: 20px; }
+      div.user-security div.panel-group div.panel div.panel-heading div.panel-title div.item-desc {
+        float: left;
+        width: 350px; }
+      div.user-security div.panel-group div.panel div.panel-heading div.panel-title div.item-status {
+        color: #040;
+        font-weight: bold;
+        float: left;
+        width: 100px;
+        text-align: center; }
+      div.user-security div.panel-group div.panel div.panel-heading div.panel-title div.item-value {
+        float: left;
+        width: 150px;
+        text-align: center; }
+
+div.recharge div.panel {
+  border: 1px solid #ddd;
+  padding: 40px 20px;
+  min-height: 600px; }
+  div.recharge div.panel label {
+    display: inline-block;
+    padding: 10px 20px; }
+  div.recharge div.panel ul.options li {
+    padding: 10px 40px; }
+    div.recharge div.panel ul.options li img {
+      margin-right: 10px; }
+  div.recharge div.panel div.amount {
+    margin-bottom: 20px; }
+    div.recharge div.panel div.amount ul li.other-amount-input {
+      padding: 10px 30px;
+      text-align: center;
+      border-color: #ffa200; }
+      div.recharge div.panel div.amount ul li.other-amount-input input {
+        width: 60px;
+        margin: 0;
+        height: 20px;
+        border-left: none;
+        border-top: none;
+        border-right: none;
+        border-bottom: 1px solid #ccc;
+        text-align: right;
+        padding-right: 4px; }
+  div.recharge div.panel div.platform {
+    margin-bottom: 20px; }
+  div.recharge div.panel div.submit {
+    padding: 20px 110px;
+    margin-bottom: 20px; }
+    div.recharge div.panel div.submit button {
+      margin-top: 20px;
+      width: 200px;
+      height: 40px; }
+  div.recharge div.panel div.help {
+    padding: 20px; }
+    div.recharge div.panel div.help a {
+      color: #ffa200 !important; }
+
+div.qrcode h3 {
+  text-align: center;
+  font-size: 18px;
+  padding: 20px; }
+  div.qrcode h3 b {
+    color: #ffa200; }
+
+div.qrcode div.alert {
+  text-align: center;
+  background-color: #ffffc0;
+  border-color: #ffffc0;
+  color: #ffa200; }
+
+div.qrcode div.imgs {
+  padding: 10px 0 20px;
+  text-align: center; }
+  div.qrcode div.imgs img:last-child {
+    width: 250px; }
+  div.qrcode div.imgs img:first-child {
+    margin-right: 100px; }
+
+div.qrcode div.status {
+  border-top: 1px solid #ddd;
+  padding: 20px; }
+  div.qrcode div.status dl {
+    width: 300px;
+    margin: 0 auto; }
+    div.qrcode div.status dl dt {
+      float: left;
+      font-weight: normal;
+      margin-right: 10px; }
+
+div.filter-panel {
+  margin-bottom: 30px; }
+  div.filter-panel div.row {
+    margin: 0 0 20px 20px; }
+
+#trade-history th, #trade-history td {
+  padding: 10px;
+  font-size: 12px; }
+
+#trade-history td.codes {
+  width: 140px; }
+
+#trade-history th.name, #trade-history td.name {
+  width: 300px;
+  text-align: left; }
+  #trade-history th.name div.process-bar, #trade-history td.name div.process-bar {
+    height: 6px;
+    background-color: #ddd;
+    border-radius: 1px; }
+  #trade-history th.name div.process, #trade-history td.name div.process {
+    height: 6px;
+    background-color: #ffa200; }
+  #trade-history th.name ul.status, #trade-history td.name ul.status {
+    margin: 0;
+    padding: 0;
+    height: 70px; }
+    #trade-history th.name ul.status li, #trade-history td.name ul.status li {
+      width: 33%;
+      float: left;
+      display: block;
+      text-align: center; }
+      #trade-history th.name ul.status li div, #trade-history td.name ul.status li div {
+        margin-top: 6px; }
+
+div.label {
+  color: #888;
+  font-weight: normal;
+  font-size: 14px;
+  text-align: right;
+  padding-top: 7px; }
+
+#user-addresses ul li {
+	float: left;
+	background-image: url(/css/desktop/images/address.jpg);
+	background-position: top;
+	background-repeat: repeat-x;
+	margin: 0 20px 20px 0;
+	padding: 0px 10px 20px;
+	border: 1px solid #ddd;
+	height: 150px;
+	width: 280px;
+}
+  #user-addresses ul li div.cmds {
+    text-align: right;
+    padding-top: 5px; }
+    #user-addresses ul li div.cmds span.fa {
+      color: #888;
+      font-size: 13px;
+      padding: 0 10px; }
+    #user-addresses ul li div.cmds span.default {
+      font-weight: bold;
+      font-size: 12px; }
+  #user-addresses ul li div.name {
+    border-bottom: 1px dotted #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 10px; }
+
+#user-addresses ul li.add {
+  padding: 40px;
+  text-align: center;
+  font-size: 20px;
+  color: #888;
+  cursor: pointer; }
+
+#win-records table td, #objectprize table td {
+  font-size: 12px; }
+
+#user-invite .invite-link {
+  padding: 30px 50px; }
+  #user-invite .invite-link label {
+    float: left;
+    font-size: 20px;
+    color: #888;
+    margin: 7px 5px 0 0; }
+  #user-invite .invite-link input {
+    margin-left: 100px !important;
+    width: 500px !important;
+    background-color: #fff; }
+
+#user-invite .invite-panel {
+  padding: 30px; }
+  #user-invite .invite-panel > div {
+    position: relative;
+    float: left;
+    margin: 20px 20px; }
+    #user-invite .invite-panel > div > .btn {
+      width: 200px; }
+    #user-invite .invite-panel > div > a {
+      background-color: #ffffc0; }
+    #user-invite .invite-panel > div > button {
+      background-color: #ffa200;
+      color: #fff; }
+  #user-invite .invite-panel > div.user_invite_weichat > div {
+    position: absolute;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 20px;
+    background: #f8f8f8; }
+  #user-invite .invite-panel > div.user_invite_sms > div {
+    position: absolute;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 10px;
+    width: 260px !important;
+    background-color: #f8f8f8; }
+    #user-invite .invite-panel > div.user_invite_sms > div > div {
+      margin-bottom: 10px; }
+    #user-invite .invite-panel > div.user_invite_sms > div > div.content {
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 3px; }
+    #user-invite .invite-panel > div.user_invite_sms > div > div.phonenumber input {
+      width: 100% !important; }
+    #user-invite .invite-panel > div.user_invite_sms > div > div.verifycode input {
+      width: 100px;
+      float: left; }
+    #user-invite .invite-panel > div.user_invite_sms > div > div.error {
+      color: #fdb31c; }
+    #user-invite .invite-panel > div.user_invite_sms > div > div.submit > button {
+      width: 100%; }
+
+#user-invite .activities {
+  border-top: 1px solid #ccc;
+  padding-top: 20px; }
+
+.notification-detail section {
+  padding: 0 50px; }
+
+#user-notification tr > td:last-child {
+  width: 100px;
+  padding: 0px; }
+  #user-notification tr > td:last-child button {
+    color: #888;
+    display: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px; }
+
+#user-notification tr:hover > td:last-child button {
+  display: inline-block; }
+
+#user-notification td.new {
+  color: #ffa200; }
+  #user-notification td.new > a {
+    color: #ffa200 !important; }
+
+div.user-page {
+	background-image: url(/css/desktop/images/login_bg.jpg);
+	background-position: center;
+	height: 848px;
+	padding: 60px;
+}
+  div.user-page div.head {
+    text-align: center; }
+  div.user-page div.container {
+    width: 320px;
+    padding: 30px 0; }
+
+div.signin-panel {
+  position: relative; }
+
+div.signup-panel {
+  margin-bottom: 10px; }
+
+div.reset-password-panel h3 {
+  text-align: center; }
+
+div.reset-password-panel form.reset-password {
+  margin: 0 auto; }
+
+/*>div:first-child{
+        position:fixed;
+        left:0;
+        top:0;
+        right:0;
+        bottom:0;
+        opacity:0.1;
+        background-color:#000;
+        z-index:1000;
+    }*/
+#dlg-signup img.dlg-logo {
+  margin-bottom: 20px; }
+
+#dlg-signup span.help-block {
+  left: -30px;
+  top: 43px; }
+
+#dlg-signin img.dlg-logo {
+  margin-bottom: 20px; }
+
+#dlg-signin span.help-block {
+  left: -30px;
+  top: 43px; }
+
+#wx-signin-qr {
+  position: absolute;
+  left: -380px;
+  top: -50px;
+  width: 350px;
+  background-color: #fcfcfc;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+  display: none; }
+  #wx-signin-qr > span {
+    color: #fdb31c; }
+
+div.product-list {
+  margin-bottom: 20px; }
+  div.product-list div.head {
+    padding: 30px 0 0 0; }
+    div.product-list div.head div.floor {
+      float: left;
+      font-size: 18px;
+      margin: 0 0 0 0;
+      padding: 1px 2px 1px 10px;
+      border-left: 5px solid #ffa200;
+      line-height: 1; }
+    div.product-list div.head h3.title {
+      margin: 0;
+      padding: 1px 0 1px 0;
+      font-size: 18px;
+      float: left; }
+    div.product-list div.head div.more {
+      float: right;
+      padding: 10px 0 0 6px;
+      font-size: 12px;
+      font-family: 宋体;
+      cursor: pointer; }
+      div.product-list div.head div.more > a {
+        color: #ccc !important; }
+  div.product-list div.head:after, div.product-list ul.items:after {
+    content: " ";
+    display: block;
+    height: 0;
+    visibility: hidden;
+    clear: both; }
+  div.product-list ul.items {
+    clear: both;
+    margin: 0 -4px 0 0;
+    padding: 1px 0 0 1px; }
+
+li.list-item {
+  float: left;
+  padding: 20px;
+  border: 1px solid #ddd;
+  margin: -1px 0 0 -1px; }
+
+li.list-item:hover {
+  border: 2px solid #ffa200;
+  margin: -2px 1px 1px -2px;
+  padding: 20px 18px 18px 20px;
+  position: relative; }
+
+.product-item {
+  position: relative; }
+  .product-item img.product-tag10 {
+    position: absolute;
+    right: 50px;
+    top: 30px; }
+  .product-item img {
+    display: block;
+    margin: 15px auto; }
+  .product-item h5 {
+    margin: 0 0 8px 0;
+    padding: 0;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 16px; }
+  .product-item span.price {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin: 0 0 10px; }
+  .product-item button.btn-product-buy {
+    width: 180px;
+    height: 40px; }
+  .product-item a.btn-product-buy {
+    width: 180px;
+    height: 40px;
+    padding-top: 10px; }
+  .product-item a.btn-product-buy:last-child {
+    margin-left: 30px;
+    width: 180px; }
+  .product-item button.btn-add {
+    border: none;
+    font-size: 30px;
+    padding: 0;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    padding-left: 10px;
+    color: #ffa200;
+    text-align: left;
+    line-height: 1; }
+  .product-item button.btn-add:active {
+    color: #fff;
+    background: #ffa200; }
+
+li.product-item {
+  width: 25%;
+  padding: 30px; }
+
+li.product-item:hover {
+  padding: 30px 28px 28px 30px; }
+  li.product-item:hover img.product-tag10 {
+    right: 48px; }
+
+li.product-round {
+  width: 20%;
+  position: relative;
+  height: 375px; }
+  li.product-round strong {
+    background-repeat: no-repeat;
+    position: absolute;
+    z-index: 1;
+    top: 10px;
+    left: 170px; }
+  li.product-round strong.opened {
+    background-image: url(/content/desktop/images/state-opened.png);
+    width: 55px;
+    height: 55px; }
+  li.product-round strong.open-waiting {
+    background-image: url(/content/desktop/images/state-opening.png);
+    width: 62px;
+    height: 48px; }
+  li.product-round img {
+    display: block;
+    margin: 15px auto; }
+  li.product-round h5 {
+    margin: 0 0 8px 0;
+    padding: 0;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 16px; }
+  li.product-round span.price {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin: 0 0 10px; }
+  li.product-round div.result {
+    background-color: #f8f8f8;
+    margin: 0 -8px -8px -10px;
+    height: 60px; }
+  li.product-round div.syncing {
+    padding: 20px;
+    text-align: center;
+    color: #ffa200; }
+  li.product-round div.pending {
+    padding: 20px;
+    text-align: center;
+    color: #888; }
+  li.product-round ins.timer {
+    padding-top: 12px; }
+  li.product-round div.win {
+    padding: 10px 8px;
+    font-size: 12px; }
+    li.product-round div.win img {
+      float: left;
+      border-radius: 50%;
+      margin: 0; }
+    li.product-round div.win dl {
+      margin: 0 0 0 50px;
+      padding: 4px 0 0 0; }
+      li.product-round div.win dl dt {
+        float: left;
+        font-weight: normal;
+        padding-right: 6px; }
+      li.product-round div.win dl dd {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        height: 18px; }
+
+ins.timer {
+  text-decoration: none;
+  visibility: hidden;
+  display: block;
+  height: 44px;
+  text-align: center; }
+  ins.timer b {
+    background-color: #ffa200;
+    width: 20px;
+    height: 30px;
+    padding: 6px;
+    color: #fff;
+    margin-right: 2px;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: bold;
+    border-radius: 2px; }
+  ins.timer i {
+    color: #ffa200;
+    display: inline-block;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: bold;
+    width: 20px;
+    margin-left: -6px; }
+
+div.product-detail div.head div.detail {
+  margin-right: 250px; }
+  div.product-detail div.head div.detail div.image-list {
+    float: left;
+    width: 430px; }
+    div.product-detail div.head div.detail div.image-list div.image {
+      padding: 25px;
+      width: 430px;
+      height: 430px;
+      border: 1px solid #f0f0f0;
+      border-radius: 2px; }
+    div.product-detail div.head div.detail div.image-list div.arrow span {
+      margin-left: 35px; }
+    div.product-detail div.head div.detail div.image-list ul {
+      margin: 0;
+      padding: 0; }
+      div.product-detail div.head div.detail div.image-list ul li {
+        float: left; }
+        div.product-detail div.head div.detail div.image-list ul li span {
+          visibility: hidden;
+          text-align: center;
+          display: block;
+          margin: 6px 0 6px 35px; }
+        div.product-detail div.head div.detail div.image-list ul li img {
+          border: 1px solid #f0f0f0;
+          border-radius: 1px;
+          margin-right: 10px; }
+      div.product-detail div.head div.detail div.image-list ul li.active span {
+        visibility: visible;
+        text-align: center;
+        font-size: 14px;
+        color: #ffa200;
+        font-weight: bold; }
+      div.product-detail div.head div.detail div.image-list ul li.active img {
+        border-color: #ffa200; }
+  div.product-detail div.head div.detail div.desc {
+    margin-left: 430px;
+    padding: 0 20px; }
+    div.product-detail div.head div.detail div.desc h2 {
+      margin: 0 0 20px 0;
+      padding: 0;
+      font-size: 22px; }
+    div.product-detail div.head div.detail div.desc div.price {
+      margin-top: 10px;
+      color: #ccc; }
+    div.product-detail div.head div.detail div.desc div.product-status {
+      margin-top: 16px; }
+    div.product-detail div.head div.detail div.desc div.tooltip-container div.tooltip {
+      width: 100px;
+      opacity: 1; }
+    div.product-detail div.head div.detail div.desc div.quantity {
+      height: 40px; }
+      div.product-detail div.head div.detail div.desc div.quantity div.title {
+        margin-top: 2px; }
+      div.product-detail div.head div.detail div.desc div.quantity div.input-group {
+        width: 130px;
+        margin-right: 20px; }
+      div.product-detail div.head div.detail div.desc div.quantity div.special button {
+        margin-right: 6px; }
+    div.product-detail div.head div.detail div.desc div.actions {
+      margin-top: 20px;
+      text-align: center; }
+      div.product-detail div.head div.detail div.desc div.actions button {
+        width: 200px;
+        height: 40px; }
+      div.product-detail div.head div.detail div.desc div.actions button.btn-primary {
+        margin-right: 20px; }
+      div.product-detail div.head div.detail div.desc div.actions button.btn-default {
+        margin-right: 20px;
+        background-color: #ff4000;
+        border: none;
+        color: #fff; }
+      div.product-detail div.head div.detail div.desc div.actions button.btn-default:hover, div.product-detail div.head div.detail div.desc div.actions button.btn-default:active {
+        background-color: #f02000; }
+    div.product-detail div.head div.detail div.desc ul.features {
+      margin-top: 20px;
+      border-top: 1px dotted #f0f0f0;
+      padding: 20px 0; }
+      div.product-detail div.head div.detail div.desc ul.features li {
+        display: inline-block; }
+    div.product-detail div.head div.detail div.desc div.user-status {
+      border: 1px solid #fcfcfc;
+      padding: 30px;
+      background-color: #ffffc0;
+      margin-bottom: 20px;
+      line-height: 1.3; }
+
+div.product-detail div.head div.history {
+  width: 250px;
+  float: right;
+  height: 600px;
+  background-color: #f8f8f8; }
+  div.product-detail div.head div.history div.head {
+    background-color: #888;
+    padding: 10px;
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: #fff; }
+  div.product-detail div.head div.history div.body {
+    padding: 20px; }
+    div.product-detail div.head div.history div.body div.waiting {
+      height: 290px;
+      font-size: 18px;
+      text-align: center; }
+      div.product-detail div.head div.history div.body div.waiting div.pending {
+        color: #ccc;
+        padding: 40px 10px; }
+      div.product-detail div.head div.history div.body div.waiting div.syncing {
+        color: #ffa200;
+        padding: 40px 10px; }
+      div.product-detail div.head div.history div.body div.waiting div.clock span.fa {
+        color: #ffa200;
+        font-size: 40px;
+        margin: 20px 0 20px -20px; }
+      div.product-detail div.head div.history div.body div.waiting div.clock ins.timer {
+        margin-top: 20px; }
+    div.product-detail div.head div.history div.body div.win {
+      height: 290px; }
+      div.product-detail div.head div.history div.body div.win img {
+        margin: 10px 48px;
+        border: 1px solid #ccc;
+        padding: 5px;
+        border-radius: 2px; }
+      div.product-detail div.head div.history div.body div.win div.name {
+        text-align: center;
+        padding-bottom: 5px;
+        border-bottom: 1px dotted #ccc; }
+      div.product-detail div.head div.history div.body div.win dl {
+        font-size: 12px;
+        padding: 20px 10px 0; }
+        div.product-detail div.head div.history div.body div.win dl dt {
+          float: left;
+          margin-right: 4px;
+          font-weight: normal; }
+        div.product-detail div.head div.history div.body div.win dl dd {
+          margin-bottom: 4px; }
+          div.product-detail div.head div.history div.body div.win dl dd b {
+            font-weight: normal;
+            color: #ffa200; }
+    div.product-detail div.head div.history div.body div.tail {
+      text-align: center; }
+      div.product-detail div.head div.history div.body div.tail a {
+        font-size: 12px; }
+      div.product-detail div.head div.history div.body div.tail ul {
+        margin: 20px 0 10px 6px; }
+      div.product-detail div.head div.history div.body div.tail li {
+        font-size: 12px;
+        width: 90px;
+        margin: 0 8px 4px 0;
+        background-color: #fff; }
+      div.product-detail div.head div.history div.body div.tail li.active {
+        color: #ffa200; }
+      div.product-detail div.head div.history div.body div.tail button {
+        width: 90px;
+        height: 30px;
+        font-size: 12px !important; }
+
+div.product-detail div.tabs {
+  margin-top: 20px; }
+  div.product-detail div.tabs div.tab-content div.tab-pane ul {
+    width: 900px;
+    margin: 0 auto; }
+    div.product-detail div.tabs div.tab-content div.tab-pane ul li {
+      display: block; }
+
+#allCodesContent {
+  margin: 20px; }
+  #allCodesContent li {
+    margin-bottom: 10px; }
+    #allCodesContent li div:first-child {
+      font-weight: bold; }
+
+#product-share-list ul {
+  margin: 0;
+  padding: 0 20px; }
+  #product-share-list ul li {
+    margin-bottom: 50px; }
+    #product-share-list ul li div.user {
+      float: left;
+      text-align: center; }
+      #product-share-list ul li div.user img {
+        border: 1px solid #ddd; }
+    #product-share-list ul li div.share {
+      border: 1px solid #ddd;
+      margin-left: 120px; }
+      #product-share-list ul li div.share div.head {
+        padding: 16px;
+        border-bottom: 1px dotted #ddd; }
+        #product-share-list ul li div.share div.head div.title {
+          font-size: 18px; }
+          #product-share-list ul li div.share div.head div.title span {
+            font-size: 12px;
+            color: #888; }
+        #product-share-list ul li div.share div.head div.pull-right {
+          font-size: 12px;
+          color: #888; }
+      #product-share-list ul li div.share div.content {
+        padding: 16px;
+        color: #888; }
+      #product-share-list ul li div.share ul {
+        padding: 0;
+        margin: 0 0 16px 16px; }
+        #product-share-list ul li div.share ul li {
+          padding: 0;
+          margin: 0 10px 10px 0;
+          float: left; }
+
+div.product-history div.head div.detail {
+  margin-right: 250px; }
+  div.product-history div.head div.detail div.image {
+    float: left;
+    width: 250px;
+    height: 210px;
+    border: 1px solid #ddd;
+    padding: 5px; }
+    div.product-history div.head div.detail div.image img {
+      margin: 0 auto;
+      display: block; }
+  div.product-history div.head div.detail div.desc {
+    height: 220px;
+    margin-left: 250px;
+    padding: 0 20px; }
+    div.product-history div.head div.detail div.desc h2 {
+      margin: 0 0 20px 0;
+      padding: 0;
+      font-size: 22px;
+      font-weight: normal; }
+	div.product-history div.head div.detail div.desc div.code-status {
+		background-image: url(/css/desktop/images/item-waiting-bg.gif);
+		background-size: cover;
+		height: 120px;
+		width: 550px;
+		margin: 30px 50px;
+		padding: 25px 60px;
+	}
+      div.product-history div.head div.detail div.desc div.code-status div.pending {
+        text-align: center;
+        font-size: 24px;
+        padding: 20px;
+        color: #888; }
+      div.product-history div.head div.detail div.desc div.code-status div.syncing {
+        text-align: center;
+        font-size: 24px;
+        padding: 20px;
+        color: #ffa200; }
+      div.product-history div.head div.detail div.desc div.code-status div.clock > div:first-child {
+        float: left;
+        width: 150px;
+        padding-left: 20px;
+        margin-top: 30px;
+        font-size: 24px; }
+      div.product-history div.head div.detail div.desc div.code-status div.clock ins {
+        margin: 30px;
+        float: left;
+        width: 220px; }
+        div.product-history div.head div.detail div.desc div.code-status div.clock ins b {
+          font-size: 24px; }
+        div.product-history div.head div.detail div.desc div.code-status div.clock ins i {
+          font-size: 24px;
+          margin: 0 1px 0 -8px; }
+      div.product-history div.head div.detail div.desc div.code-status div.win-code > div {
+        float: left; }
+        div.product-history div.head div.detail div.desc div.code-status div.win-code > div > div:first-child {
+          margin-top: 10px;
+          font-size: 24px;
+          color: #888; }
+        div.product-history div.head div.detail div.desc div.code-status div.win-code > div > div:last-child {
+          font-size: 20px;
+          color: #ffa200; }
+      div.product-history div.head div.detail div.desc div.code-status div.win-code > div:last-child {
+        margin-left: 20px;
+        font-size: 60px;
+        color: #ffa200;
+        font-weight: bold;
+        letter-spacing: -1px; }
+  div.product-history div.head div.detail div.round-status {
+    border: 1px solid #ddd;
+    background-color: #f8f8f8;
+    width: 930px;
+    height: 140px; }
+    div.product-history div.head div.detail div.round-status div.win {
+      float: left;
+      width: 450px;
+      padding: 10px;
+      height: 110px; }
+      div.product-history div.head div.detail div.round-status div.win a.icon {
+        float: left;
+        margin: 10px; }
+      div.product-history div.head div.detail div.round-status div.win div.name {
+        padding-top: 10px; }
+      div.product-history div.head div.detail div.round-status div.win dl {
+        font-size: 12px; }
+        div.product-history div.head div.detail div.round-status div.win dl dt {
+          float: left;
+          font-weight: normal;
+          margin-right: 4px; }
+        div.product-history div.head div.detail div.round-status div.win dl dd b {
+          font-weight: normal;
+          color: #ffa200; }
+		div.product-history div.head div.detail div.round-status div.win .waiting {
+			padding: 70px 0 0 170px;
+			height: 120px;
+			color: #ffa200;
+			font-size: 20px;
+			background-image: url(/css/desktop/images/win.png);
+			background-repeat: no-repeat;
+		}
+    div.product-history div.head div.detail div.round-status div.user-status {
+      width: 450px;
+      height: 100px;
+      float: left;
+      border: 1px solid #ddd;
+      background-color: #ffffc0;
+      padding: 10px 30px;
+      margin: 20px 0;
+      line-height: 1.3; }
+  div.product-history div.head div.detail ul.rounds {
+    width: 930px;
+    height: 30px;
+    display: block;
+    margin: -3px 0 0 0;
+    padding: 0;
+    text-align: center; }
+    div.product-history div.head div.detail ul.rounds li {
+      float: left;
+      display: inline-block;
+      border-right: 1px solid #ddd;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      width: 12.5%;
+      height: 40px;
+      padding-top: 8px;
+      cursor: pointer; }
+    div.product-history div.head div.detail ul.rounds li:first-child {
+      border-left: 1px solid #ddd; }
+    div.product-history div.head div.detail ul.rounds li.active {
+      border: 1px solid #ffa200;
+      background-color: #ffa200;
+      color: #FFF; }
+  div.product-history div.head div.detail div.intro {
+    width: 930px;
+    margin-top: 30px;
+    padding: 15px 15px 15px 80px;
+    border: 1px solid #ddd;
+    background-color: #fcfcfc; }
+    div.product-history div.head div.detail div.intro span.fa {
+      display: block;
+      margin: 0 0 -40px -50px;
+      font-size: 20px;
+      background-color: #ffa200;
+      width: 40px;
+      height: 40px;
+      padding: 8px 0 0 8px;
+      color: #fff;
+      border-radius: 50%; }
+    div.product-history div.head div.detail div.intro ul li {
+      margin-top: 20px; }
+      div.product-history div.head div.detail div.intro ul li label {
+        font-weight: bold; }
+      div.product-history div.head div.detail div.intro ul li div.expr dl {
+        display: inline-block;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 15px;
+        text-align: center; }
+        div.product-history div.head div.detail div.intro ul li div.expr dl dt {
+          font-weight: normal;
+          font-size: 12px; }
+        div.product-history div.head div.detail div.intro ul li div.expr dl dd {
+          color: #ffa200; }
+      div.product-history div.head div.detail div.intro ul li div.expr dl:first-child {
+        background-color: #fff1ec;
+        border: 1px solid #fdb31c; }
+      div.product-history div.head div.detail div.intro ul li div.expr s {
+        display: inline-block;
+        font-style: normal;
+        text-decoration: none;
+        font-size: 40px;
+        color: #ccc; }
+
+div.product-history div.head div.cur-round {
+  width: 250px;
+  float: right;
+  height: 600px;
+  background-color: #f8f8f8; }
+  div.product-history div.head div.cur-round div.head {
+    background-color: #888;
+    padding: 10px;
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: #fff; }
+  div.product-history div.head div.cur-round div.body {
+    padding: 20px; }
+    div.product-history div.head div.cur-round div.body .product-status li {
+      width: 50%; }
+
+div.product-history #allRoundsContent {
+  padding-left: 10px; }
+  div.product-history #allRoundsContent li {
+    margin: 0 10px 10px 0;
+    width: 100px; }
+
+div.product-history div.tabs {
+  margin-top: 20px; }
+
+div.product-history div.calc-desc {
+  border: 1px solid #ccc;
+  height: 200px; }
+  div.product-history div.calc-desc > div:first-child {
+    background-color: #fdb31c;
+    height: 200px;
+    float: left;
+    width: 140px;
+    color: #fff;
+    padding: 20px;
+    text-align: center; }
+    div.product-history div.calc-desc > div:first-child span.fa {
+      font-size: 80px;
+      margin: 0 0 10px -60%; }
+    div.product-history div.calc-desc > div:first-child div {
+      margin-bottom: 2px;
+      font-size: 20px; }
+  div.product-history div.calc-desc > div:last-child {
+    margin-left: 160px;
+    padding: 10px;
+    color: #888; }
+    div.product-history div.calc-desc > div:last-child > p:last-child {
+      color: #ffa200; }
+
+div.product-history table.calc-table {
+  width: 100%;
+  margin-top: 20px;
+  background-color: #f8f8f8;
+  font-size: 12px; }
+  div.product-history table.calc-table th {
+    height: 40px;
+    color: #888;
+    font-weight: normal;
+    text-align: center;
+    font-size: 18px; }
+  div.product-history table.calc-table td {
+    text-align: center;
+    padding: 10px; }
+    div.product-history table.calc-table td span.fa {
+      color: #ffa200;
+      margin: 0 20px; }
+    div.product-history table.calc-table td span.tv {
+      color: #ffa200; }
+  div.product-history table.calc-table tr {
+    border-left: 1px solid #f8f8f8;
+    border-right: 1px solid #f8f8f8;
+    border-bottom: 1px solid #ddd; }
+  div.product-history table.calc-table tr.sp td {
+    text-align: center;
+    background-color: #fdb31c;
+    color: #fff; }
+  div.product-history table.calc-table tr.sp td.calc {
+    padding: 0; }
+  div.product-history table.calc-table tr.sp div.calc {
+    text-align: left;
+    border: 1px solid #fdb31c;
+    padding: 20px;
+    font-size: 14px;
+    background-color: #fff1ec;
+    color: #333; }
+    div.product-history table.calc-table tr.sp div.calc a {
+      color: #ffa200 !important; }
+    div.product-history table.calc-table tr.sp div.calc #lottery-code2, div.product-history table.calc-table tr.sp div.calc #lottery-code3, div.product-history table.calc-table tr.sp div.calc #win-index1, div.product-history table.calc-table tr.sp div.calc #win-index2, div.product-history table.calc-table tr.sp div.calc #win-code2 {
+      color: #ffa200; }
+    div.product-history table.calc-table tr.sp div.calc > div:first-child {
+      float: left;
+      font-size: 18px;
+      color: #ffa200; }
+    div.product-history table.calc-table tr.sp div.calc > div:last-child {
+      margin-left: 100px; }
+      div.product-history table.calc-table tr.sp div.calc > div:last-child p.result {
+        background-color: #ffa200;
+        color: #fff;
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 3px; }
+
+#allCodesContent {
+  margin: 20px; }
+  #allCodesContent li {
+    margin-bottom: 10px; }
+    #allCodesContent li div:first-child {
+      font-weight: bold; }
+
+div.product-category ol.breadcrumb {
+  background: none;
+  margin-top: 8px;
+  height: 20px; }
+
+div.product-category div.types {
+  border: 1px solid #ddd; }
+  div.product-category div.types div.head {
+    font-size: 16px;
+    padding: 8px 16px;
+    border-bottom: 1px solid #ddd; }
+  div.product-category div.types ul {
+    height: 160px;
+    margin: 0;
+    padding: 0; }
+    div.product-category div.types ul li {
+      float: left;
+      width: 12.5%;
+      text-align: center;
+      padding: 30px; }
+      div.product-category div.types ul li img {
+        display: block;
+        margin: 0 auto 10px; }
+      div.product-category div.types ul li span {
+        display: block; }
+    div.product-category div.types ul li:hover img {
+      display: block;
+      width: 80%;
+      margin: -9px auto 10px; }
+    div.product-category div.types ul li.active span {
+      color: #ffa200; }
+
+div.product-category div.products {
+  margin-top: 10px; }
+  div.product-category div.products div.toolbar {
+    padding: 20px; }
+    div.product-category div.products div.toolbar button.buy-all {
+      float: right; }
+    div.product-category div.products div.toolbar button {
+      border: none; }
+    div.product-category div.products div.toolbar button.active {
+      background-color: #ffa200;
+      color: #fff; }
+  div.product-category div.products ul.items {
+    margin: 0;
+    padding: 0; }
+  div.product-category div.products div.more {
+    color: #fdb31c;
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    font-size: 20px;
+    cursor: pointer; }
+  div.product-category div.products div.loading {
+    color: #fdb31c;
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    font-size: 20px; }
+
+div.product-collection div.head {
+  padding: 1px;
+  height: 250px;
+  background-position: center; }
+
+div.product-collection div.products {
+  margin-top: 10px; }
+  div.product-collection div.products div.toolbar {
+    padding: 20px; }
+    div.product-collection div.products div.toolbar button.buy-all {
+      float: right; }
+    div.product-collection div.products div.toolbar button {
+      border: none; }
+    div.product-collection div.products div.toolbar button.active {
+      background-color: #ffa200;
+      color: #fff; }
+  div.product-collection div.products ul.items {
+    margin: 0;
+    padding: 0; }
+  div.product-collection div.products div.more {
+    color: #fdb31c;
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    font-size: 20px;
+    cursor: pointer; }
+  div.product-collection div.products div.loading {
+    color: #fdb31c;
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px;
+    font-size: 20px; }
+
+div.shopping-cart table {
+  width: 100%;
+  border: 1px solid #ddd; }
+  div.shopping-cart table tr.item td {
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    padding: 20px; }
+  div.shopping-cart table tr.item td.check {
+    width: 40px; }
+  div.shopping-cart table tr.item td.name {
+    text-align: left; }
+    div.shopping-cart table tr.item td.name div.intro {
+      font-size: 12px;
+      color: #888; }
+    div.shopping-cart table tr.item td.name span.cf-total, div.shopping-cart table tr.item td.name span.cf-left {
+      color: #ffa200; }
+    div.shopping-cart table tr.item td.name div.price {
+      display: inline-block;
+      text-align: center;
+      padding: 3px 20px;
+      background-color: #fdb31c;
+      color: #fff;
+      font-size: 12px; }
+  div.shopping-cart table tr.item td.left {
+    color: #ffa200; }
+  div.shopping-cart table tr.item td.quantity {
+    width: 150px; }
+    div.shopping-cart table tr.item td.quantity div.input-group {
+      width: 150px; }
+      div.shopping-cart table tr.item td.quantity div.input-group span.input-group-addon {
+        cursor: pointer;
+        color: #ccc; }
+      div.shopping-cart table tr.item td.quantity div.input-group span.input-group-addon:hover {
+        color: #888; }
+      div.shopping-cart table tr.item td.quantity div.input-group input {
+        text-align: center; }
+  div.shopping-cart table tr.item td.amount {
+    color: #fdb31c; }
+  div.shopping-cart table tr.item:hover {
+    background-color: #f8f8f8; }
+  div.shopping-cart table th, div.shopping-cart table td {
+    padding: 10px 20px; }
+  div.shopping-cart table th {
+    font-weight: normal;
+    text-align: center;
+    padding: 10px; }
+  div.shopping-cart table tr.head {
+    background-color: #f8f8f8;
+    color: #888; }
+  div.shopping-cart table th.check {
+    width: 40px; }
+  div.shopping-cart table th.image {
+    width: 120px; }
+  div.shopping-cart table th.name {
+    text-align: left;
+    padding-left: 20px; }
+  div.shopping-cart table th.left {
+    width: 150px; }
+  div.shopping-cart table th.quantity {
+    width: 150px; }
+  div.shopping-cart table th.amount {
+    width: 150px; }
+  div.shopping-cart table th.cmd {
+    width: 100px; }
+  div.shopping-cart table td.tail {
+    text-align: left; }
+  div.shopping-cart table td.summary {
+    text-align: right; }
+    div.shopping-cart table td.summary span {
+      font-size: 24px;
+      margin: 3px;
+      color: #ffa200; }
+  div.shopping-cart table td.payment-balance span {
+    font-size: 20px;
+    margin: 3px;
+    color: #ffa200; }
+  div.shopping-cart table td.payment-coupon > div.use-coupon {
+    float: left;
+    margin-top: 2px; }
+  div.shopping-cart table td.payment-coupon > select {
+    height: 30px;
+    padding: 3px 6px;
+    font-size: 12px;
+    float: left;
+    display: inline-block;
+    width: auto; }
+  div.shopping-cart table td.payment-coupon > div.input-group {
+    float: left;
+    margin-left: 16px;
+    width: 120px; }
+    div.shopping-cart table td.payment-coupon > div.input-group > input {
+      text-align: center; }
+  div.shopping-cart table td.payment-coupon > span {
+    display: block;
+    float: left;
+    margin: 3px 16px; }
+  div.shopping-cart table td.payment-deposit-list {
+    height: 50px; }
+    div.shopping-cart table td.payment-deposit-list ul {
+      margin-top: 20px; }
+  div.shopping-cart table td.payment-deposit-status {
+    text-align: right;
+    font-size: 14px; }
+    div.shopping-cart table td.payment-deposit-status span.type {
+      color: #ffa200; }
+    div.shopping-cart table td.payment-deposit-status span.value {
+      font-size: 24px;
+      margin: 3px;
+      color: #ffa200; }
+  div.shopping-cart table td.submit {
+    padding-top: 40px;
+    text-align: right; }
+    div.shopping-cart table td.submit button {
+      margin-top: 20px;
+      width: 220px;
+      height: 40px; }
+  div.shopping-cart table td.help {
+    padding-top: 20px;
+    padding-bottom: 40px; }
+  div.shopping-cart table td.empty {
+    font-size: 20px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    padding: 70px; }
+    div.shopping-cart table td.empty a, div.shopping-cart table td.empty a:visited {
+      color: #fdb31c !important; }
+
+ul.activity-result-list {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 20px 0 10px 0;
+  padding: 0; }
+  ul.activity-result-list > li {
+    float: left;
+    width: 400px;
+    margin-right: 20px;
+    margin-bottom: 20px; }
+
+.activity-result {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  padding: 10px;
+  min-height: 130px;
+  background-color: #fcfcfc; }
+  .activity-result div.end {
+    float: right; }
+  .activity-result h4 {
+    margin: 0 0 10px;
+    font-size: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px dotted #ddd; }
+  .activity-result > div {
+    float: right;
+    font-size: 12px;
+    width: 180px; }
+  .activity-result > ul {
+    margin: 0;
+    padding-left: 10px;
+    color: #ffa200; }
+
+ul.coupon-list {
+  margin: 0;
+  padding: 0; }
+
+li.coupon {
+  float: left; }
+
+.coupon {
+  width: 280px;
+  margin: 0 20px 20px 0;
+  box-shadow: 1px 1px 3px RGBA(0, 0, 0, 0.2);
+  border-radius: 6px; }
+  .coupon div.body {
+    border-radius: 6px 6px 0 0;
+    background-color: #ffd070;
+    padding: 20px; }
+    .coupon div.body img {
+      float: left; }
+    .coupon div.body .info {
+      font-size: 14px;
+      margin-left: 80px;
+      color: #fff;
+      min-height: 70px; }
+      .coupon div.body .info .value {
+        display: block;
+        font-size: 16px !important; }
+  .coupon div.tail {
+    padding: 8px 8px;
+    font-size: 12px;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-radius: 0 0 6px 6px; }
+    .coupon div.tail span.expires {
+      float: right;
+      display: block; }
+
+ul.activity-grant-list {
+  margin: 0;
+  padding: 0; }
+  ul.activity-grant-list li {
+    float: left;
+    margin: 0 20px 20px 0; }
+
+.activity-grant {
+  width: 400px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  box-shadow: 1px 1px 3px RGBA(0, 0, 0, 0.2); }
+  .activity-grant div.body {
+    padding: 20px;
+    border-bottom: 1px solid #ddd; }
+    .activity-grant div.body img {
+      float: left; }
+    .activity-grant div.body .info {
+      font-size: 16px;
+      margin-left: 130px;
+      min-height: 120px; }
+      .activity-grant div.body .info .name {
+        color: #ffa200;
+        margin-bottom: 10px;
+        font-size: 20px; }
+        .activity-grant div.body .info .name span {
+          font-size: 14px; }
+      .activity-grant div.body .info button {
+        margin: 20px 20px 10px 60px; }
+      .activity-grant div.body .info a {
+        margin: 20px 20px 10px 60px; }
+  .activity-grant div.tail {
+    padding: 8px 12px;
+    font-size: 12px;
+    background: #f8f8f8;
+    border-radius: 0 0 6px 6px;
+    height: 36px; }
+    .activity-grant div.tail span.end {
+      float: right;
+      display: block; }
+
+.private-activity-result {
+  text-align: center;
+  padding: 0 0 20px 0; }
+  .private-activity-result h4 {
+    font-size: 28px;
+    color: #ffa200;
+    padding: 10px; }
+  .private-activity-result ul {
+    margin: 0;
+    padding: 0 0 20px; }
+    .private-activity-result ul li {
+      padding: 0;
+      margin: 0;
+      font-size: 20px;
+      color: #fdb31c; }
+  .private-activity-result button {
+    padding: 8px 30px 8px 40px;
+    letter-spacing: 10px; }
+
+.private-activity-result.no-reward h4 {
+  color: #888; }
+
+div.open-page h3 {
+  padding-bottom: 10px;
+  border-bottom: 2px solid #ccc;
+  margin-right: 10px; }
+
+div.open-page div.soon {
+  float: left;
+  width: 260px; }
+  div.open-page div.soon > ul {
+    background-color: #f8f8f8;
+    margin: 0;
+    padding: 1px 0 0 0;
+    border-radius: 3px; }
+    div.open-page div.soon > ul > li {
+      margin: 10px;
+      background-color: #fff;
+      float: none;
+      width: auto;
+      padding: 10px; }
+      div.open-page div.soon > ul > li a.btn-primary {
+        width: 160px; }
+    div.open-page div.soon > ul > li:hover {
+      padding: 9px; }
+
+div.open-page div.round-list {
+  float: left;
+  width: 900px; }
+
+div.open-page li.product-round {
+  width: 33%;
+  position: relative;
+  padding: 30px;
+  height: 511px; }
+  div.open-page li.product-round img {
+    display: block;
+    margin: 15px auto; }
+  div.open-page li.product-round h5 {
+    margin: 0 0 8px 0;
+    padding: 0;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 16px; }
+  div.open-page li.product-round span.price {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    margin: 0 0 10px; }
+  div.open-page li.product-round div.result {
+    margin: 0 -28px 0 -28px;
+    height: 195px; }
+  div.open-page li.product-round div.syncing {
+    padding: 60px 0;
+    font-size: 20px; }
+  div.open-page li.product-round div.pending {
+    padding: 50px;
+    font-size: 20px; }
+  div.open-page li.product-round div.clock {
+    text-align: center;
+    padding: 25px 20px 20px;
+    font-size: 20px;
+    color: #888; }
+    div.open-page li.product-round div.clock span {
+      margin-right: 20px;
+      font-size: 30px; }
+  div.open-page li.product-round ins.timer {
+    margin: 10px 0 40px; }
+    div.open-page li.product-round ins.timer b {
+      font-size: 30px; }
+    div.open-page li.product-round ins.timer i {
+      font-size: 30px;
+      margin: 0 3px 0 -8px; }
+  div.open-page li.product-round div.win {
+    font-size: 12px;
+    background-color: #f8f8f8;
+    padding: 20px 25px 24px; }
+    div.open-page li.product-round div.win img {
+      float: left;
+      margin: 10px 0 0 0; }
+    div.open-page li.product-round div.win dl {
+      margin: 0 0 0 60px;
+      padding: 4px 0 0 0; }
+      div.open-page li.product-round div.win dl b {
+        color: #ffa200; }
+      div.open-page li.product-round div.win dl dt {
+        float: left;
+        font-weight: normal;
+        padding-right: 6px; }
+      div.open-page li.product-round div.win dl dd {
+        display: block;
+        margin-bottom: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        height: 18px; }
+    div.open-page li.product-round div.win a.btn {
+      padding-top: 7px;
+      margin: 10px 0 0 60px;
+      width: 180px;
+      height: 36px;
+      background-color: #fff; }
+      div.open-page li.product-round div.win a.btn span:last-child {
+        display: none; }
+      div.open-page li.product-round div.win a.btn span:first-child {
+        color: #ffa200; }
+    div.open-page li.product-round div.win a.btn:hover {
+      background-color: #ffa200;
+      border-color: #ffa200; }
+      div.open-page li.product-round div.win a.btn:hover span:first-child {
+        display: none; }
+      div.open-page li.product-round div.win a.btn:hover span:last-child {
+        display: inline;
+        color: #fff; }
+
+div.open-page li.product-round:hover {
+  padding: 30px 28px 28px 30px; }
+
+#user-win-share div.form {
+  padding: 20px 20px; }
+  #user-win-share div.form input[type=text] {
+    width: 400px; }
+  #user-win-share div.form textarea {
+    width: 400px; }
+  #user-win-share div.form label {
+    width: 300px; }
+  #user-win-share div.form span.info {
+    margin-left: 20px;
+    color: #888; }
+  #user-win-share div.form span.msg {
+    margin-left: 20px;
+    color: #ffa200; }
+
+#user-win-share ul {
+  margin: 0;
+  padding: 0; }
+  #user-win-share ul li {
+    position: relative;
+    float: left; }
+    #user-win-share ul li span.glyphicon-remove {
+      position: absolute;
+      right: 15px;
+      top: 15px;
+      color: #fff;
+      background-color: #444;
+      opacity: 0.8;
+      padding: 5px;
+      border-radius: 50%;
+      cursor: pointer; }
+    #user-win-share ul li img {
+      width: 160px;
+      height: 160px;
+      margin: 6px;
+      border-radius: 2px; }
+  #user-win-share ul li:last-child div {
+    cursor: pointer;
+    width: 160px;
+    height: 160px;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    position: relative;
+    padding: 30px;
+    margin: 6px 10px;
+    text-align: center;
+    color: #ddd; }
+    #user-win-share ul li:last-child div span {
+      display: block;
+      font-size: 20px;
+      margin-left: -10px; }
+    #user-win-share ul li:last-child div span.glyphicon {
+      font-size: 60px;
+      display: block;
+      margin-left: 0; }
+    #user-win-share ul li:last-child div input[type=file] {
+      display: none; }
+  #user-win-share ul li:last-child div:hover {
+    color: #888; }
+
+#user-win-share button.btn-primary {
+  width: 200px;
+  height: 50px; }
+
+div.user-win-status {
+  border: 1px solid #ddd;
+  padding: 20px; }
+  div.user-win-status img.user {
+    float: left;
+    margin: 0 10px; }
+  div.user-win-status div.user {
+    width: 250px;
+    height: 100px;
+    float: left;
+    font-size: 12px;
+    padding: 8px;
+    border-right: 1px dotted #ddd; }
+  div.user-win-status img.product {
+    float: left;
+    margin: 0 10px 0 20px; }
+  div.user-win-status div.product {
+    float: left;
+    font-size: 12px;
+    padding: 8px 30px 8px 8px;
+    height: 100px;
+    border-right: 1px dotted #ddd; }
+  div.user-win-status button.btn-primary {
+    margin: 30px 0 0 50px;
+    width: 150px;
+    height: 40px; }
+
+div.share-detail {
+  border: 1px solid #ddd; }
+  div.share-detail h3 {
+    font-size: 14px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd; }
+  div.share-detail div.head {
+    padding: 20px;
+    text-align: center; }
+    div.share-detail div.head div:first-child {
+      font-size: 20px; }
+    div.share-detail div.head div:last-child {
+      font-size: 12px; }
+  div.share-detail div.user-win-status {
+    border-left: none;
+    border-right: none; }
+  div.share-detail div.quote {
+    margin: 20px;
+    font-size: 20px;
+    color: #888;
+    padding: 20px; }
+    div.share-detail div.quote i.open {
+      float: left;
+      font-size: 50px;
+      font-family: 宋体;
+      color: #ccc;
+      font-style: normal;
+      display: block;
+      margin-top: -20px; }
+    div.share-detail div.quote i.close {
+      margin-top: -20px;
+      float: right;
+      font-size: 50px;
+      font-family: 宋体;
+      font-style: normal;
+      color: #ccc;
+      display: block;
+      opacity: 1; }
+    div.share-detail div.quote > div {
+      padding-left: 60px; }
+  div.share-detail ul {
+    margin: 0 10px 100px;
+    padding: 0; }
+    div.share-detail ul li {
+      float: left;
+      margin: 10px 10px 0 0; }
+
+.all-shared-list li {
+  width: 25%;
+  height: 550px; }
+  .all-shared-list li img {
+    margin-left: -5px; }
+  .all-shared-list li h5 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 18px; }
+  .all-shared-list li .content {
+    color: #888;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    height: 18px; }
+  .all-shared-list li .time {
+    color: #888;
+    font-size: 12px;
+    margin-top: 4px; }
+  .all-shared-list li .author {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding: 20px 30px; }
+    .all-shared-list li .author img {
+      border-radius: 50%;
+      margin-right: 10px; }
+
+div.help-center > div.help-menu {
+  margin: 60px 0;
+  float: left;
+  width: 230px;
+  border: 1px solid #ddd; }
+  div.help-center > div.help-menu h3 {
+    color: #ffa200;
+    text-align: center;
+    padding: 0;
+    margin: 20px; }
+  div.help-center > div.help-menu > ul {
+    margin: 0;
+    padding: 0; }
+    div.help-center > div.help-menu > ul > li div.help-category-item {
+      font-weight: bold;
+      padding: 10px;
+      background-color: #f8f8f8; }
+    div.help-center > div.help-menu > ul > li ul.doc-list {
+      margin: 0;
+      padding: 0; }
+      div.help-center > div.help-menu > ul > li ul.doc-list li.doc-item a {
+        display: block;
+        padding: 10px 20px; }
+      div.help-center > div.help-menu > ul > li ul.doc-list li.doc-item.active a, div.help-center > div.help-menu > ul > li ul.doc-list li.doc-item.active a:visited {
+        background-color: #ffa200;
+        color: #fff !important; }
+  div.help-center > div.help-menu > a.feedback {
+    width: 210px;
+    margin: 30px 0 8px 8px;
+    padding-top: 10px;
+    height: 40px; }
+
+div.help-center form.feedback span.help-block {
+  top: 30px; }
+
+div.help-center div.help-doc {
+  margin-left: 250px; }
+  div.help-center div.help-doc .breadcrumb {
+    height: 30px;
+    margin: 20px 0 10px; }
+    div.help-center div.help-doc .breadcrumb .active {
+      color: #ffa200; }
+  div.help-center div.help-doc div.help-content {
+    padding: 40px 40px 80px;
+    border: 1px solid #ddd; }
+    div.help-center div.help-doc div.help-content h3.help-title {
+      color: #ffa200;
+      padding: 0 0 0 20px;
+      margin: 0 0 20px;
+      border-left: 5px solid #ffa200; }
+    div.help-center div.help-doc div.help-content div.help-body {
+      border-top: 2px solid #ccc;
+      padding: 20px 0 0;
+      color: #888;
+      line-height: 2;
+      font-size: 16px;
+      min-height: 465px; }
+      div.help-center div.help-doc div.help-content div.help-body h3 {
+        color: #fff;
+        background-color: #ffa200;
+        width: 150px;
+        text-align: center;
+        padding: 10px 20px; }
+      div.help-center div.help-doc div.help-content div.help-body .m-helpcenter-main {
+        margin-bottom: 100px; }
+      div.help-center div.help-doc div.help-content div.help-body .m-helpcenter-pic {
+        float: right; }
+      div.help-center div.help-doc div.help-content div.help-body h4 {
+        color: #ffa200;
+        border-left: 3px solid #ffa200;
+        padding: 5px 20px; }
+      div.help-center div.help-doc div.help-content div.help-body span.index {
+        background-color: #ffa200;
+        color: #fff;
+        border-radius: 50%;
+        width: 23px;
+        height: 23px;
+        display: inline-block;
+        margin-right: 10px;
+        font-size: 14px;
+        text-align: center;
+        vertical-align: baseline;
+        padding-top: 0px; }
+
+div#home-main-content {
+  position: relative; }
+  div#home-main-content div#left_panel {
+    position: fixed;
+    z-index: 1000;
+    width: 36px;
+    top: 150px;
+    margin-left: -40px;
+    text-align: center;
+    line-height: 1.1;
+    background-color: #fff;
+    border-radius: 3px;
+    opacity: 0.9; }
+    div#home-main-content div#left_panel > a {
+      border-bottom: 1px dotted #ddd;
+      display: block;
+      padding: 10px 0; }
+      div#home-main-content div#left_panel > a > span:last-child {
+        display: none; }
+    div#home-main-content div#left_panel > a.active {
+      color: #ffa200 !important; }
+    div#home-main-content div#left_panel > a:hover {
+      background: #ffa200;
+      color: #fff !important;
+      display: block; }
+      div#home-main-content div#left_panel > a:hover > span:first-child {
+        display: none; }
+      div#home-main-content div#left_panel > a:hover > span:last-child {
+        display: inline; }
+    div#home-main-content div#left_panel > a:last-child {
+      border-bottom: none; }
+
+body.netdisk div.head {
+  padding: 30px 0;
+  border-bottom: 1px solid #ddd; }
+  body.netdisk div.head a.logo {
+    vertical-align: bottom;
+    font-size: 20px;
+    letter-spacing: 4px; }
+    body.netdisk div.head a.logo img {
+      margin-right: 0px; }
+  body.netdisk div.head ul {
+    margin-top: 10px;
+    float: right; }
+    body.netdisk div.head ul li {
+      float: left;
+      margin: 0 10px; }
+
+body.netdisk footer {
+  border-top: 2px solid #ffa200;
+  background: #000;
+  padding: 30px 0;
+  color: #ccc; }
+
+body.netdisk form .help-block {
+  right: auto !important;
+  left: 45px !important;
+  top: 40px !important; }
+
+body.netdisk div#slider {
+  position: relative; }
+  body.netdisk div#slider div.container {
+    position: relative;
+    margin-top: -400px;
+    height: 400px;
+    padding-top: 50px; }
+    body.netdisk div#slider div.container div.signin-panel, body.netdisk div#slider div.container div.status-panel {
+      float: right;
+      padding: 30px;
+      border-radius: 3px;
+      background: #fff;
+      top: 20px;
+      right: 0;
+      width: 400px; }
+    body.netdisk div#slider div.container div.status-panel {
+      height: 300px;
+      text-align: center; }
+      body.netdisk div#slider div.container div.status-panel div.stg {
+        margin-top: 20px;
+        font-size: 20px; }
+        body.netdisk div#slider div.container div.status-panel div.stg > div {
+          color: #ff5200; }
+          body.netdisk div#slider div.container div.status-panel div.stg > div strong {
+            font-size: 40px; }
+      body.netdisk div#slider div.container div.status-panel div.recharge {
+        position: relative; }
+        body.netdisk div#slider div.container div.status-panel div.recharge a.history {
+          position: absolute;
+          display: block;
+          right: 0;
+          top: 45px; }
+        body.netdisk div#slider div.container div.status-panel div.recharge a.btn {
+          margin: 30px 50px 10px;
+          font-size: 20px;
+          width: 200px;
+          height: 50px;
+          padding-top: 10px; }
+
+body.netdisk div#home-main-content {
+  height: 100px; }
+
+body.netdisk div.auth-pages {
+	background-image: url(/css/desktop/images/login_bg.jpg);
+	background-position: center -200px;
+	margin-top: -150px;
+	height: 600px;
+}
+  body.netdisk div.auth-pages div.reset-password-panel, body.netdisk div.auth-pages div.signup-panel {
+    width: 400px;
+    margin: 170px auto 20px;
+    padding: 30px 50px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: #fcfcfc; }
+
+body.netdisk.console div.modal form > div.form-group:last-child {
+  margin-bottom: 0; }
+
+body.netdisk.console div.container {
+  margin: 0 20px; }
+
+body.netdisk.console div.head {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 71px;
+  padding: 10px 0; }
+
+body.netdisk.console footer {
+  padding: 10px 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0; }
+
+body.netdisk.console > div.sidebar {
+  position: fixed;
+  left: 0;
+  top: 71px;
+  bottom: 40px;
+  width: 160px;
+  background: #f8f8f8;
+  padding: 16px; }
+  body.netdisk.console > div.sidebar > ul {
+    font-size: 14px;
+    margin: 0;
+    padding: 0; }
+    body.netdisk.console > div.sidebar > ul > li {
+      cursor: pointer;
+      padding: 5px 0 5px 30px; }
+      body.netdisk.console > div.sidebar > ul > li > span {
+        margin-right: 10px; }
+    body.netdisk.console > div.sidebar > ul > li:first-child {
+      padding: 5px 10px; }
+    body.netdisk.console > div.sidebar > ul > li.active {
+      color: #ffa200; }
+  body.netdisk.console > div.sidebar > div.status {
+    margin: 30px 0;
+    font-weight: bold;
+    font-size: 12px; }
+
+body.netdisk.console > div.head-panel {
+  position: fixed;
+  top: 71px;
+  left: 160px;
+  right: 0;
+  height: 84px;
+  padding-right: 20px; }
+  body.netdisk.console > div.head-panel > div.toolbar {
+    padding: 10px; }
+    body.netdisk.console > div.head-panel > div.toolbar > div.actions {
+      float: left; }
+      body.netdisk.console > div.head-panel > div.toolbar > div.actions > button {
+        float: left;
+        margin-right: 8px; }
+      body.netdisk.console > div.head-panel > div.toolbar > div.actions > div.input-group {
+        float: left;
+        width: 200px; }
+    body.netdisk.console > div.head-panel > div.toolbar > div.paging {
+      float: right; }
+      body.netdisk.console > div.head-panel > div.toolbar > div.paging > button {
+        border-radius: 50%;
+        width: 30px;
+        height: 30px; }
+  body.netdisk.console > div.head-panel > table {
+    width: 100%; }
+    body.netdisk.console > div.head-panel > table td {
+      padding: 8px; }
+    body.netdisk.console > div.head-panel > table td.select {
+      text-align: center;
+      width: 32px; }
+    body.netdisk.console > div.head-panel > table td.file > ul {
+      display: inline;
+      margin: 0 0 0 10px;
+      padding: 0; }
+      body.netdisk.console > div.head-panel > table td.file > ul > li {
+        display: inline;
+        margin: 0 0px 0 0; }
+      body.netdisk.console > div.head-panel > table td.file > ul > li::after {
+        content: "/"; }
+    body.netdisk.console > div.head-panel > table td.file > ul::before {
+      content: "位于："; }
+    body.netdisk.console > div.head-panel > table td.size {
+      text-align: center;
+      width: 100px; }
+    body.netdisk.console > div.head-panel > table td.time {
+      text-align: center;
+      width: 100px; }
+
+body.netdisk.console > div.content {
+  padding: 0;
+  margin: 0;
+  position: fixed;
+  left: 160px;
+  top: 155px;
+  right: 0;
+  bottom: 40px;
+  overflow: auto; }
+  body.netdisk.console > div.content > table {
+    width: 100%; }
+    body.netdisk.console > div.content > table tr:hover {
+      background-color: #f8f8f8; }
+      body.netdisk.console > div.content > table tr:hover > td.file > div.btn-group {
+        display: block; }
+    body.netdisk.console > div.content > table td {
+      padding: 8px; }
+    body.netdisk.console > div.content > table td.select {
+      text-align: center;
+      width: 32px; }
+    body.netdisk.console > div.content > table td.file > div.btn-group {
+      float: right;
+      margin: -5px;
+      display: none; }
+      body.netdisk.console > div.content > table td.file > div.btn-group > button {
+        border: none;
+        padding: 5px;
+        width: 30px;
+        height: 30px;
+        margin-right: 5px;
+        border-radius: 50%;
+        background: transparent; }
+      body.netdisk.console > div.content > table td.file > div.btn-group > button:hover {
+        background: #ccc; }
+    body.netdisk.console > div.content > table td.file i {
+      display: inline-block;
+      margin: -4px 0 -4px -20px; }
+    body.netdisk.console > div.content > table td.file i.fa {
+      display: inline-block;
+      margin: 0 2px 0 3px;
+      font-size: 16px; }
+    body.netdisk.console > div.content > table td.size {
+      text-align: center;
+      width: 100px; }
+    body.netdisk.console > div.content > table td.time {
+      text-align: center;
+      width: 100px; }
+    body.netdisk.console > div.content > table td.empty {
+      text-align: center;
+      font-size: 20px;
+      color: #ccc;
+      padding: 50px; }
+
+body.netdisk.console > div.uploading {
+  position: fixed;
+  bottom: 5px;
+  right: 40px;
+  width: 400px;
+  z-index: 10000;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding-top: 30px;
+  font-size: 12px;
+  border-radius: 2px; }
+  body.netdisk.console > div.uploading > h4 {
+    margin: -30px 0 0 0;
+    height: 30px;
+    font-size: 12px;
+    padding: 8px;
+    background: #f8f8f8;
+    font-weight: bold;
+    cursor: pointer; }
+    body.netdisk.console > div.uploading > h4 > button {
+      float: right;
+      border: none;
+      width: 24px;
+      height: 24px;
+      text-align: center;
+      padding: 0 !important;
+      margin-top: -5px;
+      border-radius: 50%; }
+  body.netdisk.console > div.uploading > ul {
+    margin: 0;
+    padding: 0;
+    overflow: auto;
+    height: 100%; }
+    body.netdisk.console > div.uploading > ul > li {
+      padding: 8px; }
+      body.netdisk.console > div.uploading > ul > li > button {
+        float: right;
+        border: none;
+        visibility: hidden;
+        width: 24px;
+        height: 24px;
+        text-align: center;
+        padding: 0 !important;
+        margin: -3px 0 0 8px;
+        border-radius: 50%; }
+      body.netdisk.console > div.uploading > ul > li > span {
+        float: right;
+        display: block; }
+    body.netdisk.console > div.uploading > ul > li:hover {
+      background: #f8f8f8; }
+      body.netdisk.console > div.uploading > ul > li:hover > button {
+        background: #ccc;
+        visibility: visible; }
+    body.netdisk.console > div.uploading > ul > li.empty {
+      text-align: center; }
+
+body.netdisk.console div.dir-tree {
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  max-height: 200px;
+  overflow: auto; }
+  body.netdisk.console div.dir-tree > ul {
+    padding: 0;
+    margin-left: -10px; }
+  body.netdisk.console div.dir-tree ul {
+    padding: 0 0 0 20px; }
+  body.netdisk.console div.dir-tree div {
+    cursor: pointer; }
+    body.netdisk.console div.dir-tree div > button {
+      background: transparent;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      text-align: center;
+      line-height: 1; }
+    body.netdisk.console div.dir-tree div > button:hover {
+      background: #ccc; }
+  body.netdisk.console div.dir-tree div.active {
+    font-weight: bold;
+    color: #ffa200; }
+
+div.admin-page .btn-primary {
+  background-color: #d64635 !important; }
+
+div.admin-page input.form-control {
+  background-color: #fff !important; }
+
+div.admin-page div.head {
+  background-color: #1f1f1f;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  color: #fff;
+  padding: 10px; }
+
+div.admin-page div.container {
+  margin-top: 150px;
+  width: 420px;
+  padding: 50px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background-color: #f8f8f8; }
+

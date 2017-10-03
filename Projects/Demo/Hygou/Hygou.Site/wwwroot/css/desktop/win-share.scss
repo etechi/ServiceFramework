@@ -1,0 +1,214 @@
+﻿@import "../defaultStyle.scss";
+#user-win-share{
+    div.form{
+        padding:20px 20px;
+        input[type=text]{width:400px ;}
+        textarea{width:400px ;}
+        label{width:300px}
+        span.info{
+            margin-left:20px;
+            color:$grayDark;
+        }
+        span.msg{
+            margin-left:20px;
+            color:$primaryBGColorDark;
+        }
+    }
+    ul{
+        margin:0;
+        padding:0;
+        li{
+            position:relative;
+            float:left;
+            span.glyphicon-remove{
+                position:absolute;
+                right:15px;
+                top:15px;
+                color:#fff;
+                background-color:#444;
+                opacity:0.8;
+                padding:5px;
+                border-radius:50%;
+                cursor:pointer;
+            }
+            img{
+                width:160px;
+                height:160px;
+                margin:6px;
+                border-radius:2px;
+            }
+        }
+        li:last-child{
+            div{
+                cursor:pointer;
+                width:160px;
+                height:160px;
+                overflow:hidden;
+                border:1px solid $gray;
+                border-radius:2px;
+                position:relative;
+                padding:30px;
+                margin:6px 10px;
+                text-align:center;
+                    color:$grayLight;
+                span{
+                    display:block;
+                    font-size:20px;
+                    margin-left:-10px;
+                }
+                span.glyphicon{
+                    font-size:60px;
+                    display:block;
+                     margin-left:0;
+               }
+                input[type=file]{
+                    display:none;
+                }
+            }
+            div:hover{
+                color:$grayDark;
+            }
+        }
+    }
+    button.btn-primary{
+        width:200px;
+        height:50px;
+    }
+}
+
+
+
+div.user-win-status{
+    border:1px solid $grayLight;
+    padding:20px;
+    img.user{
+        float:left;
+        margin:0 10px;
+    }
+    div.user{
+        width:250px;
+        height:100px;
+        float:left;
+        font-size:12px;
+        padding:8px;
+        border-right:1px dotted $grayLight;
+    }
+    img.product{
+        float:left;
+        margin:0 10px 0 20px;
+     }
+    div.product{
+        float:left;
+        font-size:12px;
+        padding:8px 30px 8px 8px;
+        height:100px;
+        border-right:1px dotted $grayLight;
+   }
+    button.btn-primary{  
+        margin:30px 0 0 50px;
+        width:150px;
+        height:40px;
+    }
+}
+
+div.share-detail{
+    border:1px solid $grayLight;
+    h3{
+        font-size:14px;
+        padding:10px;
+        border-bottom:1px solid $grayLight;
+    }
+    div.head{
+        padding:20px;
+        text-align:center;
+        div:first-child{
+            font-size:20px;
+        }
+        div:last-child{
+            font-size:12px;
+        }
+    }
+    div.user-win-status{
+        border-left:none;
+        border-right:none;
+    }
+    div.quote{
+        margin:20px;
+        font-size:20px;
+        color:$grayDark;
+        padding:20px;
+        i.open{
+            float:left;
+            font-size:50px;
+            font-family:宋体;
+            color:$gray;
+            font-style:normal;
+            display:block;
+            margin-top:-20px;
+        }
+        i.close{
+            margin-top:-20px;
+            float:right;
+            font-size:50px;
+            font-family:宋体;
+            font-style:normal;
+            color:$gray;
+            display:block;
+            opacity:1;
+       }
+       >div{
+           padding-left:60px;
+       }
+    }
+    ul{
+        margin:0 10px 100px;
+        padding:0;
+        li{
+            float:left;
+            margin:10px 10px 0 0;
+        }
+    }
+}
+
+.all-shared-list{
+
+    li{
+        width:25%;
+        height:550px;
+        img{
+            margin-left:-5px;
+        }
+        h5{
+             overflow: hidden;
+	        text-overflow: ellipsis;
+	        white-space: nowrap;
+	        height:18px;
+
+        }
+        .content{
+            color:$grayDark;
+             overflow: hidden;
+	        text-overflow: ellipsis;
+	        white-space: nowrap;
+	        height:18px;
+
+        }
+        .time{
+            color:$grayDark;
+            font-size:12px;
+            margin-top:4px;
+        }
+        .author{
+            i{
+
+            }
+            margin-top:20px;
+            border-top:1px solid $grayLight;
+            padding:20px 30px;
+            img{
+                border-radius:50%;
+                margin-right:10px;
+            }
+        }
+    }
+}

@@ -1,5 +1,8 @@
-﻿@{ 
-    var setting = Html.Setting<CrowdMallSetting>();
+﻿@using SF.AspNetCore.Mvc
+@using SF.Services.Settings
+
+@{ 
+    var setting = Html.Setting<CustomServiceSetting>();
     var items = setting.CSQQ.SplitAndNormalizae().Select(s => s.Split2(':'));
 }    
 <div class="right-chat-panel" >

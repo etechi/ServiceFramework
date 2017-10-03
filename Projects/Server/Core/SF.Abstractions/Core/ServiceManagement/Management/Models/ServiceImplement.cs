@@ -18,6 +18,11 @@ namespace SF.Core.ServiceManagement.Models
 		[Comment("名称")]
 		[ReadOnly(true)]
 		[TableVisible]
+		public string Type { get; set; }
+
+		[Comment("名称")]
+		[ReadOnly(true)]
+		[TableVisible]
 		public string Name { get; set; }
 
 		[Comment("描述")]

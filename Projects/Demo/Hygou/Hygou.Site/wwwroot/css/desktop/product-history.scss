@@ -1,0 +1,436 @@
+﻿@import "../defaultStyle.scss";
+div.product-history {
+    div.head {
+        div.detail {
+            margin-right: 250px;
+
+            div.image {
+                float: left;
+                width: 250px;
+                height: 210px;
+                border: 1px solid $grayLight;
+                padding: 5px;
+
+                img {
+                    margin: 0 auto;
+                    display: block;
+                }
+            }
+
+            div.desc {
+                height: 220px;
+                margin-left: 250px;
+                padding: 0 20px;
+
+                h2 {
+                    margin: 0 0 20px 0;
+                    padding: 0;
+                    font-size: 22px;
+                    font-weight: normal;
+                }
+
+                div.code-status {
+                    background-image: url(/css/desktop/images/item-waiting-bg.gif);
+                    background-size: cover;
+                    height: 120px;
+                    width: 550px;
+                    margin: 30px 50px;
+                    padding: 25px 60px;
+
+                    div.pending {
+                        text-align: center;
+                        font-size: 24px;
+                        padding: 20px;
+                        color: $grayDark;
+                    }
+
+                    div.syncing {
+                        text-align: center;
+                        font-size: 24px;
+                        padding: 20px;
+                        color: $primaryBGColorDark;
+                    }
+
+                    div.clock {
+                        > div:first-child {
+                            float: left;
+                            width: 150px;
+                            padding-left: 20px;
+                            margin-top: 30px;
+                            font-size: 24px;
+                        }
+
+                        ins {
+                            margin: 30px;
+                            float: left;
+                            width: 220px;
+
+                            b {
+                                font-size: 24px
+                            }
+
+                            i {
+                                font-size: 24px;
+                                margin: 0 1px 0 -8px
+                            }
+                        }
+                    }
+
+                    div.win-code {
+                        > div {
+                            float: left;
+
+                            > div:first-child {
+                                margin-top: 10px;
+                                font-size: 24px;
+                                color: $grayDark;
+                            }
+
+                            > div:last-child {
+                                font-size: 20px;
+                                color: $primaryBGColorDark;
+                            }
+                        }
+
+                        > div:last-child {
+                            margin-left: 20px;
+                            font-size: 60px;
+                            color: $primaryBGColorDark;
+                            font-weight: bold;
+                            letter-spacing: -1px;
+                        }
+                    }
+                }
+            }
+
+            div.round-status {
+                border: 1px solid $grayLight;
+                background-color: $grayBG;
+                width: 930px;
+                height: 140px;
+
+                div.win {
+                    float: left;
+                    width: 450px;
+                    padding: 10px;
+                    height: 110px;
+
+                    div.waiting {
+                    }
+
+                    a.icon {
+                        float: left;
+                        margin: 10px;
+                    }
+
+                    div.name {
+                        padding-top: 10px;
+                    }
+
+                    dl {
+                        font-size: 12px;
+
+                        dt {
+                            float: left;
+                            font-weight: normal;
+                            margin-right: 4px;
+                        }
+
+                        dd {
+                            b {
+                                font-weight: normal;
+                                color: $primaryBGColorDark;
+                            }
+                        }
+                    }
+
+                    .waiting {
+                        padding: 70px 0 0 170px;
+                        height: 120px;
+                        color: $primaryBGColorDark;
+                        font-size: 20px;
+                        background-image: url(/css/desktop/images/win.png);
+                        background-repeat: no-repeat;
+                    }
+                }
+
+                div.user-status {
+                    width: 450px;
+                    height: 100px;
+                    float: left;
+                    border: 1px solid $grayLight;
+                    background-color: $secondlyBGColorLight;
+                    padding: 10px 30px;
+                    margin: 20px 0;
+                    line-height: 1.3;
+                }
+            }
+
+            ul.rounds {
+                width: 930px;
+                height: 30px;
+                display: block;
+                margin: -3px 0 0 0;
+                padding: 0;
+                text-align: center;
+
+                li {
+                    float: left;
+                    display: inline-block;
+                    border-right: 1px solid $grayLight;
+                    border-top: 1px solid $grayLight;
+                    border-bottom: 1px solid $grayLight;
+                    width: 12.5%;
+                    height: 40px;
+                    padding-top: 8px;
+                    cursor: pointer;
+                }
+
+                li:first-child {
+                    border-left: 1px solid $grayLight;
+                }
+
+                li.active {
+                    border: 1px solid $primaryBGColorDark;
+                    background-color: $primaryBGColorDark;
+                    color: #FFF;
+                }
+            }
+
+            div.intro {
+                width: 930px;
+                margin-top: 30px;
+                padding: 15px 15px 15px 80px;
+                border: 1px solid $grayLight;
+                background-color: $grayBGLight;
+
+                span.fa {
+                    display: block;
+                    margin: 0 0 -40px -50px;
+                    font-size: 20px;
+                    background-color: $primaryBGColorDark;
+                    width: 40px;
+                    height: 40px;
+                    padding: 8px 0 0 8px;
+                    color: #fff;
+                    border-radius: 50%;
+                }
+
+                ul {
+                    li {
+                        margin-top: 20px;
+
+                        label {
+                            font-weight: bold;
+                        }
+
+                        div.expr {
+
+                            dl {
+                                display: inline-block;
+                                background-color: #fff;
+                                border: 1px solid $gray;
+                                padding: 15px;
+                                text-align: center;
+
+                                dt {
+                                    font-weight: normal;
+                                    font-size: 12px;
+                                }
+
+                                dd {
+                                    color: $primaryBGColorDark;
+                                }
+                            }
+
+                            dl:first-child {
+                                background-color: $primaryBGColorLight;
+                                border: 1px solid $primaryBGColor;
+                            }
+
+                            s {
+                                display: inline-block;
+                                font-style: normal;
+                                text-decoration: none;
+                                font-size: 40px;
+                                color: $gray;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        div.cur-round {
+            width: 250px;
+            float: right;
+            height: 600px;
+            background-color: $grayBG;
+
+            div.head {
+                background-color: $grayDark;
+                padding: 10px;
+                text-align: center;
+                font-size: 18px;
+                letter-spacing: 3px;
+                color: #fff;
+            }
+
+            div.body {
+                padding: 20px;
+
+                .product-status {
+                    li {
+                        width: 50%;
+                    }
+                }
+            }
+        }
+    }
+
+    #allRoundsContent {
+        padding-left: 10px;
+
+        li {
+            margin: 0 10px 10px 0;
+            width: 100px;
+        }
+    }
+
+    div.tabs {
+        margin-top: 20px;
+
+        div.tab-content {
+            div.tab-pane {
+            }
+        }
+    }
+
+    div.calc-desc {
+        border: 1px solid $gray;
+        height: 200px;
+
+        > div:first-child {
+            background-color: $primaryBGColor;
+            height: 200px;
+            float: left;
+            width: 140px;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+
+            span.fa {
+                font-size: 80px;
+                margin: 0 0 10px -60%;
+            }
+
+            div {
+                margin-bottom: 2px;
+                font-size: 20px;
+            }
+        }
+
+        > div:last-child {
+            margin-left: 160px;
+            padding: 10px;
+            color: $grayDark;
+
+            > p:last-child {
+                color: $primaryBGColorDark;
+            }
+        }
+    }
+
+    table.calc-table {
+        width: 100%;
+        margin-top: 20px;
+        background-color: $grayBG;
+        font-size: 12px;
+
+        th {
+            height: 40px;
+            color: $grayDark;
+            font-weight: normal;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        td {
+            text-align: center;
+            padding: 10px;
+
+            span.fa {
+                color: $primaryBGColorDark;
+                margin: 0 20px;
+            }
+
+            span.tv {
+                color: $primaryBGColorDark;
+            }
+        }
+
+        tr {
+            border-left: 1px solid $grayBG;
+            border-right: 1px solid $grayBG;
+            border-bottom: 1px solid $grayLight;
+        }
+
+        tr.sp {
+            td {
+                text-align: center;
+                background-color: $primaryBGColor;
+                color: #fff;
+            }
+
+            td.calc {
+                padding: 0;
+            }
+
+            div.calc {
+                a {
+                    color: $primaryBGColorDark !important;
+                }
+
+                text-align: left;
+                border: 1px solid $primaryBGColor;
+                padding: 20px;
+                font-size: 14px;
+                background-color: $primaryBGColorLight;
+                color: $color;
+
+                #lottery-code2, #lottery-code3, #win-index1, #win-index2, #win-code2 {
+                    color: $primaryBGColorDark;
+                }
+
+                > div:first-child {
+                    float: left;
+                    font-size: 18px;
+                    color: $primaryBGColorDark;
+                }
+
+                > div:last-child {
+                    margin-left: 100px;
+
+                    p.result {
+                        background-color: $primaryBGColorDark;
+                        color: #fff;
+                        display: inline-block;
+                        padding: 10px 20px;
+                        border-radius: 3px;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#allCodesContent{
+    margin:20px;
+    li{
+        margin-bottom:10px;
+        div:first-child{
+            font-weight:bold;
+        }
+    }
+
+}

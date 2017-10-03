@@ -1,0 +1,419 @@
+﻿@import "../defaultStyle.scss";
+
+body.netdisk {
+    div.head {
+        padding: 30px 0;
+        border-bottom: 1px solid $grayLight;
+
+        a.logo {
+            vertical-align: bottom;
+            font-size: 20px;
+            letter-spacing: 4px;
+
+            img {
+                margin-right: 0px;
+            }
+        }
+
+        ul {
+            margin-top: 10px;
+            float: right;
+
+            li {
+                float: left;
+                margin: 0 10px;
+            }
+        }
+    }
+
+    footer {
+        border-top: 2px solid $primaryBGColorDark;
+        background: #000;
+        padding: 30px 0;
+        color: $gray;
+    }
+
+    form {
+        .help-block {
+            right: auto !important;
+            left: 45px !important;
+            top: 40px !important;
+        }
+    }
+
+    div#slider {
+        position: relative;
+
+        div.container {
+            position: relative;
+            margin-top: -400px;
+            height: 400px;
+            padding-top: 50px;
+
+            div.signin-panel, div.status-panel {
+                float: right;
+                padding: 30px;
+                border-radius: 3px;
+                background: #fff;
+                top: 20px;
+                right: 0;
+                width: 400px;
+            }
+
+            div.status-panel {
+                height: 300px;
+                text-align: center;
+
+                div.stg {
+                    margin-top: 20px;
+                    font-size: 20px;
+
+                    > div {
+                        color: $stressColor;
+
+                        strong {
+                            font-size: 40px;
+                        }
+                    }
+                }
+
+                div.recharge {
+                    position: relative;
+
+                    a.history {
+                        position: absolute;
+                        display: block;
+                        right: 0;
+                        top: 45px;
+                    }
+
+                    a.btn {
+                        margin: 30px 50px 10px;
+                        font-size: 20px;
+                        width: 200px;
+                        height: 50px;
+                        padding-top: 10px;
+                    }
+                }
+            }
+        }
+    }
+
+    div#home-main-content {
+        height: 100px;
+    }
+
+    div.auth-pages {
+        background-image: url(/css/desktop/images/login_bg.jpg);
+        background-position: center -200px;
+        margin-top: -150px;
+        height: 600px;
+
+        div.reset-password-panel, div.signup-panel {
+            width: 400px;
+            margin: 170px auto 20px;
+            padding: 30px 50px;
+            border: 1px solid $gray;
+            border-radius: 10px;
+            background: $grayBGLight;
+        }
+    }
+}
+
+body.netdisk.console{
+    div.modal{
+        form{
+            >div.form-group:last-child{
+                margin-bottom:0;
+            }
+        }
+    }
+    div.container{
+        margin:0 20px;
+    }
+    div.head{
+        position:fixed;
+        top:0;
+        left:0;
+        right:0;
+        height:71px;
+        padding:10px 0;
+    }
+    footer{
+        padding:10px 0;
+        position:fixed;
+        bottom:0;
+        left:0;
+        right:0;
+    }
+    >div.sidebar{
+        position:fixed;
+        left:0;
+        top:71px;
+        bottom:40px;
+        width:160px;
+        background:$grayBG;
+        padding:16px;
+        >ul{
+            font-size:14px;
+            margin:0;
+            padding:0;
+            >li{
+                cursor:pointer;
+                padding:5px 0 5px 30px;
+                >span{
+                    margin-right:10px;
+                }
+            }
+            >li:first-child{
+                padding:5px 10px;
+            }
+            >li.active{
+                color:$primaryBGColorDark;
+            }
+        }
+        >div.status{
+            margin:30px 0;
+            font-weight:bold;
+            font-size:12px;
+        }
+    }
+    >div.head-panel{
+        position:fixed;
+        top:71px;
+        left:160px;
+        right:0;
+        height:84px;
+        padding-right:20px;
+        >div.toolbar{
+            padding:10px;
+            >div.actions{
+                float:left;
+                >button{
+                    float:left;
+                    margin-right:8px;
+                }
+                >div.input-group{
+                    float:left;
+                    width:200px;
+                    
+                }
+            }
+            >div.paging{
+                float:right;
+                >button{
+                    border-radius:50%;
+                    width:30px;
+                    height:30px;
+                }
+            }
+        }
+        >table{
+            width:100%;
+            td{
+              padding:8px;
+            }
+            td.select{
+                text-align:center;
+                width:32px;
+            }
+            td.file{
+                >ul{
+                    display:inline;
+                    margin:0 0 0 10px;
+                    padding:0;
+                    >li{
+                        display:inline;
+                        margin:0 0px 0 0;
+                    }
+                    >li::after{
+                        content:"/";
+                    }
+                }
+                >ul::before{
+                    content:"位于："
+                }
+            }
+            td.size{
+                text-align:center;
+                width:100px;
+            }
+            td.time{
+                text-align:center;
+                width:100px;
+            }
+        }
+    }
+    >div.content{
+        padding:0;
+        margin:0;
+        position:fixed;
+        left:160px;
+        top:155px;
+        right:0;
+        bottom:40px;
+        overflow:auto;
+        >table{
+            width:100%;
+            tr{
+
+            }
+            tr:hover{
+                background-color:$grayBG;
+                >td.file{
+                    >div.btn-group{
+                        display:block;
+                    }
+                }
+            }
+            td{
+              padding:8px;
+
+            }
+            td.select{
+                text-align:center;
+                width:32px;
+            }
+            td.file{
+                >div.btn-group{
+                    float:right;
+                    margin:-5px;
+                    display:none;
+                    >button{
+                        border:none;
+                        padding:5px;
+                        width:30px;
+                        height:30px;
+                        margin-right:5px;
+                        border-radius:50%;
+                        background:transparent;
+                    }
+                    >button:hover{
+                        background:#ccc;
+                    }
+                }
+                i{
+                    display:inline-block;
+                    margin:-4px 0 -4px -20px ;
+                }
+                i.fa{
+                    display:inline-block;
+                    margin:0 2px 0 3px;
+                    font-size:16px;
+                }
+            }
+            td.size{
+                text-align:center;
+                width:100px;
+            }
+            td.time{
+                text-align:center;
+                width:100px;
+            }
+            td.empty{
+                text-align:center;
+                font-size:20px;
+                color:$gray;
+                padding:50px;
+            }
+        }
+    }
+    >div.uploading{
+        position:fixed;
+        bottom:5px;
+        right:40px;
+        width:400px;
+        z-index:10000;
+        background:#fff;
+        border:1px solid $gray;
+        padding-top:30px;
+        font-size:12px;
+        border-radius:2px;
+        >h4{
+            margin:-30px 0 0 0;
+            height:30px;
+            font-size:12px;
+            padding:8px;
+            background:$grayBG;
+            font-weight:bold;
+            cursor:pointer;
+            >button{
+                float:right;
+                border:none;
+                width:24px;
+                height:24px;
+                text-align:center;
+                padding:0 !important;
+                margin-top:-5px;
+                    border-radius:50%;
+            }
+        }
+        >ul{
+            margin:0;
+            padding:0;
+            overflow:auto;
+            height:100%;
+            >li{
+                padding:8px;
+                >button{
+                    float:right;
+                    border:none;
+                    visibility:hidden;
+                    width:24px;
+                    height:24px;
+                    text-align:center;
+                    padding:0 !important;
+                    margin:-3px 0 0 8px;
+                    border-radius:50%;
+               }
+                >span{
+                    float:right;
+                    display:block;
+                }
+            }
+            >li:hover{
+                background:$grayBG;
+                >button{
+                    background:#ccc;
+                    visibility:visible;
+                }
+
+            }
+            >li.empty{
+                text-align:center;
+            }
+        }
+    }
+    div.dir-tree{
+        border:1px solid $gray;
+        border-radius:2px;
+        max-height:200px;
+        overflow:auto;
+        >ul{
+            padding:0;
+            margin-left:-10px;
+        }
+        ul{
+            padding:0 0 0 20px;
+        }
+        div{
+            >button{
+                background:transparent;
+                border-radius:50%;
+                width:20px;
+                height:20px;
+                padding:0;
+                text-align:center;
+                line-height:1;
+            }
+            >button:hover{
+                background:$gray;
+            }
+            cursor:pointer;
+        }
+        div.active{
+            font-weight:bold;
+            color:$primaryBGColorDark;
+        }
+    }
+}

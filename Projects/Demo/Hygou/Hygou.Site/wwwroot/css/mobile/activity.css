@@ -1,0 +1,134 @@
+﻿body {
+  margin: 0;
+  padding: 0;
+  font-family: microsoft Yahei;
+  font-size: 14px;
+  line-height: 1.2;
+  color: #333;
+  background-color: #fff; }
+
+img {
+  border: 0;
+  margin: 0; }
+
+.content {
+  max-width: 640px;
+  margin: 0 auto; }
+
+.content img.bg {
+  display: block;
+  width: 100%; }
+
+a {
+  background-color: transparent;
+  color: #333;
+  text-decoration: none;
+  font-weight: normal; }
+
+a:visited, a:hover {
+  text-decoration: none; }
+
+.clearfix::before, .clearfix::after, .dl-horizontal dd::before, .dl-horizontal dd::after, .container::before, .container::after, .container-fluid::before, .container-fluid::after, .row::before, .row::after, .form-horizontal .form-group::before, .form-horizontal .form-group::after, .btn-toolbar::before, .btn-toolbar::after, .btn-group-vertical > .btn-group::before, .btn-group-vertical > .btn-group::after, .nav::before, .nav::after, .navbar::before, .navbar::after, .navbar-header::before, .navbar-header::after, .navbar-collapse::before, .navbar-collapse::after, .pager::before, .pager::after, .panel-body::before, .panel-body::after, .modal-header::before, .modal-header::after, .modal-footer::before, .modal-footer::after {
+  display: table;
+  content: " "; }
+
+h4, .h4 {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+p, h1, h2, h3, h4, h5, h6 {
+  word-break: break-all; }
+
+.product-item img {
+  display: block;
+  margin: 0 auto; }
+
+.product-item h4 {
+  margin: 4px 0 4px 0;
+  padding: 0;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  height: 16px; }
+
+.product-item div.note .selled {
+  margin-left: 10px; }
+
+.product-item div.tail div.progress {
+  margin-right: 30px;
+  margin-top: 10px; }
+
+.product-item div.tail a {
+  background-color: transparent;
+  color: #ffa200;
+  float: right;
+  font-size: 25px;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: -15px -2px 0 5px; }
+
+div.product-list {
+  width: 100%; }
+  div.product-list > div.items {
+    width: 95%;
+    margin: 0 auto; }
+    div.product-list > div.items div.product-item {
+      margin: 1.5%;
+      background: #fff;
+      float: left;
+      width: 47%;
+      padding: 10px; }
+  div.product-list div.empty {
+    text-align: center;
+    color: #888;
+    font-size: 16px;
+    padding: 30px; }
+
+div.progress {
+  background-color: #ddd;
+  height: 5px;
+  margin: 0;
+  border-radius: 2px; }
+  div.progress div.progress-bar {
+    height: 5px;
+    border-radius: 2px 0 0 2px;
+    background-color: #ffa200; }
+
+div.overlay > div:first-child {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  opacity: 0.5; }
+
+div.overlay > div:last-child {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  margin-left: -45%;
+  text-align: center; }
+  div.overlay > div:last-child > img {
+    width: 90%; }
+  div.overlay > div:last-child #close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 50px;
+    background: #ccc;
+    opacity: 0.01; }
+  div.overlay > div:last-child #recharge {
+    position: absolute;
+    right: 0;
+    left: 0;
+    height: 60px;
+    bottom: 10px;
+    background: #ccc;
+    opacity: 0.01; }
+

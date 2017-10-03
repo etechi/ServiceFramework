@@ -20,6 +20,11 @@ namespace SF.Entities
 		[TableVisible]
 		public T Id { get; set; }
 
+		public override string ToString()
+		{
+			return EqualityComparer<T>.Default.Equals(Id, default(T)) ? null : Id.ToString();
+		}
+
 		//public static implicit  operator ObjectKey<long>(long id)=>new ObjectKey<long> { Id=id};
 	}
 	

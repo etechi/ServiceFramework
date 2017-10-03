@@ -1,0 +1,160 @@
+﻿@import "defaultStyle.scss";
+/*div.cond-expr-editor{
+    select{
+        height:26px;
+        border-color:$gray;
+        border-radius:3px;
+    }
+    div.expr{
+        label{
+            float:left;
+            display:block;
+            margin:2px 4px 0 0 ;
+            >div{
+                padding:0;
+                >button{
+                    >span{
+                        display:none;
+                    }
+                }
+            }
+        }
+        label::after{
+            content:":"
+        }
+    }
+    ul.expr-group{
+        float:left;
+        margin:0;
+        padding:0;
+        li.expr-item{
+            list-style:none;
+            padding:0;
+            margin:0 0 4px 0;
+            >button {
+                float:right;
+                
+            }
+        }
+    }
+}
+
+.expr-user-source{
+    float:left;
+}
+div.expr-user-level{
+    >div.input-group{
+        float:left;
+        width:150px;
+    }
+}
+div.expr-time-range{
+    >select{float:left}
+    >div.input-group{
+        float:left;
+        width:300px;
+    }
+
+}*/
+
+
+div.cond-expr-editor{
+    >div{
+        border-left:1px solid $gray;
+        border-right:1px solid $gray;
+        padding:4px 10px;
+        background:#fefefe;
+    }
+    >div:first-child{
+        background-color:$grayBG;
+        border-top:1px solid $grayLight;
+        padding:4px 10px;
+        border-radius:3px 3px 0 0 ;
+    }
+    >div:last-child{
+        border-bottom:1px solid $grayLight;
+        background-color:$grayBG;
+        padding:10px;
+        border-radius:0 0 3px 3px ;
+    }
+    >div.expr{
+        border-left:1px solid $grayLight;
+        border-right:1px solid $grayLight;
+    }
+    select{
+        height:26px;
+        border-color:$gray;
+        border-radius:3px;
+    }
+    div.expr{
+        float:left;
+        div.dropdown{
+            float:left;
+        }
+        label{
+            width:60px;
+            float:left;
+            margin:4px 4px 0 0 ;
+            >div.dropdown{
+                padding:0;
+                margin:0;
+                display:inline-block;
+                >button{
+                    display:inline-block;
+                    border:none;
+                    padding:0;
+                    margin:0;
+                    >span{
+                        display:none;
+                    }
+                }
+            }
+        }
+        label::after{
+            content:":"
+        }
+    }
+    ul.expr-group{
+        margin:0 0 0 70px;
+        padding:0;
+        li.expr-item{
+            list-style:none;
+            padding:0;
+            margin:0 0 4px 0;
+            >button {
+                float:left;
+                margin:4px 0 0 8px;
+                border:none;
+            }
+        }
+    }
+}
+
+.expr-user-source{
+    display:block;
+    margin-left:70px;
+}
+div.expr-user-level{
+    margin-left:70px;
+    >div.input-group{
+        float:left;
+        width:100px;
+        margin-right:3px;
+    }
+}
+div.expr-base-value{
+    margin-left:70px;
+    >div.input-group{
+        float:left;
+        width:130px;
+        margin-right:3px;
+    }
+}
+div.expr-time-range{
+    margin-left:70px;
+    width:280px;
+    >div.input-group{
+        width:200px;
+    }
+
+}

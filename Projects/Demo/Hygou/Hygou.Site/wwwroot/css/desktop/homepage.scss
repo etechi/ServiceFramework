@@ -1,0 +1,38 @@
+﻿@import "../defaultStyle.scss";
+div#home-main-content{
+    position:relative;
+    div#left_panel{
+        position:fixed;
+        z-index:1000;
+        width:36px;
+        top:150px;
+        margin-left:-40px;
+        text-align:center;
+        line-height:1.1;
+        background-color:#fff;
+        border-radius:3px;
+        opacity:0.9;
+        >a{
+            border-bottom:1px dotted $grayLight;
+            display:block;
+            padding:10px 0;
+            >span:first-child{}
+            >span:last-child{display:none;}
+        } 
+        >a.active{
+            color:$primaryBGColorDark !important;
+        }
+        >a:hover{
+            background:$primaryBGColorDark;
+            color:#fff !important;
+            display:block;
+            >span:first-child{display:none}
+            >span:last-child{display:inline;}
+        }
+        >a:last-child{
+            border-bottom:none;
+        }
+        >a:last-child:hover{
+        }
+    }
+}

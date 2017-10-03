@@ -16,7 +16,7 @@ namespace SF.Core.ServiceManagement.Management
 			return (await Manager.QuerySingleEntityIdent(
 					new ServiceInstanceQueryArgument
 					{
-						ServiceType = typeof(I).GetFullName(),
+						ServiceId = typeof(I).GetFullName().UTF8Bytes().MD5().Hex(),
 						IsDefaultService = true
 					}))?.Id;
 		}
@@ -34,8 +34,14 @@ namespace SF.Core.ServiceManagement.Management
 			)
 		{
 			var comment = ImplementType.Comment();
-			e.ImplementType = ImplementType.GetFullName() + "@" + InterfaceType.GetFullName();
+			e.ImplementId = $"{ImplementType.GetFullName()}@{InterfaceType.GetFullName()}".UTF8Bytes().MD5().Hex();
+			e.ImplementType = ImplementType.GetFullName();
+			e.ImplementName = ImplementType.Comment().Name;
+
+			e.ServiceId = InterfaceType.GetFullName().UTF8Bytes().MD5().Hex();
 			e.ServiceType = InterfaceType.GetFullName();
+			e.ServiceName = InterfaceType.Comment().Name;
+
 			e.ItemOrder = 0;
 			e.LogicState = State;
 			e.ServiceIdent = ServiceIdent;
@@ -60,7 +66,7 @@ namespace SF.Core.ServiceManagement.Management
 				new ServiceInstanceQueryArgument
 				{
 					ContainerId = ParentId ?? 0,
-					ServiceType = InterfaceType.GetFullName(),
+					ServiceId = InterfaceType.GetFullName().UTF8Bytes().MD5().Hex(),
 					IsDefaultService = true
 				});
 
@@ -115,8 +121,8 @@ namespace SF.Core.ServiceManagement.Management
 			) =>await Manager.QuerySingleEntityIdent(
 				new ServiceInstanceQueryArgument
 				{
-					ServiceType = typeof(I).GetFullName(),
-					ImplementId = typeof(T).GetFullName() + "@" + typeof(I).GetFullName(),
+					ServiceId = typeof(I).GetFullName().UTF8Bytes().MD5().Hex(),
+					ImplementId = (typeof(T).GetFullName() + "@" + typeof(I).GetFullName()).UTF8Bytes().MD5().Hex(),
 					ContainerId = ParentId ?? 0,
 				});
 		

@@ -16,8 +16,7 @@ namespace SF.Entities
 		
 		class EntityReference<TKey,TEntity> : 
 			IEntityReference
-			where TEntity:IEntityWithId<TKey>,IEntityWithName
-			where TKey:IEquatable<TKey>
+			where TEntity:IEntityWithName
 		{
 			public TEntity Instance { get; }
 			public long ServiceId { get; }
@@ -30,7 +29,10 @@ namespace SF.Entities
 			}
 			public string Name { get => Instance.Name; set => Instance.Name = value; }
 
-			public string Id => ServiceEntityIdent.Create(ServiceId, Convert.ToString(Instance.Id));
+			public string Id => ServiceEntityIdent.Create(
+				ServiceId, 
+				Entity<TEntity>.GetKey<TKey>(Instance).ToString()
+				);
 
 			public Task<object> Resolve()
 			{
@@ -46,8 +48,7 @@ namespace SF.Entities
 		class EntityReferenceLoader<TKey, TEntity, TManager> :
 			EntityReferenceLoader
 			where TManager : class,IEntityLoadable<TKey,TEntity>, IManagedServiceWithId
-			where TKey:IEquatable<TKey>
-			where TEntity:IEntityWithId<TKey>,IEntityWithName
+			where TEntity:IEntityWithName
 		{
 			async Task<IEntityReference[]> Load(TManager manager, IEnumerable<string> Ids)
 			{

@@ -22,7 +22,7 @@ namespace SF.Services.Settings
 		[Comment(GroupName = "基础信息", Name = "网站主图标", Description = "用户网站左上角的大图标")]
 		[Required]
 		[Image]
-		public string SiteLogoLink { get; set; }
+		public string SiteLogo { get; set; }
 
 		[Comment(GroupName = "基础信息", Name = "网站小图标", Description = "用于二维码生成")]
 		[Required]

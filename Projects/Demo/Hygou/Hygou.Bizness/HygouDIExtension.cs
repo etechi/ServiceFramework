@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using SF.Data.EntityFrameworkCore;
 using Hygou.Setup;
+using SF.Services.Settings;
 
 namespace Hygou
 {	
@@ -23,6 +24,7 @@ namespace Hygou
 	{
 		public static IServiceCollection AddHygouServices(this IServiceCollection sc,EnvironmentType envType)
 		{
+			sc.AddSetting<HygouSetting>();
 			sc.AddInitializer("data", "初始化Hygou数据", sp => SystemInitializer.Initialize(sp, envType));
 			return sc;
 		}

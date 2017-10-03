@@ -1,0 +1,25 @@
+{
+  "images": {
+    "sbr-cart-active": "sbr-cart-active.jpg",
+    "sbr-cart": "sbr-cart.jpg",
+    "sbr-coca-active": "sbr-coca-active.jpg",
+    "sbr-coca": "sbr-coca.jpg",
+    "sbr-feedback-active": "sbr-feedback-active.jpg",
+    "sbr-feedback": "sbr-feedback.jpg",
+    "sbr-head": "sbr-head.jpg",
+    "sbr-qr-active": "sbr-qr-active.jpg",
+    "sbr-qr": "sbr-qr.jpg",
+    "sbr-top-active": "sbr-top-active.jpg",
+    "sbr-top": "sbr-top.jpg"
+  },
+  "orientation": "vertical",
+  "optimize": "lossless",
+  "padding": 10,
+  "output": "jpg",
+  "dpi": 72,
+  "stylesheet": "scss",
+  "pathprefix": "images/",
+  "customstyles": {
+    "display": "block"
+  }
+}

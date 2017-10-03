@@ -1,5 +1,8 @@
-﻿@{ 
-    var setting = Html.Setting<CrowdMall.CrowdMallSetting>();
+﻿@using SF.Services.Settings
+@using SF.AspNetCore.Mvc
+
+@{ 
+    var setting = Html.Setting<CustomServiceSetting>();
 }
 @if(!string.IsNullOrWhiteSpace(setting.CSQQ))
 {
@@ -9,7 +12,7 @@
 }
 @* 站长统计 *@
 @{ 
-    var cnzz = setting.CNZZSiteIdent?.Trim() ??"";
+	var cnzz = "";// setting.CNZZSiteIdent?.Trim() ??"";
 }
 @if (!string.IsNullOrEmpty(cnzz))
 {

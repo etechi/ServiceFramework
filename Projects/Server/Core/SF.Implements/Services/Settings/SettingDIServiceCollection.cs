@@ -23,16 +23,16 @@ namespace SF.Core.ServiceManagement
 
 	public static class SettingDIServiceCollectionExtension
 	{
-		public static IServiceCollection AddSettingService(
+		
+		public static IServiceCollection AddSystemSettings(
 			this IServiceCollection sc
 			)
 		{
-			sc.AddManaged(
-				typeof(ISettingService<>),
-				typeof(SettingService<>),
-				ServiceImplementLifetime.Scoped
-				);
-
+			sc.AddSetting<AppSiteSetting>();
+			sc.AddSetting<CustomServiceSetting>();
+			sc.AddSetting<DebugSetting>();
+			sc.AddSetting<HttpSetting>();
+			sc.AddSetting<SystemSetting>();
 			return sc;
 		}
 	}

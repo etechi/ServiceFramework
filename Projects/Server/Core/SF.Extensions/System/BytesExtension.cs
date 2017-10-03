@@ -73,6 +73,10 @@ namespace System
 			return new string(buf);
 			
 		}
+		public static byte[] MD5(this byte[] bytes) => Hash.CalcHash(bytes, Hash.MD5());
+		public static byte[] Sha1(this byte[] bytes) => Hash.CalcHash(bytes, Hash.Sha1());
+		public static byte[] Sha256(this byte[] bytes) => Hash.CalcHash(bytes, Hash.Sha256());
+
 		public static string Base64(this byte[] data)
 		{
 			Ensure.NotNull(data,nameof(data));

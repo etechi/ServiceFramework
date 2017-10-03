@@ -1,0 +1,72 @@
+﻿@import "./defaultStyle.scss";
+div.open-page{
+   
+}
+
+.round-item{
+    img{
+        display:block;
+        margin:0 auto;
+    }
+    h4{
+        margin:4px -4px 4px -4px;
+        padding:0;
+        font-size:$smallFontSize;
+        overflow: hidden;
+	    text-overflow: ellipsis;
+	    white-space: nowrap;
+	    height:16px;
+    }
+    div.note{
+        .selled{margin-left:10px;}
+    }
+    div.tail{
+        div.progress{
+            margin-right:40px;
+            margin-top:10px;
+        }
+        button{
+            background-color:transparent;
+            color:$primaryBGColorDark;
+            float:right;
+            font-size:25px;
+            width:28px;
+            height:28px;
+            padding:0;
+            margin:-15px 15px 0 0;
+        }
+    }
+    >div.waiting{
+        text-align:center;
+        color:$primaryBGColorDark;
+        font-size:$fontSize;
+        padding:8px;
+        >div:first-child{
+            font-size:30px;
+            margin:0 0 8px -10px;
+        }
+    }
+    >div.opening,>div.delayed{
+        text-align:center;
+        color:$primaryBGColorDark;
+        font-size:$fontSize;
+        padding:30px 10px;
+    }
+}
+
+div.round-list{
+    overflow-x:hidden;
+    padding-bottom:100px;
+    >div.items{
+        border-top:1px solid $grayLight;
+        margin-right:-1px;
+        .round-item{
+            float:left;
+            width:50%;
+            height:220px;
+            border-right:1px solid $grayLight;
+            border-bottom:1px solid $grayLight;
+            padding:10px 10px 10px 10px;
+        }
+    }
+}

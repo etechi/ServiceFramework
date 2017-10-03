@@ -25,6 +25,10 @@ namespace SF.Core.ServiceManagement.Models
 		[Comment("服务定义")]
 		[EntityIdent(typeof(ServiceDeclaration), nameof(ServiceName))]
 		[Required]
+		public string ServiceId { get; set; }
+
+		[Comment("服务实现类型")]
+		[Required]
 		public string ServiceType { get; set; }
 
 		[Ignore]
@@ -32,15 +36,18 @@ namespace SF.Core.ServiceManagement.Models
 		[Comment("服务名称")]
 		public string ServiceName { get; set; }
 
-		[Comment("服务实现")]
-		[EntityIdent(typeof(ServiceImplement), nameof(ImplementName), ScopeField = nameof(ServiceType))]
+		[Comment("服务实现ID")]
+		[EntityIdent(typeof(ServiceImplement), nameof(ImplementName), ScopeField = nameof(ServiceId))]
+		[Required]
+		public string ImplementId { get; set; }
+
+		[Comment("服务实现类型")]
 		[Required]
 		public string ImplementType { get; set; }
 
-
 		[Ignore]
 		[TableVisible]
-		[Comment("服务实现")]
+		[Comment("服务实现名称")]
 		public string ImplementName { get; set; }
 
 		[Comment("父服务实例")]

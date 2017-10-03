@@ -19,5 +19,14 @@ namespace SF.Services.Settings
 		[Comment(Name = "启用HTTPS模式", Description = "启用后，访问普通页面的用户将引导至通过HTTPS协议访问")]
 		public bool HttpsMode { get; set; }
 
+		[Comment(Name = "HTTP基础路径", Description = "使用方式: <img src=\"@Html.ResBase()path1/path2/image.gif\"/>")]
+		public string HttpRoot { get; set; }
+		
+		[Comment(Name = "资源文件基础路径", Description = "默认为HTTP基础路径")]
+		public string ResBase { get; set; }
+
+		[Comment(Name = "图片资源文件基础路径", Description = "默认为资源文件基础路径")]
+		public string ImageResBase { get; set; }
+
 	}
 }

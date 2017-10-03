@@ -1,0 +1,67 @@
+﻿@import "./defaultStyle.scss";
+div.recharge-page{
+    ul.hert-options{
+        background-color:#fff ;
+        padding-top:10px;
+        li{
+            border:1px solid $grayLight;
+            margin:0 1.5% 10px;
+            width:30% !important;
+            border-radius:2px;
+            input{
+                width:100%;
+                border:none;
+                text-align:center;
+            }
+        }
+        li.active{
+            border:1px solid $primaryBGColorDark;
+        }
+
+    }
+    h3{
+        font-size:$fontSize;
+        font-weight:normal;
+        background-color:$grayBGDark;
+        padding:15px 10px;
+        margin:0;
+    }
+    .alert{
+        margin:0;
+    }
+
+}
+
+.recharge-success-page{
+    h3{
+        text-align:center;
+        color:$primaryBGColorDark;
+        span{
+            color:#080;
+            margin-right:10px;
+        }
+        span.failed{
+            color:$primaryBGColorDark;
+        }
+    }
+    dl.result{
+        border:1px solid $gray;
+        padding:20px;
+        border-radius:2px;
+        margin:30px;
+        dt{
+            font-weight:normal;
+            color:$colorLight;
+        }
+        dd{
+            margin-bottom:10px;
+            padding:0 0 0 10px;
+        }
+    }
+}
+
+.user-recharge-record-table{
+    td{
+        padding:10px !important;
+    }
+}

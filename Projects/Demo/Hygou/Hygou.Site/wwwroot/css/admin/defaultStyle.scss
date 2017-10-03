@@ -1,0 +1,55 @@
+
+//$primaryBGColor :#dd2726;
+//$primaryBGColorDark :#c40000;
+//$primaryBGColorLight :#fff1ec;
+//$secondlyBGColor :#ffb922;
+//$secondlyBGColorDark :#ffa200;
+//$stressColor:#dd2726;
+//$stressColorLight:#c40000;
+$defaultBGColor: #eee;
+$primaryBGColor :#d64635;
+$primaryBGColorDark : darken($primaryBGColor,10%);
+$primaryBGColorLight :lighten($primaryBGColor,10%);
+
+$secondlyBGColor :#ffc040;
+$secondlyBGColorDark :#ffa000;
+$secondlyBGColorLight :#ffffc0;
+
+$stressColor:#ff5200;
+$stressColorLight:#ff6922;
+
+$hoverBGColor:lighten(#00f,45%);
+$selectedBGColor:lighten(#0f0,35%);
+
+$grayBGLight:#fcfcfc;
+$grayBG:#f8f8f8;
+$grayBGDark:#f0f0f0;
+
+$grayLight:#ddd;
+$gray:#ccc;
+$grayDark:#888;
+
+
+//asdasda
+$whiteColor:#fff;
+$color :#444;
+$colorLight:#888;
+
+$inverseGrayDark:#222;
+$inverseGray:#444;
+$inverseGrayLight:#666;
+$inverseColor :#ccc;
+$inverseColorDark :#aaa;
+
+
+
+
+
+$muteFGColor :#999;
+$linkFGColor :#444;
+$linkFGColorHover: lighten($linkFGColor,20%);
+$fontFamily :microsoft Yahei;
+$muteFontSize :12px;
+$fontSize :14px;
+$bigFontSize :16px;
+$primaryFontSize :20px;

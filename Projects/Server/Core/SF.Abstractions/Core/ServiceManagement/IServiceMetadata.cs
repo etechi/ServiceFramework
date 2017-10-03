@@ -29,6 +29,8 @@ namespace SF.Core.ServiceManagement
 	}
 	public interface IServiceMetadata : IServiceDetector
 	{
+		IReadOnlyDictionary<string, IServiceDeclaration> ServicesById { get; }
+		IReadOnlyDictionary<string, IServiceImplement> ImplementsById { get; }
 		IReadOnlyDictionary<string, IServiceDeclaration> ServicesByTypeName { get; }
 		IReadOnlyDictionary<string, IServiceImplement[]> ImplementsByTypeName { get; }
 		IReadOnlyDictionary<Type, IServiceDeclaration> Services { get; }

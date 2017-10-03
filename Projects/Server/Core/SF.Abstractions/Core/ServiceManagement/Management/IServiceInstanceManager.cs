@@ -17,11 +17,18 @@ namespace SF.Core.ServiceManagement.Management
 
 		[EntityIdent(typeof(Models.ServiceDeclaration))]
 		[Comment("服务定义")]
+		public string ServiceId { get; set; }
+
+
+		[Comment("服务类型")]
 		public string ServiceType { get; set; }
 
 		[EntityIdent(typeof(Models.ServiceImplement))]
 		[Comment("服务实现")]
 		public string ImplementId { get; set; }
+
+		[Comment("服务类型类型")]
+		public string ImplementType { get; set; }
 
 		[EntityIdent(typeof(Models.ServiceInstance))]
 		[Comment("父服务实现")]

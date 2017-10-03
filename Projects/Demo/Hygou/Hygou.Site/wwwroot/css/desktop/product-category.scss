@@ -1,0 +1,83 @@
+﻿@import "../defaultStyle.scss";
+div.product-category{
+    ol.breadcrumb{
+        background:none;
+        margin-top:8px;
+        height:20px;
+   }
+   div.types{
+       border:1px solid $grayLight;
+       div.head{
+           font-size:$bigFontSize;
+           padding:8px 16px;
+           border-bottom:1px solid $grayLight;
+       }
+       ul{
+           height:160px;
+           margin:0;
+           padding:0;
+           li{
+               float:left;
+               width:12.5%;
+               text-align:center;
+               padding:30px;
+               img{
+                   display:block;
+                   margin:0 auto 10px;
+               }
+               span{
+                   display:block;
+               }
+           }
+           li:hover{
+               img{
+                   display:block;
+                   width:80%;
+                   margin:-9px auto 10px;
+               }
+           }
+           li.active{
+               span{
+                   color:$primaryBGColorDark;
+               }
+           }
+       }
+    }
+   div.products{
+       margin-top:10px;
+       div.toolbar{
+           padding:20px;
+           button.buy-all{
+               float:right;
+
+           }
+           button{
+               border:none;
+           }
+           button.active{
+               background-color:$primaryBGColorDark;
+               color:#fff;
+           }
+       }
+	   ul.items{
+             margin:0;
+             padding:0;
+	    }
+       div.more{
+           color:$primaryBGColor;
+           text-align:center;
+           margin-top:20px;
+           padding:20px;
+           font-size:20px;
+           cursor:pointer;
+       }
+       div.loading{
+           color:$primaryBGColor;
+           text-align:center;
+           margin-top:20px;
+           padding:20px;
+           font-size:20px;
+       }
+    }
+}
+    

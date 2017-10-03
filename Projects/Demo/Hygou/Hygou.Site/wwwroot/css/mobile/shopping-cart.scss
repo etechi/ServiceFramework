@@ -1,0 +1,120 @@
+﻿@import "./defaultStyle.scss";
+
+div.shopping-cart-page{
+    padding-bottom:100px;
+
+    div.tail{
+        background-color:#fff;
+        position:fixed;
+        bottom:60px;
+        height:50px;
+        left:0;
+        right:0;
+        border-top:1px solid $gray;
+        padding:15px;
+        button{
+            float:right;
+            display:block;
+            padding:8px 30px;
+            border-radius:2px;
+            background-color:$primaryBGColorDark;
+            color:#fff;
+            margin:-6px 10px 0 0;
+        }
+        button.disabled{
+            background-color:$grayBGDark;
+            color:$gray;
+        }
+    }
+    div.note{
+        padding:20px;
+        color:$gray;
+    }
+    div.items{
+        a.empty{
+            color:$primaryBGColorDark;
+            padding:30px;
+            display:block;
+            text-align:center;
+        }
+        div.cart-item{
+            border-top:1px solid $grayLight;
+            border-bottom:1px solid $grayLight;
+            padding-bottom:5px;
+            margin-bottom:3px;
+            div.head{
+                height:36px;
+                border-bottom:1px solid $grayLight;
+                padding:10px;
+                h4{
+                    margin-top:0;
+                }
+                button{
+                    float:right;
+                    display:block;
+                    background-color:transparent;
+                }
+            }
+            img{
+                float:left;
+                margin:10px 0 0 10px;
+            }
+            div.content{
+                padding:20px 0;
+                margin-left:85px;
+
+                button.buy-all{
+                    float:right;
+                    display:block;
+                    color:#fff;
+                    background-color:$primaryBGColorDark;
+                    padding:4px 4px;
+                    border-radius:3px;
+                    margin:10px 5px;
+                }
+                div.input-line{
+                    font-size:11px;
+                    span{
+                        display:block;
+                        float:left;
+                        width:24px;
+                        margin:13px 4px 0 0;
+                    }
+
+                    div.input{
+                        float:left;
+                        width:120px;
+                        border:1px solid $gray;
+                        margin-top:6px;
+                        border-radius:2px;
+                        padding:0;
+                        overflow:hidden;
+                        button{
+                            float:left;
+                            width:26px;
+                            height:26px;
+                            font-size:12px;
+                            font-weight:bold;
+                            border:none;
+                            margin-top:-2px;
+                            padding:0 !important;
+                            background-color:#fff;
+                            font-size:20px;
+                            color:$grayDark;
+                        }
+                        input{
+                            float:left;
+                            text-align:center;
+                            border:none;
+                            width:66px;
+                            height:26px;
+                             border-right:1px solid $gray;
+                            border-left:1px solid $gray;
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+}

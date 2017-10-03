@@ -1,0 +1,325 @@
+﻿@import "./defaultStyle.scss";
+input,button,select,textarea{outline:none}
+p,h1,h2,h3,h4,h5,h6{word-break:break-all}
+button{
+    border:none;
+}
+li{list-style-type:none;}
+.fa{
+    width:14px;
+}
+
+.stress{
+    color:$stressColor;
+}
+.stress:visited, .stress:hover,.stress:active,.stress:active{
+    color:$stressColorLight;
+}
+.mute{font-size:$smallFontSize;color:$colorLight}
+
+body {
+    padding:0;
+    margin:0;
+    color:$color;
+    font-size:$fontSize;
+    font-family:$fontFamily;
+    line-height:1.2;
+}
+a{
+     color:$color;
+}
+a:visited, a:hover, a:active, a:focus{
+    color:$colorLight;
+    text-decoration:none;
+}
+.preload * {
+    animation:none !important;
+}
+
+ul{
+    margin:0;
+    padding:0;
+}
+b{
+    font-weight:normal;
+    color:$primaryBGColorDark;
+}
+.primary{
+    color:$primaryBGColorDark;
+}
+ul.hert-options{
+    background-color:$grayBG;
+    li{
+        float:left;
+        text-align:center;
+        cursor:pointer;
+        height:40px;
+        padding:10px 0;
+        font-size:$inputFontSize;
+    }
+    li.active{
+        color:$primaryBGColorDark;
+    }
+}
+div.progress{
+    background-color:$grayBGLight;
+    height:5px;
+    margin:0;
+    div.progress-bar{
+        height:5px;
+        background-color:$primaryBGColorDark;
+    }
+}
+
+div.scroll-to-load-more{
+    text-align:center;
+    color:$primaryBGColorDark;
+    padding:20px;
+    div.loading{
+
+    }
+    div.load-more{
+        
+    }
+}
+
+.sidebar-overlay{
+    background-color:#ccc;
+    opacity:0.3;
+}
+
+.sidebar-content{
+    background-color:#222;
+    width:150px;
+    color:#fff;
+    padding:20px 0;
+    >div:first-child{
+        text-align:center;
+        font-size:$inputFontSize;
+        padding-bottom:10px;
+        border-bottom:1px solid $grayDark;
+    }
+    ul{
+        li{
+            img{margin-right:6px;}
+            text-align:center;
+            font-size:$inputFontSize;
+            padding:10px;
+        }
+        li.active{
+            color:$primaryBGColorDark;
+        }
+    }
+}
+
+button.btn{
+    border:none;
+    background-color:transparent;
+}
+button.btn:active,button.btn:hover,button.btn:visited{
+    border:none;
+    box-shadow:none;
+    background-color:transparent !important;
+}
+button.btn:active{
+    color:$primaryBGColorDark !important;
+}
+
+button.btn-primary,a.btn-primary{
+    background-color:$primaryBGColor !important;
+    border:none;
+    color:#fff !important;
+}
+button.btn-primary:active, button.btn-primary:hover, button.btn-primary:visited,
+a.btn-primary:active, a.btn-primary:hover, a.btn-primary:visited{
+    background-color:$primaryBGColorDark !important;
+    color:#fff !important;
+}
+.btn-primary.big{
+    display:block;
+    margin:20px;
+}
+
+.btn-default{
+}
+.btn-default:active, .btn-primary:hover, .btn-primary:visited{
+}
+
+#app{
+    max-width:640px;
+    margin:0 auto;
+}
+
+
+
+
+dl.status{
+    font-size:$smallFontSize;
+    line-height:1.4;
+    color:$colorLight;
+    dt{
+        float:left;
+        margin-right:6px;
+        font-weight:normal
+
+    }
+    dd{
+        overflow: hidden;
+	    text-overflow: ellipsis;
+	    white-space: nowrap;
+	    height:18px;
+        display:block;
+        b{
+            font-weight:normal;
+            color:$primaryBGColorDark
+        }
+    }
+    margin-bottom:0;
+}
+
+table.grid{
+    width:100%;
+    font-size:12px;
+    th{
+        color:$grayDark;
+        font-weight:normal;
+        background-color:$grayBG;
+        padding:15px 2px;
+        text-align:center;
+    }
+    td{
+        padding:10px 2px;
+        border-bottom:1px solid $grayLight;
+        text-align:center;
+        line-height:1.8;
+    }
+    tr{
+
+    }
+    tr:hover{
+        background-color:$grayBGLight;
+    }
+}
+
+ul.hert-menu{
+    height:40px;
+    li{
+        float:left;
+        text-align:center;
+        cursor:pointer;
+        height:40px;
+        width:33%;
+        font-size:$inputFontSize;
+        a{
+            display:block;
+            padding:10px 0 11px;
+            border-bottom:1px solid $gray;
+        }
+        a.active{
+            padding:10px 0 10px;
+           border-bottom:2px solid $primaryBGColorDark;
+        }
+    }
+    
+}
+
+ul.hert-menu.item-2{
+    li{
+        width:50%;
+    }
+}
+ul.hert-menu.item-3{
+    li{
+        width:33%;
+    }
+}
+
+
+ul.hert-image-list{
+
+    li{
+        float:left;
+        margin:0 4px 4px 0;
+    }
+
+}
+
+div.data-list{
+    width:100%;
+    >span:first-child{
+        display:block;
+    }
+    >table.data-list-table{
+        width:100%;
+        td{font-size:12px;text-align:center;padding:8px}
+        th{
+            font-size:12px;
+            text-align:center;
+            padding:3px;
+            background-color:$grayBG;
+            font-weight:normal;
+        }
+        tr{border-bottom:1px solid $grayLight}
+    }
+}
+
+.component-fadein-enter {
+  opacity: 0.01;
+}
+
+.component-fadein-enter.component-fadein-enter-active {
+  opacity: 1;
+  transition: opacity 200ms ease-in;
+}
+
+.component-fadein-leave {
+  opacity: 1;
+}
+
+.component-fadein-leave.component-fadein-leave-active {
+  opacity: 0.01;
+  transition: opacity 150ms ease-in;
+}
+
+.check-list{
+    font-size:$inputFontSize;
+    border-top:1px solid $grayLight;
+    .check-list-item{
+        height:60px;
+        padding:15px 20px;
+        border-bottom:1px solid $gray;
+        img{
+            margin-right:10px;
+        }
+        >span:last-child{
+            display:inline-block;
+            margin-top:4px;
+        }
+        .checkbox{
+            float:right;
+            cursor:pointer;
+            font-size:26px;
+            margin:3px 15px;
+            color:$primaryBGColorDark;
+        }
+        .checkbox.disabled{
+            color:$grayLight;
+        }
+    }
+
+}
+
+ a.fixed-go-back{
+    position:fixed;
+    top:10px;
+    left:10px;
+    width:30px;
+    height:30px;
+    background-color:#333;
+    color:#fff;
+    opacity:0.4;
+    font-size:24px;
+    border-radius:50%;
+    text-align:center;
+    z-index:100000;
+}

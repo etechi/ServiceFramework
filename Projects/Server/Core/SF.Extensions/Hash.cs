@@ -12,7 +12,7 @@ namespace SF
 		public static HashAlgorithm Sha1() => System.Security.Cryptography.SHA1.Create();
 		public static HashAlgorithm Sha256() => System.Security.Cryptography.HMACSHA256.Create();
 
-		
+
 		public static int HashCode(this byte[] data)
         {   
             var d = data.CalcHash(MD5());

@@ -1,4 +1,6 @@
-﻿@{ Html.UIBlock("幻灯片区域"); }
+﻿@using SF.AspNetCore.Mvc;
+
+@{ Html.UIBlock("幻灯片区域"); }
 <div>
     <div class="container">
         @*@{ Html.UIBlock("公告区"); }*@
@@ -13,12 +15,12 @@
                 TOP
             </span>
             <span>
-                返回顶部
+                返回顶部123
             </span>
         </a>
     </div>
 </div>
-
+ 
 @section scripts{
     <script>
 		window.boot("home");

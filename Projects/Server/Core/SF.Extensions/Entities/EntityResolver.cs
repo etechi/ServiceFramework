@@ -189,6 +189,8 @@ namespace SF.Entities
 		class Filler {
 			protected static string ToIdent<T>(string Type, T Id)
 			{
+				if (Id.IsDefault())
+					return null;
 				return Type + "-" + Id.ToString();
 			}
 			protected static MethodInfo ToIdentMethod { get; } = typeof(Filler).GetMethod(nameof(ToIdent), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod);
@@ -238,7 +240,9 @@ namespace SF.Entities
 							p.name.GetSetMethod(),
 							Expression.Call(
 								null,
-								typeof(Filler).GetMethod(nameof(GetItemName), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod),
+								typeof(Filler).GetMethod(
+									nameof(GetItemName), 
+									BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod),
 								ArgNames,
 								Expression.Constant(i)
 								)

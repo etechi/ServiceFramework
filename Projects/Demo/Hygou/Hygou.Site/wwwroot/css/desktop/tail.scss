@@ -1,0 +1,96 @@
+﻿@import "../defaultStyle.scss";
+footer{
+    div.features{
+        margin-top:68px;
+        border-top:2px solid $primaryBGColorDark;
+        padding-top:48px;
+        >div.container{
+            >ul{
+                height:100px;
+                margin:0;
+                padding:0 0 36px 0;
+                border-bottom:2px solid $grayBG;
+                >li{
+                    padding:0;
+                    margin:0;
+                    display:block;
+                    width:25%;
+                    float:left;
+                    font-size:16px;
+                    border-right:1px solid $grayLight;
+                    >img{
+                        float:left;
+                        display:block;
+                        margin:0px 10px 0 20px;
+                    }
+                    >div{
+                        margin-top:10px;
+                    }
+                    >div:last-child{
+                        margin-top:4px;
+                        font-size:12px;
+                        color:$gray;
+                    }
+                }
+                li:last-child{
+                    border-right:none;
+                }
+            }
+        }
+    }
+    >div.articles{
+        //background-color:$inverseGray;
+        //color:$inverseColorDark;
+        >div.container{
+            padding:38px 0;
+            dl{
+                float:left;
+                padding:0 140px 0 40px;
+                //border-right:1px dotted $inverseGrayLight;
+            }
+            dd{
+                a{
+                    //color:$inverseColorDark !important;
+                    color:$grayDark !important;
+                }
+                a:active,a:hover,a:visited{
+                    //color:$inverseColor !important;
+                    color:$grayDark !important;
+                }
+                padding:0 0 8px;
+            }
+            dt{
+                font-size:$bigFontSize;
+                padding:0 0 12px;
+            }
+        }
+    }
+    div.footer{
+        border-top:3px solid $primaryBGColorDark;
+        background:#000;
+        padding:30px 0;
+        
+        div.container{
+            div.links{
+                color:$grayLight;
+                >ul{
+                    margin:0;
+                    padding:0;
+                    >li{
+                        float:left;
+                        margin:0 16px 16px 0;
+                        >a{
+                            color:$gray !important;
+                        }
+                    }
+                }
+            }
+            div.icp{
+                color:$grayDark;
+            }
+            div.certs{
+
+            }
+        }
+    }
+}

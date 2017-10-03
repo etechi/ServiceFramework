@@ -1,0 +1,86 @@
+﻿@import "./defaultStyle.scss";
+
+div.user-info {
+    background-image: url("/css/mobile/images/summary_bg.png");
+    background-size: cover;
+    height: 100px;
+    padding: 16px 16px 0 10px;
+    border-bottom: 10px solid $grayBG;
+    color: #fff;
+
+    > a:first-child {
+        float: right;
+        color: #fff;
+        margin-top: 20px;
+    }
+
+    a.icon {
+        float: left;
+        margin: 0 10px;
+
+        img {
+            width: 60px;
+            height: 60px;
+            padding: 2px;
+            border: 1px solid $grayLight;
+            background-color: #fff;
+            border-radius: 3px;
+        }
+    }
+
+    > div:last-child {
+        h4 {
+            margin: 9px 0;
+            color: #fff;
+        }
+
+        .balance {
+            font-size: 12px;
+
+            a {
+                background-color: #fff;
+                color: $primaryBGColorDark;
+                border-radius: 3px;
+                padding: 1px 6px;
+                margin-left: 8px;
+            }
+        }
+    }
+}
+
+
+
+.user-trade-record{
+    ul.hert-menu li{
+        width:33%;
+    }
+
+}
+.user-share-record{
+    ul.hert-menu li{
+        width:50%;
+    }
+    a.share{
+        color:#fff;
+        background-color:$primaryBGColor;
+        padding:4px 8px; 
+        border-radius:2px;
+        font-size:$smallFontSize;
+        margin-top:4px;
+        display:inline-block;
+    }
+}
+.icon-unreaded-notification-icon{
+    display:inline-block;
+    background:$primaryBGColorDark;
+    color:#fff;
+    vertical-align:bottom;
+    font-size:9px;
+    margin-left:5px;
+    padding:3px 0;
+    text-align:center;
+    line-height:1;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+}

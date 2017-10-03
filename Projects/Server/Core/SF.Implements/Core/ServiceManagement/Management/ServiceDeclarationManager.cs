@@ -19,12 +19,13 @@ namespace SF.Core.ServiceManagement.Management
 		public Dictionary<string,ServiceDeclaration> Items { get; }
 		public ServiceDeclarationManager(IServiceMetadata ServiceMetadata)
 		{
-			this.Items = (from svc in ServiceMetadata.Services
-						  let type=svc.Key
+			this.Items = (from pair in ServiceMetadata.ServicesById
+						  let type=pair.Value.ServiceType
 						  let comment = type.GetCustomAttribute<CommentAttribute>()
 						  select new ServiceDeclaration
 						  {
-							  Id = type.GetFullName(),
+							  Id = pair.Key,
+							  Type=type.GetFullName(),
 							  Description = comment?.Description,
 							  Name = comment?.Name ?? type.Name,
 							  Group = comment?.GroupName

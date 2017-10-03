@@ -1,5 +1,9 @@
-﻿@{
-	var setting = Html.Setting<CrowdMall.CrowdMallSetting>();
+﻿@using SF.AspNetCore.Mvc
+@using SF.Services.Settings
+@{
+
+	var setting = Html.Setting<AppSiteSetting>();
+
 }
 <div class="footer">
 	<div class="container">
@@ -10,7 +14,7 @@
 			@setting.SiteCopyright
 			@setting.SiteCert
             <div style="display:inline-block">
-                浙B2-20160929 <img src="~/Content/desktop/images/gaba.png"/> 浙公网安备 33028202000262号
+                浙B2-20160929 <img src="~/css/desktop/images/gaba.png"/> 浙公网安备 33028202000262号
             </div>
 		</div>
 		<div class="certs">

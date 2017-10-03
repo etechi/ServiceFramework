@@ -1,0 +1,30 @@
+﻿@import "../defaultStyle.scss"; 
+div.admin-page{
+    .btn-primary{
+        background-color:#d64635 !important;
+    }
+    input.form-control{
+        background-color:#fff !important;
+    }
+    div.head{
+        background-color:#1f1f1f;
+        position:fixed;
+        left:0;
+        right:0;
+        top:0;
+        color:#fff;
+        padding:10px;
+    }
+    div.container{
+        margin-top:150px;
+        width:420px;
+        padding:50px;
+        border:1px solid $gray;
+        border-radius:3px;
+        background-color:$grayBG;
+    }
+    div.signin-panel{
+    }
+    div.reset-password-panel{
+    }
+}

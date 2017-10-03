@@ -27,16 +27,24 @@ namespace SF.Core.ServiceManagement.Management.DataModels
 		[InverseProperty(nameof(Container))]
 		public override IEnumerable<ServiceInstance> Children { get; set; }
 
-		[Comment("服务定义")]
-		[MaxLength(100)]
+		[Comment("服务定义ID")]
+		[MaxLength(40)]
 		[Required]
 		[Index("TypedService", 2)]
+		public string ServiceId { get; set; }
+
+		[Comment("服务定义")]
+		[Required]
 		public string ServiceType { get; set; }
 
-		[Comment("接口实现")]
+		[Comment("接口实现ID")]
 		[Required]
-		[MaxLength(300)]
+		[MaxLength(40)]
 		[Index("impl", 1)]
+		public string ImplementId { get; set; }
+
+		[Required]
+		[Comment("接口实现")]
 		public string ImplementType { get; set; }
 
 		[Comment("服务优先级")]

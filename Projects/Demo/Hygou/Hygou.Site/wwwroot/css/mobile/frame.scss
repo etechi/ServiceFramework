@@ -1,0 +1,113 @@
+﻿@import "./defaultStyle.scss";
+div.frame{
+    div.container{
+
+    }
+    div.toolbar{
+        position:fixed;
+        height:40px;
+        bottom:0;
+        left:0;
+        right:0;
+    }
+}
+
+div.home-frame {
+    div.page {
+        margin-bottom: 60px;
+    }
+
+    div.toolbar {
+        height: 60px;
+        border-top: 1px solid $inverseGrayLight;
+        background-color: #000;
+
+        a {
+            width: 20%;
+            height: 70px;
+            display: block;
+            float: left;
+            text-align: center;
+            color: #fff;
+            padding-top: 10px;
+
+            span.menu-icon {
+                background-image: url("/css/mobile/images/icons.png");
+                background-size: 125px 50px;
+                width: 25px;
+                height: 25px;
+                display: inline-block;
+            }
+
+            span.menu-icon.menu-icon-home {
+                background-position: 0 0;
+            }
+
+            span.menu-icon.menu-icon-products {
+                background-position: -25px 0;
+            }
+
+            span.menu-icon.menu-icon-open {
+                background-position: -50px 0;
+            }
+
+            span.menu-icon.menu-icon-cart {
+                background-position: -75px 0;
+            }
+
+            span.menu-icon.menu-icon-user {
+                background-position: -100px 0;
+            }
+        }
+
+        a.active {
+            color: $primaryBGColor;
+
+            span.menu-icon.menu-icon-home {
+                background-position: 0 -25px;
+            }
+
+            span.menu-icon.menu-icon-products {
+                background-position: -25px -25px;
+            }
+
+            span.menu-icon.menu-icon-open {
+                background-position: -50px -25px;
+            }
+
+            span.menu-icon.menu-icon-cart {
+                background-position: -75px -25px;
+            }
+
+            span.menu-icon.menu-icon-user {
+                background-position: -100px -25px;
+            }
+        }
+    }
+}
+
+#float-side-menu-icon{
+    position:fixed;
+    z-index:1;
+    right:10px;
+    bottom:10px;
+    width:20px;
+    height:20px;
+    font-size:16px;
+}
+
+#main-menu-user-home-icon{
+    position:relative;
+    >span.notification-icon{
+        position:absolute;
+        background:$primaryBGColorDark;
+        color:#fff;
+        font-size:9px;
+        padding:2px 0;
+        text-align:center;
+        line-height:1;
+        width:16px;
+        height:16px;
+        border-radius:50%;
+    }
+}

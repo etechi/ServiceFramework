@@ -21,8 +21,30 @@ namespace SF.Services.Settings
 			this.Value = Value;
 		}
 	}
+	
 	public static class SettingServiceExtension
 	{
+		public static IServiceCollection AddSetting<T>(
+			   this IServiceCollection sc,
+			   T DefaultSetting = null
+			   ) where T : class
+		{
+			sc.AddManaged(
+				typeof(ISettingService<T>),
+				typeof(SettingService<T>),
+				ServiceImplementLifetime.Scoped
+				);
+			sc.InitServices($"初始化配置:{typeof(T)}", async (sp, sim, ParentId) =>
+			{
+				await sim.EnsureDefaultService(
+					ParentId,
+					typeof(ISettingService<T>),
+					typeof(SettingService<T>),
+					(object)DefaultSetting ?? new { }
+					);
+			});
+			return sc;
+		}
 		class Data<T>
 		{
 			public T Value { get; set; }

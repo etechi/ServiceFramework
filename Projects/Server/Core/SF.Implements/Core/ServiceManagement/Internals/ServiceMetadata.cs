@@ -47,6 +47,8 @@ namespace SF.Core.ServiceManagement.Internals
 		public IReadOnlyDictionary<Type, IServiceDeclaration> Services { get; }
 		public IReadOnlyDictionary<string, IServiceDeclaration> ServicesByTypeName { get; }
 		public IReadOnlyDictionary<string, IServiceImplement[]> ImplementsByTypeName { get; }
+		public IReadOnlyDictionary<string, IServiceDeclaration> ServicesById { get; }
+		public IReadOnlyDictionary<string, IServiceImplement> ImplementsById { get; }
 
 
 		public ServiceMetadata(IEnumerable<ServiceDescriptor> ServiceDescriptors)
@@ -88,6 +90,35 @@ namespace SF.Core.ServiceManagement.Internals
 				.GroupBy(i => i.ImplementType)
 				.ToDictionary(g => g.Key.GetFullName(), g => g.Cast<IServiceImplement>().ToArray());
 
+			ServicesById = ServicesByTypeName.ToDictionary(p => p.Key.UTF8Bytes().MD5().Hex(), p => p.Value);
+
+			ImplementsByTypeName = lists
+				.Where(i => i.ImplementType != null)
+				.GroupBy(i => i.ImplementType)
+				.ToDictionary(g => g.Key.GetFullName(), g => g.Cast<IServiceImplement>().ToArray());
+
+			var dupImpls = (from i in lists
+							where i.ImplementType != null && i.IsManagedService
+							let svc = i.ServiceType
+							let impl = i.ImplementType
+							group (svc, impl) by (svc, impl) into g
+							where g.Count() > 1
+							group g.Key.impl by g.Key.svc into gi
+							select gi
+						   ).ToArray();
+						   
+			if (dupImpls.Length > 0)
+				throw new InvalidOperationException(
+					"服务实现重复定义:"+
+					dupImpls.Select(di=>$"服务:{di.Key.GetFullName()}的实现包括:{di.Select(i=>i.GetFullName()).Join(",")}").Join(";")
+					);
+
+			ImplementsById = lists
+				.Where(i => i.ImplementType != null && i.IsManagedService)
+				.ToDictionary(i => 
+				$"{i.ImplementType.GetFullName()}@{i.ServiceType.GetFullName()}".UTF8Bytes().MD5().Hex(),
+				i => i as IServiceImplement
+				);
 
 			//ServiceTypeForInterface =
 			//	(from svc in Services.Values

@@ -1,0 +1,35 @@
+﻿@import "./defaultStyle.scss";
+.user-win-record{
+    .win-record-item{
+        border-bottom:1px solid $grayLight;
+        border-top:1px solid $grayLight;
+        margin-bottom:20px;
+        box-shadow: 0 1px 3px RGBA(0,0,0,.1);
+        .delivery-status{
+            background-color:$grayBG;
+            line-height:1.5;
+            padding:10px;
+            select{
+                display:block;
+                width:100%;
+                border-radius:3px;
+                border-color:$grayLight;
+                padding:6px;
+            }
+            button{
+                color:#fff;
+                width:40%;
+                background-color:$primaryBGColorDark;
+                border-radius:2px;
+                padding:8px 4px;
+                margin:10px 10px 0 0;
+            }
+            .addr{
+                font-size:$smallFontSize;
+            }
+            .transport{
+                font-size:$smallFontSize;
+            }
+        }
+    }
+}

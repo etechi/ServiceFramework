@@ -9,7 +9,7 @@
 <li class="product-item list-item">
     @if (item.CurRound.PriceUnit == 10)
     {
-        <img class="product-tag10" src="@Html.ResBase()Content/desktop/images/tag10.png" />
+        <img class="product-tag10" src="@Html.ResBase()css/desktop/images/tag10.png" />
     }
     <a class="img" href="@href" target="@target">
         @if (ViewData.ContainsKey("NoDelayImage"))
@@ -18,7 +18,7 @@
         }
         else
         {
-            <img src="@Html.ResBase()Content/desktop/images/empty.gif" data-src="@Html.Media(item.Image, "c" + ImageSize)" width="@ImageSize" height="@ImageSize" class="lazy" />
+            <img src="@Html.ResBase()css/desktop/images/empty.gif" data-src="@Html.Media(item.Image, "c" + ImageSize)" width="@ImageSize" height="@ImageSize" class="lazy" />
         }
     </a>
     <div class="info">

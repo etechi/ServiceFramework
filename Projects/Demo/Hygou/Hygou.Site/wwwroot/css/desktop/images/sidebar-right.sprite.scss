@@ -1,0 +1,69 @@
+/*
+@import this file directly into your existing Scss files to use these mixins
+*/
+@mixin sidebar-right-sbr-cart-active() {
+	width: 35px;
+	height: 123px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -10px no-repeat;
+}
+@mixin sidebar-right-sbr-cart() {
+	width: 35px;
+	height: 123px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -143px no-repeat;
+}
+@mixin sidebar-right-sbr-coca-active() {
+	width: 125px;
+	height: 35px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -276px no-repeat;
+}
+@mixin sidebar-right-sbr-coca() {
+	width: 35px;
+	height: 35px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -321px no-repeat;
+}
+@mixin sidebar-right-sbr-feedback-active() {
+	width: 125px;
+	height: 35px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -366px no-repeat;
+}
+@mixin sidebar-right-sbr-feedback() {
+	width: 35px;
+	height: 35px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -411px no-repeat;
+}
+@mixin sidebar-right-sbr-head() {
+	width: 35px;
+	height: 159px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -456px no-repeat;
+}
+@mixin sidebar-right-sbr-qr-active() {
+	width: 35px;
+	height: 35px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -625px no-repeat;
+}
+@mixin sidebar-right-sbr-qr() {
+	width: 35px;
+	height: 35px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -670px no-repeat;
+}
+@mixin sidebar-right-sbr-top-active() {
+	width: 125px;
+	height: 35px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -715px no-repeat;
+}
+@mixin sidebar-right-sbr-top() {
+	width: 35px;
+	height: 35px;
+	display: block;
+	background: url('images/sidebar-right.sprite.jpg') -10px -760px no-repeat;
+}
