@@ -3,6 +3,23 @@ using System.Threading.Tasks;
 
 namespace SF.Entities.AutoEntityProvider
 {
+	public class AutoEntityManager<TKey, TDetail, TSummary, TEditable, TQueryArgument,TDataModel> :
+		AutoEntityManager<TKey, TDetail, TSummary, TEditable, TQueryArgument>
+		where TDataModel:class
+		where TEditable : class
+	{
+		public AutoEntityManager(
+			IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory
+			) :base(DataSetAutoEntityProviderFactory)
+		{
+		}
+		protected override IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> OnCreateAutoEntityProvider(
+			IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory
+			)
+		{
+			return DataSetAutoEntityProviderFactory.Create<TKey, TDetail, TSummary, TEditable, TQueryArgument,TDataModel>();
+		}
+	}
 
 	public class AutoEntityManager<TKey,TDetail, TSummary,TEditable, TQueryArgument> :
 		IEntityLoadable<TKey, TDetail>,
@@ -14,20 +31,18 @@ namespace SF.Entities.AutoEntityProvider
 		IEntityUpdator<TEditable>,
 		IEntityRemover<TKey>,
 		IEntityAllRemover
-		where TDetail : class
-		where TSummary : class
 		where TEditable : class
-		where TQueryArgument : class
 	{
 		protected IDataSetAutoEntityProvider<TKey,TDetail, TSummary, TEditable, TQueryArgument> AutoEntityProvider { get; }
 		protected IDataSetEntityManager EntityManager => AutoEntityProvider.EntityManager;
-		public AutoEntityManager(
-			IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> AutoEntityProvider
-			)
+		public AutoEntityManager(IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory)
 		{
-			this.AutoEntityProvider = AutoEntityProvider;
+			this.AutoEntityProvider = OnCreateAutoEntityProvider(DataSetAutoEntityProviderFactory);
 		}
-
+		protected virtual IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> OnCreateAutoEntityProvider(IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory)
+		{
+			return DataSetAutoEntityProviderFactory.Create<TKey, TDetail, TSummary, TEditable, TQueryArgument>();
+		}
 		public EntityManagerCapability Capabilities => AutoEntityProvider.Capabilities;
 
 		public Task<TKey> CreateAsync(TEditable Entity)

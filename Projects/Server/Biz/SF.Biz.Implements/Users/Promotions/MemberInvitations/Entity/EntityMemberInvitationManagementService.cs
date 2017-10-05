@@ -6,7 +6,6 @@ using SF.Data;
 using SF.Entities;
 using SF.Entities.AutoEntityProvider;
 using SF.Users.Members.Models;
-using SF.Users.Promotions.MemberInvitations.Entity.DataModels;
 using SF.Users.Promotions.MemberInvitations.Models;
 using System;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace SF.Users.Promotions.MemberInvitations.Entity
 		AutoEntityManager<ObjectKey<long>, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationQueryArgument>,
 		IMemberInvitationManagementService
 	{
-		public EntityMemberInvitationManagementService(IDataSetAutoEntityProvider<ObjectKey<long>, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationQueryArgument> AutoEntityProvider) : base(AutoEntityProvider)
+		public EntityMemberInvitationManagementService(IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory) : base(DataSetAutoEntityProviderFactory)
 		{
 		}
 	}

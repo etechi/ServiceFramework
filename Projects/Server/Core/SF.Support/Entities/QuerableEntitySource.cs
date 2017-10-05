@@ -27,7 +27,7 @@ namespace SF.Entities
 		}
 		protected virtual IContextQueryable<TSummaryTemp> OnMapModelToSummary(IContextQueryable<TModel> Query)
 		{
-			return Query.Select(ADT.Poco.Map<TModel, TSummaryTemp>());
+			return Query.Select(ADT.Poco.MapExpression<TModel, TSummaryTemp>());
 		}
 		protected abstract Task<TEntitySummary[]> OnPrepareSummaries(TSummaryTemp[] Internals);
 

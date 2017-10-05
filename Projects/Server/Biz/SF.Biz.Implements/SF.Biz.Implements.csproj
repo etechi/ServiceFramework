@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Users\Promotions\MemberInvitations\Entity\DataModels\**" />
+    <EmbeddedResource Remove="Users\Promotions\MemberInvitations\Entity\DataModels\**" />
+    <None Remove="Users\Promotions\MemberInvitations\Entity\DataModels\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Bizness\Products\ProductCollectionService.cs" />
     <Compile Remove="Bizness\Products\ProductService.cs" />
     <Compile Remove="Bizness\Products\ProductTypeService.cs" />

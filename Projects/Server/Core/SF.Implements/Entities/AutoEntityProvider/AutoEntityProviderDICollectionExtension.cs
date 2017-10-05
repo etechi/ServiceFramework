@@ -9,15 +9,17 @@ using SF.Entities;
 using SF.Entities.AutoEntityProvider;
 using SF.Entities.AutoEntityProvider.Internals;
 using SF.Data;
-using SF.Entities.AutoEntityProvider.Internals.DataModelAttributeGenerators;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using SF.Entities.AutoEntityProvider.Internals.ValueTypes;
 using System.ComponentModel;
 using SF.Entities.AutoEntityProvider.Internals.PropertyModifiers;
 using SF.Entities.AutoEntityProvider.Internals.EntityModifiers;
-using SF.Entities.AutoEntityProvider.Internals.DataModelTypeMappers;
 using SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters;
+using SF.Entities.AutoEntityProvider.Internals.DataModelBuilders;
+using SF.Entities.AutoEntityProvider.Internals.DataModelBuilders.AttributeGenerators;
+using SF.Entities.AutoEntityProvider.Internals.DataModelBuilders.TypeMappers;
+using SF.Entities.AutoEntityProvider.Internals.DataModelBuilders.Providers;
 
 namespace SF.Core.ServiceManagement
 {
@@ -28,15 +30,8 @@ namespace SF.Core.ServiceManagement
 		{
 			 public EntityDataModels DataModels { get; set; }
 		}
-		static IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument> 
-			CreateEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(
-			IServiceProvider sp)
-		{
-			var f = sp.Resolve<DataSetAutoEntityProviderFactory>();
-			return f.Create<TKey,TEntityDetail,TEntitySummary,TEntityEditable,TQueryArgument>(sp);
-		}
+	
 
-		
 		static void AddAttributeGenerator<G,A>(this IServiceCollection sc)
 			where G:IDataModelAttributeGenerator
 		{
@@ -75,8 +70,26 @@ namespace SF.Core.ServiceManagement
 			//Data Model Type Mapper
 			sc.AddSingleton<IDataModelTypeMapper, JsonDataTypeMapper>();
 
+			//DataModel Build Providers
+			sc.AddSingleton<IDataModelBuildProvider, DefaultDataModelBuildProvider>();
+			sc.AddSingleton<IDataModelBuildProvider, DataModelRelationBuildProvider>();
+
+			sc.AddSingleton<IDataModelTypeBuildProvider, DefaultDataModelTypeBuildProvider>();
+			sc.AddSingleton<IDataModelTypeBuildProvider, DataModelAutoPrimaryKeyProvider>();
+			sc.AddSingleton<IDataModelTypeBuildProvider, DataModelTableNameProvider>();
+			sc.AddSingleton<IDataModelTypeBuildProvider, DataModelServiceScopeProvider>();
+
+
+
+			sc.AddSingleton<IDataModelPropertyBuildProvider, DefaultDataModelValuePropertyBuildProvider>();
+			sc.AddSingleton<IDataModelPropertyBuildProvider, DataModelEntityIdentPropertyBuildProvider>();
+
+			sc.AddTransient<DataModelBuilder>();
+
 			sc.AddTransient<SystemTypeMetadataBuilder>();
-			sc.AddTransient<DataModelTypeBuilder>();
+
+
+
 			sc.AddSingleton<DataSetAutoEntityProviderFactory>();
 
 			sc.AddSingleton<IMetadataCollection>(sp =>sp.Resolve<SystemTypeMetadataBuilder>().Build());
@@ -87,20 +100,17 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IEntityPropertyModifierProvider, DefaultPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, JsonDataPropertyModifierProvider>();
 			sc.AddSingleton<IEntityModifierProvider, PropertyEntityModifierProvider>();
+			sc.AddSingleton<IEntityModifierBuilder, EntityModifierBuilder>();
 
 			//Entity Query Support
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, JsonDataQueryConverterProvider>();
 
 
-			sc.AddTransient(
-				typeof(IDataSetAutoEntityProvider<, , , , >), 
-				typeof(AutoEntityProviderDICollectionExtension).GetMethodExt(
-					nameof(CreateEntityProvider),
-					BindingFlags.Static | BindingFlags.NonPublic |  BindingFlags.InvokeMethod,
-					typeof(IServiceProvider))
-				);
+			sc.AddSingleton<IDataSetAutoEntityProviderCache, DataSetAutoEntityProviderCache>();
+			sc.AddScoped<IDataSetAutoEntityProviderFactory, DataSetAutoEntityProviderFactory>();
+
 			sc.AddSingleton(
-				sp => sp.Resolve<DataModelTypeBuilder>().Build(string.Empty)
+				sp => sp.Resolve<DataModelBuilder>().Build(string.Empty)
 				);
 
 			sc.AddSingleton<SF.Data.IEntityDataModelSource>(

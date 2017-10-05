@@ -43,6 +43,9 @@ namespace SF.Core.ServiceManagement
 			Services.AddSystemSettings();
 			Services.AddFrontEndServices();
 
+			Services.AddTestServices();
+			Services.AddEntityTestServices();
+
 			Services.InitServices("系统服务", async (sp, sim, ParentId) =>
 			{
 				await sim.NewDataProtectorService().Ensure(sp, ParentId);

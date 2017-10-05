@@ -25,17 +25,14 @@ namespace SF.Entities
 		EntityManagerCapability Capabilities { get; }
 	}
 	public interface IEntityEditableLoader<TKey, TEntity>
-		where TEntity : class
 	{
 		Task<TEntity> LoadForEdit(TKey Key);
 	}
 	public interface IEntityUpdator<TEntity>
-		where TEntity : class
 	{
 		Task UpdateAsync(TEntity Entity);
 	}
 	public interface IEntityCreator<TKey,TEntity>
-		where TEntity : class
 	{
 		Task<TKey> CreateAsync(TEntity Entity);
 	}
@@ -46,7 +43,6 @@ namespace SF.Entities
 		IEntityEditableLoader<TKey, TEntity>,
 		IEntityCreator<TKey,TEntity>,
 		IEntityUpdator<TEntity>
-		where TEntity:class
 	{
 		
 		

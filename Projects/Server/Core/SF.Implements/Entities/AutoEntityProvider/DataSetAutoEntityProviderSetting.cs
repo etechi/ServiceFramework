@@ -52,9 +52,9 @@ namespace SF.Entities.AutoEntityProvider
 		IQueryResultBuildHelper<TDataModel, TEntityDetailTemp, TEntityDetail> DetailQueryResultBuildHelper { get; }
 		IQueryResultBuildHelper<TDataModel, TEntitySummaryTemp, TEntitySummary> SummaryQueryResultBuildHelper { get; }
 		IQueryResultBuildHelper<TDataModel, TEntityEditableTemp,TEntityEditable> EditableQueryResultBuildHelper { get; }
-		IEntityModifier<TEntityEditable, TDataModel>[] InitModifiers { get; }
-		IEntityModifier<TEntityEditable, TDataModel>[] UpdateModifiers { get; }
-		IEntityModifier<TEntityEditable, TDataModel>[] RemoveModifiers { get; }
+		IEntityModifier<TEntityEditable, TDataModel> InitModifier { get; }
+		IEntityModifier<TEntityEditable, TDataModel> UpdateModifier { get; }
+		IEntityModifier<TEntityEditable, TDataModel> RemoveModifier { get; }
 
 		public Lazy<Func<IServiceProvider, object>> FuncCreateProvider { get; }
 
@@ -77,13 +77,11 @@ namespace SF.Entities.AutoEntityProvider
 			return em.CreateAsync<TKey,TEntityEditable, TDataModel>(
 				Entity,
 				async ctx => {
-					foreach (var m in InitModifiers)
-						await m.Execute(em, ctx);
+					await InitModifier.Execute(em, ctx);
 				},
 				async ctx =>
 				{
-					foreach (var m in UpdateModifiers)
-						await m.Execute(em, ctx);
+					await UpdateModifier.Execute(em, ctx);
 				},
 				null
 				);
@@ -157,8 +155,7 @@ namespace SF.Entities.AutoEntityProvider
 			await em.RemoveAsync<TKey, TEntityEditable, TDataModel>(
 				Key,
 				async ctx => {
-					foreach (var m in RemoveModifiers)
-						await m.Execute(em, ctx);
+					await RemoveModifier.Execute(em, ctx);
 				},
 				(key, ctx) => FuncLoadModelForModify.Value(em, key, ctx)
 				);
@@ -170,8 +167,7 @@ namespace SF.Entities.AutoEntityProvider
 			await em.UpdateAsync<TKey,TEntityEditable, TDataModel>(
 				Entity,
 				async ctx => {
-					foreach (var m in UpdateModifiers)
-						await m.Execute(em, ctx);
+					await UpdateModifier.Execute(em, ctx);
 				},
 				(key, ctx) => FuncLoadModelForModify.Value(em, key, ctx)
 				);
@@ -181,17 +177,17 @@ namespace SF.Entities.AutoEntityProvider
 			IQueryResultBuildHelper<TDataModel,TEntityDetailTemp,TEntityDetail> DetailQueryResultBuildHelper,
 			IQueryResultBuildHelper<TDataModel, TEntitySummaryTemp, TEntitySummary> SummaryQueryResultBuildHelper,
 			IQueryResultBuildHelper<TDataModel, TEntityEditableTemp, TEntityEditable> EditableQueryResultBuildHelper,
-			IEntityModifier<TEntityEditable, TDataModel>[] InitModifiers,
-			IEntityModifier<TEntityEditable, TDataModel>[] UpdateModifiers,
-			IEntityModifier<TEntityEditable, TDataModel>[] RemoveModifiers
+			IEntityModifier<TEntityEditable, TDataModel> InitModifier,
+			IEntityModifier<TEntityEditable, TDataModel> UpdateModifier,
+			IEntityModifier<TEntityEditable, TDataModel> RemoveModifier
 		)
 		{
 			this.DetailQueryResultBuildHelper = DetailQueryResultBuildHelper;
 			this.SummaryQueryResultBuildHelper = SummaryQueryResultBuildHelper;
 			this.EditableQueryResultBuildHelper = EditableQueryResultBuildHelper;
-			this.InitModifiers = InitModifiers;
-			this.UpdateModifiers = UpdateModifiers;
-			this.RemoveModifiers = RemoveModifiers;
+			this.InitModifier = InitModifier;
+			this.UpdateModifier = UpdateModifier;
+			this.RemoveModifier = RemoveModifier;
 
 			FuncCreateProvider = new Lazy<Func<IServiceProvider, object>>(() =>
 				new Func<IServiceProvider, object>(

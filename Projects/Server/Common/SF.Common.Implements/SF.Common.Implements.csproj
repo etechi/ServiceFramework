@@ -7,14 +7,25 @@
   <ItemGroup>
     <Compile Remove="Auth\Passport\**" />
     <Compile Remove="Auth\Users\**" />
+    <Compile Remove="Common\Documents\Management\Backup\**" />
     <EmbeddedResource Remove="Auth\Passport\**" />
     <EmbeddedResource Remove="Auth\Users\**" />
+    <EmbeddedResource Remove="Common\Documents\Management\Backup\**" />
     <None Remove="Auth\Passport\**" />
     <None Remove="Auth\Users\**" />
+    <None Remove="Common\Documents\Management\Backup\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Common\Documents\Management\Backup\DataModels\Document.cs" />
+    <Compile Include="Common\Documents\Management\Backup\DataModels\DocumentAuthor.cs" />
+    <Compile Include="Common\Documents\Management\Backup\DataModels\DocumentCategory.cs" />
+    <Compile Include="Common\Documents\Management\Backup\DataModels\DocumentTag.cs" />
+    <Compile Include="Common\Documents\Management\Backup\DataModels\DocumentTagReference.cs" />
   </ItemGroup>
 
   <ItemGroup>

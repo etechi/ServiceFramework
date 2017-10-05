@@ -545,12 +545,16 @@ namespace SF.Entities
 			var paging = new Paging { Count = BatchCount };
 			for (; ; )
 			{
+				var batchIndex = 0;
 				using (var scope = await tsm.CreateScope($"批量删除{typeof(TModel).Comment()}", TransactionScopeMode.RequireTransaction))
 				{
-					var q = Storage.DataSet.AsQueryable();
-					if (Condition != null)
-						q = q.Where(Condition);
-					var ids = await q.Select(Entity<TModel>.KeySelector<TKey>()).Take(BatchCount).ToArrayAsync();
+					var ids = await Storage.UseTransaction($"查询批量删除主键{batchIndex++}",async (trans) =>
+					{
+						var q = Storage.DataSet.AsQueryable();
+						if (Condition != null)
+							q = q.Where(Condition);
+						return await q.Select(Entity<TModel>.KeySelector<TKey>()).Take(BatchCount).ToArrayAsync();
+					});
 					foreach (var id in ids)
 						await Remove(id);
 					await scope.Commit();

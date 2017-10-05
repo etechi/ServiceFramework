@@ -220,7 +220,10 @@ namespace SF.Entities
 		public static Expression<Func<T,bool>> ObjectFilter<TObj>(TObj Obj)
 			=>ObjectFilterCreator<TObj>.Instance.Value(Obj);
 
-		static MethodInfo MethodObjectFilter { get; } = typeof(Entity<T>).GetMethods("ObjectFilter", BindingFlags.Static | BindingFlags.Public).Single();
+		static MethodInfo MethodObjectFilter { get; } = typeof(Entity<T>).GetMethods(
+			nameof(Entity < T > .ObjectFilter),
+			BindingFlags.Static | BindingFlags.Public
+			).Single();
 
 		public static MethodInfo MethodContains { get; } = 
 			typeof(Enumerable)
@@ -298,13 +301,17 @@ namespace SF.Entities
 				);
 
 		static MethodInfo MethodWhere { get; } = typeof(ContextQueryable).GetMethodExt(
-			"Where",
+			nameof(ContextQueryable.Where),
 			BindingFlags.Static | BindingFlags.Public,
 			typeof(IContextQueryable<>).MakeGenericType<System.Reflection.TypeExtension.GenericTypeArgument>(),
-			typeof(Func<,>).MakeGenericType(
-				typeof(IContextQueryable<>).MakeGenericType<System.Reflection.TypeExtension.GenericTypeArgument>(),
-				typeof(bool)
-			));
+			typeof(Expression<>).MakeGenericType(
+				typeof(Func<,>).MakeGenericType(
+					typeof(System.Reflection.TypeExtension.GenericTypeArgument),
+					typeof(bool)
+				)
+			)
+			);
+
 
 		static class QueryArgumentIdent<QueryArgument>
 		{
@@ -315,7 +322,9 @@ namespace SF.Entities
 						{
 							if (!qap.PropertyType.IsClass)
 								return false;
-							var ks = qap.PropertyType.AllPublicInstanceProperties().Where(ip => ip.PropertyType.IsDefined(typeof(KeyAttribute))).ToArray();
+							var ks = qap.PropertyType.AllPublicInstanceProperties().Where(ip => 
+								ip.GetCustomAttribute<KeyAttribute>()!=null
+								).ToArray();
 							if (ks.Length != KeyProperties.Count) return false;
 							return ks.Zip(KeyProperties, (x, y) => x.Name == y.Name && x.PropertyType == y.PropertyType).All(a=>a);
 						}).ToArray();
@@ -332,6 +341,7 @@ namespace SF.Entities
 							Expression.Call(
 								null,
 								MethodWhere.MakeGenericMethod(typeof(T)),
+								ArgQueryable,
 								Expression.Call(
 									null,
 									MethodObjectFilter.MakeGenericMethod(p.PropertyType),

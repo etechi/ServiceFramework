@@ -94,6 +94,11 @@ namespace SF.Entities.AutoEntityProvider
 		IEntityModifier<TEntity, TDataModel> GetEntityModifier<TEntity, TDataModel>(DataActionType ActionType)
 			where TDataModel : class;
 	}
+
+	public interface IEntityModifierBuilder : IEntityModifierProvider
+	{
+	}
+
 	public interface IDataSetAutoEntityProvider<TKey,TDetail, TSummary, TEditable, TQueryArgument>
 	{
 		EntityManagerCapability Capabilities { get; }
@@ -108,6 +113,19 @@ namespace SF.Entities.AutoEntityProvider
 		Task RemoveAsync(TKey Key);
 		Task UpdateAsync(TEditable Entity);
 	}
+
+	public interface IDataSetAutoEntityProviderCache
+	{
+		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument>(IServiceProvider sp);
+		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument,TDataModel>(IServiceProvider sp) where TDataModel : class;
+	}
+
+	public interface IDataSetAutoEntityProviderFactory
+	{
+		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument>();
+		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument, TDataModel>() where TDataModel:class;
+	}
+
 	public interface IValueTypeProvider
 	{
 		int Priority { get; }

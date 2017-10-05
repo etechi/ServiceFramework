@@ -9,6 +9,7 @@ using SF.Core.ServiceManagement;
 using SF.Common.Documents.Management;
 using SF.Common.Documents;
 using SF.Core.ServiceManagement.Management;
+using SF.Entities.AutoEntityProvider;
 
 namespace SF.Core.ServiceManagement
 {
@@ -21,6 +22,17 @@ namespace SF.Core.ServiceManagement
 			sc.AddManagedScoped<IDocumentCategoryManager, DocumentCategoryManager>();
 			sc.AddManagedScoped<IDocumentManager, DocumentManager>();
 			sc.AddManagedScoped<IDocumentService, DocumentService>();
+
+			sc.AddAutoEntityType(
+				(TablePrefix ?? "") + "Doc",
+				false,
+				typeof(Document),
+				typeof(DocumentInternal),
+				typeof(DocumentEditable),
+				typeof(Category),
+				typeof(CategoryInternal)
+				);
+
 
 			sc.AddDataModules<
 				SF.Common.Documents.DataModels.Document,

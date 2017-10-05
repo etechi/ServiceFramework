@@ -168,7 +168,7 @@ namespace SF.Entities
 
 		protected virtual Task<TEditable> OnMapModelToEditable(IContextQueryable<TModel> Query)
 		{
-			return Query.Select(ADT.Poco.Map<TModel, TEditable>()).SingleOrDefaultAsync();
+			return Query.Select(ADT.Poco.MapExpression<TModel, TEditable>()).SingleOrDefaultAsync();
 		}
 
 		public virtual Task<TEditable> LoadForEdit(TKey Key)

@@ -186,18 +186,18 @@ namespace System.Reflection
 		{
 			return type.GetTypeInfo().IsPrimitive;
 		}
-		static HashSet<Type> SysTypes { get; } = new HashSet<Type>
+		static HashSet<Type> ConstTypes { get; } = new HashSet<Type>
 		{
 			typeof(string),
 			typeof(DateTime),
 			typeof(TimeSpan),
 		};
-		public static bool IsSystemType(this Type type)
+		public static bool IsConstType(this Type type)
 		{
 			if (type.IsPrimitiveType())
 				return true;
 
-			return SysTypes.Contains(type);
+			return ConstTypes.Contains(type);
 		}
 
 		public static Assembly GetAssembly(this Type type)

@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 using System.Linq;
 using SF.Metadata;
+using System.ComponentModel.DataAnnotations;
 
 namespace SF.Entities.AutoEntityProvider.Internals
 {
@@ -19,7 +20,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		Dictionary<string, EntityType> IdToEntityTypes { get; } = new Dictionary<string, EntityType>();
 		Dictionary<Type, EntityType> SysTypeToEntityTypes { get; } = new Dictionary<Type, EntityType>();
 
-		Dictionary<Type, (string ns, Type type)> EntitySysTypes { get; }
+		Dictionary<Type, AutoEntityType> EntitySysTypes { get; }
 		IValueTypeResolver ValueTypeResolver { get; }
 
 	
@@ -39,9 +40,21 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			}
 		}
 
-		EntityAttribute[] MergeAttributes(IGrouping<string,(MemberInfo,EntityAttribute)> Members)
+		EntityAttribute[] MergeAttributes(IGrouping<string,(MemberInfo,EntityAttribute)> attrs)
 		{
-			var gs= Members.GroupBy(a => a.Item1, a => a.Item2)
+			if(attrs.Key==typeof(CommentAttribute).FullName)
+			{
+				var values =
+					(from a in attrs
+					 from p in a.Item2.Values
+					 let lev = a.Item1.DeclaringType.GetInheritLevel()
+					 group (value: p.Value, lev: lev) by p.Key into g
+					 select (g.Key, value: g.OrderByDescending(i => i.lev).Select(i => i.value).First())
+				).ToDictionary(i => i.Key, i => i.value);
+				return new[] { new EntityAttribute(attrs.Key, values) };
+			}
+
+			var gs= attrs.GroupBy(a => a.Item1, a => a.Item2)
 				.Select(g=>(g.Key,g.ToArray(),g.Select(i=>i.ToString()).OrderBy(i=>i).ToArray()))
 				.Distinct(EntityComparer.Instance)
 				.ToArray();
@@ -64,51 +77,76 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		{
 			return (
 			from m in Members
-			 from ea in EntityAttribute.GetAttributes(m)
-			 group (m, ea) by ea.Name into g
+			from ea in EntityAttribute.GetAttributes(m)
+			let name=ea.Name == typeof(DisplayAttribute).FullName ? typeof(CommentAttribute).FullName : ea.Name
+			 group (m, ea) by name into g
 			 from a in MergeAttributes(g)
 			 select a
 			 ).ToArray();
 		}
 
+		(Type Type, IEntityType Entity, PropertyMode Mode) GetPropType(Type Type)
+		{
+			var realType = Type;
+			if (Type.IsGeneric())
+			{
+				var ptd = Type.GetGenericTypeDefinition();
+				if (ptd == typeof(IEnumerable<>) || ptd == typeof(ICollection<>))
+					realType = Type.GetGenericArguments()[0];
+			}
+			else if (Type.IsArray)
+				realType = Type.GetElementType();
+
+			var et = SysTypeToEntityTypes.Get(realType);
+
+			return (
+				et==null?Type:realType,
+				et ,
+				et == null ? PropertyMode.Value : 
+					realType == Type ? PropertyMode.SingleRelation : 
+					PropertyMode.MultipleRelation
+				);
+		}
+
 		EntityProperty BuildProperty(string Entity,PropertyInfo[] props)
 		{
-			var propTypes = props.Select(p => p.PropertyType).Distinct().ToArray();
-			if (propTypes.Length > 1)
-				throw new InvalidOperationException($"实体{Entity}的属性{props[0].Name}的类型并不完全一致:{propTypes.Join(",")}");
-			var propType = propTypes[0];
-			var realType = propType;
-			if (propType.IsGeneric())
+			var propTypes = props.Select(p => GetPropType(p.PropertyType)).ToArray();
+			var PropModes = propTypes.Select(pt => pt.Mode).Distinct().ToArray();
+			if (PropModes.Length>1)
+				throw new InvalidOperationException($"实体{Entity}的属性{props[0].Name}的模式并不完全一致,包含:{PropModes.Join(",")}");
+
+			if (PropModes[0] == PropertyMode.Value)
 			{
-				var ptd = propType.GetGenericTypeDefinition();
-				if (ptd == typeof(IEnumerable<>) || ptd == typeof(ICollection<>) )
-					realType = propType.GetGenericArguments()[0];
+				var types = propTypes.Select(pt => pt.Type).Distinct().ToArray();
+				if (types.Length > 1)
+					throw new InvalidOperationException($"实体{Entity}的属性{props[0].Name}的类型并不完全一致:{types.Join(",")}");
 			}
-			else if (propType.IsArray)
-				realType = propType.GetElementType();
+			else
+			{
+				var entityTypes = propTypes.Select(pt => pt.Entity).Distinct().ToArray();
+				if (entityTypes.Length > 1)
+					throw new InvalidOperationException($"实体{Entity}的实体属性{props[0].Name}的类型并不完全一致:{entityTypes.Select(e=>e.FullName).Join(",")}");
+			}
 
 			var name = props[0].Name;
 			//if (name == "Id")
 			//	throw new ArgumentException(props.Select(p => p.DeclaringType.Name+"."+p.Name+":"+ p.GetCustomAttributes().Select(a => a.GetType().Name).Join(",")).Join(";"));
 			var attrs = MergeMemberAttributes(props);
-
-			var et = SysTypeToEntityTypes.Get(realType) as IType;
-			
-			if(et==null)
+			IType propType;
+			if (PropModes[0] == PropertyMode.Value)
 			{
 				//如果不是实体类，则查找数据类型
-				et = ValueTypeResolver.Resolve(Entity, name, propType, attrs);
-				if (et == null)
+				propType = ValueTypeResolver.Resolve(Entity, name, propTypes[0].Type, attrs);
+				if (propType == null)
 					throw new ArgumentException($"找不到属性类型:{propType} {props[0].DeclaringType}.{name}");
 			}
-			var mode = et is IValueType ? PropertyMode.Value : 
-					realType == propType ? PropertyMode.SingleRelation : 
-					PropertyMode.MultipleRelation;
-
+			else
+				propType = propTypes[0].Entity;
+			
 			return new EntityProperty(
 				name,
-				mode,
-				et,
+				PropModes[0],
+				propType,
 				attrs
 				);
 		}
@@ -117,7 +155,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			IValueTypeResolver ValueTypeResolver
 			)
 		{
-			this.EntitySysTypes = EntityTypes.ToDictionary(p => p.Type,p=>(p.Namespace,p.Type));
+			this.EntitySysTypes = EntityTypes.ToDictionary(p => p.Type);
 			this.ValueTypeResolver = ValueTypeResolver;
 		}
 		
@@ -133,17 +171,25 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			//提取所有实体
 			var entities =
 			(from sysType in EntitySysTypes.Values
-			 let eo = sysType.type.GetCustomAttribute<EntityObjectAttribute>() ?? throw new ArgumentException($"{sysType.type}未定义EntityObjectAttribute属性，不是实体对象")
-			 let name = eo.Entity ?? sysType.type.Name
-			 let entity = sysType.ns + name
+			 let eo = sysType.Type.GetCustomAttribute<EntityObjectAttribute>() ?? throw new ArgumentException($"{sysType.Type}未定义EntityObjectAttribute属性，不是实体对象")
+			 let name = eo.Entity ?? sysType.Type.Name
+			 let entity = sysType.Namespace + name
 			 group (name,sysType) by entity into g
-			 select (id:g.Key,name:g.First().name,ns:g.First().sysType.ns, types: g.Select(i => i.sysType.type).ToArray())).ToArray();
+			 select (
+				id:g.Key,
+				name:g.First().name,
+				ns:g.First().sysType.Namespace, 
+				dbModel: g.First().sysType.AutoGenerateDataModel,
+				types: g.Select(i => i.sysType.Type).ToArray()
+				)
+			).ToArray();
 
 			foreach (var e in entities)
 			{
 				var et = new EntityType(
 						e.name,
 						e.ns,
+						e.dbModel,
 						null,
 						MergeMemberAttributes(e.types)
 					);

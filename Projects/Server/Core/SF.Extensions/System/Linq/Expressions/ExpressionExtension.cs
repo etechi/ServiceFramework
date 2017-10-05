@@ -765,7 +765,7 @@ namespace System.Linq.Expressions
 						if (gt == typeof(IEnumerable<>) || gt == typeof(Dictionary<,>) || gt == typeof(List<>))
 							type = gt.GetGenericArguments().Last();
 					}
-					if (!type.IsSystemType())
+					if (!type.IsConstType())
 						throw new NotSupportedException($"表达式不支持类型为{r.Type}的引用:{r.Value}");
 				}
 				return e;

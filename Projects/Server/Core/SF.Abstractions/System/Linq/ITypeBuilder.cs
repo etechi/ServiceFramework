@@ -73,11 +73,14 @@ namespace System.Linq.TypeExpressions
 		public PropertyExpression(
 			string Name, 
 			TypeReference PropertyType , 
-			PropertyAttributes Attributes 
+			PropertyAttributes Attributes ,
+			IEnumerable<CustomAttributeExpression> CustomAttributes=null
 			) : base(Name)
 		{
 			this.Attributes = Attributes;
 			this.PropertyType = PropertyType;
+			if (CustomAttributes != null)
+				this.CustomAttributes.AddRange(CustomAttributes);
 		}
 	}
 	public class TypeExpression : MemberExpression

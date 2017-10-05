@@ -68,12 +68,12 @@ namespace SF.Auth.Identities.Entity
 			if (UnionIdent != null)
 				return await DataSet.FirstOrDefaultAsync(
 					i => i.ProviderId == Provider && i.UnionIdent == UnionIdent && i.Credential == Credential,
-					ADT.Poco.Map<TIdentityCredential, IdentityCredential>()
+					ADT.Poco.MapExpression<TIdentityCredential, IdentityCredential>()
 					);
 			else
 				return await DataSet.FirstOrDefaultAsync(
 					i => i.ProviderId == Provider && i.Credential == Credential,
-					ADT.Poco.Map<TIdentityCredential, IdentityCredential>()
+					ADT.Poco.MapExpression<TIdentityCredential, IdentityCredential>()
 					);
 		}
 
@@ -111,7 +111,7 @@ namespace SF.Auth.Identities.Entity
 		{
 			return await DataSet.QueryAsync(
 				i => i.ProviderId == Provider && i.IdentityId == UserId,
-				ADT.Poco.Map<TIdentityCredential, IdentityCredential>()
+				ADT.Poco.MapExpression<TIdentityCredential, IdentityCredential>()
 				);
 		}
 

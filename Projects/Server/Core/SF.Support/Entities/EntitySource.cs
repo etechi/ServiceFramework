@@ -66,7 +66,7 @@ namespace SF.Entities
 		}
 		protected virtual IContextQueryable<TDetailTemp> OnMapModelToDetail(IContextQueryable<TModel> Query)
 		{
-			return Query.Select(Poco.Map<TModel, TDetailTemp>());
+			return Query.Select(Poco.MapExpression<TModel, TDetailTemp>());
 		}
 		protected abstract Task<TDetail[]> OnPrepareDetails(TDetailTemp[] Internals);
 
@@ -123,7 +123,7 @@ namespace SF.Entities
 		}
 		protected virtual IContextQueryable<TTemp> OnMapModelToInternal(IContextQueryable<TModel> Query)
 		{
-			return Query.Select(ADT.Poco.Map<TModel, TTemp>());
+			return Query.Select(ADT.Poco.MapExpression<TModel, TTemp>());
 		}
 		protected abstract Task<TEntityDetail[]> OnPrepareInternals(TTemp[] Internals);
 		public async Task<TEntityDetail> GetAsync(TKey Id)

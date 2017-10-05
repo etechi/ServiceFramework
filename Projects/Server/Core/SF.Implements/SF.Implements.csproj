@@ -16,11 +16,13 @@
     <Compile Remove="Core\ServiceManagement\Management\DataModels\ServiceCategoryItem.cs" />
     <Compile Remove="Core\ServiceManagement\Management\DataModels\ServiceInstanceInteface.cs" />
     <Compile Remove="Core\ServiceManagement\Management\ServiceInstanceManagerBackup.cs" />
-    <Compile Remove="Entities\AutoEntityProvider\Internals\EntityModifiers\EntityModifierCreator.cs" />
+    <Compile Remove="Entities\AutoEntityProvider\Internals\DataModelBuilders\DataModelBuilder - 复制.cs" />
+    <Compile Remove="Entities\AutoEntityProvider\Internals\EntityModifierBuilders\EntityModifiers\EntityModifierCreator.cs" />
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Entities\Tests\EntityDetailToSummaryConverters\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

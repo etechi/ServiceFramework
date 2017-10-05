@@ -7,7 +7,33 @@ using System.Reflection;
 
 namespace SF.Entities.AutoEntityProvider
 {
-	public class DataSetAutoEntityProviderFactory
+	public class DataSetAutoEntityProviderFactory : IDataSetAutoEntityProviderFactory
+	{
+		IDataSetAutoEntityProviderCache DataSetAutoEntityProviderCache { get; }
+		IServiceProvider ServiceProvider { get; }
+		public DataSetAutoEntityProviderFactory(
+			IDataSetAutoEntityProviderCache DataSetAutoEntityProviderCache,
+			IServiceProvider ServiceProvider
+			)
+		{
+			this.DataSetAutoEntityProviderCache = DataSetAutoEntityProviderCache;
+			this.ServiceProvider = ServiceProvider;
+
+		}
+
+		public IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
+		Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>()
+		{
+			return DataSetAutoEntityProviderCache.Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(ServiceProvider);
+		}
+		public IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
+		   Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument, TDataModel>()
+			where TDataModel : class
+		{
+			return DataSetAutoEntityProviderCache.Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument,TDataModel>(ServiceProvider);
+		}
+	}
+	public class DataSetAutoEntityProviderCache : IDataSetAutoEntityProviderCache
 	{
 		System.Collections.Concurrent.ConcurrentDictionary<Type, Lazy<IDataSetAutoEntityProviderSetting>> Creators =
 			new System.Collections.Concurrent.ConcurrentDictionary<Type, Lazy<IDataSetAutoEntityProviderSetting>>();
@@ -15,19 +41,19 @@ namespace SF.Entities.AutoEntityProvider
 		IDataModelTypeCollection DataModelTypeCollection { get; }
 		IEntityPropertyQueryConverterProvider[] PropertyQueryConverterProviders { get; }
 		NamedServiceResolver<IEntityPropertyModifier> EntityModifierValueConverterResolver { get; }
-		IEnumerable<IEntityModifierProvider> EntityModifierProviders { get; }
-		public DataSetAutoEntityProviderFactory(
+		IEntityModifierBuilder EntityModifierBuilder { get; }
+		public DataSetAutoEntityProviderCache(
 			IMetadataCollection Metas,
 			IDataModelTypeCollection DataModelTypeCollection,
 			IEnumerable<IEntityPropertyQueryConverterProvider> PropertyQueryConverterProviders,
-			IEnumerable<IEntityModifierProvider> EntityModifierProviders
+			IEntityModifierBuilder EntityModifierBuilder
 			)
 		{
 			this.Metas = Metas;
 			this.DataModelTypeCollection = DataModelTypeCollection;
 			this.PropertyQueryConverterProviders = PropertyQueryConverterProviders.OrderBy(p=>p.Property).ToArray();
 			this.EntityModifierValueConverterResolver = EntityModifierValueConverterResolver;
-			this.EntityModifierProviders = EntityModifierProviders;
+			this.EntityModifierBuilder = EntityModifierBuilder;
 		}
 
 		void ValidateEntityTypes(Type TEntityDetail, IEntityType entity, params Type[] types)
@@ -48,9 +74,7 @@ namespace SF.Entities.AutoEntityProvider
 			QueryResultBuildHelper DetailQueryResultBuildHelper,
 			QueryResultBuildHelper SummaryQueryResultBuildHelper,
 			QueryResultBuildHelper EditableQueryResultBuildHelper,
-			IEntityModifier[] InitModifiers,
-			IEntityModifier[] UpdateModifiers,
-			IEntityModifier[] RemoveModifiers
+			IEntityModifierBuilder EntityModifierBuilder
 			)
 			where TDataModel : class,new()
 			{
@@ -68,30 +92,59 @@ namespace SF.Entities.AutoEntityProvider
 				(IQueryResultBuildHelper<TDataModel, TEntityDetailTemp, TEntityDetail>)DetailQueryResultBuildHelper,
 				(IQueryResultBuildHelper<TDataModel, TEntitySummaryTemp, TEntitySummary>)SummaryQueryResultBuildHelper,
 				(IQueryResultBuildHelper<TDataModel, TEntityEditableTemp, TEntityEditable>)EditableQueryResultBuildHelper,
-				InitModifiers.Cast<IEntityModifier<TEntityEditable,TDataModel>>().ToArray(),
-				UpdateModifiers.Cast<IEntityModifier<TEntityEditable, TDataModel>>().ToArray(),
-				RemoveModifiers.Cast<IEntityModifier<TEntityEditable, TDataModel>>().ToArray()
+				EntityModifierBuilder.GetEntityModifier<TEntityEditable,TDataModel>(DataActionType.Create),
+				EntityModifierBuilder.GetEntityModifier<TEntityEditable, TDataModel>(DataActionType.Update),
+				EntityModifierBuilder.GetEntityModifier<TEntityEditable, TDataModel>(DataActionType.Delete)
 				);
 			}
-		static MethodInfo MethodGetModifier { get; } = typeof(IEntityModifierProvider)
-			.GetMethodExt(
-				nameof(IEntityModifierProvider.GetEntityModifier),
-				typeof(DataActionType)
-			);
 
-		IEntityModifier[] GetEntityModifiers(MethodInfo GetModifier, DataActionType Type)
+		IDataSetAutoEntityProviderSetting CreateSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(Type DataModelType)
 		{
-			return EntityModifierProviders
-				.Select(p => 
-					GetModifier.Invoke(
-						p, 
-						new object[] { Type }
-						)
-					)
-				.Where(p => p != null)
-				.Cast<IEntityModifier>()
-				.OrderBy(m=>m.Priority)
-				.ToArray();
+			var tKey = typeof(TKey);
+			var tDetail = typeof(TEntityDetail);
+			var tSummary = typeof(TEntitySummary);
+			var tEditable = typeof(TEntityEditable);
+			var tQueryArg = typeof(TQueryArgument);
+
+			var entity = Metas.EntityTypesByType.Get(tDetail);
+			if (entity == null)
+				throw new ArgumentException($"自动化实体类型库中找不到类型{tDetail}对应的实体");
+			ValidateEntityTypes(
+				tDetail,
+				entity,
+				tSummary,
+				tEditable
+				);
+			var dataType = DataModelType?? DataModelTypeCollection.Get(entity.FullName);
+
+			var detailHelper = new QueryResultBuildHelperCreator(dataType, tDetail, PropertyQueryConverterProviders).Build();
+			var summaryHelper = new QueryResultBuildHelperCreator(dataType, tSummary, PropertyQueryConverterProviders).Build();
+			var editableHelper = new QueryResultBuildHelperCreator(dataType, tEditable, PropertyQueryConverterProviders).Build();
+
+			var newSetting = typeof(DataSetAutoEntityProviderCache).GetMethods(
+				nameof(DataSetAutoEntityProviderCache.NewSetting),
+				BindingFlags.Static | BindingFlags.NonPublic
+				).Single();
+
+			return (IDataSetAutoEntityProviderSetting)newSetting.MakeGenericMethod(
+			   tKey,
+			  tDetail,
+			  detailHelper.TempType,
+			  tSummary,
+			  summaryHelper.TempType,
+			  tEditable,
+			  editableHelper.TempType,
+			  tQueryArg,
+			  dataType
+			  ).Invoke(
+				null,
+				new object[] {
+						detailHelper,
+						summaryHelper,
+						editableHelper,
+						EntityModifierBuilder
+			}
+			);
 		}
 		public IDataSetAutoEntityProvider<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>  
 			Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(IServiceProvider sp)
@@ -99,64 +152,28 @@ namespace SF.Entities.AutoEntityProvider
 			var tDetail = typeof(TEntityDetail);
 			if (!Creators.TryGetValue(tDetail, out var setting))
 			{
-				setting = new Lazy<IDataSetAutoEntityProviderSetting>(() =>
-				  {
-					  var tKey = typeof(TKey);
-					  var tSummary = typeof(TEntitySummary);
-					  var tEditable = typeof(TEntityEditable);
-					  var tQueryArg = typeof(TQueryArgument);
-
-					  var entity = Metas.EntityTypesByType.Get(tDetail);
-					  if (entity == null)
-						  throw new ArgumentException($"自动化实体类型库中找不到类型{tDetail}对应的实体");
-					  ValidateEntityTypes(
-						  tDetail,
-						  entity,
-						  tSummary,
-						  tEditable
-						  );
-					  var dataType = DataModelTypeCollection.Get(entity.FullName);
-
-					  var detailHelper = new QueryResultBuildHelperCreator(dataType, tDetail, PropertyQueryConverterProviders).Build();
-					  var summaryHelper = new QueryResultBuildHelperCreator(dataType, tSummary, PropertyQueryConverterProviders).Build();
-					  var editableHelper = new QueryResultBuildHelperCreator(dataType, tEditable, PropertyQueryConverterProviders).Build();
-
-
-					  var GetModifier = MethodGetModifier.MakeGenericMethod(tEditable, dataType);
-
-					  var initModifiers = GetEntityModifiers(GetModifier, DataActionType.Create);
-					  var updateModifiers = GetEntityModifiers(GetModifier, DataActionType.Update);
-					  var removeModifiers = GetEntityModifiers(GetModifier, DataActionType.Delete);
-
-					  var newSetting = typeof(DataSetAutoEntityProviderFactory).GetMethods(
-						  "NewSetting",
-						  BindingFlags.Static | BindingFlags.NonPublic
-						  ).Single();
-
-					  return (IDataSetAutoEntityProviderSetting)newSetting.MakeGenericMethod(
-						 tKey,
-						tDetail,
-						detailHelper.TempType,
-						tSummary,
-						summaryHelper.TempType,
-						tEditable,
-						editableHelper.TempType,
-						tQueryArg,
-						dataType
-						).Invoke(
-						  null,
-						  new object[] {
-							detailHelper,
-							summaryHelper,
-							editableHelper,
-							initModifiers,
-							updateModifiers,
-							removeModifiers
-						  }
-						 );
-				  });
-				
-				setting = Creators.GetOrAdd(tDetail,setting);
+				setting = Creators.GetOrAdd(
+					tDetail, 
+					new Lazy<IDataSetAutoEntityProviderSetting>(() =>
+					   CreateSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(null)
+					)
+				);
+			}
+			return (IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>)setting.Value.FuncCreateProvider.Value(sp);
+		}
+		public IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
+		   Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument,TDataModel>(IServiceProvider sp)
+			where TDataModel:class
+		{
+			var tDetail = typeof(TEntityDetail);
+			if (!Creators.TryGetValue(tDetail, out var setting))
+			{
+				setting = Creators.GetOrAdd(
+					tDetail,
+					new Lazy<IDataSetAutoEntityProviderSetting>(() =>
+					   CreateSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(typeof(TDataModel))
+					)
+				);
 			}
 			return (IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>)setting.Value.FuncCreateProvider.Value(sp);
 		}
