@@ -23,6 +23,16 @@ namespace SF.ADT
 		{
 			static int CompareEnumerable<X>(IEnumerable<X> xs, IEnumerable<X> ys)
 			{
+				if (xs == ys)
+					return 0;
+				if (xs != null)
+				{
+					if (ys == null)
+						return 1;
+				}
+				else if (ys != null)
+					return -1;
+
 				var comparer = DeepComparers.GetComparer<X>();
 				using (var ex = xs.GetEnumerator())
 				using (var ey = ys.GetEnumerator())
@@ -87,7 +97,10 @@ namespace SF.ADT
 					return UseFuncEqual(argColl, x, y);
 
 
-				var props = x.Type.AllPublicInstanceProperties().ToArray();
+				var props = x.Type.AllPublicInstanceProperties()
+					.Where(p=>p.GetGetMethod().GetParameters().Length==0)
+					.ToArray();
+
 				var expr =
 					props.Length == 0 ? null :
 					props.Length == 1 ? GetEqualExpression(
@@ -192,9 +205,10 @@ namespace SF.ADT
 			}
 			public static Func<IComparerCollection, T, T, int> Build()
 			{
+				var type = typeof(T);
 				var argColl = Expression.Parameter(typeof(IComparerCollection));
-				var argX = Expression.Parameter(typeof(T));
-				var argY = Expression.Parameter(typeof(T));
+				var argX = Expression.Parameter(type);
+				var argY = Expression.Parameter(type);
 				var varT = Expression.Variable(typeof(int));
 				return Expression.Lambda<Func<IComparerCollection, T, T, int>>(
 					Expression.Block(

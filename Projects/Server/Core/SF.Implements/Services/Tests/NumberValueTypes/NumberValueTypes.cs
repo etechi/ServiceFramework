@@ -15,9 +15,9 @@ namespace SF.Services.Tests.NumberValueTypes
 		public T One { get; } = (T)Convert.ChangeType(1, typeof(T));
 		public T Zero { get; } = default(T);
 
-		public T MinValue { get; } = (T)typeof(T).GetProperty("MinValue", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+		public T MinValue { get; } = (T)typeof(T).GetField("MinValue").GetValue(null);
 
-		public T MaxValue { get; } = (T)typeof(T).GetProperty("MaxValue", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+		public T MaxValue { get; } = (T)typeof(T).GetField("MaxValue").GetValue(null);
 
 		static ParameterExpression ArgX { get; } = Expression.Parameter(typeof(T), "x");
 		static ParameterExpression ArgY { get; } = Expression.Parameter(typeof(T), "y");

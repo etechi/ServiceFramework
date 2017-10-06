@@ -37,6 +37,16 @@ namespace SF.UT
 			}
 				);
 		}
+		[Fact]
+		public async Task ExecuteTestCases()
+		{
+			await Scope(async (IServiceProvider sp) =>
+			{
+				await sp.InitServices("test");
+				return 0;
+			}
+				);
+		}
 	}
 	
 

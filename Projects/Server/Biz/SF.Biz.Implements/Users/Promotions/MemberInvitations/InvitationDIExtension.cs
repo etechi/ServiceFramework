@@ -27,6 +27,12 @@ namespace SF.Core.ServiceManagement
 					await svc.RemoveAllAsync()
 				);
 
+			//sc.AddServiceInstanceCreator(
+			//	(sim) =>
+			//		sim.DefaultService<IMemberInvitationManagementService, EntityMemberInvitationManagementService>(
+			//		new { }
+			//		)
+			//	);
 			return sc;
 		}
 		

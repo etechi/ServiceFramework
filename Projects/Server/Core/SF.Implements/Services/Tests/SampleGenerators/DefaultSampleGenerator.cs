@@ -267,15 +267,16 @@ namespace SF.Services.Tests.SampleGenerators
 		public IValueSampleGenerator<T> GetGenerator<T>(PropertyInfo Prop)
 		{
 			var type = typeof(T);
-			if (Prop != null && (
-				Prop.PropertyType != typeof(T) ||
-				!(Prop.PropertyType.IsGeneric() && Prop.PropertyType.GenericTypeArguments[0] == typeof(T)))
+			if (Prop != null && !(
+				Prop.PropertyType == typeof(T) ||
+				(Prop.PropertyType.IsGeneric() && Prop.PropertyType.GenericTypeArguments[0] == typeof(T)))
 				)
 				throw new ArgumentException($"属性{Prop}类型{Prop.PropertyType}和指定类型{typeof(T)}不符");
 
 			if (type.IsGeneric() && type.GetGenericTypeDefinition() == typeof(Nullable<>))
 				return (IValueSampleGenerator<T>)Activator.CreateInstance(
 					typeof(NullableSampleGenerator<>).MakeGenericType(type.GenericTypeArguments[0]),
+					(IValueSampleGeneratorProvider)this,
 					Prop
 					);
 
@@ -297,7 +298,7 @@ namespace SF.Services.Tests.SampleGenerators
 			if (type == typeof(TimeSpan))
 				return (IValueSampleGenerator<T>)new TimeSpanSampleGenerator(Prop);
 
-			throw null;
+			return null;
 		}
 
 	}

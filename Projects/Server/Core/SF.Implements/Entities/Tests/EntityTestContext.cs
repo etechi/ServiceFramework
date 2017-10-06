@@ -9,6 +9,7 @@ using SF.Core.Times;
 using SF.Data;
 using SF.Core.ServiceManagement;
 using SF.Core.Events;
+using SF.Services.Tests;
 
 namespace SF.Entities.Tests
 {
@@ -21,9 +22,11 @@ namespace SF.Entities.Tests
 		public EntityTestContext(
 			TManager Manager, 
 			ITestAssert TestAssert, 
-			IEntityTestHelperCache EntityTestHelperCache
+			IEntityTestHelperCache EntityTestHelperCache,
+			ISampleSeed SampleSeed
 			)
 		{
+			this.SampleSeed = SampleSeed;
 			this.Manager = Manager;
 			this.Assert = TestAssert;
 			this.Helper = EntityTestHelperCache.GetTestHelper<TDetail,TSummary,TEditable,TQueryArgument>();
@@ -34,5 +37,7 @@ namespace SF.Entities.Tests
 		public ITestAssert Assert { get; }
 
 		public IEntityTestHelper<TDetail, TSummary, TEditable, TQueryArgument> Helper { get; }
+
+		public ISampleSeed SampleSeed { get; }
 	}
 }

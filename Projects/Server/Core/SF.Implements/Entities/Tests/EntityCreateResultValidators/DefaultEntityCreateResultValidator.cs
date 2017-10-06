@@ -12,6 +12,8 @@ using SF.Core.Events;
 using SF.Services.Tests;
 using System.Linq.Expressions;
 using System.Reflection;
+using SF.Metadata;
+
 namespace SF.Entities.Tests.EntityCreateResultValidators
 {
 	class DefaultEntityCreateResultValidatorProvider : 
@@ -26,15 +28,15 @@ namespace SF.Entities.Tests.EntityCreateResultValidators
 			EntitytValidator<TEditable,TEditable>,
 			IEntityCreateResultValidator<TEditable>
 		{
-			public EntityCreateResultValidator(Action<TEditable, TEditable, List<AssertResult>> FuncValidator) : base(FuncValidator)
+			public EntityCreateResultValidator(Action<TEditable, TEditable, List<TestResult>> FuncValidator) : base(FuncValidator)
 			{
 			}
-
-			public AssertResult ValidateCreateResult(TEditable CreateArgument, TEditable UpdateResult)
+			
+			public TestResult ValidateCreateResult(TEditable CreateArgument, TEditable UpdateResult)
 				=> Validate(CreateArgument, UpdateResult);
 		}
 
-
+		
 		public IEntityCreateResultValidator<TEditable> GetCreateResultValidator<TEditable>()
 		{
 			return new EntityCreateResultValidator<TEditable>(

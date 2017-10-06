@@ -34,20 +34,26 @@ namespace SF.Services.Tests
 			this.NextSampleGenerators = SampleGenerators.Where(s => s.NextSampleSupported).ToArray();
 		}
 
-		public void Assert(T ExpectValue, T TestValue)
+		public TestResult Assert(T ExpectValue, T TestValue)
 		{
-			ValueAsserts.ForEach(va => va.Assert(ExpectValue, TestValue));
+			return TestResult.Merge(
+				ValueAsserts.Select(va => va.Assert(ExpectValue, TestValue))
+				);
 		}
 
 		int SampleSourceSource = 0;
 		public T NextSample(T OrgValue,ISampleSeed Seed)
 		{
+			if (NextSampleGenerators.Length == 0)
+				return default(T);
 			return NextSampleGenerators[SampleSourceSource++ % SampleGenerators.Length].NextSample(OrgValue,Seed);
 		}
 		
-		public void Validate(T Value)
+		public TestResult Validate(T Value)
 		{
-			Validators.ForEach(v => v.Validate(Value));
+			return TestResult.Merge(
+				Validators.Select(v => v.Validate(Value))
+				);			
 		}
 	}
 }

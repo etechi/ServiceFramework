@@ -312,47 +312,56 @@ namespace SF.Entities
 			)
 			);
 
-
+		public static PropertyInfo GetQueryArgumentIdentProperty<TQueryArgument>()
+		{
+			return QueryArgumentIdent<TQueryArgument>.IdentProperty.Value;
+		}
 		static class QueryArgumentIdent<QueryArgument>
 		{
-			public static Lazy<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>> Func = new Lazy<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>>(() =>
-				{
-					var re = typeof(QueryArgument).AllPublicInstanceProperties().Where(
-						qap =>
-						{
-							if (!qap.PropertyType.IsClass)
-								return false;
-							var ks = qap.PropertyType.AllPublicInstanceProperties().Where(ip => 
-								ip.GetCustomAttribute<KeyAttribute>()!=null
-								).ToArray();
-							if (ks.Length != KeyProperties.Count) return false;
-							return ks.Zip(KeyProperties, (x, y) => x.Name == y.Name && x.PropertyType == y.PropertyType).All(a=>a);
-						}).ToArray();
-					if (re.Length == 0)
-						return (q, a) => q;
-					var p = re.Length == 1 ? re[0] : re.FirstOrDefault(ip => ip.Name == "Id") ?? re[0];
+			public static Lazy<PropertyInfo> IdentProperty { get; } = new Lazy<PropertyInfo>(() =>
+			 {
+				 var re = typeof(QueryArgument).AllPublicInstanceProperties().Where(
+							  qap =>
+							 {
+								 if (!qap.PropertyType.IsClass)
+									 return false;
+								 var ks = qap.PropertyType.AllPublicInstanceProperties().Where(ip =>
+								 ip.GetCustomAttribute<KeyAttribute>() != null
+								 ).ToArray();
+								 if (ks.Length != KeyProperties.Count) return false;
+								 return ks.Zip(KeyProperties, (x, y) => x.Name == y.Name && x.PropertyType == y.PropertyType).All(a => a);
+							 }).ToArray();
+				 if (re.Length == 0)
+					 return null;
+				 return re.Length == 1 ? re[0] : re.FirstOrDefault(ip => ip.Name == "Id") ?? re[0];
+			 });
 
-					var ArgQueryable = Expression.Parameter(typeof(IContextQueryable<T>));
-					var ArgQA = Expression.Parameter(typeof(QueryArgument));
-					return Expression.Lambda<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>>(
-						Expression.Condition(
-							ArgQA.GetMember(p).Equal(Expression.Constant(null, p.PropertyType)),
+			public static Lazy<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>> Func = new Lazy<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>>(() =>
+			{
+				var p = IdentProperty.Value;
+				if (p == null)
+					return (q, a) => q; 
+				var ArgQueryable = Expression.Parameter(typeof(IContextQueryable<T>));
+				var ArgQA = Expression.Parameter(typeof(QueryArgument));
+				return Expression.Lambda<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>>(
+					Expression.Condition(
+						ArgQA.GetMember(p).Equal(Expression.Constant(null, p.PropertyType)),
+						ArgQueryable,
+						Expression.Call(
+							null,
+							MethodWhere.MakeGenericMethod(typeof(T)),
 							ArgQueryable,
 							Expression.Call(
 								null,
-								MethodWhere.MakeGenericMethod(typeof(T)),
-								ArgQueryable,
-								Expression.Call(
-									null,
-									MethodObjectFilter.MakeGenericMethod(p.PropertyType),
-									ArgQA.GetMember(p)
-									)
-							)
-						),
-						ArgQueryable,
-						ArgQA
-						).Compile();
-				});
+								MethodObjectFilter.MakeGenericMethod(p.PropertyType),
+								ArgQA.GetMember(p)
+								)
+						)
+					),
+					ArgQueryable,
+					ArgQA
+					).Compile();
+			});
 		}
 		public static IContextQueryable<T> QueryIdentFilter<TQueryArgument>(IContextQueryable<T> q,TQueryArgument a)
 		{

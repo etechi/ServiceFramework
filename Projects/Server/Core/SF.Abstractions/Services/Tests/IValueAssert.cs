@@ -11,32 +11,48 @@ using System.Reflection;
 
 namespace SF.Services.Tests
 {
-	public class AssertResult
+	public class TestResult
 	{
-		public static AssertResult Success { get; } = new AssertResult();
-		
+		public static TestResult Success { get; } = new TestResult("测试成功");
+		public string Message { get; }
+		public TestResult(string Message)
+		{
+			this.Message = Message;
+		}
+		public static TestResult Merge(IEnumerable<TestResult> results)
+		{
+			var rs = results.ToArray();
+			var es = rs.Where(r => r != TestResult.Success).ToArray();
+			if (es.Length == 0) return TestResult.Success;
+			if (es.Length == 1) return es[0];
+			return new GroupTestResult(es.ToArray());
+		}
+
 	}
-	public class AssertResult<T> : AssertResult
+	public class GroupTestResult : TestResult
+	{
+		public TestResult[] Results { get; }
+		public GroupTestResult(TestResult[] Results,string Message=null):
+			base(Message??"多项测试失败")
+		{
+			this.Results = Results;
+		}
+	}
+	public class AssertResult<T> : TestResult
 	{
 		public T ExpectValue { get; }
 		public T TestValue { get; }
 		public AssertResult(T expectValue,T testValue)
+			:base($"断言失败:期望值:{expectValue} 实际值:{testValue}")
 		{
 			this.ExpectValue = expectValue;
 			this.TestValue = testValue;
 		}
 	}
-	public class GroupAssertResult : AssertResult
-	{
-		public AssertResult[] Results { get; }
-		public GroupAssertResult(AssertResult[] Results)
-		{
-			this.Results = Results;
-		}
-	}
+	
 	public interface IValueAssert<T>
 	{
-		AssertResult Assert(T ExpectValue,T TestValue);
+		TestResult Assert(T ExpectValue,T TestValue);
 	}
 	public interface IValueAssertProvider
 	{

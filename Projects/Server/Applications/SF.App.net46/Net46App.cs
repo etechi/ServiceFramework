@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SF.Core.ServiceManagement;
 using SF.Metadata;
-using SF.Services.Test;
 using SF.Core.TaskServices;
 using SF.Core.Hosting;
 using SF.Core.Logging;

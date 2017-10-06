@@ -64,28 +64,37 @@ namespace SF.Entities.Tests
 		}
 		public IEnumerable<QueryTestCase<TQueryArgument, TSummary>> GenerateQueryArgument(IEnumerable<TSummary> Summaries)
 		{
-			return QueryArgumentGenerators.Select(g => g(Summaries)).SelectMany(s => s);
+			return QueryArgumentGenerators.Select(g => g.GenerateQueryArgument(Summaries)).SelectMany(s => s);
 		}
 
 
-		public void ValidateCreateResult(TEditable CreateArgument, TEditable UpdateResult)
+		public TestResult ValidateCreateResult(TEditable CreateArgument, TEditable UpdateResult)
 		{
-			CreateResultValidators.ForEach(v => v.ValidateCreateResult(CreateArgument, UpdateResult));
+			return TestResult.Merge(
+				CreateResultValidators.Select(v => v.ValidateCreateResult(CreateArgument, UpdateResult))
+				);
 		}
 
-		public void ValidateDetail(TEditable LoadEditableResult, TDetail Detail)
+		public TestResult ValidateDetail(TEditable LoadEditableResult, TDetail Detail)
 		{
-			DetailValidators.ForEach(v => v.ValidateDetail(LoadEditableResult, Detail));
+			return TestResult.Merge(
+				DetailValidators.Select(v => v.ValidateDetail(LoadEditableResult, Detail))
+				);
 		}
 
-		public void ValidateSummary(TDetail Detail, TSummary Summary)
+		public TestResult ValidateSummary(TDetail Detail, TSummary Summary)
 		{
-			SummaryValidators.ForEach(v => v.ValidateSummary(Detail, Summary));
+			return TestResult.Merge(
+				SummaryValidators.Select(v => v.ValidateSummary(Detail, Summary))
+				);
+
 		}
 
-		public void ValidateUpdateResult(TEditable UpdateArgument, TEditable UpdateResult)
+		public TestResult ValidateUpdateResult(TEditable UpdateArgument, TEditable UpdateResult)
 		{
-			UpdateResultValidators.ForEach(v => v.ValidateUpdateResult(UpdateArgument, UpdateResult));
+			return TestResult.Merge(
+				UpdateResultValidators.Select(v => v.ValidateUpdateResult(UpdateArgument, UpdateResult))
+				);
 		}
 
 		int index = 0;

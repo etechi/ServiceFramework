@@ -11,17 +11,8 @@ using System.Reflection;
 
 namespace SF.Services.Tests
 {
-	public class ValidateResult
-	{
-		public static ValidateResult Success { get; } = new ValidateResult(null,null);
-		public string Message { get; }
-		public ValidateResult(string message)
-		{
-			this.Message = message;
-		}
-	}
 
-	public class ValidateResult<T>: ValidateResult
+	public class ValidateResult<T>: TestResult
 	{
 		public T Value { get; }
 		public ValidateResult(T Value, string message):base(message)
@@ -30,9 +21,10 @@ namespace SF.Services.Tests
 
 		}
 	}
+	
 	public interface IValueValidator<T>
 	{
-		ValidateResult Validate(T Value);
+		TestResult Validate(T Value);
 	}
 	public interface IValueValidatorProvider
 	{

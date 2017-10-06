@@ -23,10 +23,10 @@ namespace SF.Services.Tests.ValueAsserts
 			{
 				this.TestAssert = TestAssert;
 			}
-			public AssertResult Assert(T ExpectValue, T TestValue)
+			public TestResult Assert(T ExpectValue, T TestValue)
 			{
 				if (Comparer<T>.Default.Compare(ExpectValue, TestValue) == 0)
-					return AssertResult.Success;
+					return TestResult.Success;
 				else
 					return new AssertResult<T>(ExpectValue, TestValue);
 

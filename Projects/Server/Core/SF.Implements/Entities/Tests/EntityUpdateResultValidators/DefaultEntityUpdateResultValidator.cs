@@ -26,11 +26,11 @@ namespace SF.Entities.Tests.EntityUpdateResultValidators
 			EntitytValidator<TEditable, TEditable>,
 			IEntityUpdateResultValidator<TEditable>
 		{
-			public EntityUpdateResultValidator(Action<TEditable, TEditable, List<AssertResult>> FuncValidator) : base(FuncValidator)
+			public EntityUpdateResultValidator(Action<TEditable, TEditable, List<TestResult>> FuncValidator) : base(FuncValidator)
 			{
 			}
 
-			public AssertResult ValidateUpdateResult(TEditable CreateArgument, TEditable UpdateResult)
+			public TestResult ValidateUpdateResult(TEditable CreateArgument, TEditable UpdateResult)
 				=> Validate(CreateArgument, UpdateResult);
 		}
 

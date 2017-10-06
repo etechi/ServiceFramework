@@ -18,19 +18,17 @@ namespace SF.Entities.Tests
 	{
 		public class EntitytValidator<TExpect,TTest> 
 		{
-			Action<TExpect, TTest, List<AssertResult>> FuncValidator { get; }
-			public EntitytValidator(Action<TExpect, TTest, List<AssertResult>> FuncValidator)
+			Action<TExpect, TTest, List<TestResult>> FuncValidator { get; }
+			public EntitytValidator(Action<TExpect, TTest, List<TestResult>> FuncValidator)
 			{
 				this.FuncValidator = FuncValidator;
 
 			}
-			protected AssertResult Validate(TExpect Expect, TTest Test)
+			protected TestResult Validate(TExpect Expect, TTest Test)
 			{
-				var ars = new List<AssertResult>();
+				var ars = new List<TestResult>();
 				FuncValidator(Expect, Test, ars);
-				if (ars.All(ar => ar == AssertResult.Success))
-					return AssertResult.Success;
-				return new GroupAssertResult(ars.ToArray());
+				return TestResult.Merge(ars);
 			}
 		}
 
@@ -50,33 +48,37 @@ namespace SF.Entities.Tests
 						typeof(PropertyInfo)
 						);
 		
-		public Action<TExpect, TTest, List<AssertResult>> GetValidator<TExpect,TTest>()
+		protected virtual bool SkipProperty(PropertyInfo p)
+		{
+			return false;
+		}
+		public Action<TExpect, TTest, List<TestResult>> GetValidator<TExpect,TTest>()
 		{
 			var key = (typeof(TExpect), typeof(TTest));
 			if (FuncCache.TryGetValue(key, out var ne))
-				return (Action<TExpect, TTest, List<AssertResult>>)ne;
+				return (Action<TExpect, TTest, List<TestResult>>)ne;
 
 			var argExpect = Expression.Parameter(typeof(TExpect));
 			var argTest = Expression.Parameter(typeof(TTest));
-			var argResults = Expression.Parameter(typeof(List<AssertResult>));
+			var argResults = Expression.Parameter(typeof(List<TestResult>));
 			var func = Expression.Block(
 						from p in typeof(TTest).AllPublicInstanceProperties()
-						where Entity<TTest>.KeyProperties.All(kp => kp.Name != p.Name)
+						where Entity<TTest>.KeyProperties.All(kp => kp.Name != p.Name) && !SkipProperty(p)
 						let vthType = typeof(IValueTestHelper<>).MakeGenericType(p.PropertyType)
 						let valueAssertType = typeof(IValueAssert<>).MakeGenericType(p.PropertyType)
 						let vth = MethodGetHelper.MakeGenericMethod(p.PropertyType).Invoke(ValueTestHelperCache, new[] { p })
 
 						select
 							argResults.CallMethod(
-								typeof(List<>).MakeGenericType<AssertResult>().GetMethod(nameof(List<int>.Add)),
+								typeof(List<>).MakeGenericType<TestResult>().GetMethod(nameof(List<int>.Add)),
 								Expression.Constant(vth, valueAssertType).CallMethod(
 									valueAssertType.GetMethod(nameof(IValueAssert<int>.Assert)),
 									argExpect.GetMember(p).To(p.PropertyType),
 									argTest.GetMember(p)
 									)
 								)
-					).Compile<Func<TExpect, TTest, List<AssertResult>>>(argExpect, argTest, argResults);
-			return (Action<TExpect, TTest, List<AssertResult>>)FuncCache.GetOrAdd(key, func);
+					).Compile<Action<TExpect, TTest, List<TestResult>>>(argExpect, argTest, argResults);
+			return (Action<TExpect, TTest, List<TestResult>>)FuncCache.GetOrAdd(key, func);
 		}
 
 	}

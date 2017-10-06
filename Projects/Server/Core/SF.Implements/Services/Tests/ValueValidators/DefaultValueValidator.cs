@@ -38,7 +38,7 @@ namespace SF.Services.Tests.ValueAsserts
 
 			}
 
-			public ValidateResult Validate(T Value)
+			public TestResult Validate(T Value)
 			{
 				var ctx = new ValidationContext(this);
 				foreach (var v in Validations)
@@ -48,7 +48,7 @@ namespace SF.Services.Tests.ValueAsserts
 						continue;
 					return new ValidateResult<T>(Value,re.ErrorMessage + "," + re.MemberNames.Join(","));
 				}
-				return ValidateResult.Success;
+				return TestResult.Success;
 			}
 		}
 		public IValueValidator<T> GetValidator<T>(PropertyInfo Prop)

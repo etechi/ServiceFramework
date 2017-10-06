@@ -13,6 +13,9 @@ namespace SF.Services.Tests
     public interface ITestAssert
 	{
 		void ValidateFailed<T>(T value,string message);
-		void AssertFailed<T>(T expect, T test);
+		void AssertFailed<T>(T expect, T test,string message=null);
+		void Equal<T>(T expect, T test);
+		void NotEqual<T>(T expect, T test);
+		void Success(TestResult Result);
 	}
 }

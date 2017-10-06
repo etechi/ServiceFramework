@@ -12,6 +12,10 @@ using SF.Entities.Tests.EntityCreateResultValidators;
 using SF.Entities.Tests.EntityUpdateResultValidators;
 using SF.Entities.Tests.EntitySummaryValidators;
 using SF.Entities.Tests.EntityDetailValidators;
+using SF.Entities.Tests.EntityQueryArgumentGenerators;
+using SF.Entities.Tests.EntityDetailToSummaryConverters;
+using SF.Entities.Tests.EntityTestors;
+using SF.Services.Tests;
 
 namespace SF.Core.ServiceManagement
 {
@@ -28,7 +32,10 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IEntityUpdateResultValidatorProvider, DefaultEntityUpdateResultValidatorProvider>();
 			sc.AddSingleton<IEntitySummaryValidatorProvider, DefaultEntitySummaryValidatorProvider>();
 			sc.AddSingleton<IEntityDetailValidatorProvider, DefaultEntityDetailValidatorProvider>();
+			sc.AddSingleton<IEntityQueryArgumentGeneratorProvider, DefaultEntityQueryArgumentGeneratorProvider>();
+			sc.AddSingleton<IEntityDetailToSummaryConverterProvider, DefaultEntityDetailToSummaryConverterProvider>();
 
+			sc.AddTransient<ITestCaseProvider, DefaultEntityTestCaseProvider>();
 
 			return sc;
 		}

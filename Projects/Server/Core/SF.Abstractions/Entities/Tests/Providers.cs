@@ -8,7 +8,7 @@ namespace SF.Entities.Tests
 	
 	public interface IEntityCreateResultValidator<TEditable>
 	{
-		AssertResult ValidateCreateResult(TEditable CreateArgument, TEditable UpdateResult);
+		TestResult ValidateCreateResult(TEditable CreateArgument, TEditable UpdateResult);
 	}
 
 	public interface IEntityCreateResultValidatorProvider
@@ -33,7 +33,7 @@ namespace SF.Entities.Tests
 
 	public interface IEntityUpdateResultValidator<TEditable>
 	{
-		AssertResult ValidateUpdateResult(TEditable UpdateArgument, TEditable UpdateResult);
+		TestResult ValidateUpdateResult(TEditable UpdateArgument, TEditable UpdateResult);
 	}
 	public interface IEntityUpdateResultValidatorProvider
 	{
@@ -43,7 +43,7 @@ namespace SF.Entities.Tests
 
 	public interface IEntityDetailValidator<TEditable, TDetail>
 	{
-		AssertResult ValidateDetail(TEditable LoadEditableResult, TDetail Detail);
+		TestResult ValidateDetail(TEditable LoadEditableResult, TDetail Detail);
 	}
 	public interface IEntityDetailValidatorProvider
 	{
@@ -52,7 +52,7 @@ namespace SF.Entities.Tests
 
 	public interface IEntitySummaryValidator<TDetail, TSummary>
 	{
-		AssertResult ValidateSummary(TDetail Detail, TSummary Summary);
+		TestResult ValidateSummary(TDetail Detail, TSummary Summary);
 	}
 	public interface IEntitySummaryValidatorProvider
 	{
@@ -81,35 +81,6 @@ namespace SF.Entities.Tests
 	public interface IEntityQueryArgumentGeneratorProvider
 	{
 		IEntityQueryArgumentGenerator<TSummary, TQueryArgument> GetQueryArgumentGenerator<TSummary, TQueryArgument>();
-	}
-	public interface ITestAssert
-	{
-		void Equal<T>(T expect, T target);
-	}
-	public interface IEntityTestContext<TKey,TDetail, TSummary, TEditable, TQueryArgument, TManager>
-		where TManager:
-			IEntitySource<TKey,TSummary,TDetail,TQueryArgument>,
-			IEntityManager<TKey,TEditable>
-	{
-		TManager Manager { get; }
-		ITestAssert Assert { get; }
-		IEntityTestHelper<TDetail,TSummary,TEditable,TQueryArgument> Helper { get; }
-	}
-
-	public interface IEntityTestHelper<TDetail, TSummary, TEditable, TQueryArgument> :
-		IEntityCreateResultValidator<TEditable>,
-		IEntitySampleGenerator<TEditable>,
-		IEntityUpdateResultValidator<TEditable>,
-		IEntityDetailValidator<TEditable, TDetail>,
-		IEntitySummaryValidator<TDetail, TSummary>,
-		IEntityQueryArgumentGenerator<TSummary, TQueryArgument>,
-		IEntityDetailToSummaryConverter<TDetail, TSummary>
-	{
-	}
-
-	public interface IEntityTestHelperCache
-	{
-		IEntityTestHelper<TDetail, TSummary, TEditable, TQueryArgument> GetTestHelper<TDetail, TSummary, TEditable, TQueryArgument>();
 	}
 
 
