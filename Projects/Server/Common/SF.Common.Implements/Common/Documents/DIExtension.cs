@@ -10,6 +10,7 @@ using SF.Common.Documents.Management;
 using SF.Common.Documents;
 using SF.Core.ServiceManagement.Management;
 using SF.Entities.AutoEntityProvider;
+using SF.Entities.Tests;
 
 namespace SF.Core.ServiceManagement
 {
@@ -42,6 +43,8 @@ namespace SF.Core.ServiceManagement
 				SF.Common.Documents.DataModels.DocumentTagReference
 				>(TablePrefix);
 
+			sc.AddAutoEntityTest(NewDocumentManager);
+			sc.AddAutoEntityTest(NewDocumentCategoryManager);
 			return sc;
 		}
 

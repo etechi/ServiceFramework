@@ -44,8 +44,7 @@ namespace SF.UT
 			{
 				await sp.InitServices("test");
 				return 0;
-			}
-				);
+			});
 		}
 	}
 	

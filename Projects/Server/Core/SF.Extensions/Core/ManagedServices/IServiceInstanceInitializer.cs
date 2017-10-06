@@ -288,6 +288,17 @@ namespace SF.Core.ServiceManagement
 			await sim.RemoveAsync(ObjectKey.From(sid));
 			return re;
 		}
+
+		public static IServiceCollection AddServiceInstanceInitializer<I>(
+			this IServiceCollection sc,
+			Func<IServiceInstanceManager,IServiceInstanceInitializer<I>> serviceCreater
+			)
+		{
+			return sc.AddTransient(
+				sp =>
+				serviceCreater(sp.Resolve<IServiceInstanceManager>())
+				);
+		}
 	}
 
 }

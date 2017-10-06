@@ -125,14 +125,23 @@ namespace SF.Entities.Tests.EntityTestors
 	{
 		IEntityMetadataCollection Metadatas { get; }
 		IServiceProvider ServiceProvider { get; }
+		Dictionary<Type,IAutoTestEntity[]> AutoTestEntities { get; }
 		class TestCase : ITestCase
 		{
 			public string Category { get; set; }
 			public string Name { get; set; }
 			public IEntityMetadata Metadata { get; set; }
 		}
-		public DefaultEntityTestCaseProvider(IEntityMetadataCollection Metadatas, IServiceProvider ServiceProvider)
+		public DefaultEntityTestCaseProvider(
+			IEntityMetadataCollection Metadatas, 
+			IServiceProvider ServiceProvider,
+			IEnumerable<IAutoTestEntity> AutoTestEntities
+			)
 		{
+			this.AutoTestEntities = AutoTestEntities
+				.GroupBy(a => a.EntityManagerType)
+				.ToDictionary(g => g.Key, g => g.ToArray());
+
 			this.Metadatas = Metadatas;
 			this.ServiceProvider = ServiceProvider;
 		}
@@ -141,7 +150,7 @@ namespace SF.Entities.Tests.EntityTestors
 		public IEnumerable<ITestCase> GetTestCases()
 		{
 			return from e in Metadatas
-				   where e.EntityManagerType.GetCustomAttribute<AutoTestAttribute>()!=null
+				   where AutoTestEntities.ContainsKey(e.EntityManagerType)
 				   select new TestCase
 				   {
 					   Category = "实体自动测试",
@@ -150,30 +159,51 @@ namespace SF.Entities.Tests.EntityTestors
 				   };
 		}
 
+		async Task Execute<TKey,TDetail,TSummary,TEditable, TQueryArgument, TManager>(ITestCase Case)
+			where TManager :
+			class,
+			IEntitySource<TKey, TSummary, TDetail, TQueryArgument>,
+			IEntityManager<TKey, TEditable>
+			where TKey : new()
+			where TDetail : new()
+			where TEditable : new()
+		{
+			var c = (TestCase)Case;
+			var managers = AutoTestEntities[c.Metadata.EntityManagerType];
+			foreach (var m in managers)
+			{
+				await ServiceProvider.WithScope(async isp =>
+				{
+					await ServiceProvider.TestService<TManager, int>(
+						((IAutoTestEntity<TManager>)m).ServiceConfig,
+						async svc =>
+						{
+							var ctx = ServiceProvider.Resolve<IEntityTestContext<TKey, TDetail, TSummary, TEditable, TQueryArgument, TManager>>();
+							var executor = new EntityTestExecutor<TKey, TDetail, TSummary, TEditable, TQueryArgument, TManager>();
+							await executor.Test(ctx);
+							return 0;
+						}
+						);
+				});
+			}
+		}
+		static MethodInfo MethodExecute { get; } = typeof(DefaultEntityTestCaseProvider).GetMethodExt(
+			"Execute",
+			BindingFlags.NonPublic | BindingFlags.Instance,
+			typeof(ITestCase)
+			);
 		public async Task Execute(ITestCase Case)
 		{
 			var meta = ((TestCase)Case).Metadata;
-			var ctx = (ITestContext) ServiceProvider.GetService(
-				typeof(IEntityTestContext<,,,,,>).MakeGenericType(
+			await (Task)MethodExecute.MakeGenericMethod(
 					meta.EntityKeyType,
 					meta.EntityDetailType,
 					meta.EntitySummaryType ?? meta.EntitySummaryType,
 					meta.EntityEditableType ?? meta.EntityDetailType,
 					meta.QueryArgumentType,
 					meta.EntityManagerType
-				)
-			);
-			var e = (EntityTestExecutor)Activator.CreateInstance(
-				typeof(EntityTestExecutor<,,,,,>).MakeGenericType(
-					meta.EntityKeyType,
-					meta.EntityDetailType,
-					meta.EntitySummaryType ?? meta.EntitySummaryType,
-					meta.EntityEditableType ?? meta.EntityDetailType,
-					meta.QueryArgumentType,
-					meta.EntityManagerType
-					)
-				);
-			await e.Test(ctx);
+				).Invoke(this, new[] { Case });
+			
 		}
 	}
 }

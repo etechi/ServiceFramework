@@ -2,6 +2,7 @@
 using SF.Core.ServiceManagement.Management;
 using SF.Entities;
 using SF.Entities.AutoEntityProvider;
+using SF.Entities.Tests;
 using SF.Users.Members;
 using SF.Users.Promotions.MemberInvitations;
 using SF.Users.Promotions.MemberInvitations.Entity;
@@ -33,6 +34,8 @@ namespace SF.Core.ServiceManagement
 			//		new { }
 			//		)
 			//	);
+
+			sc.AddAutoEntityTest(NewMemberInvitationServive);
 			return sc;
 		}
 		

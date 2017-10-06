@@ -27,7 +27,6 @@ namespace SF.Users.Promotions.MemberInvitations
 	[NetworkService]
 	[Comment("会员邀请")]
 	[Category("用户管理", "会员邀请管理")]
-	[AutoTest]
 
 	public interface IMemberInvitationManagementService : 
 		Entities.IEntitySource<ObjectKey<long>, MemberInvitationInternal, MemberInvitationQueryArgument>,
