@@ -9,7 +9,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Users.Promotions.MemberInvitations.Models
 {
-	[EntityObject(nameof(MemberInvitation))]
+	[EntityObject]
 	public class MemberInvitationInternal : EventEntityBase
 	{
 		[Comment("被邀请人ID")]

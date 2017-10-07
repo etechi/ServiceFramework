@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Biz.Products
 {
-	[EntityObject("Item")]
+	[EntityObject]
     public class ItemInternal :
 		IEntityWithId<long>
 	{

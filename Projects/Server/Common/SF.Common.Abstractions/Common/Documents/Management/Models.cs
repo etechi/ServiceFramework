@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SF.Common.Documents.Management
 {
-	[EntityObject("Category")]
+	[EntityObject]
 	public class CategoryInternal : UITreeContainerEntityBase<CategoryInternal,DocumentInternal>
 	{
 		[EntityIdent(typeof(Category), nameof(ContainerName), IsTreeParentId = true)]
@@ -22,7 +22,7 @@ namespace SF.Common.Documents.Management
 		public override string ContainerName { get; set; }
 	}
 
-	[EntityObject("Document")]
+	[EntityObject]
 	public class DocumentBase : UIItemEntityBase<CategoryInternal>
 	{
 

@@ -39,7 +39,7 @@ namespace SF.Users.Members
 
 		public long? InvitorId { get; set; }
 	}
-	[EntityManager("会员")]
+	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
 	[Comment("会员")]

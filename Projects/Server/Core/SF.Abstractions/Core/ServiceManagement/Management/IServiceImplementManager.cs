@@ -21,7 +21,7 @@ namespace SF.Core.ServiceManagement.Management
 		public string DeclarationId { get; set; }
 	}
 
-	[EntityManager("系统服务实现")]
+	[EntityManager]
 	[Authorize("sysadmin")]
 	[NetworkService]
 	[Comment("服务实现管理", "系统内置服务实现")]

@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace SF.Auth.Permissions.Models
 {
 
-    [EntityObject("Resource")]
-    public class ResourceInternal : ObjectEntityBase<string>
+	[EntityObject]
+	public class ResourceInternal : ObjectEntityBase<string>
     {
         [Display(Name = "资源分组")]
         [ReadOnly(true)]

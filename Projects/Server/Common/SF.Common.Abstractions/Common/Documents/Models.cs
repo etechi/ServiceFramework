@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace SF.Common.Documents
 {
-	[EntityObject(nameof(Document))]
+	[EntityObject]
 	public class Document : UIItemEntityBase<Category>
 	{
 		public string Content { get; set; }
 	}
-	[EntityObject(nameof(Category))]
+	[EntityObject]
 	public class Category : UITreeContainerEntityBase<Category,Document>
 	{
 	}

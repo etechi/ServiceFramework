@@ -178,6 +178,8 @@ namespace SF.Entities.Tests.EntityTestors
 						((IAutoTestEntity<TManager>)m).ServiceConfig,
 						async svc =>
 						{
+							var logger=isp.Resolve<ILogger<TManager>>();
+							logger.Info($"开始测试{typeof(TManager)}服务基础功能");
 							var ctx = ServiceProvider.Resolve<IEntityTestContext<TKey, TDetail, TSummary, TEditable, TQueryArgument, TManager>>();
 							var executor = new EntityTestExecutor<TKey, TDetail, TSummary, TEditable, TQueryArgument, TManager>();
 							await executor.Test(ctx);

@@ -20,19 +20,26 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection AddDocumentServices(this IServiceCollection sc,string TablePrefix=null)
 		{
 			//文章
-			sc.AddManagedScoped<IDocumentCategoryManager, DocumentCategoryManager>();
-			sc.AddManagedScoped<IDocumentManager, DocumentManager>();
-			sc.AddManagedScoped<IDocumentService, DocumentService>();
-
-			sc.AddAutoEntityType(
-				(TablePrefix ?? "") + "Doc",
-				false,
-				typeof(Document),
-				typeof(DocumentInternal),
-				typeof(DocumentEditable),
-				typeof(Category),
-				typeof(CategoryInternal)
+			sc.EntityServices(
+				"Document",
+				"文档管理",
+				d => d.Add<IDocumentCategoryManager, DocumentCategoryManager>("DocumentCategory","文档分类",typeof(Category))
+					.Add<IDocumentManager, DocumentManager>("Document", "文档", typeof(Document))
+					//.Add<IDocumentService, DocumentService>()
 				);
+
+			sc.GenerateEntityManager("DocumentCategory");
+			sc.GenerateEntityManager("Document");
+
+			//sc.AddAutoEntityType(
+			//	(TablePrefix ?? "") + "Doc",
+			//	false,
+			//	typeof(Document),
+			//	typeof(DocumentInternal),
+			//	typeof(DocumentEditable),
+			//	typeof(Category),
+			//	typeof(CategoryInternal)
+			//	);
 
 
 			sc.AddDataModules<
@@ -43,8 +50,8 @@ namespace SF.Core.ServiceManagement
 				SF.Common.Documents.DataModels.DocumentTagReference
 				>(TablePrefix);
 
-			sc.AddAutoEntityTest(NewDocumentManager);
-			sc.AddAutoEntityTest(NewDocumentCategoryManager);
+			//sc.AddAutoEntityTest(NewDocumentManager);
+			//sc.AddAutoEntityTest(NewDocumentCategoryManager);
 			return sc;
 		}
 

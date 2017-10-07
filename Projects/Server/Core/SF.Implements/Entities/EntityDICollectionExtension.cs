@@ -12,10 +12,11 @@ namespace SF.Core.ServiceManagement
 	public static class EntityDICollectionExtension
 	{
 		
-		static IEntityMetadata CreateMetadata(string Ident,Type ManagerType)
+		static IEntityMetadata CreateMetadata(string GroupIdent,string GroupName,IEntityServiceDescriptor desc)
 		{
-			if (Ident == null)
-				Ident = null;
+			Type ManagerType = desc.ServiceType;
+			var Ident = desc.Ident ?? GroupIdent;// ManagerType.GetFirstInterfaceAttribute<EntityManagerAttribute>()?.Ident;
+
 			var interfaces = ManagerType.AllInterfaces().Where(i=>i.IsGeneric()).ToDictionary(i=>i.GetGenericTypeDefinition());
 			var Loadable = interfaces.Get(typeof(IEntityLoadable<,>));
 			if (Loadable == null)
@@ -82,18 +83,29 @@ namespace SF.Core.ServiceManagement
 			var AllRemovable = interfaces.Get(typeof(IEntityAllRemover));
 
 			var comment = ManagerType.Comment();
+
+
 			return new EntityMetadata
 			{
-				Ident = Ident??ManagerType.FullName,
+				Ident = Ident,
+				GroupIdent = GroupIdent,
 				Description = comment.Description,
-				Name = comment.Name,
-				GroupName = comment.GroupName,
+				Name = comment?.Name ?? desc.Name ?? comment.GroupName ?? GroupName,
+				GroupName = comment.GroupName ?? GroupName,
 				EntityKeyType = LoadableArgs[0],
 				EntityDetailType = LoadableArgs[1],
 				EntityEditableType = EntityEditable,
 				EntityManagerType = ManagerType,
 				EntitySummaryType = QueryableArgs == null ? null : QueryableArgs[0],
 				QueryArgumentType = QueryableArgs == null ? null : QueryableArgs[1],
+
+				EntityTypes = new[] {
+					LoadableArgs[1],
+					EntityEditable,
+					QueryableArgs == null ? null : QueryableArgs[0]
+				}.Concat(desc.EntityTypes)
+				.Where(t=>t!=null).Distinct().ToArray(),
+
 				EntityManagerCapability =
 					EntityCapability.Loadable |
 					(BatchLoadable == null ? EntityCapability.None : EntityCapability.BatchLoadable) |
@@ -112,12 +124,12 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IMetadataAttributeValuesProvider<EntityObjectAttribute>, EntityObjectAttributeMetadataValuesProvider>();
 			sc.AddSingleton<IEntityMetadataCollection>(sp =>
 			{
-				var svcResolver = sp.Resolve<IServiceDeclarationTypeResolver>();
+				var ems = (from grp in sp.Resolve<IEnumerable<IEntityServiceDescriptorGroup>>()
+						   from desc in grp
+						   select (grp, desc)
+						 ).ToArray();
 				return new EntityMetadataCollection(
-					from type in sc.GetServiceTypes()
-					let em = type.GetCustomAttribute<EntityManagerAttribute>(true)
-					where em != null
-					select CreateMetadata(em.Ident, type)
+					ems.Select(em=>CreateMetadata(em.grp.Ident, em.grp.Name, em.desc))
 					);
 			});
 

@@ -24,8 +24,10 @@ namespace SF.Management.FrontEndContents.Friendly
 		}
 		protected abstract TItem ContentToItem(ContentItem Content);
 		protected abstract ContentItem ItemToContent(TItem Item);
+		public Task<ItemGroup<TItem>> GetAsync(ObjectKey<long> key)
+			=> LoadForEdit(key);
 
-		public async Task<ItemGroup<TItem>> Load()
+		public async Task<ItemGroup<TItem>> LoadForEdit(ObjectKey<long> key)
 		{
 			if (EntityId == 0)
 				throw new PublicArgumentException($"未设置{GetType().Comment()}");
@@ -38,7 +40,7 @@ namespace SF.Management.FrontEndContents.Friendly
 				Items = re.Items.Select(ContentToItem).ToArray()
 			};
 		}
-		public async Task Save(ItemGroup<TItem> value)
+		public async Task UpdateAsync(ItemGroup<TItem> value)
 		{
 			if (EntityId == 0)
 				throw new PublicArgumentException($"未设置{GetType().Comment()}");

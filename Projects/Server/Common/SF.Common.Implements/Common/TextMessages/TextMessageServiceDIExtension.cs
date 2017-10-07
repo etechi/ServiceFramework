@@ -21,7 +21,12 @@ namespace SF.Core.ServiceManagement
 			)
 		{
 			sc.AddDataModules<SF.Common.TextMessages.Management.DataModels.TextMessageRecord>();
-			sc.AddManagedScoped<IMsgRecordManager, EntityMsgRecordManager>();
+			sc.EntityServices(
+				"TextMessageRecord",
+				"文本消息记录",
+				d => d.Add<IMsgRecordManager, EntityMsgRecordManager>()
+				);
+
 			sc.AddTransient(sp => (ITextMessageLogger)sp.Resolve<IMsgRecordManager>());
 
 			//sc.AddInitializer(

@@ -487,35 +487,47 @@ namespace System.Reflection
 				System.Reflection.BindingFlags.Instance
 			);
 
-			//=> WithHiddenProperty ?
-			//	type.GetProperties(
-			//	System.Reflection.BindingFlags.FlattenHierarchy |
-			//	System.Reflection.BindingFlags.Public |
-			//	System.Reflection.BindingFlags.Instance
-			//	) :
-			//(from p in type.AllPublicInstanceProperties(true).Select((p, idx) => (idx: idx, prop: p))
-			//group p by p.prop.Name into g
-			//let p = (from gi in g
-			//		let lev= gi.prop.DeclaringType.GetInheritLevel()
-			//		orderby lev descending
-			//		select gi
-			//		).First()
-			//orderby p.idx
-			//select p.prop
-			//).ToArray();
+		//=> WithHiddenProperty ?
+		//	type.GetProperties(
+		//	System.Reflection.BindingFlags.FlattenHierarchy |
+		//	System.Reflection.BindingFlags.Public |
+		//	System.Reflection.BindingFlags.Instance
+		//	) :
+		//(from p in type.AllPublicInstanceProperties(true).Select((p, idx) => (idx: idx, prop: p))
+		//group p by p.prop.Name into g
+		//let p = (from gi in g
+		//		let lev= gi.prop.DeclaringType.GetInheritLevel()
+		//		orderby lev descending
+		//		select gi
+		//		).First()
+		//orderby p.idx
+		//select p.prop
+		//).ToArray();
 
-
-		static IEnumerable<Type> _AllInterfaces(Type type)
+		public static bool IsGenericTypeOf(this Type type, Type GenericType)
 		{
-			yield return type;
-			foreach (var i in type.GetInterfaces())
-				foreach (var ii in _AllInterfaces(i))
-					yield return ii;
+			if (!GenericType.IsGenericDefinition())
+				throw new ArgumentException();
+			return type.IsGeneric() && type.GetGenericTypeDefinition() == GenericType;
 		}
+
 		public static IEnumerable<Type> AllInterfaces(this Type type)
 		{
-			return _AllInterfaces(type).Distinct();
+			if(type.IsInterface)
+				return SF.ADT.Tree.AsEnumerable(type,t=>t.GetInterfaces()).Distinct();
+			else
+				return SF.ADT.Tree.AsEnumerable(type.GetInterfaces(), t => t.GetInterfaces()).Distinct();
 		}
+		public static IEnumerable<Attribute> GetInterfaceAttributes(this Type type)
+			=> from i in type.AllInterfaces()
+			   from a in i.GetCustomAttributes()
+			   select a;
+
+		public static IEnumerable<T> GetInterfaceAttributes<T>(this Type type) where T : Attribute
+			=> type.GetInterfaceAttributes().Where(a => a is T).Cast<T>();
+
+		public static T GetFirstInterfaceAttribute<T>(this Type type) where T : Attribute
+			=> (T)type.GetInterfaceAttributes().FirstOrDefault(a => a is T);
 
 		public static bool IsNumberLikeType(this Type type)
 		{
@@ -546,7 +558,7 @@ namespace System.Reflection
 			if (dest.IsAssignableFrom(src)) return true;
 			var srcIsNumber = src.IsNumberLikeType();
 			var dstIsNumber = dest.IsNumberLikeType();
-			return srcIsNumber == dstIsNumber;
+			return srcIsNumber && dstIsNumber;
 		}
 
 	}

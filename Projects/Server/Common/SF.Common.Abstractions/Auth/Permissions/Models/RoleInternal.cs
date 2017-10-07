@@ -7,8 +7,8 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Auth.Permissions.Models
 {
 
-	[EntityObject("Role")]
-    public class RoleInternal : ObjectEntityBase<string>
+	[EntityObject]
+	public class RoleInternal : ObjectEntityBase<string>
     {
         [Comment(Name="Id",Description ="角色创建以后，ID不能再修改")]
         public override string Id { get; set; }

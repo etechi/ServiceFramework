@@ -20,17 +20,15 @@ namespace SF.Core.ServiceManagement
 			   where TIdentityCredential : SF.Auth.Identities.Entity.DataModels.IdentityCredential<TIdentity, TIdentityCredential>, new()
 		{
 			sc.AddDataModules<TIdentity, TIdentityCredential>(TablePrefix);
-
-			sc.AddManagedScoped<IIdentityManagementService, EntityIdentityManagementService<TIdentity, TIdentityCredential>>(
-				async (sp,svc)=>
-					await svc.RemoveAllAsync()
-				);
-
 			sc.AddTransient<IIdentStorage>(sp => (IIdentStorage)sp.Resolve<IIdentityManagementService>());
-			sc.AddManagedScoped<IIdentityCredentialStorage, EntityIdentityCredentialStorage<TIdentity, TIdentityCredential>>(
-				async (sp, svc) =>
-					await svc.RemoveAllAsync()
+			sc.AddManagedScoped<IIdentityCredentialStorage, EntityIdentityCredentialStorage<TIdentity, TIdentityCredential>>();
+
+			sc.EntityServices(
+				"AuthIdentity",
+				"身份认证",
+				d => d.Add<IIdentityManagementService, EntityIdentityManagementService<TIdentity, TIdentityCredential>>("AuthIdentity", "用户身份")
 				);
+
 			return sc;
 		}
 		public static IServiceCollection AddAuthIdentityManagementService(

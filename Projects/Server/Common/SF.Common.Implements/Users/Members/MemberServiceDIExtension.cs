@@ -22,9 +22,10 @@ namespace SF.Core.ServiceManagement
 		{
 			sc.AddDataModules<TMember>(TablePrefix);
 
-			sc.AddManagedScoped<IMemberManagementService, EntityMemberManagementService<TMember>>(
-				async (sp,svc)=>
-					await svc.RemoveAllAsync()
+			sc.EntityServices(
+				"Member",
+				"会员",
+				d => d.Add<IMemberManagementService, EntityMemberManagementService<TMember>>()
 				);
 
 			return sc;

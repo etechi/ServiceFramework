@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.Permissions.Models
 {
-   
-    [EntityObject("ResourceGrant")]
-    public class ResourceGrantInternal : IEntityWithId<string>
+
+	[EntityObject]
+	public class ResourceGrantInternal : IEntityWithId<string>
 	{
 		[Comment(Name = "资源ID")]
 		[ReadOnly(true)]

@@ -26,7 +26,11 @@ namespace SF.Core.ServiceManagement
 			where TSysAdmin : SF.Management.SysAdmins.Entity.DataModels.SysAdmin<TSysAdmin>,new()
 		{
 			sc.AddDataModules<TSysAdmin>(TablePrefix);
-			sc.AddManagedScoped<ISysAdminManagementService, EntitySysAdminManagementService<TSysAdmin>>();
+			sc.EntityServices(
+				"SysAdmin",
+				"系统管理员",
+				d => d.Add<ISysAdminManagementService, EntitySysAdminManagementService<TSysAdmin>>()
+				);
 			return sc;
 		}
 		public static IServiceCollection AddSysAdminManagementService(

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.Permissions.Models
 {
-   
-    [EntityObject("Grant")]
-    public class GrantEditable: ObjectEntityBase<long>
+
+	[EntityObject]
+	public class GrantEditable: ObjectEntityBase<long>
     {
 
 

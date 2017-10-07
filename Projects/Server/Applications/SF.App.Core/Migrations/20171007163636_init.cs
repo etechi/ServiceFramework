@@ -156,7 +156,7 @@ namespace SF.App.Core.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "InvitationMemberInvitation",
+                name: "MemberInvitation",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false),
@@ -167,7 +167,7 @@ namespace SF.App.Core.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_InvitationMemberInvitation", x => x.Id);
+                    table.PrimaryKey("PK_MemberInvitation", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -348,6 +348,28 @@ namespace SF.App.Core.Migrations
                         principalTable: "SysServiceInstance",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserMember",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    LogicState = table.Column<byte>(type: "tinyint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OwnerId = table.Column<long>(type: "bigint", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    SignupIdentityId = table.Column<long>(type: "bigint", nullable: false),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
+                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatorId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserMember", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -682,13 +704,13 @@ namespace SF.App.Core.Migrations
                 column: "TemplateId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InvitationMemberInvitation_InvitorId",
-                table: "InvitationMemberInvitation",
+                name: "IX_MemberInvitation_InvitorId",
+                table: "MemberInvitation",
                 column: "InvitorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_InvitationMemberInvitation_UserId",
-                table: "InvitationMemberInvitation",
+                name: "IX_MemberInvitation_UserId",
+                table: "MemberInvitation",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -900,6 +922,36 @@ namespace SF.App.Core.Migrations
                 name: "IX_SysServiceInstance_ContainerId_ServiceId",
                 table: "SysServiceInstance",
                 columns: new[] { "ContainerId", "ServiceId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMember_CreatedTime",
+                table: "UserMember",
+                column: "CreatedTime");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMember_Name",
+                table: "UserMember",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMember_OwnerId",
+                table: "UserMember",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMember_PhoneNumber",
+                table: "UserMember",
+                column: "PhoneNumber");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMember_ScopeId",
+                table: "UserMember",
+                column: "ScopeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserMember_UpdatorId",
+                table: "UserMember",
+                column: "UpdatorId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -917,7 +969,7 @@ namespace SF.App.Core.Migrations
                 name: "FrontSite");
 
             migrationBuilder.DropTable(
-                name: "InvitationMemberInvitation");
+                name: "MemberInvitation");
 
             migrationBuilder.DropTable(
                 name: "MgrBizAdmin");
@@ -942,6 +994,9 @@ namespace SF.App.Core.Migrations
 
             migrationBuilder.DropTable(
                 name: "SysServiceInstance");
+
+            migrationBuilder.DropTable(
+                name: "UserMember");
 
             migrationBuilder.DropTable(
                 name: "CommonDocument");

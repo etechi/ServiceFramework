@@ -25,14 +25,18 @@ namespace SF.Entities
 	{
 		string Ident { get; }
 		string Name { get; }
+		string GroupIdent { get; }
 		string GroupName { get; }
 		string Description { get; }
+
 		Type EntityKeyType { get; }
 		Type EntityDetailType { get; }
 		Type EntitySummaryType { get; }
 		Type EntityEditableType { get; }
 		Type EntityManagerType { get; }
 		Type QueryArgumentType { get; }
+
+		IEnumerable<Type> EntityTypes { get; }
 		EntityCapability EntityManagerCapability { get; }
 	}
 	public interface IEntityMetadataCollection: IEnumerable<IEntityMetadata>

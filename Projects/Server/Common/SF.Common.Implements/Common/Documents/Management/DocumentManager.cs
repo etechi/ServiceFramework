@@ -5,6 +5,7 @@ using SF.Core.Times;
 using SF.Data;
 using SF.Entities;
 using SF.Entities.AutoEntityProvider;
+using SF.Metadata;
 using SF.Users.Members.Models;
 using System;
 using System.Linq;

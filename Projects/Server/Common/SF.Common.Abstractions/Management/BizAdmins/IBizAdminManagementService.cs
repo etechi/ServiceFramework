@@ -11,7 +11,7 @@ namespace SF.Management.BizAdmins
 		public string Name { get; set; }
 	}
 
-	[EntityManager("业务管理员")]
+	[EntityManager]
 	[Authorize("bizadmin")]
 	[NetworkService]
 	[Comment("业务管理员")]

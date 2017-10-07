@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace SF.Auth.Permissions.Models
 {
 
-    [EntityObject("Operation")]
-    public class OperationInternal : ObjectEntityBase<string>
+	[EntityObject]
+	public class OperationInternal : ObjectEntityBase<string>
     {
 		public string Description { get; set; }
     }

@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Users.Members.Models
 {
-	[EntityObject("Member")]
+	[EntityObject]
 	public class MemberInternal : ObjectEntityBase
 	{
 		[MaxLength(20)]

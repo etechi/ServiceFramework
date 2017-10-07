@@ -110,7 +110,7 @@ namespace SF.Biz.Products
         public DateTime UpdatedTime { get; set; }
 
     }
-    [EntityObject("Product")]
+    [EntityObject()]
     public class ProductBase :
 		IEntityWithId<long>
 	{

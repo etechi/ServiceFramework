@@ -47,8 +47,8 @@ namespace SF.Core.ServiceManagement
 			return new
 			{
 				Entity = entity.Ident,
-				Title=attr.Title,
-				FontIcon = attr.FontIcon
+				Title= entity.Name,
+				//FontIcon = entity.FontIcon
 			};
 
 		}

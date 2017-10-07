@@ -67,7 +67,7 @@ namespace SF.Entities.AutoEntityProvider
 					throw new ArgumentException($"自动化实体类型库中找不到类型{type}对应的实体");
 
 				if (ne != entity)
-					throw new ArgumentException($"类型{type}对应的实体{ne.FullName}和类型{typeof(TEntityDetail)}对应的实体{entity.FullName}不一致");
+					throw new ArgumentException($"类型{type}对应的实体{ne.Name}和类型{typeof(TEntityDetail)}对应的实体{entity.Name}不一致");
 			}
 		}
 

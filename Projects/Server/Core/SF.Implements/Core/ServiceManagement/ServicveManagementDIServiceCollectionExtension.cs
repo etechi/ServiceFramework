@@ -30,9 +30,13 @@ namespace SF.Core.ServiceManagement
 		{
 			sc.AddDataModules<Management.DataModels.ServiceInstance>(TablePrefix);
 
-			sc.AddEntityService<Management.IServiceDeclarationManager, Management.ServiceDeclarationManager,string,Models.ServiceDeclaration>();
-			sc.AddEntityService<Management.IServiceImplementManager, Management.ServiceImplementManager, string, Models.ServiceImplement>();
-			sc.AddEntityService<Management.IServiceInstanceManager, Management.ServiceInstanceManager, string, Models.ServiceInstanceInternal>();
+			sc.EntityServices(
+				"SysService",
+				"系统服务",
+				d => d.AddUnmanaged<Management.IServiceDeclarationManager, Management.ServiceDeclarationManager>("SysServiceDeclaration","系统服务定义")
+					.AddUnmanaged<Management.IServiceImplementManager, Management.ServiceImplementManager>("SysServiceImplement", "系统服务实现")
+					.AddUnmanaged<Management.IServiceInstanceManager, Management.ServiceInstanceManager>("SysServiceInstance", "系统服务实例")
+					);
 
 			sc.AddScoped<IServiceConfigLoader, Storages.DBServiceSource>();
 			sc.AddScoped<IServiceInstanceLister, Storages.DBServiceSource>();

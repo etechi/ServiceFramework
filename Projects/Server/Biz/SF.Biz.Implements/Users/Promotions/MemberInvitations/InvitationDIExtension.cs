@@ -17,16 +17,19 @@ namespace SF.Core.ServiceManagement
 			   string TablePrefix = null
 			   )
 		{
-			sc.AddAutoEntityType(
-				(TablePrefix ?? "") + "Invitation",
-				typeof(MemberInvitation),
-				typeof(MemberInvitationInternal)
-				);
 
-			sc.AddManagedScoped<IMemberInvitationManagementService, EntityMemberInvitationManagementService>(
-				async (sp,svc)=>
-					await svc.RemoveAllAsync()
+				//(TablePrefix ?? "") + "Invitation",
+				//typeof(MemberInvitation),
+				//typeof(MemberInvitationInternal)
+				//);
+
+			sc.EntityServices(
+				"MemberInvitation",
+				"会员邀请",
+				d=>d.Add<IMemberInvitationManagementService, EntityMemberInvitationManagementService>(typeof(MemberInvitation))
 				);
+			sc.GenerateEntityDataModel("MemberInvitation");
+			sc.GenerateEntityManager("MemberInvitation");
 
 			//sc.AddServiceInstanceCreator(
 			//	(sim) =>

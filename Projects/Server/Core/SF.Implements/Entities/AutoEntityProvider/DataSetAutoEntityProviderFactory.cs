@@ -65,7 +65,7 @@ namespace SF.Entities.AutoEntityProvider
 					throw new ArgumentException($"自动化实体类型库中找不到类型{type}对应的实体");
 
 				if (ne != entity)
-					throw new ArgumentException($"类型{type}对应的实体{ne.FullName}和类型{TEntityDetail}对应的实体{entity.FullName}不一致");
+					throw new ArgumentException($"类型{type}对应的实体{ne.Name}和类型{TEntityDetail}对应的实体{entity.Name}不一致");
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace SF.Entities.AutoEntityProvider
 				tSummary,
 				tEditable
 				);
-			var dataType = DataModelType?? DataModelTypeCollection.Get(entity.FullName);
+			var dataType = DataModelType?? DataModelTypeCollection.Get(entity.Name);
 
 			var detailHelper = new QueryResultBuildHelperCreator(dataType, tDetail, PropertyQueryConverterProviders).Build();
 			var summaryHelper = new QueryResultBuildHelperCreator(dataType, tSummary, PropertyQueryConverterProviders).Build();

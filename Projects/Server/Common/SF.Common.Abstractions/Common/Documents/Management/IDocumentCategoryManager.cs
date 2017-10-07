@@ -15,6 +15,7 @@ namespace SF.Common.Documents.Management
 		public string Name { get; set; }
 	}
 	[NetworkService]
+	[EntityManager]
 	public interface IDocumentCategoryManager<TInternal> :
 		IEntitySource<ObjectKey<long>, TInternal, DocumentCategoryQueryArgument>,
 		IEntityManager<ObjectKey<long>, TInternal>

@@ -14,7 +14,7 @@ using System;
 namespace SF.App.Core.Migrations
 {
     [DbContext(typeof(SFDbContext))]
-    [Migration("20171003024412_init")]
+    [Migration("20171007163636_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace SF.App.Core.Migrations
                 .HasAnnotation("ProductVersion", "2.0.0-rtm-26452")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("InvitationMemberInvitation_2", b =>
+            modelBuilder.Entity("MemberInvitation_2", b =>
                 {
                     b.Property<long>("Id");
 
@@ -42,7 +42,7 @@ namespace SF.App.Core.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("InvitationMemberInvitation");
+                    b.ToTable("MemberInvitation");
                 });
 
             modelBuilder.Entity("SF.Auth.Identities.Entity.DataModels.Identity", b =>
@@ -940,6 +940,55 @@ namespace SF.App.Core.Migrations
                     b.HasIndex("UpdatorId");
 
                     b.ToTable("MgrSysAdmin");
+                });
+
+            modelBuilder.Entity("SF.Users.Members.Entity.DataModels.Member", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(100);
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long>("OwnerId");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("ScopeId");
+
+                    b.Property<long>("SignupIdentityId");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long>("UpdatorId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedTime");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("PhoneNumber");
+
+                    b.HasIndex("ScopeId");
+
+                    b.HasIndex("UpdatorId");
+
+                    b.ToTable("UserMember");
                 });
 
             modelBuilder.Entity("SF.Auth.Identities.Entity.DataModels.IdentityCredential", b =>

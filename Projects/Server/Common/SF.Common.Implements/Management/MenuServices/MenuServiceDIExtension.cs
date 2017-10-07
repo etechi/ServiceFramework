@@ -127,7 +127,11 @@ namespace SF.Core.ServiceManagement
 			where TMenuItem: SF.Management.MenuServices.Entity.DataModels.MenuItem<TMenu,TMenuItem>,new()
 		{
 			sc.AddDataModules<TMenu,TMenuItem>(TablePrefix);
-			sc.AddManagedScoped<IMenuService, SF.Management.MenuServices.Entity.EntityMenuService<TMenu, TMenuItem>>();
+			sc.EntityServices(
+				"SysMenu",
+				"系统菜单",
+				d => d.Add<IMenuService, SF.Management.MenuServices.Entity.EntityMenuService<TMenu, TMenuItem>>()
+				);
 
 			//sc.AddInitializer(
 			//	"初始化菜单",

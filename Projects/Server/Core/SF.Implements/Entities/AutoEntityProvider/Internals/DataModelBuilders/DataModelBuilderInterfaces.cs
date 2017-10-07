@@ -32,6 +32,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.DataModelBuilders
 	{
 		Dictionary<string, TypeExpression> TypeExpressions{ get; }
 		IMetadataCollection Metadata { get; }
+		IEnumerable<IEntityType> EntityTypes { get; }
 	}
 	public interface IDataModelPropertyBuildProvider
 	{

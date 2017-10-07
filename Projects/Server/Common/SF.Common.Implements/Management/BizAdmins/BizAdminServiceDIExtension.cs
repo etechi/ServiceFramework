@@ -26,7 +26,11 @@ namespace SF.Core.ServiceManagement
 			where TBizAdmin : SF.Management.BizAdmins.Entity.DataModels.BizAdmin<TBizAdmin>,new()
 		{
 			sc.AddDataModules<TBizAdmin>(TablePrefix);
-			sc.AddManagedScoped<IBizAdminManagementService, EntityBizAdminManagementService<TBizAdmin>>();
+			sc.EntityServices(
+				"BizAdmin",
+				"业务管理员",
+				d => d.Add<IBizAdminManagementService, EntityBizAdminManagementService<TBizAdmin>>()
+				);
 			return sc;
 		}
 		public static IServiceCollection AddBizAdminManagementService(

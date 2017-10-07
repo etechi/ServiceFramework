@@ -26,7 +26,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.DataModelBuilders.Providers
 			Type.CustomAttributes.Add(
 				new CustomAttributeExpression(
 				typeof(TableAttribute).GetConstructor(new[] { typeof(string) }),
-				new object[] { (Entity.Namespace ?? "") + Entity.Name }
+				new object[] {  Entity.Name }
 				)
 				);
 		}

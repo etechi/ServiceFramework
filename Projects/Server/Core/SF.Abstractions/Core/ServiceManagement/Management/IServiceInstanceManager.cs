@@ -42,7 +42,7 @@ namespace SF.Core.ServiceManagement.Management
 		public bool? IsDefaultService { get; set; }
 	}
 
-	[EntityManager("系统服务实例")]
+	[EntityManager]
 	[Authorize("sysadmin")]
 	[NetworkService]
 	[Comment("服务实例管理", "系统内置服务实例")]
