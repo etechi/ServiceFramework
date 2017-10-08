@@ -16,7 +16,6 @@ namespace SF.Data.Models
 		[Key]
 		[ReadOnly(true)]
 		[TableVisible]
-		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public virtual K Id { get; set; }
 
 		[Comment("名称")]

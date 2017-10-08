@@ -198,7 +198,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			}
 			else if (srcProp == null)
 				return;
-			else
+			else if(srcProp.GetCustomAttribute<ForeignKeyAttribute>()==null && srcProp.GetCustomAttribute<InversePropertyAttribute>()==null)
 			{
 				var src = (Expression)Expression.Property(ArgSource, srcProp);
  				if (dstProp.PropertyType != srcProp.PropertyType)
@@ -206,7 +206,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					if (srcProp.PropertyType.CanSimpleConvertTo(dstProp.PropertyType))
 						src = Expression.Convert(src, dstProp.PropertyType);
 					else
-						throw new NotSupportedException($"来源字段{SrcType.FullName}.{srcProp.Name} 的类型{srcProp.PropertyType} 和目标字段 {DstType.FullName}.{dstProp.Name} 的类型不兼容");
+						throw new NotSupportedException($"来源字段{SrcType.FullName}.{srcProp.Name} 的类型{srcProp.PropertyType} 和目标字段 {DstType.FullName}.{dstProp.Name} 的类型{dstProp.PropertyType}不兼容");
 				}
 				DstBindings.Add(Expression.Bind(dstProp, src));
 			}

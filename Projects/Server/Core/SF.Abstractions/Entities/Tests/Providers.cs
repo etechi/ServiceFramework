@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SF.Services.Tests;
+using System.Threading.Tasks;
 
 namespace SF.Entities.Tests
 {
@@ -21,9 +22,9 @@ namespace SF.Entities.Tests
 	{
 		int Priority { get; }
 		bool NextSampleSupported { get; }
-		IEnumerable<TEditable> ValidSamples { get; }
-		IEnumerable<TEditable> InvalidSamples { get; }
-		TEditable NextSample(TEditable OrgValue, ISampleSeed Seed);
+		Task<TEditable[]> ValidSamples();
+		Task<TEditable[]> InvalidSamples();
+		Task<TEditable> NextSample(TEditable OrgValue, ISampleSeed Seed);
 	}
 	public interface IEntitySampleGeneratorProvider
 	{

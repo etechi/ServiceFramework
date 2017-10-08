@@ -16,31 +16,31 @@ namespace SF.Services.Tests
 		{
 		}
 
-		public void AssertFailed<T>(T expect, T test,string Message=null)
+		public void AssertFailed<T>(string Message,T expect, T test)
 		{
 			throw new InvalidOperationException($"断言错误:{Message},期望值{expect},实际值{test}");
 		}
 
-		public void Equal<T>(T expect, T test)
+		public void Equal<T>(string Message,T expect, T test)
 		{
 			if (Poco.DeepEquals(expect, test))
 				return;
-			AssertFailed(expect, test,"实际值和期望值不同");
+			AssertFailed(Message + ",实际值与期望值不同",expect, test);
 		}
-		public void NotEqual<T>(T expect, T test)
+		public void NotEqual<T>(string Message, T expect, T test)
 		{
 			if (Poco.DeepEquals(expect, test))
-				AssertFailed(expect, test, "实际值和期望值相同");
+				AssertFailed(Message + ",实际值与期望值相同",expect, test);
 		}
-		public void ValidateFailed<T>(T value, string message)
+		public void ValidateFailed<T>(string message, T value )
 		{
 			throw new InvalidOperationException($"{value}验证错误，{message}");
 		}
-		public void Success(TestResult Result)
+		public void Success(string Message,TestResult Result)
 		{
 			if (Result == TestResult.Success)
 				return;
-			throw new InvalidOperationException($"测试失败:" + Result.Message);
+			throw new InvalidOperationException($"测试失败:{Message} {Result}");
 		}
 	}
 }

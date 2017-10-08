@@ -48,7 +48,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 			if (DataModelProperty.PropertyType != typeof(string))
 				return null;
 
-			var jd = EntityProperty.GetCustomAttribute<JsonDataAttribute>();
+			var jd = EntityProperty?.GetCustomAttribute<JsonDataAttribute>();
 			if (jd == null)
 				return null;
 			return (IEntityPropertyModifier)Activator.CreateInstance(

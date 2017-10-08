@@ -14,9 +14,10 @@ using System;
 namespace SF.App.Core.Migrations
 {
     [DbContext(typeof(SFDbContext))]
-    partial class SFDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171008094327_add-internal-remarks")]
+    partial class addinternalremarks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

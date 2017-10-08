@@ -15,7 +15,7 @@ namespace SF.Services.Tests
 	public class ValidateResult<T>: TestResult
 	{
 		public T Value { get; }
-		public ValidateResult(T Value, string message):base(message)
+		public ValidateResult(string Source,T Value, string message):base(Source,message)
 		{
 			this.Value = Value;
 
@@ -24,7 +24,7 @@ namespace SF.Services.Tests
 	
 	public interface IValueValidator<T>
 	{
-		TestResult Validate(T Value);
+		TestResult Validate(string Source, T Value);
 	}
 	public interface IValueValidatorProvider
 	{

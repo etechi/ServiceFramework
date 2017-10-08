@@ -160,11 +160,13 @@ namespace SF.Services.Tests.SampleGenerators
 			public bool NextSampleSupported => true;
 
 			public IEnumerable<T> ValidSamples { get; }= Values;
-
+			static E[] GetEnumValues<E>() =>
+				(E[])Enum.GetValues(typeof(E));
+			
 			public IEnumerable<T> InvalidSamples { get; } = new T[]
 			{
-				(T)Convert.ChangeType(Enum.GetValues(typeof(T)).Cast<int>().Min()-1,typeof(T)),
-				(T)Convert.ChangeType(Enum.GetValues(typeof(T)).Cast<int>().Max()+1,typeof(T))
+				(T)Enum.ToObject(typeof(T),GetEnumValues<T>().Select(v=> (int)Convert.ChangeType(v,typeof(int))).Min()-1),
+				(T)Enum.ToObject(typeof(T),GetEnumValues<T>().Select(v=> (int)Convert.ChangeType(v,typeof(int))).Max()+1)
 			};
 
 			public T NextSample(T OrgValue, ISampleSeed Seed)

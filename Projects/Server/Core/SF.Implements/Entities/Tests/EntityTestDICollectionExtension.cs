@@ -27,7 +27,7 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IEntityTestHelperCache, EntityTestHelperCache>();
 			sc.Add(typeof(IEntityTestContext<,,,,,>), typeof(EntityTestContext<,,,,,>), ServiceImplementLifetime.Scoped);
 
-			sc.AddSingleton<IEntitySampleGeneratorProvider,DefaultEntitySampleGeneratorProvider>();
+			sc.AddSingleton<IEntitySampleGeneratorProvider,EntitySampleGeneratorProvider>();
 			sc.AddSingleton<IEntityCreateResultValidatorProvider, DefaultEntityCreateResultValidatorProvider>();
 			sc.AddSingleton<IEntityUpdateResultValidatorProvider, DefaultEntityUpdateResultValidatorProvider>();
 			sc.AddSingleton<IEntitySummaryValidatorProvider, DefaultEntitySummaryValidatorProvider>();

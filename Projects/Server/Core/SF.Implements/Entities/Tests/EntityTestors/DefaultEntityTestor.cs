@@ -36,8 +36,9 @@ namespace SF.Entities.Tests.EntityTestors
 			var svc = ctx.Manager;
 			var createCount = 10;
 			var Assert = ctx.Assert;
-			var createArguments = Enumerable.Range(0, createCount)
-				.Select(i => ctx.Helper.NextSample(new TEditable(), ctx.SampleSeed)).ToArray();
+			var createArguments = new TEditable[createCount];
+			for (var i = 0; i < createArguments.Length; i++)
+				createArguments[i] = await ctx.Helper.NextSample(new TEditable(), ctx.SampleSeed);
 			var createIdents = new TKey[createCount];
 
 			//创建对象
@@ -47,19 +48,19 @@ namespace SF.Entities.Tests.EntityTestors
 
 			//检查新创建的对象主键各不相同
 			var distincted = createIdents.Distinct(Poco.DeepEqualityComparer<TKey>()).ToArray();
-			Assert.Equal(distincted.Length, createCount);
+			Assert.Equal("新建的实体主键有重复",distincted.Length, createCount);
 
 			var emptyIdent = new TKey();
 			//检查新创建的对象主键不为空
 			foreach (var id in createIdents)
-				Assert.NotEqual(id, emptyIdent);
+				Assert.NotEqual("新建的实体主键为默认值",id, emptyIdent);
 
 			//检查新建结果
 			var createResults = new TEditable[createCount];
 			for (var i = 0; i < createCount; i++)
 			{
 				createResults[i] = await svc.LoadForEdit(createIdents[i]);
-				Assert.Success(ctx.Helper.ValidateCreateResult(
+				Assert.Success("实体创建结果和参数不符",ctx.Helper.ValidateCreateResult(
 					createArguments[i],
 					createResults[i]
 					));
@@ -72,12 +73,12 @@ namespace SF.Entities.Tests.EntityTestors
 			for (var i = 0; i < createCount; i++)
 			{
 				details[i] = await svc.GetAsync(createIdents[i]);
-				Assert.Success(ctx.Helper.ValidateDetail(createResults[i], details[i]));
+				Assert.Success("获取详细实体和可编辑实体不符",ctx.Helper.ValidateDetail(createResults[i], details[i]));
 			}
 
 			//检查批量实体获取
 			var batchDetails = await svc.GetAsync(createIdents);
-			Assert.Equal(details, batchDetails);
+			Assert.Equal("批量获取的实体和单独获取的实体不符",details, batchDetails);
 
 
 			var querySeedSummaries = details.Select(d => ctx.Helper.ConvertToSummary(d)).ToArray();
@@ -85,11 +86,11 @@ namespace SF.Entities.Tests.EntityTestors
 			foreach (var qa in ctx.Helper.GenerateQueryArgument(querySeedSummaries))
 			{
 				var re = await svc.QueryAsync(qa.QueryArgument, qa.Paging);
-				Assert.Equal(re.Items.ToArray(), qa.Results);
+				Assert.Equal("查询到的结果和期望不符",re.Items.ToArray(), qa.Results);
 
 				var ire = await svc.QueryIdentsAsync(qa.QueryArgument, qa.Paging);
 				var eids = qa.Results.Select(i => Entity<TSummary>.GetKey<TKey>(i)).ToArray();
-				Assert.Equal(ire.Items.ToArray(), eids);
+				Assert.Equal("查询到主键和期望不符",ire.Items.ToArray(), eids);
 			}
 
 
@@ -98,10 +99,10 @@ namespace SF.Entities.Tests.EntityTestors
 			var updateResults = new TEditable[createCount];
 			for (var i = 0; i < createCount; i++)
 			{
-				updateEditables[i] = ctx.Helper.NextSample(createResults[i], ctx.SampleSeed);
+				updateEditables[i] =await ctx.Helper.NextSample(createResults[i], ctx.SampleSeed);
 				await svc.UpdateAsync(updateEditables[i]);
 				updateResults[i] = await svc.LoadForEdit(createIdents[i]);
-				Assert.Success(ctx.Helper.ValidateUpdateResult(updateEditables[i], updateResults[i]));
+				Assert.Success("实体更新结果和更新参数不符",ctx.Helper.ValidateUpdateResult(updateEditables[i], updateResults[i]));
 			}
 
 			//删除部分
@@ -110,13 +111,13 @@ namespace SF.Entities.Tests.EntityTestors
 			foreach (var rid in removeIds)
 			{
 				await svc.RemoveAsync(rid);
-				Assert.Equal(default(TDetail), await svc.GetAsync(rid));
+				Assert.Equal("删除后，还能获取到实体",default(TDetail), await svc.GetAsync(rid));
 			}
 
 			//删除剩余部分
 			await svc.RemoveAllAsync();
 			foreach (var rid in restIds)
-				Assert.Equal(default(TDetail), await svc.GetAsync(rid));
+				Assert.Equal("批量删除后，还能获取到实体",default(TDetail), await svc.GetAsync(rid));
 		}
 
 	}

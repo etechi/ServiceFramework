@@ -172,8 +172,36 @@ namespace SF.ADT
 				if (x.Type != y.Type)
 					throw new InvalidOperationException("类型不一致");
 
+
 				if (x.Type.IsValue())
+				{
+					if(x.Type.IsGenericTypeOf(typeof(Nullable<>)))
+					{
+						return Expression.Condition(
+							Expression.And(
+								Expression.IsTrue(x.GetMember("HasValue")),
+								Expression.IsTrue(y.GetMember("HasValue"))
+								),
+							GetBaseEqualExpression(argColl,x,y,t,level),
+							Expression.Condition(
+								Expression.And(
+									Expression.IsFalse(x.GetMember("HasValue")),
+									Expression.IsFalse(y.GetMember("HasValue"))
+									),
+								Expression.Constant(0),
+								Expression.Condition(
+									Expression.And(
+										Expression.IsTrue(x.GetMember("HasValue")),
+										Expression.IsFalse(y.GetMember("HasValue"))
+										),
+									Expression.Constant(1),
+									Expression.Constant(-1)
+								)
+							)
+						);
+					}
 					return GetBaseEqualExpression(argColl, x, y, t, level);
+				}
 				return Expression.Condition(
 						Expression.And(
 							Expression.NotEqual(x, NullValue),

@@ -26,7 +26,7 @@ namespace SF.Entities.Tests.EntityDetailValidators
 			EntitytValidator<TEditable, TDetail>,
 			IEntityDetailValidator<TEditable, TDetail>
 		{
-			public EntityDetailValidator(Action<TEditable, TDetail, List<TestResult>> FuncValidator) : base(FuncValidator)
+			public EntityDetailValidator(Action<TEditable, TDetail, string, List<TestResult>> FuncValidator) : base(FuncValidator)
 			{
 			}
 

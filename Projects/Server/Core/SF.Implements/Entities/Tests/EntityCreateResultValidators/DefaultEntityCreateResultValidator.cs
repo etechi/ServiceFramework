@@ -28,7 +28,7 @@ namespace SF.Entities.Tests.EntityCreateResultValidators
 			EntitytValidator<TEditable,TEditable>,
 			IEntityCreateResultValidator<TEditable>
 		{
-			public EntityCreateResultValidator(Action<TEditable, TEditable, List<TestResult>> FuncValidator) : base(FuncValidator)
+			public EntityCreateResultValidator(Action<TEditable, TEditable, string, List<TestResult>> FuncValidator) : base(FuncValidator)
 			{
 			}
 			

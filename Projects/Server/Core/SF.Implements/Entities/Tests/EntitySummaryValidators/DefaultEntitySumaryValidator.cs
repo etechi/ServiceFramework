@@ -26,7 +26,7 @@ namespace SF.Entities.Tests.EntitySummaryValidators
 			EntitytValidator<TDetail, TSummary>,
 			IEntitySummaryValidator<TDetail, TSummary>
 		{
-			public EntitySummaryValidator(Action<TDetail, TSummary, List<TestResult>> FuncValidator) : base(FuncValidator)
+			public EntitySummaryValidator(Action<TDetail, TSummary, string, List<TestResult>> FuncValidator) : base(FuncValidator)
 			{
 			}
 

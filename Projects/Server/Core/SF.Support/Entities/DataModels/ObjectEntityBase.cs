@@ -55,6 +55,8 @@ namespace SF.Entities.DataModels
 		[Comment("修改时间")]
 		public virtual DateTime UpdatedTime { get; set; }
 
+		[Comment("内部备注")]
+		public virtual string InternalRemarks { get; set; }
 	
 		[ConcurrencyCheck]
 		[Timestamp]

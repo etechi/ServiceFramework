@@ -192,7 +192,7 @@ namespace SF.Entities.AutoEntityProvider
 			FuncCreateProvider = new Lazy<Func<IServiceProvider, object>>(() =>
 				new Func<IServiceProvider, object>(
 					sp=>new DataSetAutoEntityProvider<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(
-							sp.Resolve<IDataSetEntityManager<TEntityDetail,TDataModel>>(),
+							sp.Resolve<IDataSetEntityManager<TEntityEditable,TDataModel>>(),
 							this
 						)
 				)

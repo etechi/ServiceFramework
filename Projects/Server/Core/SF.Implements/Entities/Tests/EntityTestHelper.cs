@@ -30,11 +30,11 @@ namespace SF.Entities.Tests
 
 		public bool NextSampleSupported => NextSampleGenerators.Length > 0;
 
-		public IEnumerable<TEditable> ValidSamples =>
-			SamplesGenerators.SelectMany(g => g.ValidSamples);
+		public async Task<TEditable[]> ValidSamples() =>
+			(await Task.WhenAll(SamplesGenerators.Select(g => g.ValidSamples()))).SelectMany(m => m).ToArray();
 
-		public IEnumerable<TEditable> InvalidSamples =>
-			SamplesGenerators.SelectMany(g => g.InvalidSamples);
+		public async Task<TEditable[]> InvalidSamples() =>
+			(await Task.WhenAll(SamplesGenerators.Select(g => g.InvalidSamples()))).SelectMany(m => m).ToArray();
 
 		public EntityTestHelper(
 			IEntityDetailToSummaryConverter<TDetail, TSummary> DetailToSummaryConverter,
@@ -97,11 +97,11 @@ namespace SF.Entities.Tests
 				);
 		}
 
-		int index = 0;
-		public TEditable NextSample(TEditable OrgValue, ISampleSeed Seed)
+		public async Task<TEditable> NextSample(TEditable OrgValue, ISampleSeed Seed)
 		{
-			index++;
-			return NextSampleGenerators[index % NextSampleGenerators.Length].NextSample(OrgValue, Seed);
+			foreach(var g in NextSampleGenerators)
+				OrgValue= await g.NextSample(OrgValue, Seed);
+			return OrgValue;
 			
 		}
 	}

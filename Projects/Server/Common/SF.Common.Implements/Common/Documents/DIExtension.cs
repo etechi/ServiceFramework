@@ -51,7 +51,7 @@ namespace SF.Core.ServiceManagement
 				>(TablePrefix);
 
 			//sc.AddAutoEntityTest(NewDocumentManager);
-			//sc.AddAutoEntityTest(NewDocumentCategoryManager);
+			sc.AddAutoEntityTest(NewDocumentCategoryManager);
 			return sc;
 		}
 

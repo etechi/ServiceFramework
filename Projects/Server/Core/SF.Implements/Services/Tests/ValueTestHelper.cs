@@ -34,10 +34,10 @@ namespace SF.Services.Tests
 			this.NextSampleGenerators = SampleGenerators.Where(s => s.NextSampleSupported).ToArray();
 		}
 
-		public TestResult Assert(T ExpectValue, T TestValue)
+		public TestResult Assert(string Source,T ExpectValue, T TestValue)
 		{
 			return TestResult.Merge(
-				ValueAsserts.Select(va => va.Assert(ExpectValue, TestValue))
+				ValueAsserts.Select(va => va.Assert(Source,ExpectValue, TestValue))
 				);
 		}
 
@@ -49,10 +49,10 @@ namespace SF.Services.Tests
 			return NextSampleGenerators[SampleSourceSource++ % SampleGenerators.Length].NextSample(OrgValue,Seed);
 		}
 		
-		public TestResult Validate(T Value)
+		public TestResult Validate(string Source,T Value)
 		{
 			return TestResult.Merge(
-				Validators.Select(v => v.Validate(Value))
+				Validators.Select(v => v.Validate(Source,Value))
 				);			
 		}
 	}

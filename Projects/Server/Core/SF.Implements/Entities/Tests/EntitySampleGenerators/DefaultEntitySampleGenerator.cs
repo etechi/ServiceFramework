@@ -16,10 +16,10 @@ using SF.Metadata;
 
 namespace SF.Entities.Tests.EntitySampleGenerators
 {
-	class DefaultEntitySampleGeneratorProvider : IEntitySampleGeneratorProvider
+	class EntitySampleGeneratorProvider : IEntitySampleGeneratorProvider
 	{
 		IValueTestHelperCache ValueTestHelperCache { get; }
-		public DefaultEntitySampleGeneratorProvider(IValueTestHelperCache ValueTestHelperCache)
+		public EntitySampleGeneratorProvider(IValueTestHelperCache ValueTestHelperCache)
 		{
 			this.ValueTestHelperCache = ValueTestHelperCache;
 		}
@@ -48,6 +48,7 @@ namespace SF.Entities.Tests.EntitySampleGenerators
 			var argSeed = Expression.Parameter(typeof(ISampleSeed));
 			var func= Expression.Block(
 						from p in typeof(TEditable).AllPublicInstanceProperties()
+						
 						where Entity<TEditable>.KeyProperties.All(kp => kp.Name != p.Name) && !SkipProperty(p)
 						let vthType = typeof(IValueTestHelper<>).MakeGenericType(p.PropertyType)
 						let valueSampleGeneratorType = typeof(IValueSampleGenerator<>).MakeGenericType(p.PropertyType)
@@ -55,6 +56,7 @@ namespace SF.Entities.Tests.EntitySampleGenerators
 						select
 							argEditable.CallMethod(
 								p.GetSetMethod(),
+
 								Expression.Constant(vth, valueSampleGeneratorType).CallMethod(
 									valueSampleGeneratorType.GetMethodExt(
 										nameof(IValueSampleGenerator<int>.NextSample),
@@ -71,9 +73,14 @@ namespace SF.Entities.Tests.EntitySampleGenerators
 		}
 		bool SkipProperty(PropertyInfo p)
 		{
+			//跳过实体标识字段
+			if (p.GetCustomAttribute<EntityIdentAttribute>() != null)
+				return true;
+
 			if (p.PropertyType != typeof(string))
 				return false;
 
+			//跳过实体名称字段
 			if ((from ip in p.ReflectedType.AllPublicInstanceProperties()
 				 let a = ip.GetCustomAttribute<EntityIdentAttribute>()
 				 where a != null && a.NameField == p.Name
@@ -95,15 +102,20 @@ namespace SF.Entities.Tests.EntitySampleGenerators
 
 			public bool NextSampleSupported => true;
 
-			public IEnumerable<TEditable> ValidSamples => Enumerable.Empty<TEditable>();
+			public Task<TEditable[]> ValidSamples()
+			{
+				return Task.FromResult(Array.Empty<TEditable>());
+			}
 
-			public IEnumerable<TEditable> InvalidSamples => Enumerable.Empty<TEditable>();
-
-			public TEditable NextSample(TEditable OrgValue, ISampleSeed Seed)
+			public Task<TEditable[]> InvalidSamples()
+			{
+				return Task.FromResult(Array.Empty<TEditable>());
+			}
+			public Task<TEditable> NextSample(TEditable OrgValue, ISampleSeed Seed)
 			{
 				var NewValue = Entity<TEditable>.GetKey<TEditable>(OrgValue);
 				FuncSampleInit(NewValue, Seed);
-				return NewValue;
+				return Task.FromResult(NewValue);
 			}
 		}
 		
