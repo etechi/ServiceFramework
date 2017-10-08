@@ -16,7 +16,7 @@ namespace SF.Core.ServiceManagement
 		bool IsManaged { get; }
 		IServiceDeclaration ServiceDeclaration { get; }
 		IServiceImplement ServiceImplement { get; }
-
+		IDisposable OnSettingChanged<T>(Action<T> Callback);
 	}
 
 }

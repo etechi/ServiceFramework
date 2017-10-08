@@ -16,14 +16,15 @@ namespace SF.Core.ServiceManagement.Internals
 
 		public IServiceCreateParameterTemplate CreateParameterTemplate { get; }
 		public ServiceCreator Creator { get; }
-
+		public ServiceConfigLoader ConfigLoader { get; }
 		public ServiceFactory(
 			long Id,
 			long? ParentServiceId,
 			IServiceDeclaration ServiceDeclaration,
 			IServiceImplement ServiceImplement,
 			IServiceCreateParameterTemplate CreateParameterTemplate,
-			ServiceCreator Creator
+			ServiceCreator Creator,
+			ServiceConfigLoader ConfigLoader
 			)
 		{
 			this.InstanceId = Id;
@@ -32,6 +33,7 @@ namespace SF.Core.ServiceManagement.Internals
 			this.ServiceImplement = ServiceImplement;
 			this.CreateParameterTemplate = CreateParameterTemplate;
 			this.Creator = Creator;
+			this.ConfigLoader = ConfigLoader;
 		}
 
 		public object Create(
@@ -95,6 +97,7 @@ namespace SF.Core.ServiceManagement.Internals
 			)
 		{
 			ServiceCreator Creator;
+			ServiceConfigLoader ConfigLoader = (sp, si, ctr) => Array.Empty<KeyValuePair<string, object>>();
 			IServiceCreateParameterTemplate CreateParameterTemplate = null;
 			switch (impl.ServiceImplementType)
 			{
@@ -118,7 +121,7 @@ namespace SF.Core.ServiceManagement.Internals
 					break;
 				case ServiceImplementType.Type:
 					{
-						(Creator, CreateParameterTemplate) =
+						(Creator,ConfigLoader, CreateParameterTemplate) =
 							CreatorCache == null ?
 							ServiceCreatorCache.CreateServiceInstanceCreator(
 								ServiceType,
@@ -145,8 +148,38 @@ namespace SF.Core.ServiceManagement.Internals
 				decl,
 				impl,
 				CreateParameterTemplate,
-				Creator
+				Creator,
+				ConfigLoader
 				);
+		}
+
+		Dictionary<Delegate,Lazy<Action<object>>> _SettingChangedCallbacks;
+
+		public void NotifySettingChanged(object Setting)
+		{
+			lock (this)
+				foreach (var cb in _SettingChangedCallbacks.Values)
+					cb.Value(Setting);
+
+		}
+		public IDisposable OnSettingChanged<T>(Action<T> Callback)
+		{
+			if (ServiceImplement.LifeTime != ServiceImplementLifetime.Singleton)
+				throw new NotSupportedException("只有单例服务支持设置更改通知");
+			lock (this)
+			{
+				if (_SettingChangedCallbacks == null)
+					_SettingChangedCallbacks = new Dictionary<Delegate, Lazy<Action<object>>>();
+				_SettingChangedCallbacks.Add(Callback,new Lazy<Action<object>>(()=>{
+					return null;
+				}));
+				return Disposable.FromAction(() =>
+				{
+					lock(this)
+						_SettingChangedCallbacks.Remove(Callback);
+				});
+			}
+
 		}
 	}
 

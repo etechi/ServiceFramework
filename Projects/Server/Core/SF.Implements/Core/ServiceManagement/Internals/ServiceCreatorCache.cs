@@ -13,8 +13,8 @@ namespace SF.Core.ServiceManagement.Internals
 	{
 		
 		//服务实例创建缓存
-		ConcurrentDictionary<(Type, Type), (ServiceCreator, ConstructorInfo)> ServiceCreatorDict { get; }
-			= new ConcurrentDictionary<(Type, Type), (ServiceCreator, ConstructorInfo)>();
+		ConcurrentDictionary<(Type, Type), (ServiceCreator,ServiceConfigLoader, ConstructorInfo)> ServiceCreatorDict { get; }
+			= new ConcurrentDictionary<(Type, Type), (ServiceCreator, ServiceConfigLoader, ConstructorInfo)>();
 
 		IServiceMetadata ServiceMetadata { get; }
 		public ServiceCreatorCache(IServiceMetadata ServiceMetadata)
@@ -22,7 +22,7 @@ namespace SF.Core.ServiceManagement.Internals
 			this.ServiceMetadata = ServiceMetadata;
 		}
 
-		public static (ServiceCreator, ConstructorInfo) CreateServiceCreator(
+		public static (ServiceCreator,ServiceConfigLoader, ConstructorInfo) CreateServiceCreator(
 			Type ServiceType, 
 			Type ImplementType,
 			IServiceMetadata ServiceMetadata,
@@ -34,21 +34,21 @@ namespace SF.Core.ServiceManagement.Internals
 				.IsNotNull(
 					() => $"找不到服务实现类型{ImplementType}的构造函数"
 					);
-			var creator = ServiceCreatorBuilder.Build(
+			var result = ServiceCreatorBuilder.Build(
 				ServiceMetadata,
 				ServiceType,
 				ImplementType,
 				ci,
 				IsManagedService
 				);
-			return (creator, ci);
+			return (result.creator,result.loader, ci);
 		}
-		public static (ServiceCreator, IServiceCreateParameterTemplate) CreateServiceInstanceCreator(
+		public static (ServiceCreator,ServiceConfigLoader, IServiceCreateParameterTemplate) CreateServiceInstanceCreator(
 			Type ServiceType,
 			Type ImplementType,
 			string Setting,
 			IServiceMetadata ServiceMetadata,
-			Func<Type,Type,bool,(ServiceCreator, ConstructorInfo)> ServiceCreator,
+			Func<Type,Type,bool,(ServiceCreator, ServiceConfigLoader, ConstructorInfo)> ServiceCreator,
 			bool IsManagedService
 			)
 		{
@@ -56,16 +56,16 @@ namespace SF.Core.ServiceManagement.Internals
 							ImplementType.MakeGenericType(ServiceType.GetGenericArguments()) :
 							ImplementType;
 
-			var (Creator, ConstructorInfo) = ServiceCreator(ServiceType, realImplType, IsManagedService);
+			var (Creator, cfgLoader, ConstructorInfo) = ServiceCreator(ServiceType, realImplType, IsManagedService);
 			var CreateParameterTemplate = ServiceCreateParameterTemplate.Load(
 				ConstructorInfo,
 				Setting,
 				ServiceMetadata
 				);
-			return (Creator, CreateParameterTemplate);
+			return (Creator, cfgLoader,CreateParameterTemplate);
 		}
 
-		public static (ServiceCreator, IServiceCreateParameterTemplate) CreateServiceInstanceCreator(
+		public static (ServiceCreator,ServiceConfigLoader, IServiceCreateParameterTemplate) CreateServiceInstanceCreator(
 			Type ServiceType,
 			Type ImplementType,
 			string Setting,
@@ -81,14 +81,15 @@ namespace SF.Core.ServiceManagement.Internals
 				IsManagedService
 				);
 
-		public (ServiceCreator,ConstructorInfo) GetServiceCreator(Type ServiceType, Type ImplementType,bool IsManagedService)
+		public (ServiceCreator,ServiceConfigLoader,ConstructorInfo) GetServiceCreator(
+			Type ServiceType, Type ImplementType,bool IsManagedService)
 			=> ServiceCreatorDict.GetOrAdd(
 				(ServiceType, ImplementType), 
 				key => CreateServiceCreator(key.Item1,key.Item2,ServiceMetadata,IsManagedService)
 				);
 
 
-		public (ServiceCreator, IServiceCreateParameterTemplate) GetServiceInstanceCreator(
+		public (ServiceCreator, ServiceConfigLoader,IServiceCreateParameterTemplate) GetServiceInstanceCreator(
 			Type ServiceType,
 			Type ImplementType,
 			string Setting,

@@ -5,7 +5,9 @@ using SF.Metadata;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
-
+	public class CategoryItem :
+		CategoryItem<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
+	{ }
 	[Table("BizProductCategoryItem")]
     [Comment(GroupName = "产品服务", Name = "产品分类项目")]
     public class CategoryItem<TProduct,TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>

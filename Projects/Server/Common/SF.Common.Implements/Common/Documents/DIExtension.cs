@@ -28,6 +28,8 @@ namespace SF.Core.ServiceManagement
 					//.Add<IDocumentService, DocumentService>()
 				);
 
+			sc.AddManagedScoped<IDocumentService, DocumentService>();
+
 			sc.GenerateEntityManager("DocumentCategory");
 			sc.GenerateEntityManager("Document");
 
@@ -50,7 +52,7 @@ namespace SF.Core.ServiceManagement
 				SF.Common.Documents.DataModels.DocumentTagReference
 				>(TablePrefix);
 
-			//sc.AddAutoEntityTest(NewDocumentManager);
+			sc.AddAutoEntityTest(NewDocumentManager);
 			sc.AddAutoEntityTest(NewDocumentCategoryManager);
 			return sc;
 		}

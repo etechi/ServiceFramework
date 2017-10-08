@@ -16,9 +16,10 @@ namespace SF.Core.ServiceManagement.Internals
 		//服务实例创建缓存
 		ServiceCreatorCache ServiceCreatorCache { get; }
 		public IServiceMetadata ServiceMetadata { get; }
-
+		
 		ManagedServiceFactoryManager ManagedServiceFactoryManager { get; }
 		UnmanagedServiceFactoryManager UnmanagedServiceFactoryManager { get; }
+		IServiceRemovable _ServiceRemovable;
 
 		public ServiceFactoryManager(
 			Caching.ILocalCache<IServiceEntry> ServiceCache,
@@ -44,22 +45,27 @@ namespace SF.Core.ServiceManagement.Internals
 				ServiceCreatorCache
 				);
 		}
-		public void SubscribeEvents(IServiceProvider Provider)
+		public void BindServiceProvider(IServiceProvider Provider)
 		{
+			_ServiceRemovable = Provider as IServiceRemovable;
+
 			var OnServiceInstanceChanged = Provider.Resolve<IEventSubscriber<ServiceInstanceChanged>>();
 			var OnInternalServiceChanged = Provider.Resolve<IEventSubscriber<InternalServiceChanged>>();
 
 			OnServiceInstanceChanged.Wait(
 				sic =>
 				{
-					ManagedServiceFactoryManager.NotifyChanged(sic.Id);
+					var types=ManagedServiceFactoryManager.TryRemoveEntry(sic.Id);
+					if (types != null)
+						_ServiceRemovable.RemoveService(sic.Id, types);
+
 					return Task.CompletedTask;
 				});
 
 			OnInternalServiceChanged.Wait(
 				isc =>
 				{
-					ManagedServiceFactoryManager.NotifyInternalServiceChanged(isc.ScopeId, isc.ServiceType);
+					ManagedServiceFactoryManager.TryRemoveInternalEntries(isc.ScopeId, isc.ServiceType);
 					return Task.CompletedTask;
 				});
 		}

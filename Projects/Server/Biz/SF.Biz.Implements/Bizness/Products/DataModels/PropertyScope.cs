@@ -7,6 +7,10 @@ using SF.Entities;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
+	public class PropertyScope :
+		   PropertyScope<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
+	{ }
+
 	[Table("BizProductPropertyScope")]
     [Comment(GroupName = "产品服务", Name = "产品属性分区")]
     public class PropertyScope<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -23,6 +27,7 @@ namespace SF.Biz.Products.Entity.DataModels
     {
         [Key]
         [Display(Name="ID")]
+		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public long Id{get; set;}
 
 		[Index("name", IsUnique =true,Order =1)]

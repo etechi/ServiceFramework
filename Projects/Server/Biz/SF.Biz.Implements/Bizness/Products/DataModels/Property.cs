@@ -7,7 +7,9 @@ using SF.Entities;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
-
+	public class Property :
+		Property<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
+	{ }
 	[Table("BizProductProperty")]
     [Comment(GroupName = "产品服务", Name = "产品属性")]
     public class Property<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -23,6 +25,7 @@ namespace SF.Biz.Products.Entity.DataModels
         where TProductSpec : ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
     {
         [Display(Name="ID")]
+		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public long Id { get; set; }
 
 		[Index]

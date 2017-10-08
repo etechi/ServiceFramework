@@ -4,9 +4,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SF.Biz.Products.Entity.DataModels;
 
 namespace SF.Biz.Products.Entity
 {
+	public class ProductTypeManager :
+		ProductTypeManager<ProductTypeInternal, ProductTypeEditable, DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec> ,
+		IProductTypeManager
+	{
+		public ProductTypeManager(IDataSetEntityManager<ProductTypeEditable, DataModels.ProductType> EntityManager) : base(EntityManager)
+		{
+		}
+	}
+
+
 	public class ProductTypeManager<TInternal, TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec> :
 		ModidifiableEntityManager<ObjectKey<long>, TInternal,ProductTypeQueryArgument,  TEditable, TProductType>,
 		IProductTypeManager<TInternal, TEditable>
@@ -73,11 +84,11 @@ namespace SF.Biz.Products.Entity
 			Model.UpdatedTime = Now;
 			return Task.CompletedTask;
 		}
-		protected override Task OnNewModel(IModifyContext ctx)
+		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
+			Model.Id = await IdentGenerator.GenerateAsync(GetType().FullName);
 			Model.CreatedTime = Now;
-			return Task.CompletedTask;
 		}
 		protected override Task<TProductType> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TProductType> ctx)
 		{

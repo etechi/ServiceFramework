@@ -26,6 +26,13 @@ namespace SF.Core.ServiceManagement
 					throw new NotSupportedException();
 			}
 		}
+		internal override object GetService(IServiceFactory factory, Type ServiceType, IServiceResolver ServiceResolver)
+		{
+			lock (this)
+			{
+				return base.GetService(factory, ServiceType, ServiceResolver);
+			}
+		}
 	}
 
 }

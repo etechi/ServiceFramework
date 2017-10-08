@@ -23,7 +23,7 @@ namespace Hygou.Core2.Migrations
                 .HasAnnotation("ProductVersion", "2.0.0-rtm-26452")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("InvitationMemberInvitation_2", b =>
+            modelBuilder.Entity("MemberInvitation_2", b =>
                 {
                     b.Property<long>("Id");
 
@@ -41,7 +41,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("InvitationMemberInvitation");
+                    b.ToTable("MemberInvitation");
                 });
 
             modelBuilder.Entity("SF.Auth.Identities.Entity.DataModels.Identity", b =>
@@ -126,6 +126,366 @@ namespace Hygou.Core2.Migrations
                     b.ToTable("SysAuthIdentityCredential");
                 });
 
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.Category", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<string>("BannerImage")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("BannerUrl")
+                        .HasMaxLength(200);
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("ItemCount");
+
+                    b.Property<string>("MobileBannerImage")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("MobileBannerUrl")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<byte>("ObjectState");
+
+                    b.Property<int>("Order");
+
+                    b.Property<long>("OwnerUserId");
+
+                    b.Property<long?>("ParentId");
+
+                    b.Property<string>("Tag")
+                        .HasMaxLength(20);
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(100);
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("Tag");
+
+                    b.ToTable("BizProductCategory");
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.CategoryItem", b =>
+                {
+                    b.Property<long>("CategoryId");
+
+                    b.Property<long>("ItemId");
+
+                    b.Property<long>("Order");
+
+                    b.HasKey("CategoryId", "ItemId");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("CategoryId", "Order");
+
+                    b.ToTable("BizProductCategoryItem");
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.Item", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<string>("CategoryTags");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(100);
+
+                    b.Property<byte>("ObjectState");
+
+                    b.Property<decimal?>("Price");
+
+                    b.Property<long>("ProductId");
+
+                    b.Property<long>("SellerId");
+
+                    b.Property<long?>("SourceItemId");
+
+                    b.Property<int>("SourceLevel");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(100);
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SellerId");
+
+                    b.HasIndex("SourceItemId");
+
+                    b.ToTable("BizProductItem");
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.Product", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<bool>("CouponDisabled");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("Image");
+
+                    b.Property<bool>("IsVirtual");
+
+                    b.Property<decimal>("MarketPrice");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<byte>("ObjectState");
+
+                    b.Property<double>("Order");
+
+                    b.Property<long>("OwnerUserId");
+
+                    b.Property<decimal>("Price");
+
+                    b.Property<DateTime?>("PublishedTime");
+
+                    b.Property<int>("SellCount");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long>("TypeId");
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long?>("VIADSpecId");
+
+                    b.Property<int>("Visited");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerUserId");
+
+                    b.HasIndex("TypeId");
+
+                    b.HasIndex("ObjectState", "Order");
+
+                    b.HasIndex("ObjectState", "Price");
+
+                    b.HasIndex("ObjectState", "PublishedTime");
+
+                    b.HasIndex("ObjectState", "SellCount");
+
+                    b.HasIndex("ObjectState", "Visited");
+
+                    b.HasIndex("ObjectState", "TypeId", "Order");
+
+                    b.HasIndex("ObjectState", "TypeId", "Price");
+
+                    b.HasIndex("ObjectState", "TypeId", "PublishedTime");
+
+                    b.HasIndex("ObjectState", "TypeId", "SellCount");
+
+                    b.HasIndex("ObjectState", "TypeId", "Visited");
+
+                    b.ToTable("BizProduct");
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.ProductDetail", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<string>("Detail");
+
+                    b.Property<string>("Images");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BizProductDetail");
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.ProductSpec", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("Desc");
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<byte>("ObjectState");
+
+                    b.Property<int>("Order");
+
+                    b.Property<long>("ProductId");
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long?>("VIADSpecId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("BizProductSpec");
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.ProductType", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<byte>("ObjectState");
+
+                    b.Property<int>("Order");
+
+                    b.Property<int>("ProductCount");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Unit")
+                        .HasMaxLength(20);
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("Order");
+
+                    b.ToTable("BizProductType");
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.Property", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<string>("Icon");
+
+                    b.Property<string>("Image");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<byte>("ObjectState");
+
+                    b.Property<int>("Order");
+
+                    b.Property<long?>("ParentId");
+
+                    b.Property<long>("ScopeId");
+
+                    b.Property<long>("TypeId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScopeId");
+
+                    b.HasIndex("ParentId", "Order");
+
+                    b.HasIndex("TypeId", "ParentId", "Name")
+                        .IsUnique()
+                        .HasFilter("[ParentId] IS NOT NULL");
+
+                    b.ToTable("BizProductProperty");
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.PropertyItem", b =>
+                {
+                    b.Property<long>("PropertyId");
+
+                    b.Property<long>("ProductId");
+
+                    b.Property<double>("Order");
+
+                    b.HasKey("PropertyId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("PropertyId", "Order");
+
+                    b.ToTable("BizProductPropertyItem");
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.PropertyScope", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50);
+
+                    b.Property<byte>("ObjectState");
+
+                    b.Property<int>("Order");
+
+                    b.Property<long>("TypeId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Order");
+
+                    b.HasIndex("TypeId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("BizProductPropertyScope");
+                });
+
             modelBuilder.Entity("SF.Common.Documents.DataModels.Document", b =>
                 {
                     b.Property<long>("Id");
@@ -149,6 +509,8 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<string>("Image")
                         .HasMaxLength(100);
+
+                    b.Property<string>("InternalRemarks");
 
                     b.Property<int>("ItemOrder");
 
@@ -225,6 +587,8 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Image")
                         .HasMaxLength(100);
 
+                    b.Property<string>("InternalRemarks");
+
                     b.Property<byte>("LogicState");
 
                     b.Property<string>("Memo")
@@ -288,6 +652,8 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Image")
                         .HasMaxLength(100);
 
+                    b.Property<string>("InternalRemarks");
+
                     b.Property<int>("ItemOrder");
 
                     b.Property<byte>("LogicState");
@@ -343,6 +709,8 @@ namespace Hygou.Core2.Migrations
                     b.Property<long>("Id");
 
                     b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("InternalRemarks");
 
                     b.Property<byte>("LogicState");
 
@@ -549,6 +917,8 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("ImplementType")
                         .IsRequired();
 
+                    b.Property<string>("InternalRemarks");
+
                     b.Property<int>("ItemOrder");
 
                     b.Property<byte>("LogicState");
@@ -647,6 +1017,8 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<string>("Icon")
                         .HasMaxLength(100);
+
+                    b.Property<string>("InternalRemarks");
 
                     b.Property<byte>("LogicState");
 
@@ -780,6 +1152,8 @@ namespace Hygou.Core2.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
+                    b.Property<string>("InternalRemarks");
+
                     b.Property<byte>("LogicState");
 
                     b.Property<string>("Name")
@@ -837,6 +1211,8 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<string>("Image")
                         .HasMaxLength(100);
+
+                    b.Property<string>("InternalRemarks");
 
                     b.Property<byte>("LogicState");
 
@@ -906,6 +1282,8 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Icon")
                         .HasMaxLength(100);
 
+                    b.Property<string>("InternalRemarks");
+
                     b.Property<byte>("LogicState");
 
                     b.Property<string>("Name")
@@ -949,6 +1327,8 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<string>("Icon")
                         .HasMaxLength(100);
+
+                    b.Property<string>("InternalRemarks");
 
                     b.Property<byte>("LogicState");
 
@@ -995,25 +1375,125 @@ namespace Hygou.Core2.Migrations
                     b.HasOne("SF.Auth.Identities.Entity.DataModels.Identity", "Identity")
                         .WithMany("Credentials")
                         .HasForeignKey("IdentityId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.Category", b =>
+                {
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.Category", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.CategoryItem", b =>
+                {
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.Category", "Category")
+                        .WithMany("Items")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.Item", "Item")
+                        .WithMany("CategoryItems")
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.Item", b =>
+                {
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.Product", "Product")
+                        .WithMany("Items")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.Item", "SourceItem")
+                        .WithMany("ChildItems")
+                        .HasForeignKey("SourceItemId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.Product", b =>
+                {
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.ProductType", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.ProductDetail", b =>
+                {
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.Product", "Product")
+                        .WithOne("Detail")
+                        .HasForeignKey("SF.Biz.Products.Entity.DataModels.ProductDetail", "Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.ProductSpec", b =>
+                {
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.Product", "Product")
+                        .WithMany("Specs")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.Property", b =>
+                {
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.Property", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.PropertyScope", "Scope")
+                        .WithMany("Properties")
+                        .HasForeignKey("ScopeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.ProductType", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.PropertyItem", b =>
+                {
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.Product", "Product")
+                        .WithMany("PropertyItems")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.Property", "Property")
+                        .WithMany("ProductItems")
+                        .HasForeignKey("PropertyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.PropertyScope", b =>
+                {
+                    b.HasOne("SF.Biz.Products.Entity.DataModels.ProductType", "Type")
+                        .WithMany("PropertyScopes")
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("SF.Common.Documents.DataModels.Document", b =>
                 {
                     b.HasOne("SF.Common.Documents.DataModels.DocumentAuthor", "Author")
                         .WithMany("Documents")
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SF.Common.Documents.DataModels.DocumentCategory", "Container")
                         .WithMany("Items")
-                        .HasForeignKey("ContainerId");
+                        .HasForeignKey("ContainerId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("SF.Common.Documents.DataModels.DocumentCategory", b =>
                 {
                     b.HasOne("SF.Common.Documents.DataModels.DocumentCategory", "Container")
                         .WithMany("Children")
-                        .HasForeignKey("ContainerId");
+                        .HasForeignKey("ContainerId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("SF.Common.Documents.DataModels.DocumentTagReference", b =>
@@ -1021,19 +1501,20 @@ namespace Hygou.Core2.Migrations
                     b.HasOne("SF.Common.Documents.DataModels.Document", "Document")
                         .WithMany("Tags")
                         .HasForeignKey("DocumentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SF.Common.Documents.DataModels.DocumentTag", "Tag")
                         .WithMany()
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("SF.Core.ServiceManagement.Management.DataModels.ServiceInstance", b =>
                 {
                     b.HasOne("SF.Core.ServiceManagement.Management.DataModels.ServiceInstance", "Container")
                         .WithMany("Children")
-                        .HasForeignKey("ContainerId");
+                        .HasForeignKey("ContainerId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("SF.Management.FrontEndContents.DataModels.Site", b =>
@@ -1041,7 +1522,7 @@ namespace Hygou.Core2.Migrations
                     b.HasOne("SF.Management.FrontEndContents.DataModels.SiteTemplate", "Template")
                         .WithMany()
                         .HasForeignKey("TemplateId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("SF.Management.MenuServices.Entity.DataModels.MenuItem", b =>
@@ -1049,11 +1530,12 @@ namespace Hygou.Core2.Migrations
                     b.HasOne("SF.Management.MenuServices.Entity.DataModels.Menu", "Menu")
                         .WithMany("Items")
                         .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SF.Management.MenuServices.Entity.DataModels.MenuItem", "Parent")
                         .WithMany("Children")
-                        .HasForeignKey("ParentId");
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

@@ -81,7 +81,7 @@ namespace SF.ADT
 					if (srcType.IsConstType())
 						return src;
 				}
-				else if (srcType.IsDefined(typeof(IConvertible)))
+				else if (typeof(IConvertible).IsAssignableFrom(srcType))
 				{
 					var method = typeof(IConvertible)
 						.GetMethods(BindingFlags.Public | BindingFlags.Instance)

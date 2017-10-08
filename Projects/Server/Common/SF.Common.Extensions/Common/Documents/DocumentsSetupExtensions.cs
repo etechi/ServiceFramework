@@ -56,6 +56,7 @@ namespace SF.Common.Documents
 				s =>
 				{
 					s.Name = name;
+					s.Title = name;
 					s.Ident = ident;
 					s.ContainerId= cid;
 					s.Content = content;

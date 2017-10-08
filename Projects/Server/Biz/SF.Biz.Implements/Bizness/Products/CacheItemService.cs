@@ -9,16 +9,24 @@ using SF.Entities;
 
 namespace SF.Biz.Products
 {
+	public class CacheItemService :
+		CacheItemService<ICategoryCached, IItemSource>,
+		IItemService
+	{
+		public CacheItemService(Func<IItemSource> ItemSource) : base(ItemSource)
+		{
+		}
+	}
 	public class CacheItemService<TCategory,TItemSource>:
-		CacheItemService<Item, TCategory, TItemSource>
+		CacheItemService<IItem, TCategory, TItemSource>
 		 where TCategory : ICategoryCached
 		 where TItemSource : IItemSource
 	{
-		public CacheItemService(TItemSource ItemSource) : base(ItemSource)
+		public CacheItemService(Func<TItemSource> ItemSource) : base(ItemSource)
 		{
 		}
 
-		protected override Item CreateItemResult(IItemCached Item, IProductCached Product, IProductContentCached Content)
+		protected override IItem CreateItemResult(IItemCached Item, IProductCached Product, IProductContentCached Content)
 		{
 			return new Item(Item, Product, Content);
 		}
@@ -40,10 +48,10 @@ namespace SF.Biz.Products
 		ObjectSyncQueue<long> CategorySyncQueue { get; } = new ObjectSyncQueue<long>();
 		ObjectSyncQueue<long> ItemContentSyncQueue { get; } = new ObjectSyncQueue<long>();
 
-		public TItemSource ItemSource { get; }
+		public Func<TItemSource> ItemSource { get; }
 
-		public int MainCategoryId => ItemSource.MainCategoryId;
-		public CacheItemService(TItemSource ItemSource)
+		public long MainCategoryId => ItemSource().MainCategoryId;
+		public CacheItemService(Func<TItemSource> ItemSource)
 		{
 			this.ItemSource = ItemSource;
 		}
@@ -69,7 +77,7 @@ namespace SF.Biz.Products
 
 		public async Task<QueryResult<TCategory>> ListCategories(long ParentCategoryId, Paging paging)
 		{
-			var cids = await GetRelationIds(ParentCategoryId, category_children, ItemSource.CategoryChildrenLoader);
+			var cids = await GetRelationIds(ParentCategoryId, category_children, ItemSource().CategoryChildrenLoader);
 			var cats = await GetCategories(cids);
 			var re = cats.AsQueryable<TCategory>().ToQueryResult(
 				pq => pq,
@@ -81,14 +89,14 @@ namespace SF.Biz.Products
 		}
 		public async Task<TCategory[]> GetCategories(long[] CategoryIds)
 		{
-			return await GetObjects<ICategoryCached, TCategory>(CategoryIds, categories, ItemSource.CategoryLoader);
+			return await GetObjects<ICategoryCached, TCategory>(CategoryIds, categories, ItemSource().CategoryLoader);
 		}
 		public async Task<long[]> GetCategoryIds(string Tag)
 		{
 			long[] ids;
 			if (!taggedCategories.TryGetValue(Tag, out ids))
 			{
-				ids = await ItemSource.TaggedCategoryLoader.Load(Tag);
+				ids = await ItemSource().TaggedCategoryLoader.Load(Tag);
 				taggedCategories.GetOrAdd(Tag, ids);
 			}
 			return ids;
@@ -151,8 +159,9 @@ namespace SF.Biz.Products
 		protected abstract TItem CreateItemResult(IItemCached Item, IProductCached Product, IProductContentCached Content);
 		public async Task<TItem[]> GetItems(long[] ItemIds)
 		{
-			var its=await GetObjects<IItemCached>(ItemIds, items, ItemSource.ItemLoader);
-			var ps = (await GetObjects<IProductCached>(its.Select(i => i.ProductId).ToArray(), products, ItemSource.ProductLoader)).ToDictionary(p => p.Id);
+			var itemSource = ItemSource();
+			var its=await GetObjects<IItemCached>(ItemIds, items, itemSource.ItemLoader);
+			var ps = (await GetObjects<IProductCached>(its.Select(i => i.ProductId).ToArray(), products, itemSource.ProductLoader)).ToDictionary(p => p.Id);
 			return its.Select(it =>
 			{
 				IProductCached p;
@@ -164,16 +173,17 @@ namespace SF.Biz.Products
 		}
 		public async Task<TItem[]> GetProducts(long[] ProductIds)
 		{
-			var ps = await GetObjects<IProductCached>(ProductIds, products, ItemSource.ProductLoader);
+			var ps = await GetObjects<IProductCached>(ProductIds, products, ItemSource().ProductLoader);
 			return ps.Select(p => CreateItemResult(null, p, null)).Where(p=>p!=null).ToArray();
 		}
 
 		async Task ItemCollect(long cid,HashSet<long> aids)
 		{
-			var cids = await GetRelationIds(cid, category_items, ItemSource.CategoryItemsLoader);
+			var itemSource = ItemSource();
+			var cids = await GetRelationIds(cid, category_items, itemSource.CategoryItemsLoader);
 			foreach (var id in cids)
 				aids.Add(id);
-			var ccats = await GetRelationIds(cid, category_children, ItemSource.CategoryChildrenLoader);
+			var ccats = await GetRelationIds(cid, category_children, itemSource.CategoryChildrenLoader);
 			foreach (var cat in ccats)
 				await ItemCollect(cat, aids);
 		}
@@ -261,7 +271,7 @@ namespace SF.Biz.Products
 			}
 			else
 			{
-				ids = await GetRelationIds(CategoryId, category_items, ItemSource.CategoryItemsLoader);
+				ids = await GetRelationIds(CategoryId, category_items, ItemSource().CategoryItemsLoader);
 			}
 			return ids;
 		}
@@ -315,7 +325,7 @@ namespace SF.Biz.Products
 			{
 				if (productContents.TryGetValue(Id, out detail))
 					return detail;
-				var re=await ItemSource.ProductContentLoader.Load(new long[] { Id });
+				var re=await ItemSource().ProductContentLoader.Load(new long[] { Id });
 				if (re.Length == 0)
 					return null;
 				detail = re[0];
@@ -325,10 +335,11 @@ namespace SF.Biz.Products
 		}
 		public async Task<TItem> GetItemDetail(long Id)
 		{
-			var its = await GetObjects<IItemCached>(new long[]{ Id}, items, ItemSource.ItemLoader);
+			var itemSource = ItemSource();
+			var its = await GetObjects<IItemCached>(new long[]{ Id}, items, itemSource.ItemLoader);
 			if (its.Length == 0) return default(TItem);
 
-			var ps = await GetObjects<IProductCached>(new long[] { its[0].ProductId }, products, ItemSource.ProductLoader);
+			var ps = await GetObjects<IProductCached>(new long[] { its[0].ProductId }, products, itemSource.ProductLoader);
 			if (ps.Length == 0) return default(TItem);
 
 			var content = await GetProductContent(ps[0].Id);
@@ -338,7 +349,7 @@ namespace SF.Biz.Products
 		}
 		public async Task<TItem> GetProductDetail(long Id)
 		{
-			var ps = await GetObjects<IProductCached>(new long[] { Id }, products, ItemSource.ProductLoader);
+			var ps = await GetObjects<IProductCached>(new long[] { Id }, products, ItemSource().ProductLoader);
 			if (ps.Length == 0) return default(TItem);
 
 			var content = await GetProductContent(Id);

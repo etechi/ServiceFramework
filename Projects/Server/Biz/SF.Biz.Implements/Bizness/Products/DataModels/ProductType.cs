@@ -8,7 +8,9 @@ using SF.Data;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
-
+	public class ProductType :
+		ProductType<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
+	{ }
 	[Table("BizProductType")]
     [Comment(GroupName = "产品服务", Name = "产品类型")]
     public class ProductType<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>:
@@ -26,6 +28,7 @@ namespace SF.Biz.Products.Entity.DataModels
     {
         [Key]
         [Display(Name="ID")]
+		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public long Id { get; set; }
 
 		[Index(IsUnique = true)]

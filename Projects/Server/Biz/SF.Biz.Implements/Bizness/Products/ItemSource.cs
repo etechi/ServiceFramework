@@ -8,11 +8,24 @@ using SF.Data;
 using SF.Core.ServiceManagement;
 using SF.Entities;
 using SF.Core;
-
+using SF.Core.Events;
+using SF.Core.ServiceManagement.Internals;
+using SF.Metadata;
 namespace SF.Biz.Products.Entity
 {
-	
-	public abstract class ItemSource<
+	public class ItemSource : 
+		ItemSource<
+			ItemSource,
+			ItemCached, ProductCached, ProductContentCached, CategoryCached,
+			DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec
+		>,
+		IItemSource
+	{
+		public ItemSource(IServiceScopeFactory ScopeFactory, [EntityIdent(typeof(CategoryInternal), null, 0, null)] long MainCategoryId, IEventSubscriber<ServiceInstanceChanged> ServiceInstanceChanged) : base(ScopeFactory, MainCategoryId, ServiceInstanceChanged)
+		{
+		}
+	}
+	public class ItemSource<
 		TItemSource,
 		TItemCached, TProductCached,TProductContentCached,TCategoryCached,
 		 TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec
@@ -38,7 +51,7 @@ namespace SF.Biz.Products.Entity
 		where TItem : DataModels.Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : DataModels.ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>
     {
-        public abstract int MainCategoryId { get; }
+        public  long MainCategoryId { get; }
 
 		static async Task<T> NewDataContext<T>(IServiceScopeFactory ScopeFactory,Func<IDataContext,Task<T>> Callback)
 		{
@@ -287,8 +300,15 @@ namespace SF.Biz.Products.Entity
 					ProductId = item.ProductId
 				};
 		}
-		public ItemSource(IServiceScopeFactory ScopeFactory)
+		public ItemSource(
+			IServiceScopeFactory ScopeFactory,
+			[EntityIdent(typeof(CategoryInternal))]
+			long MainCategoryId,
+			IEventSubscriber<ServiceInstanceChanged> ServiceInstanceChanged
+			)
 		{
+			this.MainCategoryId = MainCategoryId;
+
 			this.ScopeFactory = ScopeFactory;
 			this.CategoryChildrenLoader = new CategoryChildrenLoaderInstance((TItemSource)this);
 			this.CategoryItemsLoader = new CategoryItemsLoaderInstance((TItemSource)this);

@@ -3,7 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
 namespace SF.Biz.Products.Entity.DataModels
 {
-
+	public class ProductDetail :
+		ProductDetail<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
+	{ }
 	[Table("BizProductDetail")]
     [Comment(GroupName = "产品服务", Name = "产品详细")]
     public class ProductDetail<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>

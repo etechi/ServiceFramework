@@ -1,17 +1,23 @@
 using SF.Core.ServiceManagement.Internals;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+
 namespace SF.Core.ServiceManagement
 {
-	
+	interface IServiceRemovable
+	{
+		bool RemoveService(long ServiceInstanceId, Type[] ServiceTypes);
+	}
 	public abstract class ServiceScopeBase :
 		IDisposable,
-		IServiceProvider
+		IServiceProvider,
+		IServiceRemovable
 	{ 
 		public IServiceFactoryManager FactoryManager { get; }
 		public IServiceProvider ServiceProvider => this;
 
-		Dictionary<(Type, long), object> _Services;
+		System.Collections.Concurrent.ConcurrentDictionary<(Type, long), object> Services { get; } = new System.Collections.Concurrent.ConcurrentDictionary<(Type, long), object>();
 		
 
 		class CachedServices : HashSet<object>
@@ -31,48 +37,50 @@ namespace SF.Core.ServiceManagement
 		}
 		protected abstract CacheType GetCacheType(IServiceFactory Factory);
 
-		void TryAddCache((Type, long) key, object CurEntry, object Service)
+		void TryAddCache((Type, long) key, object Service)
 		{
 			if (Service == null)
 				return;
-			if (CurEntry == Service)
-				return;
 			if (Service == this)
 				return;
-			if (CurEntry == null)
-				CurEntry = Service;
-			else
-			{
-				var Services = CurEntry as CachedServices;
-				if (Services == null)
-					CurEntry = new CachedServices { CurEntry, Service };
-				else
+
+			Services.AddOrUpdate(
+				key,
+				(k) => Service,
+				(k, s) =>
 				{
-					Services.Add(Service);
-					return;
-				}
-			}
-			_Services[key] = CurEntry;
+					if (s == Service)
+						return s;
+					var Services = s as CachedServices;
+					if (Services == null)
+						s = new CachedServices { s, Service };
+					else
+					{
+						Services.Add(Service);
+						s = Services;
+					}
+					return s;
+				});
 		}
 
 		public virtual void Dispose()
 		{
-			if (_Services != null)
-				foreach (var v in _Services.Values)
+			foreach (var v in Services.Values)
+			{
+				var p = v as IDisposable;
+				if (p != null)
 				{
-					var p = v as IDisposable;
-					if (p != null)
+					try {
+						p.Dispose();
+					}
+					catch
 					{
-						try {
-							p.Dispose();
-						}
-						catch
-						{
 
-						}
 					}
 				}
+			}
 		}
+
 		internal virtual object GetService(IServiceFactory factory,Type ServiceType,IServiceResolver ServiceResolver)
 		{
 			if (factory == null)
@@ -84,9 +92,7 @@ namespace SF.Core.ServiceManagement
 
 			var key = (ServiceType, factory.InstanceId);
 			object curEntiy = null;
-			if (_Services == null)
-				_Services = new Dictionary<(Type, long), object>();
-			else if (_Services.TryGetValue(key, out curEntiy))
+			if (Services.TryGetValue(key, out curEntiy))
 			{
 				if (cacheType == CacheType.CacheScoped)
 					return curEntiy;
@@ -95,9 +101,9 @@ namespace SF.Core.ServiceManagement
 			var service = factory.Create(ServiceResolver);
 
 			if (cacheType == CacheType.CacheScoped)
-				TryAddCache(key, curEntiy, service);
+				TryAddCache(key, service);
 			else
-				TryAddCache(key, curEntiy, service as IDisposable);
+				TryAddCache(key, service as IDisposable);
 			return service;
 		}
 		
@@ -110,6 +116,30 @@ namespace SF.Core.ServiceManagement
 				resolver.ResolveServiceByType(null, serviceType,null);
 		}
 		
+		public virtual bool RemoveService(long ServiceInstanceId,Type[] ServiceTypes)
+		{
+			foreach (var type in ServiceTypes)
+			{
+				if (Services.TryRemove((type,ServiceInstanceId), out var svc))
+				{
+					var p = svc as IDisposable;
+					if (p != null)
+					{
+						try
+						{
+							p.Dispose();
+						}
+						catch
+						{
+
+						}
+					}
+					return true;
+				}
+			}
+			
+			return false;
+		}
 	}
 
 }

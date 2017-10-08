@@ -272,6 +272,11 @@ namespace SF.Core.ServiceManagement.Management
 			public IServiceDeclaration ServiceDeclaration { get; set; }
 
 			public IServiceImplement ServiceImplement { get; set; }
+
+			public IDisposable OnSettingChanged<T>(Action<T> Callback)
+			{
+				return Disposable.Empty;
+			}
 		}
 		protected override async Task OnRemoveModel(IModifyContext ctx)
 		{

@@ -8,6 +8,14 @@ using SF.Data;
 
 namespace SF.Biz.Products.Entity
 {
+	public class ProductManager :
+		ProductManager<ProductInternal, ProductEditable, DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec>,
+		IProductManager
+	{
+		public ProductManager(IDataSetEntityManager<ProductEditable, DataModels.Product> EntityManager, Lazy<IItemNotifier> ItemNotifier) : base(EntityManager, ItemNotifier)
+		{
+		}
+	}
 	public class ProductManager<TInternal, TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec> :
 		ModidifiableEntityManager<ObjectKey<long>, TInternal, ProductInternalQueryArgument, TEditable, TProduct>,
 		IProductManager<TInternal, TEditable>
@@ -235,10 +243,11 @@ namespace SF.Biz.Products.Entity
 			}
 		}
 
-		protected override Task OnNewModel(IModifyContext ctx)
+		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
+			Model.Id = await IdentGenerator.GenerateAsync(GetType().FullName);
 			Model.Detail = new TProductDetail();
 			Model.ObjectState = EntityLogicState.Disabled;
 			Model.CreatedTime = Now;
@@ -266,7 +275,6 @@ namespace SF.Biz.Products.Entity
                 },
 				PostActionType.AfterCommit
 				);
-            return Task.CompletedTask;
 		}
 		protected override IContextQueryable<TProduct> OnLoadChildObjectsForUpdate(ObjectKey<long> Id, IContextQueryable<TProduct> query)
 		{

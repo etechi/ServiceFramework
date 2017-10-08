@@ -52,6 +52,7 @@ namespace Hygou
 				.With(sc=>sc.AddLogService(ls))
 				.With((sc,envType)=>sc.AddSystemServices(EnvType))
 				.With((sc, envType) => sc.AddCommonServices(EnvType))
+				.With((sc, envType) => sc.AddBizServices(EnvType))
 				.With((sc, envType) => sc.AddPromotionServices(EnvType))
 				.With((sc,envType)=> ConfigServices(sc,envType))
 				.OnEnvType(e => e != EnvironmentType.Utils, (sp)=>

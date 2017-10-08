@@ -27,7 +27,7 @@ namespace SF.Biz.Products
 	}
 	public interface IItemSource
 	{
-        int MainCategoryId { get;}
+        long MainCategoryId { get;}
 		IBatchLoader<IItemCached> ItemLoader { get; }
 		IBatchLoader<ICategoryCached> CategoryLoader { get; }
 		IBatchLoader<IProductCached> ProductLoader { get; }

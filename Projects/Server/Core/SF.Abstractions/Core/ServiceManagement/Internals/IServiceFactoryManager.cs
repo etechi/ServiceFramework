@@ -26,7 +26,7 @@ namespace SF.Core.ServiceManagement.Internals
 			string Name
 			);
 
-		void SubscribeEvents(IServiceProvider Provider);
+		void BindServiceProvider(IServiceProvider Provider);
 
 	}
 

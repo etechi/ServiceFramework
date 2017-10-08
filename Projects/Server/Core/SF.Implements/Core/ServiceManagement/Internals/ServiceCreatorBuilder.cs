@@ -13,7 +13,11 @@ namespace SF.Core.ServiceManagement.Internals
 		IServiceInstanceDescriptor ServiceInstanceDescriptor,
 		IServiceCreateParameterTemplate ParameterTemplate
 		);
-
+	delegate KeyValuePair<string, object>[] ServiceConfigLoader(
+		IServiceResolver ServiceResolver,
+		IServiceInstanceDescriptor ServiceInstanceDescriptor,
+		IServiceCreateParameterTemplate ParameterTemplate
+		);
 	class ServiceCreatorBuilder
 	{
 		static ParameterExpression ParamServiceResolver = Expression.Parameter(typeof(IServiceResolver), "sr");
@@ -650,7 +654,7 @@ namespace SF.Core.ServiceManagement.Internals
 							pi.ParameterType
 							);
 
-					var src = Expression.Parameter(pi.ParameterType);
+					var src = Expression.Variable(pi.ParameterType);
 					return Expression.Block(
 						new[] { src },
 						Expression.Assign(
@@ -676,21 +680,39 @@ namespace SF.Core.ServiceManagement.Internals
 						);
 				}
 			}
-			public ServiceCreator Build()
+			public (ServiceCreator, ServiceConfigLoader) Build()
 			{ 
 				var args = constructorInfo
 					.GetParameters()
 					.Select((pi, i) => BuildParamExpression(pi, i))
 					.ToArray();
-				return Expression.Lambda<ServiceCreator>(
-					Expression.New(constructorInfo, args),
-					ParamServiceResolver,
-					ParamServiceInstanceDescriptor,
-					ParamServiceCreateParameterProvider
-					).Compile();
+				var pairConstructor = typeof(KeyValuePair<string, object>).GetConstructor(new[] { typeof(string), typeof(object) });
+				return (
+					Expression.Lambda<ServiceCreator>(
+						Expression.New(constructorInfo, args),
+						ParamServiceResolver,
+						ParamServiceInstanceDescriptor,
+						ParamServiceCreateParameterProvider
+						).Compile(),
+					Expression.Lambda<ServiceConfigLoader>(
+						Expression.NewArrayInit(
+							typeof(KeyValuePair<string, object>),
+							constructorInfo.GetParameters().Zip(args, (p, a) =>
+								 Expression.New(
+									 pairConstructor,
+									 Expression.Constant(p.Name),
+									 Expression.Convert(a, typeof(object))
+									 )
+								)
+							),
+						ParamServiceResolver,
+						ParamServiceInstanceDescriptor,
+						ParamServiceCreateParameterProvider
+						).Compile()
+					);
 			}
 		}
-		public static ServiceCreator Build(
+		public static (ServiceCreator creator, ServiceConfigLoader loader) Build(
 			IServiceMetadata ServiceMetadata,
 			Type ServiceType,
 			Type ImplementType,

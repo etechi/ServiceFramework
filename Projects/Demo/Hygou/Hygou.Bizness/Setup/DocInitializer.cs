@@ -44,7 +44,7 @@ namespace Hygou.Setup
                 CatManager,
                 //"pc-help",
                 null,
-				FilePathResolver.Resolve($"root://StaticResources/文档/PC/帮助")
+				FilePathResolver.Resolve($"root://StaticResources/帮助文档/PC文档")
                 );
 			await sim.UpdateSetting<HygouSetting>(
 			   ScopeId,
@@ -130,21 +130,25 @@ namespace Hygou.Setup
 
 			
 			await ServiceProvider.Invoke(
-				(IFilePathResolver frr, IDocumentManager dm, IDocumentCategoryManager cm) => MobileHelpEnsure(frr,dm,cm),
+				((IFilePathResolver frr, IDocumentManager dm, IDocumentCategoryManager cm) arg) => MobileHelpEnsure(arg.frr, arg.dm, arg.cm),
 				mHelp
 				);
 
 			await ServiceProvider.Invoke(
-				(IFilePathResolver frr, IDocumentManager dm, IDocumentCategoryManager cm) => PCSysEnsure(frr, dm, cm),
+				((IFilePathResolver frr, IDocumentManager dm, IDocumentCategoryManager cm) arg)=>
+				{
+					var rre = PCSysEnsure(arg.frr, arg.dm, arg.cm);
+					return rre;
+				},
 				mHelp
 				);
 
 			var re=await ServiceProvider.Invoke(
-				(IContentManager ContentManager, 
+				((IContentManager ContentManager, 
 				IFilePathResolver frr, 
 				IDocumentManager dm, 
 				IDocumentCategoryManager cm
-				) => PCHelpEnsure(sim,ScopeId,ContentManager, frr, dm, cm),
+				) arg) => PCHelpEnsure(sim,ScopeId,arg.ContentManager, arg.frr, arg.dm, arg.cm),
 				pcHelp
 				);
 			//await scope.MobileDocEnsureNew();

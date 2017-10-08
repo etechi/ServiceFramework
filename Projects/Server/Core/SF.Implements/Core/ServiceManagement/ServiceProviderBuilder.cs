@@ -144,61 +144,11 @@ namespace SF.Core.ServiceManagement
 			return NewEnumerableReal<I>(sp, sp.Resolver().CurrentServiceId);
 		}
 
-
-		static WithNewScope<I1, I2, I3, I4, I5, I6, I7, I8, R> CreateWithNewScope8<I1, I2, I3, I4, I5, I6, I7, I8, R>(IServiceProvider ServiceProvider) 
-		{
-			return (callback)=>
-				ServiceProvider.WithScope(async sp =>
-					await sp.Invoke(callback)
-				);
-		}
-		static WithNewScope<I1, I2, I3, I4, I5, I6, I7, R> CreateWithNewScope7<I1, I2, I3, I4, I5, I6, I7, R>(IServiceProvider ServiceProvider)
+		static WithNewScope<A, R> CreateWithNewScope<A, R>(IServiceProvider ServiceProvider)
 		{
 			return (callback) =>
 				ServiceProvider.WithScope(async sp =>
-					await sp.Invoke(callback)
-				);
-		}
-		static WithNewScope<I1, I2, I3, I4, I5, I6, R> CreateWithNewScope6<I1, I2, I3, I4, I5, I6, R>(IServiceProvider ServiceProvider)
-		{
-			return (callback) =>
-				ServiceProvider.WithScope(async sp =>
-					await sp.Invoke(callback)
-				);
-		}
-		static WithNewScope<I1, I2, I3, I4, I5, R> CreateWithNewScope5<I1, I2, I3, I4, I5, R>(IServiceProvider ServiceProvider)
-		{
-			return (callback) =>
-				ServiceProvider.WithScope(async sp =>
-					await sp.Invoke(callback)
-				);
-		}
-		static WithNewScope<I1, I2, I3, I4, R> CreateWithNewScope4<I1, I2, I3, I4, R>(IServiceProvider ServiceProvider)
-		{
-			return (callback) =>
-				ServiceProvider.WithScope(async sp =>
-					await sp.Invoke(callback)
-				);
-		}
-		static WithNewScope<I1, I2, I3, R> CreateWithNewScope3<I1, I2, I3, R>(IServiceProvider ServiceProvider)
-		{
-			return (callback) =>
-				ServiceProvider.WithScope(async sp =>
-					await sp.Invoke(callback)
-				);
-		}
-		static WithNewScope<I1, I2, R> CreateWithNewScope2<I1, I2, R>(IServiceProvider ServiceProvider)
-		{
-			return (callback) =>
-				ServiceProvider.WithScope(async sp =>
-					await sp.Invoke(callback)
-				);
-		}
-		static WithNewScope<I1, R> CreateWithNewScope1<I1, R>(IServiceProvider ServiceProvider)
-		{
-			return (callback) =>
-				ServiceProvider.WithScope(async sp =>
-					await sp.Invoke(callback)
+					await sp.Invoke<A,Task<R>>(callback,null)
 				);
 		}
 
@@ -229,14 +179,7 @@ namespace SF.Core.ServiceManagement
 			Services.AddTransient(typeof(TypedInstanceResolver<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewTypedInstanceResolver), typeof(IServiceProvider)));
 			Services.AddTransient(typeof(NamedServiceResolver<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewNamedInstanceResolver), typeof(IServiceProvider)));
 
-			Services.AddTransient(typeof(WithNewScope<,,,,,,,,>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateWithNewScope8), typeof(IServiceProvider)));
-			Services.AddTransient(typeof(WithNewScope<,,,,,,,>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateWithNewScope7), typeof(IServiceProvider)));
-			Services.AddTransient(typeof(WithNewScope<,,,,,,>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateWithNewScope6), typeof(IServiceProvider)));
-			Services.AddTransient(typeof(WithNewScope<,,,,,>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateWithNewScope5), typeof(IServiceProvider)));
-			Services.AddTransient(typeof(WithNewScope<,,,,>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateWithNewScope4), typeof(IServiceProvider)));
-			Services.AddTransient(typeof(WithNewScope<,,,>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateWithNewScope3), typeof(IServiceProvider)));
-			Services.AddTransient(typeof(WithNewScope<,,>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateWithNewScope2), typeof(IServiceProvider)));
-			Services.AddTransient(typeof(WithNewScope<,>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateWithNewScope1), typeof(IServiceProvider)));
+			Services.AddTransient(typeof(WithNewScope<,>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateWithNewScope), typeof(IServiceProvider)));
 
 
 			meta = OnCreateServcieMetadata(Services);
@@ -247,7 +190,7 @@ namespace SF.Core.ServiceManagement
 				);
 			provider = OnCreateServiceProvider(manager);
 			scopeFactory = new ServiceScopeFactory(provider, manager);
-			manager.SubscribeEvents(provider);
+			manager.BindServiceProvider(provider);
 			return provider;
 		}
 	}

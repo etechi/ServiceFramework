@@ -5,7 +5,9 @@ using SF.Data;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
-
+	public class PropertyItem :
+		PropertyItem<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
+	{ }
 	[Table("BizProductPropertyItem")]
     [Comment(GroupName = "产品服务", Name = "产品属性项")]
     public class PropertyItem<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>

@@ -332,15 +332,17 @@ namespace SF.Core.ServiceManagement.Internals
 			}
 		}
 
-		public void NotifyChanged( long Id)
+		public Type[] TryRemoveEntry( long Id)
 		{
 			var se = GetManagedServiceEntry(null, Id, false);
 			if (se == null)
-				return;
-			_ManagedServiceCache?.Remove(Id.ToString());
+				return null;
+			if (_ManagedServiceCache?.Remove(Id.ToString())??false)
+				return se.Factories.Keys.ToArray();
+			return null;
 		}
 
-		public void NotifyInternalServiceChanged(long? ScopeId, string ServiceType)
+		public void TryRemoveInternalEntries(long? ScopeId, string ServiceType)
 		{
 			if (ScopeId == null)
 				TopScopeServices.TryRemove(ServiceType, out var ids);

@@ -7,8 +7,10 @@ using SF.Data;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
-
-	[Table("app_biz_product_spec")]
+	public class ProductSpec :
+		ProductSpec<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
+	{ }
+	[Table("BizProductSpec")]
     [Comment(GroupName = "产品服务", Name = "产品规格")]
     public class ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>:
 		IEntityWithId<long>

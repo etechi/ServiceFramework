@@ -2,27 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Biz.Products.Entity.DataModels;
 using System.Linq.Expressions;
 using SF.Entities;
 using SF.Data;
+using SF.Biz.Products.Entity.DataModels;
 
 namespace SF.Biz.Products.Entity
 {
+	public class CategoryManager :
+		CategoryManager<CategoryInternal, DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec>,
+		ICategoryManager
+	{
+		public CategoryManager(IDataSetEntityManager<CategoryInternal, Category> EntityManager, IItemNotifier Notifier) : base(EntityManager, Notifier)
+		{
+		}
+	}
 	public class CategoryManager<TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem,TItem,TProductSpec> :
 		ModidifiableEntityManager<ObjectKey<long>,TEditable, CategoryQueryArgument, TEditable, TCategory>,
 		ICategoryManager<TEditable>
 		where TEditable : CategoryInternal,  new()
-		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
-		where TProductDetail : ProductDetail<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
-		where TProductType : ProductType<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
-		where TCategory : Category<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>,new()
-		where TCategoryItem : CategoryItem<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>,new()
-		where TPropertyScope : PropertyScope<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
-		where TProperty : Property<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
-		where TPropertyItem : PropertyItem<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
-		where TItem : Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
-        where TProductSpec:ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>
+		where TProduct : DataModels.Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
+		where TProductDetail : DataModels.ProductDetail<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
+		where TProductType : DataModels.ProductType<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
+		where TCategory : DataModels.Category<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>,new()
+		where TCategoryItem : DataModels.CategoryItem<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>,new()
+		where TPropertyScope : DataModels.PropertyScope<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
+		where TProperty : DataModels.Property<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
+		where TPropertyItem : DataModels.PropertyItem<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
+		where TItem : DataModels.Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
+        where TProductSpec: DataModels.ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>
     {
 		public IItemNotifier Notifier { get; }
 		public CategoryManager(IDataSetEntityManager<TEditable,TCategory> EntityManager, IItemNotifier Notifier) :
@@ -127,6 +135,7 @@ namespace SF.Biz.Products.Entity
 				{
 					var n = new TCategory
 					{
+						Id = IdentGenerator.GenerateAsync(typeof(TCategory).FullName).Result,
 						OwnerUserId = Parent.OwnerUserId,
 						CreatedTime = time,
 						Parent = p,
@@ -183,7 +192,12 @@ namespace SF.Biz.Products.Entity
 				cur_items,
 				Items.Select((i, idx) => new { order = idx, id = i }),
 				(o, e) => o.ItemId.Equals(e.id),
-				n => new TCategoryItem { CategoryId=Category.Id,ItemId=n.id,Order=n.order},
+				n => new TCategoryItem {
+					
+					CategoryId =Category.Id,
+					ItemId =n.id,
+					Order =n.order
+				},
 				(o, n) =>
 				{
 					o.Order = n.order;
@@ -281,12 +295,11 @@ namespace SF.Biz.Products.Entity
 
 			Model.OwnerUserId = obj.SellerId;
 		}
-		protected override Task OnNewModel(IModifyContext ctx)
+		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
 			Model.CreatedTime = EntityManager.Now;
-			
-			return Task.CompletedTask;
+			Model.Id = await IdentGenerator.GenerateAsync(GetType().FullName);
 		}
 		protected override Task<TCategory> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TCategory> ctx)
 		{

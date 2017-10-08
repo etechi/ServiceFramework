@@ -7,6 +7,16 @@ using SF.Data;
 
 namespace SF.Biz.Products.Entity
 {
+	public class ItemManager :
+		ItemManager<ItemInternal, ItemEditable, DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec>,
+		IItemManager
+	{
+		public ItemManager(IDataSetEntityManager<ItemEditable, DataModels.Item> EntityManager, Lazy<IItemNotifier> ItemNotifier) : base(EntityManager, ItemNotifier)
+		{
+		}
+	}
+
+
 	public class ItemManager<TInternal, TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem,TItem,TProductSpec> :
 		ModidifiableEntityManager<ObjectKey<long>, TInternal,ItemQueryArgument, TEditable,TItem>,
 		IItemManager<TInternal,TEditable>
@@ -83,6 +93,7 @@ namespace SF.Biz.Products.Entity
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
+			Model.Id = await IdentGenerator.GenerateAsync(GetType().FullName);
 			Model.CreatedTime = Now;
 			Model.SellerId = obj.SellerId;
 			Model.ProductId = obj.ProductId;
