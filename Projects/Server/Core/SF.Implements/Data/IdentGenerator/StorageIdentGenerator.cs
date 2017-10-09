@@ -4,10 +4,22 @@ using System.Collections.Concurrent;
 using SF.Data;
 using System.Threading;
 using SF.Metadata;
+using SF.Data.IdentGenerator.DataModels;
 
 namespace SF.Data.IdentGenerator
 {
-	
+	[Comment("默认对象标识生成器")]
+	public class StorageIdentGenerator<T> : StorageIdentGenerator,IIdentGenerator<T>
+	{
+		public StorageIdentGenerator(IDataSet<IdentSeed> IdentSeedSet) : base(IdentSeedSet)
+		{
+		}
+
+		public Task<long> GenerateAsync(int Section)
+		{
+			return GenerateAsync(typeof(T).FullName, Section);
+		}
+	}
 	[Comment("默认对象标识生成器")]
 	public class StorageIdentGenerator : IIdentGenerator
 	{
@@ -56,6 +68,7 @@ namespace SF.Data.IdentGenerator
 				);
 			return re.NextValue - CountPerBatch;
 		}
+		
 		public async Task<long> GenerateAsync(string Type,int Section)
 		{
 			var cacheKey = Type;

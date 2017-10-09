@@ -20,7 +20,7 @@ namespace SF.Entities
 		ITimeService _TimeService;
 		IEntityReferenceResolver _DataEntityResolver;
 		ILogger<TDataModel> _Logger;
-		IIdentGenerator _IdentGenerator;
+		IIdentGenerator<TDataModel> _IdentGenerator;
 		IEventEmitter _EventEmitter;
 		public IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 		DateTime _Now;
@@ -50,7 +50,8 @@ namespace SF.Entities
 			}
 		}
 		public IDataSet<TDataModel> DataSet => Resolve(ref _DataSet);
-		public IIdentGenerator IdentGenerator => Resolve(ref _IdentGenerator);
+		public IIdentGenerator<TDataModel> IdentGenerator => Resolve(ref _IdentGenerator);
+		IIdentGenerator IEntityManager.IdentGenerator => Resolve(ref _IdentGenerator);
 		public IEntityReferenceResolver DataEntityResolver => Resolve(ref _DataEntityResolver);
 		public ITimeService TimeService => Resolve(ref _TimeService);
 		public ILogger Logger => Resolve(ref _Logger);

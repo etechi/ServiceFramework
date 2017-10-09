@@ -1,4 +1,8 @@
 ﻿using SF.Core.ServiceManagement.Management;
+namespace SF
+{
+	class IdentScope { }
+}
 
 namespace SF.Core.ServiceManagement
 {
@@ -10,6 +14,7 @@ namespace SF.Core.ServiceManagement
 			)
 		{
 			sc.AddDataModules<SF.Data.IdentGenerator.DataModels.IdentSeed>(TablePrefix);
+			sc.Add(typeof(SF.Data.IIdentGenerator<>),typeof(SF.Data.IdentGenerator.StorageIdentGenerator<>),ServiceImplementLifetime.Scoped);
 			sc.AddScoped<SF.Data.IIdentGenerator, SF.Data.IdentGenerator.StorageIdentGenerator>();
 			return sc;
 		}

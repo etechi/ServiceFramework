@@ -42,7 +42,7 @@ namespace SF.Management.BizAdmins.Entity
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var m = ctx.Model;
-			m.Id = await IdentGenerator.GenerateAsync("系统管理员",0);
+			m.Id = await IdentGenerator.GenerateAsync();
 			m.CreatedTime = Now;
 			m.OwnerId = m.Id;
 			await base.OnNewModel(ctx);

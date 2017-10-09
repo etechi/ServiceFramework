@@ -35,6 +35,7 @@ namespace SF.Entities
 		protected new IReadOnlyDataSetEntityManager<TModel> EntityManager => (IReadOnlyDataSetEntityManager<TModel>)base.EntityManager;
 		public IDataSet<TModel> DataSet => EntityManager.DataSet;
 		public IDataContext DataContext => DataSet.Context;
+		public new IIdentGenerator<TModel> IdentGenerator => EntityManager.IdentGenerator;
 
 		public BaseDataSetEntityManager(IReadOnlyDataSetEntityManager<TModel> EntityManager):base(EntityManager)
 		{

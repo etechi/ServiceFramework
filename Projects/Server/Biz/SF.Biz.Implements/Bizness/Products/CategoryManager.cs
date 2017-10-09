@@ -135,7 +135,7 @@ namespace SF.Biz.Products.Entity
 				{
 					var n = new TCategory
 					{
-						Id = IdentGenerator.GenerateAsync(typeof(TCategory).FullName).Result,
+						Id = IdentGenerator.GenerateAsync(GetType().FullName).Result,
 						OwnerUserId = Parent.OwnerUserId,
 						CreatedTime = time,
 						Parent = p,
@@ -153,7 +153,7 @@ namespace SF.Biz.Products.Entity
 				);
 
 			foreach(var c in Removed)
-				await DataSet.Context.Set< TCategoryItem>().RemoveRangeAsync(i => i.CategoryId == c.Id);
+				await DataSet.Context.Set<TCategoryItem>().RemoveRangeAsync(i => i.CategoryId == c.Id);
 			await DataSet.Context.SaveChangesAsync();
 
 			foreach (var c in Removed)
@@ -278,7 +278,7 @@ namespace SF.Biz.Products.Entity
 				},
 				PostActionType.AfterCommit);
 			}
-			if(Model.Id!=0)
+			if(ctx.Action==ModifyAction.Update)
 				EntityManager.AddPostAction(
 					() =>Notifier.NotifyCategoryChanged(Model.Id),
 					PostActionType.AfterCommit

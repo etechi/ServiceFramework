@@ -424,7 +424,7 @@ namespace SF.Data
 					Query(set.AsQueryable(ReadOnly), i).ToArrayAsync()
 				);
 
-		static M EnumTree<M,E,K>(
+		static M GetOrCreateTreeNode<M,E,K>(
 			this IDataSet<M> set,
 			Dictionary<K,M> exists,
 			M parent,
@@ -440,33 +440,44 @@ namespace SF.Data
 		{
 			M exist;
 			exists.TryGetValue(get_editable_ident(cur),out exist);
-			var new_children= get_children(cur)?.Where(e=>!exists.ContainsKey(get_editable_ident(e)))?.Select(chd=>
-				EnumTree<M, E, K>(
-					set,
-					exists,
-					exist,
-					chd,
-					get_editable_ident,
-					new_item,
-					updater,
-					get_children,
-					results
+
+			var all_children = get_children(cur)?.ToArray();
+
+			//收集节点下的新子节点
+			var new_children= all_children?
+				.Where(e=>!exists.ContainsKey(get_editable_ident(e)))?  //如果子节点是新节点，任然成立
+				.Select(chd=>
+					GetOrCreateTreeNode<M, E, K>(
+						set,
+						exists,
+						exist,
+						chd,
+						get_editable_ident,
+						new_item,
+						updater,
+						get_children,
+						results
 					)).ToArray();
-			if (exist == null)
+
+			if (exist == null)	//旧节点不存在，新建一个
 			{
 				exist = new_item(cur, parent, new_children);
 			}
 			else
 			{
+				//旧节点存在，需要将新子节点加入到数据库中
 				if(new_children!=null)
 					foreach (var nc in new_children)
 						set.Add(nc);
 				updater(exist, cur);
 			}
-			var exists_children = get_children(cur)?.Where(e => exists.ContainsKey(get_editable_ident(e)));
-			if(exists_children!=null)
+
+			//收集已存在的子节点
+			var exists_children = all_children?.Where(e => exists.ContainsKey(get_editable_ident(e)));
+			if (exists_children != null)
 				foreach (var chd in exists_children)
-					EnumTree<M, E, K>(
+				{
+					var e = GetOrCreateTreeNode<M, E, K>(
 						set,
 						exists,
 						exist,
@@ -477,6 +488,8 @@ namespace SF.Data
 						get_children,
 						results
 						);
+					set.Update(e);
+				}
 			results.Add(exist);
 			return exist;
 		}
@@ -511,11 +524,24 @@ namespace SF.Data
 			}
 
 			var results = new List<M>();
-			foreach (var c in new_items.Select(c => EnumTree(set, org_item_dict, null, c, get_editable_ident, new_item, updater, get_children, results)))
+			foreach (var c in new_items.Select(ic => GetOrCreateTreeNode(
+					set, 
+					org_item_dict, 
+					null, 
+					ic, 
+					get_editable_ident, 
+					new_item, 
+					updater, 
+					get_children, 
+					results
+					)))
 			{
+				//新节点需要加入到数据集中
 				var cid = get_model_ident(c);
 				if (!org_item_dict.ContainsKey(cid))
 					set.Add(c);
+				else
+					set.Update(c);
 			}
 
 

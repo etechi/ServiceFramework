@@ -74,6 +74,7 @@ namespace SF.Entities
 	public interface IReadOnlyDataSetEntityManager<TModel> : IDataSetEntityManager
 		where TModel : class
 	{
+		new IIdentGenerator<TModel> IdentGenerator { get; }
 		new IDataSet<TModel> DataSet { get; }
 	}
 	public interface IDataSetEntityManager<TEditable,TModel> : 

@@ -86,7 +86,7 @@ namespace SF.Management.MenuServices.Entity
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var m = ctx.Model;
-			m.Id = await IdentGenerator.GenerateAsync("系统菜单",0);
+			m.Id = await IdentGenerator.GenerateAsync();
 			m.Create(Now);
 			await base.OnNewModel(ctx);
 		}
