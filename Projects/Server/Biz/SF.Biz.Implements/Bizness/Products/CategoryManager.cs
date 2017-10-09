@@ -124,23 +124,27 @@ namespace SF.Biz.Products.Entity
 			var time = Now;
 			var Removed = new List<TCategory>();
 			var Updated = new List<long>();
+
+			foreach (var n in ADT.Tree.AsEnumerable(Items, ii => ii.Children).Where(n => n.Id == 0))
+				n.Id = await IdentGenerator.GenerateAsync();
+
 			var re= DataSet.MergeTree(
+				Parent,
 				org_items,
 				Items,
 				m => m.Id,
 				e => e.Id,
 				e => e.ParentId ?? 0,
 				e => e.Children?.Cast<TEditable>(),
-				(e, p,cs) =>
+				(e, p) =>
 				{
 					var n = new TCategory
 					{
-						Id = IdentGenerator.GenerateAsync(GetType().FullName).Result,
+						Id=e.Id,
 						OwnerUserId = Parent.OwnerUserId,
 						CreatedTime = time,
-						Parent = p,
-						Children=cs
 					};
+					e.ParentId = p?.Id;
 					OnUpdateModel(n, e , time);
 					return n;
 				},
@@ -153,20 +157,23 @@ namespace SF.Biz.Products.Entity
 				);
 
 			foreach(var c in Removed)
-				await DataSet.Context.Set<TCategoryItem>().RemoveRangeAsync(i => i.CategoryId == c.Id);
-			await DataSet.Context.SaveChangesAsync();
-
-			foreach (var c in Removed)
+				await DataSet.Context.Set< TCategoryItem>().RemoveRangeAsync(i => i.CategoryId == c.Id);
+			EntityManager.AddPostAction(() =>
 			{
-				Notifier.NotifyCategoryChanged(c.Id);
-				Notifier.NotifyCategoryChildrenChanged(c.Id);
-				Notifier.NotifyCategoryItemsChanged(c.Id);
-			}
-			foreach (var id in Updated)
-			{
-				Notifier.NotifyCategoryChanged(id);
-				Notifier.NotifyCategoryChildrenChanged(id);
-			}
+				foreach (var c in Removed)
+				{
+					Notifier.NotifyCategoryChanged(c.Id);
+					Notifier.NotifyCategoryChildrenChanged(c.Id);
+					Notifier.NotifyCategoryItemsChanged(c.Id);
+				}
+				foreach (var id in Updated)
+				{
+					Notifier.NotifyCategoryChanged(id);
+					Notifier.NotifyCategoryChildrenChanged(id);
+				}
+			},
+			PostActionType.AfterCommit
+			);
 			//return BatchMapModelToEditable(re.AsQueryable(DataSet.Context.Provider)).ToArray();
 		}
         public async Task<long[]> LoadItems(long CategoryId)
@@ -278,7 +285,7 @@ namespace SF.Biz.Products.Entity
 				},
 				PostActionType.AfterCommit);
 			}
-			if(ctx.Action==ModifyAction.Update)
+			if(Model.Id!=0)
 				EntityManager.AddPostAction(
 					() =>Notifier.NotifyCategoryChanged(Model.Id),
 					PostActionType.AfterCommit

@@ -430,7 +430,7 @@ namespace SF.Data
 			M parent,
 			E cur,
 			Func<E,K> get_editable_ident,
-			Func<E, M, M[], M> new_item,
+			Func<E, M, M> new_item, //新节点在子节点创建前调用
 			Action<M, E> updater,
 			Func<E, IEnumerable<E>> get_children,
 			List<M> results
@@ -438,10 +438,11 @@ namespace SF.Data
 			where M : class
 			where K : IEquatable<K>
 		{
-			M exist;
-			exists.TryGetValue(get_editable_ident(cur),out exist);
-
+			var isExistNode=exists.TryGetValue(get_editable_ident(cur),out var model);
+			
 			var all_children = get_children(cur)?.ToArray();
+			if (!isExistNode)
+				model = new_item(cur, parent);
 
 			//收集节点下的新子节点
 			var new_children= all_children?
@@ -450,7 +451,7 @@ namespace SF.Data
 					GetOrCreateTreeNode<M, E, K>(
 						set,
 						exists,
-						exist,
+						model,
 						chd,
 						get_editable_ident,
 						new_item,
@@ -459,17 +460,13 @@ namespace SF.Data
 						results
 					)).ToArray();
 
-			if (exist == null)	//旧节点不存在，新建一个
-			{
-				exist = new_item(cur, parent, new_children);
-			}
-			else
+			if (isExistNode)    //旧节点不存在，新建一个
 			{
 				//旧节点存在，需要将新子节点加入到数据库中
-				if(new_children!=null)
+				if (new_children != null)
 					foreach (var nc in new_children)
 						set.Add(nc);
-				updater(exist, cur);
+				updater(model, cur);
 			}
 
 			//收集已存在的子节点
@@ -480,7 +477,7 @@ namespace SF.Data
 					var e = GetOrCreateTreeNode<M, E, K>(
 						set,
 						exists,
-						exist,
+						model,
 						chd,
 						get_editable_ident,
 						new_item,
@@ -490,18 +487,19 @@ namespace SF.Data
 						);
 					set.Update(e);
 				}
-			results.Add(exist);
-			return exist;
+			results.Add(model);
+			return model;
 		}
 		public static List<M> MergeTree<M, E, K>(
 			this IDataSet<M> set,
+			M parent, //当前结点
 			IEnumerable<M> org_items,	//旧节点，包含整颗树的节点
 			IEnumerable<E> new_items,	//新节点，只包含树的顶层节点
 			Func<M, K> get_model_ident,
 			Func<E, K> get_editable_ident,
 			Func<E, K> get_parent_ident,
-			Func<E, IEnumerable<E>> get_children,	//获取新树节点的子节点
-			Func<E, M, M[], M> new_item,			//一般需要设置新节点的父节点 n.parent=p
+			Func<E, IEnumerable<E>> get_children,   //获取新树节点的子节点
+			Func<E, M, M> new_item, //新节点在子节点创建前调用，必须
 			Action<M, E> updater = null,
 			Action<M> remover = null
 			)
@@ -523,13 +521,14 @@ namespace SF.Data
 				set.Remove(it);
 			}
 
+
 			var results = new List<M>();
 			foreach (var c in new_items.Select(ic => GetOrCreateTreeNode(
 					set, 
-					org_item_dict, 
-					null, 
+					org_item_dict,
+					parent, 
 					ic, 
-					get_editable_ident, 
+					get_editable_ident,
 					new_item, 
 					updater, 
 					get_children, 

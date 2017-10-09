@@ -103,29 +103,27 @@ namespace SF.Management.MenuServices.Entity
 			m.Update(e, time);
 
 			var items = await MenuItemSet.Value.LoadListAsync(i => i.MenuId == m.Id);
-			var newIdents =await IdentGenerator.BatchGenerateAsync(
-				"系统菜单项",
-				ADT.Tree.AsEnumerable(e.Items,ii=>ii.Children).Count(i => i.Id == 0)
-				);
+			foreach (var n in ADT.Tree.AsEnumerable(e.Items, ii => ii.Children).Where(i => i.Id == 0))
+				n.Id = await IdentGenerator.GenerateAsync();
 
 			MenuItemSet.Value.MergeTree(
+				null,
 				items,
 				e.Items,
 				mi => mi.Id,
 				ei => ei.Id,
 				ei => ei.ParentId ?? 0,
 				ei => ei.Children,
-				(ei, pmi, chds) => {
+				(ei, pmi) => {
 					var mi = new TMenuItem();
-					mi.Id = newIdents.Dequeue();
+					mi.Id = ei.Id;
 					mi.Create(time);
 					mi.Update(ei, time);
 					mi.Action = ei.Action;
 					mi.ServiceId = ei.ServiceId;
 					mi.ActionArgument = ei.ActionArgument;
-					mi.ParentId = pmi?.Id;
 					mi.MenuId = m.Id;
-					mi.Children = chds;
+					if(pmi!=null) mi.ParentId = pmi.Id;
 					return mi;
 				},
 				(mi, ei) =>
