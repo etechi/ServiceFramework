@@ -46,10 +46,16 @@ namespace SF.Core.ServiceManagement
 			Services.AddTestServices();
 			Services.AddEntityTestServices();
 
+
+
 			Services.InitServices("系统服务", async (sp, sim, ParentId) =>
 			{
 				await sim.NewDataProtectorService().Ensure(sp, ParentId);
 				await sim.NewPasswordHasherService().Ensure(sp, ParentId);
+
+				await sim.NewSiteManager().Ensure(sp, ParentId);
+				await sim.NewSiteTemplateManager().Ensure(sp, ParentId);
+				await sim.NewSiteContentManager().Ensure(sp, ParentId);
 			});
 
 			return Services;

@@ -56,7 +56,7 @@ namespace Hygou.Setup
 
 			await ServiceProvider.Invoke(((
 				IServiceInstanceManager sim,
-				IContentManager<Content> ContentManager,
+				IContentManager ContentManager,
 				ISiteTemplateManager SiteTemplateManager,
 				ISiteManager SiteManager,
 				IItemService ItemService) arg)=>

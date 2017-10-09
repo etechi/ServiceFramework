@@ -36,7 +36,9 @@ namespace Hygou.Setup
 						c.Name = "特别分类";
 						c.Title = "特别分类";
 						c.ObjectState = EntityLogicState.Enabled;
-						c.Children = new[]
+						c.Children = CategoryManager.FillTreeIdentByName(
+							ObjectKey.From(c.Id),
+							new[]
 						{
 							new CategoryInternal
 							{
@@ -77,7 +79,11 @@ namespace Hygou.Setup
 							//	Tag = "new",
 							//	ObjectState=ServiceProtocol.ObjectManager.LogicObjectState.Enabled,
 							//}
-						};
+						},
+						(pid, i) => new CategoryQueryArgument { ParentId = i.ParentId, Name = i.Name },
+						ic => ic.Children,
+						(ic, i) => ic.Id = i.Id
+						).Result;
 					});
 			var standard=await CategoryManager.EnsureEntity(
 				await CategoryManager.QuerySingleEntityIdent(new CategoryQueryArgument { Name = "标准分类" }),
@@ -86,24 +92,29 @@ namespace Hygou.Setup
 					c.Name = "标准分类";
 					c.Title = "标准分类";
 					c.ObjectState = EntityLogicState.Enabled;
-					c.Children = new[] {
+					c.Children = CategoryManager.FillTreeIdentByName(
+							ObjectKey.From(c.Id), new[] {
 								new CategoryInternal{Order=1, Name="话费充值",Title="话费充值", Description="移动 联通 电信",Icon=StaticRes.File+"-pc-prdcats-recharge18-png",Image=StaticRes.File+"-pc-prdcats-recharge64-png"},
 								new CategoryInternal{Order=2, Name="手机",Title="手机专区",Description="三星 iPhone 华为", Icon=StaticRes.File+"-pc-prdcats-phone18-png", Image=StaticRes.File+"-pc-prdcats-phone64-png"},
 								new CategoryInternal{Order=3, Name="数码",Title="数码专区",Description="佳能 尼康 索尼", Icon=StaticRes.File+"-pc-prdcats-camera18-png", Image=StaticRes.File+"-pc-prdcats-camera64-png"},
 								new CategoryInternal{Order=4, Name="汽车",Title="汽车专区", Description="奔驰 大众 宝马", Icon=StaticRes.File+"-pc-prdcats-car18-png", Image=StaticRes.File+"-pc-prdcats-car64-png"},
 								new CategoryInternal{Order=5, Name="黄金",Title="黄金专区",Description="金条 金元宝", Icon=StaticRes.File+"-pc-prdcats-gold18-png", Image=StaticRes.File+"-pc-prdcats-gold64-png"},
-							};
-							//Children=types.Types.Select(
-							//	t=>new Bizness.Products.Models.ProductCategoryEditable
-							//	{
-							//		Name=t.Title,
-							//		Title=t.Title,
-							//		Image=t.Image,
-							//		Icon=t.Icon,
-							//		ObjectState=ServiceProtocol.ObjectManager.LogicObjectState.Enabled,
-							//	}
-							//	).ToArray()
-					
+							},
+						(pid, i) => new CategoryQueryArgument { ParentId = i.ParentId, Name = i.Name },
+						ic => ic.Children,
+						(ic, i) => ic.Id = i.Id
+						).Result;
+					//Children=types.Types.Select(
+					//	t=>new Bizness.Products.Models.ProductCategoryEditable
+					//	{
+					//		Name=t.Title,
+					//		Title=t.Title,
+					//		Image=t.Image,
+					//		Icon=t.Icon,
+					//		ObjectState=ServiceProtocol.ObjectManager.LogicObjectState.Enabled,
+					//	}
+					//	).ToArray()
+
 				});
 			//var special = cats.Where(c => c.Name == "特别分类").Single();
 			//var c100 = cats.Where(c => c.Name == "百元").Single();

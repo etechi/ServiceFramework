@@ -11,7 +11,7 @@ namespace SF.Management.FrontEndContents
 	{ }
 	public interface ISiteManager<TSite>:
 		IEntityManager<ObjectKey<string>, TSite>,
-		IEntitySource<ObjectKey<string>, TSite>,
+		IEntitySource<ObjectKey<string>, TSite, QueryArgument<ObjectKey<string>>>,
 		ISiteResolver
 		where TSite:Site
 	{

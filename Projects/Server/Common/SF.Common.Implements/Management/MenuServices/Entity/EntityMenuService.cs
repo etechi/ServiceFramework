@@ -123,13 +123,13 @@ namespace SF.Management.MenuServices.Entity
 					mi.ServiceId = ei.ServiceId;
 					mi.ActionArgument = ei.ActionArgument;
 					mi.MenuId = m.Id;
-					if(pmi!=null) mi.ParentId = pmi.Id;
+					mi.ParentId = pmi?.Id;
 					return mi;
 				},
-				(mi, ei) =>
+				(mi, ei,np) =>
 				{
 					mi.Update(ei, time);
-					mi.ParentId = ei.ParentId;
+					mi.ParentId = np?.Id;
 					mi.Action = ei.Action;
 					mi.ActionArgument = ei.ActionArgument;
 					mi.ServiceId = ei.ServiceId;

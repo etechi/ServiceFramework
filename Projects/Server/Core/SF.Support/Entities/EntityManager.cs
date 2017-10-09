@@ -9,10 +9,11 @@ namespace SF.Entities
 {
 
 	public abstract class ModidifiableEntityManager<TKey, TPublic, TEditable, TModel> :
-		ModidifiableEntityManager<TKey, TPublic, TPublic, QueryArgument, TEditable, TModel>
+		ModidifiableEntityManager<ObjectKey<TKey>, TPublic, TPublic, QueryArgument<ObjectKey<TKey>>, TEditable, TModel>
 		where TPublic : class
 		where TModel : class, new()
 		where TEditable : class
+		where TKey:IEquatable<TKey>
 	{
 		public ModidifiableEntityManager(IDataSetEntityManager<TEditable,TModel> EntityManager) : base(EntityManager)
 		{
@@ -24,9 +25,9 @@ namespace SF.Entities
 		}
 		protected override PagingQueryBuilder<TModel> PagingQueryBuilder => new PagingQueryBuilder<TModel>(
 			"id",
-			null//b => b.Add("id", Entity<TModel>.KeyFilter.SingleKeySelector( m.Id)
+			b => b.Add("id",Entity<TModel>.SingleKeySelector<TKey>())
 			);
-		protected override IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, QueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, QueryArgument<ObjectKey<TKey>> Arg, Paging paging)
 		{
 			return Query;
 		}

@@ -424,57 +424,36 @@ namespace SF.Data
 					Query(set.AsQueryable(ReadOnly), i).ToArrayAsync()
 				);
 
-		static M GetOrCreateTreeNode<M,E,K>(
+		static M CreateOrUpdateTreeNode<M,E,K>(
 			this IDataSet<M> set,
 			Dictionary<K,M> exists,
 			M parent,
 			E cur,
 			Func<E,K> get_editable_ident,
 			Func<E, M, M> new_item, //新节点在子节点创建前调用
-			Action<M, E> updater,
+			Action<M, E, M> updater,
 			Func<E, IEnumerable<E>> get_children,
 			List<M> results
 			)
 			where M : class
 			where K : IEquatable<K>
 		{
-			var isExistNode=exists.TryGetValue(get_editable_ident(cur),out var model);
-			
-			var all_children = get_children(cur)?.ToArray();
-			if (!isExistNode)
-				model = new_item(cur, parent);
 
-			//收集节点下的新子节点
-			var new_children= all_children?
-				.Where(e=>!exists.ContainsKey(get_editable_ident(e)))?  //如果子节点是新节点，任然成立
-				.Select(chd=>
-					GetOrCreateTreeNode<M, E, K>(
-						set,
-						exists,
-						model,
-						chd,
-						get_editable_ident,
-						new_item,
-						updater,
-						get_children,
-						results
-					)).ToArray();
-
-			if (isExistNode)    //旧节点不存在，新建一个
+			if (exists.TryGetValue(get_editable_ident(cur), out var model))
 			{
-				//旧节点存在，需要将新子节点加入到数据库中
-				if (new_children != null)
-					foreach (var nc in new_children)
-						set.Add(nc);
-				updater(model, cur);
+				updater(model, cur, parent);
+				set.Update(model);
+			}
+			else
+			{ 
+				model = new_item(cur, parent);
+				set.Add(model);
 			}
 
-			//收集已存在的子节点
-			var exists_children = all_children?.Where(e => exists.ContainsKey(get_editable_ident(e)));
-			if (exists_children != null)
-				foreach (var chd in exists_children)
-				{
-					var e = GetOrCreateTreeNode<M, E, K>(
+			var children = get_children(cur);
+			if(children!=null)
+				foreach (var chd in children)
+					CreateOrUpdateTreeNode<M, E, K>(
 						set,
 						exists,
 						model,
@@ -484,9 +463,8 @@ namespace SF.Data
 						updater,
 						get_children,
 						results
-						);
-					set.Update(e);
-				}
+					);
+
 			results.Add(model);
 			return model;
 		}
@@ -500,7 +478,7 @@ namespace SF.Data
 			Func<E, K> get_parent_ident,
 			Func<E, IEnumerable<E>> get_children,   //获取新树节点的子节点
 			Func<E, M, M> new_item, //新节点在子节点创建前调用，必须
-			Action<M, E> updater = null,
+			Action<M, E, M> updater = null,
 			Action<M> remover = null
 			)
 			where M : class
@@ -521,27 +499,19 @@ namespace SF.Data
 				set.Remove(it);
 			}
 
-
 			var results = new List<M>();
-			foreach (var c in new_items.Select(ic => GetOrCreateTreeNode(
-					set, 
+			foreach (var ic in new_items)
+				CreateOrUpdateTreeNode(
+					set,
 					org_item_dict,
-					parent, 
-					ic, 
+					parent,
+					ic,
 					get_editable_ident,
-					new_item, 
-					updater, 
-					get_children, 
+					new_item,
+					updater,
+					get_children,
 					results
-					)))
-			{
-				//新节点需要加入到数据集中
-				var cid = get_model_ident(c);
-				if (!org_item_dict.ContainsKey(cid))
-					set.Add(c);
-				else
-					set.Update(c);
-			}
+					);
 
 
 			////顶层新节点，需要新增

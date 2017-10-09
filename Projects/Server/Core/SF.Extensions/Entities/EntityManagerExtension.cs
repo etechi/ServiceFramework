@@ -8,6 +8,36 @@ namespace SF.Entities
 {
 	public static class EntityManagerExtension
 	{
+		public static async Task<T[]> FillTreeIdentByName<TKey, TQueryArgument, T>(
+			this IEntityIdentQueryable<TKey, TQueryArgument> EntityQueryable,
+			TKey Parent,
+			T[] items,
+			Func<TKey,T, TQueryArgument> GetQueryArgument,
+			Func<T,T[]> GetChildren,
+			Action<T,TKey> SetIdent
+			)
+		{
+			foreach(var it in items)
+			{
+				var qa = GetQueryArgument(Parent,it);
+				var id = default(TKey);
+				if (qa != null)
+				{
+					var re = await EntityQueryable.QueryIdentsAsync(qa, Paging.Single);
+					id = re.Items.FirstOrDefault();
+					if (!EqualityComparer<TKey>.Default.Equals(id, default(TKey)))
+						SetIdent(it, id);
+				}
+				if(GetChildren!=null)
+				{
+					var chds = GetChildren(it);
+					if ((chds?.Length ?? 0) > 0)
+						await EntityQueryable.FillTreeIdentByName(id,chds, GetQueryArgument, GetChildren, SetIdent);
+				}
+			}
+			return items;
+		}
+
 		public static async Task<TKey> QuerySingleEntityIdent<TKey, TQueryArgument>(
 			this IEntityIdentQueryable<TKey, TQueryArgument> EntityQueryable,
 			TQueryArgument QueryArgument

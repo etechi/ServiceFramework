@@ -10,7 +10,9 @@ using System.Threading.Tasks;
 namespace SF.Entities
 {
 	public class ObjectKey<T>:
-		IEntityWithId<T>
+		IEntityWithId<T>,
+		IEquatable<ObjectKey<T>>,
+		IComparable<ObjectKey<T>>
 		 where T:IEquatable<T>
 
 	{
@@ -19,6 +21,25 @@ namespace SF.Entities
 		[ReadOnly(true)]
 		[TableVisible]
 		public T Id { get; set; }
+
+		public int CompareTo(ObjectKey<T> other)
+		{
+			return Comparer<T>.Default.Compare(Id, other.Id);
+		}
+
+		public bool Equals(ObjectKey<T> other)
+		{
+			return EqualityComparer<T>.Default.Equals(Id, other.Id);
+		}
+		public override bool Equals(object obj)
+		{
+			var ok = obj as ObjectKey<T>;
+			return ok == null ? false : Equals(ok);
+		}
+		public override int GetHashCode()
+		{
+			return EqualityComparer<T>.Default.GetHashCode(Id);
+		}
 
 		public override string ToString()
 		{

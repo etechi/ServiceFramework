@@ -148,8 +148,9 @@ namespace SF.Biz.Products.Entity
 					OnUpdateModel(n, e , time);
 					return n;
 				},
-				(m, e) =>
+				(m, e, np) =>
 				{
+					e.ParentId = np.Id;
 					OnUpdateModel(m, e, time);
 					Updated.Add(m.Id);
 				},

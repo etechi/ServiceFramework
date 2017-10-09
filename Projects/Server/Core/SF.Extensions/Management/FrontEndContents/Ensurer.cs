@@ -13,7 +13,7 @@ namespace SF.Management.FrontEndContents
 		public static async Task<Site> SiteEnsure(this ISiteManager SiteManager, string site, string name, long siteTemplateId)
 		{
 			return await SiteManager.EnsureEntity(
-				ObjectKey.From(site),
+				await SiteManager.QuerySingleEntityIdent(new QueryArgument<ObjectKey<string>> { Id = ObjectKey.From(site) }),
 				() => new Site { Id = site, Name = name, TemplateId = siteTemplateId },
 				s =>
 				{

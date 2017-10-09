@@ -14,7 +14,7 @@ namespace Hygou.Setup
 		public static async Task PCSiteEnsure(
 			IServiceInstanceManager sim,
 			long? ScopeId,
-			IContentManager<Content> ContentManager,
+			IContentManager ContentManager,
 			ISiteTemplateManager SiteTemplateManager,
 			ISiteManager SiteManager,
 			IItemService ItemService,

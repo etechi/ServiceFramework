@@ -28,7 +28,7 @@ namespace SF.ADT
 			if (cs != null)
 				foreach (var c in cs)
 				{
-					Result.Add(Node);
+					Result.Add(c);
 					await LoadAllChildren(c, GetChildren, Result);
 				}
 		}
