@@ -134,9 +134,21 @@ namespace SF.Core.ServiceManagement
 			object cfg,
 			params IServiceInstanceInitializer[] childServices
 			) where T : I
+			=> manager.DefaultServiceWithIdent<I, T>(
+			 null,
+			 cfg ,
+			 childServices
+ 			);
+
+		public static IServiceInstanceInitializer<I> DefaultServiceWithIdent<I, T>(
+			this IServiceInstanceManager manager,
+			string ServiceIdent,
+			object cfg,
+			params IServiceInstanceInitializer[] childServices
+			) where T : I
 			=>
 			manager.CreateService<I, T>(
-				 async parent => (await manager.TryGetDefaultService<I>(parent))?.Id ??0,
+				 async parent => (await manager.TryGetDefaultService<I>(parent, ServiceIdent))?.Id ??0,
 				(parent, rcfg,scfg) => manager.EnsureDefaultService<I, T>(
 					parent, 
 					rcfg, 

@@ -15,22 +15,7 @@ namespace Hygou.Setup
 {
 	public static class DocInitializer
 	{
-		public static async Task PCSysEnsure(
-		  IFilePathResolver FilePathResolver,
-		  IDocumentManager DocManager,
-		  IDocumentCategoryManager CatManager
-		  )
-		{
-			await DocManager.DocEnsureFromFiles(
-				CatManager,
-				null,
-				FilePathResolver.Resolve($"root://StaticResources/文档/PC/系统"),
-				new Dictionary<string, string>
-				{
-					{"服务协议","pc-terms" }
-				}
-				);
-		}
+
 		public static async Task<Tuple<long,long>> PCHelpEnsure(
 			IServiceInstanceManager sim,
 			long? ScopeId,
@@ -104,25 +89,25 @@ namespace Hygou.Setup
 			long? ScopeId
 			)
 		{
-			var pcSys = await (sim.NewDocumentService()
+			var pcSys = await (sim.NewDocumentService("pc-sys")
 				.WithIdent("pc-sys")
 				.WithDisplay("PC系统文档", "PC系统文档，如关于我们等")
 				.Enabled()
 				).Ensure(ServiceProvider, ScopeId);
 
-			var pcHelp = await (sim.NewDocumentService()
+			var pcHelp = await (sim.NewDocumentService("pc-help")
 				.WithIdent("pc-help")
 				.WithDisplay("PC帮助文档")
 				.Enabled()
 				).Ensure(ServiceProvider, ScopeId);
 
-			var mSys = await (sim.NewDocumentService()
+			var mSys = await (sim.NewDocumentService("m-sys")
 				.WithIdent("m-sys")
 				.WithDisplay("移动端系统文档","移动端系统文档，如关于我们等")
 				.Enabled()
 				).Ensure(ServiceProvider, ScopeId);
 
-			var mHelp = await (sim.NewDocumentService()
+			var mHelp = await (sim.NewDocumentService("m-help")
 				.WithIdent("m-help")
 				.WithDisplay("移动端帮助文档")
 				.Enabled()
@@ -131,15 +116,6 @@ namespace Hygou.Setup
 			
 			await ServiceProvider.Invoke(
 				((IFilePathResolver frr, IDocumentManager dm, IDocumentCategoryManager cm) arg) => MobileHelpEnsure(arg.frr, arg.dm, arg.cm),
-				mHelp
-				);
-
-			await ServiceProvider.Invoke(
-				((IFilePathResolver frr, IDocumentManager dm, IDocumentCategoryManager cm) arg)=>
-				{
-					var rre = PCSysEnsure(arg.frr, arg.dm, arg.cm);
-					return rre;
-				},
 				mHelp
 				);
 

@@ -31,7 +31,7 @@ namespace SF.Users.Members
 			var sid = ((IManagedServiceWithId)Service).ServiceInstanceId;
 			var ims = ServiceProvider.Resolve<IMemberManagementService>(null, sid);
 			var identityService = ServiceProvider.Resolve<IIdentityService>(null, ((IManagedServiceWithId)ims).ServiceInstanceId);
-
+			var err = ServiceProvider.Resolve<IEntityReferenceResolver>();
 
 			var member = await ims.QuerySingleAsync(
 				new MemberQueryArgument
@@ -66,7 +66,10 @@ namespace SF.Users.Members
 						ReturnToken = true,
 					}
 					);
-				id = await identityService.ParseAccessToken(sess);
+				var iid = await identityService.ParseAccessToken(sess);
+				var ident = await identityService.GetIdentity(iid);
+				var mid = ServiceEntityIdent.Parse<long>(ident.OwnerId);
+				id = mid.Id2;
 			}
 			return await ims.GetAsync(ObjectKey.From(id));
 

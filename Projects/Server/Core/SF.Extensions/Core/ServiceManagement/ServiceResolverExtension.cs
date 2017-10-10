@@ -139,9 +139,10 @@ namespace SF.Core.ServiceManagement
 			typeof(Action<,,,,,,,,,,,,,,>),
 			typeof(Action<,,,,,,,,,,,,,,,>),
 		};
-		static Func<IServiceResolver,long?,R> GetDelegateInvoker<T,R>(Func<T,R> Func)
+		static Func<Func<T, R>, IServiceResolver,long?,R> GetDelegateInvoker<T,R>()
 		{
 			var typeResolver = typeof(IServiceResolver);
+			var ArgFunc= Expression.Parameter(typeof(Func<T, R>));
 			var ArgServiceProvider = Expression.Parameter(typeResolver);
 			var ArgScopeId = Expression.Parameter(typeof(long?));
 			var MethodResolve = typeResolver.GetMethod(nameof(IServiceResolver.ResolveServiceByType), System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.InvokeMethod | System.Reflection.BindingFlags.Public);
@@ -166,11 +167,12 @@ namespace SF.Core.ServiceManagement
 					Expression.Constant(null, typeof(string))
 					).To(typeArgument)
 				;
-			var func = Expression.Lambda<Func<IServiceResolver,long?,R>>(
+			var func = Expression.Lambda<Func<Func<T,R>,IServiceResolver,long?,R>>(
 				Expression.Invoke(
-					Expression.Constant(Func),
+					ArgFunc,
 					arg
 					),
+				ArgFunc,
 				ArgServiceProvider,
 				ArgScopeId
 				).Compile();
@@ -182,9 +184,9 @@ namespace SF.Core.ServiceManagement
 		{
 			var key = (typeof(T), typeof(R));
 			if (!Invokers.TryGetValue(key, out var l))
-				l = Invokers.GetOrAdd(key, new Lazy<Delegate>(() => GetDelegateInvoker(Func)));
-			var func=(Func< IServiceResolver, long ?, R>)l.Value;
-			return func(ServiceProvider.Resolver(),ScopeId);
+				l = Invokers.GetOrAdd(key, new Lazy<Delegate>(() => GetDelegateInvoker<T,R>()));
+			var invoke=(Func< Func <T, R >, IServiceResolver, long ?, R>)l.Value;
+			return invoke(Func, ServiceProvider.Resolver(),ScopeId);
 		}
 		public static void Invoke<T>(this IServiceProvider ServiceProvider, Action<T> Func, long? ScopeId)
 		{

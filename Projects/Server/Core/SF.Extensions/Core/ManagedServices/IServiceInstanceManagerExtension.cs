@@ -55,20 +55,23 @@ namespace SF.Core.ServiceManagement.Management
 		}
 		public static Task<ObjectKey<long>> TryGetDefaultService<I>(
 			this IServiceInstanceManager Manager,
-			long? ParentId = null
-			) => Manager.TryGetDefaultService(typeof(I), ParentId);
+			long? ParentId = null,
+			string ServiceIdent=null
+			) => Manager.TryGetDefaultService(typeof(I), ParentId, ServiceIdent);
 
 		public static async Task<ObjectKey<long>> TryGetDefaultService(
 			this IServiceInstanceManager Manager,
 			Type InterfaceType,
-			long? ParentId = null
+			long? ParentId = null,
+			string ServiceIdent = null
 			)
 			=> await Manager.QuerySingleEntityIdent(
 				new ServiceInstanceQueryArgument
 				{
 					ContainerId = ParentId ?? 0,
 					ServiceId = InterfaceType.GetFullName().UTF8Bytes().MD5().Hex(),
-					IsDefaultService = true
+					IsDefaultService = true,
+					ServiceIdent=ServiceIdent
 				});
 
 		public static Task<Models.ServiceInstanceEditable> EnsureDefaultService<I, T>(
@@ -97,7 +100,7 @@ namespace SF.Core.ServiceManagement.Management
 			)
 		{
 			return await Manager.EnsureEntity(
-				await TryGetDefaultService(Manager, InterfaceType,ParentId),
+				await TryGetDefaultService(Manager, InterfaceType,ParentId, ServiceIdent),
 				() => new Models.ServiceInstanceEditable { },
 				e => UpdateServiceModel(e, InterfaceType, ImplementType, Setting, ParentId, Name, Title, Description, ServiceIdent, State)
 				);

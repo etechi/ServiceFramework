@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,12 +36,32 @@ namespace SF.Entities
 	{
 		int Count { get; }
 	}
+	public interface IPropertyQueryFilter
+	{
+		int Priority { get; }
+	}
 
+	public interface IPropertyQueryFilter<T> : IPropertyQueryFilter
+	{
+		Expression GetFilterExpression(Expression obj, T value);
+	}
+	public interface IPropertyQueryFilterProvider
+	{
+		IPropertyQueryFilter GetFilter<TDataModel,TQueryArgument>(PropertyInfo queryProp);
+	}
+	public interface IQueryFilter<TDataModel, TQueryArgument>
+	{
+		int Priority { get; }
+		IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query,TQueryArgument Arg);
+	}
+	public interface IQueryFilterProvider
+	{
+		IQueryFilter<TDataModel, TQueryArgument> GetFilter<TDataModel, TQueryArgument>();
+	}
 	public interface IPagingQueryBuilder<T>
 	{
 		IContextQueryable<T> Build(IContextQueryable<T> query, Paging paging);
 	}
-
 	public interface IQueryResultBuildHelper<E, T, R>
 	{
 		Expression<Func<E, T>> EntityMapper { get; }

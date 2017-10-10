@@ -71,6 +71,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IServiceInstanceInitializer NewDocumentService(
 			this IServiceInstanceManager manager,
+			string ServiceIdent=null,
 			IServiceInstanceInitializer<IDocumentManager> docManager = null,
 			IServiceInstanceInitializer<IDocumentCategoryManager> catManager = null
 			)
@@ -80,7 +81,8 @@ namespace SF.Core.ServiceManagement
 			if (catManager == null)
 				catManager = manager.NewDocumentCategoryManager();
 
-			var svc = manager.DefaultService<IDocumentService, DocumentService>(
+			var svc = manager.DefaultServiceWithIdent<IDocumentService, DocumentService>(
+				ServiceIdent,
 				null,
 				docManager,
 				catManager

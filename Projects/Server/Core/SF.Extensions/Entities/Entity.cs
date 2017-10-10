@@ -145,7 +145,7 @@ namespace SF.Entities
 		static Type TypeExpression { get; } = typeof(Expression);
 		static MethodInfo MethodConstant { get; } = TypeExpression.GetMethod(nameof(Expression.Constant), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(object), typeof(Type) }, null);
 		static MethodInfo MethodProperty { get; } = TypeExpression.GetMethod(nameof(Expression.Property), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(PropertyInfo) }, null);
-		static MethodInfo MethodAnd { get; } = TypeExpression.GetMethod(nameof(Expression.And), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(Expression) }, null);
+		static MethodInfo MethodAndAlso { get; } = TypeExpression.GetMethod(nameof(Expression.AndAlso), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(Expression) }, null);
 		static MethodInfo MethodEqual { get; } = TypeExpression.GetMethod(nameof(Expression.Equal), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(Expression) }, null);
 		static MethodInfo MethodLambda { get; } = TypeExpression.GetMethods(
 			nameof(Expression.Lambda),
@@ -203,7 +203,7 @@ namespace SF.Entities
 							).Aggregate((x, y) =>
 								Expression.Call(
 									null,
-									MethodAnd,
+									MethodAndAlso,
 									x,
 									y
 									)
