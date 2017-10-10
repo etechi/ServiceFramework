@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SF.Core.ServiceManagement
 {
@@ -14,10 +15,7 @@ namespace SF.Core.ServiceManagement
 	public delegate T TypedInstanceResolver<T>(long Id);
 	public delegate T NamedServiceResolver<T>(string Name);
 
-	public interface IScoped<S>
-	{
-		T Use<T>(Func<S, T> Callback);
-	}
+	
 
 	public interface IServiceResolver 
 	{

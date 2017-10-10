@@ -307,7 +307,7 @@ namespace SF.Biz.Products.Entity
 		{
 			var Model = ctx.Model;
 			Model.CreatedTime = EntityManager.Now;
-			Model.Id = await IdentGenerator.GenerateAsync(GetType().FullName);
+			Model.Id = await IdentGenerator.GenerateAsync();
 		}
 		protected override Task<TCategory> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TCategory> ctx)
 		{

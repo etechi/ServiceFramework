@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SF.Core.ServiceManagement
 {
-
+	
 	public class ServiceProviderBuilder : IServiceProviderBuilder
 	{
 		public virtual IServiceMetadata OnCreateServcieMetadata(IServiceCollection Services)
@@ -144,12 +144,25 @@ namespace SF.Core.ServiceManagement
 			return NewEnumerableReal<I>(sp, sp.Resolver().CurrentServiceId);
 		}
 
-		static WithNewScope<A, R> CreateWithNewScope<A, R>(IServiceProvider ServiceProvider)
+		class Scoped<S> : IScoped<S> where S : class
 		{
-			return (callback) =>
-				ServiceProvider.WithScope(async sp =>
-					await sp.Invoke<A,Task<R>>(callback,null)
+			IServiceProvider ServiceProvider { get; }
+			long? CurScopeId { get; }
+			public Scoped(IServiceProvider ServiceProvider)
+			{
+				this.ServiceProvider = ServiceProvider;
+				CurScopeId = ServiceProvider.Resolver().CurrentServiceId;
+			}
+			public Task<T> Use<T>(Func<S, Task<T>> Callback)
+			{
+				return ServiceProvider.WithScope(async sp =>
+				{
+					var isr = sp.Resolver();
+					using (isr.WithScopeService(CurScopeId))
+						return await sp.Invoke(Callback);
+				}
 				);
+			}
 		}
 
 		public IServiceProvider Build(
@@ -179,7 +192,7 @@ namespace SF.Core.ServiceManagement
 			Services.AddTransient(typeof(TypedInstanceResolver<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewTypedInstanceResolver), typeof(IServiceProvider)));
 			Services.AddTransient(typeof(NamedServiceResolver<>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(NewNamedInstanceResolver), typeof(IServiceProvider)));
 
-			Services.AddTransient(typeof(WithNewScope<,>), typeof(ServiceProviderBuilder).GetMethodExt(nameof(CreateWithNewScope), typeof(IServiceProvider)));
+			Services.Add(typeof(IScoped<>), typeof(Scoped<>), ServiceImplementLifetime.Transient);
 
 
 			meta = OnCreateServcieMetadata(Services);

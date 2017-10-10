@@ -9,6 +9,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class ServicveManagementDIServiceCollectionExtension
 	{
+		
 		public static IServiceCollection AddManagedService(
 			this IServiceCollection sc
 			)

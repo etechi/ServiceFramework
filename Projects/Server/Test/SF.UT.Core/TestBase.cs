@@ -19,13 +19,7 @@ namespace SF.UT
 		public IAppInstance AppInstance { get; }
 		public Task<T> Scope<A0,T>(Func<A0, Task<T>> Action)
 			=> AppInstance.ServiceProvider.WithScope(Action);
-		public Task<T> Scope<A0, A1, T>(Func<A0, A1, Task<T>> Action)
-			=> AppInstance.ServiceProvider.WithScope(Action);
-		public Task<T> Scope<A0, A1, A2, T>(Func<A0, A1, A2, Task<T>> Action)
-			=> AppInstance.ServiceProvider.WithScope(Action);
-		public Task<T> Scope<A0, A1, A2, A3, T>(Func<A0, A1, A2, A3, Task<T>> Action)
-			=> AppInstance.ServiceProvider.WithScope(Action);
-
+	
 		public TestBase()
 		{
 			AppInstance = TestApp.Builder(EnvironmentType.Development).Build();

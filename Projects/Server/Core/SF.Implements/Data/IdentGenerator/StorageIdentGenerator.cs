@@ -5,13 +5,14 @@ using SF.Data;
 using System.Threading;
 using SF.Metadata;
 using SF.Data.IdentGenerator.DataModels;
+using SF.Core.ServiceManagement;
 
 namespace SF.Data.IdentGenerator
 {
 	[Comment("默认对象标识生成器")]
 	public class StorageIdentGenerator<T> : StorageIdentGenerator,IIdentGenerator<T>
 	{
-		public StorageIdentGenerator(IDataSet<IdentSeed> IdentSeedSet) : base(IdentSeedSet)
+		public StorageIdentGenerator(IScoped<IDataSet<DataModels.IdentSeed>> IdentSeedSet) : base(IdentSeedSet)
 		{
 		}
 
@@ -32,41 +33,44 @@ namespace SF.Data.IdentGenerator
 		static ConcurrentDictionary<string, IdentBatch> Cache { get; } = new ConcurrentDictionary<string, IdentBatch>();
 		static ObjectSyncQueue<string> SyncQueue { get; } = new ObjectSyncQueue<string>();
 
-		public IDataSet<DataModels.IdentSeed> IdentSeedSet { get; }
+		public IScoped<IDataSet<DataModels.IdentSeed>> IdentSeedSet { get; }
 		const int CountPerBatch = 100;
 
 		public StorageIdentGenerator(
-			IDataSet<DataModels.IdentSeed> IdentSeedSet
+			IScoped<IDataSet<DataModels.IdentSeed>> IdentSeedSet
 			)
 		{
 			this.IdentSeedSet = IdentSeedSet;
 		}
-		async Task<long> GetNextBatchStartAsync(string Scope, int Section)
+		Task<long> GetNextBatchStartAsync(string Scope, int Section)
 		{
-			var type = Scope;
-			var re = await IdentSeedSet.RetryForConcurrencyExceptionAsync(() =>
-				  IdentSeedSet.AddOrUpdateAsync(
-					  e=> e.Type==type,
-					  () => new DataModels.IdentSeed {
-						  NextValue = 1+ CountPerBatch,
-						  Section = Section,
-						  Type = type
-					  },
-					  s =>
-					  {
-						  if (s.Section == Section)
+			return IdentSeedSet.Use(async (dataSet) =>
+			{
+				var type = Scope;
+				var re = await dataSet.RetryForConcurrencyExceptionAsync(() =>
+					  dataSet.AddOrUpdateAsync(
+						  e => e.Type == type,
+						  () => new DataModels.IdentSeed
 						  {
-							  s.NextValue += CountPerBatch;
-						  }
-						  else
+							  NextValue = 1 + CountPerBatch,
+							  Section = Section,
+							  Type = type
+						  },
+						  s =>
 						  {
-							  s.NextValue = 1 + CountPerBatch;
-							  s.Section = Section;
-						  }
-					  }
-					  )
-				);
-			return re.NextValue - CountPerBatch;
+							  if (s.Section == Section)
+							  {
+								  s.NextValue += CountPerBatch;
+							  }
+							  else
+							  {
+								  s.NextValue = 1 + CountPerBatch;
+								  s.Section = Section;
+							  }
+						  })
+					);
+				return re.NextValue - CountPerBatch;
+			});
 		}
 		
 		public async Task<long> GenerateAsync(string Type,int Section)

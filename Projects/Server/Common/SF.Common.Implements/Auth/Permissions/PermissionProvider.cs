@@ -24,7 +24,7 @@ namespace SF.Auth.Permissions
 			   >
 	{
 		public PermissionProvider(
-			Lazy<WithNewScope<IDataSet<GrantPermission>, IDataSet<GrantRole>, IPermission[]>> WithNewScope, 
+			IScoped<(IDataSet<GrantPermission>, IDataSet<GrantRole>)> WithNewScope, 
 			ILocalCache<IPermission[]> LocalCache, 
 			IEventSubscriber<EntityModified<GrantEditable>> GrantModified, 
 			IEventSubscriber<EntityModified<RoleInternal>> RoleModified) : 
@@ -44,9 +44,9 @@ namespace SF.Auth.Permissions
 		where TGrantPermission : DataModels.GrantPermission<TGrant, TRole, TGrantRole, TRolePermission, TGrantPermission>
 	{
 		ILocalCache<IPermission[]> LocalCache { get; }
-		Lazy<WithNewScope<IDataSet<TGrantPermission>,IDataSet<TGrantRole>,IPermission[]>> WithNewScope { get; }
+		IScoped<(IDataSet<TGrantPermission>,IDataSet<TGrantRole>)> WithNewScope { get; }
 		public PermissionProvider(
-			Lazy<WithNewScope<IDataSet<TGrantPermission>, IDataSet<TGrantRole>, IPermission[]>> WithNewScope, 
+			IScoped<(IDataSet<TGrantPermission>, IDataSet<TGrantRole>)> WithNewScope, 
 			ILocalCache<IPermission[]> LocalCache,
 			IEventSubscriber<EntityModified< TGrantEditable>> GrantModified,
 			IEventSubscriber<EntityModified<TRoleEditable>> RoleModified
@@ -74,8 +74,9 @@ namespace SF.Auth.Permissions
 			if (re != null)
 				return re;
 
-			re = await WithNewScope.Value(async (Grants,Roles)=>
+			re = await WithNewScope.Use(async (svcs)=>
 			{
+				var (Grants, Roles) = svcs;
 				 return await Grants
 					 .AsQueryable()
 					 .Where(p => p.GrantId == OperatorId)
