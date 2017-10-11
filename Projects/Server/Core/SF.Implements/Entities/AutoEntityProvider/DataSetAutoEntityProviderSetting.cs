@@ -58,6 +58,7 @@ namespace SF.Entities.AutoEntityProvider
 		IEntityModifier<TEntityEditable, TDataModel> RemoveModifier { get; }
 
 		public Lazy<Func<IServiceProvider, object>> FuncCreateProvider { get; }
+		IQueryFilter<TDataModel, TQueryArgument> QueryFilter { get; }
 
 		void ValidateEntityTypes(IMetadataCollection metas, IEntityType entity, params Type[] types)
 		{
@@ -180,7 +181,8 @@ namespace SF.Entities.AutoEntityProvider
 			IQueryResultBuildHelper<TDataModel, TEntityEditableTemp, TEntityEditable> EditableQueryResultBuildHelper,
 			IEntityModifier<TEntityEditable, TDataModel> InitModifier,
 			IEntityModifier<TEntityEditable, TDataModel> UpdateModifier,
-			IEntityModifier<TEntityEditable, TDataModel> RemoveModifier
+			IEntityModifier<TEntityEditable, TDataModel> RemoveModifier,
+			IQueryFilter<TDataModel, TQueryArgument> QueryFilter
 		)
 		{
 			this.DetailQueryResultBuildHelper = DetailQueryResultBuildHelper;
@@ -189,6 +191,7 @@ namespace SF.Entities.AutoEntityProvider
 			this.InitModifier = InitModifier;
 			this.UpdateModifier = UpdateModifier;
 			this.RemoveModifier = RemoveModifier;
+			this.QueryFilter = QueryFilter;
 
 			FuncCreateProvider = new Lazy<Func<IServiceProvider, object>>(() =>
 				new Func<IServiceProvider, object>(
@@ -228,7 +231,8 @@ namespace SF.Entities.AutoEntityProvider
 
 			FuncBuildQuery = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, TQueryArgument, Paging, IContextQueryable<TDataModel>>>(() =>
 			{
-				return (em, q, arg, pg) => q;
+				return (em, q, arg, pg) => 
+					QueryFilter.Filter(q,arg);
 			});
 
 			FuncLoadEditable = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, Task<TEntityEditable>>>(() =>

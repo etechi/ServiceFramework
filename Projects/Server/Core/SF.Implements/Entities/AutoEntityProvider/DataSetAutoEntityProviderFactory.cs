@@ -40,13 +40,15 @@ namespace SF.Entities.AutoEntityProvider
 		IMetadataCollection Metas { get; }
 		IDataModelTypeCollection DataModelTypeCollection { get; }
 		IEntityPropertyQueryConverterProvider[] PropertyQueryConverterProviders { get; }
+		IQueryFilterProvider[] QueryFilterProviders { get; }
 		NamedServiceResolver<IEntityPropertyModifier> EntityModifierValueConverterResolver { get; }
 		IEntityModifierBuilder EntityModifierBuilder { get; }
 		public DataSetAutoEntityProviderCache(
 			IMetadataCollection Metas,
 			IDataModelTypeCollection DataModelTypeCollection,
 			IEnumerable<IEntityPropertyQueryConverterProvider> PropertyQueryConverterProviders,
-			IEntityModifierBuilder EntityModifierBuilder
+			IEntityModifierBuilder EntityModifierBuilder,
+			IEnumerable<IQueryFilterProvider> QueryFilterProviders
 			)
 		{
 			this.Metas = Metas;
@@ -54,6 +56,7 @@ namespace SF.Entities.AutoEntityProvider
 			this.PropertyQueryConverterProviders = PropertyQueryConverterProviders.OrderBy(p=>p.Property).ToArray();
 			this.EntityModifierValueConverterResolver = EntityModifierValueConverterResolver;
 			this.EntityModifierBuilder = EntityModifierBuilder;
+			this.QueryFilterProviders = QueryFilterProviders.ToArray();
 		}
 
 		void ValidateEntityTypes(Type TEntityDetail, IEntityType entity, params Type[] types)
@@ -74,7 +77,8 @@ namespace SF.Entities.AutoEntityProvider
 			QueryResultBuildHelper DetailQueryResultBuildHelper,
 			QueryResultBuildHelper SummaryQueryResultBuildHelper,
 			QueryResultBuildHelper EditableQueryResultBuildHelper,
-			IEntityModifierBuilder EntityModifierBuilder
+			IEntityModifierBuilder EntityModifierBuilder,
+			IQueryFilterProvider[] QueryFilterProviders
 			)
 			where TDataModel : class,new()
 			{
@@ -94,7 +98,8 @@ namespace SF.Entities.AutoEntityProvider
 				(IQueryResultBuildHelper<TDataModel, TEntityEditableTemp, TEntityEditable>)EditableQueryResultBuildHelper,
 				EntityModifierBuilder.GetEntityModifier<TEntityEditable,TDataModel>(DataActionType.Create),
 				EntityModifierBuilder.GetEntityModifier<TEntityEditable, TDataModel>(DataActionType.Update),
-				EntityModifierBuilder.GetEntityModifier<TEntityEditable, TDataModel>(DataActionType.Delete)
+				EntityModifierBuilder.GetEntityModifier<TEntityEditable, TDataModel>(DataActionType.Delete),
+				new QueryFilterBuildHelper(QueryFilterProviders).Build<TDataModel,TQueryArgument>()
 				);
 			}
 
@@ -142,7 +147,8 @@ namespace SF.Entities.AutoEntityProvider
 						detailHelper,
 						summaryHelper,
 						editableHelper,
-						EntityModifierBuilder
+						EntityModifierBuilder,
+						QueryFilterProviders
 			}
 			);
 		}

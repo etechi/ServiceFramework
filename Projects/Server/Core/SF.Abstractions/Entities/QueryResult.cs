@@ -48,6 +48,7 @@ namespace SF.Entities
 	public interface IPropertyQueryFilterProvider
 	{
 		IPropertyQueryFilter GetFilter<TDataModel,TQueryArgument>(PropertyInfo queryProp);
+		int Priority { get; }
 	}
 	public interface IQueryFilter<TDataModel, TQueryArgument>
 	{

@@ -14,17 +14,36 @@ using System.Linq.TypeExpressions;
 
 namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 {
-	public class StringPropQueryFilterProvider : SinglePropQueryFilterProvider<string>
+	public class StringPropQueryFilterProvider : SinglePropQueryFilterProvider
 	{
-		protected override Expression GetFilterExpression(Expression prop, string value)
+		public override int Priority => 100;
+
+		class Filter : PropQueryFilter<string>
 		{
-			return ContextQueryableFilters.GetStringFilterExpression(value, prop);
+			bool UseContains { get; }
+			public Filter(PropertyInfo Property, bool UseContains) : base(Property)
+			{
+				this.UseContains = UseContains;
+			}
+
+			public override Expression OnGetFilterExpression(Expression prop, string value)
+			{
+				if(UseContains)
+					return ContextQueryableFilters.GetContainFilterExpression(value, prop);
+				else
+					return ContextQueryableFilters.GetStringFilterExpression(value, prop);
+			}
 		}
 
-		protected override bool MatchType(Type DataValueType)
+		protected override IPropertyQueryFilter CreateFilter(PropertyInfo dataProp, PropertyInfo queryProp)
 		{
-			return DataValueType == typeof(string);
+			return new Filter(dataProp, queryProp.GetCustomAttribute<StringContainsAttribute>() != null);
 		}
+		protected override bool MatchType(Type DataValueType, Type PropValueType)
+		{
+			return DataValueType == typeof(string) && PropValueType==typeof(string);
+		}
+
 		
 	}
 }

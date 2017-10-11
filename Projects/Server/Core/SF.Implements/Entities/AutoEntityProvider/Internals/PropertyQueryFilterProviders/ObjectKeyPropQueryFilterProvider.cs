@@ -14,18 +14,16 @@ using System.Linq.TypeExpressions;
 
 namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 {
-	public class NullablePropQueryFilterProvider : SinglePropQueryFilterProvider
+	public class ObjectKeyPropQueryFilterProvider : SinglePropQueryFilterProvider
 	{
-
-		class Filter<T> : PropQueryFilter<T?> where T:struct
+		class Filter<T> : PropQueryFilter<ObjectKey<T>> where T:IEquatable<T>
 		{
-			public override int Priority => 10;
-
+			public override int Priority => 0;
 			public Filter(PropertyInfo Property) : base(Property)
 			{
 			}
 
-			public override Expression OnGetFilterExpression(Expression prop, T? value)
+			public override Expression OnGetFilterExpression(Expression prop, ObjectKey<T> value)
 			{
 				return ContextQueryableFilters.GetFilterExpression(value, prop);
 			}
@@ -36,9 +34,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 
 		protected override bool MatchType(Type DataValueType, Type PropValueType)
 		{
-			if (!PropValueType.IsGenericTypeOf(typeof(Nullable<>)))
-				return false;
-			if (!DataValueType.IsValueType)
+			if (!PropValueType.IsGenericTypeOf(typeof(ObjectKey<>)))
 				return false;
 			if (DataValueType != PropValueType.GenericTypeArguments[0])
 				return false;

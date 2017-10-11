@@ -20,6 +20,7 @@ using SF.Entities.AutoEntityProvider.Internals.DataModelBuilders;
 using SF.Entities.AutoEntityProvider.Internals.DataModelBuilders.AttributeGenerators;
 using SF.Entities.AutoEntityProvider.Internals.DataModelBuilders.TypeMappers;
 using SF.Entities.AutoEntityProvider.Internals.DataModelBuilders.Providers;
+using SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders;
 
 namespace SF.Core.ServiceManagement
 {
@@ -84,10 +85,25 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IDataModelPropertyBuildProvider, DefaultDataModelValuePropertyBuildProvider>();
 			sc.AddSingleton<IDataModelPropertyBuildProvider, DataModelEntityIdentPropertyBuildProvider>();
 
+
+			sc.AddSingleton<IQueryFilterProvider, PropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, DateTimeRangeToRangePropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, EntityLogicStatePropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, NullablePropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, NullableRangePropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, NullableRangeToRangePropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, ObjectKeyPropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, OptionPropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, QueryBooleanPropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, RangePropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, RangeToRangePropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, StringPropQueryFilterProvider>();
+
+
 			sc.AddTransient<DataModelBuilder>();
 
 			sc.AddTransient<SystemTypeMetadataBuilder>();
-
+			
 
 
 			sc.AddSingleton<DataSetAutoEntityProviderFactory>();

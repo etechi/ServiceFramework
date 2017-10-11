@@ -14,51 +14,38 @@ using System.Linq.TypeExpressions;
 
 namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 {
-	public abstract class SinglePropQueryFilterProvider<T> : IPropertyQueryFilterProvider
+	public abstract class SinglePropQueryFilterProvider: IPropertyQueryFilterProvider
 	{
-		class PropQueryFilter : IPropertyQueryFilter<T>
+
+		protected abstract class PropQueryFilter<T> : IPropertyQueryFilter<T>
 		{
-			public int Priority => 0;
+			public virtual int Priority => 100;
 
 			public PropertyInfo Property { get; }
-			public SinglePropQueryFilterProvider<T> Provider { get; }
+			public SinglePropQueryFilterProvider Provider { get; }
 
-			public PropQueryFilter(PropertyInfo Property, SinglePropQueryFilterProvider<T> Provider)
+			public PropQueryFilter(PropertyInfo Property)
 			{
 				this.Property = Property;
-				this.Provider = Provider;
 			}
 			public Expression GetFilterExpression(Expression obj, T value)
-			{
-				return Provider.GetFilterExpression(Expression.Property(obj, Property), value);
-			}
+				=> OnGetFilterExpression(Expression.Property(obj, Property), value);
+
+			public abstract Expression OnGetFilterExpression(Expression prop, T value);
 		}
-		protected abstract Expression GetFilterExpression(Expression prop, T value);
-		protected abstract bool MatchType(Type DataValueType);
+		public abstract int Priority { get; }
+		protected abstract bool MatchType(Type DataValueType,Type PropValueType);
+		protected abstract IPropertyQueryFilter CreateFilter(PropertyInfo dataProp, PropertyInfo queryProp);
 		public IPropertyQueryFilter GetFilter<TDataModel, TQueryArgument>(PropertyInfo queryProp)
 		{
-			if (queryProp.PropertyType != typeof(T))
-				return null;
 			var dataProp = typeof(TDataModel).GetProperty(queryProp.Name);
 			if (dataProp == null)
 				return null;
-			if (!MatchType(dataProp.PropertyType))
+			if (!MatchType(dataProp.PropertyType,queryProp.PropertyType))
 				return null;
-			return new PropQueryFilter(dataProp, this);
+			return CreateFilter(dataProp, queryProp);
 		}
 	}
 
-	public class StringPropQueryFilterProvider : SinglePropQueryFilterProvider<string>
-	{
-		protected override Expression GetFilterExpression(Expression prop, string value)
-		{
-			return ContextQueryableFilters.GetStringFilterExpression(value, prop);
-		}
-
-		protected override bool MatchType(Type DataValueType)
-		{
-			return DataValueType == typeof(string);
-		}
-		
-	}
+	
 }

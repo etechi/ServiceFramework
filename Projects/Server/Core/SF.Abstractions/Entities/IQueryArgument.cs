@@ -8,6 +8,11 @@ using System.Text;
 
 namespace SF.Entities
 {
+	[AttributeUsage(AttributeTargets.Property)]
+	public class StringContainsAttribute : Attribute
+	{
+
+	}
 	public interface IQueryArgument { }
 	public interface IQueryArgument<TKey>: IQueryArgument
 	{
