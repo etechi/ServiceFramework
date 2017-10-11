@@ -82,7 +82,7 @@ namespace SF.Biz.Products
 			where TItem : IItem
 			where TCategory : ICategoryCached
 		{
-			return service.ListItems(
+			return service.ListCategoryItems(
 				CategoryId,
 				WithChildCategoryItems,
 				keyword,

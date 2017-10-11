@@ -47,11 +47,11 @@ namespace SF.Biz.Products
 		Task<TItem> GetProductDetail(long ProductId);
 		Task<TItem[]> GetProducts(long[] ProductIds);
 		Task<TItem[]> GetItems(long[] ItemIds);
-        Task<QueryResult<TItem>> ListItems(string Tag, bool WithChildCategoryItems, string filter, Paging paging);
-        Task<QueryResult<TItem>> ListItems(long CategoryId, bool WithChildCategoryItems, string filter, Paging paging);
-        Task<TCategory[]> GetCategories(string Tag);
+        Task<QueryResult<TItem>> ListTaggedItems(string Tag, bool WithChildCategoryItems, string Filter, Paging Paging);
+        Task<QueryResult<TItem>> ListCategoryItems(long CategoryId, bool WithChildCategoryItems, string Filter, Paging Paging);
+        Task<TCategory[]> GetTaggedCategories(string Tag);
 		Task<TCategory[]> GetCategories(long[] CategoryIds);
-		Task<QueryResult<TCategory>> ListCategories(long ParentCategoryId, Paging paging);
+		Task<QueryResult<TCategory>> ListCategories(long ParentCategoryId, Paging Paging);
 	}
 	
 }

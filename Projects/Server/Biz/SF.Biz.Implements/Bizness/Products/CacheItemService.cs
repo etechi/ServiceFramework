@@ -101,7 +101,7 @@ namespace SF.Biz.Products
 			}
 			return ids;
 		}
-		public async Task<TCategory[]> GetCategories(string Tag)
+		public async Task<TCategory[]> GetTaggedCategories(string Tag)
 		{
 			return await GetCategories(await GetCategoryIds(Tag));
 		}
@@ -189,13 +189,13 @@ namespace SF.Biz.Products
 		}
       
 
-        public async Task<QueryResult<TItem>> ListItems(string Tag, bool WithChildCategoryItems, string filter, Paging paging)
+        public async Task<QueryResult<TItem>> ListTaggedItems(string Tag, bool WithChildCategoryItems, string filter, Paging paging)
         {
             var cids = await GetCategoryIds(Tag);
             if (cids.Length == 0)
                 return QueryResult<TItem>.Empty;
             if (cids.Length == 1)
-                return await ListItems(cids[0], WithChildCategoryItems, filter, paging);
+                return await ListCategoryItems(cids[0], WithChildCategoryItems, filter, paging);
 
             var aids = new HashSet<long>();
             foreach(var cid in cids)
@@ -207,10 +207,10 @@ namespace SF.Biz.Products
             if (!Args.ProductId.HasValue)
             {
                 if (Args.CategoryId != null)
-                    return await ListItems(Args.CategoryId.Value, true, Args.Title, paging);
+                    return await ListCategoryItems(Args.CategoryId.Value, true, Args.Title, paging);
                 if (Args.CategoryTag != null)
-                    return await ListItems(Args.CategoryTag, true, Args.Title, paging);
-                return await ListItems(MainCategoryId, true, Args.Title, paging);
+                    return await ListTaggedItems(Args.CategoryTag, true, Args.Title, paging);
+                return await ListCategoryItems(MainCategoryId, true, Args.Title, paging);
             }
             var pi = await GetProducts(new[] { Args.ProductId.Value });
             if (pi.Length == 0)
@@ -275,7 +275,7 @@ namespace SF.Biz.Products
 			}
 			return ids;
 		}
-		public async Task<QueryResult<TItem>> ListItems(long CategoryId, bool WithChildCategoryItems, string filter, Paging paging)
+		public async Task<QueryResult<TItem>> ListCategoryItems(long CategoryId, bool WithChildCategoryItems, string filter, Paging paging)
 		{
 			var ids = await ListItemIdents(CategoryId, WithChildCategoryItems, filter, paging);
 			return await NewItemResult(ids,filter,paging);
