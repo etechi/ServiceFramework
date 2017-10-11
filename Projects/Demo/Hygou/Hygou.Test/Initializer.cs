@@ -28,6 +28,16 @@ namespace Hygou.UT
 				);
 		}
 		[Fact]
+		public async Task InitProducts()
+		{
+			await Scope(async (IServiceProvider sp) =>
+			{
+				await sp.InitServices("product");
+				return 0;
+			}
+				);
+		}
+		[Fact]
 		public async Task InitData()
 		{
 			await Scope(async (IServiceProvider sp) =>

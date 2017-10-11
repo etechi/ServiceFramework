@@ -5,6 +5,7 @@ using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
 using SF.Core.ServiceManagement.Management;
 using SF.Management.FrontEndContents;
+using SF.Services.Settings;
 using SF.Users.Members;
 using SF.Users.Members.Models;
 using System;
@@ -32,11 +33,21 @@ namespace Hygou.Setup
 		}
 		public static async Task Initialize(IServiceProvider ServiceProvider, EnvironmentType EnvType)
 		{
+			long? ScopeId = null;
 			//scope.Resolve<IAuditService>().Disabled = true;
 
 			//await InitRoles(scope);
 			//var sysadmin = await EnsureSysAdmin(scope);
 			var sysseller = await EnsureSysSeller(ServiceProvider);
+
+			await ServiceProvider.Invoke(async (IServiceInstanceManager sim) =>
+				await sim.UpdateSetting<HygouSetting>(
+				   ScopeId,
+				   s =>
+				   {
+					   s.DefaultSellerId = sysseller.Id;
+				   })
+				   );
 			//await InitAccounting(scope);
 			//await SysServiceInitializer.Initialize(scope, EnvType);
 
@@ -45,7 +56,6 @@ namespace Hygou.Setup
 			//await InitPayments(scope);
 
 			//await ResetSettings(scope, sysadmin.Id, sysseller.Id, EnvType);
-			long? ScopeId = null;
 			var tailDocContents = await ServiceProvider.Invoke((IServiceInstanceManager sim)=>DocInitializer.DocEnsure(ServiceProvider,sim,ScopeId));
 			
 			var prdtypes = await ServiceProvider.Invoke((IProductTypeManager m)=>ProductTypeInitializer.Create(m));

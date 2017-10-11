@@ -25,6 +25,7 @@ namespace Hygou
 		{
 			sc.AddSetting<HygouSetting>();
 			sc.AddInitializer("data", "初始化Hygou数据", sp => SystemInitializer.Initialize(sp, envType));
+			sc.AddInitializer("product", "初始化Hygou产品", sp => SampleImporter.ImportSamples(sp));
 			return sc;
 		}
 	

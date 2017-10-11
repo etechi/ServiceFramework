@@ -247,21 +247,23 @@ namespace SF.Biz.Products.Entity
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
-			Model.Id = await IdentGenerator.GenerateAsync(GetType().FullName);
+			Model.Id = await IdentGenerator.GenerateAsync(Model.GetType().FullName);
 			Model.Detail = new TProductDetail();
 			Model.ObjectState = EntityLogicState.Disabled;
 			Model.CreatedTime = Now;
+			var itemId = await IdentGenerator.GenerateAsync(typeof(TItem).GetType().FullName);
 			Model.Items = new[]
 			{
 				new TItem
 				{
-					SellerId=obj.OwnerUserId,
+					Id= itemId,
+					SellerId =obj.OwnerUserId,
 					CreatedTime=Model.CreatedTime,
 					UpdatedTime=Model.CreatedTime,
 					CategoryItems=obj.CategoryIds==null?
 						null:
 						obj.CategoryIds.Select(
-							cid=>new TCategoryItem { CategoryId =cid}
+							cid=>new TCategoryItem { CategoryId =cid,ItemId=itemId}
 							)
 						.ToArray()
 				}
@@ -420,20 +422,7 @@ namespace SF.Biz.Products.Entity
 		//	return re;
 		//}
 
-		protected virtual IContextQueryable<TProduct> OnBuildQuery(IContextQueryable<TProduct> query, ProductInternalQueryArgument args)
-		{
-			//if (args.ProductId != null)
-			//	return query.Where(q => q.Id == args.ProductId.Value);
-
-			query = query
-				.Filter(args.State, p => p.ObjectState)
-				.Filter(args.ProductTypeId, p => p.TypeId)
-				.Filter(args.UpdateTime, p => p.UpdatedTime)
-				.Filter(args.Price, p => p.Price)
-				.FilterContains(args.Name, p => p.Name);
-
-			return query;
-		}
+		
 		//public async Task<QueryResult<TInternal>> Query(ProductInternalQueryArgument args,Paging paging)
 		//{
 		//	var q = OnBuildQuery(Context.ReadOnly<TProduct>(),args);
@@ -506,8 +495,15 @@ namespace SF.Biz.Products.Entity
 				.Where(s => s.Id == Id && s.ObjectState == EntityLogicState.Enabled)
                 ).SingleOrDefaultAsync();
         }
+		
 		protected override IContextQueryable<TProduct> OnBuildQuery(IContextQueryable<TProduct> Query, ProductInternalQueryArgument Arg, Paging paging)
 		{
+			Query = Query
+				   .Filter(Arg.State, p => p.ObjectState)
+				   .Filter(Arg.ProductTypeId, p => p.TypeId)
+				   .Filter(Arg.UpdateTime, p => p.UpdatedTime)
+				   .Filter(Arg.Price, p => p.Price)
+				   .FilterContains(Arg.Name, p => p.Name);
 			return Query;
 		}
 		protected override PagingQueryBuilder<TProduct> PagingQueryBuilder { get; } = new PagingQueryBuilder<TProduct>(

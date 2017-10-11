@@ -51,6 +51,10 @@ namespace SF.Services.Settings
 		{
 			public T Value { get; set; }
 		}
+		public static T Setting<T>(this IServiceProvider sp)
+		{
+			return sp.WithScope(isp => isp.Resolve<ISettingService<T>>().Value);
+		}
 		public static async Task UpdateSetting<T>(
 			this IServiceInstanceManager Manager,
 			long? ParentId,

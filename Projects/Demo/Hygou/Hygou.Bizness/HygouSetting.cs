@@ -21,6 +21,13 @@ namespace Hygou
 		[Comment(GroupName = "产品", Name = "主产品目录", Description = "主产品目录")]
 		[EntityIdent(typeof(ProductInternal))]
 		public long MainProductCategoryId { get; set; }
+
+		[Required]
+		[Comment(GroupName = "产品", Name = "默认卖家")]
+		[EntityIdent(typeof(SF.Users.Members.Models.MemberInternal))]
+		public long DefaultSellerId { get; set; }
+
+
 	}
 
 

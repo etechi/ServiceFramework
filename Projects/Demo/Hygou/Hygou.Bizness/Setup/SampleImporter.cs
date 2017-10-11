@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SF.Core.ServiceManagement;
+using SF.Services.Settings;
 
 namespace Hygou.Setup
 {
@@ -24,12 +26,34 @@ namespace Hygou.Setup
             return StaticRes.Product+"-" + s.Replace("/", "-").Replace(".", "-");
         }
 
+		public static Task ImportSamples(
+			IServiceProvider sp
+			)
+		{
+			return sp.Invoke((
+				(
+				IProductManager productManager,
+				IItemManager itemManager,
+				IProductTypeManager ProductTypeManager,
+				SF.Core.Hosting.IFilePathResolver pathResolver,
+				ISettingService<HygouSetting> setting
+				) svcs
+			) =>
+				ImportSamples(
+					svcs.productManager,
+					svcs.itemManager,
+					svcs.ProductTypeManager,
+					svcs.pathResolver,
+					svcs.setting.Value
+					)
+				);
+		}
         public static async Task ImportSamples(
 			IProductManager productManager,
 			IItemManager itemManager,
 			IProductTypeManager ProductTypeManager,
 			SF.Core.Hosting.IFilePathResolver pathResolver,
-			long SellerId
+			HygouSetting setting
 			)
 		{
             var list = System.IO.File.ReadAllLines(pathResolver.Resolve("root://StaticResources/产品数据/产品清单.csv"),Encoding.GetEncoding("GBK")).Skip(1).Select(l =>
@@ -75,7 +99,7 @@ namespace Hygou.Setup
                 if (images.Length == 0)
                     continue;
                 var p = await productManager.ProductEnsure(
-					SellerId,
+					setting.DefaultSellerId,
 					typeMap[item.cats[0]],
 					item.name,
 					item.marketprice==0?item.price:item.marketprice,
