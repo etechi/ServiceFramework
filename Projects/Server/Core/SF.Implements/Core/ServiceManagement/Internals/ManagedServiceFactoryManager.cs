@@ -24,7 +24,7 @@ namespace SF.Core.ServiceManagement.Internals
 			public InternalServiceData(ServiceReference[] srs)
 			{
 				InternalServiceIds = srs.Select(i => i.Id).ToArray();
-				foreach (var g in srs.Where(i => i.Name != null).GroupBy(s => s.Name))
+				foreach (var g in srs.Where(i => i.ServiceIdent != null).GroupBy(s => s.ServiceIdent))
 					Add(g.Key, g.Select(i => i.Id).ToArray());
 			}
 		}

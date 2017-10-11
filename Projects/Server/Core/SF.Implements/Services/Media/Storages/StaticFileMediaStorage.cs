@@ -25,6 +25,7 @@ namespace SF.Services.Media.Storages
 		{
 			this.RootPath = RootPath;
 			this.MimeResolver = MimeResolver;
+			this.PathResolver = PathResolver;
 		}
 		public Task<bool> RemoveAsync(string Id)
         {

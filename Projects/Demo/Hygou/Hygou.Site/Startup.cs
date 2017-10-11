@@ -39,7 +39,7 @@ namespace Hygou
 
 			var ins = HygouApp.Setup(SF.Core.Hosting.EnvironmentType.Production, services)
 							.With(sc =>
-								sc.AddAspNetCoreHostingService()
+								sc.AddAspNetCore()
 								)
 							.OnEnvType(
 								t=>t!=EnvironmentType.Utils,
@@ -76,7 +76,7 @@ namespace Hygou
 				routes.MapRoute(
 					name: "Media",
 					template: "r/{id?}",
-					defaults: new { controller = "media", action = "get" }
+					defaults: new { scope = "api" , controller = "media", action = "get" }
 				);
 				routes.MapRoute(
 					name: "ServiceApi",

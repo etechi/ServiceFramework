@@ -119,15 +119,27 @@ namespace SF.Core.ServiceManagement.Management
 				(ServiceInstanceEditable e) => { e.Setting = Edit(e.Setting); }
 				);
 		}
+		public static async Task<ObjectKey<long>> GetService<I, T>(
+		this IServiceInstanceManager Manager,
+		long? ParentId = null
+			) => await Manager.QuerySingleEntityIdent(
+		new ServiceInstanceQueryArgument
+		{
+			ServiceId = typeof(I).GetFullName().UTF8Bytes().MD5().Hex(),
+			ImplementId = (typeof(T).GetFullName() + "@" + typeof(I).GetFullName()).UTF8Bytes().MD5().Hex(),
+			ContainerId = ParentId ?? 0,
+		});
 		public static async Task<ObjectKey<long>> TryGetService<I,T>(
 			this IServiceInstanceManager Manager,
-			long? ParentId = null
+			long? ParentId = null,
+			string ServiceIdent=null
 			) =>await Manager.QuerySingleEntityIdent(
 				new ServiceInstanceQueryArgument
 				{
 					ServiceId = typeof(I).GetFullName().UTF8Bytes().MD5().Hex(),
 					ImplementId = (typeof(T).GetFullName() + "@" + typeof(I).GetFullName()).UTF8Bytes().MD5().Hex(),
 					ContainerId = ParentId ?? 0,
+					ServiceIdent=ServiceIdent
 				});
 		
 		public static async Task<Models.ServiceInstanceEditable> TryAddService<I, T>(
@@ -141,7 +153,7 @@ namespace SF.Core.ServiceManagement.Management
 			EntityLogicState State = EntityLogicState.Enabled
 			)
 		{
-			var re = await Manager.TryGetService<I, T>(ParentId);
+			var re = await Manager.TryGetService<I, T>(ParentId, ServiceIdent);
 			return await Manager.EnsureEntity(
 				re,
 				() => new Models.ServiceInstanceEditable { },

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Drawing.Drawing2D;
+using System.DrawingCore;
+using System.DrawingCore.Imaging;
+using System.DrawingCore.Drawing2D;
 
 namespace SF.Core.Drawing.dotNetFramework
 {

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.DrawingCore;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -44,15 +44,15 @@ namespace SF.Core.Drawing.dotNetFramework
 
 			set
 			{
-				g.Transform = new System.Drawing.Drawing2D.Matrix(
+				g.Transform = new System.DrawingCore.Drawing2D.Matrix(
 					(float)value[0], (float)value[1],
 					(float)value[3], (float)value[4],
 					(float)value[6], (float)value[7]
 					);
 			}
 		}
-		System.Drawing.Rectangle FromRectD(RectD rc) =>
-				new System.Drawing.Rectangle((int)rc.Left, (int)rc.Top, (int)rc.Width, (int)rc.Height);
+		System.DrawingCore.Rectangle FromRectD(RectD rc) =>
+				new System.DrawingCore.Rectangle((int)rc.Left, (int)rc.Top, (int)rc.Width, (int)rc.Height);
 
 		public void DrawImage(IImage Image, RectD SourceRect, RectD DestRect)
 		{
@@ -71,8 +71,8 @@ namespace SF.Core.Drawing.dotNetFramework
 
 		public void FillRect(RectD Rect, Color Color)
 		{
-			using (var b = new SolidBrush(System.Drawing.Color.FromArgb(Color.Alpha, Color.Red, Color.Green, Color.Blue)))
-				g.FillRectangle(b, (System.Drawing.Rectangle)FromRectD(Rect));
+			using (var b = new SolidBrush(System.DrawingCore.Color.FromArgb(Color.Alpha, Color.Red, Color.Green, Color.Blue)))
+				g.FillRectangle(b, (System.DrawingCore.Rectangle)FromRectD(Rect));
 		}
 
 		public IImageBuffer Buffer { get; }

@@ -9,7 +9,7 @@ using SF.Clients;
 
 namespace SF.Core.ServiceManagement
 {
-	public static class AspNetCoreServiceCollectionExtension 
+	public static class AspNetCoreHostingServiceCollectionExtension 
 	{
 		public static IServiceCollection AddAspNetCoreFilePathStructure(this IServiceCollection sc)
 		{

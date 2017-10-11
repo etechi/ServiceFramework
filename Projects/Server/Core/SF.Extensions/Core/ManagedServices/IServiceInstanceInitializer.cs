@@ -160,15 +160,24 @@ namespace SF.Core.ServiceManagement
 					),
 				cfg,
 				childServices
-				);
+				).WithIdent(ServiceIdent);
+
 		public static IServiceInstanceInitializer<I> Service<I, T>(
 			this IServiceInstanceManager manager,
+			object cfg,
+			params IServiceInstanceInitializer[] childServices
+			) where T : I
+			=> manager.ServiceWithIdent<I,T>(null, cfg, childServices);
+
+		public static IServiceInstanceInitializer<I> ServiceWithIdent<I, T>(
+			this IServiceInstanceManager manager,
+			string ServiceIdent,
 			object cfg,
 			params IServiceInstanceInitializer[] childServices
 			) where T:I
 			=>
 			manager.CreateService<I, T>(
-				async parent => (await manager.TryGetService<I, T>(parent))?.Id??0,
+				async parent => (await manager.TryGetService<I, T>(parent, ServiceIdent))?.Id??0,
 				(parent, rcfg,scfg) => manager.TryAddService<I, T>(
 					parent, 
 					rcfg,
@@ -180,7 +189,7 @@ namespace SF.Core.ServiceManagement
 					),
 				cfg,
 				childServices
-				);
+				).WithIdent(ServiceIdent);
 
 		static IServiceInstanceInitializer<I> CreateService<I, T>(
 			this IServiceInstanceManager manager,
@@ -205,7 +214,7 @@ namespace SF.Core.ServiceManagement
 						await chd.Ensure(sp, svcId);
 
 					var rcfg = await ConfigResolve(cfg, sp, svcId, children,0);
-					var nsvcId = (await ServiceCreator(parent, cfg, scfg)).Id;
+					var nsvcId = (await ServiceCreator(parent, rcfg, scfg)).Id;
 					if (nsvcId != svcId)
 						throw new InvalidOperationException($"服务初始化{typeof(T)}@{typeof(I)}返回ID不一致：第一次：{svcId},第二次：{nsvcId}");
 

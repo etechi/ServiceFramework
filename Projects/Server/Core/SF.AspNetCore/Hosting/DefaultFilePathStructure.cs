@@ -13,7 +13,7 @@ namespace SF.AspNetCore
 
 		public FilePathDefination FilePathDefination=>new FilePathDefination();
 
-		public string RootPath => System.IO.Path.Combine(Environment.ContentRootPath, "root");
+		public string RootPath => System.IO.Path.Combine(Environment.ContentRootPath);
 		public DefaultFilePathStructure(IHostingEnvironment env)
 		{
 			Environment = env;

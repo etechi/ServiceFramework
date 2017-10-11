@@ -67,6 +67,15 @@ namespace Hygou
 
 		static void ConfigServices(SF.Core.ServiceManagement.IServiceCollection Services,EnvironmentType EnvType)
 		{
+			Services.AddSystemDrawing();
+			Services.AddMediaService(
+				EnvType,
+				true,
+				new Dictionary<string, string>
+				{
+					{"s0","root://StaticResources" },
+					{"p0","root://StaticResources/产品数据/产品图片" }
+				});
 			Services.AddMicrosoftMemoryCacheAsLocalCache();
 			Services.AddHygouServices(EnvType);
 			Services.AddEFCoreDataEntity((sp, conn) => sp.Resolve<HygouDbContext>());
@@ -74,6 +83,7 @@ namespace Hygou
 			{
 				ConnectionString = "data source=.\\SQLEXPRESS;initial catalog=sf-demo-hygou;user id=sa;pwd=system;MultipleActiveResultSets=True;App=EntityFramework"
 			});
+
 
 			//Services.AddSystemDrawing();
 			//Services.AddEF6DataEntity();

@@ -121,7 +121,7 @@ namespace SF.Core.ServiceManagement.Storages
 			var svcs = GetServices(Type, ScopeId);
 			return svcs.Values
 				.Take(Limit)
-				.Select(c =>new ServiceReference { Id = c.Id, Name = c.Name })
+				.Select(c =>new ServiceReference { Id = c.Id, ServiceIdent = c.Name })
 				.ToArray();
 		}
 	}

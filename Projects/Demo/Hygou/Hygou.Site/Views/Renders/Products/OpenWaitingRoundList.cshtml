@@ -1,6 +1,9 @@
-﻿@model ServiceProtocol.Biz.UIManager.Mvc.RenderModel<ServiceProtocol.ObjectManager.QueryResult<CrowdMall.Bizness.CrowdFounding.Models.CFRound>>
+﻿
+@model SF.Management.FrontEndContents.Mvc.RenderModel<SF.Entities.QueryResult<SF.Biz.Products.IItem>>
+@using SF.AspNetCore.Mvc
+
 @{
-	var showStatus =  !(Model.Args?.Get("hideStatus") == "true");
+	var showStatus = true;// !(Model.Args?.Get("hideStatus") == "true");
 }
 
 <div class="product-list left-menu-item" data-menu-text="@Model.Content.Title2" >
@@ -17,7 +20,7 @@
 	</div>
 }
 	<ul class="items">
-		@foreach (var item in Model.Data.Items)
+		@*@foreach (var item in Model.Data.Items)
 		{
 			<li class="product-round list-item">
 				<div>
@@ -57,6 +60,6 @@
 					}
 				</div>
 			</li>
-		}
+		}*@
 	</ul>
 </div>

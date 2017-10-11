@@ -84,57 +84,57 @@ namespace SF.Core.ServiceManagement
 		
 
 
-		public static IServiceInstanceInitializer<IMediaStorage> NewStaticFileMediaStorage(this IServiceInstanceManager manager)
+		public static IServiceInstanceInitializer<IMediaStorage> NewStaticFileMediaStorage(
+			this IServiceInstanceManager manager,
+			string Ident,
+			string rootPath=null
+			)
 		{
-			return manager.Service<IMediaStorage, StaticFileMediaStorage>(
+			return manager.ServiceWithIdent<IMediaStorage, StaticFileMediaStorage>(
+				Ident,
 				new
 				{
 					//PathResolver = fpr,
-					RootPath = "data://meida/static"
+					RootPath = rootPath??"data://meida/static"
 				}
-				);
+				).WithIdent(Ident);
 		}
-		public static IServiceInstanceInitializer<IMediaStorage> NewFileSystemMediaStorage(this IServiceInstanceManager manager)
+		public static IServiceInstanceInitializer<IMediaStorage> NewFileSystemMediaStorage(
+			this IServiceInstanceManager manager,
+			string Ident
+			)
 		{
-			return manager.Service<IMediaStorage, FileSystemMediaStorage>(
+			return manager.ServiceWithIdent<IMediaStorage, FileSystemMediaStorage>(
+				Ident,
 				new
 				{
 					//PathResolver = fpr,
 					RootPath = "data://media/default"
 				}
-				);
+				).WithIdent(Ident);
 		}
 		public static IServiceInstanceInitializer<IMediaManager> NewMediaManager(
-			this IServiceInstanceManager manager,
-			params (string,IServiceInstanceInitializer)[] types
+			this IServiceInstanceManager manager
 			)
 		{
-			return manager.Service<IMediaManager, MediaManager>(
-				new
-				{
-					Setting = new
-					{
-						Types =  types.Select( pair=> 
-							new {
-								Type=pair.Item1,
-								Storage= pair.Item2
-							}
-						)
-					}
-				}
-			);
+			return manager.Service<IMediaManager, MediaManager>(new{});
 		}
 		public static IServiceInstanceInitializer NewMediaService(
 			this IServiceInstanceManager manager,
-			IServiceInstanceInitializer<IMediaManager> mediaManager=null
+			IServiceInstanceInitializer<IMediaManager> mediaManager = null,
+			Dictionary<string, string> ExtraStaticResourcePaths = null
 			)
 		{
 
 			if (mediaManager == null)
-				mediaManager = manager.NewMediaManager(
-					("ms", manager.NewFileSystemMediaStorage()),
-					("ss", manager.NewStaticFileMediaStorage())
-					);
+				mediaManager = manager.NewMediaManager();
+			var stgs = (ExtraStaticResourcePaths?.Select(p =>
+					 manager.NewStaticFileMediaStorage(p.Key, p.Value) as IServiceInstanceInitializer)
+					?? Enumerable.Empty<IServiceInstanceInitializer>()
+				).WithFirst(manager.NewFileSystemMediaStorage("ms"))
+					.WithFirst(manager.NewStaticFileMediaStorage("ss"))
+					.WithFirst(mediaManager)
+					.ToArray();
 			var svc = manager.DefaultService<IMediaService, MediaService>(
 				new
 				{
@@ -144,14 +144,15 @@ namespace SF.Core.ServiceManagement
 						UploadMediaType = "ms"
 					}
 				},
-				mediaManager
+				stgs
 				);
 			return svc;
 		}
 		public static IServiceCollection AddMediaService(
 			this IServiceCollection sc,
 			EnvironmentType EnvType,
-			bool InitMediaServiceInstance=true
+			bool InitMediaServiceInstance=true,
+			Dictionary<string,string> ExtreStaticResourcePaths=null
 			)
 		{
 			sc.AddSingleton<IMediaMetaCache, MediaMetaCache>();
@@ -164,7 +165,7 @@ namespace SF.Core.ServiceManagement
 
 			if(InitMediaServiceInstance)
 				sc.InitService("媒体服务", (sp, sim) =>
-					sim.NewMediaService()
+					sim.NewMediaService(null, ExtreStaticResourcePaths)
 					);
 
 

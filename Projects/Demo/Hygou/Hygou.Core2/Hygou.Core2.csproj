@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\..\Server\Core\SF.Support\SF.Support.csproj" />
     <ProjectReference Include="..\..\..\Server\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj" />
     <ProjectReference Include="..\..\..\Server\Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.csproj" />
+    <ProjectReference Include="..\..\..\Server\Implements\SF.Drawing.ZKWeb\SF.Drawing.ZKWeb.csproj" />
     <ProjectReference Include="..\Hygou.Bizness\Hygou.Bizness.csproj" />
   </ItemGroup>
 

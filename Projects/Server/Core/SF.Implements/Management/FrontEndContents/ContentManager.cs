@@ -116,7 +116,7 @@ namespace SF.Management.FrontEndContents
 
 		public async Task<IContent> LoadContent(long contentId)
 		{
-			return await GetAsync(ObjectKey.From(contentId));
+			return await LoadForEdit(ObjectKey.From(contentId));
 		}
 
 		public ContentManager(IDataSetEntityManager<TContentPublic,TContent> EntityManager) : base(EntityManager)

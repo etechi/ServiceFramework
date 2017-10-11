@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
+using System.DrawingCore.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,8 +11,8 @@ namespace SF.Core.Drawing.dotNetFramework
 {
 	public class Image : IImageBuffer
 	{
-		public System.Drawing.Image RawImage { get; }
-		internal Image(System.Drawing.Image RawImage)
+		public System.DrawingCore.Image RawImage { get; }
+		internal Image(System.DrawingCore.Image RawImage)
 		{
 			this.RawImage = RawImage;
 		}
@@ -59,7 +59,7 @@ namespace SF.Core.Drawing.dotNetFramework
 			if (OutputQuality > 0)
 			{
 				eps = new EncoderParameters(1);
-				eps.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, OutputQuality);
+				eps.Param[0] = new EncoderParameter(System.DrawingCore.Imaging.Encoder.Quality, OutputQuality);
 			}
 
 			RawImage.Save(Stream, ci, eps);
