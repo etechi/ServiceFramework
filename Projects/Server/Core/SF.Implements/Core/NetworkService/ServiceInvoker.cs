@@ -139,8 +139,13 @@ namespace SF.Core.NetworkService
 						),
 					argSvc.To(Type).CallMethod(
 						method,
-						args.Select(a =>
-							varArg.GetMember(a.Name)
+						args.Select(a => {
+							var prop = argType.GetProperty(a.Name);
+							if (prop == null)
+								return Expression.Constant(a.ParameterType.GetDefaultValue(), a.ParameterType);
+							else
+								return varArg.GetMember(prop); 
+							}
 							).ToArray()
 						)
 					),

@@ -116,6 +116,9 @@ namespace SF.Core.NetworkService
 			else if (name.Length - b > 10 && name.EndsWith("Controller"))
 				e -= 10;
 			name = name.Substring(b, e - b);
+
+			type.GetFullName()
+
 			return name;
 		}
 		public string FormatMethodName(System.Reflection.MethodInfo Method)

@@ -24,7 +24,7 @@ namespace Hygou.Setup
 				"产品内容",
 				"所有产品",
 				"service",
-				$"{{\"service\":\"Product\",\"method\":\"List\",\"args\":{{\"id\":{collections.TypedCategoryRoot.Id}}}}}",
+				$"{{\"service\":\"Item\",\"method\":\"ListCategoryItems\",\"args\":{{\"CategoryId\":{collections.TypedCategoryRoot.Id}}}}}",
 				$"/cat"
 				);
 
@@ -32,7 +32,7 @@ namespace Hygou.Setup
 				"夺宝内容",
 				"所有夺宝轮次",
 				"service",
-				$"{{\"service\":\"Product\",\"method\":\"List\",\"args\":{{\"id\":{collections.TypedCategoryRoot.Id}}}}}",
+				$"{{\"service\":\"Item\",\"method\":\"ListCategoryItems\",\"args\":{{\"CategoryId\":{collections.TypedCategoryRoot.Id}}}}}",
 				$"/item"
 				);
 
@@ -40,14 +40,14 @@ namespace Hygou.Setup
 				"夺宝内容",
 				"即将揭晓产品",
 				"service",
-				$"{{\"service\":\"Product\",\"method\":\"List\",\"args\":{{\"id\":{collections.TypedCategoryRoot.Id}}}}}",
+				$"{{\"service\":\"Item\",\"method\":\"ListCategoryItems\",\"args\":{{\"CategoryId\":{collections.TypedCategoryRoot.Id}}}}}",
 				$"/item"
 				);
 			var round_opened = await ContentManager.ContentEnsure(
 				"夺宝内容",
 				"最新揭晓产品",
 				"service",
-				$"{{\"service\":\"Product\",\"method\":\"List\",\"args\":{{\"id\":{collections.TypedCategoryRoot.Id}}}}}",
+				$"{{\"service\":\"Item\",\"method\":\"ListCategoryItems\",\"args\":{{\"CategoryId\":{collections.TypedCategoryRoot.Id}}}}}",
 				$"/item"
 				);
 
@@ -57,7 +57,7 @@ namespace Hygou.Setup
 					"分类产品内容",
 					t.Title,
 					"service",
-					$"{{\"service\":\"Product\",\"method\":\"List\",\"args\":{{\"id\":{t.Id},\"_pm\":\"order\"}}}}",
+				$"{{\"service\":\"Item\",\"method\":\"ListCategoryItems\",\"args\":{{\"CategoryId\":{t.Id}}}}}",
 					$"/cat/{t.Id}"
 					));
 

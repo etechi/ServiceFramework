@@ -28,9 +28,11 @@ namespace SF.Core.ServiceManagement
 			sc.AddScoped<IServiceMetadataService, DefaultServiceMetadataService>();
 			sc.AddSingleton<IServiceTypeCollection>(sp =>
 			{
-				var ServiceTypes = (Services ??
-					sc.GetServiceTypes()
-					.Where(st => st.GetCustomAttribute<NetworkServiceAttribute>() != null)
+				var ServiceTypes = (from svc in (Services ??
+					sc.GetServiceTypes())
+					from type in  svc.AllInterfaces()
+					where type.GetCustomAttribute<NetworkServiceAttribute>() != null
+					select type
 					).ToArray();
 				return new ServiceTypeCollection(ServiceTypes);
 			});

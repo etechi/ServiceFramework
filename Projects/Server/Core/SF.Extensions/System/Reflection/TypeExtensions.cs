@@ -29,6 +29,20 @@ namespace System.Reflection
 		};
 
 		static System.Collections.Concurrent.ConcurrentDictionary<(Type,bool), string> TypeFullNames { get; } = new Collections.Concurrent.ConcurrentDictionary<(Type,bool), string>();
+
+		public static string GetGenericTypeArgumentString(this Type type)
+		{
+			if (type.IsGenericTypeDefinition)
+			{
+				return $"<{Enumerable.Repeat("", type.GetGenericArguments().Length ).Join(",")}>";
+			}
+			else if (type.IsGenericType)
+			{
+				return $"<{Enumerable.Repeat("", p.Item2.ToInt32()).Join(",")}>";
+			}
+			else
+				return string.Empty;
+		}
 		public static string GetFullName(this Type type) => type.GetTypeName(true);
 		public static string GetTypeName(this Type type,bool withNamespace=false)
 		{

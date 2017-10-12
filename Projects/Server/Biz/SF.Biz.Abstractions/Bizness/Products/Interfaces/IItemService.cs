@@ -37,7 +37,7 @@ namespace SF.Biz.Products
 		IItemService<IItem, ICategoryCached>
 	{ }
 
-
+	[NetworkService]
 	public interface IItemService<TItem, TCategory>:
 		IEntityQueryable<TItem,ItemQueryArgument>
 		where TItem: IItem
