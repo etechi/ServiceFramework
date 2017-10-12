@@ -30,7 +30,7 @@ namespace System.Reflection
 
 		static System.Collections.Concurrent.ConcurrentDictionary<(Type,bool), string> TypeFullNames { get; } = new Collections.Concurrent.ConcurrentDictionary<(Type,bool), string>();
 
-		public static string GetGenericTypeArgumentString(this Type type)
+		public static string GetTypeNamePostfix(this Type type,bool withNamespace)
 		{
 			if (type.IsGenericTypeDefinition)
 			{
@@ -38,7 +38,10 @@ namespace System.Reflection
 			}
 			else if (type.IsGenericType)
 			{
-				return $"<{Enumerable.Repeat("", p.Item2.ToInt32()).Join(",")}>";
+				var gas = type.GenericTypeArguments;
+				if (type.IsGenericTypeOf(typeof(Nullable<>)))
+					return "?";
+				return $"<{gas.Select(at=>at.GetTypeName(withNamespace)).Join(",")}>";
 			}
 			else
 				return string.Empty;

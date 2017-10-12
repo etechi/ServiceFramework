@@ -1,5 +1,5 @@
 ﻿@{ 
-    var cats = (IEnumerable<CrowdMall.Bizness.Docs.Category>)ViewBag.Categories;
+    var cats = (IEnumerable<SF.Common.Documents.Category>)ViewBag.Categories;
     var CurrentDocId = ViewBag.CurrentDocId;
 }
 <div class="help-menu">
@@ -9,7 +9,7 @@
 			<li>
 				<div class="help-category-item">@cat.Name</div>
 				<ul class="doc-list">
-					@foreach (var doc in cat.Documents)
+					@foreach (var doc in cat.Items)
 					{
 						<li class="doc-item @(doc.Id==CurrentDocId?"active":"")">
 							<a href="/help/doc/@doc.Id">

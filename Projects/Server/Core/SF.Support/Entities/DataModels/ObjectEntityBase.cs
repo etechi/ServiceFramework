@@ -34,6 +34,7 @@ namespace SF.Entities.DataModels
 
 		[Comment("区域")]
 		[Index]
+		[ServiceScopeId]
 		public virtual long? ScopeId { get; set; }
 
 		[Comment("对象状态")]

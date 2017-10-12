@@ -113,6 +113,7 @@ namespace SF.Core.ServiceManagement
 
 			//Entity Modify Support
 			sc.AddSingleton<IEntityPropertyModifierProvider, AutoKeyPropertyModifierProvider>();
+			sc.AddSingleton<IEntityPropertyModifierProvider, ServiceScopeIdPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, DefaultPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, JsonDataPropertyModifierProvider>();
 			sc.AddSingleton<IEntityModifierProvider, PropertyEntityModifierProvider>();

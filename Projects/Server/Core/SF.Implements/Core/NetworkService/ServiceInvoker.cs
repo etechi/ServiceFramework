@@ -27,6 +27,7 @@ namespace SF.Core.NetworkService
 			IServiceTypeCollection ServiceTypeCollection
 			)
 		{
+			this.BuildRule = BuildRule;
 			this.JsonSerializer = JsonSerializer;
 			this.ServiceTypes = ServiceTypeCollection.Types.ToDictionary(
 				t => BuildRule.FormatServiceName(t), t => t
@@ -82,7 +83,7 @@ namespace SF.Core.NetworkService
 		}
 
 		static volatile int MethodArgumentTypeIdentSeed=1;
-		class BaseMethodArgument
+		public class BaseMethodArgument
 		{
 
 		}

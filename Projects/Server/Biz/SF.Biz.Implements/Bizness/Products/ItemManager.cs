@@ -45,7 +45,21 @@ namespace SF.Biz.Products.Entity
 			);
 		protected override IContextQueryable<TItem> OnBuildQuery(IContextQueryable<TItem> Query, ItemQueryArgument Arg, Paging paging)
 		{
-			return Query;//.Filter(Arg.CategoryId;
+			if (Arg == null)
+				return Query;
+
+			if (Arg.CategoryId.HasValue)
+				Query = Query.Where(i => i.CategoryItems.Any(ci => ci.CategoryId == Arg.CategoryId.Value));
+
+			if(Arg.CategoryTag.HasContent())
+				Query = Query.Where(i => i.CategoryItems.Any(ci => ci.Category.Tag == Arg.CategoryTag));
+
+
+			return Query.Filter(Arg.ProductId, i => i.ProductId)
+				.Filter(Arg.SellerId, i => i.SellerId)
+				.FilterContains(Arg.Title, i => i.Title)
+				.Filter(Arg.TypeId, i => i.Product.TypeId)
+				;
 		}
 		protected override IContextQueryable<TInternal> OnMapModelToDetail(IContextQueryable<TItem> Query)
 		{

@@ -1,5 +1,7 @@
 ﻿using SF.Biz.Products;
+using SF.Core;
 using SF.Core.ServiceManagement.Management;
+using SF.Entities;
 using SF.Management.FrontEndContents;
 using SF.Management.FrontEndContents.Friendly;
 using SF.Management.FrontEndContents.SiteConfigModels;
@@ -243,7 +245,7 @@ namespace Hygou.Setup
 											content=prdctns.AllRounds.Id,
 											render="razor",
 											view="~/Views/Renders/Products/OpenWaitingRoundList.cshtml",
-											contentConfig="{\"_pl\":5}",
+											contentConfig=Json.Stringify(new {args=new{ Paging=new Paging{Count=5 } } }),
 											title1="最新揭晓",
                                             title2="揭晓",
                                             title3="1F"
@@ -255,7 +257,7 @@ namespace Hygou.Setup
 											content=prdctns.CategoriesProducts[0].Id,
 											render="razor",
 											view="~/Views/Renders/Products/ProductList.cshtml",
-											contentConfig="{\"_pl\":4}",
+											contentConfig=Json.Stringify(new {args=new{ Paging=new Paging{Count=4 } } }),
                                             title2="充值",
                                             title3="2F"
 										},
@@ -273,7 +275,7 @@ namespace Hygou.Setup
                                             content=prdctns.CategoriesProducts[1].Id,
 											render="razor",
 											view="~/Views/Renders/Products/ProductList.cshtml",
-											contentConfig="{\"_pl\":4}",
+											contentConfig=Json.Stringify(new {args=new{ Paging=new Paging{Count=4 } } }),
 											title3 ="3F",
                                             title2="手机"
 										},
@@ -284,7 +286,7 @@ namespace Hygou.Setup
                                             content=prdctns.CategoriesProducts[2].Id,
 											render="razor",
 											view="~/Views/Renders/Products/ProductList.cshtml",
-											contentConfig="{\"_pl\":4}",
+											contentConfig=Json.Stringify(new { args=new{Paging=new Paging{Count=4 } } }),
                                             title2="数码",
 											title3 ="4F"
 										},
@@ -302,7 +304,7 @@ namespace Hygou.Setup
                                             content=prdctns.CategoriesProducts[3].Id,
 											render="razor",
 											view="~/Views/Renders/Products/ProductList.cshtml",
-											contentConfig="{\"_pl\":4}",
+											contentConfig=Json.Stringify(new {args=new{ Paging=new Paging{Count=4 } } }),
                                             title2="汽车",
                                             title3 ="5F"
                                             
@@ -314,7 +316,7 @@ namespace Hygou.Setup
                                             content=prdctns.CategoriesProducts[4].Id,
                                             render="razor",
                                             view="~/Views/Renders/Products/ProductList.cshtml",
-                                            contentConfig="{\"_pl\":4}",
+                                            contentConfig=Json.Stringify(new { args=new{Paging=new Paging{Count=4 } } }),
                                             title2="黄金",
                                             title3 ="6F"
                                         },

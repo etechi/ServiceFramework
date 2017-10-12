@@ -284,7 +284,8 @@ namespace SF.Biz.Products.Entity
 						Image = p.Image,
 						PublishedTime = p.PublishedTime,
 						Visited = p.Visited,
-						MainItemId = p.Items.Where(it => it.SellerId == p.OwnerUserId).Select(it => it.Id).FirstOrDefault()
+						MainItemId = p.Items.Where(it => it.SellerId == p.OwnerUserId).Select(it => it.Id).FirstOrDefault(),
+						OnSale=p.ObjectState==EntityLogicState.Enabled
 					}
 				};
 		}

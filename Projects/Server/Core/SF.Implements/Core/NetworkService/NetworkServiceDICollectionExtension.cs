@@ -30,9 +30,8 @@ namespace SF.Core.ServiceManagement
 			{
 				var ServiceTypes = (from svc in (Services ??
 					sc.GetServiceTypes())
-					from type in  svc.AllInterfaces()
-					where type.GetCustomAttribute<NetworkServiceAttribute>() != null
-					select type
+					where svc.AllInterfaces().Any(i=>i.GetCustomAttribute<NetworkServiceAttribute>() != null)
+					select svc
 					).ToArray();
 				return new ServiceTypeCollection(ServiceTypes);
 			});

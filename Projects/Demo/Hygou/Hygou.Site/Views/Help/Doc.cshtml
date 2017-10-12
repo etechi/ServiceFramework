@@ -1,6 +1,6 @@
-﻿@model CrowdMall.Bizness.Docs.Document
+﻿@model SF.Common.Documents.Document
 @{ 
-	var cats = (IEnumerable<CrowdMall.Bizness.Docs.Category>)ViewBag.Categories;
+	var cats = (IEnumerable<SF.Common.Documents.Category>)ViewBag.Categories;
 }
 <div class="help-center clearfix container">
 	@Html.Partial("_Menu")
@@ -8,9 +8,9 @@
 		<ol class="breadcrumb">
 			<li><a href="/">首页</a></li>
 			<li><a href="/help/">帮助中心</a></li>
-			@if (Model.Category != null)
+			@if (Model.Container != null)
 			{
-			<li>@Model.Category.Name</li>
+			<li>@Model.Container.Name</li>
 			}
 			<li class="active">@Model.Name</li>
 		</ol>

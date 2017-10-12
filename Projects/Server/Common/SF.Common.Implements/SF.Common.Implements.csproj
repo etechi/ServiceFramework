@@ -21,14 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Common\Documents\Management\Backup\DataModels\Document.cs" />
-    <Compile Include="Common\Documents\Management\Backup\DataModels\DocumentAuthor.cs" />
-    <Compile Include="Common\Documents\Management\Backup\DataModels\DocumentCategory.cs" />
-    <Compile Include="Common\Documents\Management\Backup\DataModels\DocumentTag.cs" />
-    <Compile Include="Common\Documents\Management\Backup\DataModels\DocumentTagReference.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <Folder Include="Common\Documents\Management\Backup\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

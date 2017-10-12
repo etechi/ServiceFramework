@@ -51,7 +51,7 @@ namespace SF.Management.FrontEndContents.Runtime
 		}
 		static ConcurrentDictionary<Type, Func<Task, object>> TaskValueExtectors { get; }
 			= new ConcurrentDictionary<Type, Func<Task, object>>();
-		static Expression ArgTask { get; } = Expression.Parameter(typeof(Expression));
+		static Expression ArgTask { get; } = Expression.Parameter(typeof(Task));
 		static object ExtractTaskResult(Task result)
 		{
 			var retType = result.GetType();

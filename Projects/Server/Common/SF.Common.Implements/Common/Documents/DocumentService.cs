@@ -41,13 +41,27 @@ namespace SF.Common.Documents
 		}
 		protected virtual IContextQueryable<TDocumentPublic> MapModelToPublic(IContextQueryable<TDocument> query, bool detail)
 		{
-			return query.Select(ADT.Poco.MapExpression<TDocument, TDocumentPublic>());
+			return query.SelectUIObjectEntity(
+				m => new TDocumentPublic
+				{
+					ContainerId=m.ContainerId,
+					Id = m.Id,
+					Content = detail ? m.Content : null,
+					Container = m.ContainerId.HasValue ? new TCategoryPublic { Id = m.ContainerId.Value } : null,
+				});
+
 		}
 		protected virtual IContextQueryable<TCategoryPublic> MapModelToPublic(IContextQueryable<TCategory> query, bool detail)
 		{
-			return query.Select(ADT.Poco.MapExpression<TCategory, TCategoryPublic>());
+			return query.SelectUIObjectEntity(
+				m => new TCategoryPublic
+				{
+					ContainerId = m.ContainerId,
+					Id = m.Id,
+				});
+			
 		}
-		
+
 
 		static PagingQueryBuilder<TDocument> docPageBuilder = new PagingQueryBuilder<TDocument>(
 			"order",
@@ -58,17 +72,19 @@ namespace SF.Common.Documents
 
 
 		IContextQueryable<TDocument> LimitedDocuments => Documents.Value.AsQueryable()
-				.WithScope(ServiceInstanceDescriptor)
+				//.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
 		IContextQueryable<TCategory> LimitedCategories => Categories.Value.AsQueryable()
-				.WithScope(ServiceInstanceDescriptor)
+				//.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
 		public async Task<TDocumentPublic> GetAsync(ObjectKey<long> Id)
 		{
 			var q = Documents.Value.AsQueryable()
-				.EnabledScopedById(Id.Id, ServiceInstanceDescriptor);
+				.Where(i=>i.Id==Id.Id)
+				//.EnabledScopedById(Id.Id, ServiceInstanceDescriptor)
+				;
 
 			return await MapModelToPublic(q, true)
 				.SingleOrDefaultAsync();
@@ -76,13 +92,17 @@ namespace SF.Common.Documents
 
 		public async Task<TDocumentPublic> GetByKeyAsync(string Key)
 		{
-			var q = LimitedDocuments.Where(d => d.Ident == Key);
+			var q = LimitedDocuments
+				.Where(d => d.Ident == Key);
 			return await MapModelToPublic(q, true).SingleOrDefaultAsync();
 		}
 
 		public async Task<TCategoryPublic> LoadContainerAsync(long Key)
 		{
-			var q = LimitedCategories.EnabledScopedById(Key, ServiceInstanceDescriptor);
+			var q = LimitedCategories
+				.Where(i=>i.Id==Key)
+				//.EnabledScopedById(Key, ServiceInstanceDescriptor)
+				;
 			return await MapModelToPublic(q, true).SingleOrDefaultAsync();
 		}
 
@@ -109,9 +129,12 @@ namespace SF.Common.Documents
 
 		public async Task<QueryResult<TDocumentPublic>> ListItemsAsync(long? Container, Paging Paging)
 		{
-			var q = LimitedDocuments.Where(d => 
-				d.ContainerId == Container 
-				);
+
+			var q = LimitedDocuments;
+			if(Container.HasValue)
+				q=q.Where(d => 
+					d.ContainerId == Container 
+					);
 			return await q.ToQueryResultAsync(
 				iq => MapModelToPublic(iq, false),
 				r => r,

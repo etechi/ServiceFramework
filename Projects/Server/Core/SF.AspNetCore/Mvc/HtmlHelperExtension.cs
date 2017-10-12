@@ -69,6 +69,10 @@ namespace SF.AspNetCore.Mvc
 				url += "?format=" + format;
 			return htmlHelper.Res(url);
 		}
+		public static Uri GetCurrentUrl(this IHtmlHelper htmlHelper)
+		{
+			return htmlHelper.ViewContext.HttpContext.Request.Uri();
+		}
 	}
 
 }

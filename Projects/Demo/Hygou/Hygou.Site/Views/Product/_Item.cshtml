@@ -29,7 +29,7 @@
             <h5>@((ViewData.ContainsKey("HideRound") ? "" : "(第" + 1 + "期)") + item.Title)</h5>
         </a>
         <span class="price">价值：￥@(Math.Round(item.MarketPrice))</span>
-        <div class="product-status">
+        @*<div class="product-status">
             <div>
                 <div style="width:@(30)%"></div>
             </div>
@@ -50,10 +50,10 @@
                     <div>剩余人次</div>
                 </li>
             </ul>
-        </div>
+        </div>*@
         <div class="btns">
             @*<button data-action="buy" data-item="@item.ItemId" class="btn btn-primary btn-product-buy">立即夺宝</button>*@
-            <a href="@href" target="@target" class="btn btn-primary btn-product-buy">@(ViewData.ContainsKey("HideBuyText") ? "" : "立即夺宝")</a>
+            <a href="@href" target="@target" class="btn btn-primary btn-product-buy">@(ViewData.ContainsKey("HideBuyText") ? "" : "立即购买")</a>
             @if (!ViewData.ContainsKey("hideAddToCart"))
             {
                 <button data-action="addToCart" data-item="@item.ItemId" class="btn btn-default btn-add"><span class="fa fa-cart-plus"></span></button>

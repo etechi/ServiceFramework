@@ -1,7 +1,8 @@
-﻿@model ServiceProtocol.ObjectManager.QueryResult<CrowdMall.Bizness.Products.IItem>
+﻿@model SF.Entities.QueryResult<SF.Biz.Products.IItem>
+@using SF.AspNetCore.Mvc
 @{
 	var showStatus = true;
-	var Categories = (CrowdMall.Bizness.Products.ICategory[])ViewBag.Categories;
+	var Categories = (SF.Biz.Products.ICategoryCached[])ViewBag.Categories;
 	var curCatId = (int?)ViewBag.CurCatId;
 	var mainCatId = (int)ViewBag.MainCategoryId;
 	var curType = Categories.Where(t => t.Id == curCatId).FirstOrDefault();

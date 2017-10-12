@@ -106,7 +106,7 @@ namespace SF.Core.NetworkService
 
 		public string FormatServiceName(System.Type type)
 		{
-			var name = type.Name;
+			var name = type.GetTypeName(false);
 			var b = 0;
 			if (type.IsInterfaceType() && name.Length > 2 && name[0] == 'I')
 				b++;
@@ -115,9 +115,8 @@ namespace SF.Core.NetworkService
 				e -= 7;
 			else if (name.Length - b > 10 && name.EndsWith("Controller"))
 				e -= 10;
-			name = name.Substring(b, e - b);
-
-			type.GetFullName()
+			if(b>0 || e<name.Length)
+				name = name.Substring(b, e - b);
 
 			return name;
 		}
