@@ -34,6 +34,8 @@ namespace SF.Core.ServiceManagement
 					).ToArray();
 				return new ServiceTypeCollection(ServiceTypes);
 			});
+
+			sc.AddSingleton<IServiceInvoker, ServiceInvoker>();
 		}
 	}
 

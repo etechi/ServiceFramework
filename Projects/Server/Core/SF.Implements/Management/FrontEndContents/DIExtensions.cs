@@ -36,6 +36,7 @@ namespace SF.Core.ServiceManagement
 				SF.Management.FrontEndContents.DataModels.SiteTemplate
 				>(TablePrefix);
 
+			sc.AddTransient<IDataProvider, ServiceDataProvider>("service");
 			//sc.AddSingleton<IRenderProvider, RazorRender>("razor");
 			return sc;
 		}

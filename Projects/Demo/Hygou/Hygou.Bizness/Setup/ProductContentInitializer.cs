@@ -23,32 +23,32 @@ namespace Hygou.Setup
 			var prd_all = await ContentManager.ContentEnsure(
 				"产品内容",
 				"所有产品",
-				"WebApi",
-				$"{{\"controller\":\"Product\",\"action\":\"List\",\"id\":{collections.TypedCategoryRoot.Id}}}",
+				"service",
+				$"{{\"service\":\"Product\",\"method\":\"List\",\"args\":{{\"id\":{collections.TypedCategoryRoot.Id}}}}}",
 				$"/cat"
 				);
 
 			var round_all = await ContentManager.ContentEnsure(
 				"夺宝内容",
 				"所有夺宝轮次",
-				"WebApi",
-				"{\"controller\":\"Round\",\"action\":\"List\"}",
-				$"/open"
+				"service",
+				$"{{\"service\":\"Product\",\"method\":\"List\",\"args\":{{\"id\":{collections.TypedCategoryRoot.Id}}}}}",
+				$"/item"
 				);
 
 			var round_open_waiting = await ContentManager.ContentEnsure(
 				"夺宝内容",
 				"即将揭晓产品",
-				"WebApi",
-				"{\"controller\":\"Round\",\"action\":\"List\",\"State\":\"OpenWaiting\"}",
-				$"/open"
+				"service",
+				$"{{\"service\":\"Product\",\"method\":\"List\",\"args\":{{\"id\":{collections.TypedCategoryRoot.Id}}}}}",
+				$"/item"
 				);
-			var round_opened= await ContentManager.ContentEnsure(
+			var round_opened = await ContentManager.ContentEnsure(
 				"夺宝内容",
 				"最新揭晓产品",
-				"WebApi",
-				"{\"controller\":\"Round\",\"action\":\"List\",\"State\":\"Opened\"}",
-				$"/open"
+				"service",
+				$"{{\"service\":\"Product\",\"method\":\"List\",\"args\":{{\"id\":{collections.TypedCategoryRoot.Id}}}}}",
+				$"/item"
 				);
 
 			var cats = new List<IContent>();
@@ -56,8 +56,8 @@ namespace Hygou.Setup
 				cats.Add(await ContentManager.ContentEnsure(
 					"分类产品内容",
 					t.Title,
-					"WebApi",
-					$"{{\"controller\":\"Product\",\"action\":\"List\",\"id\":{t.Id},\"_pm\":\"order\"}}",
+					"service",
+					$"{{\"service\":\"Product\",\"method\":\"List\",\"args\":{{\"id\":{t.Id},\"_pm\":\"order\"}}}}",
 					$"/cat/{t.Id}"
 					));
 
