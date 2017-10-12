@@ -9,6 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include=".licenseheader" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
     <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.csproj" />
   </ItemGroup>

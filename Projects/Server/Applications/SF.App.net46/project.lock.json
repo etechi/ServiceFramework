@@ -1,0 +1,1185 @@
+{
+  "version": 3,
+  "targets": {
+    ".NETFramework,Version=v4.6.1": {
+      "Dapper/1.50.2": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Data",
+          "System.Xml",
+          "System.Xml.Linq"
+        ],
+        "compile": {
+          "lib/net451/Dapper.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Dapper.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Caching.Abstractions/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Caching.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Caching.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Caching.Memory/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Abstractions": "2.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Options": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Caching.Memory.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Caching.Memory.dll": {}
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.dll": {}
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Options": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Debug/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Debug.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Debug.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Options/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Primitives": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Options.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Options.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Primitives/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "4.4.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {}
+        }
+      },
+      "Newtonsoft.Json/10.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "System.ComponentModel.Annotations/4.4.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.ComponentModel.DataAnnotations",
+          "mscorlib"
+        ],
+        "compile": {
+          "ref/net461/System.ComponentModel.Annotations.dll": {}
+        },
+        "runtime": {
+          "lib/net461/System.ComponentModel.Annotations.dll": {}
+        }
+      },
+      "System.Reactive/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive.PlatformServices": "3.1.1",
+          "System.Reactive.Windows.Threading": "3.1.1"
+        }
+      },
+      "System.Reactive.Core/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive.Interfaces": "3.1.1"
+        },
+        "compile": {
+          "lib/net46/System.Reactive.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net46/System.Reactive.Core.dll": {}
+        }
+      },
+      "System.Reactive.Interfaces/3.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/System.Reactive.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Interfaces.dll": {}
+        }
+      },
+      "System.Reactive.Linq/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive.Core": "3.1.1"
+        },
+        "compile": {
+          "lib/net46/System.Reactive.Linq.dll": {}
+        },
+        "runtime": {
+          "lib/net46/System.Reactive.Linq.dll": {}
+        }
+      },
+      "System.Reactive.PlatformServices/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive.Linq": "3.1.1"
+        },
+        "compile": {
+          "lib/net46/System.Reactive.PlatformServices.dll": {}
+        },
+        "runtime": {
+          "lib/net46/System.Reactive.PlatformServices.dll": {}
+        }
+      },
+      "System.Reactive.Windows.Threading/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive.Core": "3.1.1"
+        },
+        "frameworkAssemblies": [
+          "System.Windows",
+          "WindowsBase"
+        ],
+        "compile": {
+          "lib/net45/System.Reactive.Windows.Threading.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Windows.Threading.dll": {}
+        }
+      },
+      "System.Reflection.Emit/4.3.0": {
+        "type": "package",
+        "compile": {
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
+        }
+      },
+      "System.Runtime.CompilerServices.Unsafe/4.4.0": {
+        "type": "package",
+        "compile": {
+          "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {}
+        }
+      },
+      "SF.Abstractions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "System.ComponentModel.Annotations": "4.4.0"
+        }
+      },
+      "SF.Common.Abstractions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0"
+        }
+      },
+      "SF.Common.Extensions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Common.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0"
+        }
+      },
+      "SF.Common.Implements/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Common.Abstractions": "1.0.0",
+          "SF.Common.Extensions": "1.0.0",
+          "SF.Extensions": "1.0.0",
+          "SF.Support": "1.0.0"
+        }
+      },
+      "SF.Core.MicrosoftExtensions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Memory": "2.0.0",
+          "Microsoft.Extensions.DependencyInjection": "2.0.0",
+          "Microsoft.Extensions.logging": "2.0.0",
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0",
+          "microsoft.extensions.logging.debug": "2.0.0"
+        }
+      },
+      "SF.Data.Storage.EF6/1.0.0": {
+        "type": "project",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0"
+        }
+      },
+      "SF.Extensions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Newtonsoft.Json": "10.0.3",
+          "SF.Abstractions": "1.0.0",
+          "system.reactive": "3.1.1"
+        }
+      },
+      "SF.Implements/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0",
+          "SF.Support": "1.0.0",
+          "System.Reflection.Emit": "4.3.0",
+          "dapper": "1.50.2"
+        }
+      },
+      "SF.Interception/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0",
+          "System.Reflection.Emit": "4.3.0"
+        }
+      },
+      "SF.Services.dotNetFramework/1.0.0": {
+        "type": "project",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0"
+        }
+      },
+      "SF.Support/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0"
+        }
+      }
+    },
+    ".NETFramework,Version=v4.6.1/win": {
+      "Dapper/1.50.2": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.Data",
+          "System.Xml",
+          "System.Xml.Linq"
+        ],
+        "compile": {
+          "lib/net451/Dapper.dll": {}
+        },
+        "runtime": {
+          "lib/net451/Dapper.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Caching.Abstractions/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Caching.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Caching.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Caching.Memory/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Abstractions": "2.0.0",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Options": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Caching.Memory.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Caching.Memory.dll": {}
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.dll": {}
+        }
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Options": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Abstractions/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Logging.Debug/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Debug.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Logging.Debug.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Options/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "2.0.0",
+          "Microsoft.Extensions.Primitives": "2.0.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Options.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Options.dll": {}
+        }
+      },
+      "Microsoft.Extensions.Primitives/2.0.0": {
+        "type": "package",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "4.4.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll": {}
+        }
+      },
+      "Newtonsoft.Json/10.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/net45/Newtonsoft.Json.dll": {}
+        }
+      },
+      "System.ComponentModel.Annotations/4.4.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "System.ComponentModel.DataAnnotations",
+          "mscorlib"
+        ],
+        "compile": {
+          "ref/net461/System.ComponentModel.Annotations.dll": {}
+        },
+        "runtime": {
+          "lib/net461/System.ComponentModel.Annotations.dll": {}
+        }
+      },
+      "System.Reactive/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive.PlatformServices": "3.1.1",
+          "System.Reactive.Windows.Threading": "3.1.1"
+        }
+      },
+      "System.Reactive.Core/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive.Interfaces": "3.1.1"
+        },
+        "compile": {
+          "lib/net46/System.Reactive.Core.dll": {}
+        },
+        "runtime": {
+          "lib/net46/System.Reactive.Core.dll": {}
+        }
+      },
+      "System.Reactive.Interfaces/3.1.1": {
+        "type": "package",
+        "compile": {
+          "lib/net45/System.Reactive.Interfaces.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Interfaces.dll": {}
+        }
+      },
+      "System.Reactive.Linq/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive.Core": "3.1.1"
+        },
+        "compile": {
+          "lib/net46/System.Reactive.Linq.dll": {}
+        },
+        "runtime": {
+          "lib/net46/System.Reactive.Linq.dll": {}
+        }
+      },
+      "System.Reactive.PlatformServices/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive.Linq": "3.1.1"
+        },
+        "compile": {
+          "lib/net46/System.Reactive.PlatformServices.dll": {}
+        },
+        "runtime": {
+          "lib/net46/System.Reactive.PlatformServices.dll": {}
+        }
+      },
+      "System.Reactive.Windows.Threading/3.1.1": {
+        "type": "package",
+        "dependencies": {
+          "System.Reactive.Core": "3.1.1"
+        },
+        "frameworkAssemblies": [
+          "System.Windows",
+          "WindowsBase"
+        ],
+        "compile": {
+          "lib/net45/System.Reactive.Windows.Threading.dll": {}
+        },
+        "runtime": {
+          "lib/net45/System.Reactive.Windows.Threading.dll": {}
+        }
+      },
+      "System.Reflection.Emit/4.3.0": {
+        "type": "package",
+        "compile": {
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
+        }
+      },
+      "System.Runtime.CompilerServices.Unsafe/4.4.0": {
+        "type": "package",
+        "compile": {
+          "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll": {}
+        }
+      },
+      "SF.Abstractions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "System.ComponentModel.Annotations": "4.4.0"
+        }
+      },
+      "SF.Common.Abstractions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0"
+        }
+      },
+      "SF.Common.Extensions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Common.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0"
+        }
+      },
+      "SF.Common.Implements/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Common.Abstractions": "1.0.0",
+          "SF.Common.Extensions": "1.0.0",
+          "SF.Extensions": "1.0.0",
+          "SF.Support": "1.0.0"
+        }
+      },
+      "SF.Core.MicrosoftExtensions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Memory": "2.0.0",
+          "Microsoft.Extensions.DependencyInjection": "2.0.0",
+          "Microsoft.Extensions.logging": "2.0.0",
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0",
+          "microsoft.extensions.logging.debug": "2.0.0"
+        }
+      },
+      "SF.Data.Storage.EF6/1.0.0": {
+        "type": "project",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0"
+        }
+      },
+      "SF.Extensions/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "Newtonsoft.Json": "10.0.3",
+          "SF.Abstractions": "1.0.0",
+          "system.reactive": "3.1.1"
+        }
+      },
+      "SF.Implements/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0",
+          "SF.Support": "1.0.0",
+          "System.Reflection.Emit": "4.3.0",
+          "dapper": "1.50.2"
+        }
+      },
+      "SF.Interception/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0",
+          "System.Reflection.Emit": "4.3.0"
+        }
+      },
+      "SF.Services.dotNetFramework/1.0.0": {
+        "type": "project",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0"
+        }
+      },
+      "SF.Support/1.0.0": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v2.0",
+        "dependencies": {
+          "SF.Abstractions": "1.0.0",
+          "SF.Extensions": "1.0.0"
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Dapper/1.50.2": {
+      "sha512": "6VcCiiOxVhgMwgMCuQuaff8I5IyDamrzeOjuUH1iMExh8R5TJqwkVCpwdVJGQdwSCqWsQA/PerrrK7T6mONthQ==",
+      "type": "package",
+      "path": "dapper/1.50.2",
+      "files": [
+        "dapper.1.50.2.nupkg.sha512",
+        "dapper.nuspec",
+        "lib/net40/Dapper.dll",
+        "lib/net40/Dapper.xml",
+        "lib/net45/Dapper.dll",
+        "lib/net45/Dapper.xml",
+        "lib/net451/Dapper.dll",
+        "lib/net451/Dapper.xml",
+        "lib/netstandard1.3/Dapper.dll",
+        "lib/netstandard1.3/Dapper.xml"
+      ]
+    },
+    "Microsoft.Extensions.Caching.Abstractions/2.0.0": {
+      "sha512": "kGMEV53Od1ES0BDh7OOKbTW9Zu5dbbQ72yI936dvvbHlde3puuq/WRKAccFgcB2PuRjox1HFhA9+t53RYqfuEA==",
+      "type": "package",
+      "path": "microsoft.extensions.caching.abstractions/2.0.0",
+      "files": [
+        "lib/netstandard2.0/Microsoft.Extensions.Caching.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Caching.Abstractions.xml",
+        "microsoft.extensions.caching.abstractions.2.0.0.nupkg.sha512",
+        "microsoft.extensions.caching.abstractions.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Caching.Memory/2.0.0": {
+      "sha512": "NqvVdYLbX7N2J2Wz9y3zjhE66JRdROiZZsGhA2u4a9IcIq/jzINC/cLM96BHA+TSOZFPxVdWneqB6/yt9u846A==",
+      "type": "package",
+      "path": "microsoft.extensions.caching.memory/2.0.0",
+      "files": [
+        "lib/netstandard2.0/Microsoft.Extensions.Caching.Memory.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Caching.Memory.xml",
+        "microsoft.extensions.caching.memory.2.0.0.nupkg.sha512",
+        "microsoft.extensions.caching.memory.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.DependencyInjection/2.0.0": {
+      "sha512": "wakg18gHYiUL1pcjjyZuYk6OvDpbSw1E7IWxm78TMepsr+gQ8W0tWzuRm0q/9RFblngwPwo15rrgZSUV51W5Iw==",
+      "type": "package",
+      "path": "microsoft.extensions.dependencyinjection/2.0.0",
+      "files": [
+        "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.xml",
+        "microsoft.extensions.dependencyinjection.2.0.0.nupkg.sha512",
+        "microsoft.extensions.dependencyinjection.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.DependencyInjection.Abstractions/2.0.0": {
+      "sha512": "eUdJ0Q/GfVyUJc0Jal5L1QZLceL78pvEM9wEKcHeI24KorqMDoVX+gWsMGLulQMfOwsUaPtkpQM2pFERTzSfSg==",
+      "type": "package",
+      "path": "microsoft.extensions.dependencyinjection.abstractions/2.0.0",
+      "files": [
+        "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.DependencyInjection.Abstractions.xml",
+        "microsoft.extensions.dependencyinjection.abstractions.2.0.0.nupkg.sha512",
+        "microsoft.extensions.dependencyinjection.abstractions.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Logging/2.0.0": {
+      "sha512": "VP10syWV/vxYYMKgZ2eDESmUsz3gPxvBn5J6tkVN8lI4M+dF43RN8fWsEPbcAneDmZrHl3Pv23z05nmyGkJlpg==",
+      "type": "package",
+      "path": "microsoft.extensions.logging/2.0.0",
+      "files": [
+        "lib/netstandard2.0/Microsoft.Extensions.Logging.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Logging.xml",
+        "microsoft.extensions.logging.2.0.0.nupkg.sha512",
+        "microsoft.extensions.logging.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Logging.Abstractions/2.0.0": {
+      "sha512": "6ZCllUYGFukkymSTx3Yr0G/ajRxoNJp7/FqSxSB4fGISST54ifBhgu4Nc0ItGi3i6DqwuNd8SUyObmiC++AO2Q==",
+      "type": "package",
+      "path": "microsoft.extensions.logging.abstractions/2.0.0",
+      "files": [
+        "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Logging.Abstractions.xml",
+        "microsoft.extensions.logging.abstractions.2.0.0.nupkg.sha512",
+        "microsoft.extensions.logging.abstractions.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Logging.Debug/2.0.0": {
+      "sha512": "29Zn5m9yb4NEP+qbeLl+7F2lDskDfrs8NbrM8eJ+k/pYE8JksRUEFxHp1bcpGSfGP9w0pMQMOKrVcwD3u5sPog==",
+      "type": "package",
+      "path": "microsoft.extensions.logging.debug/2.0.0",
+      "files": [
+        "lib/netstandard2.0/Microsoft.Extensions.Logging.Debug.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Logging.Debug.xml",
+        "microsoft.extensions.logging.debug.2.0.0.nupkg.sha512",
+        "microsoft.extensions.logging.debug.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Options/2.0.0": {
+      "sha512": "sAKBgjl2gWsECBLLR9K54T7/uZaP2n9GhMYHay/oOLfvpvX0+iNAlQ2NJgVE352C9Fs5CDV3VbNTK8T2aNKQFA==",
+      "type": "package",
+      "path": "microsoft.extensions.options/2.0.0",
+      "files": [
+        "lib/netstandard2.0/Microsoft.Extensions.Options.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Options.xml",
+        "microsoft.extensions.options.2.0.0.nupkg.sha512",
+        "microsoft.extensions.options.nuspec"
+      ]
+    },
+    "Microsoft.Extensions.Primitives/2.0.0": {
+      "sha512": "ukg53qNlqTrK38WA30b5qhw0GD7y3jdI9PHHASjdKyTcBHTevFM2o23tyk3pWCgAV27Bbkm+CPQ2zUe1ZOuYSA==",
+      "type": "package",
+      "path": "microsoft.extensions.primitives/2.0.0",
+      "files": [
+        "lib/netstandard2.0/Microsoft.Extensions.Primitives.dll",
+        "lib/netstandard2.0/Microsoft.Extensions.Primitives.xml",
+        "microsoft.extensions.primitives.2.0.0.nupkg.sha512",
+        "microsoft.extensions.primitives.nuspec"
+      ]
+    },
+    "Newtonsoft.Json/10.0.3": {
+      "sha512": "wBM7i7i3U2WX0ecor4zdVGvgrwFUjuigBoHKiL+nH39fCOpCPjBY3RDqJM32edvdyTAVdjzlccHsg41+/+zpSA==",
+      "type": "package",
+      "path": "newtonsoft.json/10.0.3",
+      "files": [
+        "LICENSE.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "newtonsoft.json.10.0.3.nupkg.sha512",
+        "newtonsoft.json.nuspec",
+        "tools/install.ps1"
+      ]
+    },
+    "System.ComponentModel.Annotations/4.4.0": {
+      "sha512": "29K3DQ+IGU7LBaMjTo7SI7T7X/tsMtLvz1p56LJ556Iu0Dw3pKZw5g8yCYCWMRxrOF0Hr0FU0FwW0o42y2sb3A==",
+      "type": "package",
+      "path": "system.componentmodel.annotations/4.4.0",
+      "files": [
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net45/_._",
+        "lib/net461/System.ComponentModel.Annotations.dll",
+        "lib/netcore50/System.ComponentModel.Annotations.dll",
+        "lib/netcoreapp2.0/_._",
+        "lib/netstandard1.4/System.ComponentModel.Annotations.dll",
+        "lib/netstandard2.0/System.ComponentModel.Annotations.dll",
+        "lib/portable-net45+win8/_._",
+        "lib/win8/_._",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/net45/_._",
+        "ref/net461/System.ComponentModel.Annotations.dll",
+        "ref/net461/System.ComponentModel.Annotations.xml",
+        "ref/netcore50/System.ComponentModel.Annotations.dll",
+        "ref/netcore50/System.ComponentModel.Annotations.xml",
+        "ref/netcore50/de/System.ComponentModel.Annotations.xml",
+        "ref/netcore50/es/System.ComponentModel.Annotations.xml",
+        "ref/netcore50/fr/System.ComponentModel.Annotations.xml",
+        "ref/netcore50/it/System.ComponentModel.Annotations.xml",
+        "ref/netcore50/ja/System.ComponentModel.Annotations.xml",
+        "ref/netcore50/ko/System.ComponentModel.Annotations.xml",
+        "ref/netcore50/ru/System.ComponentModel.Annotations.xml",
+        "ref/netcore50/zh-hans/System.ComponentModel.Annotations.xml",
+        "ref/netcore50/zh-hant/System.ComponentModel.Annotations.xml",
+        "ref/netcoreapp2.0/_._",
+        "ref/netstandard1.1/System.ComponentModel.Annotations.dll",
+        "ref/netstandard1.1/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.1/de/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.1/es/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.1/fr/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.1/it/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.1/ja/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.1/ko/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.1/ru/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.1/zh-hans/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.1/zh-hant/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.3/System.ComponentModel.Annotations.dll",
+        "ref/netstandard1.3/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.3/de/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.3/es/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.3/fr/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.3/it/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.3/ja/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.3/ko/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.3/ru/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.3/zh-hans/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.3/zh-hant/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.4/System.ComponentModel.Annotations.dll",
+        "ref/netstandard1.4/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.4/de/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.4/es/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.4/fr/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.4/it/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.4/ja/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.4/ko/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.4/ru/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.4/zh-hans/System.ComponentModel.Annotations.xml",
+        "ref/netstandard1.4/zh-hant/System.ComponentModel.Annotations.xml",
+        "ref/netstandard2.0/System.ComponentModel.Annotations.dll",
+        "ref/netstandard2.0/System.ComponentModel.Annotations.xml",
+        "ref/portable-net45+win8/_._",
+        "ref/win8/_._",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "ref/xamarintvos10/_._",
+        "ref/xamarinwatchos10/_._",
+        "system.componentmodel.annotations.4.4.0.nupkg.sha512",
+        "system.componentmodel.annotations.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "System.Reactive/3.1.1": {
+      "sha512": "elkQdVQoBVX39BHrYHMc3Rnbb7a9qBJIwNCvhq1psPMOEPo62/VHB0lJu671x3fOrGL4V/85n6p2Az1tw7Kvmg==",
+      "type": "package",
+      "path": "system.reactive/3.1.1",
+      "files": [
+        "system.reactive.3.1.1.nupkg.sha512",
+        "system.reactive.nuspec"
+      ]
+    },
+    "System.Reactive.Core/3.1.1": {
+      "sha512": "CKWC+UP1aM75taNX+sTBn2P97uHIUjKxq+z45iy7P91QGFqNFleR2tsqIC76HMVvYl7o8oWyMiycdsc9rC1Z/g==",
+      "type": "package",
+      "path": "system.reactive.core/3.1.1",
+      "files": [
+        "lib/net45/System.Reactive.Core.dll",
+        "lib/net45/System.Reactive.Core.xml",
+        "lib/net46/System.Reactive.Core.dll",
+        "lib/net46/System.Reactive.Core.xml",
+        "lib/netcore451/System.Reactive.Core.dll",
+        "lib/netcore451/System.Reactive.Core.xml",
+        "lib/netcoreapp1.0/System.Reactive.Core.dll",
+        "lib/netcoreapp1.0/System.Reactive.Core.xml",
+        "lib/netstandard1.0/System.Reactive.Core.dll",
+        "lib/netstandard1.0/System.Reactive.Core.xml",
+        "lib/netstandard1.1/System.Reactive.Core.dll",
+        "lib/netstandard1.1/System.Reactive.Core.xml",
+        "lib/netstandard1.3/System.Reactive.Core.dll",
+        "lib/netstandard1.3/System.Reactive.Core.xml",
+        "lib/uap10.0/System.Reactive.Core.dll",
+        "lib/uap10.0/System.Reactive.Core.xml",
+        "lib/wpa81/System.Reactive.Core.dll",
+        "lib/wpa81/System.Reactive.Core.xml",
+        "system.reactive.core.3.1.1.nupkg.sha512",
+        "system.reactive.core.nuspec"
+      ]
+    },
+    "System.Reactive.Interfaces/3.1.1": {
+      "sha512": "aNVY3QoRznGFeQ+w+bMqhD8ElNWoyYq+7XTQIoxKKjBOyTOjUqIMEf1wvSdtwC4y92zg2W9q38b4Sr6cYNHVLg==",
+      "type": "package",
+      "path": "system.reactive.interfaces/3.1.1",
+      "files": [
+        "lib/net45/System.Reactive.Interfaces.dll",
+        "lib/net45/System.Reactive.Interfaces.xml",
+        "lib/netstandard1.0/System.Reactive.Interfaces.dll",
+        "lib/netstandard1.0/System.Reactive.Interfaces.xml",
+        "system.reactive.interfaces.3.1.1.nupkg.sha512",
+        "system.reactive.interfaces.nuspec"
+      ]
+    },
+    "System.Reactive.Linq/3.1.1": {
+      "sha512": "HwsZsoYRg51cLGBOEa0uoZ5+d4CMcHEg/KrbqePhLxoz/SLA+ULISphBtn3woABPATOQ6j5YgGZWh4jxnJ3KYQ==",
+      "type": "package",
+      "path": "system.reactive.linq/3.1.1",
+      "files": [
+        "lib/net45/System.Reactive.Linq.dll",
+        "lib/net45/System.Reactive.Linq.xml",
+        "lib/net46/System.Reactive.Linq.dll",
+        "lib/net46/System.Reactive.Linq.xml",
+        "lib/netstandard1.0/System.Reactive.Linq.dll",
+        "lib/netstandard1.0/System.Reactive.Linq.xml",
+        "lib/netstandard1.1/System.Reactive.Linq.dll",
+        "lib/netstandard1.1/System.Reactive.Linq.xml",
+        "lib/netstandard1.3/System.Reactive.Linq.dll",
+        "lib/netstandard1.3/System.Reactive.Linq.xml",
+        "system.reactive.linq.3.1.1.nupkg.sha512",
+        "system.reactive.linq.nuspec"
+      ]
+    },
+    "System.Reactive.PlatformServices/3.1.1": {
+      "sha512": "jCJ3iGDLb4duOxZ/Uo3O7PssWE48uRp0fw92AlIwrMNaZRUmZNkZyqbl0nUT+joFARBYun8XiVIDQreMJKBedA==",
+      "type": "package",
+      "path": "system.reactive.platformservices/3.1.1",
+      "files": [
+        "lib/net45/System.Reactive.PlatformServices.dll",
+        "lib/net45/System.Reactive.PlatformServices.xml",
+        "lib/net46/System.Reactive.PlatformServices.dll",
+        "lib/net46/System.Reactive.PlatformServices.xml",
+        "lib/netcore451/System.Reactive.PlatformServices.dll",
+        "lib/netcore451/System.Reactive.PlatformServices.xml",
+        "lib/netcoreapp1.0/System.Reactive.PlatformServices.dll",
+        "lib/netcoreapp1.0/System.Reactive.PlatformServices.xml",
+        "lib/netstandard1.0/System.Reactive.PlatformServices.dll",
+        "lib/netstandard1.0/System.Reactive.PlatformServices.xml",
+        "lib/netstandard1.3/System.Reactive.PlatformServices.dll",
+        "lib/netstandard1.3/System.Reactive.PlatformServices.xml",
+        "lib/uap10.0/System.Reactive.PlatformServices.dll",
+        "lib/uap10.0/System.Reactive.PlatformServices.xml",
+        "lib/wpa81/System.Reactive.PlatformServices.dll",
+        "lib/wpa81/System.Reactive.PlatformServices.xml",
+        "system.reactive.platformservices.3.1.1.nupkg.sha512",
+        "system.reactive.platformservices.nuspec"
+      ]
+    },
+    "System.Reactive.Windows.Threading/3.1.1": {
+      "sha512": "y1TtaYaFKJBH0L3wbLVCV2Le5cNIyVczwZAULboPyFdKTIiRb7OGAZYigly8SjNC3NHwzrTHcF8WlkL0WjGUmA==",
+      "type": "package",
+      "path": "system.reactive.windows.threading/3.1.1",
+      "files": [
+        "lib/net45/System.Reactive.Windows.Threading.dll",
+        "lib/net45/System.Reactive.Windows.Threading.xml",
+        "lib/netcore451/System.Reactive.Windows.Threading.dll",
+        "lib/netcore451/System.Reactive.Windows.Threading.xml",
+        "lib/uap10.0/System.Reactive.Windows.Threading.dll",
+        "lib/uap10.0/System.Reactive.Windows.Threading.xml",
+        "lib/wpa81/System.Reactive.Windows.Threading.dll",
+        "lib/wpa81/System.Reactive.Windows.Threading.xml",
+        "system.reactive.windows.threading.3.1.1.nupkg.sha512",
+        "system.reactive.windows.threading.nuspec"
+      ]
+    },
+    "System.Reflection.Emit/4.3.0": {
+      "sha512": "228FG0jLcIwTVJyz8CLFKueVqQK36ANazUManGaJHkO0icjiIypKW7YLWLIWahyIkdh5M7mV2dJepllLyA1SKg==",
+      "type": "package",
+      "path": "system.reflection.emit/4.3.0",
+      "files": [
+        "ThirdPartyNotices.txt",
+        "dotnet_library_license.txt",
+        "lib/MonoAndroid10/_._",
+        "lib/monotouch10/_._",
+        "lib/net45/_._",
+        "lib/netcore50/System.Reflection.Emit.dll",
+        "lib/netstandard1.3/System.Reflection.Emit.dll",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "ref/MonoAndroid10/_._",
+        "ref/net45/_._",
+        "ref/netstandard1.1/System.Reflection.Emit.dll",
+        "ref/netstandard1.1/System.Reflection.Emit.xml",
+        "ref/netstandard1.1/de/System.Reflection.Emit.xml",
+        "ref/netstandard1.1/es/System.Reflection.Emit.xml",
+        "ref/netstandard1.1/fr/System.Reflection.Emit.xml",
+        "ref/netstandard1.1/it/System.Reflection.Emit.xml",
+        "ref/netstandard1.1/ja/System.Reflection.Emit.xml",
+        "ref/netstandard1.1/ko/System.Reflection.Emit.xml",
+        "ref/netstandard1.1/ru/System.Reflection.Emit.xml",
+        "ref/netstandard1.1/zh-hans/System.Reflection.Emit.xml",
+        "ref/netstandard1.1/zh-hant/System.Reflection.Emit.xml",
+        "ref/xamarinmac20/_._",
+        "system.reflection.emit.4.3.0.nupkg.sha512",
+        "system.reflection.emit.nuspec"
+      ]
+    },
+    "System.Runtime.CompilerServices.Unsafe/4.4.0": {
+      "sha512": "9dLLuBxr5GNmOfl2jSMcsHuteEg32BEfUotmmUkmZjpR3RpVHE8YQwt0ow3p6prwA1ME8WqDVZqrr8z6H8G+Kw==",
+      "type": "package",
+      "path": "system.runtime.compilerservices.unsafe/4.4.0",
+      "files": [
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/netstandard1.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "lib/netstandard2.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "ref/netstandard1.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "ref/netstandard1.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.dll",
+        "ref/netstandard2.0/System.Runtime.CompilerServices.Unsafe.xml",
+        "system.runtime.compilerservices.unsafe.4.4.0.nupkg.sha512",
+        "system.runtime.compilerservices.unsafe.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "SF.Abstractions/1.0.0": {
+      "type": "project",
+      "path": "../../Core/SF.Abstractions/SF.Abstractions.csproj",
+      "msbuildProject": "../../Core/SF.Abstractions/SF.Abstractions.csproj"
+    },
+    "SF.Common.Abstractions/1.0.0": {
+      "type": "project",
+      "path": "../../Common/SF.Common.Abstractions/SF.Common.Abstractions.csproj",
+      "msbuildProject": "../../Common/SF.Common.Abstractions/SF.Common.Abstractions.csproj"
+    },
+    "SF.Common.Extensions/1.0.0": {
+      "type": "project",
+      "path": "../../Common/SF.Common.Extensions/SF.Common.Extensions.csproj",
+      "msbuildProject": "../../Common/SF.Common.Extensions/SF.Common.Extensions.csproj"
+    },
+    "SF.Common.Implements/1.0.0": {
+      "type": "project",
+      "path": "../../Common/SF.Common.Implements/SF.Common.Implements.csproj",
+      "msbuildProject": "../../Common/SF.Common.Implements/SF.Common.Implements.csproj"
+    },
+    "SF.Core.MicrosoftExtensions/1.0.0": {
+      "type": "project",
+      "path": "../../Implements/SF.Core.MicrosoftExtensions/SF.Core.MicrosoftExtensions.csproj",
+      "msbuildProject": "../../Implements/SF.Core.MicrosoftExtensions/SF.Core.MicrosoftExtensions.csproj"
+    },
+    "SF.Data.Storage.EF6/1.0.0": {
+      "type": "project",
+      "path": "../../Implements/SF.Data.Storage.EF6/SF.Data.Storage.EF6.csproj",
+      "msbuildProject": "../../Implements/SF.Data.Storage.EF6/SF.Data.Storage.EF6.csproj"
+    },
+    "SF.Extensions/1.0.0": {
+      "type": "project",
+      "path": "../../Core/SF.Extensions/SF.Extensions.csproj",
+      "msbuildProject": "../../Core/SF.Extensions/SF.Extensions.csproj"
+    },
+    "SF.Implements/1.0.0": {
+      "type": "project",
+      "path": "../../Core/SF.Implements/SF.Implements.csproj",
+      "msbuildProject": "../../Core/SF.Implements/SF.Implements.csproj"
+    },
+    "SF.Interception/1.0.0": {
+      "type": "project",
+      "path": "../../Core/SF.Interception/SF.Interception.csproj",
+      "msbuildProject": "../../Core/SF.Interception/SF.Interception.csproj"
+    },
+    "SF.Services.dotNetFramework/1.0.0": {
+      "type": "project",
+      "path": "../../Implements/SF.Services.dotNetFramework/SF.Services.dotNetFramework.csproj",
+      "msbuildProject": "../../Implements/SF.Services.dotNetFramework/SF.Services.dotNetFramework.csproj"
+    },
+    "SF.Support/1.0.0": {
+      "type": "project",
+      "path": "../../Core/SF.Support/SF.Support.csproj",
+      "msbuildProject": "../../Core/SF.Support/SF.Support.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "": [],
+    ".NETFramework,Version=v4.6.1": []
+  },
+  "packageFolders": {
+    "G:\\Users\\cy200\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "restore": {
+      "projectUniqueName": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Applications\\SF.App.net46\\SF.App.net46.csproj",
+      "projectName": "SF.App.net46",
+      "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Applications\\SF.App.net46\\SF.App.net46.csproj",
+      "projectJsonPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Applications\\SF.App.net46\\project.json",
+      "packagesPath": "G:\\Users\\cy200\\.nuget\\packages\\",
+      "outputPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Applications\\SF.App.net46\\obj\\",
+      "projectStyle": "ProjectJson",
+      "configFilePaths": [
+        "G:\\Users\\cy200\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "G:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "sources": {
+        "G:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {},
+        "https://nuget.cnblogs.com/v3/index.json": {}
+      },
+      "frameworks": {
+        "net461": {
+          "projectReferences": {
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Common\\SF.Common.Abstractions\\SF.Common.Abstractions.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Common\\SF.Common.Abstractions\\SF.Common.Abstractions.csproj"
+            },
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Common\\SF.Common.Extensions\\SF.Common.Extensions.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Common\\SF.Common.Extensions\\SF.Common.Extensions.csproj"
+            },
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Common\\SF.Common.Implements\\SF.Common.Implements.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Common\\SF.Common.Implements\\SF.Common.Implements.csproj"
+            },
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Core\\SF.Abstractions\\SF.Abstractions.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Core\\SF.Abstractions\\SF.Abstractions.csproj"
+            },
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Core\\SF.Extensions\\SF.Extensions.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Core\\SF.Extensions\\SF.Extensions.csproj"
+            },
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Core\\SF.Implements\\SF.Implements.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Core\\SF.Implements\\SF.Implements.csproj"
+            },
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Core\\SF.Interception\\SF.Interception.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Core\\SF.Interception\\SF.Interception.csproj"
+            },
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Core\\SF.Support\\SF.Support.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Core\\SF.Support\\SF.Support.csproj"
+            },
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Implements\\SF.Core.MicrosoftExtensions\\SF.Core.MicrosoftExtensions.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Implements\\SF.Core.MicrosoftExtensions\\SF.Core.MicrosoftExtensions.csproj"
+            },
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Implements\\SF.Data.Storage.EF6\\SF.Data.Storage.EF6.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Implements\\SF.Data.Storage.EF6\\SF.Data.Storage.EF6.csproj"
+            },
+            "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Implements\\SF.Services.dotNetFramework\\SF.Services.dotNetFramework.csproj": {
+              "projectPath": "E:\\WS\\self\\github\\ServiceFramework\\Projects\\Server\\Implements\\SF.Services.dotNetFramework\\SF.Services.dotNetFramework.csproj"
+            }
+          }
+        }
+      }
+    },
+    "frameworks": {
+      "net461": {}
+    },
+    "runtimes": {
+      "win": {
+        "#import": []
+      }
+    }
+  }
+}
