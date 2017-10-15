@@ -121,8 +121,7 @@ namespace SF.Core.ServiceManagement
 			
 
 
-			sc.AddSingleton<DataSetAutoEntityProviderFactory>();
-
+			
 			sc.AddSingleton<IMetadataCollection>(sp =>sp.Resolve<SystemTypeMetadataBuilder>().Build());
 
 
@@ -139,7 +138,7 @@ namespace SF.Core.ServiceManagement
 
 
 			sc.AddSingleton<IDataSetAutoEntityProviderCache, DataSetAutoEntityProviderCache>();
-			sc.AddScoped<IDataSetAutoEntityProviderFactory, DataSetAutoEntityProviderFactory>();
+			sc.AddTransient<IDataSetAutoEntityProviderFactory, DataSetAutoEntityProviderFactory>();
 
 			sc.AddSingleton(
 				sp => sp.Resolve<DataModelBuilder>().Build(string.Empty)

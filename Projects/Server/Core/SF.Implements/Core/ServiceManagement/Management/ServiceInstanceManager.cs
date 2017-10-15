@@ -114,19 +114,30 @@ namespace SF.Core.ServiceManagement.Management
 
 		protected override IContextQueryable<DataModels.ServiceInstance> OnBuildQuery(IContextQueryable<DataModels.ServiceInstance> Query, ServiceInstanceQueryArgument Arg, Paging paging)
 		{
-			if (Arg.Id!=null)
+			if (Arg.Id != null)
 				return Query.Filter(Arg.Id, i => i.Id);
 			else
-				return Query
+			{
+				var defService = Arg.IsDefaultService;
+				if (Arg.ServiceIdent != null)
+					defService = null;
+
+				Query = Query
 					.Filter(Arg.Name, i => i.Name)
 					.Filter(Arg.ServiceId, i => i.ServiceId)
 					.FilterContains(Arg.ServiceType, i => i.ServiceType)
-					.Filter(Arg.ServiceIdent,i=>i.ServiceIdent)
+					.Filter(Arg.ServiceIdent, i => i.ServiceIdent)
 					.Filter(Arg.ImplementId, i => i.ImplementId)
 					.FilterContains(Arg.ImplementType, i => i.ImplementType)
-					.Filter(Arg.ContainerId,i=>i.ContainerId)
-					.Filter(Arg.IsDefaultService.HasValue? (Arg.IsDefaultService.Value?(int?)0:(int?)-1):null,i=>i.ItemOrder)
+					.Filter(defService.HasValue ? (defService.Value ? (int?)0 : (int?)-1) : null, i => i.ItemOrder)
 				;
+				if (Arg.ContainerId.HasValue)
+					if (Arg.ContainerId.Value == 0)
+						Query = Query.Where(i => i.ContainerId == null);
+					else
+						Query = Query.Where(i => i.ContainerId == Arg.ContainerId.Value);
+				return Query;
+			}
 		}
 
 		
@@ -147,6 +158,7 @@ namespace SF.Core.ServiceManagement.Management
 				var factory = ServiceFactory.Create(
 					Id,
 					ParentId,
+					new Lazy<long?>(()=>null),
 					decl,
 					impl,
 					decl.ServiceType,
@@ -281,6 +293,7 @@ namespace SF.Core.ServiceManagement.Management
 			public long InstanceId { get; set; }
 
 			public long? ParentInstanceId { get; set; }
+			public long? DataScopeId { get; set; }
 
 			public bool IsManaged { get; set; }
 

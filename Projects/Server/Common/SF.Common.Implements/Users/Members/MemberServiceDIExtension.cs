@@ -22,6 +22,7 @@ using SF.Core.ServiceManagement.Management;
 using SF.Entities;
 using SF.Users.Members;
 using SF.Users.Members.Entity;
+using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
 
@@ -40,7 +41,7 @@ namespace SF.Core.ServiceManagement
 			sc.EntityServices(
 				"Member",
 				"会员",
-				d => d.Add<IMemberManagementService, EntityMemberManagementService<TMember>>()
+				d => d.Add<IMemberManagementService, EntityMemberManagementService<TMember>>(typeof(MemberDesc))
 				);
 
 			return sc;

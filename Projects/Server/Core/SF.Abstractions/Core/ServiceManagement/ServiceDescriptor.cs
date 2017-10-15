@@ -53,8 +53,17 @@ namespace SF.Core.ServiceManagement
 		public System.Reflection.MethodInfo ImplementMethod { get; }
 		public bool IsManagedService { get; }
 		public IManagedServiceInitializer ManagedServiceInitializer { get; }
+		public bool IsDataScope { get; }
 
-		public ServiceDescriptor(Type InterfaceType, Type ImplementType, ServiceImplementLifetime Lifetime,bool IsManagedService=false,IManagedServiceInitializer ManagedServiceInitializer=null,string Name=null)
+		public ServiceDescriptor(
+			Type InterfaceType, 
+			Type ImplementType, 
+			ServiceImplementLifetime Lifetime,
+			bool IsManagedService=false,
+			IManagedServiceInitializer ManagedServiceInitializer=null,
+			string Name=null,
+			bool IsDataScope=false
+			)
 		{
 			if(ImplementType==null)
 				throw new ArgumentNullException();
@@ -73,6 +82,14 @@ namespace SF.Core.ServiceManagement
 			else if (!InterfaceType.IsAssignableFrom(ImplementType))
 				throw new ArgumentException($"{ImplementType}没有实现接口{InterfaceType}");
 
+			if (!IsManagedService)
+			{
+				if (ManagedServiceInitializer != null)
+					throw new NotSupportedException();
+				if(IsDataScope)
+					throw new NotSupportedException();
+			}
+
 			this.Name = Name;
 			this.ServiceImplementType = ServiceImplementType.Type;
 			this.InterfaceType = InterfaceType;
@@ -80,6 +97,7 @@ namespace SF.Core.ServiceManagement
 			this.Lifetime = Lifetime;
 			this.IsManagedService = IsManagedService;
 			this.ManagedServiceInitializer = ManagedServiceInitializer;
+			this.IsDataScope = IsDataScope;
 		}
 		public ServiceDescriptor(Type InterfaceType, object Implement,string Name=null)
 		{

@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include=".licenseheader" />
+    <None Remove=".licenseheader" />
   </ItemGroup>
 
   <ItemGroup>

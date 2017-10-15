@@ -31,6 +31,7 @@ namespace SF.Core.ServiceManagement
 		ServiceImplementType ServiceImplementType { get; }
 		ServiceImplementLifetime LifeTime { get; }
 		bool IsManagedService { get; }
+		bool IsDataScope { get; }
 		IManagedServiceInitializer ManagedServiceInitializer { get; }
 	}
 

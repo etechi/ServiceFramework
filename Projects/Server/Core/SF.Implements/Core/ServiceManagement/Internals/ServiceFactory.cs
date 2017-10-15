@@ -25,6 +25,8 @@ namespace SF.Core.ServiceManagement.Internals
 	{
 		public long InstanceId { get; }
 		public long? ParentInstanceId { get; }
+		Lazy<long?> LazyDataScopeId { get; }
+		public long? DataScopeId => LazyDataScopeId.Value;
 		public bool IsManaged => InstanceId > 0;
 		public IServiceDeclaration ServiceDeclaration { get; }
 		public IServiceImplement ServiceImplement { get; }
@@ -35,6 +37,7 @@ namespace SF.Core.ServiceManagement.Internals
 		public ServiceFactory(
 			long Id,
 			long? ParentServiceId,
+			Lazy<long?> LazyDataScopeId,
 			IServiceDeclaration ServiceDeclaration,
 			IServiceImplement ServiceImplement,
 			IServiceCreateParameterTemplate CreateParameterTemplate,
@@ -49,6 +52,7 @@ namespace SF.Core.ServiceManagement.Internals
 			this.CreateParameterTemplate = CreateParameterTemplate;
 			this.Creator = Creator;
 			this.ConfigLoader = ConfigLoader;
+			this.LazyDataScopeId = LazyDataScopeId;
 		}
 
 		public object Create(
@@ -103,6 +107,7 @@ namespace SF.Core.ServiceManagement.Internals
 		public static IServiceFactory Create(
 			long Id,
 			long? ParentId,
+			Lazy<long?> LazyDataScopeId,
 			IServiceDeclaration decl,
 			IServiceImplement impl,
 			Type ServiceType, 
@@ -160,6 +165,7 @@ namespace SF.Core.ServiceManagement.Internals
 			return new ServiceFactory(
 				Id,
 				ParentId,
+				LazyDataScopeId,
 				decl,
 				impl,
 				CreateParameterTemplate,

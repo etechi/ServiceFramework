@@ -149,6 +149,17 @@ namespace SF.Core.ServiceManagement.Internals
 			factory =  ServiceFactory.Create(
 				cfg.Id,
 				cfg.ContainerId,
+				new Lazy<long?>(() =>
+				{
+					if (impl.IsDataScope)
+						return cfg.Id;
+					if (!cfg.ContainerId.HasValue)
+						return null;
+					var pntId = cfg.ContainerId.Value;
+					var svcType = GetServiceTypeByIdent(ServiceResolver, pntId);
+					var parentFactory = GetServiceFactoryByIdent(ServiceResolver, pntId,svcType);
+					return parentFactory.DataScopeId;
+				}),
 				decl,
 				impl,
 				decl.ServiceType,

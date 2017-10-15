@@ -28,6 +28,7 @@ namespace SF.Core.ServiceManagement
 	{
 		long InstanceId { get; }
 		long? ParentInstanceId { get; }
+		long? DataScopeId { get; }
 		bool IsManaged { get; }
 		IServiceDeclaration ServiceDeclaration { get; }
 		IServiceImplement ServiceImplement { get; }

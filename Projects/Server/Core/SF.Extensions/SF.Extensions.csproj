@@ -25,6 +25,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove=".licenseheader" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SF.Abstractions\SF.Abstractions.csproj" />
   </ItemGroup>
 

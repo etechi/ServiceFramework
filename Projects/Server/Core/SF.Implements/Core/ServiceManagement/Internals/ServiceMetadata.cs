@@ -32,7 +32,7 @@ namespace SF.Core.ServiceManagement.Internals
 			public object ImplementInstance { get; set; }
 			public Func<IServiceProvider, object> ImplementCreator { get; set; }
 			public MethodInfo ImplementMethod { get; set; }
-
+			public bool IsDataScope { get; set; }
 			public ServiceImplementType ServiceImplementType { get; set; }
 
 			public bool IsManagedService { get; set; }
@@ -78,6 +78,7 @@ namespace SF.Core.ServiceManagement.Internals
 					LifeTime = svc.Lifetime,
 					IsManagedService = svc.IsManagedService,
 					Name=svc.Name,
+					IsDataScope=svc.IsDataScope,
 					ManagedServiceInitializer = svc.ManagedServiceInitializer,
 					ImplementCreator = svc.ImplementCreator,
 					ImplementMethod=svc.ImplementMethod,

@@ -139,7 +139,8 @@ namespace Hygou.Setup
 				IFilePathResolver frr, 
 				IDocumentManager dm, 
 				IDocumentCategoryManager cm
-				) arg) => PCHelpEnsure(sim,ScopeId,arg.ContentManager, arg.frr, arg.dm, arg.cm),
+				) arg) =>
+					PCHelpEnsure(sim,ScopeId,arg.ContentManager, arg.frr, arg.dm, arg.cm),
 				pcHelp
 				);
 			//await scope.MobileDocEnsureNew();

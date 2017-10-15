@@ -26,6 +26,7 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		IDataSetAutoEntityProviderCache DataSetAutoEntityProviderCache { get; }
 		IServiceProvider ServiceProvider { get; }
+		long? CurServiceScopeId { get; }
 		public DataSetAutoEntityProviderFactory(
 			IDataSetAutoEntityProviderCache DataSetAutoEntityProviderCache,
 			IServiceProvider ServiceProvider
@@ -33,19 +34,21 @@ namespace SF.Entities.AutoEntityProvider
 		{
 			this.DataSetAutoEntityProviderCache = DataSetAutoEntityProviderCache;
 			this.ServiceProvider = ServiceProvider;
-
+			this.CurServiceScopeId = ServiceProvider.Resolver().CurrentServiceId;
 		}
 
 		public IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>()
 		{
-			return DataSetAutoEntityProviderCache.Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(ServiceProvider);
+			using (this.ServiceProvider.Resolver().WithScopeService(CurServiceScopeId))
+				return DataSetAutoEntityProviderCache.Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(ServiceProvider);
 		}
 		public IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		   Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument, TDataModel>()
 			where TDataModel : class
 		{
-			return DataSetAutoEntityProviderCache.Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument,TDataModel>(ServiceProvider);
+			using (this.ServiceProvider.Resolver().WithScopeService(CurServiceScopeId))
+				return DataSetAutoEntityProviderCache.Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument,TDataModel>(ServiceProvider);
 		}
 	}
 	public class DataSetAutoEntityProviderCache : IDataSetAutoEntityProviderCache

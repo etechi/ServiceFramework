@@ -24,12 +24,13 @@ using SF.Management.FrontEndContents;
 using SF.Management.FrontEndContents.Runtime;
 using SF.Management.FrontEndContents.DataModels;
 using SF.Core.ServiceManagement.Management;
+using SF.Core.Hosting;
 
 namespace SF.Core.ServiceManagement
 {
 	public static class FrontEndServicesDIExtensions
 	{
-		public static IServiceCollection AddFrontEndServices(this IServiceCollection sc,string TablePrefix=null)
+		public static IServiceCollection AddFrontEndServices(this IServiceCollection sc, EnvironmentType EnvType, string TablePrefix=null)
 		{
 			sc.AddScoped<ISiteResolver>(sp=>sp.Resolve<ISiteManager>());
 			sc.AddScoped<ISiteConfigLoader>(sp=>sp.Resolve<ISiteTemplateManager>());
@@ -51,10 +52,13 @@ namespace SF.Core.ServiceManagement
 				SF.Management.FrontEndContents.DataModels.SiteTemplate
 				>(TablePrefix);
 
-			sc.AddTransient<IDataProvider, ServiceDataProvider>("service");
+			if(EnvType!=EnvironmentType.Utils)
+				sc.AddTransient<IDataProvider, ServiceDataProvider>("service");
+
 			//sc.AddSingleton<IRenderProvider, RazorRender>("razor");
 			return sc;
 		}
+		
 		public static IServiceInstanceInitializer<ISiteManager> NewSiteManager(this IServiceInstanceManager sim)
 		{
 			return sim.DefaultService<ISiteManager, SiteManager>(new { });

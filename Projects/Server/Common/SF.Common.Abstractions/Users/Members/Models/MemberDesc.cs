@@ -30,6 +30,10 @@ namespace SF.Users.Members.Models
 		[Comment("名称")]
 		[MaxLength(100)]
 		public string Name { get; set; }
+
+
+		[Comment("图标")]
+		public string Icon { get; set; }
 	}
 
 }

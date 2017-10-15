@@ -56,7 +56,7 @@ namespace SF.Core.ServiceManagement
 
 			Services.AddDefaultKBServices();
 			Services.AddSystemSettings();
-			Services.AddFrontEndServices();
+			Services.AddFrontEndServices(EnvType);
 
 			Services.AddTestServices();
 			Services.AddEntityTestServices();

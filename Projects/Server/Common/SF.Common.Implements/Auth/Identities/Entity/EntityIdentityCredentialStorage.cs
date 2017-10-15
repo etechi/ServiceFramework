@@ -64,7 +64,7 @@ namespace SF.Auth.Identities.Entity
 			{
 				exist = DataSet.Add(new TIdentityCredential
 				{
-					ScopeId= ServiceInstanceDescriptor.InstanceId,
+					ScopeId= ServiceInstanceDescriptor.DataScopeId??0,
 					ProviderId = Provider,
 					Credential = Credential,
 					IdentityId = existUserId ?? UserId,

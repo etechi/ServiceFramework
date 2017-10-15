@@ -43,7 +43,7 @@ namespace SF.Core.ServiceManagement
 					//.Add<IDocumentService, DocumentService>()
 				);
 
-			sc.AddManagedScoped<IDocumentService, DocumentService>();
+			sc.AddManagedScoped<IDocumentService, DocumentService>(IsDataScope: true);
 
 			sc.GenerateEntityManager("DocumentCategory");
 			sc.GenerateEntityManager("Document");

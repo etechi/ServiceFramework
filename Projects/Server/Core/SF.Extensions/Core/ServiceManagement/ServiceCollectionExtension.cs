@@ -113,10 +113,12 @@ namespace SF.Core.ServiceManagement
 			Type ServiceType,
 			Type ImplementType,
 			ServiceImplementLifetime Lifetime,
-			IManagedServiceInitializer ManagedServiceInitializer=null
+			IManagedServiceInitializer ManagedServiceInitializer=null,
+			string Name=null,
+			bool IsDataScope=false
 			)
 		{
-			sc.Add(new ServiceDescriptor(ServiceType,ImplementType, Lifetime,true,ManagedServiceInitializer));
+			sc.Add(new ServiceDescriptor(ServiceType,ImplementType, Lifetime,true,ManagedServiceInitializer,Name, IsDataScope));
 			return sc;
 		}
 		public static IServiceCollection Add(this IServiceCollection sc, Type ServiceType, System.Reflection.MethodInfo Method, ServiceImplementLifetime Lifetime,string Name=null)
@@ -228,10 +230,10 @@ namespace SF.Core.ServiceManagement
 			sc.AddManaged(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped, new FuncManagedServiceInitializer(FuncInit, FuncUninit));
 			return sc;
 		}
-		public static IServiceCollection AddManagedScoped<TService, TImplement>(this IServiceCollection sc,IManagedServiceInitializer ManagedServiceInitializer=null)
+		public static IServiceCollection AddManagedScoped<TService, TImplement>(this IServiceCollection sc,IManagedServiceInitializer ManagedServiceInitializer=null,bool IsDataScope=false)
 			where TImplement : TService
 		{
-			sc.AddManaged(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped,ManagedServiceInitializer);
+			sc.AddManaged(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Scoped,ManagedServiceInitializer, null, IsDataScope);
 			return sc;
 		}
 		public static IServiceCollection AddScoped<TService, TImplement>(this IServiceCollection sc,string Name=null)

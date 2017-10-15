@@ -37,7 +37,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 
 			public long? Execute(IDataSetEntityManager Manager, IEntityModifyContext Context)
 			{
-				return Manager.ServiceInstanceDescroptor?.InstanceId;
+				return Manager.ServiceInstanceDescroptor?.DataScopeId;
 			}
 		}
 		public IEntityPropertyModifier GetPropertyModifier(

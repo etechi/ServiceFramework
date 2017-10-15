@@ -26,7 +26,7 @@ namespace SF.Entities
 		public static IContextQueryable<T> WithScope<T>(this IContextQueryable<T> q, IServiceInstanceDescriptor ServiceInstanceDescriptor)
 			where T : IEntityWithScope
 		{
-			var sid = ServiceInstanceDescriptor?.InstanceId;
+			var sid = ServiceInstanceDescriptor?.DataScopeId;
 			return q.Where(i => i.ScopeId == sid);
 		}
 

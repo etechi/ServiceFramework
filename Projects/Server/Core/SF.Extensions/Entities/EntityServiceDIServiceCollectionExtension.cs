@@ -67,7 +67,7 @@ namespace SF.Core.ServiceManagement
 				where T:I
 			{
 				if(ManagedService)
-					Services.AddManagedScoped<I, T>(
+					Services.AddManagedTransient<I, T>(
 						async (sp,svc)=>
 						{
 							if (svc is IEntityAllRemover ear)
@@ -75,15 +75,15 @@ namespace SF.Core.ServiceManagement
 						}
 						);
 				else
-					Services.AddScoped<I, T>();
+					Services.AddTransient<I, T>();
 
 				var loadableType=typeof(I).AllInterfaces().First(i => i.IsGenericTypeOf(typeof(IEntityLoadable<,>)));
 				if (loadableType != null)
-					Services.Add(new ServiceDescriptor(loadableType, sp => sp.GetService(typeof(I)),ServiceImplementLifetime.Scoped));
+					Services.Add(new ServiceDescriptor(loadableType, sp => sp.GetService(typeof(I)),ServiceImplementLifetime.Transient));
 
 				var batchLoadableType = typeof(I).AllInterfaces().First(i => i.IsGenericTypeOf(typeof(IEntityBatchLoadable<,>)));
 				if (batchLoadableType != null)
-					Services.Add(new ServiceDescriptor(batchLoadableType, sp => sp.GetService(typeof(I)), ServiceImplementLifetime.Scoped));
+					Services.Add(new ServiceDescriptor(batchLoadableType, sp => sp.GetService(typeof(I)), ServiceImplementLifetime.Transient));
 
 				
 				Descriptors.Add(

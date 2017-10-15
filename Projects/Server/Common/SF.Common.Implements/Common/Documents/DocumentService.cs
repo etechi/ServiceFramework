@@ -87,18 +87,18 @@ namespace SF.Common.Documents
 
 
 		IContextQueryable<TDocument> LimitedDocuments => Documents.Value.AsQueryable()
-				//.WithScope(ServiceInstanceDescriptor)
+				.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
 		IContextQueryable<TCategory> LimitedCategories => Categories.Value.AsQueryable()
-				//.WithScope(ServiceInstanceDescriptor)
+				.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
 		public async Task<TDocumentPublic> GetAsync(ObjectKey<long> Id)
 		{
 			var q = Documents.Value.AsQueryable()
 				.Where(i=>i.Id==Id.Id)
-				//.EnabledScopedById(Id.Id, ServiceInstanceDescriptor)
+				.EnabledScopedById(Id.Id, ServiceInstanceDescriptor)
 				;
 
 			return await MapModelToPublic(q, true)
@@ -116,7 +116,7 @@ namespace SF.Common.Documents
 		{
 			var q = LimitedCategories
 				.Where(i=>i.Id==Key)
-				//.EnabledScopedById(Key, ServiceInstanceDescriptor)
+				.EnabledScopedById(Key, ServiceInstanceDescriptor)
 				;
 			return await MapModelToPublic(q, true).SingleOrDefaultAsync();
 		}

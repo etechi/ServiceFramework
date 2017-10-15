@@ -110,7 +110,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include=".licenseheader" />
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>

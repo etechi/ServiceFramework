@@ -111,7 +111,8 @@ namespace SF.Core.ServiceManagement
 					ServiceType,
 					Name
 					);
-				return f == null ? null : GetService(f, ServiceType);
+				var svc=f == null ? null : GetService(f, ServiceType);
+				return svc;
 			}
 			finally
 			{
