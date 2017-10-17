@@ -180,6 +180,10 @@ namespace System.Linq.Expressions
 		{
 			return Expression.IfThenElse(expr, true_expr, false_expr);
 		}
+		public static Expression ForCondition(this Expression expr, Expression true_expr, Expression false_expr)
+		{
+			return Expression.Condition(expr, true_expr, false_expr);
+		}
 		public static Expression ThenLoop(this Expression cond, params Expression[] body)
 		{
 			var bl = Expression.Label();

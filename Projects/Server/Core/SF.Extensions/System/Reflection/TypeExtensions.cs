@@ -229,6 +229,9 @@ namespace System.Reflection
 			if (type.IsPrimitiveType())
 				return true;
 
+			if (type.IsEnumType())
+				return true;
+
 			return ConstTypes.Contains(type);
 		}
 

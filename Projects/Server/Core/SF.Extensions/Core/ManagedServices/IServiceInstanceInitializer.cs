@@ -53,7 +53,18 @@ namespace SF.Core.ServiceManagement
 					throw new ArgumentException($"指定服务实现不是托管服务实现:{typeof(T)}");
 
 				_ServiceId = await Builder(ServiceProvider, ParentId, Config);
+
+				if (_Actions != null)
+					foreach (var a in _Actions)
+						await a(ServiceProvider, _ServiceId);
 				return _ServiceId;
+			}
+
+			List<Func<IServiceProvider, long, Task>> _Actions;
+			public void AddAction(Func<IServiceProvider, long, Task> Action)
+			{
+				if (_Actions == null) _Actions = new List<Func<IServiceProvider,long, Task>>();
+				_Actions.Add(Action);
 			}
 		}
 		

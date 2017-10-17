@@ -215,6 +215,46 @@ namespace SF.ADT
 				NewParentId = npid;
 			}
 		}
+		public static IEnumerable<X> Merge<X, K>(
+			IEnumerable<X> xs,
+			IEnumerable<X> ys,
+			Func<X, K> KeySelector,
+			Func<X, IEnumerable<X>> ChildrenSelector,
+			Func<X, X, IEnumerable<X>, X> Merger
+			) where K : IEquatable<K>
+			=> Merge(xs, KeySelector, ChildrenSelector, ys, KeySelector, ChildrenSelector, Merger);
+
+		public static IEnumerable<Z> Merge<X,Y,Z,K>(
+			IEnumerable<X> xs,
+			Func<X,K> XKeySelector,
+			Func<X,IEnumerable<X>> XChildrenSelector,
+			IEnumerable<Y> ys,
+			Func<Y, K> YKeySelector,
+			Func<Y, IEnumerable<Y>> YChildrenSelector,
+			Func<X,Y,IEnumerable<Z>,Z> Merger
+			) where K:IEquatable<K>
+		{
+			return xs.Merge(
+				XKeySelector,
+				ys,
+				YKeySelector,
+				(x, y) =>
+				{
+					var xcs = XChildrenSelector(x);
+					var ycs = YChildrenSelector(y);
+					var cs = Merge(
+						xcs,
+						XKeySelector,
+						XChildrenSelector,
+						ys,
+						YKeySelector,
+						YChildrenSelector,
+						Merger
+						);
+					return Merger(x, y, cs);
+				}
+			);
+		}
 	}
 }
 

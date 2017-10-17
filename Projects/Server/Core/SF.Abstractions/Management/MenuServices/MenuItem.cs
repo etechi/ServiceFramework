@@ -13,60 +13,56 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Core.ServiceManagement.Models;
+using SF.Data.Models;
 using SF.Metadata;
-using SF.Auth;
-using SF.Auth.Identities;
-using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Auth.Identities.Models;
-using SF.Data;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using SF.Entities.DataModels;
-using SF.Management.MenuServices.Models;
-
-namespace SF.Management.MenuServices.Entity.DataModels
+namespace SF.Management.MenuServices
 {
-	[Table("MgrMenuItem")]
-	public class MenuItem<TMenu,TMenuItem> : UIObjectEntityBase
-		where TMenu : Menu<TMenu, TMenuItem>
-		where TMenuItem : MenuItem<TMenu, TMenuItem>
-
+	[Comment("菜单项动作")]
+	public enum MenuActionType
 	{
-
-		[MaxLength(100)]
-		public string FontIcon{get;set;}
-
-		public MenuActionType Action { get; set; }
-
-		[MaxLength(200)]
-		public string ActionArgument { get; set; }
-
-		[Index]
-		public long MenuId { get; set; }
-
-		[Index]
-		public long? ParentId { get; set; }
-
-		[ForeignKey(nameof(ParentId))]
-		public TMenuItem Parent { get; set; }
-
-		[ForeignKey(nameof(MenuId))]
-		public TMenu Menu { get; set; }
-
-		[InverseProperty(nameof(Parent))]
-		public ICollection<TMenuItem> Children { get; set; }
-
-		[Comment("系统服务实例ID")]
-		public long? ServiceId { get; set; }
-
+		[Comment("无")]
+		None,
+		[Comment("实体管理")]
+		EntityManager,
+		[Comment("显示表单")]
+		Form,
+		[Comment("显示列表")]
+		List,
+		[Comment("显示内嵌网页")]
+		IFrame,
+		[Comment("打开链接")]
+		Link
 	}
 
-	public class MenuItem : MenuItem<Menu, MenuItem>
-	{ }
-}
+	public class MenuItem : UIObjectEntityBase<long>
+	{
 
+		[Comment("字体图标", "字体图标", GroupName = "前端展示")]
+		[MaxLength(100)]
+		public virtual string FontIcon { get; set; }
+
+		[Comment("动作")]
+		public MenuActionType Action { get; set; }
+
+		[Comment("动作参数")]
+		public string ActionArgument { get; set; }
+
+		[Comment("服务")]
+		[EntityIdent(typeof(ServiceInstance))]
+		public long? ServiceId { get; set; }
+
+		[Comment("子菜单")]
+		[TreeNodes]
+		public IEnumerable<MenuItem> Children { get; set; }
+
+		[Ignore]
+		public long? ParentId { get; set; }
+	}
+}

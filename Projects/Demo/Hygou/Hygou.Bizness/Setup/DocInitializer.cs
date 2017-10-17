@@ -18,6 +18,7 @@ using SF.Common.Documents.Management;
 using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
 using SF.Core.ServiceManagement.Management;
+using SF.Entities;
 using SF.Management.FrontEndContents;
 using SF.Management.FrontEndContents.Friendly;
 using SF.Services.Settings;
@@ -104,35 +105,15 @@ namespace Hygou.Setup
 			long? ScopeId
 			)
 		{
-			var pcSys = await (sim.NewDocumentService("pc-sys")
-				.WithIdent("pc-sys")
-				.WithDisplay("PC系统文档", "PC系统文档，如关于我们等")
-				.Enabled()
-				).Ensure(ServiceProvider, ScopeId);
-
-			var pcHelp = await (sim.NewDocumentService("pc-help")
-				.WithIdent("pc-help")
-				.WithDisplay("PC帮助文档")
-				.Enabled()
-				).Ensure(ServiceProvider, ScopeId);
-
-			var mSys = await (sim.NewDocumentService("m-sys")
-				.WithIdent("m-sys")
-				.WithDisplay("移动端系统文档","移动端系统文档，如关于我们等")
-				.Enabled()
-				).Ensure(ServiceProvider, ScopeId);
-
-			var mHelp = await (sim.NewDocumentService("m-help")
-				.WithIdent("m-help")
-				.WithDisplay("移动端帮助文档")
-				.Enabled()
-				).Ensure(ServiceProvider, ScopeId);
-
+			var mHelp = sim.GetService<IDocumentService>("m-help", ScopeId);
 			
 			await ServiceProvider.Invoke(
-				((IFilePathResolver frr, IDocumentManager dm, IDocumentCategoryManager cm) arg) => MobileHelpEnsure(arg.frr, arg.dm, arg.cm),
-				mHelp
+				((IFilePathResolver frr, IDocumentManager dm, IDocumentCategoryManager cm) arg) => 
+					MobileHelpEnsure(arg.frr, arg.dm, arg.cm),
+				mHelp.Id
 				);
+
+			var pcHelp = sim.GetService<IDocumentService>("pc-help", ScopeId);
 
 			var re=await ServiceProvider.Invoke(
 				((IContentManager ContentManager, 
@@ -141,7 +122,7 @@ namespace Hygou.Setup
 				IDocumentCategoryManager cm
 				) arg) =>
 					PCHelpEnsure(sim,ScopeId,arg.ContentManager, arg.frr, arg.dm, arg.cm),
-				pcHelp
+				pcHelp.Id
 				);
 			//await scope.MobileDocEnsureNew();
 			return re;

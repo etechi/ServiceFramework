@@ -21,6 +21,18 @@ using System.Threading.Tasks;
 
 namespace SF.Core.ServiceManagement
 {
+	public enum CommandType
+	{
+
+	}
+	public class Command
+	{
+		public CommandType Type { get; set; }
+		public string Name { get; set; }
+		public string Description { get; set; }
+		public string Icon { get; set; }
+		public string Arguments { get; set; }
+	}
 	public class ServiceInstanceConfig
 	{
 		public string Name { get; set; }
@@ -28,10 +40,12 @@ namespace SF.Core.ServiceManagement
 		public string Description { get; set; }
 		public string Ident { get; set; }
 		public EntityLogicState LogicState { get; set; } = EntityLogicState.Disabled;
+
 	}
 	public interface IServiceInstanceInitializer
 	{
 		ServiceInstanceConfig Config { get; }
+		void AddAction(Func<IServiceProvider, long, Task> Action);
 		Task<long> Ensure(IServiceProvider ServiceProvider, long? ParentId);
 	}
 	public interface IServiceInstanceInitializer<T> : IServiceInstanceInitializer

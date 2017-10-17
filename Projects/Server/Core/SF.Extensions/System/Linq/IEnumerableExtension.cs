@@ -141,5 +141,31 @@ namespace System.Linq
 		{
 			return values;
 		}
+		public static IEnumerable<X> Merge<X, K>(
+		   this IEnumerable<X> xs,
+		   IEnumerable<X> ys,
+		   Func<X, K> KeySelector,
+		   Func<X, X, X> Merger
+		   ) where K : IEquatable<K>
+			=> Merge(xs,KeySelector, ys, KeySelector, Merger);
+
+		public static IEnumerable<Z> Merge<X,Y,Z,K>(
+			this IEnumerable<X> xs,
+			Func<X,K> XKeySelector,
+			IEnumerable<Y> ys,
+			Func<Y, K> YKeySelector,
+			Func<X,Y,Z> Merger
+			) where K : IEquatable<K>
+		{
+			var xdic = (xs??Enumerable.Empty<X>()).ToDictionary(XKeySelector);
+			var ydic = (ys??Enumerable.Empty<Y>()).ToDictionary(YKeySelector);
+			return ydic.Select(p =>
+				Merger(xdic.Get(p.Key), p.Value)
+				).Concat(
+				xdic
+				.Where(x => !ydic.ContainsKey(x.Key))
+				.Select(x => Merger(x.Value, default(Y)))
+				);
+		}
 	}
 }

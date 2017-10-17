@@ -40,7 +40,7 @@ namespace SF.Management.MenuServices
 		Entities.IEntitySource<ObjectKey<long>, Models.Menu, MenuQueryArgument>,
 		Entities.IEntityManager<ObjectKey<long>, Models.MenuEditable>
 	{
-		Task<Models.MenuItem[]> GetMenu(string Ident);
+		Task<MenuItem[]> GetMenu(string Ident);
 	}
 
 }

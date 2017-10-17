@@ -79,7 +79,7 @@ namespace SF.Core.ServiceManagement
 				{
 					if(it.Name==null)
 					{
-						if (it.Action == MenuItemAction.EntityManager)
+						if (it.Action == MenuActionType.EntityManager)
 							it.Name = it.ActionArgument;
 						else
 							throw new ArgumentException("菜单项缺少名称:"+Json.Stringify(it));
@@ -114,7 +114,7 @@ namespace SF.Core.ServiceManagement
 				{
 					if (it.Name == null)
 					{
-						if (it.Action == MenuItemAction.EntityManager)
+						if (it.Action == MenuActionType.EntityManager)
 							it.Name = it.ActionArgument;
 						else
 							throw new ArgumentException("菜单项缺少名称:" + Json.Stringify(it));
@@ -133,7 +133,7 @@ namespace SF.Core.ServiceManagement
 				}
 			);
 		}
-		public static IServiceCollection UseMenuServices<TMenu, TMenuItem>(
+		public static IServiceCollection AddMenuServices<TMenu, TMenuItem>(
 			this IServiceCollection sc,
 			//Func<MenuItem[]> DefaultMenu=null,
 			string TablePrefix = null
@@ -141,6 +141,7 @@ namespace SF.Core.ServiceManagement
 			where TMenu : SF.Management.MenuServices.Entity.DataModels.Menu<TMenu, TMenuItem>,new()
 			where TMenuItem: SF.Management.MenuServices.Entity.DataModels.MenuItem<TMenu,TMenuItem>,new()
 		{
+			sc.AddSingleton<IDefaultMenuCollection, DefaultMenuCollection>();
 			sc.AddDataModules<TMenu,TMenuItem>(TablePrefix);
 			sc.EntityServices(
 				"SysMenu",
@@ -148,12 +149,27 @@ namespace SF.Core.ServiceManagement
 				d => d.Add<IMenuService, SF.Management.MenuServices.Entity.EntityMenuService<TMenu, TMenuItem>>()
 				);
 
-			//sc.AddInitializer(
-			//	"初始化菜单",
-			//	sp=>Init(sp,DefaultMenu),
-			//	int.MaxValue
-			//	);
+			sc.AddInitializer(
+				"service",
+				"初始化默认菜单",
+				sp => InitDefaultMenu(sp),
+				int.MaxValue
+				);
 			return sc;
+		}
+
+		static async Task InitDefaultMenu(IServiceProvider sp)
+		{
+			var dmc = sp.Resolve<IDefaultMenuCollection>();
+			var mm = sp.Resolve<IMenuService>();
+
+			foreach (var key in dmc.MenuIdents)
+				await mm.EnsureEntity(
+					await mm.QuerySingleEntityIdent(new MenuQueryArgument { Ident = key }),
+					()=>new MenuEditable { Ident=key, Name=key},
+					me => {
+						me.Items = dmc.GetMenuItems(key);
+						});
 		}
 
 		public static IServiceCollection AddMenuService(
@@ -161,48 +177,11 @@ namespace SF.Core.ServiceManagement
 			//Func<MenuItem[]> DefaultMenu = null,
 			string TablePrefix = null
 			)
-			=> UseMenuServices<
+			=> AddMenuServices<
 				SF.Management.MenuServices.Entity.DataModels.Menu, 
 				SF.Management.MenuServices.Entity.DataModels.MenuItem
 				>(sc, /*DefaultMenu,*/TablePrefix);
 
-		static async Task CollectMenuItem(
-			Models.ServiceInstanceInternal svc,
-			IServiceInstanceManager sim, 
-			IServiceDeclarationTypeResolver svcTypeResolver,
-			IEntityMetadataCollection EntityMetadataCollection,
-			List<MenuItem> items
-			)
-		{
-			var type = svcTypeResolver.Resolve(svc.ServiceType);
-			var entity=EntityMetadataCollection.FindByManagerType(type);
-			//var em = type.GetCustomAttribute<EntityManagerAttribute>();
-			if (entity != null)
-				items.Add(new MenuItem
-				{
-					Name = entity.Ident,//svcTypeResolver.GetTypeIdent(type),
-					Title = type.Comment().Name,
-					Action = MenuItemAction.EntityManager,
-					ActionArgument = entity.Ident,// svcTypeResolver.GetTypeIdent(type),
-					ServiceId=svc.Id
-				});
-			var re=await sim.QueryAsync(
-				new ServiceInstanceQueryArgument
-				{
-					ContainerId = svc.Id
-				},Paging.Default
-				);
-			foreach (var i in re.Items)
-				await CollectMenuItem(i, sim, svcTypeResolver, EntityMetadataCollection, items);
-		}
-		public static async Task<MenuItem[]> GetServiceMenuItems(this IServiceInstanceManager sim,IServiceProvider sp, long ServiceId)
-		{
-			var svcTypeResolver = sp.Resolve<IServiceDeclarationTypeResolver>();
-			var EntityMetadataCollection = sp.Resolve<IEntityMetadataCollection>();
-			var svc=await sim.GetAsync(ObjectKey.From(ServiceId));
-			var items = new List<MenuItem>();
-			await CollectMenuItem(svc, sim, svcTypeResolver, EntityMetadataCollection, items);
-			return items.ToArray();
-		}
+		
 	}
 }

@@ -134,9 +134,21 @@ namespace SF.Core.ServiceManagement.Management
 				(ServiceInstanceEditable e) => { e.Setting = Edit(e.Setting); }
 				);
 		}
+		public static async Task<ObjectKey<long>> GetService<I>(
+			this IServiceInstanceManager Manager,
+			string Ident,
+			long? ParentId = null
+			) => await Manager.QuerySingleEntityIdent(
+			new ServiceInstanceQueryArgument
+			{
+				ServiceId = typeof(I).GetFullName().UTF8Bytes().MD5().Hex(),
+				ServiceIdent=Ident,
+				ContainerId = ParentId ?? 0,
+			});
+
 		public static async Task<ObjectKey<long>> GetService<I, T>(
-		this IServiceInstanceManager Manager,
-		long? ParentId = null
+			this IServiceInstanceManager Manager,
+			long? ParentId = null
 			) => await Manager.QuerySingleEntityIdent(
 		new ServiceInstanceQueryArgument
 		{

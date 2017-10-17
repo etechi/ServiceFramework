@@ -26,6 +26,8 @@ using SF.Common.Documents;
 using SF.Core.ServiceManagement.Management;
 using SF.Entities.AutoEntityProvider;
 using SF.Entities.Tests;
+using SF.Management.MenuServices.Models;
+using SF.Management.MenuServices;
 
 namespace SF.Core.ServiceManagement
 {
@@ -86,6 +88,7 @@ namespace SF.Core.ServiceManagement
 		}
 		public static IServiceInstanceInitializer NewDocumentService(
 			this IServiceInstanceManager manager,
+			string ServiceTitle,
 			string ServiceIdent=null,
 			IServiceInstanceInitializer<IDocumentManager> docManager = null,
 			IServiceInstanceInitializer<IDocumentCategoryManager> catManager = null
@@ -101,6 +104,11 @@ namespace SF.Core.ServiceManagement
 				null,
 				docManager,
 				catManager
+				)
+				.WithDisplay(ServiceTitle)
+				.WithMenuItems(
+					"bizness",
+					ServiceTitle
 				);
 			return svc;
 		}
