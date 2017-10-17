@@ -1,0 +1,43 @@
+Goals := MakeMoney
+MakeMoney := MoreTrades
+MoreTrades := More<NextTrade>
+NextTrade := Wait<Trade> & Complete<Trade>
+
+Complete<Trade> := Received<Trade.Goods>
+Received<X> := Delived<X> & Confirmed<X.Target,X.Goods>
+
+TradeGoodDelived := Delived
+CustomerReceivedComfirmed := TradeGoodDelived 
+TradeGoodDelived := 
+
+
+NewTrade := New<Trade>
+Trade := Property<User> & 
+        Property<Seller> & 
+        Property<List<(Product,Quantity)>>
+    
+Product := Entity & HasProperty<Name> & HasProperty<Image> & HasProperty<Price>
+Trade :
+
+
+
+DocService := EntityService<Document>
+
+Document := 
+    UIEntity &
+    Property<HtmlContent> &
+    HasContainer<DocumentCategory> 
+
+DocumentCategory :=
+    UIEntity & 
+    TreeItem &
+    Container<Document>
+
+EntityService 
+
+
+
+
+
+
+
