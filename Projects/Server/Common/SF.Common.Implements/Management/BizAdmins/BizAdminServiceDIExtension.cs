@@ -83,6 +83,9 @@ namespace SF.Core.ServiceManagement
 				new { },
 				BizAdminManagementService??sim.NewBizAdminMangementService<TBizAdmin>(),
 				IdentityService ?? sim.NewAuthIdentityServive()
+				).WithMenuItems(
+				"bizness",
+				"管理员管理"
 				);
 		public static IServiceInstanceInitializer<IBizAdminService> NewBizAdminService(
 			this IServiceInstanceManager sim,

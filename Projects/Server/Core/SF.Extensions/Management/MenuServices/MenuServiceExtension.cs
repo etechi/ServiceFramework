@@ -16,7 +16,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Metadata;
 using SF.Auth;
 using SF.Auth.Identities;
-using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,8 +73,30 @@ namespace SF.Core.ServiceManagement
 			await CollectMenuItem(svc, sim, svcTypeResolver, EntityMetadataCollection, items);
 			return items.ToArray();
 		}
-		public static IServiceInstanceInitializer WithMenuItems(
-			this IServiceInstanceInitializer sii,
+		public static IServiceCollection AddDefaultMenuItems(
+			this IServiceCollection sc,
+			string MenuIdent,
+			string Path,
+			params MenuItem[] MenuItems
+			)
+		{
+			if (MenuItems.Length == 0)
+				return sc;
+			sc.AddInitializer("service", "设置默认菜单项:"+Path, (isp) =>
+			  {
+				  var dmc = isp.Resolve<IDefaultMenuCollection>();
+				  dmc.AddMenuItems(
+					  MenuIdent,
+					  Path,
+					  MenuItems
+					  );
+				  return Task.CompletedTask;
+			  });
+			return sc;
+
+		}
+		public static IServiceInstanceInitializer<T> WithMenuItems<T>(
+			this IServiceInstanceInitializer<T> sii,
 			string MenuIdent,
 			string Path,
 			params MenuItem[] MenuItems
@@ -90,15 +111,17 @@ namespace SF.Core.ServiceManagement
 					Path,
 					await sim.GetServiceMenuItems(sp, sid)
 					);
+				if (MenuItems.Length > 0)
+				{
+					foreach (var mi in MenuItems)
+						mi.ServiceId = sid;
 
-				foreach(var mi in MenuItems)
-					mi.ServiceId = sid;
-
-				dmc.AddMenuItems(
-					MenuIdent,
-					Path,
-					MenuItems
-					);
+					dmc.AddMenuItems(
+						MenuIdent,
+						Path,
+						MenuItems
+						);
+				}
 			});
 			return sii;
 		}

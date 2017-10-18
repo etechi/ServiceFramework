@@ -42,7 +42,9 @@ namespace SF.Core.ServiceManagement
 			var meta = EntityMetadataCollection.FindByEntityType((Type)AttrSource);
 			//var EntityManagementType = meta.EntityManagerType;
 			//EntityManagerAttributeMetadataValuesProvider.VerifyEntityManagementType(EntityManagementType);
-			var entity = meta.Ident;//ServiceDeclarationTypeResolver.GetTypeIdent(EntityManagementType);
+			var entity = meta?.Ident;//ServiceDeclarationTypeResolver.GetTypeIdent(EntityManagementType);
+			if (entity.IsNullOrEmpty())
+				return null;
 			return new
 			{
 				Entity = entity,

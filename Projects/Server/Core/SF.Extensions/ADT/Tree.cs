@@ -246,7 +246,7 @@ namespace SF.ADT
 						xcs,
 						XKeySelector,
 						XChildrenSelector,
-						ys,
+						ycs,
 						YKeySelector,
 						YChildrenSelector,
 						Merger

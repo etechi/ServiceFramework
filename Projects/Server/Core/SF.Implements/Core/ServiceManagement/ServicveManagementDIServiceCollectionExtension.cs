@@ -56,6 +56,28 @@ namespace SF.Core.ServiceManagement
 
 			sc.AddScoped<IServiceConfigLoader, Storages.DBServiceSource>();
 			sc.AddScoped<IServiceInstanceLister, Storages.DBServiceSource>();
+
+			sc.AddDefaultMenuItems(
+				"system",
+				"系统服务",
+				new SF.Management.MenuServices.MenuItem {
+					Name = "系统服务定义",
+					Action = SF.Management.MenuServices.MenuActionType.EntityManager,
+					ActionArgument = "SysServiceDeclaration"
+				},
+				new SF.Management.MenuServices.MenuItem
+				{
+					Name = "系统服务实现",
+					Action = SF.Management.MenuServices.MenuActionType.EntityManager,
+					ActionArgument = "SysServiceImplement"
+				},
+				new SF.Management.MenuServices.MenuItem
+				{
+					Name = "系统服务实例",
+					Action = SF.Management.MenuServices.MenuActionType.EntityManager,
+					ActionArgument = "SysServiceInstance"
+				}
+				);
 		}
 		public static IServiceProvider BuildServiceResolver(
 			this IServiceCollection sc,

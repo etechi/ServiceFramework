@@ -52,7 +52,7 @@ namespace SF.Core.NetworkService
 
 		Metadata.Service GenerateServiceMetadata(Type type)
 		{
-			var attrs = type.GetCustomAttributes(true).Cast<Attribute>();
+			var attrs = type.AllInterfaces().SelectMany(i=>i.GetCustomAttributes(true)).Cast<Attribute>().Distinct();
 			var aas = attrs.Where(a => a is AuthorizeAttribute).Cast<AuthorizeAttribute>().ToArray();
 			var rps = attrs.Where(a => a is RequirePermissionAttribute).Cast<RequirePermissionAttribute>().ToArray();
 			var roles = aas.Length == 0 ? null :

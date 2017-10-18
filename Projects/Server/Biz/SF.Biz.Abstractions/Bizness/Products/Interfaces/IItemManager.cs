@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Entities;
+using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace SF.Biz.Products
 {
 	public interface IItemManager : IItemManager<ItemInternal, ItemEditable>
 	{ }
+	[NetworkService]
+	[EntityManager]
 	public interface IItemManager<TInternal, TEditable> :
 		IEntityManager<ObjectKey<long>, TEditable>,
 		IEntitySource<ObjectKey<long>, TInternal,ItemQueryArgument>

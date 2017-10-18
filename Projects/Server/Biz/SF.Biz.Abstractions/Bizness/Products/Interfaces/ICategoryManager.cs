@@ -48,6 +48,8 @@ namespace SF.Biz.Products
 	public interface ICategoryManager : ICategoryManager<CategoryInternal>
 	{ }
 
+	[NetworkService]
+	[EntityManager]
 	public interface ICategoryManager<TEditable> :
 		IEntityManager<ObjectKey<long>, TEditable>,
 		IEntitySource<ObjectKey<long>, TEditable, CategoryQueryArgument>

@@ -382,7 +382,7 @@ namespace SF.Metadata
 			return new Models.Attribute
 			{
 				Type = type.FullName,
-				Values = values.Length > 0 && values!="{}" ? values : null
+				Values = (values?.Length??0) > 0 && values!="{}" ? values : null
 			};
 		}
 		

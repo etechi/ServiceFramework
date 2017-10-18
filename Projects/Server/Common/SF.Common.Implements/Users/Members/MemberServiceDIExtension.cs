@@ -78,6 +78,9 @@ namespace SF.Core.ServiceManagement
 				new{},
 				MemberManagementService ?? sim.NewMemberManagementService(),
 				IdentityService ?? sim.NewAuthIdentityServive()
+				).WithMenuItems(
+				"bizness",
+				"会员管理"
 				);
 		}
 

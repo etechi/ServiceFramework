@@ -77,11 +77,11 @@ namespace SF.Core.ServiceManagement
 				else
 					Services.AddTransient<I, T>();
 
-				var loadableType=typeof(I).AllInterfaces().First(i => i.IsGenericTypeOf(typeof(IEntityLoadable<,>)));
+				var loadableType=typeof(I).AllInterfaces().FirstOrDefault(i => i.IsGenericTypeOf(typeof(IEntityLoadable<,>)));
 				if (loadableType != null)
 					Services.Add(new ServiceDescriptor(loadableType, sp => sp.GetService(typeof(I)),ServiceImplementLifetime.Transient));
 
-				var batchLoadableType = typeof(I).AllInterfaces().First(i => i.IsGenericTypeOf(typeof(IEntityBatchLoadable<,>)));
+				var batchLoadableType = typeof(I).AllInterfaces().FirstOrDefault(i => i.IsGenericTypeOf(typeof(IEntityBatchLoadable<,>)));
 				if (batchLoadableType != null)
 					Services.Add(new ServiceDescriptor(batchLoadableType, sp => sp.GetService(typeof(I)), ServiceImplementLifetime.Transient));
 

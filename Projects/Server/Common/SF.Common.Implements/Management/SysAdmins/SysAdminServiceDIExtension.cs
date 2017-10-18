@@ -83,7 +83,7 @@ namespace SF.Core.ServiceManagement
 				new { },
 				SysAdminManagementService??sim.NewSysAdminMangementService<TSysAdmin>(),
 				IdentityService ?? sim.NewAuthIdentityServive()
-				);
+				).WithMenuItems("system","系统管理员");
 		public static IServiceInstanceInitializer<ISysAdminService> NewSysAdminService(
 			this IServiceInstanceManager sim,
 			IServiceInstanceInitializer<ISysAdminManagementService> SysAdminManagementService = null,

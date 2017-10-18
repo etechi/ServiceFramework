@@ -99,7 +99,13 @@ namespace SF.Core.ServiceManagement
 			);
 		}
 		public static IServiceInstanceInitializer<IMenuService> NewMenuService(this IServiceInstanceManager manager)
-			=>manager.Service<IMenuService, EntityMenuService<SF.Management.MenuServices.Entity.DataModels.Menu, SF.Management.MenuServices.Entity.DataModels.MenuItem>>(null);
+			=>manager.Service<IMenuService, 
+				EntityMenuService<SF.Management.MenuServices.Entity.DataModels.Menu, SF.Management.MenuServices.Entity.DataModels.MenuItem>
+				>(null)
+			.WithMenuItems(
+				"system",
+				"菜单管理"
+				);
 
 		public static async Task NewMenu(
 			this IServiceProvider sp, 

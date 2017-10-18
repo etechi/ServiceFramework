@@ -23,6 +23,7 @@ using System.Threading.Tasks;
 using SF.Management.FrontEndContents.Friendly;
 using SF.Management.FrontEndContents;
 using SF.Services.Settings;
+using SF.Management.MenuServices;
 
 namespace SF.Core.ServiceManagement
 {
@@ -33,19 +34,35 @@ namespace SF.Core.ServiceManagement
 
 			sc.AddSetting<FriendlyContentSetting>();
 
-			sc.AddManagedScoped<IMobileHomeSilderManager, MobileHomeSilderManager>();
-			sc.AddManagedScoped<IMobileImageLandingPageManager, MobileImageLandingPageManager>();
-			sc.AddManagedScoped<IMobileProductCategoryMenuManager, MobileProductCategoryMenuManager>();
 
-			sc.AddManagedScoped<IPCHeadMenuManager, PCHeadMenuManager>();
-			sc.AddManagedScoped<IPCTailMenuManager, PCTailMenuManager>();
-			sc.AddManagedScoped<IPCHomeSilderManager, PCHomeSilderManager>();
-			sc.AddManagedScoped<IPCProductCategoryMenuManager, PCProductCategoryMenuManager>();
+			//sc.EntityServices(
+			//	"FriendlyFontEndContent",
+			//	"定制前端设置",
+			//	d => d.Add<IMobileHomeSilderManager, MobileHomeSilderManager>("MobileHomeSilder", "移动端首页幻灯片", false)
+			//		.Add<IMobileImageLandingPageManager, MobileImageLandingPageManager>("MobileImageLanding", "移动端引导页", false)
+			//		.Add<IMobileProductCategoryMenuManager, MobileProductCategoryMenuManager>("MobileProductCategory", "移动端产品目录", false)
+			//		.Add<IPCHeadMenuManager, PCHeadMenuManager>("PCHeadMenu", "PC头部菜单", false)
+			//		.Add<IPCTailMenuManager, PCTailMenuManager>("PCTailMenu", "PC尾部菜单", false)
+			//		.Add<IPCHomeSilderManager, PCHomeSilderManager>("PCHomeSilder", "PC首页幻灯片", false)
+			//		.Add<IPCProductCategoryMenuManager, PCProductCategoryMenuManager>("PCProductCategory", "PC产品目录", false)
+			//		.Add<IPCAdManager, PCAdManager>("PCAd", "PC广告", false)
+			//		.Add<IMobileAdManager, MobileAdManager>("MobileAd", "移动端广告", false)
+			//	);
 
-			sc.AddManagedScoped<IPCAdManager, PCAdManager>();
-			sc.AddManagedScoped<IMobileAdManager, MobileAdManager>();
+			//sc.AddDefaultMenuItems(
+			//	"bizness",
+			//	"内容管理",
+			//	new SF.Management.MenuServices.MenuItem{Name = "移动端首页幻灯片",Action = MenuActionType.EntityManager,ActionArgument = "MobileHomeSilder"},
+			//	new SF.Management.MenuServices.MenuItem{Name = "移动端引导页",Action = MenuActionType.EntityManager,ActionArgument = "MobileImageLanding"},
+			//	new SF.Management.MenuServices.MenuItem{Name = "移动端产品目录",Action = MenuActionType.EntityManager,ActionArgument = "MobileProductCategory"},
+			//	new SF.Management.MenuServices.MenuItem { Name = "PC头部菜单", Action = MenuActionType.EntityManager, ActionArgument = "PCHeadMenu" },
+			//	new SF.Management.MenuServices.MenuItem{Name = "PC尾部菜单",Action = MenuActionType.EntityManager,ActionArgument = "PCTailMenu" },
+			//	new SF.Management.MenuServices.MenuItem{Name = "PC首页幻灯片",Action = MenuActionType.EntityManager,ActionArgument = "PCHomeSilder"},
+			//	new SF.Management.MenuServices.MenuItem{Name = "PC产品目录",Action = MenuActionType.EntityManager,ActionArgument = "PCProductCategory"},
+			//	new SF.Management.MenuServices.MenuItem { Name = "PC广告", Action = MenuActionType.EntityManager, ActionArgument = "PCAd" },
+			//	new SF.Management.MenuServices.MenuItem { Name = "移动端广告", Action = MenuActionType.EntityManager, ActionArgument = "MobileAd" }
 
-
+			//	);
 			return sc;
 		}
 	}
