@@ -13,42 +13,15 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Entities;
-using SF.Metadata;
-using System.ComponentModel.DataAnnotations;
 using System;
+using System.ComponentModel.DataAnnotations;
+using SF.Metadata;
 using System.Threading.Tasks;
 
-namespace SF.Common.Documents.Management
+namespace SF.Entities.AutoEntityProvider
 {
-	public class DocumentQueryArguments : QueryArgument
-	{
-		[Comment(Name = "文档分类")]
-		[EntityIdent(typeof(Category))]
-		public int? CategoryId { get; set; }
-
-		[Comment(Name = "标题")]
-		[StringLength(50)]
-		public string Name { get; set; }
-
-		[Comment(Name = "发布日期")]
-		public NullableDateQueryRange PublishDate { get; set; }
+	[AttributeUsage(AttributeTargets.Property)]
+	public class CreatedTimeAttribute:Attribute
+	{	
 	}
-
-	[NetworkService]
-	[EntityManager]
-	[Comment("文档管理")]
-	public interface IDocumentManager<TInternal, TEditable> :
-		IEntitySource<ObjectKey<long>, TInternal, DocumentQueryArguments>,
-		IEntityManager<ObjectKey<long>, TEditable>
-		where TInternal : DocumentInternal
-		where TEditable : DocumentEditable
-	{
-	}
-	public interface IDocumentManager:
-		IDocumentManager<DocumentInternal,DocumentEditable>
-	{
-
-	}
-
 }

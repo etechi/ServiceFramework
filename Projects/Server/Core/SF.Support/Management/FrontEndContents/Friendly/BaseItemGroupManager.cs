@@ -33,6 +33,8 @@ namespace SF.Management.FrontEndContents.Friendly
 	{
 		protected abstract long EntityId { get; }
 		public IContentManager<TContent> ContentManager { get; }
+
+
 		public BaseItemGroupManager(IContentManager<TContent> ContentManager)
 		{
 			this.ContentManager = ContentManager;

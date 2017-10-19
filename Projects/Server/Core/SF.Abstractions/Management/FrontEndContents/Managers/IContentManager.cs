@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Entities;
+using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,9 @@ namespace SF.Management.FrontEndContents
 	}
 	public interface IContentManager : IContentManager<Content>
 	{ }
+	[NetworkService]
+	[EntityManager]
+	[Comment("前端内容管理")]
 	public interface IContentManager<TContent> :
 		IEntityManager<ObjectKey<long>, TContent>,
 		IEntitySource<ObjectKey<long>, TContent, ContentQueryArgument>,

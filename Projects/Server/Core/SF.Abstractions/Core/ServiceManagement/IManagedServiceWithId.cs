@@ -20,6 +20,6 @@ namespace SF.Core.ServiceManagement
 {
 	public interface IManagedServiceWithId
 	{
-		long ServiceInstanceId { get; }
+		long? ServiceInstanceId { get; }
 	}
 }

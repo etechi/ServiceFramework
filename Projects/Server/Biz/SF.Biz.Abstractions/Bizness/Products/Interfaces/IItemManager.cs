@@ -27,6 +27,7 @@ namespace SF.Biz.Products
 	{ }
 	[NetworkService]
 	[EntityManager]
+	[Comment("商品管理")]
 	public interface IItemManager<TInternal, TEditable> :
 		IEntityManager<ObjectKey<long>, TEditable>,
 		IEntitySource<ObjectKey<long>, TInternal,ItemQueryArgument>

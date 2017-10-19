@@ -19,11 +19,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Entities;
+using SF.Metadata;
+
 namespace SF.Management.FrontEndContents
 {
 	public interface ISiteManager : 
 		ISiteManager<Site>
 	{ }
+	[NetworkService]
+	[EntityManager]
+	[Comment("前端站点管理")]
 	public interface ISiteManager<TSite>:
 		IEntityManager<ObjectKey<string>, TSite>,
 		IEntitySource<ObjectKey<string>, TSite, QueryArgument<ObjectKey<string>>>,

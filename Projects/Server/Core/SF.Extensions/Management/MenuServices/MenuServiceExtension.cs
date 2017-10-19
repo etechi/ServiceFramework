@@ -49,7 +49,7 @@ namespace SF.Core.ServiceManagement
 			if (entity != null)
 				items.Add(new MenuItem
 				{
-					Name = entity.Ident,//svcTypeResolver.GetTypeIdent(type),
+					Name = type.Comment().Name,//svcTypeResolver.GetTypeIdent(type),
 					Title = type.Comment().Name,
 					Action = MenuActionType.EntityManager,
 					ActionArgument = entity.Ident,// svcTypeResolver.GetTypeIdent(type),
@@ -95,6 +95,19 @@ namespace SF.Core.ServiceManagement
 			return sc;
 
 		}
+		public static IServiceInstanceInitializer<T> WithSystemAdminMenuItems<T>(
+			this IServiceInstanceInitializer<T> sii,
+			string Path,
+			params MenuItem[] MenuItems
+			)
+			=> sii.WithMenuItems("system", Path, MenuItems);
+		public static IServiceInstanceInitializer<T> WithBiznessAdminMenuItems<T>(
+			this IServiceInstanceInitializer<T> sii,
+			string Path,
+			params MenuItem[] MenuItems
+			)
+			=> sii.WithMenuItems("bizness", Path, MenuItems);
+
 		public static IServiceInstanceInitializer<T> WithMenuItems<T>(
 			this IServiceInstanceInitializer<T> sii,
 			string MenuIdent,

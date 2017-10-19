@@ -22,11 +22,12 @@ namespace SF.Biz.Products
 {
 	[EntityObject]
     public class ItemInternal :
-		IEntityWithId<long>
+		IEntityWithId<long>,
+		IEntityWithName
 	{
         [Key]
         [ReadOnly(true)]
-        [Display(Name ="ID")]
+        [Comment(Name ="ID")]
         [TableVisible]
 		public long Id { get; set; }
         
@@ -34,26 +35,27 @@ namespace SF.Biz.Products
         public long? SourceItemId { get; set; }
 
         [Ignore]
-        [Display(Name ="产品")]
+        [Comment(Name ="产品")]
         [EntityIdent(typeof(ProductInternal),"Title")]
         [TableVisible]
         public long ProductId { get; set; }
 
-        [Display(Name = "图片")]
+        [Comment(Name = "图片")]
         [Image]
         public string Image { get; set; }
 
-        [Display(Name = "标题")]
+        [Comment(Name = "标题")]
         [TableVisible]
         public string Title { get; set; }
 
-        [Display(Name ="价格")]
+        [Comment(Name ="价格")]
         [TableVisible]
         public decimal? Price { get; set; }
 
-        [Display(Name ="卡密")]
+        [Comment(Name ="卡密")]
         [TableVisible]
         public bool IsVirtual { get; set; }
+		string IEntityWithName.Name { get => Title; set { Title = value; } }
 	}
     
 	public class ItemEditable :

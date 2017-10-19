@@ -31,6 +31,8 @@ namespace SF.Common.Documents.Management
 	}
 	[NetworkService]
 	[EntityManager]
+	[Comment("分类管理")]
+
 	public interface IDocumentCategoryManager<TInternal> :
 		IEntitySource<ObjectKey<long>, TInternal, DocumentCategoryQueryArgument>,
 		IEntityManager<ObjectKey<long>, TInternal>

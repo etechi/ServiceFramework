@@ -35,7 +35,7 @@ namespace SF.Entities
 		public ILogger Logger => EntityManager.Logger;
 		public IIdentGenerator IdentGenerator => EntityManager.IdentGenerator;
 		
-		long IManagedServiceWithId.ServiceInstanceId => EntityManager.ServiceInstanceDescroptor.InstanceId;
+		public long? ServiceInstanceId => EntityManager.ServiceInstanceDescroptor.InstanceId;
 
 		public BaseEntityManager(IEntityManager EntityManager)
 		{

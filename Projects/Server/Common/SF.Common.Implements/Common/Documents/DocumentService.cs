@@ -94,6 +94,8 @@ namespace SF.Common.Documents
 				.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
+		public long? ServiceInstanceId => ServiceInstanceDescriptor.InstanceId;
+
 		public async Task<TDocumentPublic> GetAsync(ObjectKey<long> Id)
 		{
 			var q = Documents.Value.AsQueryable()

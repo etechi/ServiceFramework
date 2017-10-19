@@ -33,6 +33,8 @@ namespace SF.Management.FrontEndContents.Friendly
 	{
 		protected abstract string ContentGroup { get; }
 		public IContentManager<TContent> ContentManager { get; }
+
+
 		public BaseItemGroupListManager(IContentManager<TContent> ContentManager)
 		{
 			this.ContentManager = ContentManager;

@@ -24,6 +24,7 @@ namespace SF.Biz.Products
 	}
 	[NetworkService]
 	[EntityManager]
+	[Comment("产品管理")]
 	public interface IProductManager<TInternal, TEditable> :
 		IEntityManager<ObjectKey<long>, TEditable>,
 		IEntitySource<ObjectKey<long>, TInternal , ProductInternalQueryArgument>

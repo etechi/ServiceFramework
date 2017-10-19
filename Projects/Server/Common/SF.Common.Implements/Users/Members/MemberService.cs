@@ -35,7 +35,7 @@ namespace SF.Users.Members
 	{
 		MemberServiceSetting Setting { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
-		public long ServiceInstanceId => ServiceInstanceDescriptor.InstanceId;
+		public long? ServiceInstanceId => ServiceInstanceDescriptor.InstanceId;
 
 		public MemberService(MemberServiceSetting Setting, IServiceInstanceDescriptor ServiceInstanceDescriptor) 
 		{

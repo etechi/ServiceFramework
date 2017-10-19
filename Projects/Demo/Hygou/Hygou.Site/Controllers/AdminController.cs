@@ -25,8 +25,12 @@ namespace Hygou.Site.Controllers
 {
 	public class AdminController : Controller
 	{
-		
-        public ActionResult Bizness()
+
+		public ActionResult Index()
+		{
+			return RedirectToAction("bizness");
+		}
+		public ActionResult Bizness()
 		{
 			return View();
 		}

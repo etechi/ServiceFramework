@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Data;
+using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,7 @@ namespace SF.Entities.DataModels
 
 		[Comment("创建时间")]
 		[Index]
+		[CreatedTime]
 		public virtual DateTime CreatedTime { get; set; }
 
 		
@@ -69,6 +71,7 @@ namespace SF.Entities.DataModels
 		public virtual long UpdatorId { get; set; }
 
 		[Comment("修改时间")]
+		[UpdatedTime]
 		public virtual DateTime UpdatedTime { get; set; }
 
 		[Comment("内部备注")]

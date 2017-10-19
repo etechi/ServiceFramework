@@ -48,8 +48,9 @@ namespace SF.Entities
 		}
 		public override bool Equals(object obj)
 		{
-			var ok = obj as ObjectKey<T>;
-			return ok == null ? false : Equals(ok);
+			if (!(obj is ObjectKey<T>))
+				return false;
+			return Equals((ObjectKey<T>)obj);
 		}
 		public override int GetHashCode()
 		{

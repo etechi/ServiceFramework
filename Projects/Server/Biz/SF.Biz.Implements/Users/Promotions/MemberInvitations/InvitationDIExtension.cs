@@ -63,8 +63,7 @@ namespace SF.Core.ServiceManagement
 		{
 			return sim.DefaultService<IMemberInvitationManagementService, EntityMemberInvitationManagementService>(
 				new{}
-				).WithMenuItems(
-				"bizness",
+				).WithBiznessAdminMenuItems(
 				"促销管理/会员邀请"
 				);
 		}

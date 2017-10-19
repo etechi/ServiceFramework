@@ -446,12 +446,19 @@ namespace System.Reflection
 		{
 			SF.Metadata.CommentAttribute attr;
 			if (CommentDict.TryGetValue(Info, out attr)) return attr;
-
-			var c = Info.GetCustomAttribute<SF.Metadata.CommentAttribute>(true) ?? new SF.Metadata.CommentAttribute(Info.ShortName());
-			if(Info is Type t && t.IsGeneric())
+			var type = Info as Type;
+			var c = (type==null?
+					Info.GetCustomAttribute<SF.Metadata.CommentAttribute>(true): 
+					type.AllInterfaces()
+						.WithFirst(type)
+						.Select(i=>i.GetCustomAttribute<SF.Metadata.CommentAttribute>())
+						.FirstOrDefault(i=>i!=null) 
+					)
+					?? new SF.Metadata.CommentAttribute(Info.ShortName());
+			if(type!=null && type.IsGeneric())
 			{
-				var gtd = t.GetGenericTypeDefinition();
-				var gta = t.GenericTypeArguments;
+				var gtd = type.GetGenericTypeDefinition();
+				var gta = type.GenericTypeArguments;
 				var baseName = c.Name.TrimEndTo("<", true, true);
 				c = new SF.Metadata.CommentAttribute(
 					$"{gta.Select(a => a.Comment().Name).Join(" ")} {baseName}",

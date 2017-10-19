@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Internal;
 using System;
 using SF.Core.NetworkService;
+using SF.Core.ServiceManagement;
 
 namespace SF.AspNetCore.NetworkServices
 {
@@ -36,7 +37,12 @@ namespace SF.AspNetCore.NetworkServices
 			}
 			Type serviceType = actionContext.ActionDescriptor.ControllerTypeInfo.AsType();
 			var services = actionContext.HttpContext.RequestServices;
-			var s = services.GetService(serviceType);
+
+			long svcId = actionContext.RouteData.Values.TryGetValue("service", out var sid) ? Convert.ToInt64(sid) : 0;
+
+			var s = svcId == 0 ? 
+				services.GetService(serviceType) : 
+				services.Resolver().ResolveServiceByIdent(svcId, serviceType);
 			if (s == null)
 			{
 				s = base.Create(actionContext);

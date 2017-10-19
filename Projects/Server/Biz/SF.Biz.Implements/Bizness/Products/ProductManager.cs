@@ -71,9 +71,12 @@ namespace SF.Biz.Products.Entity
 					   UpdatedTime = c.UpdatedTime,
 					   CreatedTime = c.CreatedTime,
 					   PublishedTime = c.PublishedTime,
-					   ObjectState = c.ObjectState					   
+					   ObjectState = c.ObjectState,
+					   ProductTypeId=c.TypeId
+					   
 				   };
 		}
+
 		protected virtual Task OnInitEditable(TEditable editable,TProduct product)
 		{
 			return Task.CompletedTask;

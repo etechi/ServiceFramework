@@ -54,6 +54,13 @@ namespace SF.Entities.AutoEntityProvider.Internals.DataModelBuilders.Providers
 					typeof(IndexAttribute).GetConstructor(Array.Empty<Type>())
 					)
 				);
+
+			prop.CustomAttributes.Add(
+				new CustomAttributeExpression(
+					typeof(ServiceScopeIdAttribute).GetConstructor(Array.Empty<Type>())
+					)
+				);
+
 			Type.Properties.Add(prop);
 		}
 

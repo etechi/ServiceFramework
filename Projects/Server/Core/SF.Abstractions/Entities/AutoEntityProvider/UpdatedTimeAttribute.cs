@@ -18,10 +18,10 @@ using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
 using System.Threading.Tasks;
 
-namespace SF.Entities
+namespace SF.Entities.AutoEntityProvider
 {
 	[AttributeUsage(AttributeTargets.Property)]
-	public class ServiceScopeIdAttribute:Attribute
+	public class UpdatedTimeAttribute:Attribute
 	{	
 	}
 }

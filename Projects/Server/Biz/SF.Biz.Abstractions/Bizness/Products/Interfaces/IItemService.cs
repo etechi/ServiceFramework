@@ -25,25 +25,25 @@ namespace SF.Biz.Products
     {
 		public ObjectKey<long> Id { get; set; }
 
-        [Display(Name = "产品")]
+        [Comment(Name = "产品")]
 		[EntityIdent(typeof(ProductInternal))]
 		public long? ProductId { get; set; }
 
-		[Display(Name = "卖家")]
+		[Comment(Name = "卖家")]
 		[EntityIdent(typeof(SF.Users.Members.Models.MemberInternal))]
 		public long? SellerId { get; set; }
 
-		[Display(Name = "产品标题")]
+		[Comment(Name = "产品标题")]
         public string Title { get; set; }
 
         [EntityIdent(typeof(CategoryInternal))]
-        [Display(Name = "产品目录")]
+        [Comment(Name = "产品目录")]
         public long? CategoryId { get; set; }
 
-        [Display(Name = "目录标签")]
+        [Comment(Name = "目录标签")]
         public string CategoryTag { get; set; }
 
-		[Display(Name = "产品类型")]
+		[Comment(Name = "产品类型")]
 		public long? TypeId { get; set; }
     }
 

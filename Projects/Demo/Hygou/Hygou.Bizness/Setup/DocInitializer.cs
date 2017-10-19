@@ -105,7 +105,7 @@ namespace Hygou.Setup
 			long? ScopeId
 			)
 		{
-			var mHelp = sim.GetService<IDocumentService>("m-help", ScopeId);
+			var mHelp = await sim.GetService<IDocumentService>("m-help", ScopeId);
 			
 			await ServiceProvider.Invoke(
 				((IFilePathResolver frr, IDocumentManager dm, IDocumentCategoryManager cm) arg) => 
@@ -113,7 +113,7 @@ namespace Hygou.Setup
 				mHelp.Id
 				);
 
-			var pcHelp = sim.GetService<IDocumentService>("pc-help", ScopeId);
+			var pcHelp = await sim.GetService<IDocumentService>("pc-help", ScopeId);
 
 			var re=await ServiceProvider.Invoke(
 				((IContentManager ContentManager, 

@@ -28,7 +28,7 @@ namespace SF.Auth.Identities
 	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
-	[Comment("身份标识")]
+	[Comment("身份认证管理")]
 	public interface IIdentityManagementService :
 		IEntityManager<ObjectKey<long>,Models.IdentityEditable>,
 		IEntitySource<ObjectKey<long>, Models.IdentityInternal, IdentityQueryArgument>

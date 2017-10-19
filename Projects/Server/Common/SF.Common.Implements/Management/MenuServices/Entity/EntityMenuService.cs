@@ -139,6 +139,7 @@ namespace SF.Management.MenuServices.Entity
 					mi.ActionArgument = ei.ActionArgument;
 					mi.MenuId = m.Id;
 					mi.ParentId = pmi?.Id;
+					
 					return mi;
 				},
 				(mi, ei,np) =>

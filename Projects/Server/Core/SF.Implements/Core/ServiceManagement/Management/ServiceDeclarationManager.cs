@@ -32,6 +32,9 @@ namespace SF.Core.ServiceManagement.Management
 		IServiceDeclarationManager
 	{
 		public Dictionary<string,ServiceDeclaration> Items { get; }
+
+		public long? ServiceInstanceId => null;
+
 		public ServiceDeclarationManager(IServiceMetadata ServiceMetadata)
 		{
 			this.Items = (from pair in ServiceMetadata.ServicesById

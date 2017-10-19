@@ -29,6 +29,9 @@ namespace SF.Core.ServiceManagement.Management
 		IServiceImplementManager
 	{
 		public Dictionary<string, ServiceImplement> Items { get; }
+
+		public long? ServiceInstanceId => null;
+
 		public ServiceImplementManager(IServiceMetadata ServiceMetadata)
 		{
 			var sis = from impl in ServiceMetadata.ImplementsById

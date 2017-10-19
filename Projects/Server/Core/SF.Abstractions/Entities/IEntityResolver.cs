@@ -31,6 +31,7 @@ namespace SF.Entities
 	}
 	public interface IEntityReferenceResolver
 	{
+		string FindEntityIdent(Type Type);
         Task<IEntityReference[]> Resolve(long ServiceId, IEnumerable<string> Keys);
 		Task<IEntityReference[]> Resolve(long? ScopeId, string Type, IEnumerable<string> Keys);
 	}

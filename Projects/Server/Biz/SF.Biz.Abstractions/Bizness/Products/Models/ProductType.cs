@@ -23,22 +23,23 @@ namespace SF.Biz.Products
 {
 	[EntityObject]
     public class ProductType :
-		IEntityWithId<long>
+		IEntityWithId<long>,
+		IEntityWithName
 	{
-		[Display(Name ="ID")]
+		[Comment(Name ="ID")]
 		[TableVisible]
 		[Key]
 		[ReadOnly(true)]
 		public long Id { get; set; }
 
-		[Display(Name = "名称")]
+		[Comment(Name = "名称")]
 		[TableVisible]
 		[Required]
 		[StringLength(100)]
 		public string Name { get; set; }
 
 
-		[Display(Name = "标题")]
+		[Comment(Name = "标题")]
 		[TableVisible]
 		[Required]
 		[StringLength(100)]
@@ -46,19 +47,19 @@ namespace SF.Biz.Products
 
 
 
-		[Display(Name = "图片")]
+		[Comment(Name = "图片")]
 		[Layout(0, 1)]
 		[Image]
 		public string Image { get; set; }
 
-		[Display(Name = "图标")]
+		[Comment(Name = "图标")]
 		[Layout(0, 2)]
 		[Image]
 		public string Icon { get; set; }
 
 		[TableVisible]
 		[ReadOnly(true)]
-		[Display(Name ="产品数量")]
+		[Comment(Name ="产品数量")]
 		public int ProductCount { get; set; }
 
 		[Ignore]
@@ -67,16 +68,16 @@ namespace SF.Biz.Products
     }
 	public class ProductTypeEditable : ProductType
 	{
-		[Display(Name = "状态")]
+		[Comment(Name = "状态")]
 		[Required]
 		public EntityLogicState ObjectState { get; set; }
 
 		[ReadOnly(true)]
-		[Display(Name = "显示排位")]
+		[Comment(Name = "显示排位")]
         [Optional]
         public int Order { get; set; }
 
-		[Display(Name = "单位")]
+		[Comment(Name = "单位")]
 		[TableVisible]
 		[Required]
 		[StringLength(4)]
@@ -84,7 +85,7 @@ namespace SF.Biz.Products
 	}
 	public class ProductTypeInternal : ProductTypeEditable
 	{
-		[Display(Name = "更新时间")]
+		[Comment(Name = "更新时间")]
 		[TableVisible]
 		public DateTime UpdatedTime { get; set; }
 		public DateTime CreatedTime { get; set; }

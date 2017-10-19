@@ -56,7 +56,8 @@ namespace SF.Entities
 		}
         public static Task<IEntityReference[]> Resolve(this IEntityReferenceResolver Resolver,long? ScopeId,params string[] Idents)
             =>Resolve(Resolver, ScopeId, (IEnumerable<string>)Idents);
-        public static async Task<IEntityReference[]> Resolve(this IEntityReferenceResolver Resolver, long? ScopeId,IEnumerable<string> Idents)
+		
+		public static async Task<IEntityReference[]> Resolve(this IEntityReferenceResolver Resolver, long? ScopeId,IEnumerable<string> Idents)
         {
 			var idGroups = Idents
 				.Where(id => !string.IsNullOrWhiteSpace(id))
@@ -94,8 +95,9 @@ namespace SF.Entities
 			var re = await Resolver.Resolve(ScopeId,Idents);
 			return re.ToDictionary(o => o.Id);
 		}
+	
 
-        public static Task<IEntityReference[]> ResolveWithOrder(this IEntityReferenceResolver Resolver,long? ScopeId ,params string[] Idents)
+		public static Task<IEntityReference[]> ResolveWithOrder(this IEntityReferenceResolver Resolver,long? ScopeId ,params string[] Idents)
             => ResolveWithOrder(Resolver, ScopeId, (IEnumerable<string>)Idents);
 
         public static async Task<IEntityReference[]> ResolveWithOrder(this IEntityReferenceResolver Resolver, long? ScopeId, IEnumerable<string> Idents)
@@ -120,13 +122,31 @@ namespace SF.Entities
             this IEntityReferenceResolver Resolver,
 			long? ScopeId,
             IEnumerable<TItem> items,
-            Func<TItem, IEnumerable<string>> IdSelector,
+            Func<TItem, IEnumerable<(Type,string)>> IdSelector,
             Func<IEntityReference, TResult> ResultSelector,
             Action<TItem, IReadOnlyList<TResult>> action
             )
         {
-            var keys = items.Select(it => new { item = it, keys = IdSelector(it).ToArray() }).ToArray();
-            var dic = await Resolver.ResolveToDictionary(ScopeId,keys.SelectMany(k => k.keys));
+            var keys = items.Select(it => new {
+				item = it,
+				keys = IdSelector(it)
+					.Select(i=>
+					{
+						if (i.Item2 == null)
+							return null;
+						if (i.Item1 == null)
+							return i.Item2;
+						var e = Resolver.FindEntityIdent(i.Item1);
+						if (e == null)
+							return null;
+						return e + "-" + i.Item2;
+					})
+					.ToArray()
+			}).ToArray();
+            var dic = await Resolver.ResolveToDictionary(
+				ScopeId,
+				keys.SelectMany(k => k.keys.Where(ki=>ki!=null))
+				);
             var rs = new List<TResult>();
             foreach (var r in keys)
             {
@@ -187,7 +207,7 @@ namespace SF.Entities
 			this IEntityReferenceResolver Resolver,
 			long? ScopeId,
 			IEnumerable<TItem> items,
-			Func<TItem, IEnumerable<string>> IdSelector,
+			Func<TItem, IEnumerable<(Type,string)>> IdSelector,
 			Action<TItem, IReadOnlyList<string>> action
            )
             => Resolver.Fill(ScopeId,items, IdSelector, i => i.Name, action);
@@ -202,13 +222,17 @@ namespace SF.Entities
             => Resolver.Fill(ScopeId, items, IdSelector, i => i.Name, action);
 
 		class Filler {
-			protected static string ToIdent<T>(string Type, T Id)
+			protected static (Type,string) ToIdent<T>(Type Type,T Id)
 			{
 				if (Id.IsDefault())
-					return null;
-				return Type + "-" + Id.ToString();
+					return (Type,null);
+				return (Type,Id.ToString());
 			}
-			protected static MethodInfo ToIdentMethod { get; } = typeof(Filler).GetMethod(nameof(ToIdent), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod);
+			protected static MethodInfo ToIdentMethod { get; } =
+				typeof(Filler).GetMethod(
+					nameof(ToIdent), 
+					BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod
+					);
 			protected static string GetItemName(IReadOnlyList<string> list, int index) => list[index];
 
 		}
@@ -230,20 +254,20 @@ namespace SF.Entities
 				 ).ToArray();
 			static bool FillRequired { get; } = PropPairs.Length > 0;
 
-			static Func<TItem, string[]> GetIdents { get; } =
-				Expression.Lambda<Func<TItem, string[]>>(
+			static Func<TItem, (Type,string)[]> GetIdents { get; } =
+				Expression.Lambda<Func<TItem, (Type,string)[]>>(
 					Expression.NewArrayInit(
-						typeof(string),
+						typeof((Type,string)),
 						PropPairs.Select(p=>
 						Expression.Call(
 							 null,
 							 ToIdentMethod.MakeGenericMethod(p.id.PropertyType),
-							 Expression.Constant(p.attr.EntityType.FullName),
+							 Expression.Constant(p.attr.EntityType),
 							 Expression.Property(ArgItem, p.id)
 							 )
 						).ToArray()
 						),
-					ArgItem
+					ArgItem	
 					).Compile();
 
 			static Action<TItem, IReadOnlyList<string>> FillIdents { get; } =

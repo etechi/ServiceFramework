@@ -60,6 +60,8 @@ namespace SF.Entities.AutoEntityProvider
 		}
 		public EntityManagerCapability Capabilities => AutoEntityProvider.Capabilities;
 
+		public long? ServiceInstanceId => EntityManager.ServiceInstanceDescroptor.InstanceId;
+
 		public Task<TKey> CreateAsync(TEditable Entity)
 		{
 			return AutoEntityProvider.CreateAsync( Entity);

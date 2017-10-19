@@ -59,22 +59,19 @@ namespace SF.Core.ServiceManagement
 		public static IServiceInstanceInitializer<IProductManager> NewProductManager(this IServiceInstanceManager sim)
 		{
 			return sim.DefaultService<IProductManager, ProductManager>(new { })
-				.WithMenuItems(
-				"bizness",
+				.WithBiznessAdminMenuItems(
 				"产品管理"
 				);
 		}
 		public static IServiceInstanceInitializer<IProductTypeManager> NewProductTypeManager(this IServiceInstanceManager sim)
 		{
-			return sim.DefaultService<IProductTypeManager, ProductTypeManager>(new { }).WithMenuItems(
-				"bizness",
+			return sim.DefaultService<IProductTypeManager, ProductTypeManager>(new { }).WithBiznessAdminMenuItems(
 				"产品管理"
 				);
 		}
 		public static IServiceInstanceInitializer<ICategoryManager> NewProductCategoryManager(this IServiceInstanceManager sim)
 		{
-			return sim.DefaultService<ICategoryManager, CategoryManager>(new { }).WithMenuItems(
-				"bizness",
+			return sim.DefaultService<ICategoryManager, CategoryManager>(new { }).WithBiznessAdminMenuItems(
 				"产品管理"
 				);
 		}
@@ -82,8 +79,7 @@ namespace SF.Core.ServiceManagement
 			this IServiceInstanceManager sim
 			)
 		{
-			return sim.DefaultService<IItemManager, ItemManager>(new { }).WithMenuItems(
-				"bizness",
+			return sim.DefaultService<IItemManager, ItemManager>(new { }).WithBiznessAdminMenuItems(
 				"产品管理"
 				);
 		}

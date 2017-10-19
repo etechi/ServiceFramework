@@ -247,7 +247,7 @@ namespace SF.Entities.AutoEntityProvider
 			FuncBuildQuery = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, TQueryArgument, Paging, IContextQueryable<TDataModel>>>(() =>
 			{
 				return (em, q, arg, pg) => 
-					QueryFilter.Filter(q,arg);
+					QueryFilter.Filter(q,em,arg);
 			});
 
 			FuncLoadEditable = new Lazy<Func<IDataSetEntityManager<TEntityEditable, TDataModel>, IContextQueryable<TDataModel>, Task<TEntityEditable>>>(() =>

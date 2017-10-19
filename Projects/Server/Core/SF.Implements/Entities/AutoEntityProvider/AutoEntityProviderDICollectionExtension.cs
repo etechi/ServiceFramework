@@ -102,6 +102,8 @@ namespace SF.Core.ServiceManagement
 
 
 			sc.AddSingleton<IQueryFilterProvider, PropQueryFilterProvider>();
+			sc.AddSingleton<IQueryFilterProvider, ServiceScopeQueryFilterProvider>();
+
 			sc.AddSingleton<IPropertyQueryFilterProvider, DateTimeRangeToRangePropQueryFilterProvider>();
 			sc.AddSingleton<IPropertyQueryFilterProvider, EntityLogicStatePropQueryFilterProvider>();
 			sc.AddSingleton<IPropertyQueryFilterProvider, NullablePropQueryFilterProvider>();
@@ -127,6 +129,9 @@ namespace SF.Core.ServiceManagement
 
 			//Entity Modify Support
 			sc.AddSingleton<IEntityPropertyModifierProvider, AutoKeyPropertyModifierProvider>();
+			sc.AddSingleton<IEntityPropertyModifierProvider, CreatedTimePropertyModifierProvider>();
+			sc.AddSingleton<IEntityPropertyModifierProvider, UpdatedTimePropertyModifierProvider>();
+
 			sc.AddSingleton<IEntityPropertyModifierProvider, ServiceScopeIdPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, DefaultPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, JsonDataPropertyModifierProvider>();

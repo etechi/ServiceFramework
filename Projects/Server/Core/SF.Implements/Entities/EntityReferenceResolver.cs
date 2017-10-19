@@ -32,22 +32,16 @@ namespace SF.Entities
 		class EntityReference<TKey,TEntity> : 
 			IEntityReference
 			where TEntity:IEntityWithName
+			where TKey:IEquatable<TKey>
 		{
 			public TEntity Instance { get; }
-			public long ServiceId { get; }
-			public EntityReferenceLoader Loader { get; }
-			public EntityReference(TEntity Instance, long ServiceId, EntityReferenceLoader Loader)
+			public string Id { get; }
+			public EntityReference(TEntity Instance, string Id)
 			{
-				this.ServiceId = ServiceId;
 				this.Instance = Instance;
-				this.Loader = Loader;
+				this.Id = Id;
 			}
 			public string Name { get => Instance.Name; set => Instance.Name = value; }
-
-			public string Id => ServiceEntityIdent.Create(
-				ServiceId, 
-				Entity<TEntity>.GetKey<TKey>(Instance).ToString()
-				);
 
 			public Task<object> Resolve()
 			{
@@ -57,54 +51,66 @@ namespace SF.Entities
 
 		abstract class EntityReferenceLoader
 		{
-			public abstract Task<IEntityReference[]> LoadByType(IServiceProvider sp, long? ScopeId, IEnumerable<string> Idents);
+			public abstract Task<IEntityReference[]> LoadByType(IServiceProvider sp, long? ScopeId, string EntityIdent,IEnumerable<string> Idents);
 			public abstract Task<IEntityReference[]> LoadByServiceInstance(IServiceProvider sp, long ServiceId, IEnumerable<string> Idents);
 		}
 		class EntityReferenceLoader<TKey, TEntity, TManager> :
 			EntityReferenceLoader
-			where TManager : class,IEntityLoadable<TKey,TEntity>, IManagedServiceWithId
+			where TManager : class,IEntityLoadable<ObjectKey<TKey>,TEntity>
 			where TEntity:IEntityWithName
+			where TKey:IEquatable<TKey>
 		{
-			async Task<IEntityReference[]> Load(TManager manager, IEnumerable<string> Ids)
+
+			EntityReference<TKey, TEntity> CreateReference(TEntity e, string EntityIdent, long? ServiceId)
+			{
+				var key = Entity<TEntity>.GetKey<ObjectKey<TKey>>(e).Id.ToString();
+				var id=EntityIdent == null?
+					"i-" + ServiceId.Value + "-" + key:
+					EntityIdent + "-" + key;
+				return new EntityReference<TKey, TEntity>(e, id);
+			}
+			async Task<IEntityReference[]> Load(TManager manager,string EntityIdent, long? ServiceId, IEnumerable<string> Ids)
 			{
 				var Idents = Ids?.ToArray();
 				if ((Idents?.Length ?? 0) == 0)
 					return Array.Empty<IEntityReference>();
 				if (Idents.Length == 1)
 				{
-					var ins = await manager.GetAsync((TKey)Convert.ChangeType(Idents[0], typeof(TKey)));
-					return new[] { new EntityReference<TKey,TEntity>(ins, manager.ServiceInstanceId, this) };
+					var ins = await manager.GetAsync(new ObjectKey<TKey> { Id = (TKey)Convert.ChangeType(Idents[0], typeof(TKey)) });
+					if (ins == null)
+						return Array.Empty<IEntityReference>();
+					return new[] {CreateReference(ins,EntityIdent,ServiceId)};
 				}
 				else
 				{
-					var mel = manager as IEntityBatchLoadable<TKey, TEntity>;
+					var mel = manager as IEntityBatchLoadable<ObjectKey<TKey>, TEntity>;
 					if (mel != null)
 						return (await mel.GetAsync(
-							Idents.Select(id => (TKey)Convert.ChangeType(id, typeof(TKey))).ToArray()
+							Idents.Select(id =>new ObjectKey<TKey> { Id = (TKey)Convert.ChangeType(id, typeof(TKey)) }).ToArray()
 							))
-							.Select(ins => new EntityReference<TKey, TEntity>(ins, manager.ServiceInstanceId, this))
+							.Select(ins => CreateReference(ins, EntityIdent,ServiceId))
 							.ToArray();
 
 					var re = new List<IEntityReference>();
-					var el = (IEntityLoadable<TKey, TEntity>)manager;
+					var el = (IEntityLoadable<ObjectKey<TKey>, TEntity>)manager;
 					foreach (var id in Idents.Select(id => (TKey)Convert.ChangeType(id, typeof(TKey))))
 					{
-						var ins = await el.GetAsync(id);
+						var ins = await el.GetAsync(new ObjectKey<TKey> { Id = id });
 						if (ins != null)
-							re.Add(new EntityReference<TKey, TEntity>(ins,manager.ServiceInstanceId, this));
+							re.Add(CreateReference(ins, EntityIdent, ServiceId));
 					}
 					return re.ToArray();
 				}
 			}
-			public override async Task<IEntityReference[]> LoadByType(IServiceProvider sp, long? ScopeId, IEnumerable<string> Idents)
+			public override async Task<IEntityReference[]> LoadByType(IServiceProvider sp, long? ScopeId, string EntityIdent, IEnumerable<string> Idents)
 			{
 				var manager = sp.Resolve<TManager>(null, ScopeId);
-				return await Load(manager, Idents);
+				return await Load(manager,EntityIdent,null,  Idents);
 			}
 			public override async Task<IEntityReference[]> LoadByServiceInstance(IServiceProvider sp, long ServiceId, IEnumerable<string> Idents)
 			{
 				var manager = sp.Resolve<TManager>(ServiceId);
-				return await Load(manager, Idents);
+				return await Load(manager, null,ServiceId,Idents);
 			}
 		}
 
@@ -119,7 +125,7 @@ namespace SF.Entities
 			l = (EntityReferenceLoader)Activator.CreateInstance(
 				typeof(EntityReferenceLoader<,,>)
 				.MakeGenericType(
-					meta.EntityKeyType, 
+					meta.EntityKeyType.GenericTypeArguments[0], 
 					meta.EntityDetailType, 
 					meta.EntityManagerType
 					));
@@ -136,7 +142,7 @@ namespace SF.Entities
 			if (meta == null)
 				return Array.Empty<IEntityReference>();
 			var loader = GetLoader(meta);
-			return await loader.LoadByType(ServiceProvider, ScopeId, Keys);
+			return await loader.LoadByType(ServiceProvider, ScopeId, meta.Ident,  Keys);
 		}
 		public async Task<IEntityReference[]> Resolve(long ServiceId, IEnumerable<string> Keys)
 		{
@@ -146,6 +152,11 @@ namespace SF.Entities
 				return Array.Empty<IEntityReference>();
 			var loader = GetLoader(meta);
 			return await loader.LoadByServiceInstance(ServiceProvider, ServiceId, Keys);
+		}
+
+		public string FindEntityIdent(Type Type)
+		{
+			return MetadataCollection.FindByEntityType(Type)?.Ident;
 		}
 	}
 }

@@ -19,6 +19,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Entities;
+using SF.Metadata;
+
 namespace SF.Management.FrontEndContents
 {
 	public class SiteTemplateQueryArgument : IQueryArgument<ObjectKey<long>>
@@ -28,6 +30,9 @@ namespace SF.Management.FrontEndContents
 	}
 	public interface ISiteTemplateManager : ISiteTemplateManager<SiteTemplate>
 	{ }
+	[EntityManager]
+	[NetworkService]
+	[Comment("前端站点模板管理")]
 	public interface ISiteTemplateManager<TSiteTemplate> :
 		IEntityManager<ObjectKey<long>, TSiteTemplate>,
 		IEntitySource<ObjectKey<long>, TSiteTemplate, SiteTemplateQueryArgument>,

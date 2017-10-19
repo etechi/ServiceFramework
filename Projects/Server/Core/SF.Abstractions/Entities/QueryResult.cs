@@ -68,7 +68,7 @@ namespace SF.Entities
 	public interface IQueryFilter<TDataModel, TQueryArgument>
 	{
 		int Priority { get; }
-		IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query,TQueryArgument Arg);
+		IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, IDataSetEntityManager EntityManager, TQueryArgument Arg);
 	}
 	public interface IQueryFilterProvider
 	{

@@ -29,19 +29,19 @@ namespace SF.Biz.Products
     {
 		public ObjectKey<long> Id { get; set; }
 
-        [Display(Name = "卖家")]
+        [Comment(Name = "卖家")]
         [EntityIdent(typeof(Identity))]
         [Ignore]
         public long? SellerId { get; set; }
 
-        [Display(Name = "父目录")]
+        [Comment(Name = "父目录")]
         [EntityIdent(typeof(CategoryInternal))]
         public long? ParentId { get; set; }
 
-        [Display(Name = "对象状态")]
+        [Comment(Name = "对象状态")]
         public EntityLogicState? ObjectState { get; set; }
 
-		[Display(Name = "名称")]
+		[Comment(Name = "名称")]
 		public string Name { get; set; }
 	}
 
@@ -50,6 +50,7 @@ namespace SF.Biz.Products
 
 	[NetworkService]
 	[EntityManager]
+	[Comment("产品目录管理")]
 	public interface ICategoryManager<TEditable> :
 		IEntityManager<ObjectKey<long>, TEditable>,
 		IEntitySource<ObjectKey<long>, TEditable, CategoryQueryArgument>

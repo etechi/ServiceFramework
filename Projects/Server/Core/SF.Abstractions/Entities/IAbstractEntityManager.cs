@@ -21,5 +21,6 @@ using System.Threading.Tasks;
 namespace SF.Entities
 {
 
-	public interface IAbstractEntityManager<TEntity> { }
+	public interface IAbstractEntityManager<TEntity>  {
+	}
 }

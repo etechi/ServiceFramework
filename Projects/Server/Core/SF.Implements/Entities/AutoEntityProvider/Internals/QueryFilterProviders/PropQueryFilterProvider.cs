@@ -39,7 +39,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 			{
 				this.GetFilter = GetFilter;
 			}
-			public IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, TQueryArgument Arg)
+			public IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, IDataSetEntityManager EntityManager, TQueryArgument Arg)
 			{
 				var cond = GetFilter.Value(Arg);
 				if (cond == null) return Query;
@@ -63,15 +63,26 @@ namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 				return ps.Length == 2 && ps[0].ParameterType == typeof(Expression) && ps[1].ParameterType == typeof(IEnumerable<ParameterExpression>);
 			});
 		static MethodInfo MethodAndAlso { get; } = typeof(Expression).GetMethod(nameof(Expression.AndAlso), BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(Expression), typeof(Expression) }, null);
-		static Expression CombineConditions(Expression[] Exprs)
+		static Expression<Func<TModel, bool>> CreateLambda<TModel>(
+			ParameterExpression argModel, 
+			Expression[] Exprs
+			)
 		{
 			var es = Exprs.Where(x => x != null).ToArray();
 			if (es.Length == 0)
 				return null;
+			Expression expr;
 			if (es.Length == 1)
-				return es[0];
-			Array.Reverse(es);
-			return es.Aggregate((x, y) => Expression.AndAlso(y, x));
+				expr = es[0];
+			else
+			{
+				Array.Reverse(es);
+				expr = es.Aggregate((x, y) => Expression.AndAlso(y, x));
+			}
+			return Expression.Lambda<Func<TModel,bool>>(
+				expr,
+				argModel
+				);
 		}
 		public IQueryFilter<TDataModel, TQueryArgument> GetFilter<TDataModel, TQueryArgument>()
 		{
@@ -104,28 +115,19 @@ namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 									  )
 								);
 					var body = Expression.Call(
-						typeof(PropQueryFilterProvider).GetMethod(
-							nameof(CombineConditions),
+						typeof(PropQueryFilterProvider).GetMethodExt(
+							nameof(CreateLambda),
 							BindingFlags.Static | BindingFlags.NonPublic,
-							null,
-							new[] { typeof(Expression[]) },
-							null
-							),
+							new[] {typeof(ParameterExpression), typeof(Expression[]) }
+							).MakeGenericMethod(typeof(TDataModel)),
+						Expression.Constant(argModel),
 						Expression.NewArrayInit(
 							typeof(Expression),
 							conds
 						)
 						);
 					var getfilter = Expression.Lambda<Func<TQueryArgument, Expression<Func<TDataModel, bool>>>>(
-						Expression.Call(
-							null,
-							MethodLambda.MakeGenericMethod(typeof(Func<TDataModel, bool>)),
 							body,
-							Expression.NewArrayInit(
-								typeof(ParameterExpression),
-								Expression.Constant(argModel)
-								)
-							),
 							argQuery
 						).Compile();
 
