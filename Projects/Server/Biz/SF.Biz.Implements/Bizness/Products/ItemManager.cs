@@ -24,7 +24,7 @@ namespace SF.Biz.Products.Entity
 {
 	public class ItemManager :
 		ItemManager<ItemInternal, ItemEditable, DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec>,
-		IItemManager
+		IProductItemManager
 	{
 		public ItemManager(IDataSetEntityManager<ItemEditable, DataModels.Item> EntityManager, Lazy<IItemNotifier> ItemNotifier) : base(EntityManager, ItemNotifier)
 		{
@@ -34,7 +34,7 @@ namespace SF.Biz.Products.Entity
 
 	public class ItemManager<TInternal, TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem,TItem,TProductSpec> :
 		ModidifiableEntityManager<ObjectKey<long>, TInternal,ItemQueryArgument, TEditable,TItem>,
-		IItemManager<TInternal,TEditable>
+		IProductItemManager<TInternal,TEditable>
 		where TInternal : ItemInternal,  new()
 		where TEditable : ItemEditable, new()
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>

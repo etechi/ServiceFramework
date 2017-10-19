@@ -22,7 +22,8 @@ namespace SF.Core.ServiceManagement.Models
 {
 	[EntityObject]
 	public class ServiceDeclaration : 
-		IEntityWithId<string>
+		IEntityWithId<string>,
+		IEntityWithName
 	{
 		[Key]
 		[Comment("ID")]

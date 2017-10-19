@@ -96,7 +96,7 @@ namespace SF.Auth.Identities.Entity
 		{
 			DataSet.Add(new TIdentityCredential
 			{
-				ScopeId = ServiceInstanceDescriptor.InstanceId,
+				ScopeId = ServiceInstanceDescriptor.DataScopeId.Value,
 				ProviderId = Provider,
 				Credential = Credential,
 				IdentityId = UserId,
@@ -132,7 +132,7 @@ namespace SF.Auth.Identities.Entity
 
 		public async Task RemoveAllAsync()
 		{
-			var sid =  ServiceInstanceDescriptor.InstanceId;
+			var sid =  ServiceInstanceDescriptor.DataScopeId.Value;
 			await DataSet.RemoveRangeAsync(ic => ic.ScopeId == sid);
 		}
 	}

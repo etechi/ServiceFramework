@@ -16569,7 +16569,7 @@ var EntityEditor = (function (_super) {
                     args = (_c = {}, _c[props[0].Name] = id, _c);
             }
         }
-        return lib.call(this.props.controller, act.Name, args, null).then(function (re) {
+        return lib.call(this.props.controller, act.Name, args, { serviceId: this.props.serviceId }).then(function (re) {
             lib.restoreDefaultValues(re, lib.type(act.Type), true);
             return re;
         });

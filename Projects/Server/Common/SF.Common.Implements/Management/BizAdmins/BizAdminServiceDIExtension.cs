@@ -60,7 +60,7 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection AddBizAdminServices(this IServiceCollection sc)
 		{
 			sc.AddBizAdminManagementService();
-			sc.AddManagedScoped<IBizAdminService, BizAdminService>();
+			sc.AddManagedScoped<IBizAdminService, BizAdminService>(IsDataScope:true);
 			return sc;
 		}
 

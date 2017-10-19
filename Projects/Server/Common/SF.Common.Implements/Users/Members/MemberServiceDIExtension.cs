@@ -57,7 +57,7 @@ namespace SF.Core.ServiceManagement
 			this IServiceCollection sc
 			)
 		{
-			sc.AddManagedScoped<IMemberService, MemberService>();
+			sc.AddManagedScoped<IMemberService, MemberService>(IsDataScope: true);
 			sc.AddMemberManagementService();
 			return sc;
 		}

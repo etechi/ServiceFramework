@@ -60,7 +60,7 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection AddSysAdminServices(this IServiceCollection sc)
 		{
 			sc.AddSysAdminManagementService();
-			sc.AddManagedScoped<ISysAdminService, SysAdminService>();
+			sc.AddManagedScoped<ISysAdminService, SysAdminService>(IsDataScope: true);
 			return sc;
 		}
 

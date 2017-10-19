@@ -80,7 +80,7 @@ namespace SF.Biz.Products
 		//	return re;
 		//}
 		public static async Task SetItems<TEditable>(
-			this ICategoryManager<TEditable> CategoryManager,
+			this IProductCategoryManager<TEditable> CategoryManager,
 			long CategoryId,
 			long[] Items
 			) where TEditable:CategoryInternal

@@ -53,19 +53,19 @@ namespace SF.Core.ServiceManagement.Management
 			this.Items = sis.ToDictionary(t => t.Id);
 		}
 
-		public Task<ServiceImplement[]> GetAsync(string[] Ids)
+		public Task<ServiceImplement[]> GetAsync(ObjectKey<string>[] Ids)
 		{
 			return Task.FromResult(
 				Ids
-				.Select(id => Items.Get(id))
+				.Select(id => Items.Get(id.Id))
 				.Where(i => i != null)
 				.ToArray()
 				);
 		}
 
-		public Task<ServiceImplement> GetAsync(string Id)
+		public Task<ServiceImplement> GetAsync(ObjectKey<string> Id)
 		{
-			return Task.FromResult(Items.Get(Id));
+			return Task.FromResult(Items.Get(Id.Id));
 		}
 
 		static PagingQueryBuilder<ServiceImplement> pageQueryBuilder = new PagingQueryBuilder<ServiceImplement>(
@@ -91,10 +91,10 @@ namespace SF.Core.ServiceManagement.Management
 					)
 					);
 		}
-		public async Task<QueryResult<string>> QueryIdentsAsync(ServiceImplementQueryArgument Arg, Paging paging)
+		public async Task<QueryResult<ObjectKey<string>>> QueryIdentsAsync(ServiceImplementQueryArgument Arg, Paging paging)
 		{
 			var re = await QueryAsync(Arg, paging);
-			return re.Select(i => i.Id);
+			return re.Select(i =>new ObjectKey<string> { Id = i.Id });
 		}
 	}
 }

@@ -37,8 +37,8 @@ namespace Hygou.Setup
 		public long MainProductCategoryId { get; private set; }
 		public static async Task<ProductCategoryInitializer> Create(
 			IServiceInstanceManager ServiceInstanceManager,
-			ICategoryManager CategoryManager,
-			IItemManager ItemManager,
+			IProductCategoryManager CategoryManager,
+			IProductItemManager ItemManager,
 			long sellerId,
 			long? ScopeId,
 			ProductTypeInitializer types

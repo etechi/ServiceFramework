@@ -58,6 +58,7 @@ namespace SF.Users.Members.Entity
 			var q = Query.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)
 				.FilterContains(Arg.PhoneNumber, r => r.PhoneNumber)
+				.WithScope(ServiceInstanceDescriptor)
 				;
 			//if (Arg.MemberSourceId.HasValue)
 			//{
@@ -93,6 +94,7 @@ namespace SF.Users.Members.Entity
 			m.Id = await IdentGenerator.GenerateAsync();
 			m.CreatedTime = Now;
 			m.OwnerId = m.Id;
+			m.ScopeId = DataScopeId;
 			await base.OnNewModel(ctx);
 		}
 		protected override async Task OnUpdateModel(IModifyContext ctx)

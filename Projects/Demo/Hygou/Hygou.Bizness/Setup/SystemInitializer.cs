@@ -74,7 +74,7 @@ namespace Hygou.Setup
 			var tailDocContents = await ServiceProvider.Invoke((IServiceInstanceManager sim)=>DocInitializer.DocEnsure(ServiceProvider,sim,ScopeId));
 			
 			var prdtypes = await ServiceProvider.Invoke((IProductTypeManager m)=>ProductTypeInitializer.Create(m));
-			var colls = await ServiceProvider.Invoke(((ICategoryManager cm,IItemManager im, IServiceInstanceManager sim) arg) => 
+			var colls = await ServiceProvider.Invoke(((IProductCategoryManager cm,IProductItemManager im, IServiceInstanceManager sim) arg) => 
 				ProductCategoryInitializer.Create(arg.sim, arg.cm, arg.im, sysseller.Id, ScopeId, prdtypes));
 
 			var prdctns = await ServiceProvider.Invoke((IContentManager cm)=> ProductContentInitializer.Create(cm, colls));

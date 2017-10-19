@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Core.ServiceManagement.Models
 {
 	[EntityObject]
-	public class ServiceImplement: IEntityWithId<string>
+	public class ServiceImplement: IEntityWithId<string>, IEntityWithName
 	{
 		[Key]
 		[Comment("ID")]

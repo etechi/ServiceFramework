@@ -42,7 +42,7 @@ namespace SF.Core.ServiceManagement.Management
 	[Comment("服务实现管理", "系统内置服务实现")]
 	[Category("系统管理", "系统服务管理")]
 	public interface IServiceImplementManager :
-		IEntitySource<string, Models.ServiceImplement, ServiceImplementQueryArgument>
+		IEntitySource<ObjectKey<string>, Models.ServiceImplement, ServiceImplementQueryArgument>
 	{
 
 	}

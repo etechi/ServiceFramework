@@ -38,7 +38,7 @@ namespace SF.Core.ServiceManagement.Management
 	[Comment("服务定义管理", "定义系统内置服务")]
 	[Category("系统管理", "系统服务管理")]
 	public interface IServiceDeclarationManager:
-		IEntitySource<string,Models.ServiceDeclaration, ServiceDeclarationQueryArgument>
+		IEntitySource<ObjectKey<string>,Models.ServiceDeclaration, ServiceDeclarationQueryArgument>
 	{
 
 	}

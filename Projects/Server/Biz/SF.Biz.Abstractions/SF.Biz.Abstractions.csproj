@@ -16,7 +16,6 @@
   <ItemGroup>
     <Folder Include="Bizness\Carts\" />
     <Folder Include="Bizness\Delivery\" />
-    <Folder Include="Bizness\Products\" />
     <Folder Include="Bizness\Trades\" />
     <Folder Include="Properties\" />
     <Folder Include="Users\Accounting\" />

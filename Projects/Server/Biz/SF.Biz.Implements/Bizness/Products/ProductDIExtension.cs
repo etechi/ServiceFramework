@@ -33,8 +33,8 @@ namespace SF.Core.ServiceManagement
 				"产品管理",
 				b => b.Add<IProductManager, ProductManager>("Product", "产品")
 					.Add<IProductTypeManager, ProductTypeManager>("ProductType", "产品类型")
-					.Add<ICategoryManager, CategoryManager>("ProductItemCategory", "商品目录")
-					.Add<IItemManager, ItemManager>("ProductItem", "商品")
+					.Add<IProductCategoryManager, CategoryManager>("ProductItemCategory", "商品目录")
+					.Add<IProductItemManager, ItemManager>("ProductItem", "商品")
 				);
 			Services.AddSingleton<IItemService, CacheItemService>();
 			Services.AddSingleton<IItemSource, ItemSource>();
@@ -69,17 +69,17 @@ namespace SF.Core.ServiceManagement
 				"产品管理"
 				);
 		}
-		public static IServiceInstanceInitializer<ICategoryManager> NewProductCategoryManager(this IServiceInstanceManager sim)
+		public static IServiceInstanceInitializer<IProductCategoryManager> NewProductCategoryManager(this IServiceInstanceManager sim)
 		{
-			return sim.DefaultService<ICategoryManager, CategoryManager>(new { }).WithBiznessAdminMenuItems(
+			return sim.DefaultService<IProductCategoryManager, CategoryManager>(new { }).WithBiznessAdminMenuItems(
 				"产品管理"
 				);
 		}
-		public static IServiceInstanceInitializer<IItemManager> NewProductItemManager(
+		public static IServiceInstanceInitializer<IProductItemManager> NewProductItemManager(
 			this IServiceInstanceManager sim
 			)
 		{
-			return sim.DefaultService<IItemManager, ItemManager>(new { }).WithBiznessAdminMenuItems(
+			return sim.DefaultService<IProductItemManager, ItemManager>(new { }).WithBiznessAdminMenuItems(
 				"产品管理"
 				);
 		}

@@ -36,6 +36,7 @@ namespace SF.Entities
 		public IIdentGenerator IdentGenerator => EntityManager.IdentGenerator;
 		
 		public long? ServiceInstanceId => EntityManager.ServiceInstanceDescroptor.InstanceId;
+		public long? DataScopeId => EntityManager.ServiceInstanceDescroptor.DataScopeId;
 
 		public BaseEntityManager(IEntityManager EntityManager)
 		{

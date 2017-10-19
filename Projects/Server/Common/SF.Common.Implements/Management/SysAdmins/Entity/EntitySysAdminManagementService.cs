@@ -49,6 +49,7 @@ namespace SF.Management.SysAdmins.Entity
 			var q = Query.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)
 				.FilterContains(Arg.Account, r => r.Account)
+				.WithScope(ServiceInstanceDescriptor)
 				;
 			
 			return q;
@@ -60,6 +61,7 @@ namespace SF.Management.SysAdmins.Entity
 			m.Id = await IdentGenerator.GenerateAsync();
 			m.CreatedTime =Now;
 			m.OwnerId = m.Id;
+			m.ScopeId = DataScopeId;
 			await base.OnNewModel(ctx);
 		}
 		protected override async Task OnUpdateModel(IModifyContext ctx)

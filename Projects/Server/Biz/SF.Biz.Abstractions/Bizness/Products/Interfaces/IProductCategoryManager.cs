@@ -45,13 +45,13 @@ namespace SF.Biz.Products
 		public string Name { get; set; }
 	}
 
-	public interface ICategoryManager : ICategoryManager<CategoryInternal>
+	public interface IProductCategoryManager : IProductCategoryManager<CategoryInternal>
 	{ }
 
 	[NetworkService]
 	[EntityManager]
 	[Comment("产品目录管理")]
-	public interface ICategoryManager<TEditable> :
+	public interface IProductCategoryManager<TEditable> :
 		IEntityManager<ObjectKey<long>, TEditable>,
 		IEntitySource<ObjectKey<long>, TEditable, CategoryQueryArgument>
 		where TEditable : CategoryInternal

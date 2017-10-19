@@ -162,20 +162,25 @@ namespace SF.Core.ServiceManagement
 
 		public static IServiceCollection AddManagedTransient<TService, TImplement>(
 			this IServiceCollection sc,
-			Func<IServiceProvider, TService, Task> FuncUninit )
+			Func<IServiceProvider, TService, Task> FuncUninit,
+			bool IsDataScope=false
+			)
 			where TImplement : TService
 			where TService : class
 			=> sc.AddManagedTransient<TService, TImplement>(
 				null,
-				FuncUninit == null ? null : new Func<IServiceProvider, IServiceInstanceDescriptor, Task>((sp, sd) => FuncUninit(sp, sp.Resolve<TService>(sd.InstanceId)))
+				FuncUninit == null ? null : new Func<IServiceProvider, IServiceInstanceDescriptor, Task>((sp, sd) => FuncUninit(sp, sp.Resolve<TService>(sd.InstanceId))),
+				IsDataScope
 				);
 		public static IServiceCollection AddManagedTransient<TService, TImplement>(
 			this IServiceCollection sc, 
 			Func<IServiceProvider,IServiceInstanceDescriptor,Task> FuncInit,
-			Func<IServiceProvider, IServiceInstanceDescriptor, Task> FuncUninit=null)
+			Func<IServiceProvider, IServiceInstanceDescriptor, Task> FuncUninit=null,
+			bool IsDataScope=false
+			)
 			where TImplement : TService
 		{
-			sc.AddManaged(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Transient, new FuncManagedServiceInitializer(FuncInit,FuncUninit));
+			sc.AddManaged(typeof(TService), typeof(TImplement), ServiceImplementLifetime.Transient, new FuncManagedServiceInitializer(FuncInit, FuncUninit), null, IsDataScope);
 			return sc;
 		}
 		public static IServiceCollection AddManagedTransient<TService, TImplement>(this IServiceCollection sc,IManagedServiceInitializer ManagedServiceInitializer=null)

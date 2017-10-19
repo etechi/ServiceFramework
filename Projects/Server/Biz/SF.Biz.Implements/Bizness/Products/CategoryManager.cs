@@ -26,7 +26,7 @@ namespace SF.Biz.Products.Entity
 {
 	public class CategoryManager :
 		CategoryManager<CategoryInternal, DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec>,
-		ICategoryManager
+		IProductCategoryManager
 	{
 		public CategoryManager(IDataSetEntityManager<CategoryInternal, Category> EntityManager, IItemNotifier Notifier) : base(EntityManager, Notifier)
 		{
@@ -34,7 +34,7 @@ namespace SF.Biz.Products.Entity
 	}
 	public class CategoryManager<TEditable, TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem,TItem,TProductSpec> :
 		ModidifiableEntityManager<ObjectKey<long>,TEditable, CategoryQueryArgument, TEditable, TCategory>,
-		ICategoryManager<TEditable>
+		IProductCategoryManager<TEditable>
 		where TEditable : CategoryInternal,  new()
 		where TProduct : DataModels.Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
 		where TProductDetail : DataModels.ProductDetail<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>

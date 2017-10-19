@@ -53,7 +53,7 @@ namespace SF.Auth.Identities.Entity
 
 		protected override IContextQueryable<TIdentity> OnBuildQuery(IContextQueryable<TIdentity> Query, IdentityQueryArgument Arg, Paging paging)
 		{
-			var sid = EntityManager.ServiceInstanceDescroptor.InstanceId;
+			var sid = EntityManager.ServiceInstanceDescroptor.DataScopeId;
 			return Query
 				.Where(r=>r.ScopeId==sid)
 				.Filter(Arg.Id, r => r.Id)
@@ -140,7 +140,7 @@ namespace SF.Auth.Identities.Entity
 			m.SignupIdentProviderId = e.CreateCredentialProviderId;
 			m.SignupIdentValue = e.CreateCredential;
 			m.CreatedTime = Now;
-			m.ScopeId = ServiceInstanceDescriptor.InstanceId;
+			m.ScopeId = ServiceInstanceDescriptor.DataScopeId ?? 0;
 			if (e.Credentials == null)
 				e.Credentials = new[]{
 					new IdentityCredential

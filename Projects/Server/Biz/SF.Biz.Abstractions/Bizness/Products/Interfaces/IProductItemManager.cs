@@ -23,12 +23,12 @@ using System.Threading.Tasks;
 
 namespace SF.Biz.Products
 {
-	public interface IItemManager : IItemManager<ItemInternal, ItemEditable>
+	public interface IProductItemManager : IProductItemManager<ItemInternal, ItemEditable>
 	{ }
 	[NetworkService]
 	[EntityManager]
 	[Comment("商品管理")]
-	public interface IItemManager<TInternal, TEditable> :
+	public interface IProductItemManager<TInternal, TEditable> :
 		IEntityManager<ObjectKey<long>, TEditable>,
 		IEntitySource<ObjectKey<long>, TInternal,ItemQueryArgument>
 		where TInternal : ItemInternal

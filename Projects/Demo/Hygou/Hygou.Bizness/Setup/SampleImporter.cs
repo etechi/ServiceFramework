@@ -48,7 +48,7 @@ namespace Hygou.Setup
 			return sp.Invoke((
 				(
 				IProductManager productManager,
-				IItemManager itemManager,
+				IProductItemManager itemManager,
 				IProductTypeManager ProductTypeManager,
 				SF.Core.Hosting.IFilePathResolver pathResolver,
 				ISettingService<HygouSetting> setting
@@ -65,7 +65,7 @@ namespace Hygou.Setup
 		}
         public static async Task ImportSamples(
 			IProductManager productManager,
-			IItemManager itemManager,
+			IProductItemManager itemManager,
 			IProductTypeManager ProductTypeManager,
 			SF.Core.Hosting.IFilePathResolver pathResolver,
 			HygouSetting setting

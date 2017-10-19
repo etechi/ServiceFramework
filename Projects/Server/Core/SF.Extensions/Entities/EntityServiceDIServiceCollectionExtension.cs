@@ -52,7 +52,7 @@ namespace SF.Core.ServiceManagement
 		public interface IEntityServiceDeclarer
 		{
 
-			IEntityServiceDeclarer Add<I, T>(string Ident, string Name, bool ManagedService,params Type[] EntityTypes)
+			IEntityServiceDeclarer Add<I, T>(string Ident, string Name, bool ManagedService,bool IsDataScope,params Type[] EntityTypes)
 				where I : class
 				where T : I;
 
@@ -62,7 +62,7 @@ namespace SF.Core.ServiceManagement
 		{
 			public IServiceCollection Services { get; set; }
 			public List<IEntityServiceDescriptor> Descriptors { get; } = new List<IEntityServiceDescriptor>();
-			public IEntityServiceDeclarer Add<I, T>(string Ident,string Name,bool ManagedService,params Type[] EntityTypes)
+			public IEntityServiceDeclarer Add<I, T>(string Ident,string Name,bool ManagedService,bool IsDataScope,params Type[] EntityTypes)
 				where I:class
 				where T:I
 			{
@@ -72,7 +72,8 @@ namespace SF.Core.ServiceManagement
 						{
 							if (svc is IEntityAllRemover ear)
 								await ear.RemoveAllAsync();
-						}
+						},
+						IsDataScope: IsDataScope
 						);
 				else
 					Services.AddTransient<I, T>();
@@ -103,26 +104,32 @@ namespace SF.Core.ServiceManagement
 			where I : class
 				where T : I
 		{
-			return declarer.Add<I,T>(null, null, true, EntityTypes);
+			return declarer.Add<I,T>(null, null, true, false,EntityTypes);
 		}
 		public static IEntityServiceDeclarer AddUnmanaged<I, T>(this IEntityServiceDeclarer declarer, params Type[] EntityTypes)
 			where I : class
 				where T : I
 		{
-			return declarer.Add<I, T>(null, null,false, EntityTypes);
+			return declarer.Add<I, T>(null, null,false, false, EntityTypes);
 		}
 
-		public static IEntityServiceDeclarer Add<I, T>(this IEntityServiceDeclarer declarer, string Ident,string Name,params Type[] EntityTypes)
+		public static IEntityServiceDeclarer Add<I, T>(this IEntityServiceDeclarer declarer, string Ident,string Name,bool IsDataScope,params Type[] EntityTypes)
 			where I : class
 				where T : I
 		{
-			return declarer.Add<I, T>(Ident,Name, true, EntityTypes);
+			return declarer.Add<I, T>(Ident,Name, true, IsDataScope,EntityTypes);
+		}
+		public static IEntityServiceDeclarer Add<I, T>(this IEntityServiceDeclarer declarer, string Ident, string Name, params Type[] EntityTypes)
+			where I : class
+				where T : I
+		{
+			return declarer.Add<I, T>(Ident, Name, true, false, EntityTypes);
 		}
 		public static IEntityServiceDeclarer AddUnmanaged<I, T>(this IEntityServiceDeclarer declarer, string Ident, string Name, params Type[] EntityTypes)
 			where I : class
 				where T : I
 		{
-			return declarer.Add<I, T>(Ident, Name, false, EntityTypes);
+			return declarer.Add<I, T>(Ident, Name, false, false,EntityTypes);
 		}
 
 
