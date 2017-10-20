@@ -26,7 +26,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class AspNetCoreServiceCollectionExtension 
 	{
-		public static IServiceCollection AddAspNetCore(this IServiceCollection sc)
+		public static IServiceCollection AddAspNetCoreSupport(this IServiceCollection sc)
 		{
 			return sc.AddAspNetCoreHostingService()
 				.AddFrontSideMvcContentRenderProvider();

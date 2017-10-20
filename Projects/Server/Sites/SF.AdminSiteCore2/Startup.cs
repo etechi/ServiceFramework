@@ -44,7 +44,7 @@ namespace SF.AdminSiteCore2
 
 			var ins = Core2App.Setup(Core.Hosting.EnvironmentType.Production, services)
 				.With(sc=>
-					sc.AddAspNetCore()
+					sc.AddAspNetCoreSupport()
 					)
 				.Build();
 			return ins.ServiceProvider;

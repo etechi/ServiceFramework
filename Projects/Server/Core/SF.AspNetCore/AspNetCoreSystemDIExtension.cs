@@ -13,33 +13,25 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using SF.Core.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using SF.AspNetCore;
-using SF.Services.Settings;
-using Microsoft.AspNetCore.Authorization;
+using SF.AspNetCore.Auth;
 
-namespace Hygou.Site.Controllers 
+namespace SF.AspNetCore
 {
-	public class AdminController : Controller
+	public static class AspNetCoreSystemDIExtension
 	{
-		
-		public ActionResult Index()
+		public static IServiceCollection AddAspNetCoreSystemServices(this IServiceCollection services)
 		{
-			return RedirectToAction("bizness");
-		}
-		[Authorize]//("admin-bizness")]
-		public ActionResult Bizness()
-		{
-			return View();
-		}
-		[Authorize]//("admin-system")]
-		public ActionResult System()
-		{
-			return View();
+			services.AddAspNetCoreCommonAuthorization();
+			
+			return services;
 		}
 	}
 }
