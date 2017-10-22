@@ -33,6 +33,23 @@ namespace Hygou.Setup
 {
 	public class SystemInitializer
 	{
+		public static async Task<long> EnsureSysAdmin(IServiceProvider sp)
+		{
+			var u = await scope.UserEnsure("sysadmin", "系统管理员", "13011110001", "temsys", new[] { "sysadmin", "admin", "special" });
+
+			await scope.UserEnsure("超级管理员01", "超级管理员01", "13011120001", "system123", new[] { "sysadmin", "admin", "special" });
+			await scope.UserEnsure("超级管理员02", "超级管理员02", "13011120002", "system123", new[] { "sysadmin", "admin", "special" });
+			await scope.UserEnsure("超级管理员03", "超级管理员03", "13011120003", "system123", new[] { "sysadmin", "admin", "special" });
+
+			await scope.UserEnsure("次级管理员01", "次级管理员01", "13011130001", "system123", new[] { "sysadmin", "admin" });
+			await scope.UserEnsure("次级管理员02", "次级管理员02", "13011130002", "system123", new[] { "sysadmin", "admin" });
+			await scope.UserEnsure("次级管理员03", "次级管理员04", "13011130003", "system123", new[] { "sysadmin", "admin" });
+			await scope.UserEnsure("次级管理员04", "次级管理员05", "13011130004", "system123", new[] { "sysadmin", "admin" });
+			await scope.UserEnsure("次级管理员05", "次级管理员06", "13011130005", "system123", new[] { "sysadmin", "admin" });
+
+			return u;
+		}
+
 		public static async Task<MemberInternal> EnsureSysSeller(IServiceProvider sp)
 		{
 			var svc = sp.Resolve<IMemberService>();

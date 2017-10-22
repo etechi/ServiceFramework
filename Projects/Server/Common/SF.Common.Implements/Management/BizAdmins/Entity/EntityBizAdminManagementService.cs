@@ -90,7 +90,7 @@ namespace SF.Management.BizAdmins.Entity
 						Password = e.Password.Trim(),
 						Identity = new Auth.Identities.Models.Identity
 						{
-							OwnerId="svc-"+ServiceInstanceDescriptor.InstanceId+"-"+m.Id,
+							OwnerId="i-"+ServiceInstanceDescriptor.InstanceId+"-"+m.Id,
 							Icon = e.Icon,
 							Id = m.Id,
 							Name=m.Name

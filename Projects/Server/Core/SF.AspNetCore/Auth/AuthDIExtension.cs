@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -31,27 +32,19 @@ namespace SF.AspNetCore.Auth
 	{
 		public static IServiceCollection AddAspNetCoreCommonAuthorization(this IServiceCollection services)
 		{
+			services.AddAuthentication(
+				CookieAuthenticationDefaults.AuthenticationScheme
+				)
+				.AddCookie(opt =>
+				{
 
-			services.AddAuthorization(options =>
-			{
-				options.DefaultPolicy =
-					new AuthorizationPolicyBuilder("default")
-					.RequireAuthenticatedUser()
-					.Build();
-
-				//options.AddPolicy("admin-bizness", policy =>
-				//{
-				//	policy.RequireAuthenticatedUser();
-
-				//});
-				//options.AddPolicy("admin-bizness", policy =>
-				//{
-
-				//	policy.RequireAuthenticatedUser();
-				//});
-
-			});
-
+					opt.Cookie.HttpOnly = true;
+					opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+					opt.Cookie.Path = "/";
+					opt.Cookie.Name = "sf-sess";
+					opt.LoginPath = "/account/signin";
+				}
+			);
 
 			var securityKey = "12faod919&^*%1212";
 
@@ -74,25 +67,57 @@ namespace SF.AspNetCore.Auth
 
 				// If you want to allow a certain amount of clock drift, set that here:
 				ClockSkew = TimeSpan.Zero
-			};
 
-			services.AddAuthentication(opt=>
-			{
-				opt.DefaultScheme = "default";
 				
-			})
-			.AddJwtBearer(opt =>
-			{
-				opt.TokenValidationParameters = tokenValidationParameters;
-				
-			})
-			.AddCookie(opt =>
-			{
-				opt.Cookie.HttpOnly = true;
-				opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
-				opt.Cookie.Path = "/";
-				opt.Cookie.Name = "sf-sess";
-			});
+			};
+			services.AddAuthentication(
+				JwtBearerDefaults.AuthenticationScheme
+				)
+				.AddJwtBearer(opt =>
+				{
+					opt.TokenValidationParameters = tokenValidationParameters;
+				});
+			
+			//services.AddAuthorization(options =>
+			//{
+			//	options.DefaultPolicy =
+			//		new AuthorizationPolicyBuilder("default")
+			//		.RequireAuthenticatedUser()
+			//		.Build();
+
+			//	//options.AddPolicy("admin-bizness", policy =>
+			//	//{
+			//	//	policy.RequireAuthenticatedUser();
+
+			//	//});
+			//	//options.AddPolicy("admin-bizness", policy =>
+			//	//{
+
+			//	//	policy.RequireAuthenticatedUser();
+			//	//});
+
+			//});
+
+
+		
+
+			//services.AddAuthentication(opt=>
+			//{
+			//	opt.DefaultScheme = "default";
+
+			//})
+			//.AddJwtBearer(opt =>
+			//{
+			//	opt.TokenValidationParameters = tokenValidationParameters;
+
+			//})
+			//.AddCookie(opt =>
+			//{
+			//	opt.Cookie.HttpOnly = true;
+			//	opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+			//	opt.Cookie.Path = "/";
+			//	opt.Cookie.Name = "sf-sess";
+			//});
 
 
 			return services;

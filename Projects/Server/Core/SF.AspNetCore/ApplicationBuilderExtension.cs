@@ -56,10 +56,12 @@ namespace SF.AspNetCore
 			{
 				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 			});
-
+			app.UseAuthentication();
+			//app.UseCookiePolicy(cookiePolicyOptions);
 
 			var mvc = app.UseMvc(routes =>
 			{
+
 				routes.MapRoute(
 					name: "Media",
 					template: "r/{id?}",

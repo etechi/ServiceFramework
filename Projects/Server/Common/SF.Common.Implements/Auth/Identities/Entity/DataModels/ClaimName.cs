@@ -13,33 +13,21 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using Microsoft.AspNetCore.Mvc;
+using SF.Data;
+using SF.Metadata;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SF.AspNetCore;
-using SF.Services.Settings;
-using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Hygou.Site.Controllers 
+namespace SF.Auth.Identities.Entity.DataModels
 {
-	public class AdminController : Controller
+	[Table("SysAuthClaimName")]
+	public class ClaimName
 	{
-		
-		public ActionResult Index()
-		{
-			return RedirectToAction("bizness");
-		}
-		[Authorize("admin-bizness")]
-		public ActionResult Bizness()
-		{
-			return View();
-		}
-		[Authorize("admin-system")]
-		public ActionResult System()
-		{
-			return View();
-		}
+		[DatabaseGenerated(DatabaseGeneratedOption.None)]
+		public int Id { get; set; }
+
+		[MaxLength(100)]
+		public string Name { get; set; }
 	}
 }
