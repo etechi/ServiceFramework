@@ -13,23 +13,26 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Entities;
 using SF.Metadata;
-using SF.Auth;
-using SF.Auth.Identities;
-using SF.Users.Members.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SF.Data;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
-namespace SF.Users.Members
+namespace SF.Auth.Users.Models
 {
-	public class MemberServiceSetting 
+	public class UserDesc : IEntityWithId<long>,IEntityWithName
 	{
-		public Lazy<IMemberManagementService> ManagementService { get; set; }
+		[Comment("ID")]
+		[ReadOnly(true)]
+		public long Id { get; set; }
 
+		[Comment("名称")]
+		[MaxLength(100)]
+		public string Name { get; set; }
+
+
+		[Comment("图标")]
+		public string Icon { get; set; }
 	}
 
 }

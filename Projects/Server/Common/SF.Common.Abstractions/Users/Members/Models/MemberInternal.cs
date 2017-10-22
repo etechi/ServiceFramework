@@ -23,13 +23,9 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Users.Members.Models
 {
 	[EntityObject]
-	public class MemberInternal : ObjectEntityBase
+	public class MemberInternal :SF.Auth.Users.Models.UserInternal
 	{
-		[MaxLength(20)]
-		[Comment("电话号码")]
-		[TableVisible]
-		[Required]
-		public string PhoneNumber { get; set; }
+	
 
 	}
 }

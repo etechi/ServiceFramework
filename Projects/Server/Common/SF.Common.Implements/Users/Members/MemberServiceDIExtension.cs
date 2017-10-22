@@ -21,7 +21,6 @@ using SF.Core.ServiceManagement;
 using SF.Core.ServiceManagement.Management;
 using SF.Entities;
 using SF.Users.Members;
-using SF.Users.Members.Entity;
 using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
@@ -34,14 +33,14 @@ namespace SF.Core.ServiceManagement
 			   this IServiceCollection sc,
 			   string TablePrefix = null
 			   )
-			   where TMember : SF.Users.Members.Entity.DataModels.Member<TMember>,new()
+			   where TMember : SF.Users.Members.DataModels.Member<TMember>,new()
 		{
 			sc.AddDataModules<TMember>(TablePrefix);
 
 			sc.EntityServices(
 				"Member",
 				"会员",
-				d => d.Add<IMemberManagementService, EntityMemberManagementService<TMember>>(typeof(MemberDesc))
+				d => d.Add<IMemberManagementService, MemberManagementService<TMember>>(typeof(MemberDesc))
 				);
 
 			return sc;
@@ -49,7 +48,7 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection AddMemberManagementService(
 			this IServiceCollection sc,
 			string TablePrefix = null
-			) => sc.AddMemberManagementService<SF.Users.Members.Entity.DataModels.Member>(
+			) => sc.AddMemberManagementService<SF.Users.Members.DataModels.Member>(
 				TablePrefix
 				);
 
@@ -62,11 +61,11 @@ namespace SF.Core.ServiceManagement
 			return sc;
 		}
 		public static IServiceInstanceInitializer<IMemberManagementService> NewMemberManagementService<TMember>(this IServiceInstanceManager sim)
-				 where TMember : SF.Users.Members.Entity.DataModels.Member<TMember>, new()
-			=> sim.DefaultService<IMemberManagementService, EntityMemberManagementService<TMember>>(null);
+				 where TMember : SF.Users.Members.DataModels.Member<TMember>, new()
+			=> sim.DefaultService<IMemberManagementService, MemberManagementService<TMember>>(null);
 
 		public static IServiceInstanceInitializer<IMemberManagementService> NewMemberManagementService(this IServiceInstanceManager sim)
-			=> sim.NewMemberManagementService<SF.Users.Members.Entity.DataModels.Member>();
+			=> sim.NewMemberManagementService<SF.Users.Members.DataModels.Member>();
 
 		public static IServiceInstanceInitializer<IMemberService> NewMemberServive(
 			this IServiceInstanceManager sim,

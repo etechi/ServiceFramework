@@ -14,20 +14,22 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Data;
-using SF.Data.Models;
-using SF.KB;
 using SF.Metadata;
-using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace SF.Management.BizAdmins.Models
+namespace SF.Auth.Users.Models
 {
-	public class BizAdminInternal : SF.Auth.Users.Models.UserInternal
+	public class UserEditable : UserInternal
 	{
-		[Comment("账号")]
-		[Required]
+		[Comment("图标")]
+		[Image]
+		public virtual string Icon { get; set; }
+
+
+		[Comment("密码","新建时必须填写，修改时填写密码将修改会员密码")]
+		[Password]
 		[MaxLength(100)]
-		public string Account { get; set; }
+		public virtual string Password { get; set; }
 
 	}
 }

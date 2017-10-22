@@ -13,22 +13,33 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Auth.Identities;
+using SF.Core;
+using SF.Core.CallPlans;
+using SF.Core.Times;
 using SF.Data;
-using SF.Data.Models;
-using SF.KB;
-using SF.Metadata;
+using SF.Entities;
+using SF.Users.Members.Models;
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 
-namespace SF.Management.BizAdmins.Models
+namespace SF.Users.Members
 {
-	public class BizAdminInternal : SF.Auth.Users.Models.UserInternal
+	public class MemberManagementService<TMember> :
+		Auth.Users.BaseUserManagementService<
+		CreateMemberArgument, MemberRegisted, MemberInternal, MemberEditable, MemberQueryArgument, TMember>,
+		IMemberManagementService
+		where TMember:DataModels.Member<TMember>,new()
 	{
-		[Comment("账号")]
-		[Required]
-		[MaxLength(100)]
-		public string Account { get; set; }
-
+		public MemberManagementService(
+			IDataSetEntityManager<MemberEditable, TMember> Manager, 
+			Lazy<IIdentityService> IdentityService, 
+			ICallPlanProvider CallPlanProvider
+			) : base(Manager, IdentityService, CallPlanProvider)
+		{
+		}
 	}
-}
 
+}

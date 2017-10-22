@@ -20,6 +20,7 @@ namespace SF.Auth
 	
 	public class Claim
 	{
+		
 		public string Issuer { get; set; }
 		public string OriginalIssuer { get; set; }
 		public KeyValuePair<string, string>[] Properties { get; }

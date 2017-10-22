@@ -19,11 +19,11 @@ using SF.Metadata;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Management.SysAdmins.Entity.DataModels
+namespace SF.Management.BizAdmins.DataModels
 {
-	[Table("MgrSysAdmin")]
-	public class SysAdmin<TSysAdmin> : ObjectEntityBase
-		where TSysAdmin: SysAdmin<TSysAdmin>
+	[Table("MgrBizAdmin")]
+	public class BizAdmin<TBizAdmin> : Auth.Users.DataModels.BaseUserModel<TBizAdmin>
+		where TBizAdmin: BizAdmin<TBizAdmin>
 	{
 
 		[Comment("账号")]
@@ -31,12 +31,9 @@ namespace SF.Management.SysAdmins.Entity.DataModels
 		[Index]
 		public string Account { get; set; }
 
-		[Comment("图标")]
-		[MaxLength(100)]
-		public string Icon { get; set; }
 
 	}
-	public class SysAdmin : SysAdmin<SysAdmin>
+	public class BizAdmin : BizAdmin<BizAdmin>
 	{ }
 
 }

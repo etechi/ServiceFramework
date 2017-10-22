@@ -26,11 +26,16 @@ using System.Threading.Tasks;
 
 namespace SF.Management.SysAdmins
 {
-	public class SysAdminQueryArgument : Entities.IQueryArgument<ObjectKey<long>>
+	public class SysAdminQueryArgument : SF.Auth.Users.UserQueryArgument
 	{
-		public ObjectKey<long> Id { get; set; }
 		public string Account { get; set; }
-		public string Name { get; set; }
+	}
+	public class SysAdminCreateArgument : SF.Auth.Users.CreateUserArgument
+	{
+
+	}
+	public class SysAdminRegisted : SF.Auth.Users.UserRegisted
+	{
 	}
 
 	[EntityManager]
@@ -38,11 +43,15 @@ namespace SF.Management.SysAdmins
 	[NetworkService]
 	[Comment("系统管理员")]
 	[Category("系统管理", "系统管理员管理")]
-	public interface ISysAdminManagementService : 
-		Entities.IEntitySource<ObjectKey<long>, SysAdminInternal,SysAdminQueryArgument>,
-		Entities.IEntityManager<ObjectKey<long>, SysAdminEditable>
-    {
-    }
+	public interface ISysAdminManagementService :
+		SF.Auth.Users.IUserManagementService<
+			SysAdminCreateArgument, 
+			Models.SysAdminInternal, 
+			SysAdminEditable, 
+			SysAdminQueryArgument
+			>
+	{
+	}
 
 }
 

@@ -19,7 +19,7 @@ using System;
 
 namespace SF.Management.BizAdmins.Models
 {
-	public class BizAdminDesc : Identity
+	public class BizAdminDesc : SF.Auth.Users.Models.UserDesc
 	{
 	}
 

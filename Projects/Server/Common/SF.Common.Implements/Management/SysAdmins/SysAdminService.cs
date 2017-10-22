@@ -16,7 +16,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Metadata;
 using SF.Auth;
 using SF.Auth.Identities;
-using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,18 +24,26 @@ using System.Threading.Tasks;
 using SF.Auth.Identities.Models;
 using SF.Entities;
 using SF.Data;
+using SF.Core.ServiceManagement;
+using SF.Management.SysAdmins.Models;
 
 namespace SF.Management.SysAdmins
 {
 	public class SysAdminService :
-		ISysAdminService
+		SysAdminService<DataModels.SysAdmin>
 	{
-		SysAdminServiceSetting Setting { get; }
-		public SysAdminService(SysAdminServiceSetting Setting) 
+		public SysAdminService(ISysAdminManagementService UserManagerService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(UserManagerService, ServiceInstanceDescriptor)
 		{
-			this.Setting = Setting;
 		}
-
+	}
+	public class SysAdminService<TSysAdmin> :
+		Auth.Users.BaseUserService<SysAdminCreateArgument, SysAdminDesc, SysAdminInternal, SysAdminEditable, SysAdminQueryArgument, TSysAdmin, ISysAdminManagementService>,
+		ISysAdminService
+		where TSysAdmin : DataModels.SysAdmin<TSysAdmin>, new()
+	{
+		public SysAdminService(ISysAdminManagementService UserManagerService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(UserManagerService, ServiceInstanceDescriptor)
+		{
+		}
 	}
 
 }

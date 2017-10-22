@@ -25,17 +25,22 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace SF.Users.Members.Entity
+namespace SF.Auth.Users
 {
-	public class EntityMemberManagementService<TMember> :
-		ModidifiableEntityManager<ObjectKey<long>, Models.MemberInternal,  MemberQueryArgument, Models.MemberEditable, TMember>,
-		IMemberManagementService,
+	public abstract class BaseUserManagementService<TCreateUserArgument,TUserRegisted,TUserInternal,TUserEditable,TUserQueryArgument,TUser> :
+		ModidifiableEntityManager<ObjectKey<long>, TUserInternal,  TUserQueryArgument, TUserEditable, TUser>,
+		IUserManagementService<TCreateUserArgument,TUserInternal,TUserEditable,TUserQueryArgument>,
 		ICallable
-		where TMember: DataModels.Member<TMember>,new()
+		where TUser: DataModels.BaseUserModel<TUser>,new()
+		where TUserInternal:Models.UserInternal
+		where TUserEditable:Models.UserEditable,new()
+		where TUserQueryArgument:UserQueryArgument,new()
+		where TCreateUserArgument:CreateUserArgument
+		where TUserRegisted:UserRegisted,new()
 	{
 		public Lazy<IIdentityService> IdentityService { get; }
-		public EntityMemberManagementService(
-			IDataSetEntityManager<Models.MemberEditable,TMember> Manager,
+		public BaseUserManagementService(
+			IDataSetEntityManager<TUserEditable,TUser> Manager,
 			Lazy<IIdentityService> IdentityService,
 			ICallPlanProvider CallPlanProvider
 			) : base(Manager)
@@ -50,10 +55,10 @@ namespace SF.Users.Members.Entity
 			//	);
 		}
 
-		protected override PagingQueryBuilder<TMember> PagingQueryBuilder =>
-			PagingQueryBuilder<TMember>.Simple("time", b => b.CreatedTime, true);
+		protected override PagingQueryBuilder<TUser> PagingQueryBuilder =>
+			PagingQueryBuilder<TUser>.Simple("time", b => b.CreatedTime, true);
 
-		protected override IContextQueryable<TMember> OnBuildQuery(IContextQueryable<TMember> Query, MemberQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TUser> OnBuildQuery(IContextQueryable<TUser> Query, TUserQueryArgument Arg, Paging paging)
 		{
 			var q = Query.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)
@@ -70,14 +75,14 @@ namespace SF.Users.Members.Entity
 			//}
 			return q;
 		}
-		public async Task<string> CreateMemberAsync(
-			CreateMemberArgument Arg
+		public async Task<string> CreateUserAsync(
+			TCreateUserArgument Arg
 			)
 		{
 			var ctx = NewModifyContext();
 			await InternalCreateAsync(
 				ctx,
-				new MemberEditable
+				new TUserEditable
 				{
 					Name=Arg.Identity?.Name,
 					Icon=Arg.Identity?.Icon,
@@ -115,7 +120,7 @@ namespace SF.Users.Members.Entity
 
 			if (ctx.Action == ModifyAction.Create)
 			{
-				var CreateArgument= (CreateMemberArgument)ctx.ExtraArgument;
+				var CreateArgument= (TCreateUserArgument)ctx.ExtraArgument;
 
 
 				UIEnsure.HasContent(e.Password, "需要提供密码");
@@ -144,9 +149,9 @@ namespace SF.Users.Members.Entity
 				m.SignupIdentityId = iid;
 
 				EntityManager.AddPostAction(() =>
-					EntityManager.EventEmitter.Emit(new MemberRegisted
+					EntityManager.EventEmitter.Emit(new TUserRegisted
 					{
-						MemberId = m.Id,
+						UserId = m.Id,
 						ServiceId = ServiceInstanceDescriptor.InstanceId,
 						Time= m.CreatedTime
 					})

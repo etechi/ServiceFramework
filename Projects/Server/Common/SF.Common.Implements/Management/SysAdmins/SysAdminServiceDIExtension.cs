@@ -25,7 +25,6 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using SF.Management.SysAdmins;
-using SF.Management.SysAdmins.Entity;
 using SF.Auth.Identities;
 
 namespace SF.Core.ServiceManagement
@@ -38,13 +37,13 @@ namespace SF.Core.ServiceManagement
 			//Func<MenuItem[]> DefaultMenu=null,
 			string TablePrefix = null
 			)
-			where TSysAdmin : SF.Management.SysAdmins.Entity.DataModels.SysAdmin<TSysAdmin>,new()
+			where TSysAdmin : SF.Management.SysAdmins.DataModels.SysAdmin<TSysAdmin>,new()
 		{
 			sc.AddDataModules<TSysAdmin>(TablePrefix);
 			sc.EntityServices(
 				"SysAdmin",
 				"系统管理员",
-				d => d.Add<ISysAdminManagementService, EntitySysAdminManagementService<TSysAdmin>>()
+				d => d.Add<ISysAdminManagementService, SysAdminManagementService<TSysAdmin>>()
 				);
 			return sc;
 		}
@@ -52,7 +51,7 @@ namespace SF.Core.ServiceManagement
 			this IServiceCollection sc,
 			string TablePrefix = null
 			) =>
-			sc.AddSysAdminManagementService<SF.Management.SysAdmins.Entity.DataModels.SysAdmin>(TablePrefix);
+			sc.AddSysAdminManagementService<SF.Management.SysAdmins.DataModels.SysAdmin>(TablePrefix);
 
 		public static IServiceCollection AddSysAdminService(this IServiceCollection sc)=>
 			sc.AddManagedScoped<ISysAdminService,SysAdminService>();
@@ -68,8 +67,8 @@ namespace SF.Core.ServiceManagement
 		public static IServiceInstanceInitializer<ISysAdminManagementService> NewSysAdminMangementService<TSysAdmin>(
 			this IServiceInstanceManager sim
 			)
-			where TSysAdmin: SF.Management.SysAdmins.Entity.DataModels.SysAdmin<TSysAdmin>, new()
-			=> sim.DefaultService<ISysAdminManagementService, EntitySysAdminManagementService<TSysAdmin>>(
+			where TSysAdmin: SF.Management.SysAdmins.DataModels.SysAdmin<TSysAdmin>, new()
+			=> sim.DefaultService<ISysAdminManagementService, SysAdminManagementService<TSysAdmin>>(
 				new { }
 				);
 
@@ -78,7 +77,7 @@ namespace SF.Core.ServiceManagement
 			IServiceInstanceInitializer<ISysAdminManagementService> SysAdminManagementService=null,
 			IServiceInstanceInitializer<IIdentityService> IdentityService = null
 			)
-			where TSysAdmin : SF.Management.SysAdmins.Entity.DataModels.SysAdmin<TSysAdmin>, new()
+			where TSysAdmin : SF.Management.SysAdmins.DataModels.SysAdmin<TSysAdmin>, new()
 			=> sim.DefaultService<ISysAdminService, SysAdminService>(
 				new { },
 				SysAdminManagementService??sim.NewSysAdminMangementService<TSysAdmin>(),
@@ -89,7 +88,7 @@ namespace SF.Core.ServiceManagement
 			IServiceInstanceInitializer<ISysAdminManagementService> SysAdminManagementService = null,
 			IServiceInstanceInitializer<IIdentityService> IdentityService = null
 			) =>
-			sim.NewSysAdminService<SF.Management.SysAdmins.Entity.DataModels.SysAdmin>(SysAdminManagementService, IdentityService);
+			sim.NewSysAdminService<SF.Management.SysAdmins.DataModels.SysAdmin>(SysAdminManagementService, IdentityService);
 
 
 	}

@@ -20,10 +20,15 @@ using SF.Metadata;
 
 namespace SF.Management.BizAdmins
 {
-	public class BizAdminQueryArgument : QueryArgument
+	public class BizAdminQueryArgument :SF.Auth.Users.UserQueryArgument
 	{
-		public string Account { get; set; }
-		public string Name { get; set; }
+	}
+	public class BizAdminCreateArgument : SF.Auth.Users.CreateUserArgument
+	{
+
+	}
+	public class BizAdminRegisted : SF.Auth.Users.UserRegisted
+	{
 	}
 
 	[EntityManager]
@@ -31,10 +36,14 @@ namespace SF.Management.BizAdmins
 	[NetworkService]
 	[Comment("业务管理员")]
 	[Category("系统管理", "业务管理员管理")]
-	public interface IBizAdminManagementService : 
-		IEntitySource<ObjectKey<long>, BizAdminInternal,BizAdminQueryArgument>,
-		IEntityManager<ObjectKey<long>, BizAdminEditable>
-    {
+	public interface IBizAdminManagementService :
+			SF.Auth.Users.IUserManagementService<
+			BizAdminCreateArgument,
+			BizAdminInternal,
+			BizAdminEditable,
+			BizAdminQueryArgument
+			>
+	{
     }
 
 }

@@ -25,29 +25,44 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Users.Members
+
+namespace SF.Auth.Users
 {
-	public class MemberQueryArgument :SF.Auth.Users.UserQueryArgument
+	public class UserQueryArgument : Entities.IQueryArgument<ObjectKey<long>>
 	{
+		[Comment("Id")]
+		public ObjectKey<long> Id { get; set; }
+
+		[Comment("名称")]
+		public string Name { get; set; }
+
+		[Comment("电话")]
+		public string PhoneNumber { get; set; }
+
+		//[Comment("来源")]
+		//[EntityIdent(typeof(MemberSources.IMemberSourceManagementService))]
+		//public long? MemberSourceId { get; set; }
+
+		//[Comment("邀请人")]
+		//[EntityIdent(typeof(IMemberManagementService))]
+		//public long? InvitorId { get; set; }
 
 	}
 
-	public class CreateMemberArgument : SF.Auth.Users.CreateUserArgument
-	{
-		
-	}
-	public class MemberRegisted : SF.Auth.Users.UserRegisted
+	public class CreateUserArgument : CreateIdentityArgument
 	{
 	}
-
-	[EntityManager]
-	[Authorize("admin")]
-	[NetworkService]
-	[Comment("会员")]
-	[Category("用户管理", "会员管理")]
-	public interface IMemberManagementService : 
-		SF.Auth.Users.IUserManagementService<CreateMemberArgument,Models.MemberInternal,MemberEditable,MemberQueryArgument>
-    {
+	public interface IUserManagementService<TCreateUserArgument,TUserInternal, TUserEditable,TUserQueryArgument> : 
+		Entities.IEntitySource<ObjectKey<long>,TUserInternal, TUserQueryArgument>,
+		Entities.IEntityManager<ObjectKey<long>, TUserEditable>
+		where TUserInternal:Models.UserInternal
+		where TUserEditable : Models.UserEditable
+		where TUserQueryArgument:UserQueryArgument
+		where TCreateUserArgument:CreateUserArgument
+	{
+		Task<string> CreateUserAsync(
+			TCreateUserArgument Arg
+			);
 	}
 
 }

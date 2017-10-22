@@ -6,13 +6,13 @@
 
   <ItemGroup>
     <Compile Remove="Auth\Passport\**" />
-    <Compile Remove="Auth\Users\**" />
+    <Compile Remove="Auth\Users-backup\**" />
     <Compile Remove="Common\Documents\Management\Backup\**" />
     <EmbeddedResource Remove="Auth\Passport\**" />
-    <EmbeddedResource Remove="Auth\Users\**" />
+    <EmbeddedResource Remove="Auth\Users-backup\**" />
     <EmbeddedResource Remove="Common\Documents\Management\Backup\**" />
     <None Remove="Auth\Passport\**" />
-    <None Remove="Auth\Users\**" />
+    <None Remove="Auth\Users-backup\**" />
     <None Remove="Common\Documents\Management\Backup\**" />
   </ItemGroup>
 

@@ -21,19 +21,10 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Users.Members.Models
 {
 	[EntityObject]
-	public class MemberDesc : IEntityWithId<long>
+	public class MemberDesc : 
+		SF.Auth.Users.Models.UserDesc
 	{
-		[Comment("ID")]
-		[ReadOnly(true)]
-		public long Id { get; set; }
-
-		[Comment("名称")]
-		[MaxLength(100)]
-		public string Name { get; set; }
-
-
-		[Comment("图标")]
-		public string Icon { get; set; }
+		
 	}
 
 }

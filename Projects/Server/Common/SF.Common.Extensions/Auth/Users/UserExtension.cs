@@ -28,12 +28,12 @@ using SF.Data;
 using SF.Core.ServiceManagement;
 using SF.Core;
 
-namespace SF.Users.Members
+namespace SF.Auth.Users
 {
-	public static class MemberExtension
+	public static class UserExtension
 	{
-		public static async Task<MemberInternal> MemberEnsure(
-			this IMemberService Service,
+		public static async Task<long> Ensure<TCreateUserArgument, TUserDesc>(
+			this IUserService<TCreateUserArgument, TUserDesc> Service,
 			IServiceProvider ServiceProvider,
 			string name,
 			string nick,
@@ -41,12 +41,12 @@ namespace SF.Users.Members
 			string password,
 			string[] roles = null,
 			Dictionary<string, string> extArgs = null
-			)
+			) 
+			where TCreateUserArgument : CreateUserArgument,new()
+			where TUserDesc : Models.UserDesc
 		{
 			var sid = ((IManagedServiceWithId)Service).ServiceInstanceId;
-			var ims = ServiceProvider.Resolve<IMemberManagementService>(null, sid);
-			var identityService = ServiceProvider.Resolve<IIdentityService>(null, ((IManagedServiceWithId)ims).ServiceInstanceId);
-			var err = ServiceProvider.Resolve<IEntityReferenceResolver>();
+			var ims = ServiceProvider.Resolve<IUserManagementService>(null, sid);
 
 			var member = await ims.QuerySingleAsync(
 				new MemberQueryArgument
@@ -68,7 +68,7 @@ namespace SF.Users.Members
 				}
 
 				var sess = await Service.Signup(
-					new CreateMemberArgument
+					new TCreateUserArgument
 					{
 						Credential = phoneNumber,
 						ExtraArgument = extArgs.Count > 0 ? extArgs : null,

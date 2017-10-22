@@ -27,21 +27,13 @@ using SF.Core.Events;
 
 namespace SF.Users.Members
 {
-	public class MemberRegisted  : IEvent
+	public class MemberRegisted  : SF.Auth.Users.UserRegisted
 	{
-		public long ServiceId { get; set; }
-		public long MemberId { get; set; }
-		public DateTime Time { get; set; }
-
-		long? IEvent.IdentityId => MemberId;
-		long? IEvent.ServiceId => ServiceId;
 	}
 	
 	[NetworkService]
-	public interface IMemberService
+	public interface IMemberService : SF.Auth.Users.IUserService<CreateMemberArgument, Models.MemberDesc>
 	{
-		Task<string> Signup(CreateMemberArgument Arg);
-		Task<MemberDesc> GetCurrentMember();
 	}
 
 }

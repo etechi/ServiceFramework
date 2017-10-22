@@ -13,22 +13,37 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Data.Models;
-using SF.KB;
 using SF.Metadata;
+using SF.Auth;
+using SF.Auth.Identities;
+using SF.Users.Members.Models;
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SF.Data.Models;
+using SF.Core.Events;
 
-namespace SF.Management.BizAdmins.Models
+namespace SF.Auth.Users
 {
-	public class BizAdminInternal : SF.Auth.Users.Models.UserInternal
+	public class UserRegisted  : IEvent
 	{
-		[Comment("账号")]
-		[Required]
-		[MaxLength(100)]
-		public string Account { get; set; }
+		public long ServiceId { get; set; }
+		public long UserId { get; set; }
+		public DateTime Time { get; set; }
 
+		long? IEvent.IdentityId => UserId;
+		long? IEvent.ServiceId => ServiceId;
 	}
+	
+	public interface IUserService<TCreateUserArgument,TUserDesc>
+		where TCreateUserArgument: CreateUserArgument
+		where TUserDesc:Models.UserDesc
+	{
+		Task<string> Signup(TCreateUserArgument Arg);
+		Task<TUserDesc> GetCurrentUser();
+	}
+
 }
 

@@ -38,13 +38,13 @@ namespace SF.Core.ServiceManagement
 			//Func<MenuItem[]> DefaultMenu=null,
 			string TablePrefix = null
 			)
-			where TBizAdmin : SF.Management.BizAdmins.Entity.DataModels.BizAdmin<TBizAdmin>,new()
+			where TBizAdmin : SF.Management.BizAdmins.DataModels.BizAdmin<TBizAdmin>,new()
 		{
 			sc.AddDataModules<TBizAdmin>(TablePrefix);
 			sc.EntityServices(
 				"BizAdmin",
 				"业务管理员",
-				d => d.Add<IBizAdminManagementService, EntityBizAdminManagementService<TBizAdmin>>()
+				d => d.Add<IBizAdminManagementService, BizAdminManagementService<TBizAdmin>>()
 				);
 			return sc;
 		}
@@ -52,7 +52,7 @@ namespace SF.Core.ServiceManagement
 			this IServiceCollection sc,
 			string TablePrefix = null
 			) =>
-			sc.AddBizAdminManagementService<SF.Management.BizAdmins.Entity.DataModels.BizAdmin>(TablePrefix);
+			sc.AddBizAdminManagementService<SF.Management.BizAdmins.DataModels.BizAdmin>(TablePrefix);
 
 		public static IServiceCollection AddBizAdminService(this IServiceCollection sc)=>
 			sc.AddManagedScoped<IBizAdminService,BizAdminService>();
@@ -68,8 +68,8 @@ namespace SF.Core.ServiceManagement
 		public static IServiceInstanceInitializer<IBizAdminManagementService> NewBizAdminMangementService<TBizAdmin>(
 			this IServiceInstanceManager sim
 			)
-			where TBizAdmin: SF.Management.BizAdmins.Entity.DataModels.BizAdmin<TBizAdmin>, new()
-			=> sim.DefaultService<IBizAdminManagementService, EntityBizAdminManagementService<TBizAdmin>>(
+			where TBizAdmin: SF.Management.BizAdmins.DataModels.BizAdmin<TBizAdmin>, new()
+			=> sim.DefaultService<IBizAdminManagementService, BizAdminManagementService<TBizAdmin>>(
 				new { }
 				);
 
@@ -78,7 +78,7 @@ namespace SF.Core.ServiceManagement
 			IServiceInstanceInitializer<IBizAdminManagementService> BizAdminManagementService=null,
 			IServiceInstanceInitializer<IIdentityService> IdentityService = null
 			)
-			where TBizAdmin : SF.Management.BizAdmins.Entity.DataModels.BizAdmin<TBizAdmin>, new()
+			where TBizAdmin : SF.Management.BizAdmins.DataModels.BizAdmin<TBizAdmin>, new()
 			=> sim.DefaultService<IBizAdminService, BizAdminService>(
 				new { },
 				BizAdminManagementService??sim.NewBizAdminMangementService<TBizAdmin>(),
@@ -91,7 +91,7 @@ namespace SF.Core.ServiceManagement
 			IServiceInstanceInitializer<IBizAdminManagementService> BizAdminManagementService = null,
 			IServiceInstanceInitializer<IIdentityService> IdentityService = null
 			) =>
-			sim.NewBizAdminService<SF.Management.BizAdmins.Entity.DataModels.BizAdmin>(BizAdminManagementService, IdentityService);
+			sim.NewBizAdminService<SF.Management.BizAdmins.DataModels.BizAdmin>(BizAdminManagementService, IdentityService);
 
 
 	}

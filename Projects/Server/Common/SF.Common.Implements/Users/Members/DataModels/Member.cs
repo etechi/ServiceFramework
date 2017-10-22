@@ -14,20 +14,21 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Data;
-using SF.Data.Models;
-using SF.KB;
+using SF.Entities.DataModels;
 using SF.Metadata;
-using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Management.BizAdmins.Models
+namespace SF.Users.Members.DataModels
 {
-	public class BizAdminInternal : SF.Auth.Users.Models.UserInternal
+	public class Member: Member<Member> 
 	{
-		[Comment("账号")]
-		[Required]
-		[MaxLength(100)]
-		public string Account { get; set; }
+
+	}
+	[Table("UserMember")]
+	public class Member<TMember> : Auth.Users.DataModels.BaseUserModel<TMember>
+		where TMember: Member<TMember>
+	{
 
 	}
 }

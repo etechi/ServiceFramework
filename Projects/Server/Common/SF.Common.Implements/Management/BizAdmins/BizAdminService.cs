@@ -25,19 +25,26 @@ using System.Threading.Tasks;
 using SF.Auth.Identities.Models;
 using SF.Entities;
 using SF.Data;
+using SF.Core.ServiceManagement;
+using SF.Management.BizAdmins.Models;
 
 namespace SF.Management.BizAdmins
 {
 	public class BizAdminService :
-		IBizAdminService
+		BizAdminService<DataModels.BizAdmin>
 	{
-		BizAdminServiceSetting Setting { get; }
-		public BizAdminService(BizAdminServiceSetting Setting) 
+		public BizAdminService(IBizAdminManagementService UserManagerService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(UserManagerService, ServiceInstanceDescriptor)
 		{
-			this.Setting = Setting;
 		}
-
 	}
-
+	public class BizAdminService<TBizAdmin> :
+		Auth.Users.BaseUserService<BizAdminCreateArgument, BizAdminDesc, BizAdminInternal, BizAdminEditable, BizAdminQueryArgument, TBizAdmin, IBizAdminManagementService>,
+		IBizAdminService
+		where TBizAdmin : DataModels.BizAdmin<TBizAdmin>, new()
+	{
+		public BizAdminService(IBizAdminManagementService UserManagerService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(UserManagerService, ServiceInstanceDescriptor)
+		{
+		}
+	}
 }
 

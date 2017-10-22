@@ -22,6 +22,7 @@ using Microsoft.IdentityModel.Tokens;
 using SF.Core.Hosting;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -69,7 +70,7 @@ namespace SF.AspNetCore.Auth
 				ClockSkew = TimeSpan.Zero
 
 				
-			};
+			}; 
 			services.AddAuthentication(
 				JwtBearerDefaults.AuthenticationScheme
 				)

@@ -13,22 +13,29 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Metadata;
-using SF.Auth;
-using SF.Auth.Identities;
-using SF.Users.Members.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SF.Data;
+using SF.Entities.DataModels;
+using SF.Metadata;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Management.BizAdmins
+namespace SF.Auth.Users.DataModels
 {
-	public class BizAdminServiceSetting 
+	public abstract class BaseUserModel<TUser> : ObjectEntityBase
+		where TUser: BaseUserModel<TUser>
 	{
-	}
 
+		[Comment("电话")]
+		[MaxLength(100)]
+		[Index]
+		public string PhoneNumber { get; set; }
+
+		[Comment("图标")]
+		[MaxLength(100)]
+		public string Icon { get; set; }
+
+		[Comment("注册用户描述")]
+		public long SignupIdentityId { get; set; }
+	}
 }
 

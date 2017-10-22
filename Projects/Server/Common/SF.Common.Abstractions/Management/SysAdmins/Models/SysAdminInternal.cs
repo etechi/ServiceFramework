@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Management.SysAdmins.Models
 {
-	public class SysAdminInternal : ObjectEntityBase
+	public class SysAdminInternal : SF.Auth.Users.Models.UserInternal
 	{
 		[Comment("账号")]
 		[Required]

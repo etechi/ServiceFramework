@@ -13,22 +13,27 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Metadata;
-using SF.Auth;
 using SF.Auth.Identities;
-using SF.Users.Members.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SF.Core.Times;
 using SF.Data;
+using SF.Entities;
+using SF.Management.SysAdmins.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using SF.Core.CallPlans;
 
 namespace SF.Management.SysAdmins
 {
-	public class SysAdminServiceSetting 
+	public class SysAdminManagementService<TSysAdmin> :
+		Auth.Users.BaseUserManagementService<
+		SysAdminCreateArgument, SysAdminRegisted, SysAdminInternal, SysAdminEditable, SysAdminQueryArgument, TSysAdmin>,
+		ISysAdminManagementService
+		where TSysAdmin : DataModels.SysAdmin<TSysAdmin>, new()
 	{
+		public SysAdminManagementService(IDataSetEntityManager<SysAdminEditable, TSysAdmin> Manager, Lazy<IIdentityService> IdentityService, ICallPlanProvider CallPlanProvider) : base(Manager, IdentityService, CallPlanProvider)
+		{
+		}
 	}
 
 }
-

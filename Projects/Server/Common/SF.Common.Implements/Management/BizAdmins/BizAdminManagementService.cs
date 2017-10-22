@@ -13,34 +13,26 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Auth.Identities;
+using SF.Core.CallPlans;
+using SF.Core.Times;
 using SF.Data;
-using SF.Entities.DataModels;
-using SF.Metadata;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using SF.Entities;
+using SF.Management.BizAdmins.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace SF.Users.Members.Entity.DataModels
+namespace SF.Management.BizAdmins.Entity
 {
-	public class Member: Member<Member> 
+	public class BizAdminManagementService<TBizAdmin> :
+		Auth.Users.BaseUserManagementService<
+		BizAdminCreateArgument, BizAdminRegisted, BizAdminInternal, BizAdminEditable, BizAdminQueryArgument, TBizAdmin>,
+		IBizAdminManagementService
+		where TBizAdmin : DataModels.BizAdmin<TBizAdmin>, new()
 	{
-
-	}
-	[Table("UserMember")]
-	public class Member<TMember> : ObjectEntityBase
-		where TMember: Member<TMember>
-	{
-
-		[Comment("电话")]
-		[MaxLength(100)]
-		[Index]
-		public string PhoneNumber { get; set; }
-
-		[Comment("图标")]
-		[MaxLength(100)]
-		public string Icon { get; set; }
-
-		[Comment("注册用户描述")]
-		public long SignupIdentityId { get; set; }
+		public BizAdminManagementService(IDataSetEntityManager<BizAdminEditable, TBizAdmin> Manager, Lazy<IIdentityService> IdentityService, ICallPlanProvider CallPlanProvider) : base(Manager, IdentityService, CallPlanProvider)
+		{
+		}
 	}
 }
-

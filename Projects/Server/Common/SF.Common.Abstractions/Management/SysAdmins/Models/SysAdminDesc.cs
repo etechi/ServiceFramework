@@ -19,7 +19,8 @@ using System;
 
 namespace SF.Management.SysAdmins.Models
 {
-	public class SysAdminDesc : Identity
+	public class SysAdminDesc :
+		SF.Auth.Users.Models.UserDesc
 	{
 	}
 

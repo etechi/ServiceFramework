@@ -30,31 +30,19 @@ using SF.Core.ServiceManagement;
 namespace SF.Users.Members
 {
 	public class MemberService :
-		IMemberService,
-		IManagedServiceWithId
+		MemberService<DataModels.Member>
 	{
-		MemberServiceSetting Setting { get; }
-		IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
-		public long? ServiceInstanceId => ServiceInstanceDescriptor.InstanceId;
-
-		public MemberService(MemberServiceSetting Setting, IServiceInstanceDescriptor ServiceInstanceDescriptor) 
+		public MemberService(IMemberManagementService UserManagerService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(UserManagerService, ServiceInstanceDescriptor)
 		{
-			this.Setting = Setting;
-			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
-
-		[TransactionScope("用户注册")]
-		public async Task<string> Signup(CreateMemberArgument Arg)
+	}
+	public class MemberService<TMember> :
+		Auth.Users.BaseUserService<CreateMemberArgument, MemberDesc, MemberInternal, MemberEditable, MemberQueryArgument, TMember, IMemberManagementService>,
+		IMemberService
+		where TMember:DataModels.Member<TMember>,new()
+	{
+		public MemberService(IMemberManagementService UserManagerService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(UserManagerService, ServiceInstanceDescriptor)
 		{
-			var token = await Setting.ManagementService.Value.CreateMemberAsync(
-				Arg
-				);
-			return token;
-		}
-
-		public Task<MemberDesc> GetCurrentMember()
-		{
-			return null;
 		}
 	}
 
