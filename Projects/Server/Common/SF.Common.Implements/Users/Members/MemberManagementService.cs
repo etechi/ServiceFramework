@@ -29,7 +29,7 @@ namespace SF.Users.Members
 {
 	public class MemberManagementService<TMember> :
 		Auth.Users.BaseUserManagementService<
-		CreateMemberArgument, MemberRegisted, MemberInternal, MemberEditable, MemberQueryArgument, TMember>,
+		MemberRegisted, MemberInternal, MemberEditable, MemberQueryArgument, TMember>,
 		IMemberManagementService
 		where TMember:DataModels.Member<TMember>,new()
 	{

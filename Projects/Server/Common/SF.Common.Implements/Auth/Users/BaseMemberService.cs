@@ -29,15 +29,14 @@ using SF.Core.ServiceManagement;
 
 namespace SF.Auth.Users
 {
-	public abstract class BaseUserService<TCreateUserArgument, TUserDesc,TUserInternal, TUserEditable,TUserQueryArgument,TUserModel, TUserManagerService> :
-		IUserService<TCreateUserArgument,TUserDesc>,
+	public abstract class BaseUserService<TUserDesc,TUserInternal, TUserEditable,TUserQueryArgument,TUserModel, TUserManagerService> :
+		IUserService,
 		IManagedServiceWithId
-		where TUserManagerService : IUserManagementService<TCreateUserArgument,TUserInternal,TUserEditable,TUserQueryArgument>
+		where TUserManagerService : IUserManagementService<TUserInternal,TUserEditable,TUserQueryArgument>
 		where TUserDesc:Auth.Users.Models.UserDesc
 		where TUserInternal : Models.UserInternal
 		where TUserEditable : Models.UserEditable
 		where TUserQueryArgument : UserQueryArgument
-		where TCreateUserArgument : CreateUserArgument
 	{
 		IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
 		public long? ServiceInstanceId => ServiceInstanceDescriptor.InstanceId;
@@ -50,7 +49,7 @@ namespace SF.Auth.Users
 		}
 
 		[TransactionScope("用户注册")]
-		public async Task<string> Signup(TCreateUserArgument Arg)
+		public async Task<string> Signup(CreateIdentityArgument Arg)
 		{
 			var token = await UserManagerService.CreateUserAsync(
 				Arg
@@ -60,7 +59,7 @@ namespace SF.Auth.Users
 
 		
 
-		public Task<TUserDesc> GetCurrentUser()
+		public Task<Models.UserDesc> GetCurrentUser()
 		{
 			throw new NotImplementedException();
 		}

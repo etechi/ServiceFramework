@@ -27,7 +27,7 @@ namespace SF.Management.SysAdmins
 {
 	public class SysAdminManagementService<TSysAdmin> :
 		Auth.Users.BaseUserManagementService<
-		SysAdminCreateArgument, SysAdminRegisted, SysAdminInternal, SysAdminEditable, SysAdminQueryArgument, TSysAdmin>,
+		SysAdminRegisted, SysAdminInternal, SysAdminEditable, SysAdminQueryArgument, TSysAdmin>,
 		ISysAdminManagementService
 		where TSysAdmin : DataModels.SysAdmin<TSysAdmin>, new()
 	{

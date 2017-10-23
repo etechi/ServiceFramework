@@ -32,8 +32,8 @@ namespace SF.Auth.Users
 {
 	public static class UserExtension
 	{
-		public static async Task<long> Ensure<TCreateUserArgument, TUserDesc>(
-			this IUserService<TCreateUserArgument, TUserDesc> Service,
+		public static async Task<TUserInternal> Ensure<TUserManagementService,TUserInternal,TUserEditable,TQueryArgument>(
+			this IUserService Service,
 			IServiceProvider ServiceProvider,
 			string name,
 			string nick,
@@ -42,14 +42,17 @@ namespace SF.Auth.Users
 			string[] roles = null,
 			Dictionary<string, string> extArgs = null
 			) 
-			where TCreateUserArgument : CreateUserArgument,new()
-			where TUserDesc : Models.UserDesc
+			where TUserManagementService : class,Auth.Users.IUserManagementService<TUserInternal,TUserEditable,TQueryArgument>
+			where TUserInternal:Auth.Users.Models.UserInternal
+			where TUserEditable:Auth.Users.Models.UserEditable
+			where TQueryArgument : Auth.Users.UserQueryArgument,new()
 		{
 			var sid = ((IManagedServiceWithId)Service).ServiceInstanceId;
-			var ims = ServiceProvider.Resolve<IUserManagementService>(null, sid);
+			var ims = ServiceProvider.Resolve<TUserManagementService>(null, sid);
+			var identityService = ServiceProvider.Resolve<IIdentityService>(null, ((IManagedServiceWithId)ims).ServiceInstanceId);
 
 			var member = await ims.QuerySingleAsync(
-				new MemberQueryArgument
+				new TQueryArgument
 				{
 					PhoneNumber = phoneNumber
 				});
@@ -68,7 +71,7 @@ namespace SF.Auth.Users
 				}
 
 				var sess = await Service.Signup(
-					new TCreateUserArgument
+					new CreateIdentityArgument
 					{
 						Credential = phoneNumber,
 						ExtraArgument = extArgs.Count > 0 ? extArgs : null,

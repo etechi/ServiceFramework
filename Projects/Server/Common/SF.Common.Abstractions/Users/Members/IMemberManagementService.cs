@@ -32,10 +32,6 @@ namespace SF.Users.Members
 
 	}
 
-	public class CreateMemberArgument : SF.Auth.Users.CreateUserArgument
-	{
-		
-	}
 	public class MemberRegisted : SF.Auth.Users.UserRegisted
 	{
 	}
@@ -46,7 +42,7 @@ namespace SF.Users.Members
 	[Comment("会员")]
 	[Category("用户管理", "会员管理")]
 	public interface IMemberManagementService : 
-		SF.Auth.Users.IUserManagementService<CreateMemberArgument,Models.MemberInternal,MemberEditable,MemberQueryArgument>
+		SF.Auth.Users.IUserManagementService<Models.MemberInternal,MemberEditable,MemberQueryArgument>
     {
 	}
 

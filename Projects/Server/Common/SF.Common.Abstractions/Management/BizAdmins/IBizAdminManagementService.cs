@@ -23,10 +23,6 @@ namespace SF.Management.BizAdmins
 	public class BizAdminQueryArgument :SF.Auth.Users.UserQueryArgument
 	{
 	}
-	public class BizAdminCreateArgument : SF.Auth.Users.CreateUserArgument
-	{
-
-	}
 	public class BizAdminRegisted : SF.Auth.Users.UserRegisted
 	{
 	}
@@ -38,7 +34,6 @@ namespace SF.Management.BizAdmins
 	[Category("系统管理", "业务管理员管理")]
 	public interface IBizAdminManagementService :
 			SF.Auth.Users.IUserManagementService<
-			BizAdminCreateArgument,
 			BizAdminInternal,
 			BizAdminEditable,
 			BizAdminQueryArgument

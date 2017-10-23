@@ -28,7 +28,7 @@ namespace SF.Management.BizAdmins
 	
 	[NetworkService]
 	public interface IBizAdminService:
-		SF.Auth.Users.IUserService<BizAdminCreateArgument, Models.BizAdminDesc>
+		SF.Auth.Users.IUserService
 	{
 	}
 

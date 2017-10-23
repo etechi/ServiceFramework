@@ -27,15 +27,14 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.Users
 {
-	public abstract class BaseUserManagementService<TCreateUserArgument,TUserRegisted,TUserInternal,TUserEditable,TUserQueryArgument,TUser> :
+	public abstract class BaseUserManagementService<TUserRegisted,TUserInternal,TUserEditable,TUserQueryArgument,TUser> :
 		ModidifiableEntityManager<ObjectKey<long>, TUserInternal,  TUserQueryArgument, TUserEditable, TUser>,
-		IUserManagementService<TCreateUserArgument,TUserInternal,TUserEditable,TUserQueryArgument>,
+		IUserManagementService<TUserInternal,TUserEditable,TUserQueryArgument>,
 		ICallable
 		where TUser: DataModels.BaseUserModel<TUser>,new()
 		where TUserInternal:Models.UserInternal
 		where TUserEditable:Models.UserEditable,new()
 		where TUserQueryArgument:UserQueryArgument,new()
-		where TCreateUserArgument:CreateUserArgument
 		where TUserRegisted:UserRegisted,new()
 	{
 		public Lazy<IIdentityService> IdentityService { get; }
@@ -76,7 +75,7 @@ namespace SF.Auth.Users
 			return q;
 		}
 		public async Task<string> CreateUserAsync(
-			TCreateUserArgument Arg
+			CreateIdentityArgument Arg
 			)
 		{
 			var ctx = NewModifyContext();

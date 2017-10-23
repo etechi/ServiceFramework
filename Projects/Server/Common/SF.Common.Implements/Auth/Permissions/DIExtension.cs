@@ -25,7 +25,6 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using SF.Management.SysAdmins;
-using SF.Management.SysAdmins.Entity;
 using SF.Auth.Identities;
 using SF.Auth.Permissions.Models;
 using SF.Auth.Permissions;

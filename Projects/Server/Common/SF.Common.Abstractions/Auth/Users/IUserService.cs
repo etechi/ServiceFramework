@@ -37,12 +37,10 @@ namespace SF.Auth.Users
 		long? IEvent.ServiceId => ServiceId;
 	}
 	
-	public interface IUserService<TCreateUserArgument,TUserDesc>
-		where TCreateUserArgument: CreateUserArgument
-		where TUserDesc:Models.UserDesc
+	public interface IUserService
 	{
-		Task<string> Signup(TCreateUserArgument Arg);
-		Task<TUserDesc> GetCurrentUser();
+		Task<string> Signup(CreateIdentityArgument Arg);
+		Task<Models.UserDesc> GetCurrentUser();
 	}
 
 }

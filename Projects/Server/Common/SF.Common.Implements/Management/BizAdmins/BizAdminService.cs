@@ -38,7 +38,7 @@ namespace SF.Management.BizAdmins
 		}
 	}
 	public class BizAdminService<TBizAdmin> :
-		Auth.Users.BaseUserService<BizAdminCreateArgument, BizAdminDesc, BizAdminInternal, BizAdminEditable, BizAdminQueryArgument, TBizAdmin, IBizAdminManagementService>,
+		Auth.Users.BaseUserService<BizAdminDesc, BizAdminInternal, BizAdminEditable, BizAdminQueryArgument, TBizAdmin, IBizAdminManagementService>,
 		IBizAdminService
 		where TBizAdmin : DataModels.BizAdmin<TBizAdmin>, new()
 	{

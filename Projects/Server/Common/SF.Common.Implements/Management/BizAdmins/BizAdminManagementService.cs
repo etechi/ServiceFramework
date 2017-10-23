@@ -27,7 +27,7 @@ namespace SF.Management.BizAdmins.Entity
 {
 	public class BizAdminManagementService<TBizAdmin> :
 		Auth.Users.BaseUserManagementService<
-		BizAdminCreateArgument, BizAdminRegisted, BizAdminInternal, BizAdminEditable, BizAdminQueryArgument, TBizAdmin>,
+		BizAdminRegisted, BizAdminInternal, BizAdminEditable, BizAdminQueryArgument, TBizAdmin>,
 		IBizAdminManagementService
 		where TBizAdmin : DataModels.BizAdmin<TBizAdmin>, new()
 	{

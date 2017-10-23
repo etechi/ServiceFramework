@@ -28,7 +28,7 @@ namespace SF.Management.SysAdmins
 	
 	[NetworkService]
 	public interface ISysAdminService  :
-		SF.Auth.Users.IUserService<SysAdminCreateArgument,Models.SysAdminDesc>
+		SF.Auth.Users.IUserService
 	{
 	}
 

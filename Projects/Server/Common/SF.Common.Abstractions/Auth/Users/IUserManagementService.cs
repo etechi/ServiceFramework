@@ -49,19 +49,15 @@ namespace SF.Auth.Users
 
 	}
 
-	public class CreateUserArgument : CreateIdentityArgument
-	{
-	}
-	public interface IUserManagementService<TCreateUserArgument,TUserInternal, TUserEditable,TUserQueryArgument> : 
+	public interface IUserManagementService<TUserInternal, TUserEditable,TUserQueryArgument> : 
 		Entities.IEntitySource<ObjectKey<long>,TUserInternal, TUserQueryArgument>,
 		Entities.IEntityManager<ObjectKey<long>, TUserEditable>
 		where TUserInternal:Models.UserInternal
 		where TUserEditable : Models.UserEditable
 		where TUserQueryArgument:UserQueryArgument
-		where TCreateUserArgument:CreateUserArgument
 	{
 		Task<string> CreateUserAsync(
-			TCreateUserArgument Arg
+			CreateIdentityArgument Arg
 			);
 	}
 

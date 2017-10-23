@@ -30,10 +30,6 @@ namespace SF.Management.SysAdmins
 	{
 		public string Account { get; set; }
 	}
-	public class SysAdminCreateArgument : SF.Auth.Users.CreateUserArgument
-	{
-
-	}
 	public class SysAdminRegisted : SF.Auth.Users.UserRegisted
 	{
 	}
@@ -45,7 +41,6 @@ namespace SF.Management.SysAdmins
 	[Category("系统管理", "系统管理员管理")]
 	public interface ISysAdminManagementService :
 		SF.Auth.Users.IUserManagementService<
-			SysAdminCreateArgument, 
 			Models.SysAdminInternal, 
 			SysAdminEditable, 
 			SysAdminQueryArgument

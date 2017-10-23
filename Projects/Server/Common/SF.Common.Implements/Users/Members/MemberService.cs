@@ -37,7 +37,7 @@ namespace SF.Users.Members
 		}
 	}
 	public class MemberService<TMember> :
-		Auth.Users.BaseUserService<CreateMemberArgument, MemberDesc, MemberInternal, MemberEditable, MemberQueryArgument, TMember, IMemberManagementService>,
+		Auth.Users.BaseUserService<MemberDesc, MemberInternal, MemberEditable, MemberQueryArgument, TMember, IMemberManagementService>,
 		IMemberService
 		where TMember:DataModels.Member<TMember>,new()
 	{

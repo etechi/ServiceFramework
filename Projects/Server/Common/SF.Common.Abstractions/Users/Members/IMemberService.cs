@@ -27,12 +27,9 @@ using SF.Core.Events;
 
 namespace SF.Users.Members
 {
-	public class MemberRegisted  : SF.Auth.Users.UserRegisted
-	{
-	}
 	
 	[NetworkService]
-	public interface IMemberService : SF.Auth.Users.IUserService<CreateMemberArgument, Models.MemberDesc>
+	public interface IMemberService : SF.Auth.Users.IUserService
 	{
 	}
 

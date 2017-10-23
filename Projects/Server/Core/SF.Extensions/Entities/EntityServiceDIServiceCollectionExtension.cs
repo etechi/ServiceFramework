@@ -62,6 +62,15 @@ namespace SF.Core.ServiceManagement
 		{
 			public IServiceCollection Services { get; set; }
 			public List<IEntityServiceDescriptor> Descriptors { get; } = new List<IEntityServiceDescriptor>();
+
+			static Type[] EntityManagerInterfaceTypes { get; } = new[]
+			{
+				typeof(IEntityLoadable<,>),
+				typeof(IEntityBatchLoadable<,>),
+				typeof(IEntityQueryable<,>),
+				typeof(IEntityManager<,>)
+			};
+
 			public IEntityServiceDeclarer Add<I, T>(string Ident,string Name,bool ManagedService,bool IsDataScope,params Type[] EntityTypes)
 				where I:class
 				where T:I
@@ -78,15 +87,14 @@ namespace SF.Core.ServiceManagement
 				else
 					Services.AddTransient<I, T>();
 
-				var loadableType=typeof(I).AllInterfaces().FirstOrDefault(i => i.IsGenericTypeOf(typeof(IEntityLoadable<,>)));
-				if (loadableType != null)
-					Services.Add(new ServiceDescriptor(loadableType, sp => sp.GetService(typeof(I)),ServiceImplementLifetime.Transient));
+				typeof(I).AllInterfaces()
+					.Select(i => (svc: typeof(I), i: i))
+					.Where(i => EntityManagerInterfaceTypes.Any(it => i.i.IsGenericTypeOf(it)))
+					.ForEach(i =>
+					{
+						Services.Add(new ServiceDescriptor(i.i, sp => sp.GetService(i.svc), ServiceImplementLifetime.Transient));
+					});
 
-				var batchLoadableType = typeof(I).AllInterfaces().FirstOrDefault(i => i.IsGenericTypeOf(typeof(IEntityBatchLoadable<,>)));
-				if (batchLoadableType != null)
-					Services.Add(new ServiceDescriptor(batchLoadableType, sp => sp.GetService(typeof(I)), ServiceImplementLifetime.Transient));
-
-				
 				Descriptors.Add(
 					new EntityServiceDescriptor
 					{
