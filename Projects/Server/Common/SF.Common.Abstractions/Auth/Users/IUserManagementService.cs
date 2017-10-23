@@ -36,8 +36,8 @@ namespace SF.Auth.Users
 		[Comment("名称")]
 		public string Name { get; set; }
 
-		[Comment("电话")]
-		public string PhoneNumber { get; set; }
+		[Comment("账户名")]
+		public string AccountName { get; set; }
 
 		//[Comment("来源")]
 		//[EntityIdent(typeof(MemberSources.IMemberSourceManagementService))]

@@ -25,10 +25,10 @@ namespace SF.Auth.Users.DataModels
 		where TUser: BaseUserModel<TUser>
 	{
 
-		[Comment("电话")]
+		[Comment("账户名")]
 		[MaxLength(100)]
 		[Index]
-		public string PhoneNumber { get; set; }
+		public string AccountName { get; set; }
 
 		[Comment("图标")]
 		[MaxLength(100)]

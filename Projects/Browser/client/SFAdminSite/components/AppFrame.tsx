@@ -4,23 +4,22 @@ import * as WA from "SF/webadmin";
 import {Image} from "SF/components/utils/Image";
 //import modules from "../modules";
 import api = require("../webapi-all");
-//import * as auth from "../auth";
+import * as auth from "SF/utils/auth";
 import * as config from "../config";
 import { RouteProps } from "react-router";
-var auth: any;
 
-export interface AppProps {
+export interface AppFrameProps {
     route?: RouteProps;
     children?: React.ReactNode;
 }
 interface state {
 }
-export default class App extends React.Component<AppProps, state>
+export default class AppFrame extends React.Component<AppFrameProps, state>
 {
     static contextTypes = {
         router: React.PropTypes.object.isRequired
     };
-    constructor(props: AppProps,ctx:any) {
+    constructor(props: AppFrameProps,ctx:any) {
         super(props, ctx);
     }
     handleSignout() {
@@ -29,20 +28,20 @@ export default class App extends React.Component<AppProps, state>
         //});
     }
     render() {
-        var u :any= {};//auth.user();
+        var u = {icon:"",nick:"xxx"};//auth.user();
         return <WA.Application>
             <WA.Header.Container>
                 <WA.Header.Logo>系统管理中心</WA.Header.Logo>
-                <WA.Header.Text to={"/admin/" + encodeURIComponent("系统安全") + "/AdminInfo"}>
+                {u ? <WA.Header.Text to={"/admin/" + encodeURIComponent("系统安全") + "/AdminInfo"}>
                     <Image className="img-circle" format="c30" res={u.icon} />
                     <span className="username username-hide-on-mobile">{u.nick}</span>
-                </WA.Header.Text>
-                <WA.Header.Button onClick={() => this.handleSignout() }><i className="icon-logout"></i></WA.Header.Button>
+                </WA.Header.Text> : null}
+                {u?<WA.Header.Button onClick={() => this.handleSignout() }><i className="icon-logout"></i></WA.Header.Button>:null}
             </WA.Header.Container>
-            <WA.SideBar.Container pathPrefix={this.props.route.path} menuCategories={config.ManagerBuildResult.menus/* modules.map(m => m.menu) */} >
+            {u ? <WA.SideBar.Container pathPrefix={this.props.route.path} menuCategories={config.ManagerBuildResult.menus/* modules.map(m => m.menu) */} >
                 {/*<WA.SideBar.SearchBox></WA.SideBar.SearchBox>*/}
                 <WA.SideBar.MenuItem icon='icon-home' name='首页' to={this.props.route.path + 'dashboard'} />
-            </WA.SideBar.Container>
+            </WA.SideBar.Container> : null}
             {/*<WA.Footer>footer</WA.Footer>*/}
             {this.props.children}
         </WA.Application>

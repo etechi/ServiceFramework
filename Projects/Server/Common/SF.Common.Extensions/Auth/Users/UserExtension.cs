@@ -32,12 +32,12 @@ namespace SF.Auth.Users
 {
 	public static class UserExtension
 	{
-		public static async Task<TUserInternal> Ensure<TUserManagementService,TUserInternal,TUserEditable,TQueryArgument>(
+		public static async Task<TUserInternal> UserEnsure<TUserManagementService,TUserInternal,TUserEditable,TQueryArgument>(
 			this IUserService Service,
 			IServiceProvider ServiceProvider,
 			string name,
 			string nick,
-			string phoneNumber,
+			string account,
 			string password,
 			string[] roles = null,
 			Dictionary<string, string> extArgs = null
@@ -54,7 +54,7 @@ namespace SF.Auth.Users
 			var member = await ims.QuerySingleAsync(
 				new TQueryArgument
 				{
-					PhoneNumber = phoneNumber
+					AccountName = account
 				});
 			long id;
 			if (member != null)
@@ -73,7 +73,7 @@ namespace SF.Auth.Users
 				var sess = await Service.Signup(
 					new CreateIdentityArgument
 					{
-						Credential = phoneNumber,
+						Credential = account,
 						ExtraArgument = extArgs.Count > 0 ? extArgs : null,
 						Identity = new Identity
 						{

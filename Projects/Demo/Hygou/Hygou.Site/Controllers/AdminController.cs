@@ -21,12 +21,35 @@ using System.Threading.Tasks;
 using SF.AspNetCore;
 using SF.Services.Settings;
 using Microsoft.AspNetCore.Authorization;
+using SF.Management.BizAdmins;
+using SF.Core.ServiceManagement;
+using SF.Auth.Users;
+using SF.Auth.Identities;
+using SF.Management.SysAdmins;
 
 namespace Hygou.Site.Controllers 
 {
+	public class AdminModel
+	{
+		public long IdentityServiceId { get; set; }
+		public string Type { get; set; }
+	}
 	public class AdminController : Controller
 	{
-		
+		IServiceProvider ServiceProvider { get; }
+		public AdminController(IServiceProvider ServiceProvider)
+		{
+			this.ServiceProvider = ServiceProvider;
+			
+		}
+		long GetIdentityServiceId<I>()
+			where I:class,IUserService
+		{
+			var us = ServiceProvider.Resolve<I>();
+			var id = ((IManagedServiceWithId)us).ServiceInstanceId;
+			var iis = ServiceProvider.Resolve<IIdentityService>(null, id);
+			return ((IManagedServiceWithId)iis).ServiceInstanceId.Value;
+		}
 		public ActionResult Index()
 		{
 			return RedirectToAction("bizness");
@@ -34,12 +57,34 @@ namespace Hygou.Site.Controllers
 		[Authorize("admin-bizness")]
 		public ActionResult Bizness()
 		{
-			return View();
+			return View(
+				"Admin",
+				new AdminModel
+				{
+					IdentityServiceId = GetIdentityServiceId<IBizAdminService>(),
+					Type = "bizness"
+				}
+			);
 		}
-		[Authorize("admin-system")]
+		public ActionResult BiznessSignin()
+		{
+			return Bizness();
+		}
+		//[Authorize("admin-system")]
 		public ActionResult System()
 		{
-			return View();
+			return View(
+				"Admin",
+				new AdminModel
+				{
+					IdentityServiceId = GetIdentityServiceId<ISysAdminService>(),
+					Type = "system"
+				}
+			);
+		}
+		public ActionResult SystemSignin()
+		{
+			return System();
 		}
 	}
 }

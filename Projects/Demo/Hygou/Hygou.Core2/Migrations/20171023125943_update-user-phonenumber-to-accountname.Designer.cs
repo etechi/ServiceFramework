@@ -14,9 +14,10 @@ using System;
 namespace Hygou.Core2.Migrations
 {
     [DbContext(typeof(HygouDbContext))]
-    partial class HygouDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171023125943_update-user-phonenumber-to-accountname")]
+    partial class updateuserphonenumbertoaccountname
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

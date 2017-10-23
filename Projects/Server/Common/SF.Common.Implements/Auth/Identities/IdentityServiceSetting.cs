@@ -34,7 +34,7 @@ namespace SF.Auth.Identities
 		public Lazy<IClientService> ClientService { get; set; }
 		public Lazy<IDataProtector> DataProtector { get; set; }
 		public Lazy<IPasswordHasher> PasswordHasher { get; set; }
-
+		public Lazy<IServiceInstanceDescriptor> ServiceInstanceDescriptor { get; set; }
 		public Lazy<ITimeService> TimeService { get; set; }
 		public Lazy<ILocalCache<IdentityData>> IdentityDataCache { get; set; }
 		public TypedInstanceResolver<IIdentityCredentialProvider> CredentialProviderResolver { get; set; }

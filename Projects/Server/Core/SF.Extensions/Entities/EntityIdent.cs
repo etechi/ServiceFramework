@@ -155,27 +155,28 @@ namespace SF.Entities
 	}
 
 	public static class ServiceEntityIdent {
+		public const string ServiceIdentType = "I";
 		public static string Create(long ServiceIdent, IEnumerable<string> Parts)
-			=> EntityIdents.Build("SI", (Parts ?? Enumerable.Empty<string>()).WithFirst(ServiceIdent.ToString()));
+			=> EntityIdents.Build(ServiceIdentType, (Parts ?? Enumerable.Empty<string>()).WithFirst(ServiceIdent.ToString()));
 
 		public static string Create(long ServiceIdent, params string[] Parts)
-			=> EntityIdents.Build("SI", (IEnumerable<string>)Parts);
+			=> EntityIdents.Build(ServiceIdentType, (IEnumerable<string>)Parts);
 
 		public static string Create<K1>(long ServiceIdent, K1 Key1)
-			=> EntityIdents.Build("SI", ServiceIdent.ToString(),Key1.ToString());
+			=> EntityIdents.Build(ServiceIdentType, ServiceIdent.ToString(),Key1.ToString());
 
 		public static string Create<K1,K2>(long ServiceIdent, K1 Key1, K2 Key2)
-			=> EntityIdents.Build("SI", ServiceIdent.ToString(), Key1.ToString(), Key2.ToString());
+			=> EntityIdents.Build(ServiceIdentType, ServiceIdent.ToString(), Key1.ToString(), Key2.ToString());
 
 		public static string Create<K1, K2, K3>(long ServiceIdent, K1 Key1, K2 Key2, K3 Key3)
-			=> EntityIdents.Build("SI", ServiceIdent.ToString(), Key1.ToString(), Key2.ToString(), Key3.ToString());
+			=> EntityIdents.Build(ServiceIdentType, ServiceIdent.ToString(), Key1.ToString(), Key2.ToString(), Key3.ToString());
 
 
 		public static EntityIdent<long,K1> Parse<K1>(string Id)
 			where K1:IEquatable<K1>
 		{
 			var re = EntityIdents.Parse<long, K1>(Id);
-			if (re.Type != "SI")
+			if (re.Type != ServiceIdentType)
 				throw new ArgumentException($"指定标识不是服务实例的标识:{Id}");
 			return re;
 		}
@@ -184,7 +185,7 @@ namespace SF.Entities
 			where K2 : IEquatable<K2>
 		{
 			var re = EntityIdents.Parse<long, K1,K2>(Id);
-			if (re.Type != "SI")
+			if (re.Type != ServiceIdentType)
 				throw new ArgumentException($"指定标识不是服务实例的标识:{Id}");
 			return re;
 		}
@@ -194,7 +195,7 @@ namespace SF.Entities
 			where K3 : IEquatable<K3>
 		{
 			var re = EntityIdents.Parse<long, K1,K2,K3>(Id);
-			if (re.Type != "SI")
+			if (re.Type != ServiceIdentType)
 				throw new ArgumentException($"指定标识不是服务实例的标识:{Id}");
 			return re;
 		}

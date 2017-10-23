@@ -29,18 +29,18 @@ namespace SF.Management.FrontEndContents
     public class SiteTemplate:IEntityWithId<long>
     {
 		[Key]
-		[Display(Name = "ID", Prompt = "保存后自动产生")]
+		[Comment(Name = "ID", Prompt = "保存后自动产生")]
 		[ReadOnly(true)]
 		[TableVisible]
 		public long Id { get; set; }
 
 		[TableVisible]
-		[Display(Name = "名称")]
+		[Comment(Name = "名称")]
 		[StringLength(100)]
 		[Required]
 		public string Name { get; set; }
 
-		//[Display(Name = "模板")]
+		//[Comment(Name = "模板")]
 		[Required]
 		public SiteConfigModels.SiteModel Model { get; set; }
 

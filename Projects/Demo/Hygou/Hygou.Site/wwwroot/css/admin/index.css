@@ -199,24 +199,22 @@
   color: #888; }
 
 #wait-cover div.overlap {
-	position: fixed;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	background-image: url(/css/mobile/images/empty.gif);
-	z-index: 100000;
-}
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url(/Content/mobile/images/empty.gif);
+  z-index: 100000; }
 
 #wait-cover div.cover {
-	background-image: url(/css/mobile/images/waiting-bg.png);
-	position: fixed;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	z-index: 100001;
-}
+  background-image: url(/Content/mobile/images/waiting-bg.png);
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100001; }
 
 #wait-cover div.waiting {
   position: fixed;

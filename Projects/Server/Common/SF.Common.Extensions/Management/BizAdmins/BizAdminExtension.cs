@@ -13,43 +13,49 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Entities;
 using SF.Metadata;
+using SF.Auth;
+using SF.Auth.Identities;
+using SF.Users.Members.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SF.Auth.Identities.Models;
+using SF.Entities;
+using SF.Data;
+using SF.Core.ServiceManagement;
+using SF.Core;
+using SF.Auth.Users;
+using SF.Management.BizAdmins.Models;
 
-namespace SF.Management.FrontEndContents
+namespace SF.Management.BizAdmins
 {
-	[EntityObject]
-    public class Site : IEntityWithId<string>
+	public static class BizAdminExtension
 	{
-		[Key]
-		[Comment(Name = "ID", Prompt = "保存后自动产生")]
-		[TableVisible]
-		[StringLength(20)]
-		public string Id { get; set; }
+		public static async Task<BizAdminInternal> BizAdminEnsure(
+			this IBizAdminService Service,
+			IServiceProvider ServiceProvider,
+			string name,
+			string nick,
+			string account,
+			string password,
+			string[] roles = null,
+			Dictionary<string, string> extArgs = null
+			) 
+		{
+			return await Service.UserEnsure<IBizAdminManagementService, BizAdminInternal, BizAdminEditable, BizAdminQueryArgument>(
+				ServiceProvider,
+				name, nick,
+				account,
+				password,
+				roles,
+				extArgs
+				);
 
-		[Comment(Name = "名称")]
-		[TableVisible]
-		[StringLength(100)]
-		[Required]
-		public string Name { get; set; }
+		}
+	}
 
-		[Comment(Name = "站点模板")]
-		[EntityIdent(typeof(SiteTemplate), nameof(TemplateName))]
-		[Required]
-		public long TemplateId { get; set; }
-
-		[Comment(Name = "站点模板")]
-		[TableVisible]
-		[Ignore]
-		public string TemplateName { get; set; }
-
-       
-    }
 }
+

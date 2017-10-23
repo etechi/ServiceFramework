@@ -61,7 +61,7 @@ namespace SF.Auth.Users
 		{
 			var q = Query.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)
-				.FilterContains(Arg.PhoneNumber, r => r.PhoneNumber)
+				.FilterContains(Arg.AccountName, r => r.AccountName)
 				.WithScope(ServiceInstanceDescriptor)
 				;
 			//if (Arg.MemberSourceId.HasValue)
@@ -86,7 +86,7 @@ namespace SF.Auth.Users
 					Name=Arg.Identity?.Name,
 					Icon=Arg.Identity?.Icon,
 					Password=Arg.Password,
-					PhoneNumber=Arg.Credential
+					AccountName=Arg.Credential
 				},
 				Arg
 				);
@@ -107,40 +107,30 @@ namespace SF.Auth.Users
 			var m = ctx.Model;
 
 			UIEnsure.HasContent(e.Name,"请输入姓名");
-			UIEnsure.HasContent(e.PhoneNumber, "请输入电话");
+			UIEnsure.HasContent(e.AccountName, "请输入电话");
 
 
 			m.Icon = e.Icon;
 			m.Name = e.Name.Trim();
-			m.PhoneNumber = e.PhoneNumber.Trim();
+			m.AccountName = e.AccountName.Trim();
 			m.LogicState = e.LogicState;
 			m.UpdatedTime = Now;
 			//m.UpdatorId = await IdentityService.Value.EnsureCurIdentityId();
 
 			if (ctx.Action == ModifyAction.Create)
 			{
-				var CreateArgument= (TCreateUserArgument)ctx.ExtraArgument;
-
 
 				UIEnsure.HasContent(e.Password, "需要提供密码");
+				var CreateArgument = ADT.Poco.Clone((CreateIdentityArgument)ctx.ExtraArgument);
+				CreateArgument.Identity = new Identities.Models.Identity
+				{
+					OwnerId = ServiceEntityIdent.Create(ServiceInstanceDescriptor.InstanceId, m.Id),
+					Icon = e.Icon,
+					Name = e.Name
+				};
+
 				var sess=await IdentityService.Value.CreateIdentity(
-					new CreateIdentityArgument
-					{
-						CredentialProviderId= CreateArgument.CredentialProviderId,
-						Credential = m.PhoneNumber,
-						Password = e.Password.Trim(),
-						Identity = new Auth.Identities.Models.Identity
-						{
-							OwnerId=ServiceEntityIdent.Create(ServiceInstanceDescriptor.InstanceId,m.Id),
-							Icon = e.Icon,
-							Name=m.Name
-						},
-						ReturnToken= CreateArgument.ReturnToken,
-						CaptchaCode= CreateArgument.CaptchaCode,
-						VerifyCode= CreateArgument.VerifyCode,
-						Expires= CreateArgument.Expires,
-						ExtraArgument=CreateArgument.ExtraArgument
-					}, 
+					CreateArgument, 
 					false
 					);
 				ctx.UserData = sess;

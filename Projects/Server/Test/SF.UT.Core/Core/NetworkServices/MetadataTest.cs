@@ -40,7 +40,17 @@ namespace SF.UT.Core.NetworkServices
 				return Task.FromResult(1);
 			});
 		}
-		
+		[Fact]
+		public async Task TypescriptTest()
+		{
+			await Scope((IServiceProvider sp) =>
+			{
+				var sms = sp.Resolve<IServiceMetadataService>();
+				var lib = sms.Typescript();
+				Assert.NotNull(lib);
+				return Task.FromResult(1);
+			});
+		}
 	}
 
 

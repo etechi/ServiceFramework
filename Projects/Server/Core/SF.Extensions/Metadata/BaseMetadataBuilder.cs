@@ -102,13 +102,26 @@ namespace SF.Metadata
 
 		public virtual Models.Type TryGenerateAndAddType(Type type)
 		{
+			if (type.IsGeneric() && type.IsGenericTypeOf(typeof(Nullable<>)))
+				type = type.GenericTypeArguments[0];
+
 			var re = TypeCollection.FindType(FormatTypeName(type));
 			if (re != null) return re;
 			return GenerateAndAddType(type);
 		}
 		
+		static bool IsGenericArrayType(Type type)
+		{
+			return type.IsGenericTypeOf(typeof(IEnumerable<>)) ||
+				type.IsGenericTypeOf(typeof(ICollection<>)) ||
+				type.IsGenericTypeOf(typeof(IReadOnlyCollection<>)) ||
+				type.IsGenericTypeOf(typeof(List<>)) ||
+				type.IsGenericTypeOf(typeof(IReadOnlyList<>)) ||
+				type.IsGenericTypeOf(typeof(IList<>));
+		}
 		public virtual Models.Type GenerateAndAddType(Type type)
-		{ 
+		{
+
 			var re = new Models.Type
 			{
 				Name = FormatTypeName(type),
@@ -125,6 +138,7 @@ namespace SF.Metadata
 
 			if (type.IsGeneric())
 			{
+				
 				var dict_type = TryDetectDictType(type);
 				if (dict_type != null)
 				{
@@ -132,7 +146,7 @@ namespace SF.Metadata
 					re.IsDictType = true;
 					return re;
 				}
-				if (type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+				if (IsGenericArrayType(type))
 				{
 					re.ElementType = ResolveType(type.GetGenericArguments()[0]);
 					re.IsArrayType = true;
@@ -186,10 +200,10 @@ namespace SF.Metadata
 			{
 				var dict_type = TryDetectDictType(type);
 				if (dict_type != null)
-					return FormatTypeName(dict_type) + "<>";
+					return FormatTypeName(dict_type) + "{}";
 
 
-				if (type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+				if (IsGenericArrayType(type))
 					return FormatTypeName(type.GetGenericArguments()[0]) + "[]";
 
 				var tas=type.GetGenericArguments();
@@ -246,7 +260,7 @@ namespace SF.Metadata
 				BindingFlags.Instance |
 				BindingFlags.FlattenHierarchy
 				)
-				.Where(p => p.DeclaringType == type);
+				.Where(p => p.DeclaringType == type && !typeof(Delegate).IsAssignableFrom( p.PropertyType));
 		}
 		public virtual Models.Property[] GenerateTypeProperties(Type type)
 		{

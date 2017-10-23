@@ -152,8 +152,9 @@ namespace SF.Core.ServiceManagement
 				//Title = Title
 			};
 			re.Properties = Args.Where(
-				arg => !arg.ParameterType.IsInterfaceType() || 
-						Metadata.IsService(arg.ParameterType)
+				arg => (!arg.ParameterType.IsInterfaceType() || 
+						Metadata.IsService(arg.ParameterType) ) &&
+						!typeof(Delegate).IsAssignableFrom(arg.ParameterType)
 						)
 				.Select(
 				arg => GenerateArgsProperty(Type, arg, Builder)

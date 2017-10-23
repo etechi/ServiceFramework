@@ -1,73 +1,10 @@
 ﻿[
   {
-    "outputFile": "Content/defaultStyle.css",
-    "inputFile": "Content/defaultStyle.scss",
+    "outputFile": "wwwroot/css/admin/index.css",
+    "inputFile": "client/SFAdminSite/styles/index.scss",
     "minify": {
       "enabled": false
     }
-  },
-  {
-    "outputFile": "Content/admin/index.css",
-    "inputFile": "Content/admin/index.scss",
-    "minify": {
-      "enabled": false
-    }
-  },
-  {
-    "outputFile": "Content/desktop/index.css",
-    "inputFile": "Content/desktop/index.scss",
-    "minify": {
-      "enabled": false
-    }
-  },
-  {
-    "outputFile": "Content/mobile/index.css",
-    "inputFile": "Content/mobile/index.scss",
-    "minify": {
-      "enabled": false
-    }
-  },
-  {
-    "outputFile": "Content/mobile/activity.css",
-    "inputFile": "Content/mobile/activity.scss",
-    "minify": {
-      "enabled": false
-    }
-  },
-  {
-    "outputFile": "Content/desktop/admin-page.css",
-    "inputFile": "Content/desktop/index.scss"
-  },
-  {
-    "outputFile": "Content/desktop/admin-page.css",
-    "inputFile": "Content/desktop/index.scss"
-  },
-  {
-    "outputFile": "Content/desktop/admin-page.css",
-    "inputFile": "Content/desktop/index.scss"
-  },
-  //{
-  //  "outputFile": "Content/ActivityPC/A20161212/Assets/css/style.css",
-  //  "inputFile": "Content/ActivityPC/A20161212/Assets/css/style.scss"
-  //},
-  //{
-  //  "outputFile": "Content/ActivityMobile/A20161212/Assets/css/style.css",
-  //  "inputFile": "Content/ActivityMobile/A20161212/Assets/css/style.scss"
-  //},
-  {
-    "outputFile": "Content/ActivityPC/A20161224/Assets/css/style.css",
-    "inputFile": "Content/ActivityPC/A20161224/Assets/css/style.scss"
-  },
-  {
-    "outputFile": "Content/ActivityMobile/A20161224/Assets/css/style.css",
-    "inputFile": "Content/ActivityMobile/A20161224/Assets/css/style.scss"
-  },
-  {
-    "outputFile": "Content/ActivityPC/RedWine/css/style.css",
-    "inputFile": "Content/ActivityPC/RedWine/css/style.scss"
-  },
-  {
-    "outputFile": "Content/ActivityMobile/RedWine/css/style.css",
-    "inputFile": "Content/ActivityMobile/RedWine/css/style.scss"
   }
+
 ]

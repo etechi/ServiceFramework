@@ -181,12 +181,13 @@ namespace SF.ADT
 				if (ctr == null)
 					throw new NotSupportedException($"不支持克隆没有无参构造函数的对象:{type}");
 
-				if (type.AllInterfaces().Any(i => i.IsGenericTypeOf(typeof(ICollection<>))))
+				var collType = type.AllInterfaces().FirstOrDefault(i => i.IsGenericTypeOf(typeof(ICollection<>)));
+				if (collType!=null)
 				{
 					Clone = MethodCopyCollection.MakeGenericMethod(
 						type,
 						type,
-						type.GenericTypeArguments[0]
+						collType.GenericTypeArguments[0]
 						).CreateDelegate<Func<T, T>>();
 					return;
 				}

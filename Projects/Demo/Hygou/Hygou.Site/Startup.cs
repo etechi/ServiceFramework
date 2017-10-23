@@ -148,8 +148,16 @@ namespace Hygou
 					defaults: new { controller = "Other", action = "Index" }
 				  );
 
-
-
+				routes.MapRoute(
+					name: "admin-system-signin",
+					template: "admin/system/signin",
+					defaults: new { controller = "admin",action="systemsignin" }
+					);
+				routes.MapRoute(
+					name: "admin-bizness-signin",
+					template: "admin/bizness/signin",
+					defaults: new { controller = "admin",action="biznesssignin" }
+					);
 				routes.MapRoute(
 					name: "admin",
 					template: "Admin/{action}/{*id}",

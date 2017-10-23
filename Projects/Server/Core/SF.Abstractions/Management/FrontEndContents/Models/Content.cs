@@ -51,49 +51,49 @@ namespace SF.Management.FrontEndContents
 	public class ContentItem : IContentItem
 	{
 		[Layout(10,1)]
-		[Display(Name = "大图")]
+		[Comment(Name = "大图")]
 		[Image]
 		public string Image { get; set; }
 
-		[Display(Name = "图标")]
+		[Comment(Name = "图标")]
 		[Layout(10, 2)]
 		[Image]
 		public string Icon { get; set; }
 
-		[Display(Name = "字体图标类")]
+		[Comment(Name = "字体图标类")]
 		[StringLength(50)]
 		[Layout(10, 3)]
 		public string FontIcon { get; set; }
 
-		[Display(Name = "主标题")]
+		[Comment(Name = "主标题")]
 		[TableVisible(10)]
 		[StringLength(100)]
 		public string Title1 { get; set; }
 
-		[Display(Name = "次标题1")]
+		[Comment(Name = "次标题1")]
 		[StringLength(100)]
 		[Layout(20, 1)]
 		public string Title2 { get; set; }
 
-		[Display(Name = "次标题2")]
+		[Comment(Name = "次标题2")]
 		[StringLength(100)]
 		[Layout(20,2)]
 		public string Title3 { get; set; }
 
-		[Display(Name = "摘要")]
+		[Comment(Name = "摘要")]
 		[StringLength(200)]
 		public string Summary { get; set; }
 
 		[TableVisible]
-		[Display(Name = "链接")]
+		[Comment(Name = "链接")]
 		[StringLength(200)]
 		public string Uri { get; set; }
 
-		[Display(Name = "链接目标")]
+		[Comment(Name = "链接目标")]
 		[StringLength(50)]
 		public string UriTarget { get; set; }
 
-		[Display(Name = "子项目")]
+		[Comment(Name = "子项目")]
 		[TreeNodes]
 		public ContentItem[] Items { get; set; }
 	}
@@ -101,37 +101,37 @@ namespace SF.Management.FrontEndContents
     public class Content:ContentItem, IContent,IEntityWithId<long>
 	{
 		[Key]
-		[Display(Name = "ID", Prompt = "保存后自动产生")]
+		[Comment(Name = "ID", Prompt = "保存后自动产生")]
 		[ReadOnly(true)]
 		[Layout(1)]
 		[TableVisible(1)]
 		public long Id { get; set; }
 
-		[Display(Name = "内容分类")]
+		[Comment(Name = "内容分类")]
 		[StringLength(50)]
 		[TableVisible]
 		[Required]
 		public string Category { get; set; }
 
 		[StringLength(50)]
-		[Display(Name = "内容名称")]
+		[Comment(Name = "内容名称")]
 		[TableVisible]
 		[Required]
 		public string Name { get; set; }
 
 
-		[Display(Name = "提供者类型")]
+		[Comment(Name = "提供者类型")]
 		[StringLength(50)]
 		[TableVisible]
 		[Layout(3)]
 		public string ProviderType { get; set; }
 
-		[Display(Name = "提供者配置")]
+		[Comment(Name = "提供者配置")]
 		[StringLength(100)]
 		[Layout(4)]
 		public string ProviderConfig { get; set; }
 
-		[Display(Name = "是否禁用")]
+		[Comment(Name = "是否禁用")]
 		[TableVisible]
 		public bool Disabled { get; set; }
 

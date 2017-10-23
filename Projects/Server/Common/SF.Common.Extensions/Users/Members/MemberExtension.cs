@@ -13,23 +13,48 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Data.Models;
-using SF.KB;
 using SF.Metadata;
+using SF.Auth;
+using SF.Auth.Identities;
+using SF.Users.Members.Models;
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SF.Auth.Identities.Models;
+using SF.Entities;
+using SF.Data;
+using SF.Core.ServiceManagement;
+using SF.Core;
+using SF.Auth.Users;
 
-namespace SF.Auth.Users.Models
+namespace SF.Users.Members
 {
-	public class UserInternal : ObjectEntityBase
+	public static class MemberExtension
 	{
-		[MaxLength(20)]
-		[Comment("账户名")]
-		[TableVisible]
-		[Required]
-		public string AccountName { get; set; }
+		public static async Task<MemberInternal> MemberEnsure(
+			this IMemberService Service,
+			IServiceProvider ServiceProvider,
+			string name,
+			string nick,
+			string account,
+			string password,
+			string[] roles = null,
+			Dictionary<string, string> extArgs = null
+			) 
+		{
+			return await Service.UserEnsure<IMemberManagementService, MemberInternal, MemberEditable, MemberQueryArgument>(
+				ServiceProvider,
+				name, nick,
+				account,
+				password,
+				roles,
+				extArgs
+				);
 
+		}
 	}
+
 }
 

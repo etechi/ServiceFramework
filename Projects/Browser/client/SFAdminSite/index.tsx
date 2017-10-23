@@ -19,13 +19,14 @@ var env = (window as any)["ENV"];
 
 function init(
     lib: ApiMeta.Library,
-    menuItems: api.SF$Management$MenuServices$Models$MenuItem[],
+    menuItems: api.SF$Management$MenuServices$MenuItem[],
     permissions: any//api.ServiceProtocol$Auth$Permission[]
 ) {
     //var modules=require("./modules").default;
     var config = require("./config");
-    var App=require("./components/App").default;
-    var Dashboard=require("./components/Dashboard").default;
+    var AppFrame=require("./components/AppFrame").default;
+    var Dashboard = require("./components/Dashboard").default;
+    var SigninPage = require("./components/SigninPage").default;
 
     ApiMeta.setDefaultLibrary(lib);
 
@@ -69,13 +70,18 @@ function init(
         {
             path: "dashboard",
             component: Dashboard
+        },
+        {
+            path: "signin",
+            component: SigninPage
         }
+
     ];
 
 
     const routes = {
         path: env.root,
-        component: App,
+        component: AppFrame,
         indexRoute: {
             onEnter: (nextState, transition) => {
                 transition(env.root+'dashboard');

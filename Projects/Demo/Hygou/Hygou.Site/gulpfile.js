@@ -36,14 +36,14 @@ gulp.task("build-release", (cb) => {
 });
 gulp.task("build-webapi-all-interface", (cb) => {
     build_webapi(
-        "http://localhost:62428/api/servicemetadata/typescript?all=true",
+        "http://localhost:52706/api/servicemetadata/typescript?all=true",
         path.join(__dirname, "./client/SFAdminSite/webapi-all.ts"),
         cb
     );
 });
 gulp.task("build-webapi-user-interface", (cb) => {
     build_webapi(
-        "http://localhost:62428/api/servicemetadata/typescript?all=false",
+        "http://localhost:52706/api/servicemetadata/typescript?all=false",
         path.join(__dirname, "./client/SFAdminSite/webapi.ts"),
         cb
     );

@@ -46,6 +46,34 @@ namespace SF.AspNetCore.Auth
 					opt.LoginPath = "/account/signin";
 				}
 			);
+			services.AddAuthentication(
+				"admin-system"
+				)
+				.AddCookie("admin-system", opt =>
+				{
+					opt.Cookie.HttpOnly = true;
+					opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+					opt.Cookie.Path = "/admin/system/";
+					opt.Cookie.Name = "sf-sess-sysadmin";
+					opt.LoginPath = "/admin/system/signin";
+					opt.Cookie.Expiration = TimeSpan.FromHours(1);
+				}
+			);
+
+			services.AddAuthentication(
+				"admin-bizness"
+			)
+			.AddCookie("admin-bizness",opt =>
+			{
+				opt.Cookie.HttpOnly = true;
+				opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+				opt.Cookie.Path = "/admin/bizness/";
+				opt.Cookie.Name = "sf-sess-bizadmin";
+				opt.LoginPath = "/admin/bizness/signin";
+				opt.Cookie.Expiration = TimeSpan.FromHours(1);
+			}
+		);
+
 
 			var securityKey = "12faod919&^*%1212";
 
@@ -78,29 +106,35 @@ namespace SF.AspNetCore.Auth
 				{
 					opt.TokenValidationParameters = tokenValidationParameters;
 				});
-			
-			//services.AddAuthorization(options =>
-			//{
-			//	options.DefaultPolicy =
-			//		new AuthorizationPolicyBuilder("default")
-			//		.RequireAuthenticatedUser()
-			//		.Build();
 
-			//	//options.AddPolicy("admin-bizness", policy =>
-			//	//{
-			//	//	policy.RequireAuthenticatedUser();
+			services.AddAuthorization(options =>
+			{
+				//options.DefaultPolicy =
+				//	new AuthorizationPolicyBuilder("default")
+				//	.RequireAuthenticatedUser()
+				//	.Build();
 
-			//	//});
-			//	//options.AddPolicy("admin-bizness", policy =>
-			//	//{
+				options.AddPolicy("admin-bizness", policy =>
+				{
+					policy
+						.RequireAuthenticatedUser()
+						.RequireRole("bizadmin")
+						.AddAuthenticationSchemes("admin-bizness")
+						;
 
-			//	//	policy.RequireAuthenticatedUser();
-			//	//});
+				});
+				options.AddPolicy("admin-system", policy =>
+				{
+					policy
+					.RequireAuthenticatedUser()
+					.RequireRole("sysadmin")
+					.AddAuthenticationSchemes("admin-system");
+				});
 
-			//});
+			});
 
 
-		
+
 
 			//services.AddAuthentication(opt=>
 			//{

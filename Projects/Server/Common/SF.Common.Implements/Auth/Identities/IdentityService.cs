@@ -15,14 +15,19 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Auth.Identities.Internals;
 using SF.Auth.Identities.Models;
+using SF.Core.ServiceManagement;
 using System;
 using System.Threading.Tasks;
 namespace SF.Auth.Identities
 {
 	public class IdentityService :
-		IIdentityService
+		IIdentityService,
+		IManagedServiceWithId
 	{
 		IdentityServiceSetting Setting { get; }
+
+		public long? ServiceInstanceId => Setting.ServiceInstanceDescriptor.Value.InstanceId;
+
 		public IdentityService(IdentityServiceSetting Setting)
 		{
 			this.Setting = Setting;

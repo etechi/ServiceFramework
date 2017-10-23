@@ -27,7 +27,7 @@ namespace SF.Management.MenuServices.Models
 	{
 		[MaxLength(100)]
 		[Required]
-		[Comment("菜单引用标识","约定菜单：业务管理后台:bizness,系统管理后台:system")]
+		[Comment("菜单引用标识","默认菜单：业务管理后台:bizness,系统管理后台:system")]
 		public string Ident { get; set; }
 	}
 

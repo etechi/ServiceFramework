@@ -1,4 +1,5 @@
-﻿@{
+﻿@model Hygou.Site.Controllers.AdminModel
+@{
 	Layout = null;
 }
 <!DOCTYPE html>
@@ -32,8 +33,9 @@
 		<div id="app"></div>
 		<script>
 			var ENV = {
-				root: "/admin/bizness/",
-				menu: "bizness"
+				root: "/admin/@Model.Type/",
+				menu: "@Model.Type",
+				identityServiceId:@Model.IdentityServiceId
 			}
 		</script>
 		<script src="~/vender/kindeditor/kindeditor-all-min.js"></script>

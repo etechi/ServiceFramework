@@ -32,14 +32,22 @@ namespace SF.Core.NetworkService
         }
 		static string to_js_type(string type)
 		{
+			if (type.EndsWith("?"))
+				return to_js_type(type.Substring(0, type.Length - 1)) + "|null";
+
 			var i = type.IndexOf('[');
 			if (i != -1)
 				return to_js_type(type.Substring(0, i)) + type.Substring(i);
 
-			i = type.IndexOf('<');
+			i = type.IndexOf('{');
 			if (i != -1)
 				return $"{{[index:string]:{to_js_type(type.Substring(0, i))}}}";
 
+			i = type.IndexOf('<');
+			if (i != -1)
+				return type.Replace('.', '$').Replace('<', '$').Replace(',', '_').Replace('>', '$');
+
+			
 			switch (type)
 			{
 				case "string": return "string";
@@ -201,7 +209,8 @@ export interface IQueryPaging {
 export interface ICallOptions
 {
 	paging?: IQueryPaging,
-	query?:any
+	query?:any,
+	serviceId?:number
 }
 export interface IApiInvoker{
 	(type: string,method: string,query: { [index: string]: any},post: { [index: string]: any}, opts?: ICallOptions) :any
