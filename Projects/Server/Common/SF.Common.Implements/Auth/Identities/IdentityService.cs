@@ -17,6 +17,7 @@ using SF.Auth.Identities.Internals;
 using SF.Auth.Identities.Models;
 using SF.Core.ServiceManagement;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 namespace SF.Auth.Identities
 {
@@ -73,16 +74,13 @@ namespace SF.Auth.Identities
 			var idata = await GetIdentityData(uid);
 			return idata.SecurityStamp;
 		}
-		static string DataProtectName = "用户访问令牌";
-		public async Task<long> ParseAccessToken(string AccessToken)
+		public Task<long> ValidateAccessToken(string AccessToken)
 		{
-			var re=await Setting.DataProtector.Value.Decrypt(
-				DataProtectName,
-				AccessToken.Base64(),
-				Setting.TimeService.Value.Now,
-				LoadAccessTokenPassword
-				);
-			return BitConverter.ToInt64(re,0);
+			var p = Setting.AccessTokenHandler.Value.Validate(AccessToken);
+			var id = p.GetUserIdent();
+			if (!id.HasValue)
+				throw new PublicArgumentException("访问令牌问包含用户ID");
+			return Task.FromResult(id.Value);
 		}
 
 
@@ -232,28 +230,25 @@ namespace SF.Auth.Identities
 		async Task<string> SetOrReturnAccessToken(long UserId,int? Expires,bool ReturnToken)
 		{
 			var DateExpires = GetExpires(Expires);
-			var token = await CreateAccessToken(UserId, DateExpires);
 			if (ReturnToken)
-				return token;
-			await Setting.ClientService.Value.SetAccessToken(token);
+				return await CreateAccessToken(UserId, DateExpires);
+			await Setting.ClientService.Value.SigninAsync(token);
 			return null;
 		}
+		Task<ClaimsPrincipal> CreatePrincipal(long Id)
+		{
 
+		}
 		public async Task<string> CreateAccessToken(long Id,DateTime? Expires)
 		{
-			var stamp = (await GetIdentityData(Id)).SecurityStamp;
-			var re = await Setting.DataProtector.Value.Encrypt(
-				DataProtectName,
-				BitConverter.GetBytes(Id),
-				Expires ?? Setting.TimeService.Value.Now.AddYears(1),
-				stamp
+			return Setting.AccessTokenHandler.Value.Create(
+				await CreatePrincipal(Id),
+				Expires
 				);
-			return re.Base64();
-
 		}
 		public Task Signout()
 		{
-			return Setting.ClientService.Value.SetAccessToken(null);
+			return Setting.ClientService.Value.SignOutAsync();
 		}
 
 		IIdentityCredentialProvider GetCredentialProvider(long? ProviderId)=>
@@ -322,7 +317,7 @@ namespace SF.Auth.Identities
 			var uid = await Setting.IdentStorage.Value.Create(
 				new IdentityCreateArgument
 				{
-					AccessSource = client.AccessSource,
+					AccessSource = client.UserAgent,
 					PasswordHash = passwordHash,
 					SecurityStamp = stamp,
 					CredentialValue=Arg.Credential,

@@ -57,6 +57,12 @@ namespace Hygou
 			var ins = HygouApp.Setup(SF.Core.Hosting.EnvironmentType.Production, services)
 				.With(sc =>
 					sc.AddAspNetCoreSupport()
+					.AddAccessTokenHandler(
+						"HYGOU",
+						"123456",
+						null,
+						null
+						)
 					)
 				.OnEnvType(
 					t=>t!=EnvironmentType.Utils,

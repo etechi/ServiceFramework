@@ -15,16 +15,48 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Tokens;
 using SF.Clients;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using SF.Auth;
+using SF.Core.Times;
 
 namespace SF.AspNetCore
 {
+	
 
-	public class AspNetCoreClientService : IClientService, IAccessSource
+	public class AspNetCoreAccessToken : IAccessToken
+	{
+		public Microsoft.AspNetCore.Http.HttpContext Context { get; }
+		public AspNetCoreAccessToken(Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor)
+		{
+			Context = HttpContextAccessor.HttpContext;
+		}
+		public ClaimsPrincipal User => Context.User;
+
+		Stack<ClaimsPrincipal> _Operators;
+
+		public ClaimsPrincipal Operator =>
+			(_Operators?.Count??0)==0 ? User : _Operators.Peek();
+
+		public IDisposable UseOperator(ClaimsPrincipal NewOperator)
+		{
+			if (_Operators == null)
+				_Operators = new Stack<ClaimsPrincipal>();
+			_Operators.Push(NewOperator);
+			return Disposable.FromAction(() =>
+			{
+				_Operators.Pop();
+			});
+		}
+	}
+	
+	public class AspNetCoreClientService : IClientService, IUserAgent
 	{
 		public Microsoft.AspNetCore.Http.HttpContext Context { get; }
 		public IClientDeviceTypeDetector ClientDeviceTypeDetector { get; }
@@ -33,46 +65,48 @@ namespace SF.AspNetCore
 			Context = HttpContextAccessor.HttpContext;
 			this.ClientDeviceTypeDetector = ClientDeviceTypeDetector;
 		}
-		public IAccessSource AccessSource => this;
+		public IUserAgent UserAgent => this;
 
 		public long? CurrentScopeId { get; set; }
 
-		IReadOnlyDictionary<string, string> IAccessSource.ExtraValues { get; } = new Dictionary<string, string>();
+		IReadOnlyDictionary<string, string> IUserAgent.ExtraValues { get; } = new Dictionary<string, string>();
 
-		string IAccessSource.ClientAddress => Context.Connection.RemoteIpAddress.ToString();
+		string IUserAgent.Address => Context.Connection.RemoteIpAddress.ToString();
 
-		string IAccessSource.ClientAgent => Context.Request.Headers.UserAgent();
+		string IUserAgent.AgentName => Context.Request.Headers.UserAgent();
 
-		ClientDeviceType IAccessSource.DeviceType => ClientDeviceTypeDetector.Detect(Context.Request.Headers.UserAgent());
+		ClientDeviceType IUserAgent.DeviceType => ClientDeviceTypeDetector.Detect(Context.Request.Headers.UserAgent());
 
-		string _AccessToken;
-		public string GetAccessToken()
+		public Task SignInAsync(ClaimsPrincipal User)
 		{
-			if(_AccessToken==null)
-				_AccessToken = (from id in Context.User.Identities
-						 from c in id.Claims
-						 where c.Type == "token"
-						 select c.Value).FirstOrDefault();
-			return _AccessToken;
+			return Context.SignInAsync(User);
+		}
+		public Task SignOutAsync()
+		{
+			return Context.SignOutAsync();
 		}
 
-		public async Task SetAccessToken(string AccessToken)
-		{
-			if (AccessToken == null)
-				await Context.SignOutAsync("SFAuth");
-			else
-				await Context.SignInAsync(
-					"SFAuth",
-					new System.Security.Claims.ClaimsPrincipal(
-						EnumerableEx.From(
-							new System.Security.Claims.ClaimsIdentity(
-								EnumerableEx.From(
-									new System.Security.Claims.Claim("token", AccessToken)
-								)
-							)
-						)
-					)
-				);
-		}
+		//public async Task SetAccessToken(string AccessToken)
+		//{
+		//	if (AccessToken == null)
+		//		await Context.SignOutAsync("SFAuth");
+		//	else
+		//		await Context.SignInAsync(
+		//			"admin-bizness",
+		//			new System.Security.Claims.ClaimsPrincipal(
+		//				EnumerableEx.From(
+		//					new System.Security.Claims.ClaimsIdentity(
+		//						EnumerableEx.From(
+		//							new System.Security.Claims.Claim("token", AccessToken),
+		//							new System.Security.Claims.Claim("sid", "123"),
+		//							new System.Security.Claims.Claim("name", "aaaaa"),
+		//							new System.Security.Claims.Claim(ClaimTypes.Role, "bizadmin")
+		//						),
+		//						"admin-bizness"
+		//					)
+		//				)
+		//			)
+		//		);
+		//}
 	}
 }

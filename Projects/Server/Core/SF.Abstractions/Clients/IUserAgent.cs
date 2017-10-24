@@ -18,11 +18,11 @@ using System.Collections.Generic;
 namespace SF.Clients
 {
 	
-	public interface IAccessSource
+	public interface IUserAgent
 	{
 		IReadOnlyDictionary<string,string> ExtraValues { get; }
-		string ClientAddress { get;  }
-		string ClientAgent { get; }
+		string Address { get;  }
+		string AgentName { get; }
 		ClientDeviceType DeviceType { get; }
 	}
 }

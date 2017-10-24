@@ -38,12 +38,12 @@ namespace SF.AspNetCore.Auth
 				)
 				.AddCookie(opt =>
 				{
-
 					opt.Cookie.HttpOnly = true;
-					opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+					opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
 					opt.Cookie.Path = "/";
 					opt.Cookie.Name = "sf-sess";
 					opt.LoginPath = "/account/signin";
+					//opt.TicketDataFormat
 				}
 			);
 			services.AddAuthentication(
@@ -52,7 +52,7 @@ namespace SF.AspNetCore.Auth
 				.AddCookie("admin-system", opt =>
 				{
 					opt.Cookie.HttpOnly = true;
-					opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+					opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
 					opt.Cookie.Path = "/admin/system/";
 					opt.Cookie.Name = "sf-sess-sysadmin";
 					opt.LoginPath = "/admin/system/signin";
@@ -66,7 +66,7 @@ namespace SF.AspNetCore.Auth
 			.AddCookie("admin-bizness",opt =>
 			{
 				opt.Cookie.HttpOnly = true;
-				opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Lax;
+				opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
 				opt.Cookie.Path = "/admin/bizness/";
 				opt.Cookie.Name = "sf-sess-bizadmin";
 				opt.LoginPath = "/admin/bizness/signin";
@@ -95,9 +95,9 @@ namespace SF.AspNetCore.Auth
 				ValidateLifetime = true,
 
 				// If you want to allow a certain amount of clock drift, set that here:
-				ClockSkew = TimeSpan.Zero
+				ClockSkew = TimeSpan.Zero,
+				IssuerSigningKeys=null
 
-				
 			}; 
 			services.AddAuthentication(
 				JwtBearerDefaults.AuthenticationScheme

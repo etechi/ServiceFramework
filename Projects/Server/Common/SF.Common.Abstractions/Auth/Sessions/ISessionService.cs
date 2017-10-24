@@ -41,7 +41,7 @@ namespace SF.Auth.Sessions
 			int ScopeId,
 			string IdentValue,
 			string IdentProvider,
-			Clients.IAccessSource AccessInfo, 
+			Clients.IUserAgent AccessInfo, 
 			Func<SessionCreator, Task<T>> Callback
 			);
 		//Task<long> Create(long UserId, DateTime? Expires, Clients.IAccessSource AccessInfo);

@@ -32,7 +32,7 @@ namespace SF.Auth.Identities
 		public Lazy<ILocalCache<VerifyCode>> VerifyCodeCache { get; set; }
 		public Lazy<IIdentStorage> IdentStorage { get; set; }
 		public Lazy<IClientService> ClientService { get; set; }
-		public Lazy<IDataProtector> DataProtector { get; set; }
+		public Lazy<IAccessTokenHandler> AccessTokenHandler { get; set; }
 		public Lazy<IPasswordHasher> PasswordHasher { get; set; }
 		public Lazy<IServiceInstanceDescriptor> ServiceInstanceDescriptor { get; set; }
 		public Lazy<ITimeService> TimeService { get; set; }

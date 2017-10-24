@@ -21,6 +21,7 @@ using SF.Data;
 using SF.Core.Logging;
 using SF.Core.Times;
 using SF.Core.Events;
+using SF.Clients;
 
 namespace SF.Entities
 {
@@ -57,6 +58,9 @@ namespace SF.Entities
 		ILogger Logger { get; }
 		IEventEmitter EventEmitter { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
+		IClientService ClientService { get; }
+		IAccessToken AccessToken { get; }
+		IEntityMetadata EntityMetadata { get; }
 		DateTime Now { get; }
 	}
 	public interface IModifiableEntityManager<TEditable,TModel>: IEntityManager

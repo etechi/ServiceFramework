@@ -27,6 +27,24 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection AddLocalClientService(this IServiceCollection sc)
 		{
 			sc.AddSingleton<IClientService, LocalClientService>();
+			sc.AddSingleton<IAccessToken>(sp => (IAccessToken)sp.Resolve<IClientService>());
+
+			return sc;
+		}
+		public static IServiceCollection AddAccessTokenHandler(this IServiceCollection sc,
+			string Issuer,
+			string securityKey,
+			TimeSpan? Expires,
+			string securityAlgorithms
+			)
+		{
+			sc.AddSingleton<IDefaultAccessTokenProperties>(new DefaultAccessTokenProperties(
+				Issuer,
+				securityKey,
+				Expires,
+				securityAlgorithms
+				));
+			sc.AddSingleton<IAccessTokenHandler, AccessTokenHandler>();
 			return sc;
 		}
 		

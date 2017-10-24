@@ -16,39 +16,51 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SF.Clients
 {
 	
-	public class LocalClientService : IClientService, IAccessSource
+	public class LocalClientService : IClientService, IUserAgent,IAccessToken
 	{
-		public IAccessSource AccessSource => this;
+		public IUserAgent UserAgent => this;
 
 		public long? CurrentScopeId { get; set; }
 
-		IReadOnlyDictionary<string, string> IAccessSource.ExtraValues { get; } = new Dictionary<string, string>();
+		IReadOnlyDictionary<string, string> IUserAgent.ExtraValues { get; } = new Dictionary<string, string>();
 
 		string _ClientAddress = "local";
 		string _ClientAgent = "console";
 		ClientDeviceType _ClientDeviceType = ClientDeviceType.Console;
 
-		string IAccessSource.ClientAddress => _ClientAddress;
+		string IUserAgent.Address => _ClientAddress;
 
-		string IAccessSource.ClientAgent => _ClientAgent;
+		string IUserAgent.AgentName => _ClientAgent;
 
-		ClientDeviceType IAccessSource.DeviceType => _ClientDeviceType;
+		ClientDeviceType IUserAgent.DeviceType => _ClientDeviceType;
 
-		string _AccessToken;
-		public string GetAccessToken()
+
+		ClaimsPrincipal _User;
+		public ClaimsPrincipal User => _User;
+
+		Stack<ClaimsPrincipal> _OperatorStack;
+		public ClaimsPrincipal Operator =>
+			(_OperatorStack?.Count ?? 0) == 0 ? User : _OperatorStack.Peek();
+
+		
+		public Task SignInAsync(ClaimsPrincipal User)
 		{
-			return _AccessToken;
+			_User = User;
+			return Task.CompletedTask;
 		}
 
-		public Task SetAccessToken(string AccessToken)
+		public IDisposable UseOperator(ClaimsPrincipal NewOperator)
 		{
-			_AccessToken = AccessToken;
-			return Task.CompletedTask;
+			if (_OperatorStack == null)
+				_OperatorStack = new Stack<ClaimsPrincipal>();
+			_OperatorStack.Push(NewOperator);
+			return Disposable.FromAction(() => _OperatorStack.Pop());
 		}
 	}
 }

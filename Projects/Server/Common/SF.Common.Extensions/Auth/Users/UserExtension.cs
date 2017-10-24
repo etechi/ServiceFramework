@@ -84,7 +84,7 @@ namespace SF.Auth.Users
 						ReturnToken = true,
 					}
 					);
-				var iid = await identityService.ParseAccessToken(sess);
+				var iid = await identityService.ValidateAccessToken(sess);
 				var ident = await identityService.GetIdentity(iid);
 				var mid = ServiceEntityIdent.Parse<long>(ident.OwnerId);
 				id = mid.Id2;

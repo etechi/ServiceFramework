@@ -128,6 +128,7 @@ namespace SF.Auth.Identities
 	public interface IIdentityService
     {
 		[Comment("获取当前身份标识ID")]
+		[Authorize]
 		Task<long?> GetCurIdentityId();
 
 		[Comment("获取当前身份标识")]
@@ -153,7 +154,7 @@ namespace SF.Auth.Identities
 		Task UpdateIdentity(Identity Identity);
 
 		[Comment("从访问令牌提取身份ID")]
-		Task<long> ParseAccessToken(string AccessToken);
+		Task<long> ValidateAccessToken(string AccessToken);
 
 		[Comment("发送身份标识创建验证信息")]
 		Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg);

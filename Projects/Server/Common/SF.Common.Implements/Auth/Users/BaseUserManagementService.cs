@@ -134,7 +134,7 @@ namespace SF.Auth.Users
 					false
 					);
 				ctx.UserData = sess;
-				var iid = await IdentityService.Value.ParseAccessToken(sess);
+				var iid = await IdentityService.Value.ValidateAccessToken(sess);
 				m.SignupIdentityId = iid;
 
 				EntityManager.AddPostAction(() =>

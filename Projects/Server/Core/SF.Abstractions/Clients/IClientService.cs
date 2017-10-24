@@ -13,20 +13,41 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SF.Clients
 {
-
-    public interface IClientService
+	public interface IAccessToken
 	{
-		IAccessSource AccessSource { get; }
-
+		ClaimsPrincipal User { get; }
+		ClaimsPrincipal Operator { get; }
+		IDisposable UseOperator(ClaimsPrincipal NewOperator);
+	}
+	public interface IDefaultAccessTokenProperties
+	{
+		string Issuer { get; }
+		TimeSpan? Expires { get; }
+		SigningCredentials SigningCredentials { get; }
+		TokenValidationParameters TokenValidationParameters { get; }
+	}
+	public interface IAccessTokenHandler
+	{
+		string Create(ClaimsPrincipal User, DateTime? Expires);
+		ClaimsPrincipal Validate(string AccessToken);
+	}
+	public interface IClientService
+	{
+		IUserAgent UserAgent { get; }
 		long? CurrentScopeId { get; }
-		string GetAccessToken();
-		Task SetAccessToken(string AccessToken);
+		Task SignInAsync(ClaimsPrincipal User);
+		Task SignOutAsync();
+
+		//string GetAccessToken();
+		//Task SetAccessToken(string AccessToken);
 
 		//Task<string> Ensure(AccessInfo ClientInfo,Dictionary<string,string> Items);
 

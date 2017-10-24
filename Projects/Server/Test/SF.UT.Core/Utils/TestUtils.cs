@@ -53,7 +53,7 @@ namespace SF.UT.Utils
 			});
 			if (returnToken)
 			{
-				var uid = await svc.ParseAccessToken(signinResult);
+				var uid = await svc.ValidateAccessToken(signinResult);
 				return uid;
 			}
 			else
@@ -96,7 +96,7 @@ namespace SF.UT.Utils
 				}, true
 				);
 
-			var uid = ReturnToken ? await svc.ParseAccessToken(accessToken) : (await svc.GetCurIdentity()).Id;
+			var uid = ReturnToken ? await svc.ValidateAccessToken(accessToken) : (await svc.GetCurIdentity()).Id;
 			var ii = await svc.GetIdentity(uid);
 			Assert.Equal(name, ii.Name);
 			Assert.Equal(icon, ii.Icon);

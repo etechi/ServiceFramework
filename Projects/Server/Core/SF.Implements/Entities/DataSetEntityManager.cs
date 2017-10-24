@@ -23,12 +23,15 @@ using SF.Core.Times;
 using SF.Data;
 using SF.Core.ServiceManagement;
 using SF.Core.Events;
+using SF.Clients;
+using SF.Auth;
+using SF.Auth.Permissions;
 
 namespace SF.Entities
 {
 	class DataSetEntityManager<TEditable, TDataModel> : IDataSetEntityManager<TEditable, TDataModel>
-		where TDataModel : class,new()
-		where TEditable:class,new()
+		where TDataModel : class, new()
+		where TEditable : class, new()
 	{
 		IServiceProvider ServiceProvider { get; }
 		IDataSet<TDataModel> _DataSet;
@@ -37,7 +40,11 @@ namespace SF.Entities
 		ILogger<TDataModel> _Logger;
 		IIdentGenerator<TDataModel> _IdentGenerator;
 		IEventEmitter _EventEmitter;
+		IClientService _ClientService;
+		IEntityMetadata _EntityMetadata;
+		IAccessToken _AccessToken;
 		public IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
+
 		DateTime _Now;
 
 		public DataSetEntityManager(IServiceProvider ServiceProvider)
@@ -49,7 +56,7 @@ namespace SF.Entities
 		}
 
 		I Resolve<I>(ref I value)
-			where I:class
+			where I : class
 		{
 			if (value == null)
 				value = ServiceProvider.Resolve<I>();
@@ -71,12 +78,26 @@ namespace SF.Entities
 		public ITimeService TimeService => Resolve(ref _TimeService);
 		public ILogger Logger => Resolve(ref _Logger);
 		public IEventEmitter EventEmitter => Resolve(ref _EventEmitter);
+		public IClientService ClientService => Resolve(ref _ClientService);
+		public IAccessToken AccessToken => Resolve(ref _AccessToken);
+		public IEntityMetadata EntityMetadata
+		{
+			get
+			{
+				if (_EntityMetadata == null)
+				{
+					var metas = ServiceProvider.Resolve<IEntityMetadataCollection>();
+					_EntityMetadata = metas.FindByManagerType(GetType());
+				}
+				return _EntityMetadata;
+			}
+		}
 		IDataSet IDataSetEntityManager.DataSet => DataSet;
 
 		
-
 		public void InitCreateContext(IEntityModifyContext<TEditable, TDataModel> Context,TEditable Editable, object ExtraArguments)
 		{
+
 			Context.Model = new TDataModel();
 			Context.Action = ModifyAction.Create;
 			Context.Editable = Editable;
@@ -85,6 +106,7 @@ namespace SF.Entities
 
 		public void InitRemoveContext(IEntityModifyContext<TEditable, TDataModel> Context, TEditable Editable, TDataModel Model, object ExtraArguments)
 		{
+
 			Context.Action = ModifyAction.Delete;
 			Context.Editable=Editable;
 			Context.Model = Model;
@@ -93,6 +115,7 @@ namespace SF.Entities
 
 		public void InitUpdateContext(IEntityModifyContext<TEditable, TDataModel> Context,TEditable Editable, TDataModel Model, object ExtraArguments)
 		{
+
 			Context.Action = ModifyAction.Update;
 			Context.Editable = Editable;
 			Context.Model = Model;

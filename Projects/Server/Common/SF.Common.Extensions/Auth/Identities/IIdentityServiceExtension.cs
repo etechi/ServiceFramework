@@ -185,7 +185,7 @@ namespace SF.Auth.Identities
 				},
 				false
 				);
-			return await IdentityService.ParseAccessToken(sess);
+			return await IdentityService.ValidateAccessToken(sess);
 
 		}
 		

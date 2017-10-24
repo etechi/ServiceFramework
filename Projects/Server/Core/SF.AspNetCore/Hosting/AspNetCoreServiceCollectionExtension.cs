@@ -36,9 +36,15 @@ namespace SF.Core.ServiceManagement
 			sc.AddScoped<IClientService, AspNetCoreClientService>();
 			return sc;
 		}
+		public static IServiceCollection AddAspNetCoreAccessToken(this IServiceCollection sc)
+		{
+			sc.AddScoped<IAccessToken, AspNetCoreAccessToken>();
+			return sc;
+		}
 		public static IServiceCollection AddAspNetCoreHostingService(this IServiceCollection sc)
 		{
 			sc.AddAspNetCoreClientService();
+			sc.AddAspNetCoreAccessToken();
 			sc.AddAspNetCoreFilePathStructure();
 			return sc;
 		}

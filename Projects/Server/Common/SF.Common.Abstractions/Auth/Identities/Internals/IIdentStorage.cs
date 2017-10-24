@@ -38,7 +38,7 @@ namespace SF.Auth.Identities.Internals
 
 		[Required]
 		[Comment("访问源")]
-		public Clients.IAccessSource AccessSource { get; set; }
+		public Clients.IUserAgent AccessSource { get; set; }
 
 		[Required]
 		[Comment("登录凭证")]
