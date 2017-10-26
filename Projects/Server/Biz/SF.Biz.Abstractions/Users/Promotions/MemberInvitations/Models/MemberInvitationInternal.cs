@@ -13,7 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Identities.Models;
+using SF.Auth.Users.Models;
 using SF.Data;
 using SF.Data.Models;
 using SF.KB;
@@ -28,7 +28,7 @@ namespace SF.Users.Promotions.MemberInvitations.Models
 	public class MemberInvitationInternal : EventEntityBase
 	{
 		[Comment("被邀请人ID")]
-		[EntityIdent(typeof(Identity),nameof(InviteeName))]
+		[EntityIdent(typeof(User),nameof(InviteeName))]
 		public override long Id { get; set; }
 
 		[Comment("被邀请人")]
@@ -37,7 +37,7 @@ namespace SF.Users.Promotions.MemberInvitations.Models
 		public string InviteeName { get; set; }
 
 		[Comment("邀请人ID")]
-		[EntityIdent(typeof(Identity), nameof(InvitorName))]
+		[EntityIdent(typeof(User), nameof(InvitorName))]
 		public long InvitorId { get; set; }
 
 		[Comment("邀请人")]

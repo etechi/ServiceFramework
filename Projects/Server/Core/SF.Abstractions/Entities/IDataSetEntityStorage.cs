@@ -22,6 +22,7 @@ using SF.Core.Logging;
 using SF.Core.Times;
 using SF.Core.Events;
 using SF.Clients;
+using SF.Entities.AutoEntityProvider;
 
 namespace SF.Entities
 {
@@ -61,6 +62,12 @@ namespace SF.Entities
 		IClientService ClientService { get; }
 		IAccessToken AccessToken { get; }
 		IEntityMetadata EntityMetadata { get; }
+		IScoped<IDataContext> ScopedDataContext { get; }
+		IQueryResultBuildHelperCache QueryResultBuildHelperCache { get; }
+		IPagingQueryBuilderCache PagingQueryBuilderCache { get; }
+		IQueryFilterCache QueryFilterCache { get; }
+		IEntityModifierCache EntityModifierCache { get; }
+		IDataContext DataContext { get; }
 		DateTime Now { get; }
 	}
 	public interface IModifiableEntityManager<TEditable,TModel>: IEntityManager

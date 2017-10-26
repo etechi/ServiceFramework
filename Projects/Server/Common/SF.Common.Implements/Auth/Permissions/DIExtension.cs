@@ -24,8 +24,8 @@ using SF.Management.MenuServices.Models;
 using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using SF.Management.SysAdmins;
-using SF.Auth.Identities;
+using SF.Management.Admins;
+using SF.Auth.Users;
 using SF.Auth.Permissions.Models;
 using SF.Auth.Permissions;
 using SF.Auth;
@@ -42,8 +42,8 @@ namespace SF.Core.ServiceManagement
 			sc.AddScoped<IResourceManager, ResourceManager>();
 			sc.AddScoped<IOperationManager, OperationManager>();
 
-			sc.AddManagedScoped<IRoleManager, RoleManager>();
-			sc.AddManagedScoped<IGrantManager, GrantManager>();
+			//sc.AddManagedScoped<IRoleManager, RoleManager>();
+			//sc.AddManagedScoped<IGrantManager, GrantManager>();
 
 			sc.AddSingleton<IPermissionProvider, PermissionProvider>();
 			return sc;

@@ -192,6 +192,137 @@ namespace SF.Entities
 			return EntityManager.LoadForEdit(Key, OnMapModelToEditable);
 		}
 	}
-    
-   
+
+	public abstract class AutoModifiableEntityManager<TKey, TDetail, TSummary,  TQueryArgument, TEditable, TModel> :
+		 AutoQuerableEntitySource<TKey, TDetail, TSummary, TQueryArgument, TModel>,
+		 IEntityManager<TKey, TEditable>
+		 where TDetail : class
+		 where TModel : class, new()
+		 where TQueryArgument : class, new()
+		 where TEditable : class
+		 where TSummary:class
+	{
+		new protected IDataSetEntityManager<TEditable, TModel> EntityManager => (IDataSetEntityManager<TEditable, TModel>)base.EntityManager;
+		public interface IModifyContext : IEntityModifyContext<TEditable, TModel>
+		{
+
+		}
+		class ModifyContext : EntityModifyContext<TEditable, TModel>, IModifyContext
+		{
+
+		}
+		public AutoModifiableEntityManager(IDataSetEntityManager<TEditable, TModel> EntityManager) : base(EntityManager)
+		{
+		}
+
+		public virtual EntityManagerCapability Capabilities => EntityManagerCapability.All;
+		public bool AutoSaveChanges { get; set; } = true;
+
+
+		#region create
+
+		protected virtual Task OnNewModel(IModifyContext ctx)
+		{
+			return Task.CompletedTask;
+		}
+		protected IModifyContext NewModifyContext()
+			=> new ModifyContext();
+		public virtual async Task<TKey> CreateAsync(TEditable obj)
+		{
+			var ctx = NewModifyContext();
+			await InternalCreateAsync(ctx, obj, null);
+			return Entity<TModel>.GetKey<TKey>(ctx.Model);
+		}
+		protected virtual Task InternalCreateAsync(IModifyContext Context, TEditable obj, object ExtraArgument)
+		{
+			return EntityManager.InternalCreateAsync<TKey, TEditable, TModel, IModifyContext>(
+				Context,
+				obj,
+				OnUpdateModel,
+				OnNewModel,
+				ExtraArgument,
+				true
+				);
+		}
+		#endregion
+
+
+		#region delete
+
+		public virtual async Task RemoveAsync(TKey Id)
+		{
+			var ctx = NewModifyContext();
+			var re = await InternalRemoveAsync(ctx, Id);
+			if (!re)
+				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Id}");
+		}
+		protected virtual Task<bool> InternalRemoveAsync(IModifyContext Context, TKey Id)
+		{
+			return EntityManager.InternalRemoveAsync<TKey, TEditable, TModel, IModifyContext>(
+				Context,
+				Id,
+				OnRemoveModel,
+				OnLoadModelForUpdate,
+				true
+				);
+		}
+
+		protected virtual Task OnRemoveModel(IModifyContext ctx)
+		{
+			EntityManager.DataSet.Remove(ctx.Model);
+			return Task.CompletedTask;
+		}
+
+		public virtual async Task RemoveAllAsync()
+		{
+			await EntityManager.RemoveAllAsync<TKey, TEditable, TModel>(
+				RemoveAsync
+				);
+		}
+
+		#endregion
+
+
+		#region Update
+		protected virtual Task OnUpdateModel(IModifyContext ctx)
+		{
+			return Task.CompletedTask;
+		}
+
+		public virtual async Task UpdateAsync(TEditable obj)
+		{
+			var ctx = NewModifyContext();
+			var re = await InternalUpdateAsync(ctx, obj);
+			if (!re)
+				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Entity<TEditable>.GetIdentString(obj)}");
+		}
+		protected virtual async Task<bool> InternalUpdateAsync(IModifyContext Context, TEditable obj)
+		{
+			return await EntityManager.InternalUpdateAsync<TKey, TEditable, TModel, IModifyContext>(
+				Context,
+				obj,
+				OnUpdateModel,
+				OnLoadModelForUpdate,
+				true
+				);
+		}
+
+		#endregion
+
+		protected virtual IContextQueryable<TModel> OnLoadChildObjectsForUpdate(TKey Id, IContextQueryable<TModel> query)
+		{
+			return query;
+		}
+		protected virtual Task<TModel> OnLoadModelForUpdate(TKey Id, IContextQueryable<TModel> ctx)
+		{
+			return OnLoadChildObjectsForUpdate(Id, ctx).SingleOrDefaultAsync();
+		}
+
+		
+		public virtual Task<TEditable> LoadForEdit(TKey Key)
+		{
+			return EntityManager.AutoLoadForEdit(Key);
+		}
+	}
+
 }

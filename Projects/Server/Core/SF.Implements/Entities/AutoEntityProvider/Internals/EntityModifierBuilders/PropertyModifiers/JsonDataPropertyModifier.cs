@@ -47,10 +47,11 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 			}
 			public int Priority => DefaultPriority;
 
-			public string Execute(IDataSetEntityManager Manager, IEntityModifyContext Context,T value)
+			public string Execute(IDataSetEntityManager Manager, IEntityModifyContext Context,string OrgValue,T value)
 			{
 				return JsonSerializer.Serialize<T>(value);
 			}
+			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier) => this;
 		}
 		public IEntityPropertyModifier GetPropertyModifier(
 			DataActionType ActionType, 
@@ -63,7 +64,8 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 			if (DataModelProperty.PropertyType != typeof(string))
 				return null;
 
-			var jd = EntityProperty?.GetCustomAttribute<JsonDataAttribute>();
+			var jd = EntityProperty?.GetCustomAttribute<JsonDataAttribute>() ??
+				DataModelProperty?.GetCustomAttribute<JsonDataAttribute>();
 			if (jd == null)
 				return null;
 			return (IEntityPropertyModifier)Activator.CreateInstance(

@@ -30,7 +30,7 @@ namespace SF.Biz.Products
 		public long? ProductId { get; set; }
 
 		[Comment(Name = "卖家")]
-		[EntityIdent(typeof(SF.Users.Members.Models.MemberInternal))]
+		[EntityIdent(typeof(SF.Common.Members.Models.MemberInternal))]
 		public long? SellerId { get; set; }
 
 		[Comment(Name = "产品标题")]

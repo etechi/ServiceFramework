@@ -83,6 +83,8 @@ namespace SF.Core.ServiceManagement
 			sc.AddAttributeGenerator<IndexAttributeGenerator,IndexAttribute> ();
 			sc.AddAttributeGenerator<TableAttributeGenerator,TableAttribute> ();
 
+
+
 			//Data Model Type Mapper
 			sc.AddSingleton<IDataModelTypeMapper, JsonDataTypeMapper>();
 
@@ -111,11 +113,15 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IPropertyQueryFilterProvider, NullableRangeToRangePropQueryFilterProvider>();
 			sc.AddSingleton<IPropertyQueryFilterProvider, ObjectKeyPropQueryFilterProvider>();
 			sc.AddSingleton<IPropertyQueryFilterProvider, OptionPropQueryFilterProvider>();
-			sc.AddSingleton<IPropertyQueryFilterProvider, QueryBooleanPropQueryFilterProvider>();
+			sc.AddSingleton<IPropertyQueryFilterProvider, QueryBooleanPropQueryFilterProvider>(); 
 			sc.AddSingleton<IPropertyQueryFilterProvider, RangePropQueryFilterProvider>();
 			sc.AddSingleton<IPropertyQueryFilterProvider, RangeToRangePropQueryFilterProvider>();
 			sc.AddSingleton<IPropertyQueryFilterProvider, StringPropQueryFilterProvider>();
 
+			sc.AddSingleton<IQueryFilterCache, QueryFilterCache>();
+
+
+			sc.AddSingleton<IQueryResultBuildHelperCache, QueryResultBuildHelperCache>();
 
 			sc.AddTransient<DataModelBuilder>();
 
@@ -136,7 +142,7 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IEntityPropertyModifierProvider, DefaultPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, JsonDataPropertyModifierProvider>();
 			sc.AddSingleton<IEntityModifierProvider, PropertyEntityModifierProvider>();
-			sc.AddSingleton<IEntityModifierBuilder, EntityModifierBuilder>();
+			sc.AddSingleton<IEntityModifierCache, EntityModifierCache>();
 
 			//Entity Query Support
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, JsonDataQueryConverterProvider>();
@@ -159,6 +165,8 @@ namespace SF.Core.ServiceManagement
 							)
 					}
 				);
+
+			sc.AddSingleton<IPagingQueryBuilderCache, PagingQueryBuilderCache>();
 
 			return sc;
 		}

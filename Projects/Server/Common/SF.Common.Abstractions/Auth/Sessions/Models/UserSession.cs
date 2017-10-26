@@ -13,7 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Identities.Models;
+using SF.Auth.Users.Models;
 using System;
 
 namespace SF.Auth.Sessions.Models
@@ -22,7 +22,7 @@ namespace SF.Auth.Sessions.Models
     {
         public long Id { get; set; }
 		public DateTime? Expires { get; set; }
-		public Identity Identity { get; set; }
+		public User Identity { get; set; }
     }
 }
 

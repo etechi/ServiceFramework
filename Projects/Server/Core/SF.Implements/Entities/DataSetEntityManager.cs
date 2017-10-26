@@ -26,6 +26,7 @@ using SF.Core.Events;
 using SF.Clients;
 using SF.Auth;
 using SF.Auth.Permissions;
+using SF.Entities.AutoEntityProvider;
 
 namespace SF.Entities
 {
@@ -33,7 +34,9 @@ namespace SF.Entities
 		where TDataModel : class, new()
 		where TEditable : class, new()
 	{
-		IServiceProvider ServiceProvider { get; }
+		public IServiceProvider ServiceProvider { get; }
+		IScoped<IDataContext> _ScopedDataContext;
+
 		IDataSet<TDataModel> _DataSet;
 		ITimeService _TimeService;
 		IEntityReferenceResolver _DataEntityResolver;
@@ -43,6 +46,10 @@ namespace SF.Entities
 		IClientService _ClientService;
 		IEntityMetadata _EntityMetadata;
 		IAccessToken _AccessToken;
+		IQueryResultBuildHelperCache _QueryResultBuildHelperCache;
+		IQueryFilterCache _QueryFilterCache;
+		IPagingQueryBuilderCache _PagingQueryBuilderCache;
+		IEntityModifierCache _EntityModifierCache;
 		public IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 
 		DateTime _Now;
@@ -71,6 +78,7 @@ namespace SF.Entities
 				return _Now;
 			}
 		}
+		public IDataContext DataContext => DataSet.Context;
 		public IDataSet<TDataModel> DataSet => Resolve(ref _DataSet);
 		public IIdentGenerator<TDataModel> IdentGenerator => Resolve(ref _IdentGenerator);
 		IIdentGenerator IEntityManager.IdentGenerator => Resolve(ref _IdentGenerator);
@@ -80,6 +88,12 @@ namespace SF.Entities
 		public IEventEmitter EventEmitter => Resolve(ref _EventEmitter);
 		public IClientService ClientService => Resolve(ref _ClientService);
 		public IAccessToken AccessToken => Resolve(ref _AccessToken);
+		public IScoped<IDataContext> ScopedDataContext => Resolve(ref _ScopedDataContext);
+		public IQueryFilterCache QueryFilterCache=> Resolve(ref _QueryFilterCache);
+		public IQueryResultBuildHelperCache QueryResultBuildHelperCache => Resolve(ref _QueryResultBuildHelperCache);
+		public IEntityModifierCache EntityModifierCache => Resolve(ref _EntityModifierCache);
+		public IPagingQueryBuilderCache PagingQueryBuilderCache => Resolve(ref _PagingQueryBuilderCache);
+
 		public IEntityMetadata EntityMetadata
 		{
 			get

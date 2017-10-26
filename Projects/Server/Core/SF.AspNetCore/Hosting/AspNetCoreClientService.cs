@@ -77,9 +77,12 @@ namespace SF.AspNetCore
 
 		ClientDeviceType IUserAgent.DeviceType => ClientDeviceTypeDetector.Detect(Context.Request.Headers.UserAgent());
 
-		public Task SignInAsync(ClaimsPrincipal User)
+		public Task SignInAsync(ClaimsPrincipal User,DateTime? Expires)
 		{
-			return Context.SignInAsync(User);
+			return Context.SignInAsync(User,new AuthenticationProperties
+			{
+				ExpiresUtc= Expires.Select(e=>new DateTimeOffset(Expires.Value))
+			});
 		}
 		public Task SignOutAsync()
 		{

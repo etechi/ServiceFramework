@@ -21,6 +21,38 @@ using SF.Data;
 
 namespace SF.Entities
 {
+	public abstract class AutoQuerableEntitySource<TKey, TEntityDetail, TEntitySummary, TQueryArgument, TModel> :
+			  AutoEntitySource<TKey, TEntityDetail, TModel>,
+			  IEntitySource<TKey, TEntitySummary, TEntityDetail, TQueryArgument>
+			  where TEntityDetail : class
+			   where TEntitySummary : class
+			   where TQueryArgument : class
+			  where TModel : class
+	{
+		public AutoQuerableEntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		{
+		}
+
+		protected virtual IPagingQueryBuilder<TModel> PagingQueryBuilder => null;
+		protected virtual IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, TQueryArgument Arg, Paging paging)
+		{
+			return Query;
+		}
+		public virtual Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
+		{
+			return EntityManager.AutoQueryIdentsAsync<TKey, TQueryArgument, TModel>(Arg, paging, OnBuildQuery, PagingQueryBuilder);
+		}
+		
+		public virtual Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg, Paging paging)
+		{
+			return EntityManager.AutoQueryAsync<TEntitySummary, TQueryArgument, TModel>(
+				Arg,
+				paging,
+				OnBuildQuery,
+				PagingQueryBuilder
+				);
+		}
+	}
 	public abstract class QuerableEntitySource<TKey,TEntityDetail, TDetailTemp, TEntitySummary, TSummaryTemp, TQueryArgument, TModel> :
 		   EntitySource<TKey, TEntityDetail, TDetailTemp, TModel>,
 		   IEntitySource<TKey, TEntitySummary, TEntityDetail, TQueryArgument>

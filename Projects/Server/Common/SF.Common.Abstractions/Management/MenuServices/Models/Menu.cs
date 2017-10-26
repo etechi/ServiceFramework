@@ -14,7 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Auth;
-using SF.Auth.Identities.Models;
+using SF.Auth.Users.Models;
 using SF.Data.Models;
 using SF.Metadata;
 using System;

@@ -45,7 +45,7 @@ namespace Hygou.Core2.Migrations
                     b.ToTable("MemberInvitation");
                 });
 
-            modelBuilder.Entity("SF.Auth.Identities.Entity.DataModels.Identity", b =>
+            modelBuilder.Entity("SF.Auth.Users.Entity.DataModels.Identity", b =>
                 {
                     b.Property<long>("Id");
 
@@ -100,7 +100,7 @@ namespace Hygou.Core2.Migrations
                     b.ToTable("SysAuthIdentity");
                 });
 
-            modelBuilder.Entity("SF.Auth.Identities.Entity.DataModels.IdentityCredential", b =>
+            modelBuilder.Entity("SF.Auth.Users.Entity.DataModels.IdentityCredential", b =>
                 {
                     b.Property<long>("ScopeId");
 
@@ -1385,9 +1385,9 @@ namespace Hygou.Core2.Migrations
                     b.ToTable("UserMember");
                 });
 
-            modelBuilder.Entity("SF.Auth.Identities.Entity.DataModels.IdentityCredential", b =>
+            modelBuilder.Entity("SF.Auth.Users.Entity.DataModels.IdentityCredential", b =>
                 {
-                    b.HasOne("SF.Auth.Identities.Entity.DataModels.Identity", "Identity")
+                    b.HasOne("SF.Auth.Users.Entity.DataModels.Identity", "Identity")
                         .WithMany("Credentials")
                         .HasForeignKey("IdentityId")
                         .OnDelete(DeleteBehavior.Restrict);

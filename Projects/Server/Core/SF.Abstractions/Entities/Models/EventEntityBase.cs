@@ -13,8 +13,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Identities;
-using SF.Auth.Identities.Models;
+using SF.Auth.Users;
+using SF.Auth.Users.Models;
 using SF.Entities;
 using SF.Metadata;
 using System;
@@ -48,7 +48,7 @@ namespace SF.Data.Models
 
 		[Comment("用户")]
 		[ReadOnly(true)]
-		[EntityIdent(typeof(Identity),  nameof(UserName))]
+		[EntityIdent(typeof(User),  nameof(UserName))]
 		public virtual long? UserId { get; set; }
 
 		[Comment("用户")]

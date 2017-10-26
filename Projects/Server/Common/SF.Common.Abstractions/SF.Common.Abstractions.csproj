@@ -5,8 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Auth\Users1\**" />
     <Compile Remove="Bizness\Accounting\**" />
+    <EmbeddedResource Remove="Auth\Users1\**" />
     <EmbeddedResource Remove="Bizness\Accounting\**" />
+    <None Remove="Auth\Users1\**" />
     <None Remove="Bizness\Accounting\**" />
   </ItemGroup>
 

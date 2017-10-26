@@ -49,12 +49,17 @@ namespace SF.Clients
 			(_OperatorStack?.Count ?? 0) == 0 ? User : _OperatorStack.Peek();
 
 		
-		public Task SignInAsync(ClaimsPrincipal User)
+		public Task SignInAsync(ClaimsPrincipal User,DateTime? Expires)
 		{
 			_User = User;
 			return Task.CompletedTask;
 		}
 
+		public Task SignOutAsync()
+		{
+			_User = null;
+			return Task.CompletedTask;
+		}
 		public IDisposable UseOperator(ClaimsPrincipal NewOperator)
 		{
 			if (_OperatorStack == null)

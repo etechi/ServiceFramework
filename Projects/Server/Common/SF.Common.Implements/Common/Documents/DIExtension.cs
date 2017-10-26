@@ -106,7 +106,7 @@ namespace SF.Core.ServiceManagement
 				catManager
 				)
 				.WithDisplay(ServiceTitle)
-				.WithBiznessAdminMenuItems(
+				.WithMenuItems(
 					"内容管理/"+ServiceTitle
 				);
 			return svc;

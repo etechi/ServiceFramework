@@ -35,7 +35,7 @@ namespace SF.Auth
 			var str = grants.Select(g => g.res + ":" + g.action).Join("|");
 			if (str.Length == 0)
 				return null;
-			return new Claim { Type = "grant", Value = "|" + str + "|" };
+			return new Claim("grant","|" + str + "|" );
 		}
 		public static void OperatorValidate(this ClaimsPrincipal user, long OperatorId)
 		{

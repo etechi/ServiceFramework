@@ -117,17 +117,19 @@ namespace System.Linq
 				items.Select(pair => Selector(pair)).ToArray()
 				);
 		}
-		public static IEnumerable<T> WithFirst<T>(this IEnumerable<T> items,T first)
+		public static IEnumerable<T> WithFirst<T>(this IEnumerable<T> items,params T[] firsts)
 		{
-			yield return first;
+			foreach(var f in firsts)
+				yield return f;
 			foreach (var i in items)
 				yield return i;
 		}
-		public static IEnumerable<T> WithLast<T>(this IEnumerable<T> items, T last)
+		public static IEnumerable<T> WithLast<T>(this IEnumerable<T> items, params T[] lasts)
 		{
 			foreach (var i in items)
 				yield return i;
-			yield return last;
+			foreach(var l in lasts)
+				yield return l;
 		}
 
 		public static bool AllEquals<T>(this IEnumerable<T> items, IEnumerable<T> other) where T : class

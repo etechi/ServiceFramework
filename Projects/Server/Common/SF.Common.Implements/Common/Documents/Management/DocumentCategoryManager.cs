@@ -13,7 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Identities;
+using SF.Auth.Users;
 using SF.Core;
 using SF.Core.CallPlans;
 using SF.Core.Times;
@@ -21,11 +21,11 @@ using SF.Data;
 using SF.Entities;
 using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
-using SF.Users.Members.Models;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using SF.Common.Documents.DataModels;
 
 namespace SF.Common.Documents.Management
 {
@@ -33,16 +33,16 @@ namespace SF.Common.Documents.Management
 		DocumentCategoryManager<CategoryInternal>,
 		IDocumentCategoryManager
 	{
-		public DocumentCategoryManager(IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory) : base(DataSetAutoEntityProviderFactory)
+		public DocumentCategoryManager(IDataSetEntityManager<CategoryInternal, DocumentCategory> EntityManager) : base(EntityManager)
 		{
 		}
 	}
 	public class DocumentCategoryManager<TCategoryInternal> :
-		AutoEntityManager<ObjectKey<long>, TCategoryInternal, TCategoryInternal, TCategoryInternal, DocumentCategoryQueryArgument, DataModels.DocumentCategory>,
+		AutoModifiableEntityManager<ObjectKey<long>, TCategoryInternal, TCategoryInternal, DocumentCategoryQueryArgument, TCategoryInternal, DataModels.DocumentCategory>,
 		IDocumentCategoryManager<TCategoryInternal>
 		where TCategoryInternal : CategoryInternal
 	{
-		public DocumentCategoryManager(IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory) : base(DataSetAutoEntityProviderFactory)
+		public DocumentCategoryManager(IDataSetEntityManager<TCategoryInternal, DocumentCategory> EntityManager) : base(EntityManager)
 		{
 		}
 	}

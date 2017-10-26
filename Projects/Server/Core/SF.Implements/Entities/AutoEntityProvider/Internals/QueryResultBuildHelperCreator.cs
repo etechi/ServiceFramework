@@ -38,18 +38,15 @@ namespace SF.Entities.AutoEntityProvider.Internals
 	public class QueryResultBuildHelper<TDataModel,TTemp,TResult>:
 		QueryResultBuildHelper,
 		IQueryResultBuildHelper<TDataModel,TTemp,TResult>
+		where TDataModel:class
 	{
 		public QueryResultBuildHelper(
 			Lazy<Expression<Func<TDataModel, TTemp>>> EntityMapper,
-			Lazy<Func<TTemp[], Task<TResult[]>>> ResultMapper,
-			Lazy<IPagingQueryBuilder<TDataModel>> PagingBuilder,
-			Lazy<Expression<Func<IGrouping<int, TDataModel>, ISummaryWithCount>>> Summary
+			Lazy<Func<TTemp[], Task<TResult[]>>> ResultMapper
 			)
 		{
 			this.EntityMapper = EntityMapper;
 			this.ResultMapper = ResultMapper;
-			this.PagingBuilder = PagingBuilder;
-			this.Summary = Summary;
 		}
 
 		public override Type TempType => typeof(TTemp);
@@ -58,16 +55,31 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 		public Lazy<Expression<Func<TDataModel, TTemp>>> EntityMapper { get; }
 		public Lazy<Func<TTemp[], Task<TResult[]>>> ResultMapper { get; }
-		public Lazy<IPagingQueryBuilder<TDataModel>> PagingBuilder { get; }
-		public Lazy<Expression<Func<IGrouping<int, TDataModel>, ISummaryWithCount>>> Summary { get; }
 
 		Expression<Func<TDataModel, TTemp>> IQueryResultBuildHelper<TDataModel, TTemp, TResult>.EntityMapper => EntityMapper.Value;
 
 		Func<TTemp[], Task<TResult[]>> IQueryResultBuildHelper<TDataModel, TTemp, TResult>.ResultMapper => ResultMapper.Value;
 
-		IPagingQueryBuilder<TDataModel> IQueryResultBuildHelper<TDataModel, TTemp, TResult>.PagingBuilder => PagingBuilder.Value;
 
-		Expression<Func<IGrouping<int, TDataModel>, ISummaryWithCount>> IQueryResultBuildHelper<TDataModel, TTemp, TResult>.Summary => Summary.Value;
+		public Task<QueryResult<TResult>> Query(IContextQueryable<TDataModel> queryable,IPagingQueryBuilder<TDataModel> PagingQueryBuilder, Paging paging)
+		{
+			return queryable.ToQueryResultAsync(
+				q=>q.Select(EntityMapper.Value),
+				ResultMapper.Value,
+				PagingQueryBuilder,
+				paging,
+				null
+				);
+		}
+
+		public async Task<TResult> QuerySingleOrDefault(IContextQueryable<TDataModel> queryable)
+		{
+			var re = await queryable.Select(EntityMapper.Value).SingleOrDefaultAsync();
+			if (re == null)
+				return default(TResult);
+			var rre = await ResultMapper.Value(new[] { re });
+			return rre[0];
+		}
 	}
 	//public class QueryHelper<TDataModel, TResult> :
 	//	QueryResultMapper<TDataModel, TResult, TResult>
@@ -296,63 +308,13 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				)), argTemp, argResult).Compile();
 		}
 		
-		static IPagingQueryBuilder<T> BuildPagingQueryBuilder<T>()
-		{
-			var id = typeof(T).AllPublicInstanceProperties().Where(p => p.IsDefined(typeof(KeyAttribute))).FirstOrDefault();
-			var argQueryable = Expression.Parameter(typeof(IContextQueryable<T>));
-			var argDesc = Expression.Parameter(typeof(bool));
-			var argEntity = Expression.Parameter(typeof(T));
-			var IdMapper = Expression.Lambda(
-				Expression.Property(argEntity,id),
-				argEntity
-				);
-			var KeySelectorType = typeof(Expression<>).MakeGenericType(typeof(Func<,>).MakeGenericType(typeof(T), id.PropertyType));
-
-			var expr = Expression.Lambda<Func<IContextQueryable<T>,bool, IContextQueryable<T>>>(
-				Expression.Condition(
-					argDesc,
-					Expression.Call(
-						null,
-						MethodOrderByDescending.MakeGenericMethod(
-							typeof(T),
-							id.PropertyType
-							),
-						argQueryable,
-						Expression.Constant(
-							IdMapper,
-							KeySelectorType
-							)
-						),
-					Expression.Call(
-						null,
-						MethodOrderBy.MakeGenericMethod(
-							typeof(T),
-							id.PropertyType
-							),
-						argQueryable,
-						Expression.Constant(
-							IdMapper,
-							KeySelectorType
-							)
-						)
-				),
-				argQueryable,
-				argDesc
-				).Compile();
-
-			return new PagingQueryBuilder<T>(
-				id.Name, 
-				b => b.Add(
-					id.Name,
-					expr, 
-					true
-					));
-		}
+	
 
 		static QueryResultBuildHelper CreateQueryResultBuildHelper3<TDataModel, TTemp, TResult>(
 			Func<Expression> Expr,
 			Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>> prepares
 			) where TTemp : ITempModel<TResult>
+			where TDataModel:class
 		{
 			return new QueryResultBuildHelper<TDataModel, TTemp, TResult>(
 				new Lazy<Expression<Func<TDataModel, TTemp>>>(() => (Expression<Func<TDataModel, TTemp>>)Expr()),
@@ -364,16 +326,15 @@ namespace SF.Entities.AutoEntityProvider.Internals
 						return tmps.Select(t => t.__Result).ToArray();
 					};
 				}
-				),
-				new Lazy<IPagingQueryBuilder<TDataModel>>(()=> BuildPagingQueryBuilder<TDataModel>()),
-				new Lazy<Expression<Func<IGrouping<int,TDataModel>,ISummaryWithCount>>>(()=>null)
+				)
 				);
 		}
 
 		static QueryResultBuildHelper CreateQueryResultBuildHelper2<TDataModel, TResult>(
 			Func<Expression> Expr,
 			Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>> prepares
-			) 
+			)
+			where TDataModel:class
 		{
 			return new QueryResultBuildHelper<TDataModel, TResult, TResult>(
 					new Lazy<Expression<Func<TDataModel, TResult>>>(() => (Expression<Func<TDataModel, TResult>>)Expr()),
@@ -384,9 +345,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 							await Task.WhenAll(tmps.SelectMany(t => prepare(t, t)));
 							return tmps;
 						};
-					}),
-					new Lazy<IPagingQueryBuilder<TDataModel>>(() => BuildPagingQueryBuilder<TDataModel>()),
-				new Lazy<Expression<Func<IGrouping<int, TDataModel>, ISummaryWithCount>>>(() => null)
+					})
 				);
 		}
 		

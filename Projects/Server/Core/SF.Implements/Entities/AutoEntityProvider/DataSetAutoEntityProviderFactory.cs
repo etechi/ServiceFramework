@@ -57,24 +57,13 @@ namespace SF.Entities.AutoEntityProvider
 			new System.Collections.Concurrent.ConcurrentDictionary<Type, Lazy<IDataSetAutoEntityProviderSetting>>();
 		IMetadataCollection Metas { get; }
 		IDataModelTypeCollection DataModelTypeCollection { get; }
-		IEntityPropertyQueryConverterProvider[] PropertyQueryConverterProviders { get; }
-		IQueryFilterProvider[] QueryFilterProviders { get; }
-		NamedServiceResolver<IEntityPropertyModifier> EntityModifierValueConverterResolver { get; }
-		IEntityModifierBuilder EntityModifierBuilder { get; }
 		public DataSetAutoEntityProviderCache(
 			IMetadataCollection Metas,
-			IDataModelTypeCollection DataModelTypeCollection,
-			IEnumerable<IEntityPropertyQueryConverterProvider> PropertyQueryConverterProviders,
-			IEntityModifierBuilder EntityModifierBuilder,
-			IEnumerable<IQueryFilterProvider> QueryFilterProviders
+			IDataModelTypeCollection DataModelTypeCollection
 			)
 		{
 			this.Metas = Metas;
 			this.DataModelTypeCollection = DataModelTypeCollection;
-			this.PropertyQueryConverterProviders = PropertyQueryConverterProviders.OrderBy(p=>p.Property).ToArray();
-			this.EntityModifierValueConverterResolver = EntityModifierValueConverterResolver;
-			this.EntityModifierBuilder = EntityModifierBuilder;
-			this.QueryFilterProviders = QueryFilterProviders.ToArray();
 		}
 
 		void ValidateEntityTypes(Type TEntityDetail, IEntityType entity, params Type[] types)
@@ -91,33 +80,17 @@ namespace SF.Entities.AutoEntityProvider
 		}
 
 		static IDataSetAutoEntityProviderSetting
-			NewSetting<TKey, TEntityDetail, TEntityDetailTemp, TEntitySummary, TEntitySummaryTemp, TEntityEditable, TEntityEditableTemp, TQueryArgument, TDataModel>(
-			QueryResultBuildHelper DetailQueryResultBuildHelper,
-			QueryResultBuildHelper SummaryQueryResultBuildHelper,
-			QueryResultBuildHelper EditableQueryResultBuildHelper,
-			IEntityModifierBuilder EntityModifierBuilder,
-			IQueryFilterProvider[] QueryFilterProviders
-			)
+			NewSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument, TDataModel>()
 			where TDataModel : class,new()
 			{
 			return new DataSetAutoEntityProviderSetting<
 				TKey,
 				TEntityDetail, 
-				TEntityDetailTemp, 
 				TEntitySummary, 
-				TEntitySummaryTemp, 
 				TEntityEditable, 
-				TEntityEditableTemp, 
 				TQueryArgument, 
 				TDataModel
 				>(
-				(IQueryResultBuildHelper<TDataModel, TEntityDetailTemp, TEntityDetail>)DetailQueryResultBuildHelper,
-				(IQueryResultBuildHelper<TDataModel, TEntitySummaryTemp, TEntitySummary>)SummaryQueryResultBuildHelper,
-				(IQueryResultBuildHelper<TDataModel, TEntityEditableTemp, TEntityEditable>)EditableQueryResultBuildHelper,
-				EntityModifierBuilder.GetEntityModifier<TEntityEditable,TDataModel>(DataActionType.Create),
-				EntityModifierBuilder.GetEntityModifier<TEntityEditable, TDataModel>(DataActionType.Update),
-				EntityModifierBuilder.GetEntityModifier<TEntityEditable, TDataModel>(DataActionType.Delete),
-				new QueryFilterBuildHelper(QueryFilterProviders).Build<TDataModel,TQueryArgument>()
 				);
 			}
 
@@ -140,10 +113,6 @@ namespace SF.Entities.AutoEntityProvider
 				);
 			var dataType = DataModelType?? DataModelTypeCollection.Get(entity.Name);
 
-			var detailHelper = new QueryResultBuildHelperCreator(dataType, tDetail, PropertyQueryConverterProviders).Build();
-			var summaryHelper = new QueryResultBuildHelperCreator(dataType, tSummary, PropertyQueryConverterProviders).Build();
-			var editableHelper = new QueryResultBuildHelperCreator(dataType, tEditable, PropertyQueryConverterProviders).Build();
-
 			var newSetting = typeof(DataSetAutoEntityProviderCache).GetMethods(
 				nameof(DataSetAutoEntityProviderCache.NewSetting),
 				BindingFlags.Static | BindingFlags.NonPublic
@@ -152,22 +121,13 @@ namespace SF.Entities.AutoEntityProvider
 			return (IDataSetAutoEntityProviderSetting)newSetting.MakeGenericMethod(
 			   tKey,
 			  tDetail,
-			  detailHelper.TempType,
 			  tSummary,
-			  summaryHelper.TempType,
 			  tEditable,
-			  editableHelper.TempType,
 			  tQueryArg,
 			  dataType
 			  ).Invoke(
 				null,
-				new object[] {
-						detailHelper,
-						summaryHelper,
-						editableHelper,
-						EntityModifierBuilder,
-						QueryFilterProviders
-			}
+				Array.Empty<object>()
 			);
 		}
 		public IDataSetAutoEntityProvider<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>  

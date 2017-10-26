@@ -31,11 +31,11 @@ namespace SF.Core.ServiceManagement
 
 			Services.AddMenuService();
 
-			Services.AddAuthIdentityServices();
-			Services.AddMemberService();
+			Services.AddAuthUserServices();
+			Services.AddMemberServices();
 
-			Services.AddSysAdminServices();
-			Services.AddBizAdminServices();
+			Services.AddAdminServices();
+			//Services.AddBizAdminServices();
 			Services.AddFriendlyFrontEndServices();
 
 			Services.AddDocumentServices();
@@ -45,10 +45,10 @@ namespace SF.Core.ServiceManagement
 		}
 		static async Task InitServices(IServiceProvider sp,IServiceInstanceManager sim,long? ParentId)
 		{
-			var SysAdminService = await sim.NewSysAdminService().Ensure(sp, ParentId);
-			var BizAdminService = await sim.NewBizAdminService().Ensure(sp, ParentId);
+			var SysAdminService = await sim.NewAdminService().Ensure(sp, ParentId);
+			//var BizAdminService = await sim.NewBizAdminService().Ensure(sp, ParentId);
 			var MenuService = await sim.NewMenuService().Ensure(sp, ParentId);
-			var MemberService = await sim.NewMemberServive().Ensure(sp,ParentId);
+			var MemberService = await sim.NewMemberService().Ensure(sp,ParentId);
 
 			//var bizMenuItems = new[]
 			//{

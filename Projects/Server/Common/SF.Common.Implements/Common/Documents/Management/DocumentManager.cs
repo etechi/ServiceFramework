@@ -13,7 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Identities;
+using SF.Auth.Users;
 using SF.Core;
 using SF.Core.CallPlans;
 using SF.Core.Times;
@@ -21,11 +21,11 @@ using SF.Data;
 using SF.Entities;
 using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
-using SF.Users.Members.Models;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using SF.Common.Documents.DataModels;
 
 namespace SF.Common.Documents.Management
 {
@@ -33,19 +33,20 @@ namespace SF.Common.Documents.Management
 		DocumentManager<DocumentInternal, DocumentEditable>,
 		IDocumentManager
 	{
-		public DocumentManager(IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory) : base(DataSetAutoEntityProviderFactory)
+		public DocumentManager(IDataSetEntityManager<DocumentEditable, DataModels.Document> EntityManager) : base(EntityManager)
 		{
 		}
 	}
 	public class DocumentManager<TDocumentInternal, TDocumentEditable> :
-		AutoEntityManager<ObjectKey<long>, TDocumentInternal, TDocumentInternal, TDocumentEditable, DocumentQueryArguments, DataModels.Document>,
+		AutoModifiableEntityManager<ObjectKey<long>, TDocumentInternal, TDocumentInternal, DocumentQueryArguments, TDocumentEditable, DataModels.Document>,
 		IDocumentManager<TDocumentInternal, TDocumentEditable>
 		where TDocumentInternal : DocumentInternal
 		where TDocumentEditable : DocumentEditable
 	{
-		public DocumentManager(IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory) : base(DataSetAutoEntityProviderFactory)
+		public DocumentManager(IDataSetEntityManager<TDocumentEditable, DataModels.Document> EntityManager) : base(EntityManager)
 		{
 		}
+
 	}
 
 }

@@ -136,19 +136,19 @@ namespace SF.Entities
 			};
 		}
 
-		public static Task<QueryResult<R>> ToQueryResultAsync<E, T, R>(
-			this IContextQueryable<E> query,
-			IQueryResultBuildHelper<E, T, R> mapper,
-			Paging paging
-			)
-			where E : class
-			=> query.ToQueryResultAsync<E,T,R>(
-				e => e.Select(mapper.EntityMapper),
-				mapper.ResultMapper,
-				mapper.PagingBuilder,
-				paging,
-				mapper.Summary
-				);
+		//public static Task<QueryResult<R>> ToQueryResultAsync<E, T, R>(
+		//	this IContextQueryable<E> query,
+		//	IQueryResultBuildHelper<E, T, R> mapper,
+		//	Paging paging
+		//	)
+		//	where E : class
+		//	=> query.ToQueryResultAsync<E,T,R>(
+		//		e => e.Select(mapper.EntityMapper),
+		//		mapper.ResultMapper,
+		//		mapper.PagingBuilder,
+		//		paging,
+		//		mapper.Summary
+		//		);
 
 		public static async Task<QueryResult<R>> ToQueryResultAsync<E, T, R>(
 			this IContextQueryable<E> query,

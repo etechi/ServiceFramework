@@ -97,6 +97,25 @@ namespace SF.Entities
 			return EntityManager.GetAsync<TKey, TDetailTemp, TDetail, TModel>(Id, OnMapModelToDetail, OnPrepareDetails);
 		}
 	}
+	public abstract class AutoEntitySource<TKey, TDetail, TModel> :
+	   BaseDataSetEntityManager<TModel>,
+	   IEntityLoadable<TKey, TDetail>,
+	   IEntityBatchLoadable<TKey, TDetail>
+	   where TModel : class
+	{
+		public AutoEntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		{
+		}
+		public virtual Task<TDetail[]> GetAsync(TKey[] Ids)
+		{
+			return EntityManager.AutoBatchGetAsync<TKey, TDetail, TModel>(Ids);
+		}
+
+		public virtual Task<TDetail> GetAsync(TKey Id)
+		{
+			return EntityManager.AutoGetAsync<TKey, TDetail, TModel>(Id);
+		}
+	}
 	public abstract class ConstantEntitySource<TKey, TEntityDetail> :
 		ConstantEntitySource<TKey, TEntityDetail, TEntityDetail>
 		where TEntityDetail : class, IEntityWithId<TKey>

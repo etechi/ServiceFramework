@@ -35,11 +35,17 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 		{
 			public int Priority => DefaultPriority;
 
-			public Task<long> Execute(IDataSetEntityManager Manager, IEntityModifyContext Context)
+			public Task<long> Execute(IDataSetEntityManager Manager, IEntityModifyContext Context, long OrgValue)
 			{
 				return Manager.IdentGenerator.GenerateAsync(
 					Manager.ServiceInstanceDescroptor.ServiceDeclaration.ServiceType.FullName
 					);
+			}
+
+
+			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier)
+			{
+				return this;
 			}
 		}
 		public IEntityPropertyModifier GetPropertyModifier(

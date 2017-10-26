@@ -43,7 +43,7 @@ namespace SF.Clients
 	{
 		IUserAgent UserAgent { get; }
 		long? CurrentScopeId { get; }
-		Task SignInAsync(ClaimsPrincipal User);
+		Task SignInAsync(ClaimsPrincipal User,DateTime? Expires);
 		Task SignOutAsync();
 
 		//string GetAccessToken();

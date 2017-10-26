@@ -16,14 +16,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System.Threading.Tasks;
 using SF.Entities;
 using SF.Metadata;
-using SF.Auth.Identities;
-using SF.Auth.Identities.Models;
+using SF.Auth.Users;
+using SF.Auth.Users.Models;
 
 namespace SF.Auth.Permissions
 {
 	public class GrantQueryArgument : ObjectQueryArgument<long>
 	{
-		[EntityIdent(typeof(Identity))]
+		[EntityIdent(typeof(User))]
 		public long? IdentityId { get; set; }
 	}
 	public interface IGrantManager<TGrantEditable>

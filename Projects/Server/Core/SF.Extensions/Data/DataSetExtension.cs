@@ -21,7 +21,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-
+using SF.Core.ServiceManagement;
 namespace SF.Data
 {
 	
@@ -218,6 +218,43 @@ namespace SF.Data
 		{
 			return set.AsQueryable(true).Where(filter).SingleOrDefaultAsync();
 		}
+
+		public static async Task<T> GetOrCreateAtomEntity<T>(
+			this IDataSet<T> set, 
+			IScoped<IDataContext> DataContex, 
+			Expression<Func<T, bool>> Filter,
+			Func<Task<T>> Creater
+			)
+			where T:class
+		{
+			var re = await set.AsQueryable().Where(Filter).SingleOrDefaultAsync();
+			if (re != null)
+				return re;
+			for (; ; )
+			{
+				try
+				{
+					return await DataContex.Use(async ctx =>
+					{
+						var iset = ctx.Set<T>();
+						for (; ; )
+						{
+							var ire = await iset.AsQueryable().Where(Filter).SingleOrDefaultAsync();
+							if (ire != null)
+								return re;
+
+							iset.Add(await Creater());
+							await ctx.SaveChangesAsync();
+						}
+					});
+				}
+				catch (DbDuplicatedKeyException)
+				{
+					continue;
+				}
+			}
+		}
+
 		public static async Task<T> EnsureAsync<T>(
 			this IDataSet<T> set,
 			T item,

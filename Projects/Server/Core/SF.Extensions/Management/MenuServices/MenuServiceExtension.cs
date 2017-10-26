@@ -15,13 +15,13 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Metadata;
 using SF.Auth;
-using SF.Auth.Identities;
+using SF.Auth.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Auth.Identities.Models;
+using SF.Auth.Users.Models;
 using SF.Entities;
 using SF.Data;
 using SF.Core.ServiceManagement;
@@ -95,18 +95,13 @@ namespace SF.Core.ServiceManagement
 			return sc;
 
 		}
-		public static IServiceInstanceInitializer<T> WithSystemAdminMenuItems<T>(
+		public static IServiceInstanceInitializer<T> WithMenuItems<T>(
 			this IServiceInstanceInitializer<T> sii,
 			string Path,
 			params MenuItem[] MenuItems
 			)
-			=> sii.WithMenuItems("system", Path, MenuItems);
-		public static IServiceInstanceInitializer<T> WithBiznessAdminMenuItems<T>(
-			this IServiceInstanceInitializer<T> sii,
-			string Path,
-			params MenuItem[] MenuItems
-			)
-			=> sii.WithMenuItems("bizness", Path, MenuItems);
+			=> sii.WithMenuItems("default", Path, MenuItems);
+		
 
 		public static IServiceInstanceInitializer<T> WithMenuItems<T>(
 			this IServiceInstanceInitializer<T> sii,

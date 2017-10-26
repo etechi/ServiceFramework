@@ -31,7 +31,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			this.JsonSerializer = JsonSerializer;
 		}
 
-		public int Property => -1;
+		public int Priority => -1;
 
 		class JsonDataQueryConverter<T> : IEntityPropertyQueryConverter<string, T>
 		{

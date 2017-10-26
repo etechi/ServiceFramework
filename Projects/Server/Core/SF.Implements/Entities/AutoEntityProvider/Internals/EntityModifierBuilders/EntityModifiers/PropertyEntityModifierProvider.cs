@@ -116,7 +116,9 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 					 let ep = typeof(TEntity).GetProperty(dp.Name)
 					 from ms in FindPropModifiers(ep, dp)
 					 group (DataProperty:dp, EntityProperty:ep, Modifier:ms) by dp into g
-					 select g.OrderBy(i=>i.Modifier.Priority).First()
+					 select g
+						.OrderBy(i=>-i.Modifier.Priority)
+						.Aggregate((l,h)=>(l.DataProperty,l.EntityProperty,Modifier:h.Modifier.Merge(l.Modifier)))
 					).ToArray();
 
 				var ArgManager = Expression.Parameter(typeof(IDataSetEntityManager<TEntity, TDataModel>));
@@ -139,13 +141,15 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 							Expression.Constant(m.Modifier, modifierType),
 							modifierType.GetMethod("Execute"),
 							ArgManager,
-							ArgModifierContext
+							ArgModifierContext,
+							ArgModel.GetMember(m.DataProperty)
 							) :
 						Expression.Call(
 							Expression.Constant(m.Modifier, modifierType),
 							modifierType.GetMethod("Execute"),
 							ArgManager,
 							ArgModifierContext,
+							ArgModel.GetMember(m.DataProperty),
 							ArgEntity.GetMember(m.EntityProperty)
 							);
 					if (typeof(Task).IsAssignableFrom(expr.Type))

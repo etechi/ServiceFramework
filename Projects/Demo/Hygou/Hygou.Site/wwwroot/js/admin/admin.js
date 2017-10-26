@@ -16038,7 +16038,7 @@ exports.IdentityManagement = {
     //
     Create: function (
         //
-        //类型:SF.Auth.Identities.Models.IdentityEditable
+        //类型:SF.Auth.Users.Models.IdentityEditable
         Entity, __opts) {
         return _invoker('IdentityManagement', 'Create', null, Entity, __opts);
     },
@@ -16046,7 +16046,7 @@ exports.IdentityManagement = {
     //
     Update: function (
         //
-        //类型:SF.Auth.Identities.Models.IdentityEditable
+        //类型:SF.Auth.Users.Models.IdentityEditable
         Entity, __opts) {
         return _invoker('IdentityManagement', 'Update', null, Entity, __opts);
     },
@@ -16062,7 +16062,7 @@ exports.IdentityManagement = {
     //
     Query: function (
         //
-        //类型:SF.Auth.Identities.IdentityQueryArgument
+        //类型:SF.Auth.Users.IdentityQueryArgument
         Arg, __opts) {
         return _invoker('IdentityManagement', 'Query', null, Arg, __opts);
     },
@@ -16070,7 +16070,7 @@ exports.IdentityManagement = {
     //
     QueryIdents: function (
         //
-        //类型:SF.Auth.Identities.IdentityQueryArgument
+        //类型:SF.Auth.Users.IdentityQueryArgument
         Arg, __opts) {
         return _invoker('IdentityManagement', 'QueryIdents', null, Arg, __opts);
     },
@@ -16092,7 +16092,7 @@ exports.Identity = {
     //
     Signin: function (
         //
-        //类型:SF.Auth.Identities.SigninArgument
+        //类型:SF.Auth.Users.SigninArgument
         Arg, __opts) {
         return _invoker('Identity', 'Signin', null, Arg, __opts);
     },
@@ -16105,7 +16105,7 @@ exports.Identity = {
     //
     SendPasswordRecorveryCode: function (
         //
-        //类型:SF.Auth.Identities.SendPasswordRecorveryCodeArgument
+        //类型:SF.Auth.Users.SendPasswordRecorveryCodeArgument
         Arg, __opts) {
         return _invoker('Identity', 'SendPasswordRecorveryCode', null, Arg, __opts);
     },
@@ -16113,7 +16113,7 @@ exports.Identity = {
     //
     ResetPasswordByRecoveryCode: function (
         //
-        //类型:SF.Auth.Identities.ResetPasswordByRecorveryCodeArgument
+        //类型:SF.Auth.Users.ResetPasswordByRecorveryCodeArgument
         Arg, __opts) {
         return _invoker('Identity', 'ResetPasswordByRecoveryCode', null, Arg, __opts);
     },
@@ -16121,7 +16121,7 @@ exports.Identity = {
     //
     SetPassword: function (
         //
-        //类型:SF.Auth.Identities.SetPasswordArgument
+        //类型:SF.Auth.Users.SetPasswordArgument
         Arg, __opts) {
         return _invoker('Identity', 'SetPassword', null, Arg, __opts);
     },
@@ -16129,7 +16129,7 @@ exports.Identity = {
     //
     UpdateIdentity: function (
         //
-        //类型:SF.Auth.Identities.Models.Identity
+        //类型:SF.Auth.Users.Models.Identity
         Identity, __opts) {
         return _invoker('Identity', 'UpdateIdentity', null, Identity, __opts);
     },
@@ -16147,7 +16147,7 @@ exports.Identity = {
     //
     SendCreateIdentityVerifyCode: function (
         //
-        //类型:SF.Auth.Identities.SendCreateIdentityVerifyCodeArgument
+        //类型:SF.Auth.Users.SendCreateIdentityVerifyCodeArgument
         Arg, __opts) {
         return _invoker('Identity', 'SendCreateIdentityVerifyCode', null, Arg, __opts);
     },
@@ -16155,7 +16155,7 @@ exports.Identity = {
     //
     CreateIdentity: function (
         //
-        //类型:SF.Auth.Identities.CreateIdentityArgument
+        //类型:SF.Auth.Users.CreateIdentityArgument
         Arg, 
         //
         //类型:bool
@@ -16182,7 +16182,7 @@ exports.Member = {
     //
     Signup: function (
         //
-        //类型:SF.Auth.Identities.CreateIdentityArgument
+        //类型:SF.Auth.Users.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('Member', 'Signup', null, Arg, __opts);
     },
@@ -16199,7 +16199,7 @@ exports.MemberManagement = {
     //
     CreateUser: function (
         //
-        //类型:SF.Auth.Identities.CreateIdentityArgument
+        //类型:SF.Auth.Users.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('MemberManagement', 'CreateUser', null, Arg, __opts);
     },
@@ -16272,7 +16272,7 @@ exports.SysAdminManagement = {
     //
     CreateUser: function (
         //
-        //类型:SF.Auth.Identities.CreateIdentityArgument
+        //类型:SF.Auth.Users.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('SysAdminManagement', 'CreateUser', null, Arg, __opts);
     },
@@ -16345,7 +16345,7 @@ exports.SysAdmin = {
     //
     Signup: function (
         //
-        //类型:SF.Auth.Identities.CreateIdentityArgument
+        //类型:SF.Auth.Users.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('SysAdmin', 'Signup', null, Arg, __opts);
     },
@@ -16362,7 +16362,7 @@ exports.BizAdminManagement = {
     //
     CreateUser: function (
         //
-        //类型:SF.Auth.Identities.CreateIdentityArgument
+        //类型:SF.Auth.Users.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('BizAdminManagement', 'CreateUser', null, Arg, __opts);
     },
@@ -16435,7 +16435,7 @@ exports.BizAdmin = {
     //
     Signup: function (
         //
-        //类型:SF.Auth.Identities.CreateIdentityArgument
+        //类型:SF.Auth.Users.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('BizAdmin', 'Signup', null, Arg, __opts);
     },

@@ -27,7 +27,7 @@ using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
 using SF.Core.ServiceFeatures;
 using System.Threading.Tasks;
-using SF.Auth.Identities;
+using SF.Auth.Users;
 using SF.Entities;
 
 namespace SF.UT.Services.Securitys

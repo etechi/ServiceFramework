@@ -13,7 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Identities.Models;
+using SF.Auth.Users.Models;
 using SF.Core.ServiceManagement.Models;
 using SF.Entities;
 using SF.Metadata;
@@ -28,7 +28,7 @@ namespace SF.Common.TextMessages.Management
 		public SendStatus? Status { get; set; }
 
 		[Comment( "目标用户")]
-		[EntityIdent(typeof(Identity))]
+		[EntityIdent(typeof(User))]
 		public long? TargeUserId { get; set; }
 
 

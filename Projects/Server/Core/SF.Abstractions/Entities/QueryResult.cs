@@ -74,15 +74,30 @@ namespace SF.Entities
 	{
 		IQueryFilter<TDataModel, TQueryArgument> GetFilter<TDataModel, TQueryArgument>();
 	}
+	public interface IQueryFilterCache : IQueryFilterProvider
+	{
+	}
+
 	public interface IPagingQueryBuilder<T>
 	{
 		IContextQueryable<T> Build(IContextQueryable<T> query, Paging paging);
 	}
-	public interface IQueryResultBuildHelper<E, T, R>
+	public interface IPagingQueryBuilderCache
+	{
+		IPagingQueryBuilder<T> GetBuilder<T>();
+	}
+	public interface IQueryResultBuildHelper<E, R>
+	{
+		Task<QueryResult<R>> Query(IContextQueryable<E> queryable, IPagingQueryBuilder<E> PagingQueryBuilder,Paging paging);
+		Task<R> QuerySingleOrDefault(IContextQueryable<E> queryable);
+	}
+	public interface IQueryResultBuildHelper<E, T, R> : IQueryResultBuildHelper<E, R>
 	{
 		Expression<Func<E, T>> EntityMapper { get; }
 		Func<T[],Task<R[]>> ResultMapper { get; }
-		IPagingQueryBuilder<E> PagingBuilder { get; }
-		Expression<Func<IGrouping<int, E>, ISummaryWithCount>> Summary { get; }
+	}
+	public interface IQueryResultBuildHelperCache
+	{
+		IQueryResultBuildHelper<E, R> GetHelper<E, R>();
 	}
 }

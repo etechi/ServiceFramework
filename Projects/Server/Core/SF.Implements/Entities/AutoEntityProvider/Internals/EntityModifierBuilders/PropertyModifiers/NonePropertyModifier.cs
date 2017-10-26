@@ -35,5 +35,6 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 		{
 			this.Priority = Priority;
 		}
+		public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier) => this;
 	}
 }

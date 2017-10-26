@@ -117,13 +117,13 @@ namespace SF.UT.Auth
 							  var re = await sp.IdentityCreate(ReturnToken: false);
 							  var newPassword = re.password + "123";
 							  await svc.SetPassword(
-									  new SF.Auth.Identities.SetPasswordArgument
+									  new SF.Auth.Users.SetPasswordArgument
 									  {
 										  NewPassword = newPassword,
 										  OldPassword = re.password
 									  });
 							  await svc.Signout();
-							  Assert.False((await svc.GetCurIdentityId()).HasValue);
+							  Assert.False((await svc.GetCurUserId()).HasValue);
 							  return (identity: re.identity, account: re.account, password: re.password, newPassword: newPassword);
 						  });
 						  await Scope(async (IServiceProvider sp) =>

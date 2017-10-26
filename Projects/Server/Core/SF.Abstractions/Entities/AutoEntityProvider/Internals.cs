@@ -32,7 +32,7 @@ namespace SF.Entities.AutoEntityProvider
 	}
 	public interface IEntityPropertyQueryConverterProvider
 	{
-		int Property { get; }
+		int Priority { get; }
 		IEntityPropertyQueryConverter GetPropertyConverter(
 			PropertyInfo DataModelProperty,
 			PropertyInfo EntityProperty
@@ -41,6 +41,7 @@ namespace SF.Entities.AutoEntityProvider
 	public interface IEntityPropertyModifier
 	{
 		int Priority { get; }
+		IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier);
 	}
 	public interface INoneEntityPropertyModifier : IEntityPropertyModifier
 	{
@@ -51,8 +52,9 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		Task<TDataModelPropertyValue> Execute(
 			IDataSetEntityManager Manager, 
-			IEntityModifyContext Context, 
-			TEntityPropertyValue Value
+			IEntityModifyContext Context,
+			TDataModelPropertyValue OrgValue,
+			TEntityPropertyValue NewValue
 			);
 	}
 
@@ -61,7 +63,8 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		Task<TDataModelPropertyValue> Execute(
 			IDataSetEntityManager Manager,
-			IEntityModifyContext Context
+			IEntityModifyContext Context,
+			TDataModelPropertyValue OrgValue
 			);
 	}
 	public interface IEntityPropertyModifier<TDataModelPropertyValue> :
@@ -69,7 +72,8 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		TDataModelPropertyValue Execute(
 			IDataSetEntityManager Manager,
-			IEntityModifyContext Context
+			IEntityModifyContext Context,
+			TDataModelPropertyValue OrgValue
 			);
 	}
 	public interface IEntityPropertyModifier<TEntityPropertyValue, TDataModelPropertyValue> :
@@ -78,6 +82,7 @@ namespace SF.Entities.AutoEntityProvider
 		TDataModelPropertyValue Execute(
 			IDataSetEntityManager Manager,
 			IEntityModifyContext Context,
+			TDataModelPropertyValue OrgValue,
 			TEntityPropertyValue Value
 			);
 	}
@@ -110,7 +115,7 @@ namespace SF.Entities.AutoEntityProvider
 			where TDataModel : class;
 	}
 
-	public interface IEntityModifierBuilder : IEntityModifierProvider
+	public interface IEntityModifierCache : IEntityModifierProvider
 	{
 	}
 

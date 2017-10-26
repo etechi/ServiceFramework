@@ -13,34 +13,157 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Auth.Users.Models;
 using SF.Metadata;
-using SF.Auth;
-using SF.Auth.Identities;
-using SF.Users.Members.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using SF.Data.Models;
-using SF.Core.Events;
 
 namespace SF.Auth.Users
 {
-	public class UserRegisted  : IEvent
+	public class SigninArgument
 	{
-		public long ServiceId { get; set; }
-		public long UserId { get; set; }
-		public DateTime Time { get; set; }
+		[Comment("用户")]
+		public string Credential { get; set; }
 
-		long? IEvent.IdentityId => UserId;
-		long? IEvent.ServiceId => ServiceId;
+		[Comment("密码")]
+		public string Password { get; set; }
+
+		[Comment("过期时间")]
+		public int? Expires { get; set; }
+
+		[Comment("人工操作验证码")]
+		public string CaptchaCode { get; set; }
+
+		[Comment("是否返回身份令牌")]
+		public bool ReturnToken { get; set; }
+		
 	}
 	
-	public interface IUserService
+
+	public class SendPasswordRecorveryCodeArgument
 	{
-		Task<string> Signup(CreateIdentityArgument Arg);
-		Task<Models.UserDesc> GetCurrentUser();
+		[Comment("身份验证服务ID")]
+		public long? CredentialProviderId { get; set; }
+
+		[Comment("人工操作验证码")]
+		public string CaptchaCode { get; set; }
+
+		[Comment("用户")]
+		public string Credential { get; set; }
+	}
+	public class ResetPasswordByRecorveryCodeArgument
+	{
+		[Comment("身份验证服务ID")]
+		public long? CredentialProviderId { get; set; }
+
+		[Comment("用户")]
+		public string Credential { get; set; }
+
+		[Comment("验证码")]
+		public string VerifyCode { get; set; }
+
+		[Comment("新密码")]
+		public string NewPassword { get; set; }
+
+		[Comment("是否返回身份令牌")]
+		public bool ReturnToken { get; set; }
+	}
+	public class SignupArgument
+	{
+		[Comment("身份验证服务ID")]
+		public long? CredentialProviderId { get; set; }
+
+		[Comment("身份信息")]
+		public User User { get; set; }
+
+		[Comment("用户")]
+		public string Credential { get; set; }
+
+		[Comment("密码")]
+		public string Password { get; set; }
+
+		[Comment("人工操作验证码")]
+		public string CaptchaCode { get; set; }
+
+		[Comment("验证码")]
+		public string VerifyCode { get; set; }
+
+		[Comment("是否返回身份令牌")]
+		public bool ReturnToken { get; set; }
+
+		[Comment("过期时间")]
+		public int? Expires { get; set; }
+
+		[Comment("附加参数")]
+		public Dictionary<string,string> ExtraArgument{get;set;}
+	}
+
+	public class SendCreateIdentityVerifyCodeArgument
+	{
+		[Comment("身份验证服务ID")]
+		public long? CredentialProviderId { get; set; }
+
+		[Comment("人工操作验证码")]
+		public string Credetial { get; set; }
+
+		[Comment("人工操作验证码")]
+		public string CaptchaCode { get; set; }
+	}
+
+	public class SetPasswordArgument
+	{
+		[Comment("就密码")]
+		public string OldPassword { get; set; }
+
+		[Comment("新密码")]
+		public string NewPassword { get; set; }
+
+		[Comment("是否返回身份令牌")]
+		public bool ReturnToken { get; set; }
+	}
+
+
+	[NetworkService]
+	[Comment("用户服务")]
+	public interface IUserService
+    {
+		[Comment("获取当前用户ID")]
+		[Authorize]
+		Task<long?> GetCurUserId();
+
+		[Comment("获取当前用户")]
+		Task<User> GetCurUser();
+
+		[Comment("登录")]
+		Task<string> Signin(SigninArgument Arg);
+
+		[Comment("注销")]
+		Task Signout();
+
+		[Comment("发送忘记密码验证消息")]
+		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
+
+		[Comment("使用验证消息重置密码")]
+		Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg);
+
+		[Comment("设置密码")]
+		Task<string> SetPassword(SetPasswordArgument Arg);
+
+
+		[Comment("修改用户信息")]
+		Task Update(User User);
+
+		[Comment("从访问令牌提取身份ID")]
+		Task<long> ValidateAccessToken(string AccessToken);
+
+		[Comment("发送用户创建验证信息")]
+		Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg);
+
+		[Comment("注册用户")]
+		Task<string> Signup(SignupArgument Arg, bool VerifyCode);
+
+		[Comment("根据用户ID获取身份信息")]
+		Task<User> GetUser(long Id);
 	}
 
 }

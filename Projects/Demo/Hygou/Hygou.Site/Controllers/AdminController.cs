@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Authorization;
 using SF.Management.BizAdmins;
 using SF.Core.ServiceManagement;
 using SF.Auth.Users;
-using SF.Auth.Identities;
+using SF.Auth.Users;
 using SF.Management.SysAdmins;
 
 namespace Hygou.Site.Controllers 
@@ -47,7 +47,7 @@ namespace Hygou.Site.Controllers
 		{
 			var us = ServiceProvider.Resolve<I>();
 			var id = ((IManagedServiceWithId)us).ServiceInstanceId;
-			var iis = ServiceProvider.Resolve<IIdentityService>(null, id);
+			var iis = ServiceProvider.Resolve<IUserService>(null, id);
 			return ((IManagedServiceWithId)iis).ServiceInstanceId.Value;
 		}
 		public ActionResult Index()

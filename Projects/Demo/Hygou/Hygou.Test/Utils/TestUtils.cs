@@ -18,14 +18,14 @@ using Xunit;
 using SF.Core.ServiceManagement;
 using System.Threading.Tasks;
 using SF.Data;
-using SF.Auth.Identities;
-using SF.Auth.Identities.Models;
+using SF.Auth.Users;
+using SF.Auth.Users.Models;
 
 namespace SF.UT.Utils
 {
 	public static class IdentityTestUtils
 	{
-		public static async Task<T> IdentityTest<T>(this IServiceProvider sp,Func<IIdentityService, Task<T>> Action)
+		public static async Task<T> IdentityTest<T>(this IServiceProvider sp,Func<IUserService, Task<T>> Action)
 		{
 			var ig = sp.Resolve<IIdentGenerator>();
 			return await sp.TestService(
@@ -44,7 +44,7 @@ namespace SF.UT.Utils
 			bool returnToken=true
 			)
 		{
-			var svc = sp.Resolve<IIdentityService>();
+			var svc = sp.Resolve<IUserService>();
 			var signinResult = await svc.Signin(new SigninArgument
 			{
 				Credential = account,
@@ -58,7 +58,7 @@ namespace SF.UT.Utils
 			}
 			else
 			{
-				var uid=await svc.GetCurIdentityId();
+				var uid=await svc.GetCurUserId();
 				return uid.Value;
 			}
 		}
@@ -74,18 +74,18 @@ namespace SF.UT.Utils
 		)
 		{
 			var ig = sp.Resolve<IIdentGenerator>();
-			var svc = sp.Resolve<IIdentityService>();
+			var svc = sp.Resolve<IUserService>();
 
 			id = id == 0 ? await ig.GenerateAsync("测试用户") : id;
 			account = account ?? "user" + id;
 			name = name ?? "测试用户" + id;
 			var icon = "icon" + id;
-			var accessToken = await svc.CreateIdentity(
-				new CreateIdentityArgument
+			var accessToken = await svc.Signup(
+				new SignupArgument
 				{
 					Credential = account,
 					Password = password,
-					Identity = new SF.Auth.Identities.Models.Identity
+					User = new SF.Auth.Users.Models.Identity
 					{
 						Id = id,
 						OwnerId = entity,
@@ -96,7 +96,7 @@ namespace SF.UT.Utils
 				}, true
 				);
 
-			var uid = ReturnToken ? await svc.ValidateAccessToken(accessToken) : (await svc.GetCurIdentity()).Id;
+			var uid = ReturnToken ? await svc.ValidateAccessToken(accessToken) : (await svc.GetCurUser()).Id;
 			var ii = await svc.GetIdentity(uid);
 			Assert.Equal(name, ii.Name);
 			Assert.Equal(icon, ii.Icon);
@@ -104,7 +104,7 @@ namespace SF.UT.Utils
 			Assert.Equal(uid, ii.Id);
 			if (!ReturnToken)
 			{
-				var uii = await svc.GetCurIdentity();
+				var uii = await svc.GetCurUser();
 				Assert.Equal(uid, uii.Id);
 				Assert.Equal(name, uii.Name);
 				Assert.Equal(icon, uii.Icon);

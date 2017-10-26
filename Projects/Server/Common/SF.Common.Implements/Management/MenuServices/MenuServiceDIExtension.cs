@@ -102,7 +102,7 @@ namespace SF.Core.ServiceManagement
 			=>manager.Service<IMenuService, 
 				EntityMenuService<SF.Management.MenuServices.Entity.DataModels.Menu, SF.Management.MenuServices.Entity.DataModels.MenuItem>
 				>(null)
-			.WithSystemAdminMenuItems(
+			.WithMenuItems(
 				"菜单管理"
 				);
 
