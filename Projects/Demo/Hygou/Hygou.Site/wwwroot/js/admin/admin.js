@@ -17058,7 +17058,7 @@ exports.MemberInvitationManagement = {
     //
     Query: function (
         //
-        //类型:SF.Users.Promotions.MemberInvitations.MemberInvitationQueryArgument
+        //类型:SF.Promotions.MemberInvitations.MemberInvitationQueryArgument
         Arg, __opts) {
         return _invoker('MemberInvitationManagement', 'Query', null, Arg, __opts);
     },
@@ -17066,7 +17066,7 @@ exports.MemberInvitationManagement = {
     //
     QueryIdents: function (
         //
-        //类型:SF.Users.Promotions.MemberInvitations.MemberInvitationQueryArgument
+        //类型:SF.Promotions.MemberInvitations.MemberInvitationQueryArgument
         Arg, __opts) {
         return _invoker('MemberInvitationManagement', 'QueryIdents', null, Arg, __opts);
     },
@@ -17095,7 +17095,7 @@ exports.MemberInvitationManagement = {
     //
     Create: function (
         //
-        //类型:SF.Users.Promotions.MemberInvitations.Models.MemberInvitationInternal
+        //类型:SF.Promotions.MemberInvitations.Models.MemberInvitationInternal
         Entity, __opts) {
         return _invoker('MemberInvitationManagement', 'Create', null, Entity, __opts);
     },
@@ -17103,7 +17103,7 @@ exports.MemberInvitationManagement = {
     //
     Update: function (
         //
-        //类型:SF.Users.Promotions.MemberInvitations.Models.MemberInvitationInternal
+        //类型:SF.Promotions.MemberInvitations.Models.MemberInvitationInternal
         Entity, __opts) {
         return _invoker('MemberInvitationManagement', 'Update', null, Entity, __opts);
     },

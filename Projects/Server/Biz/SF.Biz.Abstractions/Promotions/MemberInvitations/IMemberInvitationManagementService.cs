@@ -13,37 +13,41 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Biz.Products;
+using SF.Auth;
+using SF.Auth.Users;
+using SF.Auth.Users.Models;
+using SF.Entities;
 using SF.Metadata;
+using SF.Promotions.MemberInvitations.Models;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Hygou
+namespace SF.Promotions.MemberInvitations
 {
-    public class HygouSetting
-    {
-		[Required]
-		[Comment(GroupName = "帮助中心", Name = "PC站点默认帮助文档", Description = "默认帮助中心文档")]
-		public long PCHelpCenterDefaultDocId { get; set; }
+	public class MemberInvitationQueryArgument : Entities.IQueryArgument<ObjectKey<long>>
+	{
+		[Comment("Id")]
+		public ObjectKey<long> Id { get; set; }
 
-
-		[Required]
-		[Comment(GroupName = "产品", Name = "主产品目录", Description = "主产品目录")]
-		[EntityIdent(typeof(ProductInternal))]
-		public long MainProductCategoryId { get; set; }
-
-		[Required]
-		[Comment(GroupName = "产品", Name = "默认卖家")]
-		[EntityIdent(typeof(SF.Common.Members.Models.MemberInternal))]
-		public long DefaultSellerId { get; set; }
-
-
+		[Comment("名称")]
+		public string Name { get; set; }
 	}
 
 
+	[EntityManager]
+	[Authorize("admin")]
+	[NetworkService]
+	[Comment("会员邀请")]
+	[Category("用户管理", "会员邀请管理")]
+
+	public interface IMemberInvitationManagementService : 
+		Entities.IEntitySource<ObjectKey<long>, MemberInvitationInternal, MemberInvitationQueryArgument>,
+		Entities.IEntityManager<ObjectKey<long>, MemberInvitationInternal>
+    {
+	}
+
 }
+

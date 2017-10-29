@@ -5,16 +5,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Users\Promotions\MemberInvitations\Entity\DataModels\**" />
-    <EmbeddedResource Remove="Users\Promotions\MemberInvitations\Entity\DataModels\**" />
-    <None Remove="Users\Promotions\MemberInvitations\Entity\DataModels\**" />
+    <Compile Remove="Promotions\MemberInvitations\Entity\DataModels\**" />
+    <EmbeddedResource Remove="Promotions\MemberInvitations\Entity\DataModels\**" />
+    <None Remove="Promotions\MemberInvitations\Entity\DataModels\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Bizness\Products\ProductCollectionService.cs" />
     <Compile Remove="Bizness\Products\ProductService.cs" />
     <Compile Remove="Bizness\Products\ProductTypeService.cs" />
-    <Compile Remove="Users\Promotions\MemberInvitations\Entity\__EntityMemberInvitationManagementService.cs" />
+    <Compile Remove="Promotions\MemberInvitations\Entity\__EntityMemberInvitationManagementService.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +25,10 @@
     <ProjectReference Include="..\..\Core\SF.Support\SF.Support.csproj" />
     <ProjectReference Include="..\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj" />
     <ProjectReference Include="..\SF.Biz.Extensions\SF.Biz.Extensions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Users\" />
   </ItemGroup>
 
 </Project>

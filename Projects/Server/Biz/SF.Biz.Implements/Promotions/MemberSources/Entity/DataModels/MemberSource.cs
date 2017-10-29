@@ -13,42 +13,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Users.Models;
-using SF.Data;
-using SF.Data.Models;
-using SF.KB;
+using SF.Entities.DataModels;
 using SF.Metadata;
-using System;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Users.Promotions.MemberInvitations.Models
+namespace SF.Promotions.MemberSources.Entity.DataModels
 {
-	[EntityObject]
-	public class MemberInvitationInternal : EventEntityBase
+	[Table("UserMemberSource")]
+	public class MemberSource<TMemberSource,TSourceMember> : TreeContainerEntityBase<TMemberSource,TSourceMember>
+		where TMemberSource : MemberSource<TMemberSource, TSourceMember>,new()
+		where TSourceMember : SourceMember<TMemberSource, TSourceMember>,new()
 	{
-		[Comment("被邀请人ID")]
-		[EntityIdent(typeof(User),nameof(InviteeName))]
-		public override long Id { get; set; }
-
-		[Comment("被邀请人")]
-		[Hidden]
-		[TableVisible]
-		public string InviteeName { get; set; }
-
-		[Comment("邀请人ID")]
-		[EntityIdent(typeof(User), nameof(InvitorName))]
-		public long InvitorId { get; set; }
-
-		[Comment("邀请人")]
-		[Hidden]
-		[TableVisible]
-		public string InvitorName { get; set; }
-
-		[Hidden]
-		[JsonData]
-		public long[] Invitors { get; set; }
-
 	}
 }
 

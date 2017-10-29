@@ -18,14 +18,14 @@ using SF.Auth.Users;
 using SF.Auth.Users.Models;
 using SF.Entities;
 using SF.Metadata;
-using SF.Users.Promotions.MemberSources.Models;
+using SF.Promotions.MemberSources.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Users.Promotions.MemberSources
+namespace SF.Promotions.MemberSources
 {
 	public class MemberSourceQueryArgument : Entities.IQueryArgument<ObjectKey<long>>
 	{

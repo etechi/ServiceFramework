@@ -47,32 +47,19 @@ namespace SF.AspNetCore.Auth
 				}
 			);
 			services.AddAuthentication(
-				"admin-system"
+				"admin"
 				)
-				.AddCookie("admin-system", opt =>
+				.AddCookie("admin", opt =>
 				{
 					opt.Cookie.HttpOnly = true;
 					opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-					opt.Cookie.Path = "/admin/system/";
-					opt.Cookie.Name = "sf-sess-sysadmin";
-					opt.LoginPath = "/admin/system/signin";
+					opt.Cookie.Path = "/admin/";
+					opt.Cookie.Name = "sf-sess-admin";
+					opt.LoginPath = "/admin/signin";
 					opt.Cookie.Expiration = TimeSpan.FromHours(1);
 				}
 			);
 
-			services.AddAuthentication(
-				"admin-bizness"
-			)
-			.AddCookie("admin-bizness",opt =>
-			{
-				opt.Cookie.HttpOnly = true;
-				opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-				opt.Cookie.Path = "/admin/bizness/";
-				opt.Cookie.Name = "sf-sess-bizadmin";
-				opt.LoginPath = "/admin/bizness/signin";
-				opt.Cookie.Expiration = TimeSpan.FromHours(1);
-			}
-		);
 
 
 			var securityKey = "12faod919&^*%1212";

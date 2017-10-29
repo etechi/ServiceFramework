@@ -13,19 +13,28 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
 using SF.Data.Models;
-using SF.KB;
+using SF.Entities;
+using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
-namespace SF.Users.Promotions.MemberSources.Models
+namespace SF.Auth.Users.Models
 {
-	[EntityObject]
-	public class MemberSourceInternal : ObjectEntityBase
-	{
 
+	[Comment("认证客户端")]
+	public class Client : UIObjectEntityBase<long>
+	{
+		[Comment("标识")]
+		public string Ident { get; set; }
+
+		[Comment("默认角色")]
+		[EntityIdent(typeof(Role))]
+		public IEnumerable<long> Roles {get;set;}
 	}
+	
 }
 

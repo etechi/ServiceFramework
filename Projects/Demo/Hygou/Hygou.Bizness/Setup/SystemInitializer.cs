@@ -19,32 +19,25 @@ using SF.Core;
 using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
 using SF.Core.ServiceManagement.Management;
-using SF.Management.BizAdmins;
 using SF.Management.FrontEndContents;
-using SF.Management.SysAdmins;
 using SF.Services.Settings;
-using SF.Users.Members;
-using SF.Users.Members.Models;
+using SF.Management.Admins;
+using SF.Common.Members.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SF.Common.Members;
 
 namespace Hygou.Setup
 {
 	public class SystemInitializer
 	{
-		public static async Task<long> EnsureSysAdmin(IServiceProvider sp)
+		public static async Task<long> EnsureAdmin(IServiceProvider sp)
 		{
-			var svc = sp.Resolve<ISysAdminService>();
-			var u = await svc.SysAdminEnsure(sp,"sysadmin", "系统管理员", "13000010001", "system123", new[] { "sysadmin","admin"});
-			return u.Id;
-		}
-		public static async Task<long> EnsureBizAdmin(IServiceProvider sp)
-		{
-			var svc = sp.Resolve<IBizAdminService>();
-			var u = await svc.BizAdminEnsure(sp, "admin", "业务管理员", "13000020001", "system123", new[] { "bizadmin","admin" });
+			var svc = sp.Resolve<IAdminManager>();
+			var u = await svc.AdminEnsure(sp,"sysadmin", "系统管理员", "13000010001", "system123", new[] { "sysadmin","admin"});
 			return u.Id;
 		}
 
@@ -67,8 +60,7 @@ namespace Hygou.Setup
 			//scope.Resolve<IAuditService>().Disabled = true;
 
 			//await InitRoles(scope);
-			var sysadmin = await EnsureSysAdmin(ServiceProvider);
-			await EnsureBizAdmin(ServiceProvider);
+			var sysadmin = await EnsureAdmin(ServiceProvider);
 			var sysseller = await EnsureSysSeller(ServiceProvider);
 
 			await ServiceProvider.Invoke(async (IServiceInstanceManager sim) =>

@@ -19,14 +19,14 @@ using SF.Core.CallPlans;
 using SF.Core.Times;
 using SF.Data;
 using SF.Entities;
-using SF.Users.Members.Models;
-using SF.Users.Promotions.MemberSources.Models;
+using SF.Common.Members.Models;
+using SF.Promotions.MemberSources.Models;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace SF.Users.Promotions.MemberSources.Entity
+namespace SF.Promotions.MemberSources.Entity
 {
 	public class EntityMemberSourceManagementService<TMemberSource, TSourceMember> :
 		ModidifiableEntityManager<ObjectKey<long>, MemberSourceInternal,  MemberSourceQueryArgument, Models.MemberSourceInternal, TMemberSource>,

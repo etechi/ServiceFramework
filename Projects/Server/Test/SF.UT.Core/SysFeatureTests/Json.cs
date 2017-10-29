@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 using System.Collections;
 using System.Linq;
 using Xunit.Sdk;
-using SF.Users.Promotions.MemberInvitations;
+using SF.Promotions.MemberInvitations;
 
 namespace SF.UT.SysFeatureTests
 {

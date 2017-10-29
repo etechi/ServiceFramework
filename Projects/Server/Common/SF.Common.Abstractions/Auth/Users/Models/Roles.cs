@@ -13,17 +13,42 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Entities.DataModels;
+using SF.Data.Models;
+using SF.Entities;
+using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
-using System.ComponentModel.DataAnnotations.Schema;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
-namespace SF.Users.Promotions.MemberSources.Entity.DataModels
+namespace SF.Auth.Users.Models
 {
-	[Table("UserSourceMember")]
-	public class SourceMember<TMemberSource,TSourceMember> : ItemEntityBase<TMemberSource>
-		where TMemberSource : MemberSource<TMemberSource,TSourceMember>,new()
-		where TSourceMember : SourceMember<TMemberSource, TSourceMember>,new()
+	
+	[Comment("角色")]
+	public class Role: ObjectEntityBase<long>
 	{
+
 	}
+	public class RoleEditable : Role
+	{
+		public IEnumerable<ClaimValue> Claims { get; set; }
+	}
+	public class UserRole
+	{
+		[Comment("Id")]
+		public long Id { get; set; }
+
+		[Comment("类型ID")]
+		[EntityIdent(typeof(Role), nameof(RoleName))]
+		public long RoleId { get; set; }
+
+		[Comment("类型")]
+		[Ignore]
+		public string RoleName { get; set; }
+
+
+	}
+	
 }
 

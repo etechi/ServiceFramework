@@ -13,29 +13,52 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Users;
-using SF.Core;
-using SF.Core.CallPlans;
-using SF.Core.Times;
-using SF.Data;
+using SF.Data.Models;
 using SF.Entities;
 using SF.Entities.AutoEntityProvider;
-using SF.Users.Members.Models;
-using SF.Users.Promotions.MemberInvitations.Models;
+using SF.Metadata;
 using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
-namespace SF.Users.Promotions.MemberInvitations.Entity
+namespace SF.Auth.Users.Models
 {
-	public class EntityMemberInvitationManagementService :
-		AutoEntityManager<ObjectKey<long>, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationInternal, MemberInvitationQueryArgument>,
-		IMemberInvitationManagementService
+	
+	[Comment("凭证类型")]
+	public class ClaimType
 	{
-		public EntityMemberInvitationManagementService(IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory) : base(DataSetAutoEntityProviderFactory)
-		{
-		}
+		[Comment("Id")]
+		public long Id { get; set; }
+
+		[Comment("类型名称")]
+		[Required]
+		[MaxLength(100)]
+		public string Name { get; set; }
+	}
+
+	
+	[Comment("凭证参数值")]
+	public class ClaimValue
+	{
+		[Comment("Id")]
+		public long Id { get; set; }
+
+		[Comment("类型ID")]
+		[EntityIdent(typeof(ClaimType), nameof(TypeName))]
+		public long TypeId { get; set; }
+
+		[Comment("类型")]
+		[Ignore]
+		public string TypeName { get; set; }
+
+
+		[Comment("凭证值")]
+		public string Value { get; set; }
+
+		[Comment("发行时间")]
+		public DateTime IssueTime { get; set; }
 	}
 
 }
+

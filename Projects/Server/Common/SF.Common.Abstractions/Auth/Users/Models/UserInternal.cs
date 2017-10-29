@@ -40,65 +40,7 @@ namespace SF.Auth.Users.Models
 		[Comment("对象状态")]
 		public EntityLogicState LogicState { get; set; }
 	}
-	[Comment("凭证类型")]
-	public class ClaimType
-	{
-		[Comment("Id")]
-		public long Id { get; set; }
 
-		[Comment("类型名称")]
-		[Required]
-		[MaxLength(100)]
-		public string Name { get; set; }
-	}
-
-	
-	[Comment("凭证参数值")]
-	public class ClaimValue
-	{
-		[Comment("Id")]
-		public long Id { get; set; }
-
-		[Comment("类型ID")]
-		[EntityIdent(typeof(ClaimType), nameof(TypeName))]
-		public long TypeId { get; set; }
-
-		[Comment("类型")]
-		[Ignore]
-		public string TypeName { get; set; }
-
-
-		[Comment("凭证值")]
-		public string Value { get; set; }
-
-		[Comment("发行时间")]
-		public DateTime IssueTime { get; set; }
-	}
-
-	[Comment("角色")]
-	public class Role: ObjectEntityBase<long>
-	{
-
-	}
-	public class RoleEditable : Role
-	{
-		public IEnumerable<ClaimValue> Claims { get; set; }
-	}
-	public class IdentityRole
-	{
-		[Comment("Id")]
-		public long Id { get; set; }
-
-		[Comment("类型ID")]
-		[EntityIdent(typeof(Role), nameof(RoleName))]
-		public long RoleId { get; set; }
-
-		[Comment("类型")]
-		[Ignore]
-		public string RoleName { get; set; }
-
-
-	}
 	public class UserEditable : UserInternal
 	{
 		[SkipWhenDefault]
@@ -114,7 +56,10 @@ namespace SF.Auth.Users.Models
 		public IEnumerable<ClaimValue> Claims { get; set; }
 
 		[Ignore]
-		public IEnumerable<IdentityRole> Roles { get; set; }
+		public IEnumerable<UserRole> Roles { get; set; }
+
+		
+		public long ClientId { get; set; }
 	}
 }
 

@@ -13,41 +13,42 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth;
-using SF.Auth.Users;
 using SF.Auth.Users.Models;
-using SF.Entities;
+using SF.Data;
+using SF.Data.Models;
+using SF.KB;
 using SF.Metadata;
-using SF.Users.Promotions.MemberInvitations.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Users.Promotions.MemberInvitations
+namespace SF.Promotions.MemberInvitations.Models
 {
-	public class MemberInvitationQueryArgument : Entities.IQueryArgument<ObjectKey<long>>
+	[EntityObject]
+	public class MemberInvitationInternal : EventEntityBase
 	{
-		[Comment("Id")]
-		public ObjectKey<long> Id { get; set; }
+		[Comment("被邀请人ID")]
+		[EntityIdent(typeof(User),nameof(InviteeName))]
+		public override long Id { get; set; }
 
-		[Comment("名称")]
-		public string Name { get; set; }
+		[Comment("被邀请人")]
+		[Hidden]
+		[TableVisible]
+		public string InviteeName { get; set; }
+
+		[Comment("邀请人ID")]
+		[EntityIdent(typeof(User), nameof(InvitorName))]
+		public long InvitorId { get; set; }
+
+		[Comment("邀请人")]
+		[Hidden]
+		[TableVisible]
+		public string InvitorName { get; set; }
+
+		[Hidden]
+		[JsonData]
+		public long[] Invitors { get; set; }
+
 	}
-
-
-	[EntityManager]
-	[Authorize("admin")]
-	[NetworkService]
-	[Comment("会员邀请")]
-	[Category("用户管理", "会员邀请管理")]
-
-	public interface IMemberInvitationManagementService : 
-		Entities.IEntitySource<ObjectKey<long>, MemberInvitationInternal, MemberInvitationQueryArgument>,
-		Entities.IEntityManager<ObjectKey<long>, MemberInvitationInternal>
-    {
-	}
-
 }
 

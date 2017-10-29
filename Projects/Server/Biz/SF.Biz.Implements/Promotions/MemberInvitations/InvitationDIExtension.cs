@@ -19,9 +19,9 @@ using SF.Entities;
 using SF.Entities.AutoEntityProvider;
 using SF.Entities.Tests;
 using SF.Common.Members;
-using SF.Users.Promotions.MemberInvitations;
-using SF.Users.Promotions.MemberInvitations.Entity;
-using SF.Users.Promotions.MemberInvitations.Models;
+using SF.Promotions.MemberInvitations;
+using SF.Promotions.MemberInvitations.Entity;
+using SF.Promotions.MemberInvitations.Models;
 
 namespace SF.Core.ServiceManagement
 {
@@ -63,7 +63,7 @@ namespace SF.Core.ServiceManagement
 		{
 			return sim.DefaultService<IMemberInvitationManagementService, EntityMemberInvitationManagementService>(
 				new{}
-				).WithBiznessAdminMenuItems(
+				).WithMenuItems(
 				"促销管理/会员邀请"
 				);
 		}
