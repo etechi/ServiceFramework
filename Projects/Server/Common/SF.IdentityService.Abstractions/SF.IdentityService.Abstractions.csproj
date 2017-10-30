@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Auth\Users1\**" />
+    <Compile Remove="Bizness\**" />
+    <Compile Remove="Common\**" />
+    <EmbeddedResource Remove="Auth\Users1\**" />
+    <EmbeddedResource Remove="Bizness\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <None Remove="Auth\Users1\**" />
+    <None Remove="Bizness\**" />
+    <None Remove="Common\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>

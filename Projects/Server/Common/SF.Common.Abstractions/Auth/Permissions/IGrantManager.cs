@@ -16,8 +16,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System.Threading.Tasks;
 using SF.Entities;
 using SF.Metadata;
-using SF.Auth.Users;
-using SF.Auth.Users.Models;
 
 namespace SF.Auth.Permissions
 {

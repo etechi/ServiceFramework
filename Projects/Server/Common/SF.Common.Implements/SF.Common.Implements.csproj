@@ -5,16 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Auth\Backup\**" />
     <Compile Remove="Auth\Passport\**" />
     <Compile Remove="Auth\Permissions\**" />
     <Compile Remove="Auth\Users-backup\**" />
     <Compile Remove="Auth\Users1\**" />
     <Compile Remove="Common\Documents\Management\Backup\**" />
+    <EmbeddedResource Remove="Auth\Backup\**" />
     <EmbeddedResource Remove="Auth\Passport\**" />
     <EmbeddedResource Remove="Auth\Permissions\**" />
     <EmbeddedResource Remove="Auth\Users-backup\**" />
     <EmbeddedResource Remove="Auth\Users1\**" />
     <EmbeddedResource Remove="Common\Documents\Management\Backup\**" />
+    <None Remove="Auth\Backup\**" />
     <None Remove="Auth\Passport\**" />
     <None Remove="Auth\Permissions\**" />
     <None Remove="Auth\Users-backup\**" />
@@ -27,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Auth\" />
     <Folder Include="Common\Documents\Management\Backup\" />
     <Folder Include="Properties\" />
   </ItemGroup>

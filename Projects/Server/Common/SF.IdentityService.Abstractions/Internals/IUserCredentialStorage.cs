@@ -13,35 +13,50 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Entities;
-using SF.Entities.AutoEntityProvider;
-using SF.Metadata;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using SF.Auth.IdentityServices.Models;
+using System.Threading.Tasks;
 
-namespace SF.Auth.Users.Models
+namespace SF.Auth.IdentityServices.Internals
 {
-	[EntityObject]
-	[Comment("身份标识")]
-	public class User : IEntityWithId<long>
-    {
-		[Key]
-		[ReadOnly(true)]
-		[TableVisible]
-		[Comment("ID")]
-		public long Id { get; set; }
+	public interface IUserCredentialStorage
+	{
+		Task<UserCredential> FindOrBind(
+			long ProviderId,
+			string Ident,
+			string UnionIdent,
+			bool Confirmed,
+			long UserId
+			);
+		Task<UserCredential> Find(
+			long ProviderId,
+			string Ident,
+			string UnionIdent
+			);
 
-		[Comment("名称")]
-		[MaxLength(100)]
-		[Required]
-		[TableVisible]
-		public string Name { get; set; }
+		Task Bind(
+			long ProviderId,
+			string Ident,
+			string UnionIdent,
+			bool Confirmed,
+			long UserId
+			);
+		Task Unbind(
+			long ProviderId,
+			string Ident,
+			long UserId
+			);
 
-		[Comment("图标")]
-		[MaxLength(100)]
-		public string Icon { get; set; }
+		Task SetConfirmed(
+			long ProviderId,
+			string Ident,
+			bool Confirmed
+			);
 
+		Task<UserCredential[]> GetIdents(
+			long ProviderId,
+			long UserId
+			);
 
+		Task RemoveAllAsync();
 	}
 }
-

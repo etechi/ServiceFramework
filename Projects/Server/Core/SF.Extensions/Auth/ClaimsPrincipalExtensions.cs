@@ -27,7 +27,7 @@ namespace SF.Auth
 		public static long? GetUserIdent(this ClaimsPrincipal user)
 		{
 			if (user?.Identity?.IsAuthenticated ?? false)
-				return user.Claims.FirstOrDefault(c => c.Type == "id")?.Value?.TryToInt64();
+				return user.Claims.FirstOrDefault(c => c.Type == "sub")?.Value?.TryToInt64();
 			return null;
 		}
 		public static Claim CreateGrantClaim(IEnumerable<(string res,string action)> grants)

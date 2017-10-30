@@ -22,6 +22,7 @@ using SF.Core.ServiceManagement.Models;
 
 namespace SF.Core.ServiceManagement.Management
 {
+	
 	public static class IServiceInstanceManagerExtension
 	{
 		public static async Task<long?> ResolveDefaultService<I>(
@@ -36,6 +37,12 @@ namespace SF.Core.ServiceManagement.Management
 					}))?.Id;
 		}
 
+		public static string GetServiceId(Type InterfaceType)
+			=> InterfaceType.GetFullName().UTF8Bytes().MD5().Hex();
+
+		public static string GetImplementId(Type InterfaceType,Type ImplementType)
+			=> $"{ImplementType.GetFullName()}@{InterfaceType.GetFullName()}".UTF8Bytes().MD5().Hex();
+
 		static void UpdateServiceModel(Models.ServiceInstanceEditable e,
 			Type InterfaceType,
 			Type ImplementType,
@@ -48,11 +55,11 @@ namespace SF.Core.ServiceManagement.Management
 			EntityLogicState State=EntityLogicState.Enabled
 			)
 		{
-			e.ImplementId = $"{ImplementType.GetFullName()}@{InterfaceType.GetFullName()}".UTF8Bytes().MD5().Hex();
+			e.ImplementId = GetImplementId(InterfaceType,ImplementType);
 			e.ImplementType = ImplementType.GetFullName();
 			e.ImplementName = ImplementType.FriendlyName();
 
-			e.ServiceId = InterfaceType.GetFullName().UTF8Bytes().MD5().Hex();
+			e.ServiceId = GetServiceId(InterfaceType);
 			e.ServiceType = InterfaceType.GetFullName();
 			e.ServiceName = InterfaceType.FriendlyName();
 

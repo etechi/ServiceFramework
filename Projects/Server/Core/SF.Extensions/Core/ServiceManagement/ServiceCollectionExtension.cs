@@ -22,6 +22,17 @@ namespace SF.Core.ServiceManagement
 {
 	public static class DIServiceCollectionExtension
 	{
+		public static void Remove(this IServiceCollection sc,Type ServiceType)
+		{
+			for(var i= 0; i < sc.Count; i++)
+			{
+				if(sc[i].InterfaceType==ServiceType)
+				{
+					sc.RemoveAt(i);
+					i--;
+				}
+			}
+		}
 		class FuncManagedServiceInitializer : IManagedServiceInitializer
 		{
 			Func<IServiceProvider , IServiceInstanceDescriptor,Task> FuncInit { get; }

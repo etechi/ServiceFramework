@@ -19,9 +19,8 @@ using System.Text;
 
 namespace SF.Core.ServiceManagement
 {
-	public interface IServiceCollection : IEnumerable<ServiceDescriptor>
+	public interface IServiceCollection :
+		IList<ServiceDescriptor>, ICollection<ServiceDescriptor>, IEnumerable<ServiceDescriptor>
 	{	
-		void Add(ServiceDescriptor Descriptor);
-		void Remove(Type Service);
 	}
 }

@@ -36,13 +36,13 @@ namespace SF.Auth.Permissions
 			this.Name = Name;
 			this.Group = Group;
 			this.Description = Description;
-			this.AvailableOperations = Operations;
+			this.AvailableOperationScopes = Operations;
 		}
 		public string Description { get; }
 		public string Id { get; }
 		public string Name { get; }
 		public string Group { get; }
-		public string[] AvailableOperations { get; }
+		public string[] AvailableOperationScopes { get; }
 	}
 }
 namespace SF.Core.ServiceManagement

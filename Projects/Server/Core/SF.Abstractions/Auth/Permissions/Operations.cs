@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace SF.Auth.Permissions
 {
 	
-	public static class Operations
+	public static class OperationScopes
 	{
 		public const string Read = "read";
 		public const string Update = "edit";

@@ -27,15 +27,13 @@ namespace SF.Core.ServiceManagement
 		HashSet<Type> ServiceTypeHash { get; } = new HashSet<Type>();
 		public IEnumerable<Type> ServiceTypes=> ServiceTypeHash;
 
-		public void Remove(Type Service)
-		{
-			for (var i = 0; i < Descriptors.Count; i++)
-				if (Descriptors[i].InterfaceType == Service)
-				{
-					Descriptors.RemoveAt(i);
-					i--;
-				}
-		}
+		public int Count => Descriptors.Count;
+
+		public bool IsReadOnly => false;
+
+		public ServiceDescriptor this[int index] { get => Descriptors[index]; set => Descriptors[index]=value; }
+
+		
 
 		public void Add(ServiceDescriptor Descriptor)
 		{
@@ -64,6 +62,41 @@ namespace SF.Core.ServiceManagement
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
+		}
+
+		public int IndexOf(ServiceDescriptor item)
+		{
+			return Descriptors.IndexOf(item);
+		}
+
+		public void Insert(int index, ServiceDescriptor item)
+		{
+			Descriptors.Insert(index, item);
+		}
+
+		public void RemoveAt(int index)
+		{
+			Descriptors.RemoveAt(index);
+		}
+
+		public void Clear()
+		{
+			Descriptors.Clear();
+		}
+
+		public bool Contains(ServiceDescriptor item)
+		{
+			return Descriptors.Contains(item);
+		}
+
+		public void CopyTo(ServiceDescriptor[] array, int arrayIndex)
+		{
+			Descriptors.CopyTo(array, arrayIndex);
+		}
+
+		public bool Remove(ServiceDescriptor item)
+		{
+			return Descriptors.Remove(item);
 		}
 	}
 

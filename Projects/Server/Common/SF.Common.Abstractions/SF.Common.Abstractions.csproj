@@ -5,11 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Auth\Permissions\**" />
     <Compile Remove="Auth\Users1\**" />
+    <Compile Remove="Auth\Users\**" />
     <Compile Remove="Bizness\Accounting\**" />
+    <EmbeddedResource Remove="Auth\Permissions\**" />
     <EmbeddedResource Remove="Auth\Users1\**" />
+    <EmbeddedResource Remove="Auth\Users\**" />
     <EmbeddedResource Remove="Bizness\Accounting\**" />
+    <None Remove="Auth\Permissions\**" />
     <None Remove="Auth\Users1\**" />
+    <None Remove="Auth\Users\**" />
     <None Remove="Bizness\Accounting\**" />
   </ItemGroup>
 

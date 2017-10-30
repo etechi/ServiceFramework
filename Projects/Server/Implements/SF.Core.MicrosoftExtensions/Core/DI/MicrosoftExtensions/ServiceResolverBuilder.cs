@@ -19,6 +19,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using SF.Core.ServiceManagement.Internals;
 using System.Linq;
+using System.Collections;
+
 namespace SF.Core.ServiceManagement
 {
 	public static class MSDependencyInjectionExtension
@@ -80,22 +82,120 @@ namespace SF.Core.ServiceManagement
 					throw new NotSupportedException();
 			}
 		}
+		static ServiceDescriptor MapServiceDescriptor(Microsoft.Extensions.DependencyInjection.ServiceDescriptor s)
+		{
+			if (s.ImplementationFactory != null)
+				return new ServiceDescriptor(s.ServiceType, s.ImplementationFactory, MapLifetime(s.Lifetime));
+			else if (s.ImplementationInstance != null)
+				return new ServiceDescriptor(s.ServiceType, s.ImplementationInstance);
+			else if (s.ImplementationType != null)
+				return new ServiceDescriptor(s.ServiceType, s.ImplementationType, MapLifetime(s.Lifetime));
+			else
+				throw new NotSupportedException();
+		}
+		static Microsoft.Extensions.DependencyInjection.ServiceDescriptor MapServiceDescriptor(ServiceDescriptor s)
+		{
+			if (s.IsManagedService)
+				throw new NotSupportedException();
+			switch (s.ServiceImplementType)
+			{
+				case ServiceImplementType.Creator:
+					return new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
+						s.InterfaceType,
+						s.ImplementCreator,
+						MapLifetime(s.Lifetime)
+						);
+				case ServiceImplementType.Instance:
+					return new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
+						s.InterfaceType,
+						s.ImplementInstance
+						);
+				case ServiceImplementType.Type:
+					return new Microsoft.Extensions.DependencyInjection.ServiceDescriptor(
+						s.InterfaceType,
+						s.ImplementType,
+						MapLifetime(s.Lifetime)
+					);
+				default:
+					throw new NotSupportedException();
+			}
+		}
 		public static IServiceCollection AddServices(this IServiceCollection Services, Microsoft.Extensions.DependencyInjection.IServiceCollection MSServices)
 		{
 			Services.Remove(typeof(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory));
 			Services.AddTransient< Microsoft.Extensions.DependencyInjection.IServiceScopeFactory, MSScopeFactory>();
-			return Services.AddRange(
-				MSServices.Select(s =>
-				{
-					if (s.ImplementationFactory != null)
-						return new ServiceDescriptor(s.ServiceType, s.ImplementationFactory, MapLifetime(s.Lifetime));
-					else if (s.ImplementationInstance != null)
-						return new ServiceDescriptor(s.ServiceType, s.ImplementationInstance);
-					else if (s.ImplementationType != null)
-						return new ServiceDescriptor(s.ServiceType, s.ImplementationType, MapLifetime(s.Lifetime));
-					else
-						throw new NotSupportedException();
-				}));
+			return Services.AddRange(MSServices.Select(MapServiceDescriptor));
+		}
+
+		class MicrosoftServiceCollectionAdapter : Microsoft.Extensions.DependencyInjection.IServiceCollection
+		{
+			public IServiceCollection services { get; }
+			public MicrosoftServiceCollectionAdapter(IServiceCollection services)
+			{
+				this.services = services;
+			}
+			public Microsoft.Extensions.DependencyInjection.ServiceDescriptor this[int index] {
+				get => MapServiceDescriptor(services[index]);
+				set => services[index] = MapServiceDescriptor(value);
+			}
+
+			public int Count => services.Count;
+
+			public bool IsReadOnly => services.IsReadOnly;
+
+			public void Add(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
+			{
+				services.Add(MapServiceDescriptor(item));
+			}
+
+			public void Clear()
+			{
+				services.Clear();
+			}
+
+			public bool Contains(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
+			{
+				throw new NotSupportedException();
+			}
+
+			public void CopyTo(Microsoft.Extensions.DependencyInjection.ServiceDescriptor[] array, int arrayIndex)
+			{
+				throw new NotSupportedException();
+			}
+
+			public IEnumerator<Microsoft.Extensions.DependencyInjection.ServiceDescriptor> GetEnumerator()
+			{
+				throw new NotSupportedException();
+			}
+
+			public int IndexOf(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
+			{
+				throw new NotSupportedException();
+			}
+
+			public void Insert(int index, Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
+			{
+				throw new NotSupportedException();
+			}
+
+			public bool Remove(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
+			{
+				throw new NotSupportedException();
+			}
+
+			public void RemoveAt(int index)
+			{
+				throw new NotSupportedException();
+			}
+
+			IEnumerator IEnumerable.GetEnumerator()
+			{
+				throw new NotSupportedException();
+			}
+		}
+		public static Microsoft.Extensions.DependencyInjection.IServiceCollection AsMicrosoftServiceCollection(this IServiceCollection sc)
+		{
+			return new MicrosoftServiceCollectionAdapter(sc);
 		}
 	}
 }
