@@ -15,7 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.Threading.Tasks;
 using SF.Auth.IdentityServices.Models;
-namespace SF.Auth.IdentityServices
+namespace SF.Auth.IdentityServices.Managers
 {
 	public enum ConfirmMessageType
 	{

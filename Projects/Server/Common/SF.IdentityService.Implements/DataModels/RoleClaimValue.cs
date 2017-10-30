@@ -21,39 +21,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table("SysAuthRoleClaimValue")]
-	public class RoleClaimValue
+	[Table(nameof(RoleClaimValue))]
+	public class RoleClaimValue : BaseClaimValue
 	{
-
-		[DatabaseGenerated(DatabaseGeneratedOption.None)]
-		[Key]
-		[Comment("Id")]
-		public long Id { get; set; }
 
 		[Index]
 		[Comment("身份标识ID")]
 		public long RoleId { get; set; }
 
-		[Index]
-		[Comment("类型ID")]
-		public long TypeId { get; set; }
-
-		[ForeignKey(nameof(TypeId))]
-		public ClaimType Type { get; set; }
-
 		[ForeignKey(nameof(RoleId))]
 		public Role Role { get; set; }
 
-		[Index]
-		public long? ScopeId { get; set; }
-
-		[Comment("凭证值")]
-		public string Value { get; set; }
-
-		[Comment("创建时间")]
-		public DateTime CreateTime { get; set; }
-
-		[Comment("修改时间")]
-		public DateTime UpdateTime { get; set; }
 	}
 }

@@ -25,6 +25,7 @@ namespace SF.Auth.IdentityServices.Models
 		public string UnionIdent { get; set; }
 		public DateTime BindTime { get; set; }
 		public DateTime? ConfirmedTime { get; set; }
+		public string[] RequiredClaims { get; set; }
 	}
 
 }

@@ -19,7 +19,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Management.Admins.Models
 {
-	public class AdminEditable : Auth.Users.Models.UserEditable
+	public class AdminEditable : AdminInternal
 	{
 		
 

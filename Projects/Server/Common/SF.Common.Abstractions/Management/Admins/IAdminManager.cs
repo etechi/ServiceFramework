@@ -14,7 +14,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Auth;
-using SF.Auth.Users.Models;
 using SF.Entities;
 using SF.Management.Admins.Models;
 using SF.Metadata;
@@ -26,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace SF.Management.Admins
 {
-	public class AdminQueryArgument : SF.Auth.Users.UserQueryArgument
+	public class AdminQueryArgument : QueryArgument
 	{
 		public string Account { get; set; }
 	}

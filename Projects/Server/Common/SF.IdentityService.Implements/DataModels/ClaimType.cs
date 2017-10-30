@@ -21,7 +21,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table("SysAuthClaimName")]
+	[Table(nameof(ClaimType))]
 	public class ClaimType
 	{
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]

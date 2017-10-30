@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Management.Admins.Models
 {
-	public class AdminInternal : SF.Auth.Users.Models.UserInternal
+	public class AdminInternal : UIObjectEntityBase
 	{
 
 	}

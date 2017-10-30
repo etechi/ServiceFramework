@@ -14,35 +14,33 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Data;
+using SF.Data.Models;
 using SF.Metadata;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	public class UserClaimValue: 
-		UserClaimValue<User, UserCredential, UserClaimValue,UserRole>
+	[Table(nameof(ClientAllowedOperation))]
+	public class ClientAllowedOperation 
 	{
+		[Key]
+		[Comment("客户端ID")]
+		[Column(Order =1)]
+		public long ClientConfigId { get; set; }
 
-	}
+		[ForeignKey(nameof(ClientConfigId))]
+		public ClientConfig ClientConfig { get; set; }
 
-	[Table(nameof(UserClaimValue))]
-	public class UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole> :
-		BaseClaimValue
-		where TUser : User<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserCredential : UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserClaimValue : UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserRole : UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
+		[Key]
+		[Comment("操作区域ID")]
+		[Column(Order = 2)]
+		public long OperationId { get; set; }
 
-	{
+		[ForeignKey(nameof(OperationId))]
+		public Operation Operation { get; set; }
 
-		[Index]
-		[Comment("身份标识ID")]
-		public long UserId { get; set; }
-
-		[ForeignKey(nameof(UserId))]
-		public TUser User { get; set; }
-		
 	}
 }

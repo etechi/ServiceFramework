@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table("SysAuthRole")]
+	[Table(nameof(Role))]
 	public class Role : SF.Entities.DataModels.ObjectEntityBase<long>
 	{
 		[Index("rolename",IsUnique =true,Order=1)]

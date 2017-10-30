@@ -13,17 +13,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth;
+using SF.Auth.IdentityServices.Models;
 using SF.Entities;
 using SF.Metadata;
 using System;
-namespace SF.Auth.IdentityServices
+namespace SF.Auth.IdentityServices.Managers
 {
-	public class RoleQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class UserQueryArgument : IQueryArgument<ObjectKey<long>>
 	{
 		public ObjectKey<long> Id { get; set; }
-
-		[Comment("角色名")]
+		[StringContains]
+		public string Ident { get; set; }
 		[StringContains]
 		public string Name { get; set; }
 	}
@@ -31,12 +31,19 @@ namespace SF.Auth.IdentityServices
 	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
-	[Comment("角色管理")]
-	public interface IRoleManager :
-		IEntityManager<ObjectKey<long>,Models.RoleEditable>,
-		IEntitySource<ObjectKey<long>, Models.Role, RoleQueryArgument>
+	[Comment("用户管理")]
+	public interface IUserManager<TInternal,TEditable,TQueryArgument> :
+		IEntityManager<ObjectKey<long>,TEditable>,
+		IEntitySource<ObjectKey<long>, TInternal, TQueryArgument>,
+		Internals.IUserStorage
+		where TInternal:Models.UserInternal
+		where TEditable : Models.UserEditable
+		where TQueryArgument : UserQueryArgument
 	{
 	}
+	public interface IUserManager: IUserManager<UserInternal, UserEditable, UserQueryArgument>
+	{
 
+	}
 }
 

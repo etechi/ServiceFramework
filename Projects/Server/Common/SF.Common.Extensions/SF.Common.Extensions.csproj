@@ -5,6 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Auth\**" />
+    <EmbeddedResource Remove="Auth\**" />
+    <None Remove="Auth\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
 

@@ -15,7 +15,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Metadata;
 using SF.Auth;
-using SF.Auth.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;

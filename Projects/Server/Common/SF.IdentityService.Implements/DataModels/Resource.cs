@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table("SysAuthResource")]
+	[Table(nameof(Resource))]
 	public class Resource : SF.Entities.DataModels.ObjectEntityBase<long>
 	{
 		[Comment("资源标识")]

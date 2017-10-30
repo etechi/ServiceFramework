@@ -13,8 +13,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Users.Internals;
-using SF.Auth.Users.Models;
 using SF.Core;
 using SF.Core.ServiceManagement;
 using SF.Core.Times;

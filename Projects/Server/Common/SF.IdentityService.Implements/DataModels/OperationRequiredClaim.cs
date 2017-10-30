@@ -16,33 +16,30 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Data;
 using SF.Metadata;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	public class UserClaimValue: 
-		UserClaimValue<User, UserCredential, UserClaimValue,UserRole>
+	[Table(nameof(OperationRequiredClaim))]
+	public class OperationRequiredClaim
 	{
+		[Column(Order =1)]
+		[Key]
+		[Comment("操作Id")]
+		public long OperationId { get; set; }
 
-	}
+		[ForeignKey(nameof(OperationId))]
+		public Resource Resource { get; set; }
 
-	[Table(nameof(UserClaimValue))]
-	public class UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole> :
-		BaseClaimValue
-		where TUser : User<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserCredential : UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserClaimValue : UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserRole : UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
-
-	{
-
+		[Column(Order = 2)]
+		[Key]
+		[Comment("申明类型Id")]
 		[Index]
-		[Comment("身份标识ID")]
-		public long UserId { get; set; }
+		public long ClaimTypeId { get; set; }
 
-		[ForeignKey(nameof(UserId))]
-		public TUser User { get; set; }
-		
+		[ForeignKey(nameof(ClaimTypeId))]
+		public ClaimType ClaimType { get; set; }
 	}
 }

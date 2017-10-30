@@ -15,14 +15,12 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Metadata;
 using SF.Auth;
-using SF.Auth.Users;
 using SF.Common.Members.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Auth.Users.Models;
 using SF.Entities;
 using SF.Data;
 using SF.Core.ServiceManagement;

@@ -24,7 +24,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table("SysAuthUser")]
+	[Table(nameof(User))]
 	public class User<TUser,TUserCredential, TClaimValue, TUserRole> : IEntityWithId<long>
 		where TUser: User<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TUserCredential : UserCredential<TUser, TUserCredential, TClaimValue, TUserRole>
@@ -36,11 +36,6 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Comment("ID")]
 		public long Id { get; set; }
 
-		[Index]
-		[Comment("功能ID")]
-		[ServiceScopeId]
-		public long ScopeId { get; set; }
-
 		[MaxLength(100)]
 		[Comment("名称")]
 		[Required]
@@ -49,6 +44,10 @@ namespace SF.Auth.IdentityServices.DataModels
 		[MaxLength(100)]
 		[Comment("图标")]
 		public virtual string Icon { get; set; }
+
+		[MaxLength(30)]
+		[Comment("电话")]
+		public virtual string PhoneNumber { get; set; }
 
 		[MaxLength(100)]
 		[Comment("所属对象")]
@@ -82,18 +81,18 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Index(Order = 1)]
 		[Comment("注册标识类型")]
 		[Required]
-		public long SignupIdentProviderId { get; set; }
+		public virtual long SignupIdentProviderId { get; set; }
 
 		[MaxLength(200)]
 		[Index(Order = 2)]
 		[Comment("注册标识值")]
 		[Required]
-		public string SignupIdentValue { get; set; }
+		public virtual string SignupIdentValue { get; set; }
 
 		[MaxLength(200)]
 		[Comment("注册附加参数")]
 		[JsonData]
-		public string SignupExtraArgument { get; set; }
+		public virtual string SignupExtraArgument { get; set; }
 
 
 		[InverseProperty(nameof(UserCredential<TUser,TUserCredential, TClaimValue, TUserRole>.User))]

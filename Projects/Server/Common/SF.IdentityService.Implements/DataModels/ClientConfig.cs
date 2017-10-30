@@ -13,20 +13,20 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Data;
 using SF.Data.Models;
-using SF.Entities;
-using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Auth.IdentityServices.Models
+namespace SF.Auth.IdentityServices.DataModels
 {
-	[Comment("认证客户端配置")]
-	public class ClientConfigInternal : ObjectEntityBase<long>
+	[Table(nameof(ClientConfig))]
+	public class ClientConfig:UIObjectEntityBase<long>
 	{
+
 		[Comment("发送用户声明", "When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint. Defaults to false.")]
 		public bool AlwaysIncludeUserClaimsInIdToken { get; set; }
 
@@ -78,33 +78,28 @@ namespace SF.Auth.IdentityServices.Models
 		// 摘要:
 		//     Specifies the api scopes that the client is allowed to request. If empty, the
 		//     client can't access any scope
-		[Comment("允许区域", "Specifies the api scopes that the client is allowed to request. If empty, the client can't access any scope")]
-		[Required]
-		[MaxLength(200)]
-		public string[] AllowedScopes { get; set; }
+
+		[InverseProperty(nameof(ClientAllowedOperation.ClientConfig))]
+		public ICollection<ClientAllowedOperation> ClientScopes { get; set; }
 
 		[Comment("离线访问", " Gets or sets a value indicating whether [allow offline access]. Defaults to false.")]
 		public bool AllowOfflineAccess { get; set; }
 
-		[Comment("客户端密钥", " Client secrets - only relevant for flows that require a secret")]
-		[MaxLength(200)]
-		public string ClientSecrets { get; set; }
 
 		[Comment("是否需要密钥", "If set to false, no client secret is needed to request tokens at the token endpoint (defaults to true)")]
 		public bool RequireClientSecret { get; set; }
 
-		[Comment("客户端Url", "URI to further information about client (used on consent screen)")]
-		[MaxLength(200)]
-		public string ClientUri { get; set; }
 
-		[Comment("跨域设置", "Gets or sets the allowed CORS origins for JavaScript clients. split by ;")]
+		[Comment("跨域设置", "Gets or sets the allowed CORS origins for JavaScript clients.")]
 		[MaxLength(200)]
+		[JsonData]
 		public string AllowedCorsOrigins { get; set; }
 
 		[Comment("是否需要授权", "Specifies whether a consent screen is required (defaults to true)")]
 		public bool RequireConsent { get; set; }
-
-		[Comment("授权类型", "Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit,Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit. split by ;")]
+		
+		[Comment("授权类型","Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit,Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit. ")]
+		[JsonData]
 		public string AllowedGrantTypes { get; set; }
 		////
 		//// 摘要:
@@ -123,14 +118,6 @@ namespace SF.Auth.IdentityServices.Models
 		////     multiple response types are allowed.
 		//public bool AllowAccessTokensViaBrowser { get; set; }
 		//
-		[Comment("登录跳转地址", "Specifies allowed URIs to return tokens or authorization codes to")]
-		public string RedirectUris { get; set; }
-
-		[Comment("注销跳转地址", "Specifies allowed URIs to redirect to after logout")]
-		public string PostLogoutRedirectUris { get; set; }
-
-		[Comment("前端注销跳转地址", "Specifies logout URI at client for HTTP front-channel based logout.")]
-		public string FrontChannelLogoutUri { get; set; }
 
 		[Comment("需要注销会话", "Specifies is the user's session id should be sent to the FrontChannelLogoutUri. (defaults to true)")]
 		public bool FrontChannelLogoutSessionRequired { get; set; }
@@ -141,22 +128,5 @@ namespace SF.Auth.IdentityServices.Models
 		[Comment("是否需要注销会话", "Specifies is the user's session id should be sent to the BackChannelLogoutUri Defaults to true.")]
 		public bool BackChannelLogoutSessionRequired { get; set; }
 
-
 	}
-
-	[Comment("认证客户端")]
-	public class ClientInternal : UIObjectEntityBase<long>
-	{
-		[EntityIdent(typeof(ClientConfigInternal),nameof(ConfigName))]
-		public long ConfigId { get; set; }
-
-		[Comment("配置")]
-		public string ConfigName { get; set; }
-
-		[Comment("客户端密钥")]
-		public string Secret { get; set; }
-
-	}
-	
 }
-

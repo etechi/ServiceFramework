@@ -26,7 +26,7 @@ namespace SF.Auth.IdentityServices.DataModels
 	{
 
 	}
-	[Table("SysAuthIdentityRole")]
+	[Table(nameof(UserRole))]
 	public class UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
 		where TUser : User<TUser, TUserCredential, TUserClaimValue, TUserRole>
 		where TUserCredential : UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>

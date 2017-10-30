@@ -26,15 +26,20 @@ namespace SF.Auth.IdentityServices.Models
 {
 
 	[Comment("资源")]
-	public class Resource : UIObjectEntityBase<long>
+	public class ResourceInternal : UIObjectEntityBase<long>
 	{
 		[Comment("标识")]
 		public string Ident { get; set; }
 
-		[Comment("默认角色")]
-		[EntityIdent(typeof(Role))]
-		public IEnumerable<long> Roles {get;set;}
+		public IEnumerable<ResourceOperationScope> OperationScopes { get; set; }
 	}
-	
+
+	[Comment("资源操作范围")]
+	public class ResourceOperationScope : UIObjectEntityBase<long>
+	{
+		[Comment("标识")]
+		public string Ident { get; set; }
+
+	}
 }
 

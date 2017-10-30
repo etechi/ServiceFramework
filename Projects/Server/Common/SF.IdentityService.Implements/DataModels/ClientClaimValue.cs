@@ -14,35 +14,25 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Data;
+using SF.Data.Models;
 using SF.Metadata;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	public class UserClaimValue: 
-		UserClaimValue<User, UserCredential, UserClaimValue,UserRole>
-	{
-
-	}
-
-	[Table(nameof(UserClaimValue))]
-	public class UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole> :
-		BaseClaimValue
-		where TUser : User<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserCredential : UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserClaimValue : UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserRole : UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
-
+	[Table(nameof(ClientClaimValue))]
+	public class ClientClaimValue : BaseClaimValue
 	{
 
 		[Index]
-		[Comment("身份标识ID")]
-		public long UserId { get; set; }
+		[Comment("客户端ID")]
+		public long ClientId { get; set; }
 
-		[ForeignKey(nameof(UserId))]
-		public TUser User { get; set; }
-		
+		[ForeignKey(nameof(ClientId))]
+		public Client Client { get; set; }
+
 	}
 }

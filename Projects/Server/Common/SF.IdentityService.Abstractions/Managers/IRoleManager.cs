@@ -13,36 +13,30 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
+using SF.Auth;
+using SF.Entities;
 using SF.Metadata;
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace SF.Auth.IdentityServices.DataModels
+namespace SF.Auth.IdentityServices.Managers
 {
-	public class UserClaimValue: 
-		UserClaimValue<User, UserCredential, UserClaimValue,UserRole>
+	public class RoleQueryArgument : IQueryArgument<ObjectKey<long>>
 	{
+		public ObjectKey<long> Id { get; set; }
 
+		[Comment("角色名")]
+		[StringContains]
+		public string Name { get; set; }
 	}
 
-	[Table(nameof(UserClaimValue))]
-	public class UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole> :
-		BaseClaimValue
-		where TUser : User<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserCredential : UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserClaimValue : UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserRole : UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
-
+	[EntityManager]
+	[Authorize("admin")]
+	[NetworkService]
+	[Comment("角色管理")]
+	public interface IRoleManager :
+		IEntityManager<ObjectKey<long>,Models.RoleEditable>,
+		IEntitySource<ObjectKey<long>, Models.Role, RoleQueryArgument>
 	{
-
-		[Index]
-		[Comment("身份标识ID")]
-		public long UserId { get; set; }
-
-		[ForeignKey(nameof(UserId))]
-		public TUser User { get; set; }
-		
 	}
+
 }
+

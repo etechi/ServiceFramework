@@ -16,33 +16,29 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Data;
 using SF.Metadata;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	public class UserClaimValue: 
-		UserClaimValue<User, UserCredential, UserClaimValue,UserRole>
+	[Table(nameof(ResourceOperationScope))]
+	public class ResourceOperationScope : SF.Entities.DataModels.ObjectEntityBase<long>
 	{
+		[Index("ident",IsUnique =true,Order =1)]
+		[Comment("相关资源")]
+		public long ResourceId { get; set; }
 
-	}
+		[Comment("资源描述")]
+		public string Description { get; set; }
 
-	[Table(nameof(UserClaimValue))]
-	public class UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole> :
-		BaseClaimValue
-		where TUser : User<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserCredential : UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserClaimValue : UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserRole : UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
+		[ForeignKey(nameof(ResourceId))]
+		public Resource Resource { get; set; }
 
-	{
+		[Index("ident", IsUnique = true, Order = 2)]
+		[Comment("标识")]
+		public string Ident { get; set; }
 
-		[Index]
-		[Comment("身份标识ID")]
-		public long UserId { get; set; }
 
-		[ForeignKey(nameof(UserId))]
-		public TUser User { get; set; }
-		
 	}
 }

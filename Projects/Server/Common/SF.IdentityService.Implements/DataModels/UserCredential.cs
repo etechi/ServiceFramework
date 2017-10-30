@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 
-	[Table("SysAuthIdentityCredential")]
+	[Table(nameof(UserCredential))]
 	public class UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
 		where TUser : User<TUser, TUserCredential, TUserClaimValue, TUserRole>
 		where TUserCredential : UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
