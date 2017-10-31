@@ -49,7 +49,7 @@ namespace SF.Auth.IdentityServices.Internals
 		[Required]
 		[Comment("登录凭证提供者")]
 		[MaxLength(100)]
-		public long CredentialProvider { get; set; }
+		public long ClaimTypeId { get; set; }
 
 		[Comment("注册附加参数")]
 		[MaxLength(200)]

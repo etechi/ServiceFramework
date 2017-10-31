@@ -22,8 +22,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(ResourceOperationScope))]
-	public class ResourceOperationScope : SF.Entities.DataModels.ObjectEntityBase<long>
+	[Table(nameof(Operation))]
+	public class Operation : SF.Entities.DataModels.ObjectEntityBase<long>
 	{
 		[Index("ident",IsUnique =true,Order =1)]
 		[Comment("相关资源")]

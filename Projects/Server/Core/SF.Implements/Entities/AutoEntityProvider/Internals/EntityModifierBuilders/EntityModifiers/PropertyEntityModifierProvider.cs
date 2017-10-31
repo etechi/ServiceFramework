@@ -107,7 +107,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 					lastTask = t;
 				}
 			}
-			static MethodInfo MethodRunTasks = typeof(EntityModifierCreator<TDataModel, TEntity>).GetMethod("RunTasks",BindingFlags.Static| BindingFlags.NonPublic);
+			static MethodInfo MethodRunTasks { get; } = typeof(EntityModifierCreator<TDataModel, TEntity>).GetMethod("RunTasks", BindingFlags.Static | BindingFlags.NonPublic);
 
 			public Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task> TryBuild()
 			{

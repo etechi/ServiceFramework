@@ -46,31 +46,18 @@ namespace SF.Auth.IdentityServices.Entity
 			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
 
-		public async Task<UserCredential> FindOrBind(long Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
+		public async Task<UserCredential> FindOrBind(long ClaimTypeId, string Credential, bool Confirmed, long UserId)
 		{
-			TUserCredential exist;
-			long? existUserId;
-			if (UnionIdent != null)
-			{
-				var es = await DataSet.QueryAsync(i => i.ProviderId == Provider && i.UnionIdent == UnionIdent);
-				exist = es.First(i => i.Credential == Credential);
-				existUserId = exist?.UserId ?? es.FirstOrDefault()?.UserId;
-			}
-			else
-			{
-				exist = await DataSet.FirstOrDefaultAsync(i => i.ProviderId == Provider && i.Credential == Credential);
-				existUserId = exist?.UserId;
-			}
+			var exist = await DataSet.FirstOrDefaultAsync(i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential);
+			var existUserId = exist?.UserId;
 
 			if (exist == null)
 			{
 				exist = DataSet.Add(new TUserCredential
 				{
-					ScopeId= ServiceInstanceDescriptor.DataScopeId??0,
-					ProviderId = Provider,
+					ClaimTypeId = ClaimTypeId,
 					Credential = Credential,
 					UserId = existUserId ?? UserId,
-					UnionIdent = UnionIdent,
 					CreatedTime = TimeService.Now,
 					ConfirmedTime = Confirmed ? (DateTime?)TimeService.Now : null
 				});
@@ -80,62 +67,52 @@ namespace SF.Auth.IdentityServices.Entity
 
 		}
 
-		public async Task<UserCredential> Find(long Provider, string Credential, string UnionIdent)
+		public async Task<UserCredential> Find(long ClaimTypeId, string Credential)
 		{
-			if (UnionIdent != null)
-				return await DataSet.FirstOrDefaultAsync(
-					i => i.ProviderId == Provider && i.UnionIdent == UnionIdent && i.Credential == Credential,
-					ADT.Poco.MapExpression<TUserCredential, UserCredential>()
-					);
-			else
-				return await DataSet.FirstOrDefaultAsync(
-					i => i.ProviderId == Provider && i.Credential == Credential,
-					ADT.Poco.MapExpression<TUserCredential, UserCredential>()
-					);
+			return await DataSet.FirstOrDefaultAsync(
+				i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential,
+				ADT.Poco.MapExpression<TUserCredential, UserCredential>()
+				);
 		}
 
-		public async Task Bind(long Provider, string Credential, string UnionIdent, bool Confirmed, long UserId)
+		public async Task Bind(long ClaimTypeId, string Credential, bool Confirmed, long UserId)
 		{
 			DataSet.Add(new TUserCredential
 			{
-				ScopeId = ServiceInstanceDescriptor.DataScopeId.Value,
-				ProviderId = Provider,
 				Credential = Credential,
 				UserId = UserId,
-				UnionIdent = UnionIdent,
 				CreatedTime = TimeService.Now,
 				ConfirmedTime = Confirmed ? (DateTime?)TimeService.Now : null
 			});
 			await DataSet.Context.SaveChangesAsync();
 		}
 
-		public async Task Unbind(long Provider, string Credential, long UserId)
+		public async Task Unbind(long ClaimTypeId, string Credential, long UserId)
 		{
-			await DataSet.RemoveRangeAsync(i => i.ProviderId == Provider && i.Credential == Credential && i.UserId == UserId);
+			await DataSet.RemoveRangeAsync(i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential && i.UserId == UserId);
 		}
 
-		public async Task SetConfirmed(long Provider, string Credential, bool Confirmed)
+		public async Task SetConfirmed(long ClaimTypeId, string Credential, bool Confirmed)
 		{
 			await DataSet.Update(
-				i =>i.ProviderId == Provider && i.Credential == Credential,
+				i =>i.ClaimTypeId == ClaimTypeId && i.Credential == Credential,
 				e =>
 				{
 					e.ConfirmedTime = Confirmed ? (DateTime?)TimeService.Now : null;
 				});
 		}
 
-		public async Task<UserCredential[]> GetIdents(long Provider, long UserId)
+		public async Task<UserCredential[]> GetIdents(long ClaimTypeId, long UserId)
 		{
 			return await DataSet.QueryAsync(
-				i => i.ProviderId == Provider && i.UserId == UserId,
+				i => i.ClaimTypeId == ClaimTypeId && i.UserId == UserId,
 				ADT.Poco.MapExpression<TUserCredential, UserCredential>()
 				);
 		}
 
 		public async Task RemoveAllAsync()
 		{
-			var sid =  ServiceInstanceDescriptor.DataScopeId.Value;
-			await DataSet.RemoveRangeAsync(ic => ic.ScopeId == sid);
+			await DataSet.RemoveRangeAsync(ic => true);
 		}
 	}
 	

@@ -223,6 +223,7 @@ namespace System.Reflection
 			typeof(string),
 			typeof(DateTime),
 			typeof(TimeSpan),
+			typeof(Guid)
 		};
 		public static bool IsConstType(this Type type)
 		{

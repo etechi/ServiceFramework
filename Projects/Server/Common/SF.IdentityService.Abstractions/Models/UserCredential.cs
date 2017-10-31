@@ -19,10 +19,9 @@ namespace SF.Auth.IdentityServices.Models
 {
 	public class UserCredential
 	{
-		public long ProviderId { get; set; }
-		public long IdentityId { get; set; }
+		public long ClaimTypeId { get; set; }
+		public long UserId { get; set; }
 		public string Credential { get; set; }
-		public string UnionIdent { get; set; }
 		public DateTime BindTime { get; set; }
 		public DateTime? ConfirmedTime { get; set; }
 		public string[] RequiredClaims { get; set; }

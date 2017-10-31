@@ -138,6 +138,8 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IEntityPropertyModifierProvider, CreatedTimePropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, UpdatedTimePropertyModifierProvider>();
 
+			sc.AddSingleton<IEntityPropertyModifierProvider, SkipWhenDefaultPropertyModifierProvider>();
+			sc.AddSingleton<IEntityPropertyModifierProvider, SkipWhenKeyModifyPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, ServiceScopeIdPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, DefaultPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, JsonDataPropertyModifierProvider>();

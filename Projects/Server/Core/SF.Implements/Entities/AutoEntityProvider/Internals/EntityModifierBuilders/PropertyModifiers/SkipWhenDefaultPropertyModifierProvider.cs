@@ -28,34 +28,14 @@ using System.Threading.Tasks;
 
 namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 {
-	public class SkipWhenDefaultPropertyModifierProvider : IEntityPropertyModifierProvider
+	public class SkipWhenDefaultPropertyModifierProvider : BaseSkipPropertyModifierProvider,
+		IEntityPropertyModifierProvider
 	{
-		public static int DefaultPriority { get; } = -10000;
-		class SkipWhenDefaultPropertyModifier<T,E> : IAsyncEntityPropertyModifier<T,E>
+		class SkipWhenDefaultPropertyModifier<T,E> : BaseSkipPropertyModifier<T,E>
 		{
-			public int Priority => -1000;
-			Func<IDataSetEntityManager, IEntityModifyContext, E, T,Task<E>> GetValue;
-			public Task<E> Execute(IDataSetEntityManager Manager, IEntityModifyContext Context, E OrgValue, T Value)
+			protected override bool ShouldSkipNextModifier(T Value)
 			{
-				if (GetValue == null)
-					throw new Exception("未找到实际的属性修改器");
-				if (Value.IsDefault())
-					return Task.FromResult(OrgValue);
-				return GetValue(Manager, Context, OrgValue, Value);
-			}
-			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier)
-			{
-				if (LowPriorityModifier is IAsyncEntityPropertyModifier<T, E> m1)
-					GetValue = m1.Execute;
-				else if (LowPriorityModifier is IAsyncEntityPropertyModifier<E> m2)
-					GetValue = (m, c, o, v) => m2.Execute(m, c, o);
-				else if (LowPriorityModifier is IEntityPropertyModifier<T, E> m3)
-					GetValue = (m, c, o, v) => Task.FromResult(m3.Execute(m, c, o, v));
-				else if (LowPriorityModifier is IEntityPropertyModifier<E> m4)
-					GetValue = (m, c, o, v) => Task.FromResult(m4.Execute(m, c, o));
-				else
-					throw new NotSupportedException();
-				return this;
+				return Value.IsDefault();
 			}
 		}
 		public IEntityPropertyModifier GetPropertyModifier(

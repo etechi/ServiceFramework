@@ -68,7 +68,7 @@ namespace SF.Auth.IdentityServices.Managers
 				Icon = Arg.User.Icon,
 
 				CreateCredential = Arg.CredentialValue,
-				CreateCredentialProviderId = Arg.CredentialProvider,
+				CreateClaimTypeId = Arg.ClaimTypeId,
 
 				LogicState = EntityLogicState.Enabled,
 				SignupExtraArgument=Arg.ExtraArgument,
@@ -80,7 +80,7 @@ namespace SF.Auth.IdentityServices.Managers
 					new Models.UserCredential
 					{
 						Credential=Arg.CredentialValue,
-						ProviderId=Arg.CredentialProvider,
+						ClaimTypeId=Arg.ClaimTypeId,
 					}
 				}
 			});
@@ -133,13 +133,13 @@ namespace SF.Auth.IdentityServices.Managers
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
-			m.SignupIdentProviderId = e.CreateCredentialProviderId;
+			m.SignupIdentProviderId = e.CreateClaimTypeId;
 			m.SignupIdentValue = e.CreateCredential;
 			if (e.Credentials == null)
 				e.Credentials = new[]{
 					new Models.UserCredential
 					{
-						ProviderId=e.CreateCredentialProviderId,
+						ClaimTypeId=e.CreateClaimTypeId,
 						Credential=e.CreateCredential,
 						BindTime=Now
 					}
@@ -159,19 +159,13 @@ namespace SF.Auth.IdentityServices.Managers
 				ics.Merge(
 					oitems,
 					e.Credentials,
-					(mi, ei) => mi.ProviderId == ei.ProviderId && mi.Credential==ei.Credential,
+					(mi, ei) => mi.ClaimTypeId == ei.ClaimTypeId && mi.Credential== ei.Credential,
 					ei => new TUserCredential
 					{
-						ScopeId = m.ScopeId,
 						UserId = m.Id,
-						UnionIdent = ei.UnionIdent,
 						Credential = ei.Credential,
-						ProviderId = ei.ProviderId,
+						ClaimTypeId = ei.ClaimTypeId,
 						CreatedTime = Now,
-					},
-					(mi, ei) =>
-					{
-						mi.UnionIdent = ei.UnionIdent;
 					}
 					);
 			}
@@ -212,7 +206,6 @@ namespace SF.Auth.IdentityServices.Managers
 					{
 						Id = n.Id,
 						TypeId = n.TypeId,
-						ScopeId = DataScopeId,
 						UserId=m.Id,
 						CreateTime = Now,
 						UpdateTime = Now,

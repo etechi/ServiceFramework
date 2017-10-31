@@ -20,31 +20,32 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.IdentityServices.UserCredentialProviders
 {
-	public class UserAccountIdentityCredentialProvider :
-		BaseIdentityCredentialProvider
+	public class LocalUserCredentialProvider :
+		IUserCredentialProvider
 	{
-		public UserAccountIdentityCredentialProvider(
-			IUserCredentialStorage IdentStorage,
-			IServiceInstanceDescriptor ServiceInstanceMeta
-			) :
-			base(IdentStorage,ServiceInstanceMeta)
+		public LocalUserCredentialProvider()
 		{
 		}
-		public override string Name => "用户账号";
+		public long ClaimTypeId => 0;
+		public  string Name => "用户账号";
 
-		public override bool IsConfirmable()
+		public string Ident => "local";
+
+		public string Description => "本地用户账号";
+
+		public  bool IsConfirmable()
 		{
 			return false;
 		}
 		
-		public override Task<long> SendConfirmCode(
+		public  Task<long> SendConfirmCode(
 			long? IdentityId, string Ident,  string Code, ConfirmMessageType Type, string TrackIdent)
 		{
 
 			throw new NotSupportedException("用户账号不支持验证");
 		}
 
-		public override Task<string> VerifyFormat(string Ident)
+		public  Task<string> VerifyFormat(string Ident)
 		{
 			if (Ident.Length < 2)
 				return Task.FromResult("账号太短");

@@ -22,6 +22,7 @@ using IdentityServer4.Models;
 using System;
 using SF.Data;
 using System.Linq;
+using SF.Core;
 
 namespace SF.Auth.IdentityServices.IdentityServer4Impl
 {
@@ -40,19 +41,29 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			if (!cid.HasValue)
 				return null;
 
-			var re = await Clients.AsQueryable().Where(c => c.Id == cid.Value).SingleOrDefaultAsync();
+			var re = await (
+				from c in Clients.AsQueryable()
+				where c.Id == cid.Value && c.LogicState == Entities.EntityLogicState.Enabled
+				select new
+				{
+					cfg = c.ClientConfig,
+					cli=c,
+					scopes=from cs in c.ClientConfig.ClientScopes
+						   select cs.Operation.Resource.Ident+"."+cs.Operation.Ident
+				}).SingleOrDefaultAsync();
 			if (re == null) return null;
-
+			var cfg = re.cfg;
+			var cli = re.cli;
 			return new Client
 			{
-				BackChannelLogoutSessionRequired = re.BackChannelLogoutSessionRequired,
-				AlwaysIncludeUserClaimsInIdToken = re.AlwaysIncludeUserClaimsInIdToken,
-				IdentityTokenLifetime = re.IdentityTokenLifetime,
-				AccessTokenLifetime = re.AccessTokenLifetime,
-				AuthorizationCodeLifetime = re.AuthorizationCodeLifetime,
-				AbsoluteRefreshTokenLifetime = re.AbsoluteRefreshTokenLifetime,
-				SlidingRefreshTokenLifetime = re.SlidingRefreshTokenLifetime,
-				ConsentLifetime = re.ConsentLifetime,
+				BackChannelLogoutSessionRequired = cfg.BackChannelLogoutSessionRequired,
+				AlwaysIncludeUserClaimsInIdToken = cfg.AlwaysIncludeUserClaimsInIdToken,
+				IdentityTokenLifetime = cfg.IdentityTokenLifetime,
+				AccessTokenLifetime = cfg.AccessTokenLifetime,
+				AuthorizationCodeLifetime = cfg.AuthorizationCodeLifetime,
+				AbsoluteRefreshTokenLifetime = cfg.AbsoluteRefreshTokenLifetime,
+				SlidingRefreshTokenLifetime = cfg.SlidingRefreshTokenLifetime,
+				ConsentLifetime = cfg.ConsentLifetime,
 				//RefreshTokenUsage = re.RefreshTokenUsage,
 				//UpdateAccessTokenClaimsOnRefresh = re.UpdateAccessTokenClaimsOnRefresh,
 				//RefreshTokenExpiration = re.RefreshTokenExpiration,
@@ -62,31 +73,31 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 				IncludeJwtId = true,//re.IncludeJwtId,
 									//Claims = re.Claims,
 									//AlwaysSendClientClaims = re.AlwaysSendClientClaims,
-				ClientClaimsPrefix = re.ClientClaimsPrefix,
+				ClientClaimsPrefix = cfg.ClientClaimsPrefix,
 				//PairWiseSubjectSalt = re.PairWiseSubjectSalt,
-				AllowedScopes = re.AllowedScopes.SplitAndNormalizae(';').ToArray(),
-				AllowOfflineAccess = re.AllowOfflineAccess,
+				AllowedScopes = re.scopes.ToArray(),
+				AllowOfflineAccess = cfg.AllowOfflineAccess,
 				//Properties = re.Properties,
 				//BackChannelLogoutUri = re.BackChannelLogoutUri,
-				Enabled = re.LogicState == Entities.EntityLogicState.Enabled,
-				ClientId = re.Id.ToString(),
+				Enabled = cli.LogicState == Entities.EntityLogicState.Enabled,
+				ClientId = cli.Id.ToString(),
 				//ProtocolType = re.ProtocolType,
-				ClientSecrets = new[] { new Secret(re.ClientSecrets) },
-				RequireClientSecret = re.RequireClientSecret,
-				ClientName = re.Name,
-				ClientUri = re.ClientUri,
-				LogoUri = re.Icon,
-				AllowedCorsOrigins = re.AllowedCorsOrigins.SplitAndNormalizae(';').ToArray(),
-				RequireConsent = re.RequireConsent,
-				AllowedGrantTypes = re.AllowedGrantTypes.SplitAndNormalizae(';').ToArray(),
+				ClientSecrets = new[] { new Secret(cli.ClientSecrets) },
+				RequireClientSecret = cfg.RequireClientSecret,
+				ClientName = cli.Name,
+				ClientUri = cli.ClientUri,
+				LogoUri = cli.Icon,
+				AllowedCorsOrigins = Json.Parse<string[]>(cfg.AllowedCorsOrigins),
+				RequireConsent = cfg.RequireConsent,
+				AllowedGrantTypes = Json.Parse<string[]>(cfg.AllowedGrantTypes),
 				//RequirePkce = re.RequirePkce,
 				//AllowPlainTextPkce = re.AllowPlainTextPkce,
 				//AllowAccessTokensViaBrowser = re.AllowAccessTokensViaBrowser,
-				RedirectUris = new[] { re.RedirectUris },
-				PostLogoutRedirectUris = new[] { re.PostLogoutRedirectUris },
-				FrontChannelLogoutUri = re.FrontChannelLogoutUri,
-				FrontChannelLogoutSessionRequired = re.FrontChannelLogoutSessionRequired,
-				AllowRememberConsent = re.AllowRememberConsent,
+				RedirectUris = new[] { cli.RedirectUris },
+				PostLogoutRedirectUris = new[] { cli.PostLogoutRedirectUris },
+				FrontChannelLogoutUri = cli.FrontChannelLogoutUri,
+				FrontChannelLogoutSessionRequired = cfg.FrontChannelLogoutSessionRequired,
+				AllowRememberConsent = cfg.AllowRememberConsent,
 			};
 		}
 	}

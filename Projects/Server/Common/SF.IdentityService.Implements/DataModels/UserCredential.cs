@@ -30,30 +30,23 @@ namespace SF.Auth.IdentityServices.DataModels
 		where TUserRole : UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
 	{
 
+
 		[Key]
 		[Column(Order = 1)]
-		[Comment("分区ID")]
 		[Index("union", Order = 1)]
-		public long ScopeId { get; set; }
+		public long ClaimTypeId { get; set; }
+
+		[ForeignKey(nameof(ClaimTypeId))]
+		public ClaimType ClaimType { get; set; }
 
 		[Key]
-		[Column(Order =2)]
-		[Index("union",Order=2)]
-		public long ProviderId { get; set; }
-
-		[Key]
-		[Column(Order = 3)]
+		[Column(Order = 2)]
 		[MaxLength(100)]
 		public string Credential { get; set; }
-
 
 		[Index]
 		[Comment("标识ID")]
 		public long UserId { get; set; }
-
-		[Index("union", Order = 3)]
-		[MaxLength(100)]
-		public string UnionIdent { get; set; }
 
 		public DateTime CreatedTime { get; set; }
 		public DateTime? ConfirmedTime { get; set; }

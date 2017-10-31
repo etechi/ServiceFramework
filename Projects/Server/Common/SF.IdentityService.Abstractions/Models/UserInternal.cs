@@ -30,7 +30,7 @@ namespace SF.Auth.IdentityServices.Models
 		public string CreateCredential  { get; set; }
 
 		[Comment("创建标识提供者")]
-		public long CreateCredentialProviderId { get; set; }
+		public long CreateClaimTypeId { get; set; }
 
 		[Comment("创建时间")]
 		public DateTime CreateTime { get; set; }

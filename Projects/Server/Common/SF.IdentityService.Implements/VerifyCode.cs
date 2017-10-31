@@ -14,33 +14,16 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Auth.IdentityServices.Internals;
-using System;
+using SF.Metadata;
 
-namespace SF.Auth.IdentityServices.UserCredentialProviders
+namespace SF.Auth.IdentityServices
 {
-	public class ConfirmMessageTemplateSetting
+	[Comment("验证码")]
+	public class VerifyCode
 	{
-		public string SigninMessageTemplate { get; set; }
-		public string SignupMessageTemplate { get; set; }
-		public string PasswordRecorveryMessageTemplate { get; set; }
-		public string NormalConfirmMessageTemplate { get; set; }
-
-
-		public string GetTemplate(ConfirmMessageType Type)
-		{
-			switch (Type)
-			{
-				case ConfirmMessageType.Confirm:
-					return NormalConfirmMessageTemplate;
-				case ConfirmMessageType.PasswordRecorvery:
-					return PasswordRecorveryMessageTemplate;
-				case ConfirmMessageType.Signin:
-					return SigninMessageTemplate;
-				case ConfirmMessageType.Signup:
-					return SignupMessageTemplate;
-				default:
-					throw new NotSupportedException();
-			}
-		}
+		public ConfirmMessageType Type { get; set; }
+		public long? UserId{ get; set; }
+		public string Ident { get; set; }
+		public string Code{ get; set; }
 	}
 }

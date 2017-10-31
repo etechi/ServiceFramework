@@ -42,8 +42,8 @@ namespace SF.Auth.IdentityServices
 
 	public class SendPasswordRecorveryCodeArgument
 	{
-		[Comment("身份验证服务ID")]
-		public long? CredentialProviderId { get; set; }
+		[Comment("身份验证服务")]
+		public string CredentialProvider { get; set; }
 
 		[Comment("人工操作验证码")]
 		public string CaptchaCode { get; set; }
@@ -53,8 +53,8 @@ namespace SF.Auth.IdentityServices
 	}
 	public class ResetPasswordByRecorveryCodeArgument
 	{
-		[Comment("身份验证服务ID")]
-		public long? CredentialProviderId { get; set; }
+		[Comment("身份验证服务")]
+		public string CredentialProvider { get; set; }
 
 		[Comment("用户")]
 		public string Credential { get; set; }
@@ -71,7 +71,7 @@ namespace SF.Auth.IdentityServices
 	public class SignupArgument
 	{
 		[Comment("身份验证服务ID")]
-		public long? CredentialProviderId { get; set; }
+		public string CredentialProvider { get; set; }
 
 		[Comment("身份信息")]
 		public User User { get; set; }
@@ -100,8 +100,8 @@ namespace SF.Auth.IdentityServices
 
 	public class SendCreateIdentityVerifyCodeArgument
 	{
-		[Comment("身份验证服务ID")]
-		public long? CredentialProviderId { get; set; }
+		[Comment("身份验证服务")]
+		public string CredentialProvider { get; set; }
 
 		[Comment("人工操作验证码")]
 		public string Credetial { get; set; }

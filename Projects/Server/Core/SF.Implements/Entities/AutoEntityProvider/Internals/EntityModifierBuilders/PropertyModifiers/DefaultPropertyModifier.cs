@@ -50,11 +50,13 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			PropertyInfo DataModelProperty
 			)
 		{
-			if (ActionType != DataActionType.Update)
+			if (ActionType != DataActionType.Update && ActionType != DataActionType.Create)
 				return null;
 			if(EntityProperty==null)
 				return null;
-			if (EntityProperty.PropertyType != DataModelProperty.PropertyType)
+			if (EntityProperty.PropertyType != DataModelProperty.PropertyType )
+				return null;
+			if (!EntityProperty.PropertyType.IsConstType())
 				return null;
 			return (IEntityPropertyModifier)Activator.CreateInstance(typeof(EntityPropertyModifier<>).MakeGenericType(EntityProperty.PropertyType));
 		}

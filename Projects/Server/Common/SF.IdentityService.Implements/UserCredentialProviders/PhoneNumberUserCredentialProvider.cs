@@ -24,33 +24,36 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.IdentityServices.UserCredentialProviders
 {
-	public class PhoneNumberIdentityCredentialProvider :
-		BaseIdentityCredentialProvider
+	public class PhoneNumberUserCredentialProvider :
+		IUserCredentialProvider
 	{
 		public Lazy<IPhoneNumberValidator> PhoneNumberValidator { get; }
 		public Lazy<IPhoneMessageService> TextMessageService { get; }
 		public ConfirmMessageTemplateSetting ConfirmMessageSetting { get; }
-		public PhoneNumberIdentityCredentialProvider(
-			IUserCredentialStorage IdentStorage,
+		public PhoneNumberUserCredentialProvider(
 			Lazy<IPhoneNumberValidator> PhoneNumberValidator,
 			Lazy<IPhoneMessageService> TextMessageService,
-			ConfirmMessageTemplateSetting ConfirmMessageSetting,
-			IServiceInstanceDescriptor ServiceInstanceMeta
-			) :
-			base(IdentStorage,ServiceInstanceMeta)
+			ConfirmMessageTemplateSetting ConfirmMessageSetting
+			)
 		{
 			this.PhoneNumberValidator = PhoneNumberValidator;
 			this.ConfirmMessageSetting = ConfirmMessageSetting;
 			this.TextMessageService = TextMessageService;
 		}
-		public override string Name => "手机号";
+		public long ClaimTypeId => 0;
 
-		public override bool IsConfirmable()
+		public string Name => "手机号";
+
+		public string Ident => "phone";
+
+		public string Description => "手机号认证";
+
+		public bool IsConfirmable()
 		{
 			return true;
 		}
 		
-		public override async Task<long> SendConfirmCode(
+		public  async Task<long> SendConfirmCode(
 			 long? IdentityId, string Ident, string Code, ConfirmMessageType Type, string TrackIdent)
 		{
 
@@ -75,7 +78,7 @@ namespace SF.Auth.IdentityServices.UserCredentialProviders
 			return re;
 		}
 
-		public override Task<string> VerifyFormat(string Ident)
+		public  Task<string> VerifyFormat(string Ident)
 		{
 			return PhoneNumberValidator.Value.Validate(Ident);
 		}

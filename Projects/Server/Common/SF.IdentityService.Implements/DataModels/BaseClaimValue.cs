@@ -36,8 +36,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		[ForeignKey(nameof(TypeId))]
 		public ClaimType Type { get; set; }
 
-		
-		[Comment("凭证值")]
+		[Comment("声明值")]
 		public string Value { get; set; }
 
 		[Comment("创建时间")]

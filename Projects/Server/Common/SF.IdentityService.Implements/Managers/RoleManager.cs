@@ -72,7 +72,6 @@ namespace SF.Auth.IdentityServices.Managers
 						Id = n.Id,
 						RoleId=m.Id,
 						TypeId = n.TypeId,
-						ScopeId = DataScopeId,
 						CreateTime = Now,
 						UpdateTime = Now,
 						Value = n.Value

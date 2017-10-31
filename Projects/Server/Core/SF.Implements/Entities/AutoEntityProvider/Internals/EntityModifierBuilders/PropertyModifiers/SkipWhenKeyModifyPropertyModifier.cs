@@ -1,4 +1,4 @@
-﻿#region Apache License Version 2.0
+#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -13,23 +13,41 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Metadata;
 using System;
+using System.Reflection;
+using System.Linq.Expressions;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using SF.Metadata;
+using System.Reflection.Emit;
+using SF.Core.ServiceManagement;
 using System.ComponentModel.DataAnnotations.Schema;
+using SF.Data;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
-namespace SF.Auth.IdentityServices.DataModels
+namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 {
-	[Table(nameof(Role))]
-	public class Role : SF.Entities.DataModels.ObjectEntityBase<long>
+	public class SkipWhenKeyModifyPropertyModifierProvider : BaseSkipPropertyModifierProvider,
+		IEntityPropertyModifierProvider
 	{
+		public IEntityPropertyModifier GetPropertyModifier(
+			DataActionType ActionType, 
+			Type EntityType, 
+			PropertyInfo EntityProperty, 
+			Type DataModelType, 
+			PropertyInfo DataModelProperty
+			)
 
-		[Index(IsUnique = true)]
-		public override string Name { get; set; }
+		{
+			if (EntityProperty == null)
+				return null;
+			if (ActionType != DataActionType.Update)
+				return null;
+			if (EntityProperty.GetCustomAttribute<KeyAttribute>()==null)
+				return null;
 
-		[InverseProperty(nameof(RoleClaimValue.Role))]
-		public ICollection<RoleClaimValue> ClaimValues { get; set; }
+			return new NonePropertyModifier(-10000);
+		}
 	}
 }

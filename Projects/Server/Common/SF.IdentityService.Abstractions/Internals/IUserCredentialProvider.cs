@@ -15,7 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.Threading.Tasks;
 using SF.Auth.IdentityServices.Models;
-namespace SF.Auth.IdentityServices.Managers
+namespace SF.Auth.IdentityServices.Internals
 {
 	public enum ConfirmMessageType
 	{
@@ -26,23 +26,13 @@ namespace SF.Auth.IdentityServices.Managers
 	}
     public interface IUserCredentialProvider
     {
-		long Id { get; }
+		long ClaimTypeId { get; }
 		string Ident { get; }
 		string Name { get; }
 		string Description { get; }
-		bool IsConfirmable();
 		Task<string> VerifyFormat(string Ident);
-
 		Task<long> SendConfirmCode(long? IdentityId, string Credential, string Code, ConfirmMessageType Type, string TrackIdent);
-		Task SetConfirmed(string Credential, bool Confirmed);
-
-		Task<UserCredential> FindOrBind(string Credential, string UnionIdent,bool Confirmed,long UserId);
-		Task<UserCredential> Find(string Credential, string UnionIdent);
-
-		Task Bind(string Credential, string UnionIdent, bool Confirmed, long UserId);
-		Task Unbind(string Credential, long UserId);
-
-		Task<UserCredential[]> GetIdents(long UserId);
+		bool IsConfirmable();
 	}
 
 }

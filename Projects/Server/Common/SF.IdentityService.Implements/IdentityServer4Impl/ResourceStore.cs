@@ -23,6 +23,7 @@ using SF.Data;
 using System.Linq;
 using SF.Core.ServiceManagement.Management;
 using SF.Entities;
+using SF.Auth.IdentityServices.Internals;
 
 namespace SF.Auth.IdentityServices.IdentityServer4Impl
 {

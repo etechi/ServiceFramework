@@ -58,6 +58,7 @@ namespace SF.Entities
 		ITimeService TimeService { get; }
 		ILogger Logger { get; }
 		IEventEmitter EventEmitter { get; }
+		IServiceProvider ServiceProvider { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 		IClientService ClientService { get; }
 		IAccessToken AccessToken { get; }

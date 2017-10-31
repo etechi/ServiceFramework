@@ -398,6 +398,49 @@ namespace SF.Data
 				}).ToList();
 		}
 
+		public static async Task<List<M>> MergeAsync<M, E>(
+			this IDataSet<M> set,
+			IEnumerable<M> orgItems,
+			IEnumerable<E> newItems,
+			Func<M, E, bool> Equals,
+			Func<E, Task<M>> newItem,
+			Func<M, E,Task> updater = null,
+			Func<M,Task> remover = null
+			)
+			where M : class
+		{
+			if (orgItems != null)
+			{
+				orgItems = orgItems.ToArray();
+				foreach (var i in orgItems.Where(i => newItems == null || !newItems.Any(ni => Equals(i, ni))).ToArray())
+				{
+					if (remover != null)
+						await remover(i);
+					set.Remove(i);
+						
+				}
+			}
+
+			if (newItems == null)
+				return new List<M>();
+
+			var re = new List<M>();
+			foreach (var i in newItems) {
+				var org_item = orgItems?.Where(oi => Equals(oi, i)).SingleOrDefault();
+				if (org_item == null)
+					re.Add(set.Add(await newItem(i)));
+				else
+				{
+					if (updater != null)
+					{
+						await updater(org_item, i);
+						set.Update(org_item);
+					}
+					re.Add(org_item);
+				}
+			}
+			return re;
+		}
 		public static async Task<bool> TrySetDefaultItem<M>(
 			this IDataSet<M> DataSet,
 			M Model,

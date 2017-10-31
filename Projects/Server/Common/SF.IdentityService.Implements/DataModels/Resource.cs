@@ -35,10 +35,10 @@ namespace SF.Auth.IdentityServices.DataModels
 
 
 		[Comment("资源操作范围")]
-		[InverseProperty(nameof(ResourceOperationScope.Resource))]
-		public ICollection<ResourceOperationScope> OperationScopes { get; set; }
+		[InverseProperty(nameof(Operation.Resource))]
+		public ICollection<Operation> OperationScopes { get; set; }
 
-		[InverseProperty(nameof(ResourceOperationScope.Resource))]
+		[InverseProperty(nameof(Operation.Resource))]
 		public ICollection<RoleClaimValue> ClaimValues { get; set; }
 	}
 }
