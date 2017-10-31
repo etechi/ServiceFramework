@@ -28,7 +28,7 @@ namespace SF.Biz.Products.Entity
 		CategoryManager<CategoryInternal, DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec>,
 		IProductCategoryManager
 	{
-		public CategoryManager(IDataSetEntityManager<CategoryInternal, Category> EntityManager, IItemNotifier Notifier) : base(EntityManager, Notifier)
+		public CategoryManager(IEntityServiceContext ServiceContext, IItemNotifier Notifier) : base(ServiceContext, Notifier)
 		{
 		}
 	}
@@ -48,8 +48,8 @@ namespace SF.Biz.Products.Entity
         where TProductSpec: DataModels.ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>
     {
 		public IItemNotifier Notifier { get; }
-		public CategoryManager(IDataSetEntityManager<TEditable,TCategory> EntityManager, IItemNotifier Notifier) :
-			base(EntityManager)
+		public CategoryManager(IEntityServiceContext ServiceContext, IItemNotifier Notifier) :
+			base(ServiceContext)
 		{
 			this.Notifier = Notifier;
 		}
@@ -141,7 +141,7 @@ namespace SF.Biz.Products.Entity
 			var Updated = new List<long>();
 
 			foreach (var n in ADT.Tree.AsEnumerable(Items, ii => ii.Children).Where(n => n.Id == 0))
-				n.Id = await IdentGenerator.GenerateAsync();
+				n.Id = await IdentGenerator.GenerateAsync(n.GetType().FullName);
 
 			var re= DataSet.MergeTree(
 				Parent,
@@ -174,7 +174,7 @@ namespace SF.Biz.Products.Entity
 
 			foreach(var c in Removed)
 				await DataSet.Context.Set< TCategoryItem>().RemoveRangeAsync(i => i.CategoryId == c.Id);
-			EntityManager.AddPostAction(() =>
+			ServiceContext.AddPostAction(() =>
 			{
 				foreach (var c in Removed)
 				{
@@ -229,7 +229,7 @@ namespace SF.Biz.Products.Entity
 			Category.ItemCount = Items.Length;
 			//DataSet.Update(c);
 			//await DataContext.SaveChangesAsync();
-			EntityManager.AddPostAction(
+			ServiceContext.AddPostAction(
 				() =>Notifier.NotifyCategoryItemsChanged(Category.Id),
 				PostActionType.AfterCommit
 				);
@@ -274,7 +274,7 @@ namespace SF.Biz.Products.Entity
             var orgTags = Model.Tag;
             var newTags = ctx.Editable.Tag;
 
-            EntityManager.AddPostAction(() =>
+			ServiceContext.AddPostAction(() =>
             {
                 foreach (var tag in ((orgTags ?? "") + ";" + (newTags ?? ";")).SplitAndNormalizae(';'))
                     Notifier.NotifyCategoryTag(tag);
@@ -292,7 +292,7 @@ namespace SF.Biz.Products.Entity
 						.Select(c => c.ParentId.HasValue?c.ParentId.Value:0)
 					);
 
-				EntityManager.AddPostAction(() =>
+				ServiceContext.AddPostAction(() =>
 				{
 					if (opid != 0)
 						Notifier.NotifyCategoryChildrenChanged(opid);
@@ -302,11 +302,11 @@ namespace SF.Biz.Products.Entity
 				PostActionType.AfterCommit);
 			}
 			if(Model.Id!=0)
-				EntityManager.AddPostAction(
+				ServiceContext.AddPostAction(
 					() =>Notifier.NotifyCategoryChanged(Model.Id),
 					PostActionType.AfterCommit
 					);
-			OnUpdateModel(Model, obj, EntityManager.Now);
+			OnUpdateModel(Model, obj, ServiceContext.Now);
 
 			if(obj.Children!=null)
 				await UpdateChildren(Model, obj.Children);
@@ -321,8 +321,8 @@ namespace SF.Biz.Products.Entity
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
-			Model.CreatedTime = EntityManager.Now;
-			Model.Id = await IdentGenerator.GenerateAsync();
+			Model.CreatedTime = Now;
+			Model.Id = await IdentGenerator.GenerateAsync(Model.GetType().FullName);
 		}
 		protected override Task<TCategory> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TCategory> ctx)
 		{
@@ -338,7 +338,7 @@ namespace SF.Biz.Products.Entity
 			var Model = ctx.Model;
 			DataContext.Set<TCategoryItem>().RemoveRange(Model.Items);
             var tags = Model.Tag;
-			EntityManager.AddPostAction(() =>
+			ServiceContext.AddPostAction(() =>
 			{
 				Notifier.NotifyCategoryChanged(Model.Id);
 				Notifier.NotifyCategoryChildrenChanged(Model.Id);

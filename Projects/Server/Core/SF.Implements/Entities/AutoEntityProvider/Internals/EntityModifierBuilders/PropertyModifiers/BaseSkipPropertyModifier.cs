@@ -32,16 +32,17 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 	{
 		protected abstract class BaseSkipPropertyModifier<T,E> : IAsyncEntityPropertyModifier<T,E>
 		{
-			public int Priority => -1000;
-			Func<IDataSetEntityManager, IEntityModifyContext, E, T,Task<E>> GetValue;
+			public int MergePriority => -1000;
+			public int ExecutePriority => 0;
+			Func<IEntityServiceContext, IEntityModifyContext, E, T,Task<E>> GetValue;
 			protected abstract bool ShouldSkipNextModifier(T Value);
-			public Task<E> Execute(IDataSetEntityManager Manager, IEntityModifyContext Context, E OrgValue, T Value)
+			public Task<E> Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context, E OrgValue, T Value)
 			{
 				if (GetValue == null)
 					throw new Exception("未找到实际的属性修改器");
 				if (ShouldSkipNextModifier(Value))
 					return Task.FromResult(OrgValue);
-				return GetValue(Manager, Context, OrgValue, Value);
+				return GetValue(ServiceContext, Context, OrgValue, Value);
 			}
 			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier)
 			{

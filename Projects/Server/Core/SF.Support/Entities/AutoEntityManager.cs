@@ -49,7 +49,7 @@ namespace SF.Entities.AutoEntityProvider
 		where TEditable : class
 	{
 		protected IDataSetAutoEntityProvider<TKey,TDetail, TSummary, TEditable, TQueryArgument> AutoEntityProvider { get; }
-		protected IDataSetEntityManager EntityManager => AutoEntityProvider.EntityManager;
+		protected IEntityServiceContext ServiceContext => AutoEntityProvider.ServiceContext;
 		public AutoEntityManager(IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory)
 		{
 			this.AutoEntityProvider = OnCreateAutoEntityProvider(DataSetAutoEntityProviderFactory);
@@ -60,7 +60,7 @@ namespace SF.Entities.AutoEntityProvider
 		}
 		public EntityManagerCapability Capabilities => AutoEntityProvider.Capabilities;
 
-		public long? ServiceInstanceId => EntityManager.ServiceInstanceDescroptor.InstanceId;
+		public long? ServiceInstanceId => ServiceContext.ServiceInstanceDescroptor.InstanceId;
 
 		public Task<TKey> CreateAsync(TEditable Entity)
 		{

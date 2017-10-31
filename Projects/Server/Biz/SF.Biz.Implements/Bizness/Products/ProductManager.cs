@@ -27,7 +27,7 @@ namespace SF.Biz.Products.Entity
 		ProductManager<ProductInternal, ProductEditable, DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec>,
 		IProductManager
 	{
-		public ProductManager(IDataSetEntityManager<ProductEditable, DataModels.Product> EntityManager, Lazy<IItemNotifier> ItemNotifier) : base(EntityManager, ItemNotifier)
+		public ProductManager(IEntityServiceContext ServiceContext, Lazy<IItemNotifier> ItemNotifier) : base(ServiceContext, ItemNotifier)
 		{
 		}
 	}
@@ -49,9 +49,9 @@ namespace SF.Biz.Products.Entity
     {
 		public Lazy<IItemNotifier> ItemNotifier { get; }
         public ProductManager(
-			IDataSetEntityManager<TEditable,TProduct> EntityManager, 
+			IEntityServiceContext ServiceContext, 
 			Lazy<IItemNotifier> ItemNotifier
-            ) : base(EntityManager)
+            ) : base(ServiceContext)
 		{
 			this.ItemNotifier = ItemNotifier;
 		}
@@ -210,7 +210,7 @@ namespace SF.Biz.Products.Entity
             if (Model.Id!=0)
 			{
 				var notifier = this.ItemNotifier.Value;
-				EntityManager.AddPostAction(() =>
+				ServiceContext.AddPostAction(() =>
 				{
 					notifier.NotifyProductChanged(Model.Id);
 					notifier.NotifyProductContentChanged(Model.Id);
@@ -248,7 +248,7 @@ namespace SF.Biz.Products.Entity
                             DataContext.Remove(e);
 						}
 						);
-					EntityManager.AddPostAction(() =>
+					ServiceContext.AddPostAction(() =>
 					{
 						foreach (var i in Added)
 							notifier.NotifyCategoryItemsChanged(i);
@@ -288,7 +288,7 @@ namespace SF.Biz.Products.Entity
 			};
             var notifier = this.ItemNotifier.Value;
             if(obj.CategoryIds!=null)
-				EntityManager.AddPostAction(() =>
+				ServiceContext.AddPostAction(() =>
                 {
                     foreach (var cid in obj.CategoryIds)
                             notifier.NotifyCategoryItemsChanged(cid);
@@ -338,7 +338,7 @@ namespace SF.Biz.Products.Entity
 			DataContext.Remove(prd.Detail);
 
 			var notifier = this.ItemNotifier.Value;
-			EntityManager.AddPostAction(() =>
+			ServiceContext.AddPostAction(() =>
 			{
 				foreach (var ci in cids)
 					notifier.NotifyCategoryItemsChanged(ci);

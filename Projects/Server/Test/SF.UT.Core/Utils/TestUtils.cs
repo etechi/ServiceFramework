@@ -18,8 +18,6 @@ using Xunit;
 using SF.Core.ServiceManagement;
 using System.Threading.Tasks;
 using SF.Data;
-using SF.Auth.Users;
-using SF.Auth.Users.Models;
 
 namespace SF.UT.Utils
 {

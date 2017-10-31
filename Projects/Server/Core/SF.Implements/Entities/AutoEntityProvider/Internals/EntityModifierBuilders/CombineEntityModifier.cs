@@ -40,12 +40,12 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 
 		}
 		public async Task Execute(
-			IDataSetEntityManager<TEntity, TDataModel> Manager, 
+			IEntityServiceContext ServiceContext, 
 			IEntityModifyContext<TEntity, TDataModel> Context
 			)
 		{
 			foreach (var m in Modifiers)
-				await m.Execute(Manager, Context);
+				await m.Execute(ServiceContext, Context);
 		}
 	}
 }

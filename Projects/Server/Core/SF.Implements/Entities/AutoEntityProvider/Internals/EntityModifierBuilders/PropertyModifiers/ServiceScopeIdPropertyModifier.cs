@@ -33,11 +33,12 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 		public static int DefaultPriority { get; } = -10000;
 		class ServiceScopeIdPropertyModifier : IEntityPropertyModifier<long?>
 		{
-			public int Priority => DefaultPriority;
+			public int MergePriority => DefaultPriority;
+			public int ExecutePriority => 0;
 
-			public long? Execute(IDataSetEntityManager Manager, IEntityModifyContext Context,long? OrgValue)
+			public long? Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context,long? OrgValue)
 			{
-				return Manager.ServiceInstanceDescroptor?.DataScopeId;
+				return ServiceContext.ServiceInstanceDescroptor?.DataScopeId;
 			}
 			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier) => this;
 		}

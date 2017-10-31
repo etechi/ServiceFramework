@@ -40,7 +40,8 @@ namespace SF.Entities.AutoEntityProvider
 	}
 	public interface IEntityPropertyModifier
 	{
-		int Priority { get; }
+		int MergePriority { get; }
+		int ExecutePriority { get; }
 		IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier);
 	}
 	public interface INoneEntityPropertyModifier : IEntityPropertyModifier
@@ -51,8 +52,8 @@ namespace SF.Entities.AutoEntityProvider
 		IEntityPropertyModifier
 	{
 		Task<TDataModelPropertyValue> Execute(
-			IDataSetEntityManager Manager, 
-			IEntityModifyContext Context,
+			IEntityServiceContext ServiceContext, 
+			IEntityModifyContext ModifyContext,
 			TDataModelPropertyValue OrgValue,
 			TEntityPropertyValue NewValue
 			);
@@ -62,8 +63,8 @@ namespace SF.Entities.AutoEntityProvider
 		IEntityPropertyModifier
 	{
 		Task<TDataModelPropertyValue> Execute(
-			IDataSetEntityManager Manager,
-			IEntityModifyContext Context,
+			IEntityServiceContext ServiceContext,
+			IEntityModifyContext ModifyContext,
 			TDataModelPropertyValue OrgValue
 			);
 	}
@@ -71,8 +72,8 @@ namespace SF.Entities.AutoEntityProvider
 		IEntityPropertyModifier
 	{
 		TDataModelPropertyValue Execute(
-			IDataSetEntityManager Manager,
-			IEntityModifyContext Context,
+			IEntityServiceContext ServiceContext,
+			IEntityModifyContext ModifyContext,
 			TDataModelPropertyValue OrgValue
 			);
 	}
@@ -80,8 +81,8 @@ namespace SF.Entities.AutoEntityProvider
 		IEntityPropertyModifier
 	{
 		TDataModelPropertyValue Execute(
-			IDataSetEntityManager Manager,
-			IEntityModifyContext Context,
+			IEntityServiceContext ServiceContext,
+			IEntityModifyContext ModifyContext,
 			TDataModelPropertyValue OrgValue,
 			TEntityPropertyValue Value
 			);
@@ -107,7 +108,7 @@ namespace SF.Entities.AutoEntityProvider
 	public interface IEntityModifier<TEntity,TDataModel> : IEntityModifier
 		where TDataModel:class
 	{
-		Task Execute(IDataSetEntityManager<TEntity, TDataModel> Manager, IEntityModifyContext<TEntity, TDataModel> Context);
+		Task Execute(IEntityServiceContext ServiceContext, IEntityModifyContext<TEntity, TDataModel> Context);
 	}
 	public interface IEntityModifierProvider
 	{
@@ -122,7 +123,7 @@ namespace SF.Entities.AutoEntityProvider
 	public interface IDataSetAutoEntityProvider<TKey,TDetail, TSummary, TEditable, TQueryArgument>
 	{
 		EntityManagerCapability Capabilities { get; }
-		IDataSetEntityManager EntityManager { get; }
+		IEntityServiceContext ServiceContext { get; }
 		Task<TDetail> GetAsync(TKey Id);
 		Task<TDetail[]> GetAsync(TKey[] Ids);
 		Task<TKey> CreateAsync(TEditable Entity);

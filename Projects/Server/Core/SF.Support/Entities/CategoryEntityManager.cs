@@ -41,8 +41,8 @@ namespace SF.Entities
 		where TItemModel : class, IEntityWithId<TItemKey>, new()
 	{
 		public CategoryEntityManager(
-			IDataSetEntityManager<TCategoryEditable, TCategoryModel> EntityManager
-			) : base(EntityManager)
+			IEntityServiceContext ServiceContext
+			) : base(ServiceContext)
 		{
 		}
 	}

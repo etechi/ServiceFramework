@@ -35,8 +35,10 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 		}
 		class EntityPropertyModifier<T> : IEntityPropertyModifier<T, T>
 		{
-			public int Priority => 0;
-			public T Execute(IDataSetEntityManager Manager, IEntityModifyContext Context,T OrgValue, T Value)
+			public int MergePriority => 0;
+			public int ExecutePriority => 0;
+
+			public T Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context,T OrgValue, T Value)
 			{
 				return Value;
 			}

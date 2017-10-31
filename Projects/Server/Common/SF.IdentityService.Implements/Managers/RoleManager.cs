@@ -40,7 +40,7 @@ namespace SF.Auth.IdentityServices.Managers
 			>,
 		IRoleManager
 	{
-		public EntityRoleManager(IDataSetEntityManager<RoleEditable, DataModels.Role> EntityManager) : base(EntityManager)
+		public EntityRoleManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 
@@ -60,7 +60,7 @@ namespace SF.Auth.IdentityServices.Managers
 					if (c.Id == 0)
 						c.Id = await IdentGenerator.GenerateAsync(typeof(DataModels.RoleClaimValue).FullName);
 					if(c.TypeId==0)
-						c.TypeId = await EntityManager.GetOrCreateClaimType(c.TypeName);
+						c.TypeId = await ServiceContext.GetOrCreateClaimType(c.TypeName);
 				}
 
 				ccs.Merge(

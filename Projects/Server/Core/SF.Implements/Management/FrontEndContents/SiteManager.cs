@@ -28,7 +28,7 @@ namespace SF.Management.FrontEndContents
 		SiteManager<Site, DataModels.Site, DataModels.SiteTemplate>,
 		ISiteManager
 	{
-		public SiteManager(IDataSetEntityManager<Site,DataModels.Site> EntityManager) : base(EntityManager)
+		public SiteManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}
@@ -77,7 +77,7 @@ namespace SF.Management.FrontEndContents
             return base.OnRemoveModel(ctx);
         }
 
-        public SiteManager(IDataSetEntityManager<TSitePublic,TSite> EntityManager) : base(EntityManager)
+        public SiteManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 

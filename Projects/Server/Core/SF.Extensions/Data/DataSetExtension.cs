@@ -412,8 +412,10 @@ namespace SF.Data
 			if (orgItems != null)
 			{
 				orgItems = orgItems.ToArray();
-				foreach (var i in orgItems.Where(i => newItems == null || !newItems.Any(ni => Equals(i, ni))).ToArray())
+				foreach (var i in orgItems)
 				{
+					if (newItems != null && newItems.Any(ni => Equals(i, ni)))
+						continue;
 					if (remover != null)
 						await remover(i);
 					set.Remove(i);

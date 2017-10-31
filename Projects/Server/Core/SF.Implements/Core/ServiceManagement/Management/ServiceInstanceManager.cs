@@ -42,8 +42,8 @@ namespace SF.Core.ServiceManagement.Management
 		public ServiceInstanceManager(
 			Lazy<IServiceProvider> ServiceProvider,
 			IServiceMetadata Metadata,
-			IDataSetEntityManager<ServiceInstanceEditable,DataModels.ServiceInstance> Manager
-			):base(Manager)
+			IEntityServiceContext ServiceContext
+			) :base(ServiceContext)
 		{
 			this.ServiceProvider = ServiceProvider;
 			this.Metadata = Metadata;
@@ -229,15 +229,15 @@ namespace SF.Core.ServiceManagement.Management
 			{
 				var orgParentId = m.ContainerId;
 				m.ContainerId = e.ContainerId;
-				EntityManager.AddPostAction(async () =>
+				ServiceContext.AddPostAction(async () =>
 				{
-					await EntityManager.EventEmitter.Emit(
+					await ServiceContext.EventEmitter.Emit(
 						new InternalServiceChanged
 						{
 							ScopeId = orgParentId,
 							ServiceType = m.ServiceType
 						});
-					await EntityManager.EventEmitter.Emit(
+					await ServiceContext.EventEmitter.Emit(
 						new InternalServiceChanged
 						{
 							ScopeId = e.ContainerId,
@@ -258,8 +258,8 @@ namespace SF.Core.ServiceManagement.Management
 				i => i.ItemOrder,
 				(i, p) => i.ItemOrder = p
 				) || m.ServiceIdent != e.ServiceIdent)
-				EntityManager.AddPostAction(async () =>
-					await EntityManager.EventEmitter.Emit(
+				ServiceContext.AddPostAction(async () =>
+					await ServiceContext.EventEmitter.Emit(
 						new InternalServiceChanged
 						{
 							ScopeId = m.ContainerId,
@@ -269,9 +269,9 @@ namespace SF.Core.ServiceManagement.Management
 					PostActionType.AfterCommit);
 			m.ServiceIdent = e.ServiceIdent;
 
-			EntityManager.AddPostAction(async () =>
+			ServiceContext.AddPostAction(async () =>
 			{
-				await EntityManager.EventEmitter.Emit(
+				await ServiceContext.EventEmitter.Emit(
 					new ServiceInstanceChanged
 					{
 						Id = m.Id
@@ -284,7 +284,7 @@ namespace SF.Core.ServiceManagement.Management
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			//UIEnsure.NotNull(ctx.Model.Id, "未设置服务实例ID");
-			ctx.Model.Id = await IdentGenerator.GenerateAsync();
+			ctx.Model.Id = await IdentGenerator.GenerateAsync(GetType().FullName);
 			ctx.Model.Create(Now);
 		}
 
@@ -311,7 +311,7 @@ namespace SF.Core.ServiceManagement.Management
 			//if (ctx.Model.IsDefaultService)
 			//throw new PublicInvalidOperationException("不能删除默认服务");
 
-			await EntityManager.RemoveAllAsync<ObjectKey<long>,ServiceInstanceEditable, DataModels.ServiceInstance>(
+			await ServiceContext.RemoveAllAsync<ObjectKey<long>,ServiceInstanceEditable, DataModels.ServiceInstance>(
 				RemoveAsync,
 				q => q.ContainerId == ctx.Model.Id
 				);

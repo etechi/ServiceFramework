@@ -30,9 +30,7 @@ namespace SF.Common.TextMessages.Management
 		ITextMessageLogger
 	{
 		
-		public EntityMsgRecordManager(
-			IDataSetEntityManager<MsgRecord, DataModels.TextMessageRecord> Manager
-			) : base(Manager)
+		public EntityMsgRecordManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 

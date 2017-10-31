@@ -28,7 +28,7 @@ namespace SF.Management.FrontEndContents
 		SiteTemplateManager<SiteTemplate, DataModels.Site, DataModels.SiteTemplate>,
 		ISiteTemplateManager
 	{
-		public SiteTemplateManager(IDataSetEntityManager<SiteTemplate, DataModels.SiteTemplate> EntityManager) : base(EntityManager)
+		public SiteTemplateManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}
@@ -86,7 +86,7 @@ namespace SF.Management.FrontEndContents
 			return Task.CompletedTask;
 		}
 
-        public SiteTemplateManager(IDataSetEntityManager<TSiteTemplatePublic, TSiteTemplate> EntityManager) : base(EntityManager)
+        public SiteTemplateManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
         }
 

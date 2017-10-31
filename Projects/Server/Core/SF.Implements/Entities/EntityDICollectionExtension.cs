@@ -150,7 +150,7 @@ namespace SF.Core.ServiceManagement
 
 			sc.AddScoped<IEntityReferenceResolver, EntityReferenceResolver>();
 
-			sc.Add(typeof(IDataSetEntityManager<,>), typeof(DataSetEntityManager<,>),ServiceImplementLifetime.Transient);
+			sc.AddScoped<IEntityServiceContext, EntityServiceContext>();
 			
 			return sc;
 		}

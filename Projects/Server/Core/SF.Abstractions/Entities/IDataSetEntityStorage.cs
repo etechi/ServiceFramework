@@ -51,7 +51,7 @@ namespace SF.Entities
 		TEditable Editable { get; set; }
 	}
 
-	public interface IEntityManager
+	public interface IEntityServiceContext
 	{
 		IIdentGenerator IdentGenerator { get; }
 		IEntityReferenceResolver DataEntityResolver { get; }
@@ -71,43 +71,6 @@ namespace SF.Entities
 		IDataContext DataContext { get; }
 		DateTime Now { get; }
 	}
-	public interface IModifiableEntityManager<TEditable,TModel>: IEntityManager
-		where TModel:class
-	{
-		void InitCreateContext(
-			IEntityModifyContext<TEditable, TModel> Context,
-			TEditable Editable,
-			object ExtraArguments
-			);
 
-		void InitUpdateContext(
-			IEntityModifyContext<TEditable, TModel> Context,
-			TEditable Editable,
-			TModel Model,
-			object ExtraArguments
-			);
-
-		void InitRemoveContext(
-			IEntityModifyContext<TEditable, TModel> Context,
-			TEditable Editable,
-			TModel Model,
-			object ExtraArguments
-			);
-	}
-	public interface IDataSetEntityManager : IEntityManager
-	{
-		IDataSet DataSet { get; }
-	}
-	public interface IReadOnlyDataSetEntityManager<TModel> : IDataSetEntityManager
-		where TModel : class
-	{
-		new IIdentGenerator<TModel> IdentGenerator { get; }
-		new IDataSet<TModel> DataSet { get; }
-	}
-	public interface IDataSetEntityManager<TEditable,TModel> : 
-		IReadOnlyDataSetEntityManager<TModel>, 
-		IModifiableEntityManager<TEditable, TModel>
-		where TModel:class
-	{
-	}
+	
 }

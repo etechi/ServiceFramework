@@ -30,18 +30,15 @@ using SF.Entities.AutoEntityProvider;
 
 namespace SF.Entities
 {
-	class DataSetEntityManager<TEditable, TDataModel> : IDataSetEntityManager<TEditable, TDataModel>
-		where TDataModel : class, new()
-		where TEditable : class, new()
+	class EntityServiceContext : IEntityServiceContext
 	{
 		public IServiceProvider ServiceProvider { get; }
 		IScoped<IDataContext> _ScopedDataContext;
-
-		IDataSet<TDataModel> _DataSet;
+		ILogger _Logger;
+		IDataContext _DataContext;
 		ITimeService _TimeService;
 		IEntityReferenceResolver _DataEntityResolver;
-		ILogger<TDataModel> _Logger;
-		IIdentGenerator<TDataModel> _IdentGenerator;
+		IIdentGenerator _IdentGenerator;
 		IEventEmitter _EventEmitter;
 		IClientService _ClientService;
 		IEntityMetadata _EntityMetadata;
@@ -54,7 +51,7 @@ namespace SF.Entities
 
 		DateTime _Now;
 
-		public DataSetEntityManager(IServiceProvider ServiceProvider)
+		public EntityServiceContext(IServiceProvider ServiceProvider)
 		{
 			this.ServiceProvider = ServiceProvider;
 			var resolver = ServiceProvider.Resolver();
@@ -78,10 +75,9 @@ namespace SF.Entities
 				return _Now;
 			}
 		}
-		public IDataContext DataContext => DataSet.Context;
-		public IDataSet<TDataModel> DataSet => Resolve(ref _DataSet);
-		public IIdentGenerator<TDataModel> IdentGenerator => Resolve(ref _IdentGenerator);
-		IIdentGenerator IEntityManager.IdentGenerator => Resolve(ref _IdentGenerator);
+		public IDataContext DataContext => Resolve(ref _DataContext);
+		public IIdentGenerator IdentGenerator => Resolve(ref _IdentGenerator);
+		IIdentGenerator IEntityServiceContext.IdentGenerator => Resolve(ref _IdentGenerator);
 		public IEntityReferenceResolver DataEntityResolver => Resolve(ref _DataEntityResolver);
 		public ITimeService TimeService => Resolve(ref _TimeService);
 		public ILogger Logger => Resolve(ref _Logger);
@@ -106,34 +102,6 @@ namespace SF.Entities
 				return _EntityMetadata;
 			}
 		}
-		IDataSet IDataSetEntityManager.DataSet => DataSet;
 
-		
-		public void InitCreateContext(IEntityModifyContext<TEditable, TDataModel> Context,TEditable Editable, object ExtraArguments)
-		{
-
-			Context.Model = new TDataModel();
-			Context.Action = ModifyAction.Create;
-			Context.Editable = Editable;
-			Context.ExtraArgument = ExtraArguments;
-		}
-
-		public void InitRemoveContext(IEntityModifyContext<TEditable, TDataModel> Context, TEditable Editable, TDataModel Model, object ExtraArguments)
-		{
-
-			Context.Action = ModifyAction.Delete;
-			Context.Editable=Editable;
-			Context.Model = Model;
-			Context.ExtraArgument = ExtraArguments;
-		}
-
-		public void InitUpdateContext(IEntityModifyContext<TEditable, TDataModel> Context,TEditable Editable, TDataModel Model, object ExtraArguments)
-		{
-
-			Context.Action = ModifyAction.Update;
-			Context.Editable = Editable;
-			Context.Model = Model;
-			Context.ExtraArgument = ExtraArguments;
-		}
 	}
 }

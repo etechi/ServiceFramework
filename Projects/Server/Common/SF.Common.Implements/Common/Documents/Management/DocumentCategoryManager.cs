@@ -13,7 +13,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Users;
 using SF.Core;
 using SF.Core.CallPlans;
 using SF.Core.Times;
@@ -33,7 +32,7 @@ namespace SF.Common.Documents.Management
 		DocumentCategoryManager<CategoryInternal>,
 		IDocumentCategoryManager
 	{
-		public DocumentCategoryManager(IDataSetEntityManager<CategoryInternal, DocumentCategory> EntityManager) : base(EntityManager)
+		public DocumentCategoryManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}
@@ -42,7 +41,7 @@ namespace SF.Common.Documents.Management
 		IDocumentCategoryManager<TCategoryInternal>
 		where TCategoryInternal : CategoryInternal
 	{
-		public DocumentCategoryManager(IDataSetEntityManager<TCategoryInternal, DocumentCategory> EntityManager) : base(EntityManager)
+		public DocumentCategoryManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}

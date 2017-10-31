@@ -30,12 +30,12 @@ namespace SF.Entities
 		where TEditable : class
 		where TKey:IEquatable<TKey>
 	{
-		public ModidifiableEntityManager(IDataSetEntityManager<TEditable,TModel> EntityManager) : base(EntityManager)
+		public ModidifiableEntityManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 		protected override async Task<TPublic[]> OnPrepareDetails(TPublic[] Internals)
 		{
-			await EntityManager.DataEntityResolver.Fill(ServiceInstanceDescriptor.InstanceId, Internals);
+			await ServiceContext.DataEntityResolver.Fill(ServiceInstanceDescriptor.InstanceId, Internals);
 			return Internals;
 		}
 		protected override PagingQueryBuilder<TModel> PagingQueryBuilder => new PagingQueryBuilder<TModel>(
@@ -55,12 +55,12 @@ namespace SF.Entities
 		where TQueryArgument : class,new()
 		where TEditable : class
 	{
-		public ModidifiableEntityManager(IDataSetEntityManager<TEditable,TModel> EntityManager) : base(EntityManager)
+		public ModidifiableEntityManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 		protected override async Task<TPublic[]> OnPrepareDetails(TPublic[] Internals)
 		{
-			await EntityManager.DataEntityResolver.Fill(ServiceInstanceDescriptor?.InstanceId, Internals);
+			await ServiceContext.DataEntityResolver.Fill(ServiceInstanceDescriptor?.InstanceId, Internals);
 			return Internals;
 		}
 	}
@@ -72,7 +72,6 @@ namespace SF.Entities
 		where TQueryArgument : class,new()
 		where TEditable : class
 	{
-		new protected IDataSetEntityManager<TEditable, TModel> EntityManager => (IDataSetEntityManager < TEditable, TModel > )base.EntityManager;
 		public interface IModifyContext : IEntityModifyContext<TEditable, TModel>
 		{
 
@@ -81,7 +80,7 @@ namespace SF.Entities
 		{
 
 		}
-        public ModidifiableEntityManager(IDataSetEntityManager<TEditable,TModel> EntityManager) :base(EntityManager)
+        public ModidifiableEntityManager(IEntityServiceContext EntityServiceContext) :base(EntityServiceContext)
         {
         }
 
@@ -105,7 +104,7 @@ namespace SF.Entities
 		}
 		protected virtual Task InternalCreateAsync(IModifyContext Context, TEditable obj,object ExtraArgument)
 		{
-			return EntityManager.InternalCreateAsync<TKey,TEditable, TModel,IModifyContext>(
+			return ServiceContext.InternalCreateAsync<TKey,TEditable, TModel,IModifyContext>(
 				Context, 
 				obj, 
 				OnUpdateModel, 
@@ -127,7 +126,7 @@ namespace SF.Entities
 		}
 		protected virtual Task<bool> InternalRemoveAsync(IModifyContext Context, TKey Id)
 		{
-			return EntityManager.InternalRemoveAsync<TKey,TEditable, TModel, IModifyContext>(
+			return ServiceContext.InternalRemoveAsync<TKey,TEditable, TModel, IModifyContext>(
 				Context, 
 				Id, 
 				OnRemoveModel,
@@ -137,13 +136,13 @@ namespace SF.Entities
 
 		protected virtual Task OnRemoveModel(IModifyContext ctx)
 		{
-			EntityManager.DataSet.Remove(ctx.Model);
+			ServiceContext.DataContext.Set<TModel>().Remove(ctx.Model);
 			return Task.CompletedTask;
 		}
 
 		public virtual async Task RemoveAllAsync()
 		{
-			await EntityManager.RemoveAllAsync<TKey,TEditable,TModel>(
+			await ServiceContext.RemoveAllAsync<TKey,TEditable,TModel>(
 				RemoveAsync
 				);
 		}
@@ -163,7 +162,7 @@ namespace SF.Entities
 		}
 		protected virtual async Task<bool> InternalUpdateAsync(IModifyContext Context,TEditable obj)
 		{
-			return await EntityManager.InternalUpdateAsync<TKey,TEditable,TModel,IModifyContext>(
+			return await ServiceContext.InternalUpdateAsync<TKey,TEditable,TModel,IModifyContext>(
 				Context,
 				obj, 
 				OnUpdateModel, 
@@ -189,7 +188,7 @@ namespace SF.Entities
 
 		public virtual Task<TEditable> LoadForEdit(TKey Key)
 		{
-			return EntityManager.LoadForEdit(Key, OnMapModelToEditable);
+			return ServiceContext.LoadForEdit<TKey,TEditable,TModel>(Key, OnMapModelToEditable);
 		}
 	}
 
@@ -202,7 +201,6 @@ namespace SF.Entities
 		 where TEditable : class
 		 where TSummary:class
 	{
-		new protected IDataSetEntityManager<TEditable, TModel> EntityManager => (IDataSetEntityManager<TEditable, TModel>)base.EntityManager;
 		public interface IModifyContext : IEntityModifyContext<TEditable, TModel>
 		{
 
@@ -211,7 +209,7 @@ namespace SF.Entities
 		{
 
 		}
-		public AutoModifiableEntityManager(IDataSetEntityManager<TEditable, TModel> EntityManager) : base(EntityManager)
+		public AutoModifiableEntityManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 
@@ -235,7 +233,7 @@ namespace SF.Entities
 		}
 		protected virtual Task InternalCreateAsync(IModifyContext Context, TEditable obj, object ExtraArgument)
 		{
-			return EntityManager.InternalCreateAsync<TKey, TEditable, TModel, IModifyContext>(
+			return ServiceContext.InternalCreateAsync<TKey, TEditable, TModel, IModifyContext>(
 				Context,
 				obj,
 				OnUpdateModel,
@@ -258,7 +256,7 @@ namespace SF.Entities
 		}
 		protected virtual Task<bool> InternalRemoveAsync(IModifyContext Context, TKey Id)
 		{
-			return EntityManager.InternalRemoveAsync<TKey, TEditable, TModel, IModifyContext>(
+			return ServiceContext.InternalRemoveAsync<TKey, TEditable, TModel, IModifyContext>(
 				Context,
 				Id,
 				OnRemoveModel,
@@ -269,13 +267,13 @@ namespace SF.Entities
 
 		protected virtual Task OnRemoveModel(IModifyContext ctx)
 		{
-			EntityManager.DataSet.Remove(ctx.Model);
+			ServiceContext.DataContext.Set<TModel>().Remove(ctx.Model);
 			return Task.CompletedTask;
 		}
 
 		public virtual async Task RemoveAllAsync()
 		{
-			await EntityManager.RemoveAllAsync<TKey, TEditable, TModel>(
+			await ServiceContext.RemoveAllAsync<TKey, TEditable, TModel>(
 				RemoveAsync
 				);
 		}
@@ -298,7 +296,7 @@ namespace SF.Entities
 		}
 		protected virtual async Task<bool> InternalUpdateAsync(IModifyContext Context, TEditable obj)
 		{
-			return await EntityManager.InternalUpdateAsync<TKey, TEditable, TModel, IModifyContext>(
+			return await ServiceContext.InternalUpdateAsync<TKey, TEditable, TModel, IModifyContext>(
 				Context,
 				obj,
 				OnUpdateModel,
@@ -321,7 +319,7 @@ namespace SF.Entities
 		
 		public virtual Task<TEditable> LoadForEdit(TKey Key)
 		{
-			return EntityManager.AutoLoadForEdit(Key);
+			return ServiceContext.AutoLoadForEdit<TKey,TEditable,TModel>(Key);
 		}
 	}
 

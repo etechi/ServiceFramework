@@ -13,7 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Users;
+
 using SF.Common.Members.Models;
 using SF.Core;
 using SF.Core.CallPlans;
@@ -31,7 +31,7 @@ namespace SF.Common.Members
 		: MemberManager<MemberInternal, MemberEditable, MemberQueryArgument, DataModels.Member>,
 		IMemberManager
 	{
-		public MemberManager(IDataSetEntityManager<MemberEditable, DataModels.Member> EntityManager) : base(EntityManager)
+		public MemberManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}
@@ -43,7 +43,7 @@ namespace SF.Common.Members
 		where TQueryArgument : MemberQueryArgument, new()
 		where TMember : DataModels.Member<TMember>, new()
 	{
-		public MemberManager(IDataSetEntityManager<TEditable, TMember> EntityManager) : base(EntityManager)
+		public MemberManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}

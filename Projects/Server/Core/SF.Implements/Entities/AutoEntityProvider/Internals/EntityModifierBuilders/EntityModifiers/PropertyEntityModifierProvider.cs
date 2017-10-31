@@ -63,7 +63,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 						tp=>!(tp.GetType().GenericTypeArguments.Length==2 && EntityProperty==null),
 						tp =>$"数据实体{typeof(TDataModel)}属性{DataModelProperty.Name} 没有对应的模型实体{typeof(TEntity)}属性，但修改器{tp.GetType()}需要提供模型实体属性值"
 						))
-					.OrderBy(p => p.Priority)
+					.OrderBy(p => p.MergePriority)
 					.ToArray();
 			}
 
@@ -90,9 +90,9 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 			}
 			
 			static async Task RunTasks(
-				IDataSetEntityManager<TEntity, TDataModel> Manager, 
+				IEntityServiceContext ServiceContext, 
 				IEntityModifyContext<TEntity, TDataModel> Context,
-				Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, TEntity, TDataModel, Task, Task>[] funcs
+				Func<IEntityServiceContext, IEntityModifyContext<TEntity, TDataModel>, TEntity, TDataModel, Task, Task>[] funcs
 				)
 			{
 				Task lastTask = null;
@@ -100,7 +100,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 				var Model = Context.Model;
 				foreach (var f in funcs)
 				{
-					var t = f(Manager, Context, Entity, Model, lastTask);
+					var t = f(ServiceContext, Context, Entity, Model, lastTask);
 					if (t == null)
 						break;
 					await t;
@@ -109,19 +109,21 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 			}
 			static MethodInfo MethodRunTasks { get; } = typeof(EntityModifierCreator<TDataModel, TEntity>).GetMethod("RunTasks", BindingFlags.Static | BindingFlags.NonPublic);
 
-			public Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task> TryBuild()
+			public Func<IEntityServiceContext, IEntityModifyContext<TEntity, TDataModel>, Task> TryBuild()
 			{
 				var modifiers =
 					(from dp in typeof(TDataModel).AllPublicInstanceProperties()
 					 let ep = typeof(TEntity).GetProperty(dp.Name)
 					 from ms in FindPropModifiers(ep, dp)
 					 group (DataProperty:dp, EntityProperty:ep, Modifier:ms) by dp into g
-					 select g
-						.OrderBy(i=>-i.Modifier.Priority)
+					 let m=g
+						.OrderBy(i=>-i.Modifier.MergePriority)
 						.Aggregate((l,h)=>(l.DataProperty,l.EntityProperty,Modifier:h.Modifier.Merge(l.Modifier)))
+					orderby m.Modifier.ExecutePriority
+					select m
 					).ToArray();
 
-				var ArgManager = Expression.Parameter(typeof(IDataSetEntityManager<TEntity, TDataModel>));
+				var ArgManager = Expression.Parameter(typeof(IEntityServiceContext));
 				var ArgModifierContext = Expression.Parameter(typeof(IEntityModifyContext<TEntity, TDataModel>));
 				var ArgTask = Expression.Parameter(typeof(Task));
 				var ArgModel = Expression.Parameter(typeof(TDataModel));
@@ -166,7 +168,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 				UpdateGroups.Add((null, Updates.ToArray()));
 
 				PropertyInfo lastDataProperty = null;
-				var funcs = new List<Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, TEntity, TDataModel, Task, Task>>();
+				var funcs = new List<Func<IEntityServiceContext, IEntityModifyContext<TEntity, TDataModel>, TEntity, TDataModel, Task, Task>>();
 				var exprs = new List<Expression>(); 
 				foreach (var g in UpdateGroups)
 				{
@@ -187,7 +189,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 
 					funcs.Add(
 						Expression.Block(exprs).Compile<
-							Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, TEntity, TDataModel, Task, Task>
+							Func<IEntityServiceContext, IEntityModifyContext<TEntity, TDataModel>, TEntity, TDataModel, Task, Task>
 						>(
 							ArgManager,
 							ArgModifierContext,
@@ -204,7 +206,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 					ArgManager,
 					ArgModifierContext,
 					Expression.Constant(funcs.ToArray())
-					).Compile<Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task>>(
+					).Compile<Func<IEntityServiceContext, IEntityModifyContext<TEntity, TDataModel>, Task>>(
 					ArgManager,
 					ArgModifierContext
 					);
@@ -215,13 +217,13 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 		class Modifier<TEntity, TDataModel> : IEntityModifier<TEntity, TDataModel>
 			where TDataModel : class
 		{
-			Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task> Executor { get; }
-			public Modifier(Func<IDataSetEntityManager<TEntity, TDataModel>, IEntityModifyContext<TEntity, TDataModel>, Task> Executor)
+			Func<IEntityServiceContext, IEntityModifyContext<TEntity, TDataModel>, Task> Executor { get; }
+			public Modifier(Func<IEntityServiceContext, IEntityModifyContext<TEntity, TDataModel>, Task> Executor)
 			{
 				this.Executor = Executor;
 			}
 			public int Priority =>100;
-			public Task Execute(IDataSetEntityManager<TEntity, TDataModel> Manager, IEntityModifyContext<TEntity, TDataModel> Context)
+			public Task Execute(IEntityServiceContext Manager, IEntityModifyContext<TEntity, TDataModel> Context)
 			{
 				return Executor(Manager, Context);
 			}

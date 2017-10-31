@@ -31,7 +31,7 @@ namespace SF.Core.ServiceManagement
 
 			Services.AddMenuService();
 
-			Services.AddAuthUserServices();
+			//Services.AddAuthUserServices();
 			Services.AddMemberServices();
 
 			Services.AddAdminServices();

@@ -44,11 +44,11 @@ namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 			}
 			public IContextQueryable<TDataModel> Filter(
 				IContextQueryable<TDataModel> Query,
-				IDataSetEntityManager  EntityManager ,
+				IEntityServiceContext ServiceContext,
 				TQueryArgument Arg
 				)
 			{
-				var scopeid = EntityManager.ServiceInstanceDescroptor.DataScopeId;
+				var scopeid = ServiceContext.ServiceInstanceDescroptor.DataScopeId;
 				if (!IsNullable && !scopeid.HasValue)
 					return Query;
 				return Query.Where(Expression.Lambda<Func<TDataModel,bool>>(

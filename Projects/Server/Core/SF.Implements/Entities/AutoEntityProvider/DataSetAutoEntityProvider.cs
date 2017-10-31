@@ -24,13 +24,13 @@ namespace SF.Entities.AutoEntityProvider
 	{
 	
 
-		public IDataSetEntityManager EntityManager { get; }
-		IDataSetEntityManager IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>.EntityManager => EntityManager;
+		public IEntityServiceContext ServiceContext { get; }
+		IEntityServiceContext IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>.ServiceContext => ServiceContext;
 		IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument> Setting { get; }
 
-		public DataSetAutoEntityProvider(IDataSetEntityManager EntityManager, IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument> Setting)
+		public DataSetAutoEntityProvider(IEntityServiceContext ServiceContext, IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument> Setting)
 		{
-			this.EntityManager = EntityManager;
+			this.ServiceContext = ServiceContext;
 			this.Setting = Setting;
 
 		}
@@ -39,47 +39,47 @@ namespace SF.Entities.AutoEntityProvider
 
 		public Task<TKey> CreateAsync( TEntityEditable Entity)
 		{
-			return Setting.CreateAsync(EntityManager, Entity);
+			return Setting.CreateAsync(ServiceContext, Entity);
 		}
 
 		public Task<TEntityDetail> GetAsync(TKey Id)
 		{
-			return Setting.GetAsync(EntityManager, Id);
+			return Setting.GetAsync(ServiceContext, Id);
 		}
 
 		public Task<TEntityDetail[]> GetAsync(TKey[] Ids)
 		{
-			return Setting.GetAsync(EntityManager, Ids);
+			return Setting.GetAsync(ServiceContext, Ids);
 		}
 
 		public Task<TEntityEditable> LoadForEdit(TKey Id)
 		{
-			return Setting.LoadForEdit(EntityManager, Id);
+			return Setting.LoadForEdit(ServiceContext, Id);
 		}
 
 		public Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg, Paging paging)
 		{
-			return Setting.QueryAsync(EntityManager, Arg, paging);
+			return Setting.QueryAsync(ServiceContext, Arg, paging);
 		}
 
 		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
 		{
-			return Setting.QueryIdentsAsync(EntityManager, Arg, paging); 
+			return Setting.QueryIdentsAsync(ServiceContext, Arg, paging); 
 		}
 
 		public Task RemoveAllAsync()
 		{
-			return Setting.RemoveAllAsync(EntityManager);
+			return Setting.RemoveAllAsync(ServiceContext);
 		}
 
 		public Task RemoveAsync(TKey Key)
 		{
-			return Setting.RemoveAsync(EntityManager, Key);
+			return Setting.RemoveAsync(ServiceContext, Key);
 		}
 
 		public Task UpdateAsync(TEntityEditable Entity)
 		{
-			return Setting.UpdateAsync(EntityManager, Entity);
+			return Setting.UpdateAsync(ServiceContext, Entity);
 		}
 	}
 

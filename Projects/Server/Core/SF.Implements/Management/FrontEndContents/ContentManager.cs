@@ -29,7 +29,7 @@ namespace SF.Management.FrontEndContents
 		ContentManager<Content, DataModels.Content>,
 		IContentManager
 	{
-		public ContentManager(IDataSetEntityManager<Content, DataModels.Content> EntityManager) : base(EntityManager)
+		public ContentManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}
@@ -134,7 +134,7 @@ namespace SF.Management.FrontEndContents
 			return await LoadForEdit(ObjectKey.From(contentId));
 		}
 
-		public ContentManager(IDataSetEntityManager<TContentPublic,TContent> EntityManager) : base(EntityManager)
+		public ContentManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 
         }

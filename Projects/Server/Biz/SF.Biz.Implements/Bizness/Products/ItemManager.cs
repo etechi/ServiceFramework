@@ -26,7 +26,7 @@ namespace SF.Biz.Products.Entity
 		ItemManager<ItemInternal, ItemEditable, DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec>,
 		IProductItemManager
 	{
-		public ItemManager(IDataSetEntityManager<ItemEditable, DataModels.Item> EntityManager, Lazy<IItemNotifier> ItemNotifier) : base(EntityManager, ItemNotifier)
+		public ItemManager(IEntityServiceContext ServiceContext, Lazy<IItemNotifier> ItemNotifier) : base(ServiceContext, ItemNotifier)
 		{
 		}
 	}
@@ -49,8 +49,8 @@ namespace SF.Biz.Products.Entity
         where TProductSpec : ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>
     {
 		Lazy<IItemNotifier> ItemNotifier { get; set; }
-		public ItemManager(IDataSetEntityManager<TEditable,TItem> EntityManager, Lazy<IItemNotifier> ItemNotifier) :
-			base(EntityManager)
+		public ItemManager(IEntityServiceContext ServiceContext, Lazy<IItemNotifier> ItemNotifier) :
+			base(ServiceContext)
 		{
 			this.ItemNotifier = ItemNotifier;
 		}
@@ -122,7 +122,7 @@ namespace SF.Biz.Products.Entity
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
-			Model.Id = await IdentGenerator.GenerateAsync(GetType().FullName);
+			Model.Id = await IdentGenerator.GenerateAsync(Model.GetType().FullName);
 			Model.CreatedTime = Now;
 			Model.SellerId = obj.SellerId;
 			Model.ProductId = obj.ProductId;

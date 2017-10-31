@@ -27,7 +27,7 @@ namespace SF.Biz.Products.Entity
 		ProductTypeManager<ProductTypeInternal, ProductTypeEditable, DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec> ,
 		IProductTypeManager
 	{
-		public ProductTypeManager(IDataSetEntityManager<ProductTypeEditable, DataModels.ProductType> EntityManager) : base(EntityManager)
+		public ProductTypeManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}
@@ -49,7 +49,7 @@ namespace SF.Biz.Products.Entity
 		where TItem : DataModels.Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : DataModels.ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>
     {
-		public ProductTypeManager(IDataSetEntityManager<TEditable,TProductType> EntityManager) : base(EntityManager)
+		public ProductTypeManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
         protected override IContextQueryable<TInternal> OnMapModelToDetail(IContextQueryable<TProductType> Query)
@@ -102,7 +102,7 @@ namespace SF.Biz.Products.Entity
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
-			Model.Id = await IdentGenerator.GenerateAsync(GetType().FullName);
+			Model.Id = await IdentGenerator.GenerateAsync(Model.GetType().FullName);
 			Model.CreatedTime = Now;
 		}
 		protected override Task<TProductType> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TProductType> ctx)

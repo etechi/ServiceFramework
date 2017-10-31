@@ -31,22 +31,22 @@ namespace SF.Entities.AutoEntityProvider
 	public interface IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		: IDataSetAutoEntityProviderSetting
 	{
-		Task<TKey> CreateAsync(IDataSetEntityManager EntityManager, TEntityEditable Entity);
-		Task<TEntityDetail> GetAsync(IDataSetEntityManager EntityManager, TKey Id);
+		Task<TKey> CreateAsync(IEntityServiceContext ServiceContext, TEntityEditable Entity);
+		Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id);
 
-		Task<TEntityDetail[]> GetAsync(IDataSetEntityManager EntityManager, TKey[] Ids);
+		Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids);
 
-		Task<TEntityEditable> LoadForEdit(IDataSetEntityManager EntityManager, TKey Id);
+		Task<TEntityEditable> LoadForEdit(IEntityServiceContext ServiceContext, TKey Id);
 
-		Task<QueryResult<TEntitySummary>> QueryAsync(IDataSetEntityManager EntityManager, TQueryArgument Arg, Paging paging);
+		Task<QueryResult<TEntitySummary>> QueryAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg, Paging paging);
 
-		Task<QueryResult<TKey>> QueryIdentsAsync(IDataSetEntityManager EntityManager, TQueryArgument Arg, Paging paging);
+		Task<QueryResult<TKey>> QueryIdentsAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg, Paging paging);
 
-		Task RemoveAllAsync(IDataSetEntityManager EntityManager);
+		Task RemoveAllAsync(IEntityServiceContext ServiceContext);
 
-		Task RemoveAsync(IDataSetEntityManager EntityManager, TKey Key);
+		Task RemoveAsync(IEntityServiceContext ServiceContext, TKey Key);
 
-		Task UpdateAsync(IDataSetEntityManager EntityManager, TEntityEditable Entity);
+		Task UpdateAsync(IEntityServiceContext ServiceContext, TEntityEditable Entity);
 	}
 	class DataSetAutoEntityProviderSetting<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument,TDataModel>
 		: IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
@@ -61,17 +61,16 @@ namespace SF.Entities.AutoEntityProvider
 			FuncCreateProvider = new Lazy<Func<IServiceProvider, object>>(() =>
 				new Func<IServiceProvider, object>(
 					sp => new DataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(
-							sp.Resolve<IDataSetEntityManager<TEntityEditable, TDataModel>>(),
+							sp.Resolve<IEntityServiceContext>(),
 							this
 						)
 				)
 			 );
 
 		}
-		public Task<TKey> CreateAsync(IDataSetEntityManager EntityManager,TEntityEditable Entity)
+		public Task<TKey> CreateAsync(IEntityServiceContext ServiceContext, TEntityEditable Entity)
 		{
-			var em = (IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager;
-			return em.CreateAsync<TKey, TEntityEditable, TDataModel>(
+			return ServiceContext.CreateAsync<TKey, TEntityEditable, TDataModel>(
 				Entity,
 				null,
 				null,
@@ -80,50 +79,43 @@ namespace SF.Entities.AutoEntityProvider
 				);
 		}
 
-		public Task<TEntityDetail> GetAsync(IDataSetEntityManager EntityManager, TKey Id)
+		public Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id)
 		{
-			var em = (IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager;
-			return em.AutoGetAsync<TKey,TEntityDetail,TDataModel>(Id);
+			return ServiceContext.AutoGetAsync<TKey,TEntityDetail,TDataModel>(Id);
 		}
 
-		public Task<TEntityDetail[]> GetAsync(IDataSetEntityManager EntityManager, TKey[] Ids)
+		public Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids)
 		{
-			var em = (IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager;
-			return em.AutoBatchGetAsync<TKey,TEntityDetail,TDataModel>(Ids);
+			return ServiceContext.AutoBatchGetAsync<TKey,TEntityDetail,TDataModel>(Ids);
 		}
 
-		public Task<TEntityEditable> LoadForEdit(IDataSetEntityManager EntityManager, TKey Id)
+		public Task<TEntityEditable> LoadForEdit(IEntityServiceContext ServiceContext, TKey Id)
 		{
-			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
-			return em.AutoLoadForEdit<TKey, TEntityEditable, TDataModel>(Id);
+			return ServiceContext.AutoLoadForEdit<TKey, TEntityEditable, TDataModel>(Id);
 		}
 
-		public Task<QueryResult<TEntitySummary>> QueryAsync(IDataSetEntityManager EntityManager, TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TEntitySummary>> QueryAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg, Paging paging)
 		{
-			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
-			return em.AutoQueryAsync<TEntitySummary, TQueryArgument, TDataModel>(Arg, paging);
+			return ServiceContext.AutoQueryAsync<TEntitySummary, TQueryArgument, TDataModel>(Arg, paging);
 		}
 
-		public Task<QueryResult<TKey>> QueryIdentsAsync(IDataSetEntityManager EntityManager, TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TKey>> QueryIdentsAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg, Paging paging)
 		{
-			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
-			return em.AutoQueryIdentsAsync<TKey, TQueryArgument, TDataModel>(Arg, paging);
+			return ServiceContext.AutoQueryIdentsAsync<TKey, TQueryArgument, TDataModel>(Arg, paging);
 
 		}
 
-		public async Task RemoveAllAsync(IDataSetEntityManager EntityManager)
+		public async Task RemoveAllAsync(IEntityServiceContext ServiceContext)
 		{
-			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
-			await em.RemoveAllAsync<TKey,TEntityEditable, TDataModel>(
+			await ServiceContext.RemoveAllAsync<TKey,TEntityEditable, TDataModel>(
 				async id =>
-					await RemoveAsync(em,id)
+					await RemoveAsync(ServiceContext, id)
 				);
 		}
 
-		public async Task RemoveAsync(IDataSetEntityManager EntityManager, TKey Key)
+		public async Task RemoveAsync(IEntityServiceContext ServiceContext, TKey Key)
 		{
-			var em = ((IDataSetEntityManager<TEntityEditable, TDataModel>)EntityManager);
-			await em.RemoveAsync<TKey, TEntityEditable, TDataModel>(
+			await ServiceContext.RemoveAsync<TKey, TEntityEditable, TDataModel>(
 				Key,
 				null,
 				null,
@@ -131,10 +123,9 @@ namespace SF.Entities.AutoEntityProvider
 				);
 		}
 
-		public async Task UpdateAsync(IDataSetEntityManager EntityManager, TEntityEditable Entity)
+		public async Task UpdateAsync(IEntityServiceContext ServiceContext, TEntityEditable Entity)
 		{
-			var em = ((IDataSetEntityManager<TEntityEditable,TDataModel>)EntityManager);
-			await em.UpdateAsync<TKey,TEntityEditable, TDataModel>(
+			await ServiceContext.UpdateAsync<TKey,TEntityEditable, TDataModel>(
 				Entity,
 				null,
 				null,

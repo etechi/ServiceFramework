@@ -143,6 +143,8 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IEntityPropertyModifierProvider, ServiceScopeIdPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, DefaultPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, JsonDataPropertyModifierProvider>();
+			sc.AddSingleton<IEntityPropertyModifierProvider, MultipleRelationPropertyModifierProvider>();
+			sc.AddSingleton<IEntityPropertyModifierProvider, SingleRelationPropertyModifierProvider>();
 			sc.AddSingleton<IEntityModifierProvider, PropertyEntityModifierProvider>();
 			sc.AddSingleton<IEntityModifierCache, EntityModifierCache>();
 

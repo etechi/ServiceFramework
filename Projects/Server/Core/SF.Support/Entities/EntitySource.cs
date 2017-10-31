@@ -29,18 +29,18 @@ namespace SF.Entities
 {
 	public abstract class BaseEntityManager: IManagedServiceWithId
 	{
-		protected IEntityManager EntityManager { get; }
-		public IServiceInstanceDescriptor ServiceInstanceDescriptor => EntityManager.ServiceInstanceDescroptor;
-		public DateTime Now => EntityManager.Now;
-		public ILogger Logger => EntityManager.Logger;
-		public IIdentGenerator IdentGenerator => EntityManager.IdentGenerator;
+		protected IEntityServiceContext ServiceContext { get; }
+		public IServiceInstanceDescriptor ServiceInstanceDescriptor => ServiceContext.ServiceInstanceDescroptor;
+		public DateTime Now => ServiceContext.Now;
+		public ILogger Logger => ServiceContext.Logger;
+		public IIdentGenerator IdentGenerator => ServiceContext.IdentGenerator;
 		
-		public long? ServiceInstanceId => EntityManager.ServiceInstanceDescroptor.InstanceId;
-		public long? DataScopeId => EntityManager.ServiceInstanceDescroptor.DataScopeId;
+		public long? ServiceInstanceId => ServiceContext.ServiceInstanceDescroptor.InstanceId;
+		public long? DataScopeId => ServiceContext.ServiceInstanceDescroptor.DataScopeId;
 
-		public BaseEntityManager(IEntityManager EntityManager)
+		public BaseEntityManager(IEntityServiceContext EntityManager)
 		{
-			this.EntityManager = EntityManager;
+			this.ServiceContext = EntityManager;
 		}
 	}
 
@@ -48,12 +48,10 @@ namespace SF.Entities
 		BaseEntityManager
 		where TModel:class
 	{
-		protected new IReadOnlyDataSetEntityManager<TModel> EntityManager => (IReadOnlyDataSetEntityManager<TModel>)base.EntityManager;
-		public IDataSet<TModel> DataSet => EntityManager.DataSet;
+		public IDataSet<TModel> DataSet => ServiceContext.DataContext.Set<TModel>();
 		public IDataContext DataContext => DataSet.Context;
-		public new IIdentGenerator<TModel> IdentGenerator => EntityManager.IdentGenerator;
 
-		public BaseDataSetEntityManager(IReadOnlyDataSetEntityManager<TModel> EntityManager):base(EntityManager)
+		public BaseDataSetEntityManager(IEntityServiceContext ServiceContext) :base(ServiceContext)
 		{
 		}
 	}
@@ -62,12 +60,12 @@ namespace SF.Entities
 		EntitySource<TKey, TEntityDetail, TEntityDetail, TModel>
 		where TModel : class
 	{
-		public EntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		public EntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 		protected override async Task<TEntityDetail[]> OnPrepareDetails(TEntityDetail[] Internals)
 		{
-			await EntityManager.DataEntityResolver.Fill(ServiceInstanceDescriptor.InstanceId, Internals);
+			await ServiceContext.DataEntityResolver.Fill(ServiceInstanceDescriptor.InstanceId, Internals);
 			return Internals;
 		}
 	}
@@ -78,7 +76,7 @@ namespace SF.Entities
 		IEntityBatchLoadable<TKey, TDetail>
 		where TModel: class
 	{
-		public EntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager):base(EntityManager)
+		public EntitySource(IEntityServiceContext ServiceContext) :base(ServiceContext)
 		{
 		}
 		protected virtual IContextQueryable<TDetailTemp> OnMapModelToDetail(IContextQueryable<TModel> Query)
@@ -89,12 +87,12 @@ namespace SF.Entities
 
 		public Task<TDetail[]> GetAsync(TKey[] Ids)
 		{
-			return EntityManager.BatchGetAsync<TKey, TDetailTemp,TDetail,TModel>(Ids, OnMapModelToDetail,OnPrepareDetails);
+			return ServiceContext.BatchGetAsync<TKey, TDetailTemp,TDetail,TModel>(Ids, OnMapModelToDetail,OnPrepareDetails);
 		}
 
 		public Task<TDetail> GetAsync(TKey Id)
 		{
-			return EntityManager.GetAsync<TKey, TDetailTemp, TDetail, TModel>(Id, OnMapModelToDetail, OnPrepareDetails);
+			return ServiceContext.GetAsync<TKey, TDetailTemp, TDetail, TModel>(Id, OnMapModelToDetail, OnPrepareDetails);
 		}
 	}
 	public abstract class AutoEntitySource<TKey, TDetail, TModel> :
@@ -103,17 +101,17 @@ namespace SF.Entities
 	   IEntityBatchLoadable<TKey, TDetail>
 	   where TModel : class
 	{
-		public AutoEntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		public AutoEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 		public virtual Task<TDetail[]> GetAsync(TKey[] Ids)
 		{
-			return EntityManager.AutoBatchGetAsync<TKey, TDetail, TModel>(Ids);
+			return ServiceContext.AutoBatchGetAsync<TKey, TDetail, TModel>(Ids);
 		}
 
 		public virtual Task<TDetail> GetAsync(TKey Id)
 		{
-			return EntityManager.AutoGetAsync<TKey, TDetail, TModel>(Id);
+			return ServiceContext.AutoGetAsync<TKey, TDetail, TModel>(Id);
 		}
 	}
 	public abstract class ConstantEntitySource<TKey, TEntityDetail> :
@@ -121,7 +119,7 @@ namespace SF.Entities
 		where TEntityDetail : class, IEntityWithId<TKey>
 		where TKey : IEquatable<TKey>
 	{
-		public ConstantEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TEntityDetail> Models) : base(EntityManager, Models)
+		public ConstantEntitySource(IEntityServiceContext EntityManager, IReadOnlyDictionary<TKey, TEntityDetail> Models) : base(EntityManager, Models)
 		{
 		}
 
@@ -136,7 +134,7 @@ namespace SF.Entities
 		where TModel : class, IEntityWithId<TKey>
 		where TKey : IEquatable<TKey>
 	{
-		public ConstantEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TModel> Models) : base(EntityManager, Models)
+		public ConstantEntitySource(IEntityServiceContext EntityManager, IReadOnlyDictionary<TKey, TModel> Models) : base(EntityManager, Models)
 		{
 		}
 
@@ -153,7 +151,7 @@ namespace SF.Entities
 	{
 
 		protected IReadOnlyDictionary<TKey, TModel> Models { get; }
-		public ConstantEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TModel> Models) :base(EntityManager)
+		public ConstantEntitySource(IEntityServiceContext EntityManager, IReadOnlyDictionary<TKey, TModel> Models) :base(EntityManager)
 		{
 			this.Models = Models;
 		}

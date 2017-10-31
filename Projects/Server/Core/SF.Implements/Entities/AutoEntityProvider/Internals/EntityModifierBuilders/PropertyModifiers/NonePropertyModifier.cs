@@ -30,10 +30,12 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 {
 	public class NonePropertyModifier : INoneEntityPropertyModifier
 	{
-		public int Priority { get; }
+		public int MergePriority { get; }
+		public int ExecutePriority => 0;
+
 		public NonePropertyModifier(int Priority)
 		{
-			this.Priority = Priority;
+			this.MergePriority = Priority;
 		}
 		public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier) => this;
 	}

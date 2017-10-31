@@ -32,7 +32,7 @@ namespace SF.Auth.IdentityServices.Managers
 		EntityUserManager<UserInternal, UserEditable, UserQueryArgument, DataModels.User, DataModels.UserCredential, DataModels.UserClaimValue, DataModels.UserRole>,
 		IUserManager
 	{
-		public UserManager(IDataSetEntityManager<UserEditable, DataModels.User> EntityManager) : base(EntityManager)
+		public UserManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}
@@ -56,7 +56,7 @@ namespace SF.Auth.IdentityServices.Managers
 		where TUserClaimValue : DataModels.UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
 		where TUserRole : DataModels.UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
 	{
-		public EntityUserManager(IDataSetEntityManager<TEditable, TUser> EntityManager) : base(EntityManager)
+		public EntityUserManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 
@@ -195,7 +195,7 @@ namespace SF.Auth.IdentityServices.Managers
 					if (c.Id == 0)
 						c.Id = await IdentGenerator.GenerateAsync(typeof(TUserClaimValue).FullName);
 					if(c.TypeId==0)
-						c.TypeId = await EntityManager.GetOrCreateClaimType(c.TypeName);
+						c.TypeId = await ServiceContext.GetOrCreateClaimType(c.TypeName);
 				}
 
 				ccs.Merge(

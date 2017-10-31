@@ -49,10 +49,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			{
 				this.filters = filters;
 			}
-			public IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, IDataSetEntityManager EntityManager, TQueryArgument Arg)
+			public IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, IEntityServiceContext ServiceContext, TQueryArgument Arg)
 			{
 				foreach (var f in filters)
-					Query=f.Filter(Query, EntityManager, Arg);
+					Query=f.Filter(Query, ServiceContext, Arg);
 				return Query;
 			}
 		}

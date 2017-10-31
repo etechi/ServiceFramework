@@ -30,15 +30,17 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 {
 	public class AutoKeyPropertyModifierProvider : IEntityPropertyModifierProvider
 	{
-		public static int DefaultPriority { get; } = -10000;
+		public static int DefaultMergePriority { get; } = -10000;
+		public static int DefaultExecutePriority { get; } = -10000;
+
 		class AutoKeyPropertyModifier : IAsyncEntityPropertyModifier<long>
 		{
-			public int Priority => DefaultPriority;
-
-			public Task<long> Execute(IDataSetEntityManager Manager, IEntityModifyContext Context, long OrgValue)
+			public int MergePriority => DefaultMergePriority;
+			public int ExecutePriority => DefaultExecutePriority;
+			public Task<long> Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context, long OrgValue)
 			{
-				return Manager.IdentGenerator.GenerateAsync(
-					Manager.ServiceInstanceDescroptor.ServiceDeclaration.ServiceType.FullName
+				return ServiceContext.IdentGenerator.GenerateAsync(
+					ServiceContext.ServiceInstanceDescroptor.ServiceDeclaration.ServiceType.FullName
 					);
 			}
 
@@ -78,7 +80,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 
 			//自动生成主键不能修改
 			if (ActionType != DataActionType.Create)
-				return new NonePropertyModifier(DefaultPriority);
+				return new NonePropertyModifier(DefaultMergePriority);
 
 			return new AutoKeyPropertyModifier();
 		}

@@ -45,9 +45,10 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 			{
 				this.JsonSerializer = jsonSerializer;
 			}
-			public int Priority => DefaultPriority;
+			public int MergePriority => DefaultPriority;
+			public int ExecutePriority => 0;
 
-			public string Execute(IDataSetEntityManager Manager, IEntityModifyContext Context,string OrgValue,T value)
+			public string Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context,string OrgValue,T value)
 			{
 				return JsonSerializer.Serialize<T>(value);
 			}

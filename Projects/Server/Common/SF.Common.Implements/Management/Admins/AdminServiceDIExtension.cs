@@ -25,7 +25,7 @@ using System;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using SF.Management.Admins;
-using SF.Auth.Users;
+
 using SF.Management.Admins.Models;
 
 namespace SF.Core.ServiceManagement

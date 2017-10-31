@@ -13,7 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Users;
+
 using SF.Core;
 using SF.Core.CallPlans;
 using SF.Core.Times;
@@ -35,8 +35,9 @@ namespace SF.Promotions.MemberSources.Entity
 		where TSourceMember : DataModels.SourceMember<TMemberSource,TSourceMember>,new()
 	{
 		public EntityMemberSourceManagementService(
-			IDataSetEntityManager<MemberSourceInternal, TMemberSource> Manager
-			) : base(Manager)
+			IEntityServiceContext ServiceContext
+
+			) : base(ServiceContext)
 		{
 			//CallPlanProvider.DelayCall(
 			//	typeof(IMemberManagementService).FullName + "-" + Manager.ServiceInstanceDescroptor.InstanceId,
@@ -87,7 +88,7 @@ namespace SF.Promotions.MemberSources.Entity
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var m = ctx.Model;
-			m.Id = await IdentGenerator.GenerateAsync();
+			m.Id = await IdentGenerator.GenerateAsync(m.GetType().FullName);
 			m.CreatedTime = Now;
 			await base.OnNewModel(ctx);
 		}

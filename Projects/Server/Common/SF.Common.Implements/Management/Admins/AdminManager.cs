@@ -13,7 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.Users;
+
 using SF.Core.Times;
 using SF.Data;
 using SF.Entities;
@@ -30,7 +30,7 @@ namespace SF.Management.Admins
 		: AdminManager<AdminInternal, AdminEditable, AdminQueryArgument, DataModels.Admin>,
 		IAdminManager
 	{
-		public AdminManager(IDataSetEntityManager<AdminEditable, Admin> EntityManager) : base(EntityManager)
+		public AdminManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}
@@ -42,7 +42,7 @@ namespace SF.Management.Admins
 		where TQueryArgument : AdminQueryArgument,new()
 		where TAdmin : DataModels.Admin<TAdmin>, new()
 	{
-		public AdminManager(IDataSetEntityManager<TEditable, TAdmin> EntityManager) : base(EntityManager)
+		public AdminManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}

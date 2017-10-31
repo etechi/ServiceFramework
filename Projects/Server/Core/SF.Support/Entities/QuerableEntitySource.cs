@@ -29,7 +29,7 @@ namespace SF.Entities
 			   where TQueryArgument : class
 			  where TModel : class
 	{
-		public AutoQuerableEntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		public AutoQuerableEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 
@@ -40,12 +40,12 @@ namespace SF.Entities
 		}
 		public virtual Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
 		{
-			return EntityManager.AutoQueryIdentsAsync<TKey, TQueryArgument, TModel>(Arg, paging, OnBuildQuery, PagingQueryBuilder);
+			return ServiceContext.AutoQueryIdentsAsync<TKey, TQueryArgument, TModel>(Arg, paging, OnBuildQuery, PagingQueryBuilder);
 		}
 		
 		public virtual Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg, Paging paging)
 		{
-			return EntityManager.AutoQueryAsync<TEntitySummary, TQueryArgument, TModel>(
+			return ServiceContext.AutoQueryAsync<TEntitySummary, TQueryArgument, TModel>(
 				Arg,
 				paging,
 				OnBuildQuery,
@@ -61,7 +61,7 @@ namespace SF.Entities
 			where TQueryArgument:class
 		   where TModel : class
 	{
-		public QuerableEntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		public QuerableEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 
@@ -70,7 +70,7 @@ namespace SF.Entities
 
 		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
 		{
-			return EntityManager.QueryIdentsAsync<TKey, TQueryArgument, TModel>(Arg, paging, OnBuildQuery, PagingQueryBuilder);
+			return ServiceContext.QueryIdentsAsync<TKey, TQueryArgument, TModel>(Arg, paging, OnBuildQuery, PagingQueryBuilder);
 		}
 		protected virtual IContextQueryable<TSummaryTemp> OnMapModelToSummary(IContextQueryable<TModel> Query)
 		{
@@ -80,7 +80,7 @@ namespace SF.Entities
 
 		public Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg, Paging paging)
 		{
-			return EntityManager.QueryAsync<TSummaryTemp, TEntitySummary, TQueryArgument, TModel>(
+			return ServiceContext.QueryAsync<TSummaryTemp, TEntitySummary, TQueryArgument, TModel>(
 				Arg,
 				paging,
 				OnBuildQuery,
@@ -97,7 +97,7 @@ namespace SF.Entities
 			where TQueryArgument:class
 		   where TModel : class
 	{
-		public QuerableEntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		public QuerableEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 		protected override IContextQueryable<TDetailTemp> OnMapModelToSummary(IContextQueryable<TModel> Query)
@@ -113,12 +113,12 @@ namespace SF.Entities
 		where TModel : class
 		where TQueryArgument : class
 	{
-		public QuerableEntitySource(IReadOnlyDataSetEntityManager<TModel> EntityManager) : base(EntityManager)
+		public QuerableEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 		protected override async Task<TPublic[]> OnPrepareDetails(TPublic[] Internals)
 		{
-			await EntityManager.DataEntityResolver.Fill(ServiceInstanceDescriptor.InstanceId, Internals);
+			await ServiceContext.DataEntityResolver.Fill(ServiceInstanceDescriptor.InstanceId, Internals);
 			return Internals;
 		}
 	}
@@ -128,7 +128,7 @@ namespace SF.Entities
 		 where TInternal : class
 		 where TKey : class
 	{
-		public ConstantQueryableEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TInternal> Models) : base(EntityManager, Models)
+		public ConstantQueryableEntitySource(IEntityServiceContext EntityManager, IReadOnlyDictionary<TKey, TInternal> Models) : base(EntityManager, Models)
 		{
 		}
 
@@ -150,7 +150,7 @@ namespace SF.Entities
 		 where TInternal : class, IObjectEntity
 		where TKey:class
 	{
-		public ConstantObjectQueryableEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TInternal> Models) : base(EntityManager, Models)
+		public ConstantObjectQueryableEntitySource(IEntityServiceContext EntityManager, IReadOnlyDictionary<TKey, TInternal> Models) : base(EntityManager, Models)
 		{
 		}
 
@@ -175,7 +175,7 @@ namespace SF.Entities
 		 ConstantQueryableEntitySource<TKey, TInternal, TInternal, TQueryArgument, TInternal>
 		where TInternal:class
 	{
-		public ConstantQueryableEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TInternal> Models) : base(EntityManager, Models)
+		public ConstantQueryableEntitySource(IEntityServiceContext EntityManager, IReadOnlyDictionary<TKey, TInternal> Models) : base(EntityManager, Models)
 		{
 		}
 
@@ -188,7 +188,7 @@ namespace SF.Entities
 		 ConstantQueryableEntitySource<TKey, TInternal, TInternal, TQueryArgument, TModel>
 		where TModel : class
 	{
-		public ConstantQueryableEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TModel> Models) : base(EntityManager, Models)
+		public ConstantQueryableEntitySource(IEntityServiceContext EntityManager, IReadOnlyDictionary<TKey, TModel> Models) : base(EntityManager, Models)
 		{
 		}
 
@@ -202,7 +202,7 @@ namespace SF.Entities
 		 IEntitySource<TKey, TInternal, TQueryArgument>
 		where TModel: class
 	{
-		public ConstantQueryableEntitySource(IEntityManager EntityManager, IReadOnlyDictionary<TKey, TModel> Models) : base(EntityManager, Models)
+		public ConstantQueryableEntitySource(IEntityServiceContext EntityManager, IReadOnlyDictionary<TKey, TModel> Models) : base(EntityManager, Models)
 		{
 		}
 

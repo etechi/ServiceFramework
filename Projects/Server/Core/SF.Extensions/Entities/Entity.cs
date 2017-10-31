@@ -23,17 +23,23 @@ using System.Linq.Expressions;
 using System.Data.Common;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Entities
 {
 	public static class Entity<T>
 	{
 		public static IReadOnlyList<PropertyInfo> KeyProperties { get; }
-			= typeof(T).AllPublicInstanceProperties()
-			.Where(p => p.IsDefined(typeof(KeyAttribute)))
-			.ToArray();
+			= (from p in typeof(T).AllPublicInstanceProperties()
+			   where p.IsDefined(typeof(KeyAttribute))
+			   let col=p.GetCustomAttribute<ColumnAttribute>()
+			   let idx=col?.Order ?? 0
+			   orderby idx
+			   select p
+			)
+		   .ToArray();
 
-
+		
 		public static class KeyValidator<K>
 		{
 			public static bool HasSameKeys { get; }

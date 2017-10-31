@@ -33,11 +33,12 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 		public static int DefaultPriority { get; } = -10000;
 		class CreatedTimePropertyModifier : IEntityPropertyModifier<DateTime>
 		{
-			public int Priority => DefaultPriority;
+			public int MergePriority => DefaultPriority;
+			public int ExecutePriority => 0;
 
-			public DateTime Execute(IDataSetEntityManager Manager, IEntityModifyContext Context,DateTime OrgValue)
+			public DateTime Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context,DateTime OrgValue)
 			{
-				return Manager.Now;
+				return ServiceContext.Now;
 			}
 
 			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier)=> this;
