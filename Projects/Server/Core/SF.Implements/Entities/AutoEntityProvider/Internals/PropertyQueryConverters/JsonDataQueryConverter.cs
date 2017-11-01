@@ -42,18 +42,19 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			}
 			public Type TempFieldType => typeof(string);
 
-			public Expression SourceToTemp(Expression src, PropertyInfo srcProp)
+			public Expression SourceToDestOrTemp(Expression src,int Level, PropertyInfo srcProp,PropertyInfo dstProp)
 			{
 				return src.GetMember(srcProp);
 			}
 
-			public Task<T> TempToDest(object src, string value)
+			public T TempToDest(object src, string value)
 			{
-				return Task.FromResult(value.IsNullOrEmpty() ? default(T) : JsonSerializer.Deserialize<T>(value));
+				return value.IsNullOrEmpty() ? default(T) : JsonSerializer.Deserialize<T>(value);
 			}
+
 		}
 
-		public IEntityPropertyQueryConverter GetPropertyConverter(PropertyInfo DataModelProperty, PropertyInfo EntityProperty)
+		public IEntityPropertyQueryConverter GetPropertyConverter(PropertyInfo DataModelProperty, PropertyInfo EntityProperty, QueryMode QueryMode)
 		{
 			if (DataModelProperty==null ||
 				EntityProperty==null||

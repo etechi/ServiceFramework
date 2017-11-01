@@ -222,9 +222,9 @@ namespace SF.Entities
             => Resolver.Fill(ScopeId, items, IdSelector, i => i.Name, action);
 
 		class Filler {
-			protected static (Type,string) ToIdent<T>(Type Type,T Id)
+			protected static (Type,string) ToIdent<T>(Type Type,T Id,string Name)
 			{
-				if (Id.IsDefault())
+				if (Id.IsDefault() || Name!=null)
 					return (Type,null);
 				return (Type,Id.ToString());
 			}
@@ -263,35 +263,51 @@ namespace SF.Entities
 							 null,
 							 ToIdentMethod.MakeGenericMethod(p.id.PropertyType),
 							 Expression.Constant(p.attr.EntityType),
-							 Expression.Property(ArgItem, p.id)
+							 Expression.Property(ArgItem, p.id),
+							 Expression.Property(ArgItem, p.name)
 							 )
 						).ToArray()
 						),
 					ArgItem	
 					).Compile();
 
-			static Action<TItem, IReadOnlyList<string>> FillIdents { get; } =
-				Expression.Lambda<Action<TItem, IReadOnlyList<string>>>(
-					Expression.Block(
-						PropPairs.Select((p, i) =>
-						Expression.Call(
-							ArgItem,
-							p.name.GetSetMethod(),
-							Expression.Call(
-								null,
-								typeof(Filler).GetMethod(
-									nameof(GetItemName), 
-									BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod),
-								ArgNames,
-								Expression.Constant(i)
+			static ParameterExpression varName { get; } = Expression.Variable(typeof(string));
+			static Action<TItem, IReadOnlyList<string>> FillIdents
+			{
+				get
+				{
+					var exprs = new List<Expression>();
+					for (var i = 0; i < PropPairs.Length; i++)
+					{
+						var p = PropPairs[i];
+						exprs.Add(
+							varName.Assign(
+								Expression.Call(
+									null,
+									typeof(Filler).GetMethod(
+										nameof(GetItemName),
+										BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.InvokeMethod),
+									ArgNames,
+									Expression.Constant(i)
+									)
 								)
-						)
-					)
-					),
-					ArgItem,
-					ArgNames
+							);
+						exprs.Add(
+							Expression.NotEqual(varName, Expression.Constant(null, typeof(string))).Then(
+								ArgItem.SetProperty(p.name, varName)
+								)
+							);
+					}
+					return Expression.Lambda<Action<TItem, IReadOnlyList<string>>>(
+						Expression.Block(
+							new[] { varName },
+							exprs
+						),
+						ArgItem,
+						ArgNames
 					).Compile();
-
+				}
+			}
 			public static async Task Fill(IEntityReferenceResolver Resolver,long? ScopeId,IEnumerable<TItem> items)
 			{
 				if(FillRequired)

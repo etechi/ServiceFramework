@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Data;
+using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -48,7 +49,9 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Comment("标识ID")]
 		public long UserId { get; set; }
 
+		[CreatedTime]
 		public DateTime CreatedTime { get; set; }
+
 		public DateTime? ConfirmedTime { get; set; }
 
 		[ForeignKey(nameof(UserId))]

@@ -36,12 +36,12 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		{
 			this.PropertyQueryConverterProviders = PropertyQueryConverterProviders.OrderBy(p => p.Priority).ToArray();
 		}
-		System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), object> Helpers { get; } 
-			= new System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), object>();
+		System.Collections.Concurrent.ConcurrentDictionary<(Type, Type, QueryMode), object> Helpers { get; } 
+			= new System.Collections.Concurrent.ConcurrentDictionary<(Type, Type, QueryMode), object>();
 
-		public IQueryResultBuildHelper<E, R> GetHelper<E, R>()
+		public IQueryResultBuildHelper<E, R> GetHelper<E, R>(QueryMode Mode)
 		{
-			var key = (typeof(E), typeof(R));
+			var key = (typeof(E), typeof(R), Mode);
 			if (Helpers.TryGetValue(key, out var b))
 				return (IQueryResultBuildHelper<E, R>)b;
 			return (IQueryResultBuildHelper<E, R>)Helpers.GetOrAdd(
@@ -49,6 +49,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				new QueryResultBuildHelperCreator(
 					typeof(E),
 					typeof(R),
+					Mode,
 					PropertyQueryConverterProviders
 					).Build()
 				);

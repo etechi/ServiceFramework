@@ -39,13 +39,21 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		QueryResultBuildHelper,
 		IQueryResultBuildHelper<TDataModel,TTemp,TResult>
 		where TDataModel:class
+		where TResult:class
+		where TTemp:class
 	{
+		Func<Expression, int,Expression> FuncBuildEntityMapper { get; }
 		public QueryResultBuildHelper(
-			Lazy<Expression<Func<TDataModel, TTemp>>> EntityMapper,
+			Func<Expression,int,Expression> FuncBuildEntityMapper,
 			Lazy<Func<TTemp[], Task<TResult[]>>> ResultMapper
 			)
 		{
-			this.EntityMapper = EntityMapper;
+			this.FuncBuildEntityMapper = FuncBuildEntityMapper;
+			this.EntityMapper = new Lazy<Expression<Func<TDataModel, TTemp>>>(()=>
+			{
+				var p = Expression.Parameter(typeof(TDataModel));
+				return Expression.Lambda< Func < TDataModel, TTemp >>(FuncBuildEntityMapper(p,0),p);
+			});
 			this.ResultMapper = ResultMapper;
 		}
 
@@ -55,6 +63,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 		public Lazy<Expression<Func<TDataModel, TTemp>>> EntityMapper { get; }
 		public Lazy<Func<TTemp[], Task<TResult[]>>> ResultMapper { get; }
+		public Expression BuildEntityMapper(Expression src,int Level)
+		{
+			return FuncBuildEntityMapper(src, Level);
+		}
 
 		Expression<Func<TDataModel, TTemp>> IQueryResultBuildHelper<TDataModel, TTemp, TResult>.EntityMapper => EntityMapper.Value;
 
@@ -132,14 +144,13 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		}
 		Type SrcType { get; }
 		Type DstType { get; }
-		ParameterExpression ArgSource { get; }
-		List<MemberBinding> DstBindings { get; } = new List<MemberBinding>();
-		List<(string, Expression)> TempBindings { get; } = new List<(string, Expression)>();
-		List<(PropertyInfo prop, IEntityPropertyQueryConverter conv)> Converters { get; } = new List<(PropertyInfo prop, IEntityPropertyQueryConverter conv)>();
+		List<(PropertyInfo dstProp, PropertyInfo srcProp, IEntityPropertyQueryConverter Converter)> DstBindings { get; } = new List<(PropertyInfo dstProp, PropertyInfo srcProp, IEntityPropertyQueryConverter Converter)>();
+		List<(PropertyInfo dstProp, PropertyInfo srcProp, IEntityPropertyQueryConverter Converter)> TempBindings { get; } = new List<(PropertyInfo dstProp, PropertyInfo srcProp, IEntityPropertyQueryConverter Converter)>();
 		TypeBuilder TempTypeBuilder;
 		Type TempType;
 		IEntityPropertyQueryConverterProvider[] PropertyQueryConverterProviders { get; }
-
+		QueryMode QueryMode { get; }
+		int Level { get; }
 		static AssemblyBuilder AssemblyBuilder { get; } =
 			AssemblyBuilder.DefineDynamicAssembly(
 			new AssemblyName("SFAutoEntityProviderQueryTempClasses"),
@@ -194,19 +205,24 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			}
 			BuildProperty(TempTypeBuilder, Name, Type);
 		}
-		public QueryResultBuildHelperCreator(Type SrcType,Type DstType, IEntityPropertyQueryConverterProvider[] PropertyQueryConverterProviders)
+		public QueryResultBuildHelperCreator(
+			Type SrcType,
+			Type DstType, 
+			QueryMode Mode,
+			IEntityPropertyQueryConverterProvider[] PropertyQueryConverterProviders
+			)
 		{
+			this.QueryMode = Mode;
 			this.SrcType = SrcType;
 			this.DstType = DstType;
 			this.PropertyQueryConverterProviders = PropertyQueryConverterProviders;
-			this.ArgSource = Expression.Parameter(SrcType);
 		}
 		
 		
 		IEntityPropertyQueryConverter FindValueConverter(PropertyInfo srcProp,PropertyInfo dstProp)
 		{
 			return PropertyQueryConverterProviders
-				.Select(p => p.GetPropertyConverter(srcProp, dstProp))
+				.Select(p => p.GetPropertyConverter(srcProp, dstProp, QueryMode))
 				.FirstOrDefault(c => c != null);
 		}
 
@@ -214,115 +230,176 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		{
 			var srcProp=SrcType.GetProperty(dstProp.Name, BindingFlags.Instance | BindingFlags.Public);
 			var vc = FindValueConverter(srcProp, dstProp);
-			if (vc != null)
-			{
-				if(vc.TempFieldType!=null)
-				{
-					AddTempProperty(dstProp.Name, vc.TempFieldType);
-					TempBindings.Add((dstProp.Name, vc.SourceToTemp(ArgSource, srcProp)));
-				}
-				Converters.Add((dstProp, vc));
-			}
-			else if (srcProp == null)
+			if (vc == null)
 				return;
-			else if(srcProp.GetCustomAttribute<ForeignKeyAttribute>()==null && srcProp.GetCustomAttribute<InversePropertyAttribute>()==null)
+			
+			if(vc.TempFieldType==null)
 			{
-				var src = (Expression)Expression.Property(ArgSource, srcProp);
- 				if (dstProp.PropertyType != srcProp.PropertyType)
+				DstBindings.Add((dstProp, srcProp, vc));
+			}
+			else
+			{
+				AddTempProperty(dstProp.Name, vc.TempFieldType);
+				TempBindings.Add((dstProp,srcProp,vc));
+			}
+			
+	
+		}
+
+		class Preparer<TTemp, TResult>
+		{
+			public static async Task RunTasks(TTemp temp, TResult result, Func<TTemp, TResult, Task, Task>[] funcs)
+			{
+				Task lastTask = null;
+				foreach (var f in funcs)
 				{
-					if (srcProp.PropertyType.CanSimpleConvertTo(dstProp.PropertyType))
-						src = Expression.Convert(src, dstProp.PropertyType);
-					else
-						throw new NotSupportedException($"来源字段{SrcType.FullName}.{srcProp.Name} 的类型{srcProp.PropertyType} 和目标字段 {DstType.FullName}.{dstProp.Name} 的类型{dstProp.PropertyType}不兼容");
+					var t = f(temp, result, lastTask);
+					if (t == null)
+						break;
+					await t;
+					lastTask = t;
 				}
-				DstBindings.Add(Expression.Bind(dstProp, src));
+			}
+			static MethodInfo MethodRunTasks { get; } = typeof(Preparer<TTemp, TResult>).GetMethod("RunTasks", BindingFlags.Static | BindingFlags.Public);
+
+			public static Func<TTemp, TResult, Task, Task>[] BuildPrepare(
+				IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)> prepares
+				)
+			{
+				var argTemp = Expression.Parameter(typeof(TTemp));
+				var argResult = Expression.Parameter(typeof(TResult));
+				var argTask = Expression.Parameter(typeof(Task));
+				List<Func<TTemp, TResult, Task, Task>> funcs = new List<Func<TTemp, TResult, Task, Task>>();
+				List<Expression> exprs = new List<Expression>();
+				foreach (var p in prepares)
+				{
+					var convType = typeof(IEntityPropertyQueryConverter<,>).MakeGenericType(p.propTemp.PropertyType, p.prop.PropertyType);
+					if (!convType.IsAssignableFrom(p.conv.GetType()))
+					{
+						convType = typeof(IEntityPropertyQueryConverterAsync<,>).MakeGenericType(p.propTemp.PropertyType, p.prop.PropertyType);
+						if (!convType.IsAssignableFrom(p.conv.GetType()))
+							throw new NotSupportedException();
+					}
+					var expr = Expression.Call(
+					   Expression.Convert(
+						   Expression.Constant(p.conv),
+						   convType
+						   ),
+					   convType.GetMethod("TempToDest", BindingFlags.Public | BindingFlags.Instance),
+					   argTemp,
+					   p.propTemp == null ?
+					   (Expression)Expression.Constant(
+						   p.propTemp.PropertyType.GetDefaultValue(),
+						   p.propTemp.PropertyType
+						   ) :
+					   (Expression)Expression.Property(argTemp, p.propTemp)
+					   );
+					if (!expr.Type.IsGenericTypeOf(typeof(Task<>)))
+					{
+						exprs.Add(argResult.SetProperty(p.prop, expr));
+						continue;
+					}
+					funcs.Add(
+						Expression.Block(exprs).Compile<Func<TTemp, TResult, Task, Task>>(
+							argTemp,
+							argResult,
+							argTask
+							)
+						);
+					exprs.Clear();
+					exprs.Add(argResult.SetProperty(p.prop, argTask.To(typeof(Task<>).MakeGenericType(p.prop.PropertyType))));
+				}
+				exprs.Add(Expression.Constant(null, typeof(Task)));
+				funcs.Add(
+					Expression.Block(exprs).Compile<Func<TTemp, TResult, Task, Task>>(
+						argTemp,
+						argResult,
+						argTask
+						)
+					);
+				return funcs.ToArray();
 			}
 		}
 
-		static Func<TTemp, TResult, Task[]> BuildPrepare<TTemp, TResult>(
-			IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)> prepares
-			)
-		{
-			var argTemp = Expression.Parameter(typeof(TTemp));
-			var argResult = Expression.Parameter(typeof(TResult));
+		//	return Expression.Lambda<Func<TTemp, TResult, Task[]>>(
+		//		Expression.NewArrayInit(
+		//			typeof(Task),
+		//			prepares.Select(p =>
+		//			{
+		//				var convType = typeof(IEntityPropertyQueryConverter<,>).MakeGenericType(p.propTemp.PropertyType, p.prop.PropertyType);
 
-			return Expression.Lambda<Func<TTemp, TResult, Task[]>>(
-				Expression.NewArrayInit(
-					typeof(Task),
-					prepares.Select(p =>
-					{
-						var convType = typeof(IEntityPropertyQueryConverter<,>).MakeGenericType(p.propTemp.PropertyType, p.prop.PropertyType);
-
-						var converterCall = Expression.Call(
-							Expression.Convert(
-								Expression.Constant(p.conv),
-								convType
-								),
-							convType.GetMethod("TempToDest", BindingFlags.Public | BindingFlags.Instance),
-							argTemp,
-							p.propTemp == null ?
-							(Expression)Expression.Constant(
-								p.propTemp.PropertyType.GetDefaultValue(),
-								p.propTemp.PropertyType
-								) :
-							(Expression)Expression.Property(argTemp, p.propTemp)
-						);
-						var taskType = typeof(Task<>).MakeGenericType(p.prop.PropertyType);
-						var argTask = Expression.Parameter(typeof(Task<>).MakeGenericType(p.prop.PropertyType));
-						var argContext = Expression.Parameter(typeof(object));
-						var bind = Expression.Lambda(
-							Expression.Call(
-								Expression.Convert(argContext, typeof(TResult)),
-								p.prop.GetSetMethod(),
-								Expression.Property(
-									argTask,
-									argTask.Type.GetProperty("Result")
-									)
-								),
-							argTask,
-							argContext
-							).Compile();
-						return Expression.Convert(
-							Expression.Call(
-								converterCall,
-								taskType.GetMethod(
-									"ContinueWith",
-									BindingFlags.Public | BindingFlags.Instance,
-									null,
-									new[] {
-											typeof(Action<,>)
-											.MakeGenericType(
-												typeof(Task<>).MakeGenericType(p.prop.PropertyType),
-												typeof(object)
-												),
-											typeof(object)
-									},
-									null
-								),
-								Expression.Constant(bind),
-								argResult
-								),
-							typeof(Task)
-							);
-					}
-				)), argTemp, argResult).Compile();
-		}
+		//				var converterCall = Expression.Call(
+		//					Expression.Convert(
+		//						Expression.Constant(p.conv),
+		//						convType
+		//						),
+		//					convType.GetMethod("TempToDest", BindingFlags.Public | BindingFlags.Instance),
+		//					argTemp,
+		//					p.propTemp == null ?
+		//					(Expression)Expression.Constant(
+		//						p.propTemp.PropertyType.GetDefaultValue(),
+		//						p.propTemp.PropertyType
+		//						) :
+		//					(Expression)Expression.Property(argTemp, p.propTemp)
+		//				);
+		//				var taskType = typeof(Task<>).MakeGenericType(p.prop.PropertyType);
+		//				var argTask = Expression.Parameter(typeof(Task<>).MakeGenericType(p.prop.PropertyType));
+		//				var argContext = Expression.Parameter(typeof(object));
+		//				var bind = Expression.Lambda(
+		//					Expression.Call(
+		//						Expression.Convert(argContext, typeof(TResult)),
+		//						p.prop.GetSetMethod(),
+		//						Expression.Property(
+		//							argTask,
+		//							argTask.Type.GetProperty("Result")
+		//							)
+		//						),
+		//					argTask,
+		//					argContext
+		//					).Compile();
+		//				return Expression.Convert(
+		//					Expression.Call(
+		//						converterCall,
+		//						taskType.GetMethod(
+		//							"ContinueWith",
+		//							BindingFlags.Public | BindingFlags.Instance,
+		//							null,
+		//							new[] {
+		//									typeof(Action<,>)
+		//									.MakeGenericType(
+		//										typeof(Task<>).MakeGenericType(p.prop.PropertyType),
+		//										typeof(object)
+		//										),
+		//									typeof(object)
+		//							},
+		//							null
+		//						),
+		//						Expression.Constant(bind),
+		//						argResult
+		//						),
+		//					typeof(Task)
+		//					);
+		//			}
+		//		)), argTemp, argResult).Compile();
+		//}
 		
 	
 
 		static QueryResultBuildHelper CreateQueryResultBuildHelper3<TDataModel, TTemp, TResult>(
-			Func<Expression> Expr,
+			Func<Expression,int,Expression> EntityMapper,
 			Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>> prepares
-			) where TTemp : ITempModel<TResult>
+			) where TTemp : class,ITempModel<TResult>
 			where TDataModel:class
+			where TResult:class
 		{
 			return new QueryResultBuildHelper<TDataModel, TTemp, TResult>(
-				new Lazy<Expression<Func<TDataModel, TTemp>>>(() => (Expression<Func<TDataModel, TTemp>>)Expr()),
+				EntityMapper,
 				new Lazy<Func<TTemp[], Task<TResult[]>>>(() => {
-					var prepare = BuildPrepare<TTemp, TResult>(prepares());
+					var fs =  Preparer<TTemp, TResult>.BuildPrepare(prepares());
 					return async (tmps) =>
 					{
-						await Task.WhenAll(tmps.SelectMany(t => prepare(t, t.__Result)));
+						foreach (var t in tmps)
+							await Preparer<TTemp, TResult>.RunTasks(t, t.__Result, fs);
 						return tmps.Select(t => t.__Result).ToArray();
 					};
 				}
@@ -331,19 +408,21 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		}
 
 		static QueryResultBuildHelper CreateQueryResultBuildHelper2<TDataModel, TResult>(
-			Func<Expression> Expr,
+			Func<Expression,int,Expression> EntityMapper,
 			Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>> prepares
 			)
 			where TDataModel:class
+			where TResult:class
 		{
 			return new QueryResultBuildHelper<TDataModel, TResult, TResult>(
-					new Lazy<Expression<Func<TDataModel, TResult>>>(() => (Expression<Func<TDataModel, TResult>>)Expr()),
+					EntityMapper,
 					new Lazy<Func<TResult[], Task<TResult[]>>>(() => {
-						var prepare = BuildPrepare<TResult, TResult>(prepares());
-						return async (tmps) =>
+						//var fs = Preparer<TResult, TResult>.BuildPrepare(prepares());
+						return (tmps) =>
 						{
-							await Task.WhenAll(tmps.SelectMany(t => prepare(t, t)));
-							return tmps;
+							//foreach (var t in tmps)
+								//await Preparer<TResult, TResult>.RunTasks(t, t, fs);
+							return Task.FromResult(tmps);
 						};
 					})
 				);
@@ -362,26 +441,29 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					.MakeGenericMethod(SrcType, TempType, DstType).Invoke(
 					null,
 					new object[] {
-						new Func<Expression>(()=>Expression.Lambda(
+						new Func<Expression,int,Expression>((arg,level)=>
 							Expression.MemberInit(
 								Expression.New(TempType),
-								TempBindings.Select(
-									b => Expression.Bind(TempType.GetProperty(b.Item1), b.Item2)
-									)
+								(from b in TempBindings
+								let e=b.Converter.SourceToDestOrTemp(arg,level,b.srcProp,b.dstProp)
+								where e!=null
+								select Expression.Bind(TempType.GetProperty(b.dstProp.Name), e)
+								)
 								.WithFirst(
 									Expression.Bind(
 										TempType.GetProperty("__Result"),
 										Expression.MemberInit(
 											Expression.New(DstType),
-											DstBindings
+											from b in DstBindings
+											let e=b.Converter.SourceToDestOrTemp(arg,level,b.srcProp,b.dstProp)
+											where e!=null
+											select Expression.Bind(b.dstProp,e)
 										)
 									)
 								)
-							),
-							ArgSource
 						)),
 						new Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>>(
-							()=>Converters.Select(p => (prop:p.prop,propTemp: TempType.GetProperty(p.prop.Name), conv:p.conv))
+							()=>TempBindings.Select(p => (prop:p.dstProp,propTemp: TempType.GetProperty(p.dstProp.Name), conv:p.Converter))
 						)
 					}
 					);
@@ -392,19 +474,19 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					.MakeGenericMethod(SrcType,  DstType).Invoke(
 					null,
 					new object[] {
-						new Func<Expression>(
-							()=>
-								Expression.Lambda(
-									Expression.MemberInit(
-										Expression.New(DstType),
-										DstBindings
-									),
-									ArgSource
-								)
+						new Func<Expression,int,Expression>((arg,level)=>
+							Expression.MemberInit(
+								Expression.New(DstType),
+								from b in DstBindings
+									let e=b.Converter.SourceToDestOrTemp(arg,level,b.srcProp,b.dstProp)
+									where e!=null
+									select Expression.Bind(b.dstProp,e)
+							)
 						),
-						new Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>>(
-							()=>Converters.Select(p => (prop:p.prop,propTemp: p.prop, conv:p.conv))
-						)
+						null
+						//new Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>>(
+						//	()=>Converters.Select(p => (prop:p.prop,propTemp: p.prop, conv:p.conv))
+						//)
 					}
 					);
 			}

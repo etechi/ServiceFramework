@@ -164,41 +164,23 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			var argParentKey = Expression.Parameter(ForeignKeyProp.PropertyType);
 			var argChildEntity = Expression.Parameter(childEntityType);
 
-			var childModelKeys =(IReadOnlyList<PropertyInfo>) typeof(Entity<>)
+			var childModelKeys = ((IReadOnlyList<PropertyInfo>)typeof(Entity<>)
 				.MakeGenericType(childModelType)
 				.GetProperty(nameof(Entity<string>.KeyProperties))
-				.GetValue(null);
+				.GetValue(null)).Where(p => p.Name != ForeignKeyProp.Name).ToArray();
 
-			var childEntityKeys = (IReadOnlyList<PropertyInfo>)typeof(Entity<>)
+			var childEntityKeys = ((IReadOnlyList<PropertyInfo>)typeof(Entity<>)
 				.MakeGenericType(childEntityType)
 				.GetProperty(nameof(Entity<string>.KeyProperties))
-				.GetValue(null);
+				.GetValue(null)
+				).Where(p => p.Name != ForeignKeyProp.Name).ToArray();
 
-			if (childModelKeys.Count != childEntityKeys.Count)
-				return null;
-			if (childModelKeys.Count > 2)
+			if (childModelKeys.Length==0 || childModelKeys.Length != childEntityKeys.Length)
 				return null;
 
 			if (childEntityKeys.Zip(childModelKeys, (l, r) => l.Name != r.Name || l.PropertyType != r.PropertyType).Any())
 				return null;
 
-			PropertyInfo childEntityIdentProp;
-			PropertyInfo childModelIdentProp;
-			if (childModelKeys.Count == 1)
-			{
-				if (childModelKeys[0] == ForeignKeyProp)
-					return null;
-				childModelIdentProp = childModelKeys[0];
-				childEntityIdentProp = childEntityKeys[0];
-			}
-			else if (childModelKeys.Count == 1)
-			{
-				var pidx = childModelKeys[0] == ForeignKeyProp ? 1 : 0;
-				childModelIdentProp = childModelKeys[pidx];
-				childEntityIdentProp = childEntityKeys[pidx];
-			}
-			else
-				return null;
 
 			return (IEntityPropertyModifier)Activator.CreateInstance(
 				typeof(EntityPropertyModifier<,,,,>).MakeGenericType(
@@ -212,9 +194,14 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					ForeignKeyProp,
 					argChildModel.SetProperty(ForeignKeyProp,argParentKey)
 						.Compile(argChildModel,argParentKey),
-					argChildModel.GetMember(childModelIdentProp)
-						.Equal(argChildEntity.GetMember(childEntityIdentProp))
-						.Compile(argChildModel,argChildEntity)
+					childModelKeys.Zip(
+						childEntityKeys,
+						(m,e)=>argChildModel.GetMember(m).Equal(argChildEntity.GetMember(e))
+						)
+						.Aggregate(
+							(l,r)=>Expression.AndAlso(l,r)
+							)
+						.Compile(argChildModel, argChildEntity)
 					);
 		}
 	}

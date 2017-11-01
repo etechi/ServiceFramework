@@ -146,87 +146,107 @@ namespace SF.Auth.IdentityServices.Managers
 				};
 			await base.OnNewModel(ctx);
 		}
-		
-		protected override async Task OnUpdateModel(IModifyContext ctx)
+		async Task InitClaimTypes(TEditable obj)
+		{
+			if (obj.Claims != null)
+				foreach (var c in obj.Claims)
+					if (c.TypeId == 0)
+					{
+						if (c.TypeName == null)
+							throw new ArgumentException("类型错误");
+						c.TypeId = await ServiceContext.GetOrCreateClaimType(c.TypeName);
+					}
+		}
+		public override async Task<ObjectKey<long>> CreateAsync(TEditable obj)
+		{
+			await InitClaimTypes(obj);
+			return await base.CreateAsync(obj);
+		}
+		public override async Task UpdateAsync(TEditable obj)
+		{
+			await InitClaimTypes(obj);
+			await base.UpdateAsync(obj);
+		}
+		protected override Task OnUpdateModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
+			return Task.CompletedTask;
+			//if (e.Credentials != null)
+			//{
+			//	var ics = DataSet.Context.Set<TUserCredential>();
+			//	var oitems = await ics.LoadListAsync(ic => ic.UserId == m.Id);
+			//	ics.Merge(
+			//		oitems,
+			//		e.Credentials,
+			//		(mi, ei) => mi.ClaimTypeId == ei.ClaimTypeId && mi.Credential== ei.Credential,
+			//		ei => new TUserCredential
+			//		{
+			//			UserId = m.Id,
+			//			Credential = ei.Credential,
+			//			ClaimTypeId = ei.ClaimTypeId,
+			//			CreatedTime = Now,
+			//		}
+			//		);
+			//}
+			//if (e.Roles != null)
+			//{
+			//	var irs = DataSet.Context.Set<TUserRole>();
+			//	var oitems = await irs.LoadListAsync(ic => ic.UserId == m.Id);
+			//	irs.Merge(
+			//		oitems,
+			//		e.Roles,
+			//		(mi, ei) => mi.RoleId==ei.RoleId,
+			//		ei => new TUserRole
+			//		{
+			//			UserId = m.Id,
+			//			RoleId=ei.RoleId
+			//		}
+			//		);
+			//}
 
-			if (e.Credentials != null)
-			{
-				var ics = DataSet.Context.Set<TUserCredential>();
-				var oitems = await ics.LoadListAsync(ic => ic.UserId == m.Id);
-				ics.Merge(
-					oitems,
-					e.Credentials,
-					(mi, ei) => mi.ClaimTypeId == ei.ClaimTypeId && mi.Credential== ei.Credential,
-					ei => new TUserCredential
-					{
-						UserId = m.Id,
-						Credential = ei.Credential,
-						ClaimTypeId = ei.ClaimTypeId,
-						CreatedTime = Now,
-					}
-					);
-			}
-			if (e.Roles != null)
-			{
-				var irs = DataSet.Context.Set<TUserRole>();
-				var oitems = await irs.LoadListAsync(ic => ic.UserId == m.Id);
-				irs.Merge(
-					oitems,
-					e.Roles,
-					(mi, ei) => mi.RoleId==ei.RoleId,
-					ei => new TUserRole
-					{
-						UserId = m.Id,
-						RoleId=ei.RoleId
-					}
-					);
-			}
+			//if (e.Claims != null)
+			//{
+			//	var ccs = DataSet.Context.Set<TUserClaimValue>();
+			//	var oids = ccs.AsQueryable(false).Where(c => c.UserId == m.Id).ToArray();
 
-			if (e.Claims != null)
-			{
-				var ccs = DataSet.Context.Set<TUserClaimValue>();
-				var oids = ccs.AsQueryable(false).Where(c => c.UserId == m.Id).ToArray();
+			//	foreach (var c in e.Claims)
+			//	{
+			//		if (c.Id == 0)
+			//			c.Id = await IdentGenerator.GenerateAsync(typeof(TUserClaimValue).FullName);
+			//		if(c.TypeId==0)
+			//			c.TypeId = await ServiceContext.GetOrCreateClaimType(c.TypeName);
+			//	}
 
-				foreach (var c in e.Claims)
-				{
-					if (c.Id == 0)
-						c.Id = await IdentGenerator.GenerateAsync(typeof(TUserClaimValue).FullName);
-					if(c.TypeId==0)
-						c.TypeId = await ServiceContext.GetOrCreateClaimType(c.TypeName);
-				}
-
-				ccs.Merge(
-					oids,
-					e.Claims,
-					(o, n) => o.Id == n.Id,
-					n => new TUserClaimValue
-					{
-						Id = n.Id,
-						TypeId = n.TypeId,
-						UserId=m.Id,
-						CreateTime = Now,
-						UpdateTime = Now,
-						Value = n.Value
-					},
-					(o, n) => {
-						o.Value = n.Value;
-						o.UpdateTime = Now;
-					}
-					);
-			}
+			//	ccs.Merge(
+			//		oids,
+			//		e.Claims,
+			//		(o, n) => o.Id == n.Id,
+			//		n => new TUserClaimValue
+			//		{
+			//			Id = n.Id,
+			//			TypeId = n.TypeId,
+			//			UserId=m.Id,
+			//			CreateTime = Now,
+			//			UpdateTime = Now,
+			//			Value = n.Value
+			//		},
+			//		(o, n) => {
+			//			o.Value = n.Value;
+			//			o.UpdateTime = Now;
+			//		}
+			//		);
+			//}
 		}
 		
 		
 		protected override async Task OnRemoveModel(IModifyContext ctx)
 		{
-			var ics = DataSet.Context.Set<TUserCredential>();
-			await ics.RemoveRangeAsync(ic => ic.UserId == ctx.Model.Id);
+			//var ics = DataSet.Context.Set<TUserCredential>();
+			//await ics.RemoveRangeAsync(ic => ic.UserId == ctx.Model.Id);
 
-			var cvs = DataSet.Context.Set<TUserClaimValue>();
-			await cvs.RemoveRangeAsync(ic => ic.UserId == ctx.Model.Id);
+			//var cvs = DataSet.Context.Set<TUserClaimValue>();
+			//await cvs.RemoveRangeAsync(ic => ic.UserId == ctx.Model.Id);
 
 			await base.OnRemoveModel(ctx);
 		}

@@ -120,7 +120,7 @@ namespace SF.Entities
 				async q =>
 				{
 					return await Storage.QueryResultBuildHelperCache
-						.GetHelper<TModel, TReadOnlyEntity>()
+						.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Detail)
 						.QuerySingleOrDefault(q);
 				}
 				);
@@ -209,7 +209,7 @@ namespace SF.Entities
 			return await Storage.BatchGetAsync<TKey, TReadOnlyEntity, TModel>(
 				Ids,
 				async q => {
-					return (await Storage.QueryResultBuildHelperCache.GetHelper<TModel, TReadOnlyEntity>().Query(
+					return (await Storage.QueryResultBuildHelperCache.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Detail).Query(
 						q,
 						Storage.PagingQueryBuilderCache.GetBuilder<TModel>(),
 						Paging.All
@@ -356,7 +356,7 @@ namespace SF.Entities
 					GetFilter<TModel, TQueryArgument>().Filter(q, Storage, QueryArgument);
 				if (BuildQuery != null)
 					q = BuildQuery(q, QueryArgument, paging);
-				return await Storage.QueryResultBuildHelperCache.GetHelper<TModel, TReadOnlyEntity>()
+				return await Storage.QueryResultBuildHelperCache.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Summary)
 					.Query(
 					q,
 					PagingQueryBuilder??Storage.PagingQueryBuilderCache.GetBuilder<TModel>(),
@@ -463,7 +463,7 @@ namespace SF.Entities
 				$"载入编辑实体{typeof(TModel).Comment().Name}:{Entity<TKey>.GetIdents(Key)?.Join(",")}",
 				async (trans) =>
 				{
-					return await Storage.QueryResultBuildHelperCache.GetHelper<TModel,TEditable>().QuerySingleOrDefault(
+					return await Storage.QueryResultBuildHelperCache.GetHelper<TModel,TEditable>(QueryMode.Edit).QuerySingleOrDefault(
 						Storage.DataContext.Set<TModel>().AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Key))
 						);
 				});

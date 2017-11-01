@@ -77,7 +77,7 @@ namespace SF.Entities
 				if (Idents.Length == 1)
 				{
 					var ins = await manager.GetAsync(new ObjectKey<TKey> { Id = (TKey)Convert.ChangeType(Idents[0], typeof(TKey)) });
-					if (ins == null)
+					if (ins.IsDefault())
 						return Array.Empty<IEntityReference>();
 					return new[] {CreateReference(ins,EntityIdent,ServiceId)};
 				}

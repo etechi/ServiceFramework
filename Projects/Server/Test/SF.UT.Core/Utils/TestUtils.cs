@@ -18,6 +18,7 @@ using Xunit;
 using SF.Core.ServiceManagement;
 using System.Threading.Tasks;
 using SF.Data;
+using SF.Auth.IdentityServices;
 
 namespace SF.UT.Utils
 {

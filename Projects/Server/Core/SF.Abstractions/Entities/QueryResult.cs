@@ -90,14 +90,21 @@ namespace SF.Entities
 	{
 		Task<QueryResult<R>> Query(IContextQueryable<E> queryable, IPagingQueryBuilder<E> PagingQueryBuilder,Paging paging);
 		Task<R> QuerySingleOrDefault(IContextQueryable<E> queryable);
+		Expression BuildEntityMapper(Expression src,int Level);
 	}
 	public interface IQueryResultBuildHelper<E, T, R> : IQueryResultBuildHelper<E, R>
 	{
 		Expression<Func<E, T>> EntityMapper { get; }
 		Func<T[],Task<R[]>> ResultMapper { get; }
 	}
+	public enum QueryMode
+	{
+		Detail,
+		Summary,
+		Edit
+	}
 	public interface IQueryResultBuildHelperCache
 	{
-		IQueryResultBuildHelper<E, R> GetHelper<E, R>();
+		IQueryResultBuildHelper<E, R> GetHelper<E, R>(QueryMode QueryMode);
 	}
 }

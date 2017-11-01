@@ -24,18 +24,23 @@ namespace SF.Entities.AutoEntityProvider
 	public interface IEntityPropertyQueryConverter
 	{
 		Type TempFieldType { get; }
-		Expression SourceToTemp(Expression src, PropertyInfo srcProp);
+		Expression SourceToDestOrTemp(Expression src, int level, PropertyInfo srcProp,PropertyInfo dstProp);
+	}
+	public interface IEntityPropertyQueryConverterAsync<TTempType, TEntityPropType> : IEntityPropertyQueryConverter
+	{
+		Task<TEntityPropType> TempToDest(object src, TTempType value);
 	}
 	public interface IEntityPropertyQueryConverter<TTempType, TEntityPropType> : IEntityPropertyQueryConverter
 	{
-		Task<TEntityPropType> TempToDest(object src, TTempType value);
+		TEntityPropType TempToDest(object src, TTempType value);
 	}
 	public interface IEntityPropertyQueryConverterProvider
 	{
 		int Priority { get; }
 		IEntityPropertyQueryConverter GetPropertyConverter(
 			PropertyInfo DataModelProperty,
-			PropertyInfo EntityProperty
+			PropertyInfo EntityProperty,
+			QueryMode QueryMode
 			);
 	}
 	public interface IEntityPropertyModifier

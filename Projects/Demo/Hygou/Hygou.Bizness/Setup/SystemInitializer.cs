@@ -34,25 +34,27 @@ namespace Hygou.Setup
 {
 	public class SystemInitializer
 	{
-		public static async Task<long> EnsureAdmin(IServiceProvider sp)
+		public static  Task<long> EnsureAdmin(IServiceProvider sp)
 		{
 			var svc = sp.Resolve<IAdminManager>();
-			var u = await svc.AdminEnsure(sp,"sysadmin", "系统管理员", "13000010001", "system123", new[] { "sysadmin","admin"});
-			return u.Id;
+			//var u = await svc.AdminEnsure(sp,"sysadmin", "系统管理员", "13000010001", "system123", new[] { "sysadmin","admin"});
+			//return u.Id;
+			return Task.FromResult(0L);
 		}
 
-		public static async Task<MemberInternal> EnsureSysSeller(IServiceProvider sp)
+		public static Task<MemberInternal> EnsureSysSeller(IServiceProvider sp)
 		{
-			var svc = sp.Resolve<IMemberService>();
-			var u = await svc.MemberEnsure(
-					sp,
-					"sysseller",
-					"系统卖家",
-					"13011110002",
-					"system",
-					new[]{"admin", "seller", "provider" }
-					);
-			return u;
+			//var svc = sp.Resolve<IMemberService>();
+			//var u = await svc.MemberEnsure(
+			//		sp,
+			//		"sysseller",
+			//		"系统卖家",
+			//		"13011110002",
+			//		"system",
+			//		new[]{"admin", "seller", "provider" }
+			//		);
+			//return u;
+			return Task.FromResult((MemberInternal)null);
 		}
 		public static async Task Initialize(IServiceProvider ServiceProvider, EnvironmentType EnvType)
 		{
