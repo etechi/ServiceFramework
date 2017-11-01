@@ -73,11 +73,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hygou.Test", "Demo\Hygou\Hy
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Drawing.ZKWeb", "Server\Implements\SF.Drawing.ZKWeb\SF.Drawing.ZKWeb.csproj", "{A56E0FA9-A9D1-42B1-8C89-08B9AE573699}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.IdentityServer", "Server\Sites\SF.IdentityServer\SF.IdentityServer.csproj", "{688EBB0E-165A-4C22-878D-EC95AAC42EAF}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.IdentityService.Abstractions", "Server\Common\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj", "{6FDD038F-C69C-49D6-BD59-F3581E0E2B0F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.IdentityService.Implements", "Server\Common\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj", "{F9363BCF-9AD5-4B47-B78F-74625A27894A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.IdentityService.IdentityServer4", "Server\Common\SF.IdentityService.IdentityServer4\SF.IdentityService.IdentityServer4.csproj", "{FF9D46EB-84B6-4831-BD19-0E0D87B5A118}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -189,10 +189,6 @@ Global
 		{A56E0FA9-A9D1-42B1-8C89-08B9AE573699}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A56E0FA9-A9D1-42B1-8C89-08B9AE573699}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A56E0FA9-A9D1-42B1-8C89-08B9AE573699}.Release|Any CPU.Build.0 = Release|Any CPU
-		{688EBB0E-165A-4C22-878D-EC95AAC42EAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{688EBB0E-165A-4C22-878D-EC95AAC42EAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{688EBB0E-165A-4C22-878D-EC95AAC42EAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{688EBB0E-165A-4C22-878D-EC95AAC42EAF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6FDD038F-C69C-49D6-BD59-F3581E0E2B0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6FDD038F-C69C-49D6-BD59-F3581E0E2B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6FDD038F-C69C-49D6-BD59-F3581E0E2B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -201,6 +197,10 @@ Global
 		{F9363BCF-9AD5-4B47-B78F-74625A27894A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9363BCF-9AD5-4B47-B78F-74625A27894A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9363BCF-9AD5-4B47-B78F-74625A27894A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF9D46EB-84B6-4831-BD19-0E0D87B5A118}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF9D46EB-84B6-4831-BD19-0E0D87B5A118}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF9D46EB-84B6-4831-BD19-0E0D87B5A118}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF9D46EB-84B6-4831-BD19-0E0D87B5A118}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -233,9 +233,9 @@ Global
 		{63EF9768-72AF-49DF-B3E9-BFD07722DD02} = {66A4F4E4-6A67-479D-8650-013BD4A3913B}
 		{22C488AF-CD9B-4A3A-B8D2-CE26FF82CFF3} = {A58E1A39-F196-44DA-BAFA-A5073C82AFC1}
 		{A56E0FA9-A9D1-42B1-8C89-08B9AE573699} = {5ADFB606-7537-4C30-A712-663E4DDCED81}
-		{688EBB0E-165A-4C22-878D-EC95AAC42EAF} = {8E28520B-F54B-4C69-A62D-D5C7195031C4}
 		{6FDD038F-C69C-49D6-BD59-F3581E0E2B0F} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
 		{F9363BCF-9AD5-4B47-B78F-74625A27894A} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
+		{FF9D46EB-84B6-4831-BD19-0E0D87B5A118} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CEC16A9-B2F8-4F62-83CD-A3938068964F}

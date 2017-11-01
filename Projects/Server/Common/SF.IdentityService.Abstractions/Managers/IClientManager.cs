@@ -31,7 +31,7 @@ namespace SF.Auth.IdentityServices.Managers
 	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
-	[Comment("角色管理")]
+	[Comment("客户端管理")]
 	public interface IClientManager :
 		IEntityManager<ObjectKey<long>,Models.ClientInternal>,
 		IEntitySource<ObjectKey<long>, Models.ClientInternal, ClientQueryArgument>

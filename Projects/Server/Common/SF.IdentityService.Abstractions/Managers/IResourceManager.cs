@@ -34,6 +34,7 @@ namespace SF.Auth.IdentityServices.Managers
 		IEntityManager<ObjectKey<long>,Models.ResourceInternal>,
 		IEntitySource<ObjectKey<long>, Models.ResourceInternal, ResourceQueryArgument>
 	{
+
 	}
 
 }

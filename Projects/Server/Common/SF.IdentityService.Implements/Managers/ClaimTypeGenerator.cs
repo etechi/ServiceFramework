@@ -27,7 +27,7 @@ namespace SF.Auth.IdentityServices.Managers
 {
 	public static class ClaimTypeProvider
 	{
-		public static async Task<long> GetOrCreateClaimType(
+		public static async Task<long> GetOrCreateClaimType1(
 			this IEntityServiceContext EntityManager,
 			string Type
 			)

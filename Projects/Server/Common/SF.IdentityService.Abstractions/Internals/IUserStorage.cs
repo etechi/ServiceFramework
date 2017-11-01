@@ -46,9 +46,7 @@ namespace SF.Auth.IdentityServices.Internals
 		[MaxLength(100)]
 		public string CredentialValue { get; set; }
 
-		[Required]
 		[Comment("登录凭证提供者")]
-		[MaxLength(100)]
 		public long ClaimTypeId { get; set; }
 
 		[Comment("注册附加参数")]

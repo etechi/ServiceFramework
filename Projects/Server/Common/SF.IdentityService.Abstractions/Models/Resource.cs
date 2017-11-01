@@ -29,15 +29,32 @@ namespace SF.Auth.IdentityServices.Models
 	public class ResourceInternal : UIObjectEntityBase<long>
 	{
 		[Comment("标识")]
+		[TableVisible]
+		[Required]
+		[MaxLength(100)]
 		public string Ident { get; set; }
 
-		public IEnumerable<ResourceOperationScope> OperationScopes { get; set; }
+		public IEnumerable<ResourceOperationInternal> Operations { get; set; }
 	}
 
-	[Comment("资源操作范围")]
-	public class ResourceOperationScope : UIObjectEntityBase<long>
+	[Comment("资源操作")]
+	public class ResourceOperationInternal
+	{
+		[EntityIdent(typeof(OperationInternal),nameof(OperationName))]
+		[Comment("操作")]
+		public long OperationId { get; set; }
+
+		[Comment("操作名称")]
+		public string OperationName { get; set; }
+	}
+
+	[Comment("操作范围")]
+	public class OperationInternal : UIObjectEntityBase<long>
 	{
 		[Comment("标识")]
+		[TableVisible]
+		[Required]
+		[MaxLength(100)]
 		public string Ident { get; set; }
 
 	}

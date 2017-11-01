@@ -29,9 +29,9 @@ namespace SF.Auth.IdentityServices.Managers
 	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
-	[Comment("角色管理")]
+	[Comment("客户端配置管理")]
 	public interface IClientConfigManager :
-		IEntityManager<ObjectKey<long>,Models.ClientConfigInternal>,
+		IEntityManager<ObjectKey<long>,Models.ClientConfigEditable>,
 		IEntitySource<ObjectKey<long>, Models.ClientConfigInternal, ClientConfigQueryArgument>
 	{
 	}

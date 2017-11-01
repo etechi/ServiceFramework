@@ -13,40 +13,35 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using Microsoft.AspNetCore.Mvc;
-using System;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
+using SF.Metadata;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using SF.AspNetCore;
-using SF.Services.Settings;
-using Microsoft.AspNetCore.Authorization;
+using IdentityServer4.Models;
 using SF.Core.ServiceManagement;
+using Microsoft.Extensions.DependencyInjection;
+using SF.Auth.IdentityServices.IdentityServer4Impl;
+using SF.Auth.IdentityServices.Managers;
+using SF.Auth.IdentityServices.Models;
+using SF.Auth.IdentityServices;
+using SF.Core.ServiceManagement.Management;
+using SF.Auth.IdentityServices.Internals;
+using SF.Auth.IdentityServices.UserCredentialProviders;
 
-
-namespace Hygou.Site.Controllers 
+namespace SF.Core.ServiceManagement
 {
-	public class AdminModel
+	public static class IdentityServiceDIExtension 
 	{
-		public long IdentityServiceId { get; set; }
-		public string Type { get; set; }
-	}
-	public class AdminController : Controller
-	{
-		//[Authorize("admin")]
-		public ActionResult Index()
+		public static Core.ServiceManagement.IServiceCollection AddIdentityServer4Support(this Core.ServiceManagement.IServiceCollection sc)
 		{
-			return View(
-					"Index",
-					new AdminModel
-					{
-						Type = "default"
-					}
-				);
-		}
-		public ActionResult Signin()
-		{
-			return Index();
+			sc.AsMicrosoftServiceCollection()
+				.AddIdentityServer()
+				.AddClientStore<ClientStore>()
+				.AddProfileService<ProfileService>()
+				.AddResourceStore<ResourceStore>();
+			return sc;
 		}
 	}
 }
+

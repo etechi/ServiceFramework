@@ -26,18 +26,12 @@ namespace SF.Auth.IdentityServices.Models
 {
 	
 	[Comment("凭证类型")]
-	public class ClaimType
+	public class ClaimType : ObjectEntityBase
 	{
-		[Comment("Id")]
-		public long Id { get; set; }
-
-		[Comment("类型名称")]
-		[Required]
-		[MaxLength(100)]
-		public string Name { get; set; }
 	}
-
 	
+
+
 	[Comment("凭证参数值")]
 	public class ClaimValue
 	{

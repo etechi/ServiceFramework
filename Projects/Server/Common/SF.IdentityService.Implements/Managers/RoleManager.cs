@@ -28,7 +28,7 @@ using SF.Auth.IdentityServices;
 
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class EntityRoleManager:
+	public class RoleManager:
 		//QuerableEntitySource<long, Models.IdentityInternal, IdentityQueryArgument, TIdentity>,
 		AutoModifiableEntityManager<
 			ObjectKey<long>,
@@ -40,57 +40,58 @@ namespace SF.Auth.IdentityServices.Managers
 			>,
 		IRoleManager
 	{
-		public EntityRoleManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		public RoleManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 
-		protected override async Task OnUpdateModel(IModifyContext ctx)
-		{
-			var e = ctx.Editable;
-			var m = ctx.Model;
+		//protected override async Task OnUpdateModel(IModifyContext ctx)
+		//{
+		//	var e = ctx.Editable;
+		//	var m = ctx.Model;
 
-			
-			if (e.Claims != null)
-			{
-				var ccs = DataSet.Context.Set<DataModels.RoleClaimValue>();
-				var oids = ccs.AsQueryable(false).Where(c => c.RoleId == m.Id).ToArray();
 
-				foreach (var c in e.Claims)
-				{
-					if (c.Id == 0)
-						c.Id = await IdentGenerator.GenerateAsync(typeof(DataModels.RoleClaimValue).FullName);
-					if(c.TypeId==0)
-						c.TypeId = await ServiceContext.GetOrCreateClaimType(c.TypeName);
-				}
+		//	if (e.Claims != null)
+		//	{
+		//		var ccs = DataSet.Context.Set<DataModels.RoleClaimValue>();
+		//		var oids = ccs.AsQueryable(false).Where(c => c.RoleId == m.Id).ToArray();
 
-				ccs.Merge(
-					oids,
-					e.Claims,
-					(o, n) => o.Id == n.Id,
-					n => new DataModels.RoleClaimValue
-					{
-						Id = n.Id,
-						RoleId=m.Id,
-						TypeId = n.TypeId,
-						CreateTime = Now,
-						UpdateTime = Now,
-						Value = n.Value
-					},
-					(o, n) => {
-						o.Value = n.Value;
-						o.UpdateTime = Now;
-					}
-					);
-			}
-		}
+		//		foreach (var c in e.Claims)
+		//		{
+		//			if (c.Id == 0)
+		//				c.Id = await IdentGenerator.GenerateAsync(typeof(DataModels.RoleClaimValue).FullName);
+		//			//if(c.TypeId==0)
+		//			//c.TypeId = await ServiceContext.GetOrCreateClaimType(c.TypeName);
+		//		}
+
+		//		ccs.Merge(
+		//			oids,
+		//			e.Claims,
+		//			(o, n) => o.Id == n.Id,
+		//			n => new DataModels.RoleClaimValue
+		//			{
+		//				Id = n.Id,
+		//				RoleId = m.Id,
+		//				TypeId = n.TypeId,
+		//				CreateTime = Now,
+		//				UpdateTime = Now,
+		//				Value = n.Value
+		//			},
+		//			(o, n) =>
+		//			{
+		//				o.Value = n.Value;
+		//				o.UpdateTime = Now;
+		//			}
+		//			);
+		//	}
+		//}
 	
-		protected override async Task OnRemoveModel(IModifyContext ctx)
-		{
-			var cvs = DataSet.Context.Set<DataModels.RoleClaimValue>();
-			await cvs.RemoveRangeAsync(ic => ic.RoleId == ctx.Model.Id);
+		//protected override async Task OnRemoveModel(IModifyContext ctx)
+		//{
+		//	var cvs = DataSet.Context.Set<DataModels.RoleClaimValue>();
+		//	await cvs.RemoveRangeAsync(ic => ic.RoleId == ctx.Model.Id);
 
-			await base.OnRemoveModel(ctx);
-		}
+		//	await base.OnRemoveModel(ctx);
+		//}
 
 	}
 

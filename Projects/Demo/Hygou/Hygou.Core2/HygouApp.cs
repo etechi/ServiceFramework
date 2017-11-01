@@ -69,6 +69,7 @@ namespace Hygou
 				.With((sc, envType) => sc.AddCommonServices(EnvType))
 				.With((sc, envType) => sc.AddBizServices(EnvType))
 				.With((sc, envType) => sc.AddPromotionServices(EnvType))
+				.With((sc, envType) => sc.AddIdentityService())
 				.With((sc,envType)=> ConfigServices(sc,envType))
 				.OnEnvType(e => e != EnvironmentType.Utils, (sp)=>
 				{

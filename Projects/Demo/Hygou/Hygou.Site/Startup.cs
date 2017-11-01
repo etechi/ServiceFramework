@@ -70,6 +70,7 @@ namespace Hygou
 					{
 						sc.AddNetworkService();
 						sc.AddAspNetCoreServiceInterface();
+						sc.AddIdentityServer4Support();
 					}
 					)
 				.Build();
