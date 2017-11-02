@@ -22,23 +22,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
+
 	[Table(nameof(Operation))]
-	public class Operation : SF.Entities.DataModels.ObjectEntityBase<long>
+	public class Operation : SF.Entities.DataModels.UIObjectEntityBase<long>
 	{
-		[Index("ident",IsUnique =true,Order =1)]
-		[Comment("相关资源")]
-		public long ResourceId { get; set; }
-
-		[Comment("资源描述")]
-		public string Description { get; set; }
-
-		[ForeignKey(nameof(ResourceId))]
-		public Resource Resource { get; set; }
-
-		[Index("ident", IsUnique = true, Order = 2)]
+		[Index("ident", IsUnique = true)]
 		[Comment("标识")]
 		public string Ident { get; set; }
 
+		[InverseProperty(nameof(ResourceSupportedOperation.Operation))]
+		public ICollection<ResourceSupportedOperation> Resources { get; set; }
 
 	}
 }

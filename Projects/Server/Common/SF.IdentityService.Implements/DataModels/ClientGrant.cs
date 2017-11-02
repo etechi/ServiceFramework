@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Data;
+using SF.Data.Models;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
@@ -22,21 +23,33 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(Resource))]
-	public class Resource : SF.Entities.DataModels.UIObjectEntityBase<long>
+	[Table(nameof(ClientGrant))]
+	public class ClientGrant 
 	{
-		[Comment("资源标识")]
-		[Index(IsUnique =true)]
-		[Required]
-		public string Ident { get; set; }
+		[Key]
+		[Comment("客户端ID")]
+		[Column(Order =1)]
+		public long ClientConfigId { get; set; }
 
-		[InverseProperty(nameof(ResourceRequiredClaim.Resource))]
-		public ICollection<ResourceRequiredClaim> RequiredClaims { get; set; }
+		[ForeignKey(nameof(ClientConfigId))]
+		public ClientConfig ClientConfig { get; set; }
 
-		[InverseProperty(nameof(ResourceSupportedOperation.Resource))]
-		public ICollection<ResourceSupportedOperation> SupportedOperations { get; set; }
+
+		[Key]
+		[Comment("操作资源ID")]
+		[Column(Order = 2)]
+		public long ResourceId { get; set; }
+
+		[ForeignKey(nameof(ResourceId))]
+		public Resource Resource { get; set; }
+
+		[Key]
+		[Comment("操作区域ID")]
+		[Column(Order = 3)]
+		public long OperationId { get; set; }
+
+		[ForeignKey(nameof(OperationId))]
+		public Operation Operation { get; set; }
+
 	}
-
-
-
 }

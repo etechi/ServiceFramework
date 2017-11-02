@@ -12,6 +12,7 @@
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Abstractions\SF.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Extensions\SF.Common.Extensions.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Implements\SF.Common.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Core\SF.Abstractions\SF.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Server\Core\SF.Extensions\SF.Extensions.csproj" />
     <ProjectReference Include="..\..\..\Server\Core\SF.Implements\SF.Implements.csproj" />

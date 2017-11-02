@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".licenseheader" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.csproj" />
+    <ProjectReference Include="..\..\Core\SF.Support\SF.Support.csproj" />
+    <ProjectReference Include="..\..\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj" />
+    <ProjectReference Include="..\SF.Common.Abstractions\SF.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
+    <ProjectReference Include="..\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IdentityServer4" Version="2.0.2" />
+    <PackageReference Include="microsoft.aspnetcore" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.0" />
+    <PackageReference Include="microsoft.aspnetcore.mvc" Version="2.0.0" />
+    <PackageReference Include="microsoft.aspnetcore.staticfiles" Version="2.0.0" />
+    <PackageReference Include="microsoft.visualstudio.web.browserlink" Version="2.0.0" />
+  </ItemGroup>
+
+</Project>

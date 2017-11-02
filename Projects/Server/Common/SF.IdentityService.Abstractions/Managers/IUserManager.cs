@@ -17,6 +17,8 @@ using SF.Auth.IdentityServices.Models;
 using SF.Entities;
 using SF.Metadata;
 using System;
+using System.Threading.Tasks;
+
 namespace SF.Auth.IdentityServices.Managers
 {
 	public class UserQueryArgument : IQueryArgument<ObjectKey<long>>
@@ -43,7 +45,6 @@ namespace SF.Auth.IdentityServices.Managers
 	}
 	public interface IUserManager: IUserManager<UserInternal, UserEditable, UserQueryArgument>
 	{
-
 	}
 }
 

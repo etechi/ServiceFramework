@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Data;
+using SF.Entities.DataModels;
 using SF.Metadata;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -22,14 +23,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(ClaimType))]
-	public class ClaimType
+	public class ClaimType : ObjectEntityBase
 	{
-		[DatabaseGenerated(DatabaseGeneratedOption.None)]
-		public long Id { get; set; }
-
-		[MaxLength(100)]
-		[Required]
 		[Index(IsUnique = true)]
-		public string Name { get; set; }
+		public override string Name { get; set; }
 	}
 }

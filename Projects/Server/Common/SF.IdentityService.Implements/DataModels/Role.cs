@@ -25,11 +25,14 @@ namespace SF.Auth.IdentityServices.DataModels
 	[Table(nameof(Role))]
 	public class Role : SF.Entities.DataModels.ObjectEntityBase<long>
 	{
-
 		[Index(IsUnique = true)]
 		public override string Name { get; set; }
 
 		[InverseProperty(nameof(RoleClaimValue.Role))]
 		public ICollection<RoleClaimValue> ClaimValues { get; set; }
+
+		[InverseProperty(nameof(RoleGrant.Role))]
+		public ICollection<RoleGrant> Grants { get; set; }
+
 	}
 }

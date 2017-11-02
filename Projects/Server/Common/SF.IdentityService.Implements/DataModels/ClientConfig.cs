@@ -79,8 +79,8 @@ namespace SF.Auth.IdentityServices.DataModels
 		//     Specifies the api scopes that the client is allowed to request. If empty, the
 		//     client can't access any scope
 
-		[InverseProperty(nameof(ClientAllowedOperation.ClientConfig))]
-		public ICollection<ClientAllowedOperation> ClientScopes { get; set; }
+		[InverseProperty(nameof(ClientGrant.ClientConfig))]
+		public ICollection<ClientGrant> Grants { get; set; }
 
 		[Comment("离线访问", " Gets or sets a value indicating whether [allow offline access]. Defaults to false.")]
 		public bool AllowOfflineAccess { get; set; }

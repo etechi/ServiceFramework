@@ -146,27 +146,27 @@ namespace SF.Auth.IdentityServices.Managers
 				};
 			await base.OnNewModel(ctx);
 		}
-		async Task InitClaimTypes(TEditable obj)
-		{
-			if (obj.Claims != null)
-				foreach (var c in obj.Claims)
-					if (c.TypeId == 0)
-					{
-						if (c.TypeName == null)
-							throw new ArgumentException("类型错误");
-						c.TypeId = await ServiceContext.GetOrCreateClaimType(c.TypeName);
-					}
-		}
-		public override async Task<ObjectKey<long>> CreateAsync(TEditable obj)
-		{
-			await InitClaimTypes(obj);
-			return await base.CreateAsync(obj);
-		}
-		public override async Task UpdateAsync(TEditable obj)
-		{
-			await InitClaimTypes(obj);
-			await base.UpdateAsync(obj);
-		}
+		//async Task InitClaimTypes(TEditable obj)
+		//{
+		//	if (obj.Claims != null)
+		//		foreach (var c in obj.Claims)
+		//			if (c.TypeId == 0)
+		//			{
+		//				if (c.TypeName == null)
+		//					throw new ArgumentException("类型错误");
+		//				c.TypeId = await ServiceContext.GetOrCreateClaimType(c.TypeName);
+		//			}
+		//}
+		//public override async Task<ObjectKey<long>> CreateAsync(TEditable obj)
+		//{
+		//	await InitClaimTypes(obj);
+		//	return await base.CreateAsync(obj);
+		//}
+		//public override async Task UpdateAsync(TEditable obj)
+		//{
+		//	await InitClaimTypes(obj);
+		//	await base.UpdateAsync(obj);
+		//}
 		protected override Task OnUpdateModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;

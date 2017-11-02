@@ -13,30 +13,36 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Auth.IdentityServices.Internals;
+using SF.Auth.IdentityServices.Models;
+using SF.Core;
+using SF.Core.ServiceManagement;
+using SF.Core.Times;
 using SF.Data;
-using SF.Metadata;
+using SF.Entities;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
+using SF.Auth.IdentityServices;
 
-namespace SF.Auth.IdentityServices.DataModels
+namespace SF.Auth.IdentityServices.Managers
 {
-	[Table(nameof(Resource))]
-	public class Resource : SF.Entities.DataModels.UIObjectEntityBase<long>
+	public class ClaimTypeManager:
+		AutoModifiableEntityManager<
+			ObjectKey<long>,
+			Models.ClaimType,
+			Models.ClaimType,
+			ClaimTypeQueryArgument,
+			Models.ClaimType,
+			DataModels.ClaimType
+			>,
+		IClaimTypeManager
 	{
-		[Comment("资源标识")]
-		[Index(IsUnique =true)]
-		[Required]
-		public string Ident { get; set; }
+		public ClaimTypeManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		{
+		}
 
-		[InverseProperty(nameof(ResourceRequiredClaim.Resource))]
-		public ICollection<ResourceRequiredClaim> RequiredClaims { get; set; }
-
-		[InverseProperty(nameof(ResourceSupportedOperation.Resource))]
-		public ICollection<ResourceSupportedOperation> SupportedOperations { get; set; }
 	}
-
-
 
 }

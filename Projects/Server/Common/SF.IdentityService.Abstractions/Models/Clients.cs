@@ -27,6 +27,29 @@ namespace SF.Auth.IdentityServices.Models
 	[Comment("认证客户端配置")]
 	public class ClientConfigInternal : ObjectEntityBase<long>
 	{
+	}
+	public class ClientGrant
+	{
+		[Key]
+		[Comment("操作资源ID")]
+		[EntityIdent(typeof(ResourceInternal),nameof(ResourceName))]
+		public long ResourceId { get; set; }
+
+		[TableVisible]
+		[Ignore]
+		public string ResourceName { get; set; }
+
+		[Key]
+		[Comment("操作区域ID")]
+		[EntityIdent(typeof(OperationInternal), nameof(OperationName))]
+		public long OperationId { get; set; }
+
+		[TableVisible]
+		[Ignore]
+		public string OperationName { get; set; }
+	}
+	public class ClientConfigEditable: ClientConfigInternal
+	{ 
 		[Comment("发送用户声明", "When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint. Defaults to false.")]
 		public bool AlwaysIncludeUserClaimsInIdToken { get; set; }
 
@@ -78,10 +101,8 @@ namespace SF.Auth.IdentityServices.Models
 		// 摘要:
 		//     Specifies the api scopes that the client is allowed to request. If empty, the
 		//     client can't access any scope
-		[Comment("允许区域", "Specifies the api scopes that the client is allowed to request. If empty, the client can't access any scope")]
-		[Required]
-		[MaxLength(200)]
-		public string[] AllowedScopes { get; set; }
+		[Comment("允许操作")]
+		public IEnumerable<ClientGrant> Grants { get; set; }
 
 		[Comment("离线访问", " Gets or sets a value indicating whether [allow offline access]. Defaults to false.")]
 		public bool AllowOfflineAccess { get; set; }
@@ -151,6 +172,8 @@ namespace SF.Auth.IdentityServices.Models
 		public long ConfigId { get; set; }
 
 		[Comment("配置")]
+		[TableVisible]
+		[Hidden]
 		public string ConfigName { get; set; }
 
 		[Comment("客户端密钥")]
