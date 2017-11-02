@@ -56,7 +56,7 @@ namespace SF.Entities
 		IIdentGenerator IdentGenerator { get; }
 		IEntityReferenceResolver DataEntityResolver { get; }
 		ITimeService TimeService { get; }
-		ILogger Logger { get; }
+		ILogger GetLogger(Type Type);
 		IEventEmitter EventEmitter { get; }
 		IServiceProvider ServiceProvider { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }

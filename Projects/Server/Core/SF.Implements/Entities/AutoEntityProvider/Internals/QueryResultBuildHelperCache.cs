@@ -31,10 +31,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 
 	public class QueryResultBuildHelperCache : IQueryResultBuildHelperCache
 	{
-		IEntityPropertyQueryConverterProvider[] PropertyQueryConverterProviders { get; }
-		public QueryResultBuildHelperCache(IEnumerable<IEntityPropertyQueryConverterProvider> PropertyQueryConverterProviders)
+		Lazy<IEntityPropertyQueryConverterProvider[]> PropertyQueryConverterProviders { get; }
+		public QueryResultBuildHelperCache(Lazy<IEnumerable<IEntityPropertyQueryConverterProvider>> PropertyQueryConverterProviders)
 		{
-			this.PropertyQueryConverterProviders = PropertyQueryConverterProviders.OrderBy(p => p.Priority).ToArray();
+			this.PropertyQueryConverterProviders = new Lazy<IEntityPropertyQueryConverterProvider[]>(() => PropertyQueryConverterProviders.Value.OrderBy(p => p.Priority).ToArray());
 		}
 		System.Collections.Concurrent.ConcurrentDictionary<(Type, Type, QueryMode), object> Helpers { get; } 
 			= new System.Collections.Concurrent.ConcurrentDictionary<(Type, Type, QueryMode), object>();
@@ -50,7 +50,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 					typeof(E),
 					typeof(R),
 					Mode,
-					PropertyQueryConverterProviders
+					PropertyQueryConverterProviders.Value
 					).Build()
 				);
 		}

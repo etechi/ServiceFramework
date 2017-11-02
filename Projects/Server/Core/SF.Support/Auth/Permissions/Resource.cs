@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Entities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,8 @@ namespace SF.Auth.Permissions
 	{
 		public Resource(string Id, string Group, string Name, string Description, string[] Operations)
 		{
+			//if (Id.IsNullOrEmpty())
+			//	Debugger.Launch();
 			UIEnsure.HasContent(Id, "ID不能为空");
 			UIEnsure.HasContent(Group, "Group不能为空");
 			UIEnsure.HasContent(Name, "Name不能为空");
@@ -36,13 +39,13 @@ namespace SF.Auth.Permissions
 			this.Name = Name;
 			this.Group = Group;
 			this.Description = Description;
-			this.AvailableOperationScopes = Operations;
+			this.AvailableOperations = Operations;
 		}
 		public string Description { get; }
 		public string Id { get; }
 		public string Name { get; }
 		public string Group { get; }
-		public string[] AvailableOperationScopes { get; }
+		public string[] AvailableOperations { get; }
 	}
 }
 namespace SF.Core.ServiceManagement

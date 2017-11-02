@@ -177,7 +177,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			if (childModelKeys.Count > 2)
 				return null;
 
-			if (childEntityKeys.Zip(childModelKeys, (l, r) => l.Name != r.Name || l.PropertyType != r.PropertyType).Any())
+			if (childEntityKeys.Zip(childModelKeys, (l, r) => l.Name != r.Name || l.PropertyType != r.PropertyType).Any(r=>r))
 				return null;
 
 			return (IEntityPropertyModifier)Activator.CreateInstance(

@@ -50,7 +50,7 @@ namespace SF.Entities.Tests.EntitySampleGenerators
 				nameof(IValueTestHelperCache.GetHelper),
 				BindingFlags.Public | BindingFlags.Instance,
 				typeof(PropertyInfo)
-				);
+				).IsNotNull();
 
 		System.Collections.Concurrent.ConcurrentDictionary<Type, object> NextSampleCache { get; } = 
 			new System.Collections.Concurrent.ConcurrentDictionary<Type, object>();

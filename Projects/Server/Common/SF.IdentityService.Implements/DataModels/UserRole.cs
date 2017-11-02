@@ -44,7 +44,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Column(Order = 1)]
 		[Comment("角色")]
 		[Index]
-		public long RoleId { get; set; }
+		public string RoleId { get; set; }
 
 		[ForeignKey(nameof(RoleId))]
 		public Role Role { get; set; }

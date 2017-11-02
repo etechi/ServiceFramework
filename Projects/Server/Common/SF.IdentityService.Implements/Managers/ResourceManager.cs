@@ -30,12 +30,12 @@ namespace SF.Auth.IdentityServices.Managers
 {
 	public class ResourceManager:
 		AutoModifiableEntityManager<
-			ObjectKey<long>,
+			ObjectKey<string>,
 			Models.ResourceInternal,
 			Models.ResourceInternal,
 			ResourceQueryArgument,
-			Models.ResourceInternal,
-			DataModels.ClientConfig
+			Models.ResourceEditable,
+			DataModels.Resource
 			>,
 		IResourceManager
 	{

@@ -65,6 +65,8 @@ namespace SF.Core.ServiceManagement.Storages
 			if (svcImpl == null)
 				throw new InvalidOperationException($"找不到服务实现{implType}");
 			re.ImplementType = implType;
+
+			if (re.Setting == null) re.Setting = "{}";
 			return re;
 		}
 

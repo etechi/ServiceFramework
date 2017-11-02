@@ -27,14 +27,14 @@ namespace SF.Auth.IdentityServices.DataModels
 	{
 		[Key]
 		[Column(Order =1)]
-		public long ResourceId { get; set; }
+		public string ResourceId { get; set; }
 
 		[ForeignKey(nameof(ResourceId))]
 		public Resource Resource { get; set; }
 
 		[Key]
 		[Column(Order =2)]
-		public long OperationId { get; set; }
+		public string OperationId { get; set; }
 
 		[ForeignKey(nameof(OperationId))]
 		public Operation Operation { get; set; }

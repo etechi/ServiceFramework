@@ -34,7 +34,6 @@ namespace SF.Entities
 	{
 		public IServiceProvider ServiceProvider { get; }
 		IScoped<IDataContext> _ScopedDataContext;
-		ILogger _Logger;
 		IDataContext _DataContext;
 		ITimeService _TimeService;
 		IEntityReferenceResolver _DataEntityResolver;
@@ -80,7 +79,7 @@ namespace SF.Entities
 		IIdentGenerator IEntityServiceContext.IdentGenerator => Resolve(ref _IdentGenerator);
 		public IEntityReferenceResolver DataEntityResolver => Resolve(ref _DataEntityResolver);
 		public ITimeService TimeService => Resolve(ref _TimeService);
-		public ILogger Logger => Resolve(ref _Logger);
+		public ILogger GetLogger(Type Type) => (ILogger )ServiceProvider.GetService(typeof(ILogger<>).MakeGenericType(Type));
 		public IEventEmitter EventEmitter => Resolve(ref _EventEmitter);
 		public IClientService ClientService => Resolve(ref _ClientService);
 		public IAccessToken AccessToken => Resolve(ref _AccessToken);

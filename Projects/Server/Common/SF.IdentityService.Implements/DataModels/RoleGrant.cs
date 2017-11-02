@@ -29,7 +29,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Key]
 		[Comment("客户端ID")]
 		[Column(Order =1)]
-		public long RoleId { get; set; }
+		public string RoleId { get; set; }
 
 		[ForeignKey(nameof(RoleId))]
 		public Role Role { get; set; }
@@ -37,7 +37,9 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Key]
 		[Comment("操作资源ID")]
 		[Column(Order = 2)]
-		public long ResourceId { get; set; }
+		[MaxLength(100)]
+		[Required]
+		public string ResourceId { get; set; }
 
 		[ForeignKey(nameof(ResourceId))]
 		public Resource Resource { get; set; }
@@ -45,7 +47,9 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Key]
 		[Comment("操作区域ID")]
 		[Column(Order = 3)]
-		public long OperationId { get; set; }
+		[MaxLength(100)]
+		[Required]
+		public string OperationId { get; set; }
 
 		[ForeignKey(nameof(OperationId))]
 		public Operation Operation { get; set; }

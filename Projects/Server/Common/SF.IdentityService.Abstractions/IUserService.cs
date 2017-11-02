@@ -94,6 +94,8 @@ namespace SF.Auth.IdentityServices
 		[Comment("过期时间")]
 		public int? Expires { get; set; }
 
+		public string[] Roles { get; set; }
+
 		[Comment("附加参数")]
 		public Dictionary<string,string> ExtraArgument{get;set;}
 	}

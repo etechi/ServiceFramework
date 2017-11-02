@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using SF.Auth.IdentityServices;
 using SF.Auth.IdentityServices.Models;
 using SF.Auth.IdentityServices.Internals;
+using SF.Services.Security;
 
 namespace SF.Auth.IdentityServices.Managers
 {
@@ -32,7 +33,7 @@ namespace SF.Auth.IdentityServices.Managers
 		EntityUserManager<UserInternal, UserEditable, UserQueryArgument, DataModels.User, DataModels.UserCredential, DataModels.UserClaimValue, DataModels.UserRole>,
 		IUserManager
 	{
-		public UserManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		public UserManager(IEntityServiceContext ServiceContext, Lazy<IPasswordHasher> PasswordHasher) : base(ServiceContext, PasswordHasher)
 		{
 		}
 	}
@@ -56,12 +57,16 @@ namespace SF.Auth.IdentityServices.Managers
 		where TUserClaimValue : DataModels.UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
 		where TUserRole : DataModels.UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
 	{
-		public EntityUserManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		Lazy<IPasswordHasher> PasswordHasher { get; }
+		public EntityUserManager(IEntityServiceContext ServiceContext,Lazy<IPasswordHasher> PasswordHasher) : base(ServiceContext)
 		{
+			this.PasswordHasher = PasswordHasher;
 		}
 
 		async Task<long> IUserStorage.Create(UserCreateArgument Arg)
 		{
+			var roles = Arg.Roles == null ? null : Arg.Roles.Select(r => new UserRole { RoleId = r }).ToArray();
+
 			var uid=await CreateAsync(new TEditable
 			{
 				Name = Arg.User.Name,
@@ -74,8 +79,10 @@ namespace SF.Auth.IdentityServices.Managers
 				SignupExtraArgument=Arg.ExtraArgument,
 				PasswordHash = Arg.PasswordHash,
 				SecurityStamp = Arg.SecurityStamp.Base64(),
+
+				Roles= roles,
 				//OwnerId = Arg.Identity.OwnerId,
-				Credentials=new List<Models.UserCredential>
+				Credentials =new List<Models.UserCredential>
 				{
 					new Models.UserCredential
 					{
@@ -129,11 +136,21 @@ namespace SF.Auth.IdentityServices.Managers
 			//await DataSet.Context.SaveChangesAsync();
 			//return Arg.Identity.Id;
 		}
+		public override Task<ObjectKey<long>> CreateAsync(TEditable obj)
+		{
+			if (obj.SecurityStamp == null)
+			{
+				var stamp = Bytes.Random(16);
+				obj.PasswordHash = PasswordHasher.Value.Hash(obj.PasswordHash, stamp);
+				obj.SecurityStamp = stamp.Base64();
+			}
+			return base.CreateAsync(obj);
+		}
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
-			m.SignupIdentProviderId = e.CreateClaimTypeId;
+			m.SignupClaimTypeId = e.CreateClaimTypeId;
 			m.SignupIdentValue = e.CreateCredential;
 			if (e.Credentials == null)
 				e.Credentials = new[]{
@@ -262,18 +279,18 @@ namespace SF.Auth.IdentityServices.Managers
 					Id=i.Id,
 					Icon=i.Icon,
 					Name=i.Name,
-					Entity=i.OwnerId,
+					
 					IsEnabled=i.ObjectState==EntityLogicState.Enabled,
 					PasswordHash=i.PasswordHash,
-					Roles=i.Roles.Select(r=>r.Role.Name),
+					Roles=i.Roles.Select(r=>r.RoleId),
 					Claims=i.Roles.SelectMany(r=>r.Role.ClaimValues.Select(cv=>new ClaimValue
 					{
-						TypeName=cv.Type.Name,
+						TypeId=cv.TypeId,
 						Value=cv.Value
 					})).Union(
 					i.ClaimValues.Select(cv=>new ClaimValue
 					{
-						TypeName = cv.Type.Name,
+						TypeId = cv.TypeId,
 						Value = cv.Value
 					}))
 				}

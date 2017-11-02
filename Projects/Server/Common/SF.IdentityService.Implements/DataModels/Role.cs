@@ -23,8 +23,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(Role))]
-	public class Role : SF.Entities.DataModels.ObjectEntityBase<long>
+	public class Role : SF.Entities.DataModels.ObjectEntityBase<string>
 	{
+		[MaxLength(100)]
+		[Required]
+		public override string Id { get; set; }
+
 		[Index(IsUnique = true)]
 		public override string Name { get; set; }
 

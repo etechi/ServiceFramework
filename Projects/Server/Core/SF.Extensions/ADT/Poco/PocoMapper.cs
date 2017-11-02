@@ -46,26 +46,26 @@ namespace SF.ADT
 			static Y[] EnumerableToArray<Z, X, Y>(IMapper<X, Y> Mapper, Z src)
 				where Z : IEnumerable<X>
 				=> src.Select(i => Mapper.Map(i)).ToArray();
-			static MethodInfo MethodEnumerableToArray = typeof(InternalMapper<S, T>).GetMethodExt(
+			static MethodInfo MethodEnumerableToArray { get; } = typeof(InternalMapper<S, T>).GetMethodExt(
 				nameof(InternalMapper<S, T>.EnumerableToArray),
 				BindingFlags.NonPublic | BindingFlags.Static,
 				new[]
 				{
 					typeof(IMapper<TypeExtension.GenericTypeArgument,TypeExtension.GenericTypeArgument>),
 					typeof(TypeExtension.GenericTypeArgument)
-				});
+				}).IsNotNull();
 
 			static List<Y> EnumerableToList<Z, X, Y>(IMapper<X, Y> Mapper, Z src)
 				where Z : IEnumerable<X>
 				=> src.Select(i => Mapper.Map(i)).ToList();
-			static MethodInfo MethodEnumerableToList = typeof(InternalMapper<S, T>).GetMethodExt(
+			static MethodInfo MethodEnumerableToList { get; } = typeof(InternalMapper<S, T>).GetMethodExt(
 				nameof(InternalMapper<S, T>.EnumerableToList),
 				BindingFlags.NonPublic | BindingFlags.Static,
 				new[]
 				{
 					typeof(IMapper<TypeExtension.GenericTypeArgument,TypeExtension.GenericTypeArgument>),
 					typeof(TypeExtension.GenericTypeArgument)
-				});
+				}).IsNotNull();
 
 			static Dictionary<KD, VD> EnumerableToDictionary<Z, KS, VS, KD, VD>(
 				IMapper<KS, KD> KMapper, 
@@ -76,7 +76,7 @@ namespace SF.ADT
 			{
 				return src.ToDictionary(p => KMapper.Map(p.Key), p => VMapper.Map(p.Value));
 			}
-			static MethodInfo MethodEnumerableToDictionary = typeof(InternalMapper<S, T>).GetMethodExt(
+			static MethodInfo MethodEnumerableToDictionary { get; } = typeof(InternalMapper<S, T>).GetMethodExt(
 				nameof(InternalMapper<S, T>.EnumerableToDictionary),
 				BindingFlags.NonPublic | BindingFlags.Static,
 				new[]
@@ -84,7 +84,7 @@ namespace SF.ADT
 					typeof(IMapper<TypeExtension.GenericTypeArgument,TypeExtension.GenericTypeArgument>),
 					typeof(IMapper<TypeExtension.GenericTypeArgument,TypeExtension.GenericTypeArgument>),
 					typeof(TypeExtension.GenericTypeArgument)
-				});
+				}).IsNotNull();
 
 
 

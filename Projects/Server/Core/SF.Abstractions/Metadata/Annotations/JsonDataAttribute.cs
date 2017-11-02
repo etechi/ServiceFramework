@@ -22,7 +22,12 @@ namespace SF.Metadata
 	[AttributeUsage(AttributeTargets.Property)]
 	public class JsonDataAttribute : Attribute
 	{
-		
+		public JsonDataAttribute() { }
+		public JsonDataAttribute(Type Type)
+		{
+			this.Type = Type;
+		}
+		public Type Type { get; }
 	}
 
 }

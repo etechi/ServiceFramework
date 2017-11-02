@@ -35,7 +35,9 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Key]
 		[Column(Order = 1)]
 		[Index("union", Order = 1)]
-		public long ClaimTypeId { get; set; }
+		[Required]
+		[MaxLength(100)]
+		public string ClaimTypeId { get; set; }
 
 		[ForeignKey(nameof(ClaimTypeId))]
 		public ClaimType ClaimType { get; set; }

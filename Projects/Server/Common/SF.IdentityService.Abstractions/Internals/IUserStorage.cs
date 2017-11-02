@@ -47,7 +47,13 @@ namespace SF.Auth.IdentityServices.Internals
 		public string CredentialValue { get; set; }
 
 		[Comment("登录凭证提供者")]
-		public long ClaimTypeId { get; set; }
+		public string ClaimTypeId { get; set; }
+
+		[Comment("用户角色")]
+		public string[] Roles { get; set; }
+
+		[Comment("用户申明")]
+		public ClaimValue[] ClaimValues { get; set; }
 
 		[Comment("注册附加参数")]
 		[MaxLength(200)]
@@ -64,7 +70,6 @@ namespace SF.Auth.IdentityServices.Internals
 		public bool IsEnabled { get; set; }
 		public string Name { get; set; }
 		public string Icon { get; set; }
-		public string Entity { get; set; }
 		public IEnumerable<ClaimValue> Claims { get; set; }
 		public IEnumerable<string> Roles { get; set; }
 	}

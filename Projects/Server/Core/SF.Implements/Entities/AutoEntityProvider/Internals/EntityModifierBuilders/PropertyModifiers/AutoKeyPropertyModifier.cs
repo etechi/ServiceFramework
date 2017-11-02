@@ -37,10 +37,15 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 		{
 			public int MergePriority => DefaultMergePriority;
 			public int ExecutePriority => DefaultExecutePriority;
+			public Type DataModelType { get; }
+			public AutoKeyPropertyModifier(Type DataModelType)
+			{
+				this.DataModelType = DataModelType;
+			}
 			public Task<long> Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context, long OrgValue)
 			{
 				return ServiceContext.IdentGenerator.GenerateAsync(
-					ServiceContext.ServiceInstanceDescroptor.ServiceDeclaration.ServiceType.FullName
+					DataModelType.FullName
 					);
 			}
 
@@ -82,7 +87,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.EntityModifiers
 			if (ActionType != DataActionType.Create)
 				return new NonePropertyModifier(DefaultMergePriority);
 
-			return new AutoKeyPropertyModifier();
+			return new AutoKeyPropertyModifier(DataModelType);
 		}
 	}
 }

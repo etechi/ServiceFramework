@@ -17,9 +17,11 @@ using SF.Auth;
 using SF.Entities;
 using SF.Metadata;
 using System;
+using System.ComponentModel.DataAnnotations;
+
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class ClaimTypeQueryArgument : ObjectQueryArgument<long>
+	public class ClaimTypeQueryArgument : ObjectQueryArgument<ObjectKey<string>>
 	{
 	}
 
@@ -28,8 +30,8 @@ namespace SF.Auth.IdentityServices.Managers
 	[NetworkService]
 	[Comment("申明类型管理")]
 	public interface IClaimTypeManager :
-		IEntityManager<ObjectKey<long>,Models.ClaimType>,
-		IEntitySource<ObjectKey<long>, Models.ClaimType, ClaimTypeQueryArgument>
+		IEntityManager<ObjectKey<string>,Models.ClaimType>,
+		IEntitySource<ObjectKey<string>, Models.ClaimType, ClaimTypeQueryArgument>
 	{
 
 	}

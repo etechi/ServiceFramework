@@ -88,7 +88,7 @@ namespace SF.Management.MenuServices.Entity
 		}
 		protected override IContextQueryable<TMenu> OnBuildQuery(IContextQueryable<TMenu> Query, MenuQueryArgument Arg, Paging paging)
 		{
-			var scopeid = ServiceInstanceDescriptor.ParentInstanceId;
+			var scopeid = ServiceInstanceDescriptor?.ParentInstanceId;
 			var q = Query.Where(m=>m.ScopeId==scopeid)
 				.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)

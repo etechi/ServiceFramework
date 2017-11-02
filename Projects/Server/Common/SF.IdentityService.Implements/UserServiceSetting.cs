@@ -33,8 +33,8 @@ namespace SF.Auth.IdentityServices
 		public Lazy<IUserStorage> IdentStorage { get; set; }
 		public Lazy<IUserCredentialStorage> CredentialStorage { get; set; }
 		public Lazy<IClientService> ClientService { get; set; }
-		public Lazy<IAccessToken> AccessToken{ get; set; }
-		public Lazy<IAccessTokenHandler> AccessTokenHandler { get; set; }
+		//public Lazy<IAccessToken> AccessToken{ get; set; }
+		//public Lazy<IAccessTokenHandler> AccessTokenHandler { get; set; }
 		public Lazy<IPasswordHasher> PasswordHasher { get; set; }
 		public Lazy<IServiceInstanceDescriptor> ServiceInstanceDescriptor { get; set; }
 		public Lazy<ITimeService> TimeService { get; set; }

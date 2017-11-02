@@ -26,22 +26,21 @@ namespace SF.Auth.IdentityServices.Models
 {
 	
 	[Comment("角色")]
-	public class Role: ObjectEntityBase<long>
+	public class Role: ObjectEntityBase<string>
 	{
 
 	}
 	public class RoleEditable : Role
 	{
 		public IEnumerable<ClaimValue> Claims { get; set; }
+		public IEnumerable<Grant> Grants { get; set; }
 	}
 	public class UserRole
 	{
-		[Comment("Id")]
-		public long Id { get; set; }
 
 		[Comment("类型ID")]
 		[EntityIdent(typeof(Role), nameof(RoleName))]
-		public long RoleId { get; set; }
+		public string RoleId { get; set; }
 
 		[Comment("类型")]
 		[Ignore]

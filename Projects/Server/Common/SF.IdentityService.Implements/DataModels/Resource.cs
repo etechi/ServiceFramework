@@ -23,12 +23,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(Resource))]
-	public class Resource : SF.Entities.DataModels.UIObjectEntityBase<long>
+	public class Resource : SF.Entities.DataModels.UIObjectEntityBase<string>
 	{
-		[Comment("资源标识")]
-		[Index(IsUnique =true)]
+		[MaxLength(100)]
 		[Required]
-		public string Ident { get; set; }
+		public override string Id { get; set; }
 
 		[InverseProperty(nameof(ResourceRequiredClaim.Resource))]
 		public ICollection<ResourceRequiredClaim> RequiredClaims { get; set; }

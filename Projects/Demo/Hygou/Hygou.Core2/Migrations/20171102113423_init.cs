@@ -293,7 +293,7 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthClaimType",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     InternalRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
@@ -327,20 +327,14 @@ namespace Hygou.Core2.Migrations
                     ClientClaimsPrefix = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     ConsentLifetime = table.Column<int>(type: "int", nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
                     FrontChannelLogoutSessionRequired = table.Column<bool>(type: "bit", nullable: false),
-                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IdentityTokenLifetime = table.Column<int>(type: "int", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     InternalRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     RequireClientSecret = table.Column<bool>(type: "bit", nullable: false),
                     RequireConsent = table.Column<bool>(type: "bit", nullable: false),
                     SlidingRefreshTokenLifetime = table.Column<int>(type: "int", nullable: false),
-                    SubTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -352,11 +346,10 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthOperation",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Ident = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Image = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     InternalRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
@@ -380,11 +373,10 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthResource",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Ident = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     InternalRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
@@ -408,7 +400,7 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthRole",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     InternalRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
@@ -422,29 +414,6 @@ namespace Hygou.Core2.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SysAuthRole", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SysAuthUser",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ObjectState = table.Column<byte>(type: "tinyint", nullable: false),
-                    OwnerId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    SignupExtraArgument = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    SignupIdentProviderId = table.Column<long>(type: "bigint", nullable: false),
-                    SignupIdentValue = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SysAuthUser", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -750,8 +719,8 @@ namespace Hygou.Core2.Migrations
                 columns: table => new
                 {
                     ClientConfigId = table.Column<long>(type: "bigint", nullable: false),
-                    ResourceId = table.Column<long>(type: "bigint", nullable: false),
-                    OperationId = table.Column<long>(type: "bigint", nullable: false)
+                    ResourceId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OperationId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -780,8 +749,8 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthOperationRequiredClaim",
                 columns: table => new
                 {
-                    OperationId = table.Column<long>(type: "bigint", nullable: false),
-                    ClaimTypeId = table.Column<long>(type: "bigint", nullable: false)
+                    OperationId = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    ClaimTypeId = table.Column<string>(type: "nvarchar(100)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -804,8 +773,8 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthResourceRequiredClaim",
                 columns: table => new
                 {
-                    ResourceId = table.Column<long>(type: "bigint", nullable: false),
-                    ClaimTypeId = table.Column<long>(type: "bigint", nullable: false)
+                    ResourceId = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    ClaimTypeId = table.Column<string>(type: "nvarchar(100)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -828,8 +797,8 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthResourceSupportedOperation",
                 columns: table => new
                 {
-                    ResourceId = table.Column<long>(type: "bigint", nullable: false),
-                    OperationId = table.Column<long>(type: "bigint", nullable: false)
+                    ResourceId = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    OperationId = table.Column<string>(type: "nvarchar(100)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -854,8 +823,8 @@ namespace Hygou.Core2.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RoleId = table.Column<long>(type: "bigint", nullable: false),
-                    TypeId = table.Column<long>(type: "bigint", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(100)", nullable: true),
+                    TypeId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -880,9 +849,9 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthRoleGrant",
                 columns: table => new
                 {
-                    RoleId = table.Column<long>(type: "bigint", nullable: false),
-                    ResourceId = table.Column<long>(type: "bigint", nullable: false),
-                    OperationId = table.Column<long>(type: "bigint", nullable: false)
+                    RoleId = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    ResourceId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OperationId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -903,85 +872,6 @@ namespace Hygou.Core2.Migrations
                         name: "FK_SysAuthRoleGrant_SysAuthRole_RoleId",
                         column: x => x.RoleId,
                         principalTable: "SysAuthRole",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SysAuthUserClaimValue",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
-                    CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TypeId = table.Column<long>(type: "bigint", nullable: false),
-                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SysAuthUserClaimValue", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SysAuthUserClaimValue_SysAuthClaimType_TypeId",
-                        column: x => x.TypeId,
-                        principalTable: "SysAuthClaimType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SysAuthUserClaimValue_SysAuthUser_UserId",
-                        column: x => x.UserId,
-                        principalTable: "SysAuthUser",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SysAuthUserCredential",
-                columns: table => new
-                {
-                    ClaimTypeId = table.Column<long>(type: "bigint", nullable: false),
-                    Credential = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ConfirmedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SysAuthUserCredential", x => new { x.ClaimTypeId, x.Credential });
-                    table.ForeignKey(
-                        name: "FK_SysAuthUserCredential_SysAuthClaimType_ClaimTypeId",
-                        column: x => x.ClaimTypeId,
-                        principalTable: "SysAuthClaimType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SysAuthUserCredential_SysAuthUser_UserId",
-                        column: x => x.UserId,
-                        principalTable: "SysAuthUser",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SysAuthUserRole",
-                columns: table => new
-                {
-                    UserId = table.Column<long>(type: "bigint", nullable: false),
-                    RoleId = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SysAuthUserRole", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        name: "FK_SysAuthUserRole_SysAuthRole_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "SysAuthRole",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SysAuthUserRole_SysAuthUser_UserId",
-                        column: x => x.UserId,
-                        principalTable: "SysAuthUser",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1134,7 +1024,7 @@ namespace Hygou.Core2.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     ClientId = table.Column<long>(type: "bigint", nullable: false),
                     CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    TypeId = table.Column<long>(type: "bigint", nullable: false),
+                    TypeId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
@@ -1151,6 +1041,35 @@ namespace Hygou.Core2.Migrations
                         name: "FK_SysAuthClientClaimValue_SysAuthClaimType_TypeId",
                         column: x => x.TypeId,
                         principalTable: "SysAuthClaimType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SysAuthUser",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ObjectState = table.Column<byte>(type: "tinyint", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SignupClaimTypeId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    SignupClientId = table.Column<long>(type: "bigint", nullable: true),
+                    SignupExtraArgument = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    SignupIdentValue = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SysAuthUser", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SysAuthUser_SysAuthClient_SignupClientId",
+                        column: x => x.SignupClientId,
+                        principalTable: "SysAuthClient",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1201,6 +1120,85 @@ namespace Hygou.Core2.Migrations
                         name: "FK_BizProductPropertyItem_BizProductProperty_PropertyId",
                         column: x => x.PropertyId,
                         principalTable: "BizProductProperty",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SysAuthUserClaimValue",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TypeId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SysAuthUserClaimValue", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SysAuthUserClaimValue_SysAuthClaimType_TypeId",
+                        column: x => x.TypeId,
+                        principalTable: "SysAuthClaimType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SysAuthUserClaimValue_SysAuthUser_UserId",
+                        column: x => x.UserId,
+                        principalTable: "SysAuthUser",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SysAuthUserCredential",
+                columns: table => new
+                {
+                    ClaimTypeId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Credential = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ConfirmedTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SysAuthUserCredential", x => new { x.ClaimTypeId, x.Credential });
+                    table.ForeignKey(
+                        name: "FK_SysAuthUserCredential_SysAuthClaimType_ClaimTypeId",
+                        column: x => x.ClaimTypeId,
+                        principalTable: "SysAuthClaimType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SysAuthUserCredential_SysAuthUser_UserId",
+                        column: x => x.UserId,
+                        principalTable: "SysAuthUser",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SysAuthUserRole",
+                columns: table => new
+                {
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    RoleId = table.Column<string>(type: "nvarchar(100)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SysAuthUserRole", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_SysAuthUserRole_SysAuthRole_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "SysAuthRole",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SysAuthUserRole_SysAuthUser_UserId",
+                        column: x => x.UserId,
+                        principalTable: "SysAuthUser",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1728,13 +1726,6 @@ namespace Hygou.Core2.Migrations
                 column: "CreatedTime");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthOperation_Ident",
-                table: "SysAuthOperation",
-                column: "Ident",
-                unique: true,
-                filter: "[Ident] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SysAuthOperation_Name",
                 table: "SysAuthOperation",
                 column: "Name");
@@ -1763,12 +1754,6 @@ namespace Hygou.Core2.Migrations
                 name: "IX_SysAuthResource_CreatedTime",
                 table: "SysAuthResource",
                 column: "CreatedTime");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SysAuthResource_Ident",
-                table: "SysAuthResource",
-                column: "Ident",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthResource_Name",
@@ -1852,19 +1837,21 @@ namespace Hygou.Core2.Migrations
                 column: "CreatedTime");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthUser_OwnerId",
+                name: "IX_SysAuthUser_SignupClaimTypeId",
                 table: "SysAuthUser",
-                column: "OwnerId");
+                column: "SignupClaimTypeId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthUser_SignupIdentProviderId",
+                name: "IX_SysAuthUser_SignupClientId",
                 table: "SysAuthUser",
-                column: "SignupIdentProviderId");
+                column: "SignupClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthUser_SignupIdentValue",
                 table: "SysAuthUser",
-                column: "SignupIdentValue");
+                column: "SignupIdentValue",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthUserClaimValue_TypeId",
@@ -2044,9 +2031,6 @@ namespace Hygou.Core2.Migrations
                 name: "MgrMenu");
 
             migrationBuilder.DropTable(
-                name: "SysAuthClient");
-
-            migrationBuilder.DropTable(
                 name: "SysAuthOperation");
 
             migrationBuilder.DropTable(
@@ -2074,10 +2058,13 @@ namespace Hygou.Core2.Migrations
                 name: "CommonDocumentCategory");
 
             migrationBuilder.DropTable(
-                name: "SysAuthClientConfig");
+                name: "SysAuthClient");
 
             migrationBuilder.DropTable(
                 name: "BizProductType");
+
+            migrationBuilder.DropTable(
+                name: "SysAuthClientConfig");
         }
     }
 }

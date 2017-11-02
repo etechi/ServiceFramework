@@ -26,11 +26,12 @@ namespace SF.Auth.IdentityServices.Models
 {
 	public class UserInternal : User
 	{
+
 		[Comment("创建标识")]
 		public string CreateCredential  { get; set; }
 
 		[Comment("创建标识提供者")]
-		public long CreateClaimTypeId { get; set; }
+		public string CreateClaimTypeId { get; set; }
 
 		[Comment("创建时间")]
 		public DateTime CreateTime { get; set; }
@@ -58,8 +59,7 @@ namespace SF.Auth.IdentityServices.Models
 		[Ignore]
 		public IEnumerable<UserRole> Roles { get; set; }
 
-		
-		public long ClientId { get; set; }
+		public long? SignupClientId { get; set; }
 	}
 }
 

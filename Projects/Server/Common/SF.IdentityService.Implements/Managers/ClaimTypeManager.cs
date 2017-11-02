@@ -30,7 +30,7 @@ namespace SF.Auth.IdentityServices.Managers
 {
 	public class ClaimTypeManager:
 		AutoModifiableEntityManager<
-			ObjectKey<long>,
+			ObjectKey<string>,
 			Models.ClaimType,
 			Models.ClaimType,
 			ClaimTypeQueryArgument,

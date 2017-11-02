@@ -28,7 +28,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Column(Order =1)]
 		[Key]
 		[Comment("操作Id")]
-		public long OperationId { get; set; }
+		public string OperationId { get; set; }
 
 		[ForeignKey(nameof(OperationId))]
 		public Resource Resource { get; set; }
@@ -37,7 +37,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Key]
 		[Comment("申明类型Id")]
 		[Index]
-		public long ClaimTypeId { get; set; }
+		public string ClaimTypeId { get; set; }
 
 		[ForeignKey(nameof(ClaimTypeId))]
 		public ClaimType ClaimType { get; set; }

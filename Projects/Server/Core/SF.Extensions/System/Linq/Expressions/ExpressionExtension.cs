@@ -53,7 +53,7 @@ namespace System.Linq.Expressions
 		{
 			return Expression.Assign(left, right);
 		}
-		public static Expression Assign<T>(this Expression left, T right)
+		public static Expression AssignValue<T>(this Expression left, T right)
 		{
 			return Expression.Assign(left, Expression.Constant(right));
 		}

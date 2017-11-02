@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace SF.Auth.Permissions
 {
-	public class Operation : IOperationScope
+	public class Operation : IOperation
 	{
 		public Operation(string Id, string Name, string Description)
 		{
@@ -37,7 +37,7 @@ namespace SF.Core.ServiceManagement
 { 
 	public static class OperationCollectionExtension
 	{
-		public static IServiceCollection AddAuthOperation(this IServiceCollection sc, IOperationScope operation)
+		public static IServiceCollection AddAuthOperation(this IServiceCollection sc, IOperation operation)
 		{
 			sc.AddSingleton(operation);
 			return sc;
@@ -49,9 +49,9 @@ namespace SF.Core.ServiceManagement
 		public static IServiceCollection EnsureAuthOperation(this IServiceCollection sc, string Id, string Name, string Description)
 		{
 			if (sc.Any(s => 
-				s.InterfaceType == typeof(IOperationScope) && 
+				s.InterfaceType == typeof(IOperation) && 
 				s.ServiceImplementType == ServiceImplementType.Instance && 
-				((IOperationScope)s.ImplementInstance).Id == Id)
+				((IOperation)s.ImplementInstance).Id == Id)
 				)
 				return sc;
 			return sc.AddAuthOperation(Id, Name, Description);

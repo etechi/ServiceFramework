@@ -56,8 +56,9 @@ namespace SF.Auth.IdentityServices
 		}
 		public Task<long?> GetCurUserId()
 		{
-			var re = Setting.AccessToken.Value;
-			return Task.FromResult(re?.User?.GetUserIdent());
+			//var re = Setting.AccessToken.Value;
+			//return Task.FromResult(re?.User?.GetUserIdent());
+			return Task.FromResult((long?)null);
 		}
 		public async Task<User> GetCurUser()
 		{
@@ -78,11 +79,12 @@ namespace SF.Auth.IdentityServices
 		}
 		public Task<long> ValidateAccessToken(string AccessToken)
 		{
-			var p = Setting.AccessTokenHandler.Value.Validate(AccessToken);
-			var id = p.GetUserIdent();
-			if (!id.HasValue)
-				throw new PublicArgumentException("访问令牌问包含用户ID");
-			return Task.FromResult(id.Value);
+			//var p = Setting.AccessTokenHandler.Value.Validate(AccessToken);
+			//var id = p.GetUserIdent();
+			//if (!id.HasValue)
+			//	throw new PublicArgumentException("访问令牌问包含用户ID");
+			//return Task.FromResult(id.Value);
+			return Task.FromResult(0L);
 		}
 
 
@@ -148,7 +150,7 @@ namespace SF.Auth.IdentityServices
 			if (err != null)
 				throw new PublicArgumentException(err);
 
-			var bind = await Setting.CredentialStorage.Value.Find(provider.ClaimTypeId,  Arg.Credential);
+			var bind = await Setting.CredentialStorage.Value.Find(provider.Ident,  Arg.Credential);
 			if (bind == null)
 				throw new PublicArgumentException("找不到账号");
 			return await SendVerifyCode(
@@ -197,7 +199,7 @@ namespace SF.Auth.IdentityServices
 			{
 				if (await ip.VerifyFormat(Arg.Credential) != null)
 					continue;
-				ui = await credentialStorage.Find(ip.ClaimTypeId, Arg.Credential);
+				ui = await credentialStorage.Find(ip.Ident, Arg.Credential);
 				if (ui != null)
 				{
 					identProvider = ip;
@@ -257,12 +259,13 @@ namespace SF.Auth.IdentityServices
 				);
 
 		}
-		public async Task<string> CreateAccessToken(long Id,DateTime? Expires)
+		public Task<string> CreateAccessToken(long Id,DateTime? Expires)
 		{
-			return Setting.AccessTokenHandler.Value.Create(
-				await CreatePrincipal(Id),
-				Expires
-				);
+			//return Setting.AccessTokenHandler.Value.Create(
+			//	await CreatePrincipal(Id),
+			//	Expires
+			//	);
+			return Task.FromResult((string)null);
 		}
 		public Task Signout()
 		{
@@ -311,7 +314,7 @@ namespace SF.Auth.IdentityServices
 					);
 
 
-			var ui = await Setting.CredentialStorage.Value.Find(CredentialProvider.ClaimTypeId,Arg.Credential);
+			var ui = await Setting.CredentialStorage.Value.Find(CredentialProvider.Ident,Arg.Credential);
 			if (ui != null)
 				throw new PublicArgumentException($"您输入的{CredentialProvider.Name}已被注册");
 
@@ -337,7 +340,7 @@ namespace SF.Auth.IdentityServices
 					PasswordHash = passwordHash,
 					SecurityStamp = stamp,
 					CredentialValue=Arg.Credential,
-					ClaimTypeId= CredentialProvider.ClaimTypeId,
+					ClaimTypeId= CredentialProvider.Ident,
 					ExtraArgument=Arg.ExtraArgument,
 					User =new User
 					{

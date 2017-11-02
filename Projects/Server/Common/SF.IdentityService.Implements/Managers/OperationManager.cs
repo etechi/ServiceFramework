@@ -30,7 +30,7 @@ namespace SF.Auth.IdentityServices.Managers
 {
 	public class OperationManager:
 		AutoModifiableEntityManager<
-			ObjectKey<long>,
+			ObjectKey<string>,
 			Models.OperationInternal,
 			Models.OperationInternal,
 			OperationQueryArgument,

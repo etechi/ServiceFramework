@@ -19,10 +19,8 @@ using SF.Metadata;
 using System;
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class RoleQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class RoleQueryArgument : QueryArgument<ObjectKey<string>>
 	{
-		public ObjectKey<long> Id { get; set; }
-
 		[Comment("角色名")]
 		[StringContains]
 		public string Name { get; set; }
@@ -33,8 +31,8 @@ namespace SF.Auth.IdentityServices.Managers
 	[NetworkService]
 	[Comment("角色管理")]
 	public interface IRoleManager :
-		IEntityManager<ObjectKey<long>,Models.RoleEditable>,
-		IEntitySource<ObjectKey<long>, Models.Role, RoleQueryArgument>
+		IEntityManager<ObjectKey<string>,Models.RoleEditable>,
+		IEntitySource<ObjectKey<string>, Models.Role, RoleQueryArgument>
 	{
 	}
 

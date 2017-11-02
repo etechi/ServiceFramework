@@ -48,7 +48,7 @@ namespace SF.Core.ServiceManagement
 			sc.EntityServices(
 				"Admin",
 				"管理员",
-				d => d.Add<TService, TImplement>()
+				d => d.Add<TService, TImplement>("Admin","管理员")
 				);
 			return sc;
 		}

@@ -68,12 +68,12 @@ namespace SF.ADT
 					return 0;
 				}
 			}
-			static MethodInfo MethodCompareEnumerable = typeof(ComparerFuncBuilder<T>).GetMethodExt(
+			static MethodInfo MethodCompareEnumerable { get; } = typeof(ComparerFuncBuilder<T>).GetMethodExt(
 				nameof(ComparerFuncBuilder<T>.CompareEnumerable),
 				BindingFlags.NonPublic | BindingFlags.Static,
 				typeof(IEnumerable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
 				typeof(IEnumerable<>).MakeGenericType<TypeExtension.GenericTypeArgument>()
-				);
+				).IsNotNull();
 			static MethodInfo MethodGetComparer = typeof(IComparerCollection).GetMethodExt(nameof(IComparerCollection.GetComparer));
 			static Expression UseFuncEqual(Expression argColl, Expression x, Expression y)
 			{
@@ -276,11 +276,11 @@ namespace SF.ADT
 					r ^= comparer.GetHashCode(x);
 				return r;
 			}
-			static MethodInfo MethodGetEnumerableHashCode = typeof(GetHashCodeFuncBuilder<T>).GetMethodExt(
+			static MethodInfo MethodGetEnumerableHashCode { get; } = typeof(GetHashCodeFuncBuilder<T>).GetMethodExt(
 				nameof(GetHashCodeFuncBuilder<T>.GetEnumerableHashCode),
 				BindingFlags.NonPublic | BindingFlags.Static,
 				typeof(IEnumerable<>).MakeGenericType<TypeExtension.GenericTypeArgument>()
-				);
+				).IsNotNull();
 
 			static MethodInfo MethodGetEqualityComparer = typeof(IComparerCollection).GetMethodExt(nameof(IComparerCollection.GetEqualityComparer));
 			static Expression UseFuncGetHashCode(Expression argColl, Expression x)

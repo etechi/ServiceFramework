@@ -26,14 +26,12 @@ namespace SF.Auth.IdentityServices.Models
 {
 
 	[Comment("资源")]
-	public class ResourceInternal : UIObjectEntityBase<long>
+	public class ResourceInternal : UIObjectEntityBase<string>
 	{
-		[Comment("标识")]
-		[TableVisible]
-		[Required]
-		[MaxLength(100)]
-		public string Ident { get; set; }
-
+	}
+	[Comment("资源")]
+	public class ResourceEditable : ResourceInternal
+	{ 
 		public IEnumerable<ResourceOperationInternal> Operations { get; set; }
 	}
 
@@ -42,21 +40,17 @@ namespace SF.Auth.IdentityServices.Models
 	{
 		[EntityIdent(typeof(OperationInternal),nameof(OperationName))]
 		[Comment("操作")]
-		public long OperationId { get; set; }
+		public string OperationId { get; set; }
 
 		[Comment("操作名称")]
 		public string OperationName { get; set; }
+
 	}
 
 	[Comment("操作范围")]
-	public class OperationInternal : UIObjectEntityBase<long>
+	public class OperationInternal : UIObjectEntityBase<string>
 	{
-		[Comment("标识")]
-		[TableVisible]
-		[Required]
-		[MaxLength(100)]
-		public string Ident { get; set; }
-
+		
 	}
 }
 

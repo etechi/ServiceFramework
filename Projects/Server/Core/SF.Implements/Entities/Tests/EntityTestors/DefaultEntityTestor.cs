@@ -209,7 +209,7 @@ namespace SF.Entities.Tests.EntityTestors
 			"Execute",
 			BindingFlags.NonPublic | BindingFlags.Instance,
 			typeof(ITestCase)
-			);
+			).IsNotNull();
 		public async Task Execute(ITestCase Case)
 		{
 			var meta = ((TestCase)Case).Metadata;

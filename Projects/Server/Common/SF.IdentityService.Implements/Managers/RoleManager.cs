@@ -31,7 +31,7 @@ namespace SF.Auth.IdentityServices.Managers
 	public class RoleManager:
 		//QuerableEntitySource<long, Models.IdentityInternal, IdentityQueryArgument, TIdentity>,
 		AutoModifiableEntityManager<
-			ObjectKey<long>,
+			ObjectKey<string>,
 			Models.Role,
 			Models.Role,
 			RoleQueryArgument,

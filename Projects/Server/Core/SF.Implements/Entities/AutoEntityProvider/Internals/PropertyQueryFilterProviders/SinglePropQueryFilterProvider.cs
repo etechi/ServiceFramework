@@ -31,7 +31,6 @@ namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 {
 	public abstract class SinglePropQueryFilterProvider: IPropertyQueryFilterProvider
 	{
-
 		protected abstract class PropQueryFilter<T> : IPropertyQueryFilter<T>
 		{
 			public virtual int Priority => 100;

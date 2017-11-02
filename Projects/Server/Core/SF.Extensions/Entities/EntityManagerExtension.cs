@@ -168,17 +168,16 @@ namespace SF.Entities
 		{
 
 			var hasInstance = !Id.IsDefault();
-			TEditable ins;
+			TEditable ins = null;
 			if (hasInstance)
+				ins = await Manager.LoadForEdit(Id);
+			if (ins == null)
 			{
-				ins = await Manager
-					.LoadForEdit(Id)
-					.IsNotNull(() => $"不存在实体{typeof(TEditable)}实例:{Id} ");
-			}
-			else
+				hasInstance = false;
 				ins = Creator();
-			if (Updater != null)
-				Updater(ins);
+			}
+
+			Updater?.Invoke(ins);
 			if (hasInstance)
 				await Manager.UpdateAsync(ins);
 			else

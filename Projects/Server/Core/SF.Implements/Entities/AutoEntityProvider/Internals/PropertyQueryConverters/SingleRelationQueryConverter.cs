@@ -83,6 +83,8 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 		}
 		public IEntityPropertyQueryConverter GetPropertyConverter(PropertyInfo DataModelProperty, PropertyInfo EntityProperty,QueryMode QueryMode)
 		{
+			if (QueryMode == QueryMode.Summary)
+				return null;
 			if (DataModelProperty == null)
 				return null;
 

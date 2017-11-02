@@ -41,7 +41,7 @@ namespace SF.Core.ServiceManagement
 			sc.EntityServices(
 				"MemberInvitation",
 				"会员邀请",
-				d=>d.Add<IMemberInvitationManagementService, EntityMemberInvitationManagementService>(typeof(MemberInvitation))
+				d=>d.Add<IMemberInvitationManagementService, EntityMemberInvitationManagementService>("MemberInvitation", "会员邀请", typeof(MemberInvitation))
 				);
 			sc.GenerateEntityDataModel("MemberInvitation");
 			sc.GenerateEntityManager("MemberInvitation");

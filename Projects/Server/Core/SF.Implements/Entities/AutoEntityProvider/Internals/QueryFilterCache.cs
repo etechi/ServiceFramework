@@ -39,7 +39,7 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		static MethodInfo MethodGetFilter { get; } = typeof(IQueryFilterProvider).GetMethodExt(
 			nameof(IQueryFilterProvider.GetFilter),
 			BindingFlags.Instance | BindingFlags.Public
-			);
+			).IsNotNull();
 
 		class CombineQueryFilter<TDataModel, TQueryArgument> : IQueryFilter<TDataModel, TQueryArgument>
 		{

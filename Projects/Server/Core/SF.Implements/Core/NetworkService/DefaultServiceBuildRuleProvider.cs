@@ -44,7 +44,7 @@ namespace SF.Core.NetworkService
 				var xps = x.GetParameters();
 				var yps = y.GetParameters();
 				if (xps.Length != yps.Length) return false;
-				if (xps.Zip(yps, (xp, yp) => xp.ParameterType != yp.ParameterType).Any()) return false;
+				if (xps.Zip(yps, (xp, yp) => xp.ParameterType != yp.ParameterType).Any(r=>r)) return false;
 				return true;
 			}
 

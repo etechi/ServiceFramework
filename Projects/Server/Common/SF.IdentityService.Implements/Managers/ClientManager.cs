@@ -35,7 +35,7 @@ namespace SF.Auth.IdentityServices.Managers
 			Models.ClientInternal,
 			ClientQueryArgument,
 			Models.ClientInternal,
-			DataModels.ClientConfig
+			DataModels.Client
 			>,
 		IClientManager
 	{

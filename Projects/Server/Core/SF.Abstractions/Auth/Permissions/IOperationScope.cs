@@ -18,7 +18,7 @@ using System;
 
 namespace SF.Auth.Permissions
 {
-	public interface IOperationScope : IEntityWithId<string>
+	public interface IOperation : IEntityWithId<string>
 	{
         string Name { get; }
         string Description { get; }

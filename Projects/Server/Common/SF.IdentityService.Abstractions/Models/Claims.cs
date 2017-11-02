@@ -26,7 +26,7 @@ namespace SF.Auth.IdentityServices.Models
 {
 	
 	[Comment("凭证类型")]
-	public class ClaimType : ObjectEntityBase
+	public class ClaimType : ObjectEntityBase<string>
 	{
 	}
 	
@@ -35,19 +35,19 @@ namespace SF.Auth.IdentityServices.Models
 	[Comment("凭证参数值")]
 	public class ClaimValue
 	{
-		[Comment("Id")]
-		public long Id { get; set; }
-
 		[Comment("类型ID")]
 		[EntityIdent(typeof(ClaimType), nameof(TypeName))]
-		public long TypeId { get; set; }
+		[TableVisible]
+		public string TypeId { get; set; }
 
 		[Comment("类型")]
 		[Ignore]
+		[TableVisible]
 		public string TypeName { get; set; }
 
 
 		[Comment("凭证值")]
+		[TableVisible]
 		public string Value { get; set; }
 
 		[Comment("发行时间")]

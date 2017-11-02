@@ -23,9 +23,16 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SF.Auth.IdentityServices.Entity
+namespace SF.Auth.IdentityServices.Managers
 {
-	public class EntityUserCredentialStorage<TUser, TUserCredential, TUserClaimValue,TUserRole> :
+	public class UserCredentialStorage :
+		UserCredentialStorage<DataModels.User, DataModels.UserCredential, DataModels.UserClaimValue, DataModels.UserRole>
+	{
+		public UserCredentialStorage(IDataSet<DataModels.UserCredential> DataSet, ITimeService TimeService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(DataSet, TimeService, ServiceInstanceDescriptor)
+		{
+		}
+	}
+	public class UserCredentialStorage<TUser, TUserCredential, TUserClaimValue,TUserRole> :
 		IUserCredentialStorage
 		where TUser:DataModels.User<TUser, TUserCredential, TUserClaimValue, TUserRole>
 		where TUserCredential : DataModels.UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
@@ -35,7 +42,7 @@ namespace SF.Auth.IdentityServices.Entity
 		IDataSet<TUserCredential> DataSet { get; }
 		ITimeService TimeService { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
-		public EntityUserCredentialStorage(
+		public UserCredentialStorage(
 			IDataSet<TUserCredential> DataSet,
 			ITimeService TimeService,
 			IServiceInstanceDescriptor ServiceInstanceDescriptor
@@ -46,7 +53,7 @@ namespace SF.Auth.IdentityServices.Entity
 			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
 
-		public async Task<UserCredential> FindOrBind(long ClaimTypeId, string Credential, bool Confirmed, long UserId)
+		public async Task<UserCredential> FindOrBind(string ClaimTypeId, string Credential, bool Confirmed, long UserId)
 		{
 			var exist = await DataSet.FirstOrDefaultAsync(i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential);
 			var existUserId = exist?.UserId;
@@ -67,7 +74,7 @@ namespace SF.Auth.IdentityServices.Entity
 
 		}
 
-		public async Task<UserCredential> Find(long ClaimTypeId, string Credential)
+		public async Task<UserCredential> Find(string ClaimTypeId, string Credential)
 		{
 			return await DataSet.FirstOrDefaultAsync(
 				i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential,
@@ -75,7 +82,7 @@ namespace SF.Auth.IdentityServices.Entity
 				);
 		}
 
-		public async Task Bind(long ClaimTypeId, string Credential, bool Confirmed, long UserId)
+		public async Task Bind(string ClaimTypeId, string Credential, bool Confirmed, long UserId)
 		{
 			DataSet.Add(new TUserCredential
 			{
@@ -87,12 +94,12 @@ namespace SF.Auth.IdentityServices.Entity
 			await DataSet.Context.SaveChangesAsync();
 		}
 
-		public async Task Unbind(long ClaimTypeId, string Credential, long UserId)
+		public async Task Unbind(string ClaimTypeId, string Credential, long UserId)
 		{
 			await DataSet.RemoveRangeAsync(i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential && i.UserId == UserId);
 		}
 
-		public async Task SetConfirmed(long ClaimTypeId, string Credential, bool Confirmed)
+		public async Task SetConfirmed(string ClaimTypeId, string Credential, bool Confirmed)
 		{
 			await DataSet.Update(
 				i =>i.ClaimTypeId == ClaimTypeId && i.Credential == Credential,
@@ -102,7 +109,7 @@ namespace SF.Auth.IdentityServices.Entity
 				});
 		}
 
-		public async Task<UserCredential[]> GetIdents(long ClaimTypeId, long UserId)
+		public async Task<UserCredential[]> GetIdents(string ClaimTypeId, long UserId)
 		{
 			return await DataSet.QueryAsync(
 				i => i.ClaimTypeId == ClaimTypeId && i.UserId == UserId,

@@ -50,12 +50,6 @@ namespace SF.Auth.IdentityServices.DataModels
 		public virtual string PhoneNumber { get; set; }
 
 		[MaxLength(100)]
-		[Comment("所属对象")]
-		[Required]
-		[Index]
-		public virtual string OwnerId { get; set; }
-
-		[MaxLength(100)]
 		[Comment("密码哈希")]
 		[Required]
 		public virtual string PasswordHash { get; set; }
@@ -78,20 +72,21 @@ namespace SF.Auth.IdentityServices.DataModels
 		[UpdatedTime]
 		public virtual DateTime UpdatedTime { get; set; }
 
-		[Index(Order = 1)]
+		[Index(Order = 1,IsUnique =true)]
 		[Comment("注册标识类型")]
 		[Required]
-		public virtual long SignupIdentProviderId { get; set; }
+		[MaxLength(100)]
+		public virtual string SignupClaimTypeId { get; set; }
 
 		[MaxLength(200)]
-		[Index(Order = 2)]
+		[Index(Order = 2, IsUnique = true)]
 		[Comment("注册标识值")]
 		[Required]
 		public virtual string SignupIdentValue { get; set; }
 
 		[MaxLength(200)]
 		[Comment("注册附加参数")]
-		[JsonData]
+		[JsonData(typeof(Dictionary<string,string>))]
 		public virtual string SignupExtraArgument { get; set; }
 
 
@@ -104,6 +99,11 @@ namespace SF.Auth.IdentityServices.DataModels
 		[InverseProperty(nameof(UserRole<TUser, TUserCredential, TClaimValue, TUserRole>.User))]
 		public ICollection<TUserRole> Roles { get; set; }
 
+		[Index]
+		public long? SignupClientId { get; set; }
+
+		[ForeignKey(nameof(SignupClientId))]
+		public Client SignupClient { get; set; }
 
 	}
 	public class User : User<User, UserCredential, UserClaimValue, UserRole>

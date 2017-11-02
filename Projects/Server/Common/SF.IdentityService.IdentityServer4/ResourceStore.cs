@@ -41,10 +41,10 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 		}
 
 		ApiResource MapResource(DataModels.Resource res)
-			=> new ApiResource(res.Ident, res.Name){
+			=> new ApiResource(res.Id, res.Name){
 				Scopes = res.SupportedOperations
 				.Select(s => 
-					new Scope(res.Ident + "." + s.Operation.Ident, res.Name+"/"+s.Operation.Name)
+					new Scope(res.Id+ "." + s.OperationId, res.Name+"/"+s.Operation.Name)
 					{
 						Description = s.Operation.Description
 					})
@@ -54,7 +54,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 		{
 			var res = await Resources
 				.AsQueryable()
-				.Where(r => r.Ident == name && r.LogicState==Entities.EntityLogicState.Enabled)
+				.Where(r => r.Id == name && r.LogicState==Entities.EntityLogicState.Enabled)
 				.Include(r => r.SupportedOperations.Select(o=>o.Operation))
 				.SingleOrDefaultAsync();
 
@@ -69,7 +69,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			var ress = await (
 				from r in Resources.AsQueryable()
 				where r.LogicState == Entities.EntityLogicState.Enabled &&
-						r.SupportedOperations.Any(o=> scopeNames.Contains(r.Ident+"."+o.Operation.Ident))
+						r.SupportedOperations.Any(o=> scopeNames.Contains(r.Id+"."+o.OperationId))
 				select r
 				)
 				.Include(r => r.SupportedOperations.Select(o=>o.Operation))

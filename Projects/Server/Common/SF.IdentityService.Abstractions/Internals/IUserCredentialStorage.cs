@@ -21,36 +21,36 @@ namespace SF.Auth.IdentityServices.Internals
 	public interface IUserCredentialStorage
 	{
 		Task<UserCredential> FindOrBind(
-			long ClaimTypeId,
+			string ClaimTypeId,
 			string Ident,
 			bool Confirmed,
 			long UserId
 			);
 		Task<UserCredential> Find(
-			long ClaimTypeId,
+			string ClaimTypeId,
 			string Ident
 			);
 
 		Task Bind(
-			long ClaimTypeId,
+			string ClaimTypeId,
 			string Ident,
 			bool Confirmed,
 			long UserId
 			);
 		Task Unbind(
-			long ClaimTypeId,
+			string ClaimTypeId,
 			string Ident,
 			long UserId
 			);
 
 		Task SetConfirmed(
-			long ClaimTypeId,
+			string ClaimTypeId,
 			string Ident,
 			bool Confirmed
 			);
 
 		Task<UserCredential[]> GetIdents(
-			long ClaimTypeId,
+			string ClaimTypeId,
 			long UserId
 			);
 

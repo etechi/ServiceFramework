@@ -23,10 +23,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
     <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.csproj" />
-    <ProjectReference Include="..\..\Core\SF.Support\SF.Support.csproj" />
-    <ProjectReference Include="..\SF.Common.Abstractions\SF.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\SF.Common.Extensions\SF.Common.Extensions.csproj" />
     <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
-    <ProjectReference Include="..\SF.IdentityService.Extensions\SF.IdentityService.Extensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

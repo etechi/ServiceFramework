@@ -19,7 +19,7 @@ using SF.Metadata;
 using System;
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class OperationQueryArgument : QueryArgument<ObjectKey<long>>
+	public class OperationQueryArgument : QueryArgument<ObjectKey<string>>
 	{
 		[Comment("操作名称")]
 		[StringContains]
@@ -31,8 +31,8 @@ namespace SF.Auth.IdentityServices.Managers
 	[NetworkService]
 	[Comment("操作管理")]
 	public interface IOperationManager :
-		IEntityManager<ObjectKey<long>,Models.OperationInternal>,
-		IEntitySource<ObjectKey<long>, Models.OperationInternal, OperationQueryArgument>
+		IEntityManager<ObjectKey<string>,Models.OperationInternal>,
+		IEntitySource<ObjectKey<string>, Models.OperationInternal, OperationQueryArgument>
 	{
 	}
 

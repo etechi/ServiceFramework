@@ -41,8 +41,8 @@ namespace SF.Core.ServiceManagement
 			sc.AddDataModules<TMember>(TablePrefix);
 			sc.EntityServices(
 				"Member",
-				"管理员",
-				d => d.Add<TService, TImplement>()
+				"会员",
+				d => d.Add<TService, TImplement>("Member","会员")
 				);
 			return sc;
 		}

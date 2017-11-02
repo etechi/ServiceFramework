@@ -271,7 +271,8 @@ namespace SF.Core.ServiceManagement
 			this IServiceCollection sc,
 			string Name,
 			Func<IServiceProvider,IServiceInstanceManager, long?,Task> initializer,
-			long? ParentId=null
+			long? ParentId=null,
+			int Priority=0
 			)
 		{
 			sc.AddInitializer("service",Name, (sp) =>
@@ -281,7 +282,7 @@ namespace SF.Core.ServiceManagement
 					var sim = sp.Resolve<IServiceInstanceManager>();
 					await initializer(sp, sim, ParentId);
 				}).Wait();
-			});
+			},Priority);
 			return sc;
 		}
 		public static IServiceCollection InitService(

@@ -24,11 +24,11 @@ namespace SF.Auth.IdentityServices.DataModels
 {
 
 	[Table(nameof(Operation))]
-	public class Operation : SF.Entities.DataModels.UIObjectEntityBase<long>
+	public class Operation : SF.Entities.DataModels.UIObjectEntityBase<string>
 	{
-		[Index("ident", IsUnique = true)]
-		[Comment("标识")]
-		public string Ident { get; set; }
+		[MaxLength(100)]
+		[Required]
+		public override string Id { get; set; }
 
 		[InverseProperty(nameof(ResourceSupportedOperation.Operation))]
 		public ICollection<ResourceSupportedOperation> Resources { get; set; }

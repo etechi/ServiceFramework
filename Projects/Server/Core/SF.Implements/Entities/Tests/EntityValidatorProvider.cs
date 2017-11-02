@@ -62,7 +62,7 @@ namespace SF.Entities.Tests
 						nameof(IValueTestHelperCache.GetHelper),
 						BindingFlags.Public | BindingFlags.Instance,
 						typeof(PropertyInfo)
-						);
+						).IsNotNull();
 		
 		protected virtual bool SkipProperty(PropertyInfo p)
 		{
@@ -80,7 +80,7 @@ namespace SF.Entities.Tests
 						typeof(TypeExtension.GenericTypeArgument),
 						typeof(string),
 						typeof(PropertyInfo)
-						);
+						).IsNotNull();
 		public Action<TExpect, TTest, string,List<TestResult>> GetValidator<TExpect,TTest>()
 		{
 			var key = (typeof(TExpect), typeof(TTest));

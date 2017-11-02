@@ -39,7 +39,7 @@ namespace SF.Core.ServiceManagement
 			sc.EntityServices(
 				"TextMessageRecord",
 				"文本消息记录",
-				d => d.Add<IMsgRecordManager, EntityMsgRecordManager>()
+				d => d.Add<IMsgRecordManager, EntityMsgRecordManager>("TextMessageRecord","文本消息记录")
 				);
 
 			sc.AddTransient(sp => (ITextMessageLogger)sp.Resolve<IMsgRecordManager>());

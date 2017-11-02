@@ -331,7 +331,7 @@ namespace SF.Entities
 					typeof(bool)
 				)
 			)
-			);
+			).IsNotNull();
 
 		public static PropertyInfo GetQueryArgumentIdentProperty<TQueryArgument>()
 		{

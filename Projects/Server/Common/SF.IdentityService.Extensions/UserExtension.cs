@@ -13,36 +13,51 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Core;
-using SF.Core.ServiceManagement;
-using SF.Core.Times;
-using SF.Data;
-using SF.Entities;
+using SF.Metadata;
+using SF.Auth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using SF.Entities;
+using SF.Data;
+using SF.Core.ServiceManagement;
+using SF.Core;
+using SF.Auth.IdentityServices.Models;
+using SF.Auth.IdentityServices.Managers;
 
 namespace SF.Auth.IdentityServices.Managers
 {
-	public static class ClaimTypeProvider
+	public static class UserExtension
 	{
-		public static async Task<long> GetOrCreateClaimType1(
-			this IEntityServiceContext EntityManager,
-			string Type
-			)
+		public static async Task<UserInternal> UserEnsure(
+			this IUserManager UserManager,
+			string ClaimTypeId,
+			string Credential,
+			string Password,
+			string Name,
+			string[] roles = null,
+			Dictionary<string, string> extArgs = null
+			) 
 		{
-			var scope = await EntityManager.DataContext.Set<DataModels.ClaimType>().GetOrCreateAtomEntity(
-				EntityManager.ScopedDataContext,
-				n => n.Name == Type,
-				async () => new DataModels.ClaimType
-				{
-					Id = await EntityManager.IdentGenerator.GenerateAsync(typeof(DataModels.ClaimType).FullName),
-					Name = Type
+			return await UserManager.EnsureEntity(
+				await UserManager.QuerySingleEntityIdent(new UserQueryArgument {
+					SignupClaimTypeId = ClaimTypeId,
+					SignupIdentValue = Credential
+				}),
+				() => new UserEditable(),
+				u => {
+					u.Name = Name;
+					u.CreateClaimTypeId = ClaimTypeId;
+					u.CreateCredential = Credential;
+					u.PasswordHash = Password;
+					u.Roles = (roles ?? Array.Empty<string>()).Select(r => new UserRole { RoleId = r }).ToArray();
 				}
-				);
-			return scope.Id;
+			);
+
 		}
 	}
 
 }
+

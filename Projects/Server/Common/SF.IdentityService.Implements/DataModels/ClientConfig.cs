@@ -24,7 +24,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(ClientConfig))]
-	public class ClientConfig:UIObjectEntityBase<long>
+	public class ClientConfig:ObjectEntityBase<long>
 	{
 
 		[Comment("发送用户声明", "When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint. Defaults to false.")]
@@ -92,14 +92,14 @@ namespace SF.Auth.IdentityServices.DataModels
 
 		[Comment("跨域设置", "Gets or sets the allowed CORS origins for JavaScript clients.")]
 		[MaxLength(200)]
-		[JsonData]
+		[JsonData(typeof(string[]))]
 		public string AllowedCorsOrigins { get; set; }
 
 		[Comment("是否需要授权", "Specifies whether a consent screen is required (defaults to true)")]
 		public bool RequireConsent { get; set; }
 		
 		[Comment("授权类型","Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit,Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit. ")]
-		[JsonData]
+		[JsonData(typeof(string[]))]
 		public string AllowedGrantTypes { get; set; }
 		////
 		//// 摘要:

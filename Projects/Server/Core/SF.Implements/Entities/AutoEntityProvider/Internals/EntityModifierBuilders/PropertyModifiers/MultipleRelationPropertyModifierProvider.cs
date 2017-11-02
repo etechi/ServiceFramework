@@ -178,7 +178,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			if (childModelKeys.Length==0 || childModelKeys.Length != childEntityKeys.Length)
 				return null;
 
-			if (childEntityKeys.Zip(childModelKeys, (l, r) => l.Name != r.Name || l.PropertyType != r.PropertyType).Any())
+			if (childEntityKeys.Zip(childModelKeys, (l, r) => l.Name != r.Name || l.PropertyType != r.PropertyType).Any(r=>r))
 				return null;
 
 

@@ -31,7 +31,9 @@ namespace SF.Auth.IdentityServices.DataModels
 
 		[Index]
 		[Comment("类型ID")]
-		public long TypeId { get; set; }
+		[Required]
+		[MaxLength(100)]
+		public string TypeId { get; set; }
 
 		[ForeignKey(nameof(TypeId))]
 		public ClaimType Type { get; set; }

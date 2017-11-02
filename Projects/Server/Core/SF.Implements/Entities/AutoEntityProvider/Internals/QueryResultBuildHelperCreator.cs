@@ -131,13 +131,13 @@ namespace SF.Entities.AutoEntityProvider.Internals
 			MethodCreateQueryResultBuildHelper3 = typeof(QueryResultBuildHelperCreator).GetMethodExt(
 				 "CreateQueryResultBuildHelper3",
 				 BindingFlags.Static | BindingFlags.NonPublic,
-				 typeof(Func<Expression>),
+				 typeof(Func<Expression,int,Expression>),
 				 typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>>)
 				 ).IsNotNull();
 			MethodCreateQueryResultBuildHelper2= typeof(QueryResultBuildHelperCreator).GetMethodExt(
 				"CreateQueryResultBuildHelper2",
 				BindingFlags.Static | BindingFlags.NonPublic,
-				typeof(Func<Expression>),
+				typeof(Func<Expression, int, Expression>),
 				typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>>)
 				).IsNotNull();
 
@@ -269,8 +269,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 				var argTemp = Expression.Parameter(typeof(TTemp));
 				var argResult = Expression.Parameter(typeof(TResult));
 				var argTask = Expression.Parameter(typeof(Task));
-				List<Func<TTemp, TResult, Task, Task>> funcs = new List<Func<TTemp, TResult, Task, Task>>();
-				List<Expression> exprs = new List<Expression>();
+				var funcs = new List<Func<TTemp, TResult, Task, Task>>();
+				var exprs = new List<Expression>();
 				foreach (var p in prepares)
 				{
 					var convType = typeof(IEntityPropertyQueryConverter<,>).MakeGenericType(p.propTemp.PropertyType, p.prop.PropertyType);
@@ -299,6 +299,8 @@ namespace SF.Entities.AutoEntityProvider.Internals
 						exprs.Add(argResult.SetProperty(p.prop, expr));
 						continue;
 					}
+					else
+						exprs.Add(expr);
 					funcs.Add(
 						Expression.Block(exprs).Compile<Func<TTemp, TResult, Task, Task>>(
 							argTemp,
@@ -307,7 +309,11 @@ namespace SF.Entities.AutoEntityProvider.Internals
 							)
 						);
 					exprs.Clear();
-					exprs.Add(argResult.SetProperty(p.prop, argTask.To(typeof(Task<>).MakeGenericType(p.prop.PropertyType))));
+					exprs.Add(argResult.SetProperty(
+						p.prop, 
+						argTask.To(typeof(Task<>).MakeGenericType(p.prop.PropertyType)).GetMember(nameof(Task<int>.Result))
+						)
+					);
 				}
 				exprs.Add(Expression.Constant(null, typeof(Task)));
 				funcs.Add(

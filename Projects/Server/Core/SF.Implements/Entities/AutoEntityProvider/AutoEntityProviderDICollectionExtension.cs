@@ -149,7 +149,12 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IEntityModifierCache, EntityModifierCache>();
 
 			//Entity Query Support
+
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, JsonDataQueryConverterProvider>();
+			sc.AddSingleton<IEntityPropertyQueryConverterProvider, EntityNameQueryConverterProvider>();
+			sc.AddSingleton<IEntityPropertyQueryConverterProvider, DefaultQueryConverterProvider>();
+			sc.AddSingleton<IEntityPropertyQueryConverterProvider, SingleRelationQueryConverterProvider>();
+			sc.AddSingleton<IEntityPropertyQueryConverterProvider, MultipleRelationQueryConverterProvider>();
 
 
 			sc.AddSingleton<IDataSetAutoEntityProviderCache, DataSetAutoEntityProviderCache>();

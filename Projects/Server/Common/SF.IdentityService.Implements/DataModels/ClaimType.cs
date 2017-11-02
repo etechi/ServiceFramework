@@ -23,9 +23,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(ClaimType))]
-	public class ClaimType : ObjectEntityBase
+	public class ClaimType : ObjectEntityBase<string>
 	{
+		[MaxLength(100)]
+		[Required]
+		public override string Id { get; set; }
+
 		[Index(IsUnique = true)]
 		public override string Name { get; set; }
+
 	}
 }

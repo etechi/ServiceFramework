@@ -19,7 +19,7 @@ using SF.Metadata;
 using System;
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class ResourceQueryArgument : QueryArgument<ObjectKey<long>>
+	public class ResourceQueryArgument : QueryArgument<ObjectKey<string>>
 	{
 		[Comment("资源名称")]
 		[StringContains]
@@ -31,8 +31,8 @@ namespace SF.Auth.IdentityServices.Managers
 	[NetworkService]
 	[Comment("资源管理")]
 	public interface IResourceManager :
-		IEntityManager<ObjectKey<long>,Models.ResourceInternal>,
-		IEntitySource<ObjectKey<long>, Models.ResourceInternal, ResourceQueryArgument>
+		IEntityManager<ObjectKey<string>,Models.ResourceEditable>,
+		IEntitySource<ObjectKey<string>, Models.ResourceInternal, ResourceQueryArgument>
 	{
 
 	}

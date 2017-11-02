@@ -83,7 +83,7 @@ namespace SF.Entities
 
 		public static void PermissionValidate(this IEntityServiceContext EntityManager,string Operation)
 		{
-			EntityManager.AccessToken.Operator.PermissionValidate(EntityManager.EntityMetadata.Ident, Operation);
+			//EntityManager.AccessToken.Operator.PermissionValidate(EntityManager.EntityMetadata.Ident, Operation);
 		}
 		public static async Task<TReadOnlyEntity> GetAsync<TKey, TReadOnlyEntity, TModel>
 		(
@@ -96,7 +96,7 @@ namespace SF.Entities
 			if (Id.IsDefault())
 				return default(TReadOnlyEntity);
 
-			Storage.PermissionValidate(OperationScopes.Read);
+			Storage.PermissionValidate(Operations.Read);
 
 			return await Storage.UseTransaction(
 				$"载入实体{typeof(TModel).Comment().Name}:{Id}",
@@ -189,7 +189,7 @@ namespace SF.Entities
 		{
 			if (Ids == null || Ids.Length == 0)
 				return Array.Empty<TReadOnlyEntity>();
-			Storage.PermissionValidate(OperationScopes.Read);
+			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
 				$"批量载入实体：{typeof(TModel).Comment().Name}",
 				async (trans) =>
@@ -279,7 +279,7 @@ namespace SF.Entities
 			)
 			where TModel : class
 		{
-			Storage.PermissionValidate(OperationScopes.Read);
+			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
 				$"查询实体主键：{typeof(TModel).Comment().Name}",
 				async (trans) =>
@@ -305,7 +305,7 @@ namespace SF.Entities
 			)
 			where TModel : class
 		{
-			Storage.PermissionValidate(OperationScopes.Read);
+			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
 				$"查询实体主键：{typeof(TModel).Comment().Name}",
 				async (trans) =>
@@ -333,7 +333,7 @@ namespace SF.Entities
 			)
 			where TModel : class
 		{
-			Storage.PermissionValidate(OperationScopes.Read);
+			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
 				$"查询实体{typeof(TModel).Comment().Name}",
 				async (trans) =>
@@ -442,7 +442,7 @@ namespace SF.Entities
 		{
 			if (Key.IsDefault())
 				return default(TEditable);
-			Storage.PermissionValidate(OperationScopes.Read);
+			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
 				$"载入编辑实体{typeof(TModel).Comment().Name}:{Entity<TKey>.GetIdents(Key)?.Join(",")}",
 				async (trans) =>
@@ -458,7 +458,7 @@ namespace SF.Entities
 		{
 			if (Key.IsDefault())
 				return default(TEditable);
-			Storage.PermissionValidate(OperationScopes.Read);
+			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
 				$"载入编辑实体{typeof(TModel).Comment().Name}:{Entity<TKey>.GetIdents(Key)?.Join(",")}",
 				async (trans) =>
@@ -522,7 +522,7 @@ namespace SF.Entities
 		{
 			if (Entity.IsDefault())
 				throw new ArgumentNullException("需要提供实体");
-			Storage.PermissionValidate(OperationScopes.Create);
+			Storage.PermissionValidate(Operations.Create);
 
 			return await Storage.UseTransaction(
 				$"新建实体{typeof(TModel).Comment().Name}",
@@ -614,7 +614,7 @@ namespace SF.Entities
 			if (Entity.IsDefault())
 				throw new ArgumentNullException("需要提供实体");
 
-			Storage.PermissionValidate(OperationScopes.Update);
+			Storage.PermissionValidate(Operations.Update);
 
 			return await Storage.UseTransaction(
 				$"编辑实体{typeof(TModel).Comment().Name}:{Entity<TEditable>.GetIdentString(Entity)}",
@@ -695,7 +695,7 @@ namespace SF.Entities
 		{
 			if (Id.IsDefault())
 				throw new ArgumentNullException("需要指定主键");
-			Storage.PermissionValidate(OperationScopes.Remove);
+			Storage.PermissionValidate(Operations.Remove);
 
 			return await Storage.UseTransaction(
 				$"删除实体{typeof(TModel).Comment().Name}:{Id}",

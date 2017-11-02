@@ -32,7 +32,16 @@ namespace SF.Entities
 		protected IEntityServiceContext ServiceContext { get; }
 		public IServiceInstanceDescriptor ServiceInstanceDescriptor => ServiceContext.ServiceInstanceDescroptor;
 		public DateTime Now => ServiceContext.Now;
-		public ILogger Logger => ServiceContext.Logger;
+		ILogger _Logger;
+		public ILogger Logger
+		{
+			get
+			{
+				if (_Logger == null)
+					_Logger = ServiceContext.GetLogger(GetType());
+				return _Logger;
+			}
+		}
 		public IIdentGenerator IdentGenerator => ServiceContext.IdentGenerator;
 		
 		public long? ServiceInstanceId => ServiceContext.ServiceInstanceDescroptor.InstanceId;

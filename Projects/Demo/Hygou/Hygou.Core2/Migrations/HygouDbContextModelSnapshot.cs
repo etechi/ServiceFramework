@@ -46,7 +46,8 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClaimType", b =>
                 {
-                    b.Property<long>("Id");
+                    b.Property<string>("Id")
+                        .HasMaxLength(100);
 
                     b.Property<DateTime>("CreatedTime");
 
@@ -151,7 +152,9 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<DateTime>("CreateTime");
 
-                    b.Property<long>("TypeId");
+                    b.Property<string>("TypeId")
+                        .IsRequired()
+                        .HasMaxLength(100);
 
                     b.Property<DateTime>("UpdateTime");
 
@@ -197,16 +200,9 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<DateTime>("CreatedTime");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(2000);
-
                     b.Property<bool>("FrontChannelLogoutSessionRequired");
 
-                    b.Property<string>("Icon");
-
                     b.Property<int>("IdentityTokenLifetime");
-
-                    b.Property<string>("Image");
 
                     b.Property<string>("InternalRemarks");
 
@@ -216,21 +212,11 @@ namespace Hygou.Core2.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(100);
-
                     b.Property<bool>("RequireClientSecret");
 
                     b.Property<bool>("RequireConsent");
 
                     b.Property<int>("SlidingRefreshTokenLifetime");
-
-                    b.Property<string>("SubTitle")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100);
 
                     b.Property<DateTime>("UpdatedTime");
 
@@ -245,9 +231,11 @@ namespace Hygou.Core2.Migrations
                 {
                     b.Property<long>("ClientConfigId");
 
-                    b.Property<long>("ResourceId");
+                    b.Property<string>("ResourceId")
+                        .HasMaxLength(100);
 
-                    b.Property<long>("OperationId");
+                    b.Property<string>("OperationId")
+                        .HasMaxLength(100);
 
                     b.HasKey("ClientConfigId", "ResourceId", "OperationId");
 
@@ -260,7 +248,8 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Operation", b =>
                 {
-                    b.Property<long>("Id");
+                    b.Property<string>("Id")
+                        .HasMaxLength(100);
 
                     b.Property<DateTime>("CreatedTime");
 
@@ -269,8 +258,6 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<string>("Icon")
                         .HasMaxLength(100);
-
-                    b.Property<string>("Ident");
 
                     b.Property<string>("Image")
                         .HasMaxLength(100);
@@ -311,10 +298,6 @@ namespace Hygou.Core2.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedTime");
-
-                    b.HasIndex("Ident")
-                        .IsUnique()
-                        .HasFilter("[Ident] IS NOT NULL");
 
                     b.HasIndex("Name");
 
@@ -329,9 +312,9 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.OperationRequiredClaim", b =>
                 {
-                    b.Property<long>("OperationId");
+                    b.Property<string>("OperationId");
 
-                    b.Property<long>("ClaimTypeId");
+                    b.Property<string>("ClaimTypeId");
 
                     b.HasKey("OperationId", "ClaimTypeId");
 
@@ -342,7 +325,8 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Resource", b =>
                 {
-                    b.Property<long>("Id");
+                    b.Property<string>("Id")
+                        .HasMaxLength(100);
 
                     b.Property<DateTime>("CreatedTime");
 
@@ -351,9 +335,6 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<string>("Icon")
                         .HasMaxLength(100);
-
-                    b.Property<string>("Ident")
-                        .IsRequired();
 
                     b.Property<string>("Image")
                         .HasMaxLength(100);
@@ -395,9 +376,6 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("CreatedTime");
 
-                    b.HasIndex("Ident")
-                        .IsUnique();
-
                     b.HasIndex("Name");
 
                     b.HasIndex("OwnerId");
@@ -411,9 +389,9 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ResourceRequiredClaim", b =>
                 {
-                    b.Property<long>("ResourceId");
+                    b.Property<string>("ResourceId");
 
-                    b.Property<long>("ClaimTypeId");
+                    b.Property<string>("ClaimTypeId");
 
                     b.HasKey("ResourceId", "ClaimTypeId");
 
@@ -424,9 +402,9 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ResourceSupportedOperation", b =>
                 {
-                    b.Property<long>("ResourceId");
+                    b.Property<string>("ResourceId");
 
-                    b.Property<long>("OperationId");
+                    b.Property<string>("OperationId");
 
                     b.HasKey("ResourceId", "OperationId");
 
@@ -437,7 +415,8 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Role", b =>
                 {
-                    b.Property<long>("Id");
+                    b.Property<string>("Id")
+                        .HasMaxLength(100);
 
                     b.Property<DateTime>("CreatedTime");
 
@@ -483,9 +462,11 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<DateTime>("CreateTime");
 
-                    b.Property<long>("RoleId");
+                    b.Property<string>("RoleId");
 
-                    b.Property<long>("TypeId");
+                    b.Property<string>("TypeId")
+                        .IsRequired()
+                        .HasMaxLength(100);
 
                     b.Property<DateTime>("UpdateTime");
 
@@ -502,11 +483,13 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.RoleGrant", b =>
                 {
-                    b.Property<long>("RoleId");
+                    b.Property<string>("RoleId");
 
-                    b.Property<long>("ResourceId");
+                    b.Property<string>("ResourceId")
+                        .HasMaxLength(100);
 
-                    b.Property<long>("OperationId");
+                    b.Property<string>("OperationId")
+                        .HasMaxLength(100);
 
                     b.HasKey("RoleId", "ResourceId", "OperationId");
 
@@ -532,10 +515,6 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<byte>("ObjectState");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasMaxLength(100);
@@ -547,10 +526,14 @@ namespace Hygou.Core2.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
+                    b.Property<string>("SignupClaimTypeId")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("SignupClientId");
+
                     b.Property<string>("SignupExtraArgument")
                         .HasMaxLength(200);
-
-                    b.Property<long>("SignupIdentProviderId");
 
                     b.Property<string>("SignupIdentValue")
                         .IsRequired()
@@ -562,11 +545,13 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("CreatedTime");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("SignupClaimTypeId")
+                        .IsUnique();
 
-                    b.HasIndex("SignupIdentProviderId");
+                    b.HasIndex("SignupClientId");
 
-                    b.HasIndex("SignupIdentValue");
+                    b.HasIndex("SignupIdentValue")
+                        .IsUnique();
 
                     b.ToTable("SysAuthUser");
                 });
@@ -577,7 +562,9 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<DateTime>("CreateTime");
 
-                    b.Property<long>("TypeId");
+                    b.Property<string>("TypeId")
+                        .IsRequired()
+                        .HasMaxLength(100);
 
                     b.Property<DateTime>("UpdateTime");
 
@@ -596,7 +583,8 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.UserCredential", b =>
                 {
-                    b.Property<long>("ClaimTypeId");
+                    b.Property<string>("ClaimTypeId")
+                        .HasMaxLength(100);
 
                     b.Property<string>("Credential")
                         .HasMaxLength(100);
@@ -620,7 +608,7 @@ namespace Hygou.Core2.Migrations
                 {
                     b.Property<long>("UserId");
 
-                    b.Property<long>("RoleId");
+                    b.Property<string>("RoleId");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -1912,6 +1900,14 @@ namespace Hygou.Core2.Migrations
                     b.HasOne("SF.Auth.IdentityServices.DataModels.Role", "Role")
                         .WithMany("Grants")
                         .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.User", b =>
+                {
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.Client", "SignupClient")
+                        .WithMany()
+                        .HasForeignKey("SignupClientId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

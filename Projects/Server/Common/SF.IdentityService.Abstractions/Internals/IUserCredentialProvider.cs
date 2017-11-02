@@ -26,7 +26,6 @@ namespace SF.Auth.IdentityServices.Internals
 	}
     public interface IUserCredentialProvider
     {
-		long ClaimTypeId { get; }
 		string Ident { get; }
 		string Name { get; }
 		string Description { get; }

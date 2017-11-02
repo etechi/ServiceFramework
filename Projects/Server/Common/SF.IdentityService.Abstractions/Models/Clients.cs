@@ -28,12 +28,12 @@ namespace SF.Auth.IdentityServices.Models
 	public class ClientConfigInternal : ObjectEntityBase<long>
 	{
 	}
-	public class ClientGrant
+	public class Grant
 	{
 		[Key]
 		[Comment("操作资源ID")]
 		[EntityIdent(typeof(ResourceInternal),nameof(ResourceName))]
-		public long ResourceId { get; set; }
+		public string ResourceId { get; set; }
 
 		[TableVisible]
 		[Ignore]
@@ -42,7 +42,7 @@ namespace SF.Auth.IdentityServices.Models
 		[Key]
 		[Comment("操作区域ID")]
 		[EntityIdent(typeof(OperationInternal), nameof(OperationName))]
-		public long OperationId { get; set; }
+		public string OperationId { get; set; }
 
 		[TableVisible]
 		[Ignore]
@@ -102,7 +102,7 @@ namespace SF.Auth.IdentityServices.Models
 		//     Specifies the api scopes that the client is allowed to request. If empty, the
 		//     client can't access any scope
 		[Comment("允许操作")]
-		public IEnumerable<ClientGrant> Grants { get; set; }
+		public IEnumerable<Grant> Grants { get; set; }
 
 		[Comment("离线访问", " Gets or sets a value indicating whether [allow offline access]. Defaults to false.")]
 		public bool AllowOfflineAccess { get; set; }
@@ -125,8 +125,8 @@ namespace SF.Auth.IdentityServices.Models
 		[Comment("是否需要授权", "Specifies whether a consent screen is required (defaults to true)")]
 		public bool RequireConsent { get; set; }
 
-		[Comment("授权类型", "Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit,Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit. split by ;")]
-		public string AllowedGrantTypes { get; set; }
+		[Comment("授权类型", "Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit,Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit. ")]
+		public string[] AllowedGrantTypes { get; set; }
 		////
 		//// 摘要:
 		////     Specifies whether a proof key is required for authorization code based token
@@ -168,13 +168,13 @@ namespace SF.Auth.IdentityServices.Models
 	[Comment("认证客户端")]
 	public class ClientInternal : UIObjectEntityBase<long>
 	{
-		[EntityIdent(typeof(ClientConfigInternal),nameof(ConfigName))]
-		public long ConfigId { get; set; }
+		[EntityIdent(typeof(ClientConfigInternal),nameof(ClientConfigName))]
+		public long ClientConfigId { get; set; }
 
 		[Comment("配置")]
 		[TableVisible]
 		[Hidden]
-		public string ConfigName { get; set; }
+		public string ClientConfigName { get; set; }
 
 		[Comment("客户端密钥")]
 		public string Secret { get; set; }

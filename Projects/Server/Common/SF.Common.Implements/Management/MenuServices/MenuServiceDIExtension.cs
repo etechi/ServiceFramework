@@ -151,7 +151,7 @@ namespace SF.Core.ServiceManagement
 			sc.EntityServices(
 				"SysMenu",
 				"系统菜单",
-				d => d.Add<IMenuService, SF.Management.MenuServices.Entity.EntityMenuService<TMenu, TMenuItem>>()
+				d => d.Add<IMenuService, SF.Management.MenuServices.Entity.EntityMenuService<TMenu, TMenuItem>>("SysMenu","系统菜单")
 				);
 
 			sc.AddInitializer(

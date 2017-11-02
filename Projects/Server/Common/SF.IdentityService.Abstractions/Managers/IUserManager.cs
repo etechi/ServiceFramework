@@ -21,11 +21,15 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class UserQueryArgument : IQueryArgument<ObjectKey<long>>
-	{
-		public ObjectKey<long> Id { get; set; }
-		[StringContains]
-		public string Ident { get; set; }
+	public class UserQueryArgument : QueryArgument<long>
+	{	
+		[Comment("注册账号")]
+		public string SignupIdentValue { get; set; }
+
+		[Comment("注册类型")]
+		public string SignupClaimTypeId { get; set; }
+
+		[Comment("姓名")]
 		[StringContains]
 		public string Name { get; set; }
 	}

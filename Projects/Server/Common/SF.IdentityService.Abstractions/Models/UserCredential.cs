@@ -19,7 +19,7 @@ namespace SF.Auth.IdentityServices.Models
 {
 	public class UserCredential
 	{
-		public long ClaimTypeId { get; set; }
+		public string ClaimTypeId { get; set; }
 		public long UserId { get; set; }
 		public string Credential { get; set; }
 		public DateTime BindTime { get; set; }

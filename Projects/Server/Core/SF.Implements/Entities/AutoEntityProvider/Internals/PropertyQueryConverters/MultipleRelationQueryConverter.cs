@@ -48,7 +48,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			public MultipleRelationConverter(IQueryResultBuildHelper<E, R> QueryResultBuildHelper)
 			{
 				MethodSelectSpec = MethodSelect.MakeGenericMethod(typeof(E),typeof(T));
-				QueryResultBuildHelper = (IQueryResultBuildHelper < E, T, R > )QueryResultBuildHelper;
+				this.QueryResultBuildHelper = (IQueryResultBuildHelper < E, T, R > )QueryResultBuildHelper;
 			}
 
 			static ParameterExpression ArgItem { get; } = Expression.Parameter(typeof(E));
@@ -60,11 +60,9 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 					null,
 					MethodSelectSpec,
 					src.GetMember(srcProp),
-					Expression.Quote(
-						Expression.Lambda<Func<E, T>>(
-							QueryResultBuildHelper.BuildEntityMapper(ArgItem, Level + 1),
-							ArgItem
-						)
+					Expression.Lambda<Func<E, T>>(
+						QueryResultBuildHelper.BuildEntityMapper(ArgItem, Level + 1),
+						ArgItem
 					)
 				);
 			}
@@ -88,14 +86,17 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 					typeof(E),
 					helperWithTemp.GenericTypeArguments[1],
 					typeof(R)
-					));
+					), 
+					helper
+					);
 		}
 		static MethodInfo MethodCreateConverter { get; } = typeof(MultipleRelationQueryConverterProvider)
 			.GetMethodExt(
 				nameof(CreateConverter), 
 				BindingFlags.Static | BindingFlags.NonPublic, 
-				typeof(QueryResultBuildHelperCache)
-			);
+				typeof(IQueryResultBuildHelperCache),
+				typeof(QueryMode)
+			).IsNotNull();
 
 		IQueryResultBuildHelperCache QueryResultBuildHelperCache { get; }
 		public MultipleRelationQueryConverterProvider(IQueryResultBuildHelperCache QueryResultBuildHelperCache)
@@ -104,6 +105,8 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 		}
 		public IEntityPropertyQueryConverter GetPropertyConverter(PropertyInfo DataModelProperty, PropertyInfo EntityProperty,QueryMode QueryMode)
 		{
+			if (QueryMode == QueryMode.Summary)
+				return null;
 			if (DataModelProperty == null)
 				return null;
 			if (!DataModelProperty.PropertyType.IsGenericTypeOf(typeof(ICollection<>)))

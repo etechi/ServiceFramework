@@ -21,6 +21,7 @@ using SF.Entities;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using SF.Auth.Permissions;
 
 namespace SF.Core.ServiceManagement
 {
@@ -62,7 +63,7 @@ namespace SF.Core.ServiceManagement
 		{
 			public IServiceCollection Services { get; set; }
 			public List<IEntityServiceDescriptor> Descriptors { get; } = new List<IEntityServiceDescriptor>();
-
+			public string GroupName { get; set; }
 			static Type[] EntityManagerInterfaceTypes { get; } = new[]
 			{
 				typeof(IEntityLoadable<,>),
@@ -94,7 +95,12 @@ namespace SF.Core.ServiceManagement
 					{
 						Services.Add(new ServiceDescriptor(i.i, sp => sp.GetService(i.svc), ServiceImplementLifetime.Transient));
 					});
-
+				Services.AddAuthResource(Ident, GroupName, Name, null, new[]{
+					Operations.Read,
+					Operations.Create,
+					Operations.Update,
+					Operations.Remove
+				});
 				Descriptors.Add(
 					new EntityServiceDescriptor
 					{
@@ -153,7 +159,8 @@ namespace SF.Core.ServiceManagement
 
 			var declarer = new EntityServiceDeclarer()
 			{
-				Services=sc
+				Services=sc,
+				GroupName=GroupName
 			};
 			Callback(declarer);
 

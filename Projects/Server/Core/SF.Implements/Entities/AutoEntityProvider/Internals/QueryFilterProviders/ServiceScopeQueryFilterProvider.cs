@@ -48,7 +48,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 				TQueryArgument Arg
 				)
 			{
-				var scopeid = ServiceContext.ServiceInstanceDescroptor.DataScopeId;
+				var scopeid = ServiceContext.ServiceInstanceDescroptor?.DataScopeId;
 				if (!IsNullable && !scopeid.HasValue)
 					return Query;
 				return Query.Where(Expression.Lambda<Func<TDataModel,bool>>(

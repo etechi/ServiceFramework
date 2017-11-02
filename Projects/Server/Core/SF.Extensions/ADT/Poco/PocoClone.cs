@@ -120,7 +120,7 @@ namespace SF.ADT
 					nameof(CopyCollection),
 					BindingFlags.Static | BindingFlags.NonPublic,
 					typeof(TypeExtension.GenericTypeArgument)
-					);
+					).IsNotNull();
 			static Cloner()
 			{
 				var type = typeof(T);

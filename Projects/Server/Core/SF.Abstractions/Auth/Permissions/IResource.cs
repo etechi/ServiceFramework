@@ -28,7 +28,7 @@ namespace SF.Auth.Permissions
         string Group { get; }
         string Name { get; }
         string Description { get; }
-        string[] AvailableOperationScopes { get; }
+        string[] AvailableOperations { get; }
     }
  //   public interface IResourceCollection
  //   {
