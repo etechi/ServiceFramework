@@ -71,6 +71,10 @@ namespace System.Linq
 			}
 			throw new IndexOutOfRangeException();
 		}
+		public static T GetByIndex<T>(this IEnumerable<T> enumerable, int Index)
+		{
+			return enumerable.Skip(Index).First();
+		}
 		public static int IndexOf<T>(this IEnumerable<T> enumerable, Func<T, bool> Predicate)
 		{
 			var idx = 0;

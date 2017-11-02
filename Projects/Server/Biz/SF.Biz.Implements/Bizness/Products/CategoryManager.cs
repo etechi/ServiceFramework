@@ -141,7 +141,7 @@ namespace SF.Biz.Products.Entity
 			var Updated = new List<long>();
 
 			foreach (var n in ADT.Tree.AsEnumerable(Items, ii => ii.Children).Where(n => n.Id == 0))
-				n.Id = await IdentGenerator.GenerateAsync(n.GetType().FullName);
+				n.Id = await IdentGenerator.GenerateAsync<TCategory>();
 
 			var re= DataSet.MergeTree(
 				Parent,
@@ -322,7 +322,7 @@ namespace SF.Biz.Products.Entity
 		{
 			var Model = ctx.Model;
 			Model.CreatedTime = Now;
-			Model.Id = await IdentGenerator.GenerateAsync(Model.GetType().FullName);
+			Model.Id = await IdentGenerator.GenerateAsync<TCategory>();
 		}
 		protected override Task<TCategory> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TCategory> ctx)
 		{

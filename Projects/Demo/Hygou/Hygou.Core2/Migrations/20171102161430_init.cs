@@ -686,7 +686,7 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthClient",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ClientConfigId = table.Column<long>(type: "bigint", nullable: false),
                     ClientSecrets = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     ClientUri = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
@@ -1029,7 +1029,7 @@ namespace Hygou.Core2.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false),
-                    ClientId = table.Column<long>(type: "bigint", nullable: false),
+                    ClientId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TypeId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     UpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -1059,16 +1059,22 @@ namespace Hygou.Core2.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Image = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    InternalRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LogicState = table.Column<byte>(type: "tinyint", nullable: false),
                     MainClaimTypeId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     MainCredential = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    ObjectState = table.Column<byte>(type: "tinyint", nullable: false),
+                    OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    SignupClientId = table.Column<long>(type: "bigint", nullable: true),
+                    SignupClientId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     SignupExtraArgument = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
+                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatorId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1884,21 +1890,35 @@ namespace Hygou.Core2.Migrations
                 column: "CreatedTime");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthUser_MainClaimTypeId",
+                name: "IX_SysAuthUser_Name",
                 table: "SysAuthUser",
-                column: "MainClaimTypeId",
-                unique: true);
+                column: "Name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthUser_MainCredential",
+                name: "IX_SysAuthUser_OwnerId",
                 table: "SysAuthUser",
-                column: "MainCredential",
-                unique: true);
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthUser_ScopeId",
+                table: "SysAuthUser",
+                column: "ScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthUser_SignupClientId",
                 table: "SysAuthUser",
                 column: "SignupClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthUser_UpdatorId",
+                table: "SysAuthUser",
+                column: "UpdatorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthUser_MainClaimTypeId_MainCredential",
+                table: "SysAuthUser",
+                columns: new[] { "MainClaimTypeId", "MainCredential" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthUserClaimValue_TypeId",

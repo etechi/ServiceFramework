@@ -135,7 +135,7 @@ namespace SF.Core.ServiceManagement
 			await sim.DefaultService<IUserCredentialStorage, UserCredentialStorage>(null)
 				.Ensure(ServiceProvider, ScopeId);
 
-			await sim.DefaultServiceWithIdent<IUserCredentialProvider, LocalUserCredentialProvider>("local", null)
+			await sim.DefaultServiceWithIdent<IUserCredentialProvider, LocalUserCredentialProvider>("acc", null)
 				.Ensure(ServiceProvider, ScopeId);
 
 			await sim.DefaultServiceWithIdent<IUserCredentialProvider, PhoneNumberUserCredentialProvider>("phone", null)
@@ -207,7 +207,7 @@ namespace SF.Core.ServiceManagement
 						e.Name = o.Name;
 						e.Title = o.Name;
 						e.Description = o.Description;
-						e.Operations = o.AvailableOperations.Select(oi => new ResourceOperationInternal
+						e.SupportedOperations = o.AvailableOperations.Select(oi => new ResourceOperationInternal
 						{
 							OperationId = oi
 
@@ -226,7 +226,7 @@ namespace SF.Core.ServiceManagement
 							   ).ToArray();
 
 			var ClientConfigManager =ServiceProvider.Resolve<IClientConfigManager>();
-			var cliCfg=await ClientConfigManager.EnsureEntity(
+			var unlimitedConfig=await ClientConfigManager.EnsureEntity(
 				await ClientConfigManager.QuerySingleEntityIdent(new ClientConfigQueryArgument { Name = "无限访问" }),
 				() => new ClientConfigEditable{},
 				e =>
@@ -235,25 +235,43 @@ namespace SF.Core.ServiceManagement
 					e.Grants = allGrants;
 					e.AllowedGrantTypes = new[]
 					{
-						"ClientCredentials"
+						"ClientCredentials",
+						"authorization_code",
+						"AuthorizationCode",
+						"Implicit",
+						"Hybrid",
+						"ResourceOwner"
 					};
 				}
 				);
-
-			var ClientManager = ServiceProvider.Resolve<IClientManager>();
-			await ClientManager.EnsureEntity(
-				await ClientManager.QuerySingleEntityIdent(new ClientQueryArgument { Name = "内部系统" }),
-				() => new ClientInternal
-				{
-				},
+			var customerConfig = await ClientConfigManager.EnsureEntity(
+				await ClientConfigManager.QuerySingleEntityIdent(new ClientConfigQueryArgument { Name = "客户终端" }),
+				() => new ClientConfigEditable { },
 				e =>
 				{
-					e.Name = "内部系统";
-					e.Title= "内部系统";
-					e.Secret = "123456";
-					e.ClientConfigId = cliCfg.Id;
+					e.Name = "客户终端";
+					e.Grants = new Grant[] { };
+					e.AllowedGrantTypes = new[]
+					{
+						"ClientCredentials",
+						"authorization_code",
+						"AuthorizationCode",
+						"Implicit",
+						"Hybrid",
+						"ResourceOwner"
+					};
 				}
 				);
+			var ClientManager = ServiceProvider.Resolve<IClientManager>();
+			await ClientManager.ClientEnsure("local.internal", "内部系统", unlimitedConfig.Id, "system");
+			await ClientManager.ClientEnsure("admin.console", "管理控制台", unlimitedConfig.Id, "system");
+
+			await ClientManager.ClientEnsure("browser.pc", "PC浏览器", customerConfig.Id, "system");
+			await ClientManager.ClientEnsure("browser.wx", "微信浏览器", customerConfig.Id, "system");
+			await ClientManager.ClientEnsure("browser.wap", "移动端浏览器", customerConfig.Id, "system");
+			await ClientManager.ClientEnsure("app.android", "安卓", customerConfig.Id, "system");
+			await ClientManager.ClientEnsure("app.ios", "IOS", customerConfig.Id, "system");
+			await ClientManager.ClientEnsure("app.other", "其他浏览器", customerConfig.Id, "system");
 
 			var RoleManager = ServiceProvider.Resolve<IRoleManager>();
 

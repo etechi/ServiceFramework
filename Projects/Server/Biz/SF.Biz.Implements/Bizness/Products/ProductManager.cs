@@ -265,11 +265,11 @@ namespace SF.Biz.Products.Entity
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
-			Model.Id = await IdentGenerator.GenerateAsync(Model.GetType().FullName);
+			Model.Id = await IdentGenerator.GenerateAsync<TProduct>();
 			Model.Detail = new TProductDetail();
 			Model.ObjectState = EntityLogicState.Disabled;
 			Model.CreatedTime = Now;
-			var itemId = await IdentGenerator.GenerateAsync(typeof(TItem).GetType().FullName);
+			var itemId = await IdentGenerator.GenerateAsync<TItem>();
 			Model.Items = new[]
 			{
 				new TItem

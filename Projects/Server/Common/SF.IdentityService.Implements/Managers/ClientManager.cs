@@ -30,11 +30,11 @@ namespace SF.Auth.IdentityServices.Managers
 {
 	public class ClientManager:
 		AutoModifiableEntityManager<
-			ObjectKey<long>,
+			ObjectKey<string>,
 			Models.ClientInternal,
 			Models.ClientInternal,
 			ClientQueryArgument,
-			Models.ClientInternal,
+			Models.ClientEditable,
 			DataModels.Client
 			>,
 		IClientManager

@@ -24,8 +24,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(Client))]
-	public class Client: UIObjectEntityBase<long>
+	public class Client: UIObjectEntityBase<string>
 	{
+		[MaxLength(100)]
+		[Required]
+		public override string Id { get; set ; }
 		[Index]
 		public long ClientConfigId { get; set; }
 

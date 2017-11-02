@@ -37,13 +37,12 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 
 		public async Task<Client> FindClientByIdAsync(string clientId)
 		{
-			var cid = clientId.TryToInt64();
-			if (!cid.HasValue)
+			if (clientId==null)
 				return null;
 
 			var re = await (
 				from c in Clients.AsQueryable()
-				where c.Id == cid.Value && c.LogicState == Entities.EntityLogicState.Enabled
+				where c.Id == clientId && c.LogicState == Entities.EntityLogicState.Enabled
 				select new
 				{
 					cfg = c.ClientConfig,

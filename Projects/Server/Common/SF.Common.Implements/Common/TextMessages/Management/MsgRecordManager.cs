@@ -75,7 +75,7 @@ namespace SF.Common.TextMessages.Management
 		{
 			var re=DataSet.Add(new DataModels.TextMessageRecord
 			{
-				Id = await IdentGenerator.GenerateAsync("文本消息记录"),
+				Id = await IdentGenerator.GenerateAsync<DataModels.TextMessageRecord>(),
 				Args = Json.Stringify(message.Arguments),
 				Body = message.Body,
 				Headers = Json.Stringify(message.Headers),

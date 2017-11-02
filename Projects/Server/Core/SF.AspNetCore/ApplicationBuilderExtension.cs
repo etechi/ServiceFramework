@@ -49,6 +49,7 @@ namespace SF.AspNetCore
 			else
 			{
 				app.UseExceptionHandler(cfg.ExceptionHandler);
+				
 			}
 
 			app.UseStaticFiles();

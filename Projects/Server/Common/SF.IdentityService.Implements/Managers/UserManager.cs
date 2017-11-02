@@ -151,7 +151,7 @@ namespace SF.Auth.IdentityServices.Managers
 		}
 		public override Task<ObjectKey<long>> CreateAsync(TEditable obj)
 		{
-			if (obj.SecurityStamp == null)
+			if (obj.SecurityStamp.IsNullOrWhiteSpace())
 			{
 				var stamp = Bytes.Random(16);
 				obj.PasswordHash = PasswordHasher.Value.Hash(obj.PasswordHash, stamp);
@@ -292,16 +292,16 @@ namespace SF.Auth.IdentityServices.Managers
 					IsEnabled=i.LogicState==EntityLogicState.Enabled,
 					PasswordHash=i.PasswordHash,
 					Roles=i.Roles.Select(r=>r.RoleId),
-					Claims=i.Roles.SelectMany(r=>r.Role.ClaimValues.Select(cv=>new ClaimValue
-					{
-						TypeId=cv.TypeId,
-						Value=cv.Value
-					})).Union(
-					i.ClaimValues.Select(cv=>new ClaimValue
-					{
-						TypeId = cv.TypeId,
-						Value = cv.Value
-					}))
+					//Claims=i.Roles.SelectMany(r=>r.Role.ClaimValues.Select(cv=>new ClaimValue
+					//{
+					//	TypeId=cv.TypeId,
+					//	Value=cv.Value
+					//})).Union(
+					//i.ClaimValues.Select(cv=>new ClaimValue
+					//{
+					//	TypeId = cv.TypeId,
+					//	Value = cv.Value
+					//}))
 				}
 			}).SingleOrDefaultAsync();
 			if (re == null) return null;

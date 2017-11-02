@@ -44,9 +44,9 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			=> new ApiResource(res.Id, res.Name){
 				Scopes = res.SupportedOperations
 				.Select(s => 
-					new Scope(res.Id+ "." + s.OperationId, res.Name+"/"+s.Operation.Name)
+					new Scope(res.Id+ "." + s.OperationId, res.Name+"/"+(s.Operation?.Name ?? s.OperationId))
 					{
-						Description = s.Operation.Description
+						Description = s.Operation?.Description
 					})
 					.ToArray()
 				};
@@ -55,7 +55,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			var res = await Resources
 				.AsQueryable()
 				.Where(r => r.Id == name && r.LogicState==Entities.EntityLogicState.Enabled)
-				.Include(r => r.SupportedOperations.Select(o=>o.Operation))
+				.Include(r => r.SupportedOperations)
 				.SingleOrDefaultAsync();
 
 			if (res == null)
@@ -65,14 +65,21 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 
 		public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
 		{
+			var rids = await Resources.Context.Set<DataModels.ResourceSupportedOperation>().AsQueryable()
+				.Where(o => scopeNames.Contains(o.ResourceId + "." + o.OperationId))
+				.Select(r => r.ResourceId)
+				.Distinct()
+				.ToArrayAsync();
+
+			if (rids.Length == 0)
+				return Enumerable.Empty<ApiResource>();
 
 			var ress = await (
 				from r in Resources.AsQueryable()
-				where r.LogicState == Entities.EntityLogicState.Enabled &&
-						r.SupportedOperations.Any(o=> scopeNames.Contains(r.Id+"."+o.OperationId))
+				//where rids.Contains(r.Id)
 				select r
 				)
-				.Include(r => r.SupportedOperations.Select(o=>o.Operation))
+				.Include(r => r.SupportedOperations)
 				.ToArrayAsync();
 			return ress.Select(MapResource);
 		}
@@ -101,6 +108,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			var apiRess=await Resources
 				.AsQueryable()
 				.Where(r=>r.LogicState==Entities.EntityLogicState.Enabled)
+				.Include(r=>r.SupportedOperations)
 				.ToArrayAsync();
 
 			var idsvcs = await ServiceInstanceManager.QueryAsync(new ServiceInstanceQueryArgument

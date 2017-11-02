@@ -114,9 +114,6 @@ namespace SF.Auth.IdentityServices.Models
 		[Comment("是否需要密钥", "If set to false, no client secret is needed to request tokens at the token endpoint (defaults to true)")]
 		public bool RequireClientSecret { get; set; }
 
-		[Comment("客户端Url", "URI to further information about client (used on consent screen)")]
-		[MaxLength(200)]
-		public string ClientUri { get; set; }
 
 		[Comment("跨域设置", "Gets or sets the allowed CORS origins for JavaScript clients. split by ;")]
 		[MaxLength(200)]
@@ -144,15 +141,6 @@ namespace SF.Auth.IdentityServices.Models
 		////     multiple response types are allowed.
 		//public bool AllowAccessTokensViaBrowser { get; set; }
 		//
-		[Comment("登录跳转地址", "Specifies allowed URIs to return tokens or authorization codes to")]
-		public string RedirectUris { get; set; }
-
-		[Comment("注销跳转地址", "Specifies allowed URIs to redirect to after logout")]
-		public string PostLogoutRedirectUris { get; set; }
-
-		[Comment("前端注销跳转地址", "Specifies logout URI at client for HTTP front-channel based logout.")]
-		public string FrontChannelLogoutUri { get; set; }
-
 		[Comment("需要注销会话", "Specifies is the user's session id should be sent to the FrontChannelLogoutUri. (defaults to true)")]
 		public bool FrontChannelLogoutSessionRequired { get; set; }
 
@@ -166,7 +154,7 @@ namespace SF.Auth.IdentityServices.Models
 	}
 
 	[Comment("认证客户端")]
-	public class ClientInternal : UIObjectEntityBase<long>
+	public class ClientInternal : UIObjectEntityBase<string>
 	{
 		[EntityIdent(typeof(ClientConfigInternal),nameof(ClientConfigName))]
 		public long ClientConfigId { get; set; }
@@ -180,6 +168,25 @@ namespace SF.Auth.IdentityServices.Models
 		public string Secret { get; set; }
 
 	}
-	
+
+	public class ClientEditable : ClientInternal
+	{
+		[Comment("客户端Url", "URI to further information about client (used on consent screen)")]
+		[MaxLength(200)]
+		public string ClientUri { get; set; }
+
+		[Comment("注销跳转地址", "Specifies allowed URIs to redirect to after logout")]
+		public string PostLogoutRedirectUris { get; set; }
+
+		[Comment("前端注销跳转地址", "Specifies logout URI at client for HTTP front-channel based logout.")]
+		public string FrontChannelLogoutUri { get; set; }
+
+
+
+		[Comment("登录跳转地址", "Specifies allowed URIs to return tokens or authorization codes to")]
+		public string RedirectUris { get; set; }
+
+	}
+
 }
 

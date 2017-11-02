@@ -102,7 +102,7 @@ namespace SF.Biz.Products.Entity
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
-			Model.Id = await IdentGenerator.GenerateAsync(Model.GetType().FullName);
+			Model.Id = await IdentGenerator.GenerateAsync<TProductType>();
 			Model.CreatedTime = Now;
 		}
 		protected override Task<TProductType> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TProductType> ctx)

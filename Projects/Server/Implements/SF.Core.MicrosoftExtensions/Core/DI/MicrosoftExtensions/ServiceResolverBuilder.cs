@@ -135,11 +135,11 @@ namespace SF.Core.ServiceManagement
 				this.services = services;
 			}
 			public Microsoft.Extensions.DependencyInjection.ServiceDescriptor this[int index] {
-				get => MapServiceDescriptor(services[index]);
+				get => MapServiceDescriptor(services.Where(s=>!s.IsManagedService).GetByIndex(index));
 				set => services[index] = MapServiceDescriptor(value);
 			}
 
-			public int Count => services.Count;
+			public int Count => services.Where(s=>!s.IsManagedService).Count();
 
 			public bool IsReadOnly => services.IsReadOnly;
 
@@ -152,10 +152,19 @@ namespace SF.Core.ServiceManagement
 			{
 				services.Clear();
 			}
-
+			static bool EqualDescriptor(ServiceDescriptor s, ServiceDescriptor d)
+			{
+				return s.InterfaceType == d.InterfaceType &&
+					s.IsManagedService == d.IsManagedService &&
+					s.ServiceImplementType == d.ServiceImplementType &&
+					s.ImplementCreator == d.ImplementCreator &&
+					s.ImplementInstance == d.ImplementInstance &&
+					s.ImplementType == d.ImplementType;
+			}
 			public bool Contains(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
 			{
-				throw new NotSupportedException();
+				var d = MapServiceDescriptor(item);
+				return services.Any(s => EqualDescriptor(s, d));
 			}
 
 			public void CopyTo(Microsoft.Extensions.DependencyInjection.ServiceDescriptor[] array, int arrayIndex)
@@ -165,32 +174,43 @@ namespace SF.Core.ServiceManagement
 
 			public IEnumerator<Microsoft.Extensions.DependencyInjection.ServiceDescriptor> GetEnumerator()
 			{
-				throw new NotSupportedException();
+				return services.Where(d=>!d.IsManagedService).Select(MapServiceDescriptor).GetEnumerator();
 			}
 
 			public int IndexOf(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
 			{
-				throw new NotSupportedException();
+				var d = MapServiceDescriptor(item);
+				return services.Where(s => !s.IsManagedService).IndexOf(s => EqualDescriptor(s, d));
 			}
 
 			public void Insert(int index, Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
 			{
-				throw new NotSupportedException();
+				var d = MapServiceDescriptor(item);
+				var r = services.Where(s => !s.IsManagedService).Skip(index).FirstOrDefault();
+				if (r == null)
+					services.Add(d);
+				else
+					services.Insert(services.IndexOf(r), d);
 			}
 
 			public bool Remove(Microsoft.Extensions.DependencyInjection.ServiceDescriptor item)
 			{
-				throw new NotSupportedException();
+				var d = MapServiceDescriptor(item);
+				var idx = services.IndexOf(s => EqualDescriptor(s, d));
+				if (idx == -1)
+					return false;
+				services.RemoveAt(idx);
+				return true;
 			}
 
 			public void RemoveAt(int index)
 			{
-				throw new NotSupportedException();
+				services.Remove(services.Where(s => !s.IsManagedService).GetByIndex(index));
 			}
 
 			IEnumerator IEnumerable.GetEnumerator()
 			{
-				throw new NotSupportedException();
+				return GetEnumerator();
 			}
 		}
 		public static Microsoft.Extensions.DependencyInjection.IServiceCollection AsMicrosoftServiceCollection(this IServiceCollection sc)

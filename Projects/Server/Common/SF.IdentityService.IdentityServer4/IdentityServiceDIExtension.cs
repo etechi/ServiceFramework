@@ -36,7 +36,11 @@ namespace SF.Core.ServiceManagement
 		public static Core.ServiceManagement.IServiceCollection AddIdentityServer4Support(this Core.ServiceManagement.IServiceCollection sc)
 		{
 			sc.AsMicrosoftServiceCollection()
-				.AddIdentityServer()
+				.AddIdentityServer(o =>
+				{
+					o.UserInteraction.LoginUrl = "/user/signin";
+
+				})
 				.AddClientStore<ClientStore>()
 				.AddProfileService<ProfileService>()
 				.AddResourceStore<ResourceStore>();

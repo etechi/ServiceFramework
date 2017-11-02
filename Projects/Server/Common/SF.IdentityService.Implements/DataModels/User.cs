@@ -26,7 +26,7 @@ namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(User))]
 	public class User<TUser,TUserCredential, TClaimValue, TUserRole> :
-		SF.Entities.DataModels.UIObjectEntityBase
+		SF.Entities.DataModels.ObjectEntityBase
 		where TUser: User<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TUserCredential : UserCredential<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TClaimValue : UserClaimValue<TUser, TUserCredential, TClaimValue, TUserRole>
@@ -41,6 +41,14 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Comment("密码哈希")]
 		[Required]
 		public virtual string PasswordHash { get; set; }
+
+		[Comment("图标")]
+		[MaxLength(100)]
+		public virtual string Icon { get; set; }
+
+		[Comment("头像")]
+		[MaxLength(100)]
+		public virtual string Image { get; set; }
 
 		[MaxLength(100)]
 		[Required]
@@ -75,7 +83,8 @@ namespace SF.Auth.IdentityServices.DataModels
 		public ICollection<TUserRole> Roles { get; set; }
 
 		[Index]
-		public long? SignupClientId { get; set; }
+		[MaxLength(100)]
+		public string SignupClientId { get; set; }
 
 		[ForeignKey(nameof(SignupClientId))]
 		public Client SignupClient { get; set; }

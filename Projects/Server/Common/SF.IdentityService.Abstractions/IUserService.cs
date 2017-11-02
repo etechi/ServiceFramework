@@ -23,7 +23,7 @@ namespace SF.Auth.IdentityServices
 	public class SigninArgument
 	{
 		[Comment("用户")]
-		public string Credential { get; set; }
+		public string Ident { get; set; }
 
 		[Comment("密码")]
 		public string Password { get; set; }

@@ -19,9 +19,9 @@ using SF.Metadata;
 using System;
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class ClientQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class ClientQueryArgument : IQueryArgument<ObjectKey<string>>
 	{
-		public ObjectKey<long> Id { get; set; }
+		public ObjectKey<string> Id { get; set; }
 
 		[Comment("客户端名称")]
 		[StringContains]
@@ -33,8 +33,8 @@ namespace SF.Auth.IdentityServices.Managers
 	[NetworkService]
 	[Comment("客户端管理")]
 	public interface IClientManager :
-		IEntityManager<ObjectKey<long>,Models.ClientInternal>,
-		IEntitySource<ObjectKey<long>, Models.ClientInternal, ClientQueryArgument>
+		IEntityManager<ObjectKey<string>,Models.ClientEditable>,
+		IEntitySource<ObjectKey<string>, Models.ClientInternal, ClientQueryArgument>
 	{
 	}
 

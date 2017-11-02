@@ -185,7 +185,7 @@ namespace SF.Auth.IdentityServices
 
 		public async Task<string> Signin(SigninArgument Arg)
 		{
-			if (string.IsNullOrWhiteSpace(Arg.Credential))
+			if (string.IsNullOrWhiteSpace(Arg.Ident))
 				throw new PublicArgumentException("请输入用户标识");
 
 			if (string.IsNullOrWhiteSpace(Arg.Password))
@@ -197,9 +197,9 @@ namespace SF.Auth.IdentityServices
 			var credentialStorage = Setting.CredentialStorage.Value;
 			foreach (var ip in Setting.IdentityCredentialProviders)
 			{
-				if (await ip.VerifyFormat(Arg.Credential) != null)
+				if (await ip.VerifyFormat(Arg.Ident) != null)
 					continue;
-				ui = await credentialStorage.Find(ip.Ident, Arg.Credential);
+				ui = await credentialStorage.Find(ip.Ident, Arg.Ident);
 				if (ui != null)
 				{
 					identProvider = ip;

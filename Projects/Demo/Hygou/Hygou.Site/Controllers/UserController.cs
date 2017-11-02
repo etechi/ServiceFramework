@@ -13,43 +13,25 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.IdentityServices.Internals;
-using SF.Core.ServiceManagement;
+using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using SF.AspNetCore;
+using SF.Services.Settings;
+using SF.Biz.Products;
+using SF.Entities;
 
-namespace SF.Auth.IdentityServices.UserCredentialProviders
+namespace Hygou.Site.Controllers 
 {
-	public class LocalUserCredentialProvider :
-		IUserCredentialProvider
+	public class UserController : BaseController
 	{
-		public LocalUserCredentialProvider()
+		[HttpGet]
+		public ActionResult Signin()
 		{
-		}
-		public long ClaimTypeId => 0;
-		public  string Name => "用户账号";
-
-		public string Ident => "acc";
-
-		public string Description => "本地用户账号";
-
-		public  bool IsConfirmable()
-		{
-			return false;
-		}
-		
-		public  Task<long> SendConfirmCode(
-			long? IdentityId, string Ident,  string Code, ConfirmMessageType Type, string TrackIdent)
-		{
-
-			throw new NotSupportedException("用户账号不支持验证");
+			return View();
 		}
 
-		public  Task<string> VerifyFormat(string Ident)
-		{
-			if (Ident.Length < 2)
-				return Task.FromResult("账号太短");
-			return Task.FromResult((string)null);
-		}
 	}
 }

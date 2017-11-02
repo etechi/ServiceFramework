@@ -88,7 +88,7 @@ namespace SF.Promotions.MemberSources.Entity
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var m = ctx.Model;
-			m.Id = await IdentGenerator.GenerateAsync(m.GetType().FullName);
+			m.Id = await IdentGenerator.GenerateAsync< TMemberSource>();
 			m.CreatedTime = Now;
 			await base.OnNewModel(ctx);
 		}

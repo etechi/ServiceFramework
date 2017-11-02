@@ -24,7 +24,7 @@ using System.Security.Claims;
 
 namespace SF.Auth.IdentityServices.Models
 {
-	public class UserInternal : UIObjectEntityBase
+	public class UserInternal : ObjectEntityBase
 	{
 		[Comment("创建标识")]
 		public string MainCredential  { get; set; }
@@ -35,8 +35,18 @@ namespace SF.Auth.IdentityServices.Models
 
 	public class UserEditable : UserInternal
 	{
+		[Comment("图标")]
+		[MaxLength(100)]
+		public string Icon { get; set; }
+
+		[Comment("头像")]
+		[MaxLength(100)]
+		public string Image { get; set; }
+
+
 		[SkipWhenDefault]
 		public string PasswordHash { get; set; }
+
 		[SkipWhenDefault]
 		public string SecurityStamp { get; set; }
 		public IEnumerable<UserCredential> Credentials { get; set; }

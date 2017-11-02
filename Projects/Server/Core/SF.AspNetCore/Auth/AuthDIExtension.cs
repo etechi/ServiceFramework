@@ -42,7 +42,7 @@ namespace SF.AspNetCore.Auth
 					opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
 					opt.Cookie.Path = "/";
 					opt.Cookie.Name = "sf-sess";
-					opt.LoginPath = "/account/signin";
+					opt.LoginPath = "/user/signin";
 					//opt.TicketDataFormat
 				}
 			);

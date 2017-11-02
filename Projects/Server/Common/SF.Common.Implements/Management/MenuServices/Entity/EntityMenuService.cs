@@ -101,7 +101,7 @@ namespace SF.Management.MenuServices.Entity
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var m = ctx.Model;
-			m.Id = await IdentGenerator.GenerateAsync(m.GetType().FullName);
+			m.Id = await IdentGenerator.GenerateAsync<TMenu>();
 			m.Create(Now);
 			await base.OnNewModel(ctx);
 		}
@@ -119,7 +119,7 @@ namespace SF.Management.MenuServices.Entity
 
 			var items = await MenuItemSet.Value.LoadListAsync(i => i.MenuId == m.Id);
 			foreach (var n in ADT.Tree.AsEnumerable(e.Items, ii => ii.Children).Where(i => i.Id == 0))
-				n.Id = await IdentGenerator.GenerateAsync(n.GetType().FullName);
+				n.Id = await IdentGenerator.GenerateAsync<TMenuItem>();
 
 			MenuItemSet.Value.MergeTree(
 				null,

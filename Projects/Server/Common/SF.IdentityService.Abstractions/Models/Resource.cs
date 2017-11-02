@@ -32,7 +32,7 @@ namespace SF.Auth.IdentityServices.Models
 	[Comment("资源")]
 	public class ResourceEditable : ResourceInternal
 	{ 
-		public IEnumerable<ResourceOperationInternal> Operations { get; set; }
+		public IEnumerable<ResourceOperationInternal> SupportedOperations { get; set; }
 	}
 
 	[Comment("资源操作")]
@@ -40,6 +40,7 @@ namespace SF.Auth.IdentityServices.Models
 	{
 		[EntityIdent(typeof(OperationInternal),nameof(OperationName))]
 		[Comment("操作")]
+		[Key]
 		public string OperationId { get; set; }
 
 		[Comment("操作名称")]

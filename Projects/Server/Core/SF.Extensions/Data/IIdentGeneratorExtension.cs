@@ -25,6 +25,8 @@ namespace SF.Data
 	{
 		public static Task<long> GenerateAsync(this IIdentGenerator g, string Type)
 			=> g.GenerateAsync(Type, 0);
+		public static Task<long> GenerateAsync<T>(this IIdentGenerator g)
+			=> g.GenerateAsync(typeof(T).FullName, 0);
 
 		public static async Task<Queue<long>> BatchGenerateAsync<T>(this IIdentGenerator<T> g, int Count, int Section = 0)
 		{

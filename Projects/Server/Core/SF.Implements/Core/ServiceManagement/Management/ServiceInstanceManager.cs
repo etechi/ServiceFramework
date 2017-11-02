@@ -284,7 +284,7 @@ namespace SF.Core.ServiceManagement.Management
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			//UIEnsure.NotNull(ctx.Model.Id, "未设置服务实例ID");
-			ctx.Model.Id = await IdentGenerator.GenerateAsync(GetType().FullName);
+			ctx.Model.Id = await IdentGenerator.GenerateAsync<DataModels.ServiceInstance>();
 			ctx.Model.Create(Now);
 		}
 

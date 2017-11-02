@@ -122,7 +122,7 @@ namespace SF.Biz.Products.Entity
 		{
 			var Model = ctx.Model;
 			var obj = ctx.Editable;
-			Model.Id = await IdentGenerator.GenerateAsync(Model.GetType().FullName);
+			Model.Id = await IdentGenerator.GenerateAsync<TItem>();
 			Model.CreatedTime = Now;
 			Model.SellerId = obj.SellerId;
 			Model.ProductId = obj.ProductId;

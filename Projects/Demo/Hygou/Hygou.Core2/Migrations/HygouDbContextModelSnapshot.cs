@@ -23,7 +23,7 @@ namespace Hygou.Core2.Migrations
                 .HasAnnotation("ProductVersion", "2.0.0-rtm-26452")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("MemberInvitation_2", b =>
+            modelBuilder.Entity("MemberInvitation_3", b =>
                 {
                     b.Property<long>("Id");
 
@@ -89,7 +89,8 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Client", b =>
                 {
-                    b.Property<long>("Id");
+                    b.Property<string>("Id")
+                        .HasMaxLength(100);
 
                     b.Property<long>("ClientConfigId");
 
@@ -170,7 +171,9 @@ namespace Hygou.Core2.Migrations
                 {
                     b.Property<long>("Id");
 
-                    b.Property<long>("ClientId");
+                    b.Property<string>("ClientId")
+                        .IsRequired()
+                        .HasMaxLength(100);
 
                     b.Property<DateTime>("CreateTime");
 
@@ -545,9 +548,6 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<DateTime>("CreatedTime");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(200);
-
                     b.Property<string>("Icon")
                         .HasMaxLength(100);
 
@@ -566,9 +566,6 @@ namespace Hygou.Core2.Migrations
                         .IsRequired()
                         .HasMaxLength(200);
 
-                    b.Property<string>("Memo")
-                        .HasMaxLength(200);
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100);
@@ -582,30 +579,21 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(30);
 
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(100);
-
                     b.Property<long?>("ScopeId");
 
                     b.Property<string>("SecurityStamp")
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long?>("SignupClientId");
+                    b.Property<string>("SignupClientId")
+                        .HasMaxLength(100);
 
                     b.Property<string>("SignupExtraArgument")
                         .HasMaxLength(200);
 
-                    b.Property<string>("SubTitle")
-                        .HasMaxLength(100);
-
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100);
 
                     b.Property<DateTime>("UpdatedTime");
 

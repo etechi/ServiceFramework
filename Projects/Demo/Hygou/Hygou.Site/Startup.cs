@@ -27,6 +27,9 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using SF.AspNetCore;
+using IdentityServer4.Stores;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Hygou
 {
@@ -71,6 +74,14 @@ namespace Hygou
 						sc.AddNetworkService();
 						sc.AddAspNetCoreServiceInterface();
 						sc.AddIdentityServer4Support();
+						var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("system"));
+						sc.AddSingleton<ISigningCredentialStore>(
+							new DefaultSigningCredentialsStore(
+								new Microsoft.IdentityModel.Tokens.SigningCredentials(
+									key,
+									SecurityAlgorithms.HmacSha256
+									)
+							));
 					}
 					)
 				.Build();
@@ -80,6 +91,7 @@ namespace Hygou
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+			app.UseIdentityServer();
 			app.ApplicationCommonConfigure(env);
 			var mvc=app.UseMvc(routes =>
 			{

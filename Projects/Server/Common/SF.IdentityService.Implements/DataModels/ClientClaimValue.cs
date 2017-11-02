@@ -29,7 +29,9 @@ namespace SF.Auth.IdentityServices.DataModels
 
 		[Index]
 		[Comment("客户端ID")]
-		public long ClientId { get; set; }
+		[MaxLength(100)]
+		[Required]
+		public string ClientId { get; set; }
 
 		[ForeignKey(nameof(ClientId))]
 		public Client Client { get; set; }
