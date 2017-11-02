@@ -72,8 +72,8 @@ namespace SF.Auth.IdentityServices.Managers
 				Name = Arg.User.Name,
 				Icon = Arg.User.Icon,
 
-				CreateCredential = Arg.CredentialValue,
-				CreateClaimTypeId = Arg.ClaimTypeId,
+				MainCredential = Arg.CredentialValue,
+				MainClaimTypeId = Arg.ClaimTypeId,
 
 				LogicState = EntityLogicState.Enabled,
 				SignupExtraArgument=Arg.ExtraArgument,
@@ -136,6 +136,19 @@ namespace SF.Auth.IdentityServices.Managers
 			//await DataSet.Context.SaveChangesAsync();
 			//return Arg.Identity.Id;
 		}
+
+		void PrepareCredentials(TEditable obj)
+		{
+			if (obj.Credentials == null || !obj.Credentials.Any())
+				obj.Credentials = new[]{
+					new Models.UserCredential
+					{
+						ClaimTypeId=obj.MainClaimTypeId,
+						Credential=obj.MainCredential,
+						BindTime=Now
+					}
+				};
+		}
 		public override Task<ObjectKey<long>> CreateAsync(TEditable obj)
 		{
 			if (obj.SecurityStamp == null)
@@ -144,23 +157,19 @@ namespace SF.Auth.IdentityServices.Managers
 				obj.PasswordHash = PasswordHasher.Value.Hash(obj.PasswordHash, stamp);
 				obj.SecurityStamp = stamp.Base64();
 			}
+			PrepareCredentials(obj);
 			return base.CreateAsync(obj);
+		}
+		public override Task UpdateAsync(TEditable obj)
+		{
+			PrepareCredentials(obj);
+			return base.UpdateAsync(obj);
 		}
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
-			m.SignupClaimTypeId = e.CreateClaimTypeId;
-			m.SignupIdentValue = e.CreateCredential;
-			if (e.Credentials == null)
-				e.Credentials = new[]{
-					new Models.UserCredential
-					{
-						ClaimTypeId=e.CreateClaimTypeId,
-						Credential=e.CreateCredential,
-						BindTime=Now
-					}
-				};
+			
 			await base.OnNewModel(ctx);
 		}
 		//async Task InitClaimTypes(TEditable obj)
@@ -280,7 +289,7 @@ namespace SF.Auth.IdentityServices.Managers
 					Icon=i.Icon,
 					Name=i.Name,
 					
-					IsEnabled=i.ObjectState==EntityLogicState.Enabled,
+					IsEnabled=i.LogicState==EntityLogicState.Enabled,
 					PasswordHash=i.PasswordHash,
 					Roles=i.Roles.Select(r=>r.RoleId),
 					Claims=i.Roles.SelectMany(r=>r.Role.ClaimValues.Select(cv=>new ClaimValue

@@ -13,24 +13,45 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Metadata;
+using SF.Auth;
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SF.Entities;
+using SF.Data;
+using SF.Core.ServiceManagement;
+using SF.Core;
+using SF.Auth.IdentityServices.Models;
+using SF.Auth.IdentityServices.Managers;
 
-namespace SF.Auth.IdentityServices.Models
+namespace SF.Auth.IdentityServices.Managers
 {
-	public class UserCredential
+	public static class RoleManagerExtension
 	{
-		[Key]
-		[Column(Order=1)]
-		public string ClaimTypeId { get; set; }
-		public long UserId { get; set; }
-		[Key]
-		[Column(Order = 2)]
-		public string Credential { get; set; }
-		public DateTime BindTime { get; set; }
-		public DateTime? ConfirmedTime { get; set; }
-		public string[] RequiredClaims { get; set; }
+		public static async Task<Role> RoleEnsure(
+			this IRoleManager RoleManager,
+			string Id,
+			string Name,
+			params Grant[] Grants
+			) 
+		{
+			return await RoleManager.EnsureEntity(
+				await RoleManager.QuerySingleEntityIdent(new RoleQueryArgument { Id = new ObjectKey<string> { Id = Id } }),
+				() => new RoleEditable
+				{
+					Id = Id
+				},
+				e =>
+				{
+					e.Name = Name;
+					e.Grants = Grants;
+
+				}
+			);
+		}
 	}
 
 }

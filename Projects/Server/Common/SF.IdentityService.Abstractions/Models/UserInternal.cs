@@ -24,22 +24,13 @@ using System.Security.Claims;
 
 namespace SF.Auth.IdentityServices.Models
 {
-	public class UserInternal : User
+	public class UserInternal : UIObjectEntityBase
 	{
-
 		[Comment("创建标识")]
-		public string CreateCredential  { get; set; }
+		public string MainCredential  { get; set; }
 
 		[Comment("创建标识提供者")]
-		public string CreateClaimTypeId { get; set; }
-
-		[Comment("创建时间")]
-		public DateTime CreateTime { get; set; }
-		[Comment("更新时间")]
-		public DateTime UpdateTime { get; set; }
-
-		[Comment("对象状态")]
-		public EntityLogicState LogicState { get; set; }
+		public string MainClaimTypeId { get; set; }
 	}
 
 	public class UserEditable : UserInternal

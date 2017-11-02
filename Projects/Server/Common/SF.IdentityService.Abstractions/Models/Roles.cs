@@ -40,6 +40,7 @@ namespace SF.Auth.IdentityServices.Models
 
 		[Comment("类型ID")]
 		[EntityIdent(typeof(Role), nameof(RoleName))]
+		[Key]
 		public string RoleId { get; set; }
 
 		[Comment("类型")]

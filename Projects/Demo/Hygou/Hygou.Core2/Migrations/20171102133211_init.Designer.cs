@@ -14,9 +14,10 @@ using System;
 namespace Hygou.Core2.Migrations
 {
     [DbContext(typeof(HygouDbContext))]
-    partial class HygouDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171102133211_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -545,18 +546,8 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<DateTime>("CreatedTime");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(200);
-
                     b.Property<string>("Icon")
                         .HasMaxLength(100);
-
-                    b.Property<string>("Image")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("InternalRemarks");
-
-                    b.Property<byte>("LogicState");
 
                     b.Property<string>("MainClaimTypeId")
                         .IsRequired()
@@ -566,14 +557,11 @@ namespace Hygou.Core2.Migrations
                         .IsRequired()
                         .HasMaxLength(200);
 
-                    b.Property<string>("Memo")
-                        .HasMaxLength(200);
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<byte>("ObjectState");
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
@@ -581,11 +569,6 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(30);
-
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(100);
-
-                    b.Property<long?>("ScopeId");
 
                     b.Property<string>("SecurityStamp")
                         .IsRequired()
@@ -596,37 +579,19 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("SignupExtraArgument")
                         .HasMaxLength(200);
 
-                    b.Property<string>("SubTitle")
-                        .HasMaxLength(100);
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
                     b.Property<DateTime>("UpdatedTime");
-
-                    b.Property<long>("UpdatorId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedTime");
 
-                    b.HasIndex("Name");
+                    b.HasIndex("MainClaimTypeId")
+                        .IsUnique();
 
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("MainCredential")
+                        .IsUnique();
 
                     b.HasIndex("SignupClientId");
-
-                    b.HasIndex("UpdatorId");
-
-                    b.HasIndex("MainClaimTypeId", "MainCredential")
-                        .IsUnique();
 
                     b.ToTable("SysAuthUser");
                 });

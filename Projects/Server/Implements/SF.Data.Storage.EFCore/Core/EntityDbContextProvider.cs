@@ -71,6 +71,7 @@ namespace SF.Data.EntityFrameworkCore
 		public EntityDbContextProvider(DbContext DbContext, IDataContext DataContext)
 		{
 			this.DbContext = DbContext;
+			DbContext.ChangeTracker.AutoDetectChangesEnabled = false;
 			this.DataContext = DataContext;
 		}
 		public IAsyncQueryableProvider AsyncQueryableProvider

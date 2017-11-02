@@ -24,10 +24,10 @@ namespace SF.Auth.IdentityServices.Managers
 	public class UserQueryArgument : QueryArgument<long>
 	{	
 		[Comment("注册账号")]
-		public string SignupIdentValue { get; set; }
+		public string MainCredential { get; set; }
 
 		[Comment("注册类型")]
-		public string SignupClaimTypeId { get; set; }
+		public string MainClaimTypeId { get; set; }
 
 		[Comment("姓名")]
 		[StringContains]

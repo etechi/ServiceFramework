@@ -29,7 +29,7 @@ using SF.Auth.IdentityServices.Managers;
 
 namespace SF.Auth.IdentityServices.Managers
 {
-	public static class UserExtension
+	public static class UserManagerExtension
 	{
 		public static async Task<UserInternal> UserEnsure(
 			this IUserManager UserManager,
@@ -43,14 +43,14 @@ namespace SF.Auth.IdentityServices.Managers
 		{
 			return await UserManager.EnsureEntity(
 				await UserManager.QuerySingleEntityIdent(new UserQueryArgument {
-					SignupClaimTypeId = ClaimTypeId,
-					SignupIdentValue = Credential
+					MainClaimTypeId = ClaimTypeId,
+					MainCredential = Credential
 				}),
 				() => new UserEditable(),
 				u => {
 					u.Name = Name;
-					u.CreateClaimTypeId = ClaimTypeId;
-					u.CreateCredential = Credential;
+					u.MainClaimTypeId = ClaimTypeId;
+					u.MainCredential = Credential;
 					u.PasswordHash = Password;
 					u.Roles = (roles ?? Array.Empty<string>()).Select(r => new UserRole { RoleId = r }).ToArray();
 				}

@@ -29,21 +29,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Common.Members;
-
+using SF.Auth.IdentityServices.Managers;
+using SF.Entities;
 namespace Hygou.Setup
 {
 	public class SystemInitializer
 	{
-		public static  Task<long> EnsureAdmin(IServiceProvider sp)
+		public static async Task<long> EnsureAdmin(IServiceProvider sp)
 		{
-			var svc = sp.Resolve<IAdminManager>();
+			//var svc = sp.Resolve<IAdminManager>();
 			//var u = await svc.AdminEnsure(sp,"sysadmin", "系统管理员", "13000010001", "system123", new[] { "sysadmin","admin"});
 			//return u.Id;
-			return Task.FromResult(0L);
+			var re=await sp.Resolve<IUserManager>().QuerySingleEntityIdent(
+				new UserQueryArgument {
+					MainCredential = "superadmin",
+					MainClaimTypeId = "acc"
+				});
+			return re.Id;
 		}
 
-		public static Task<MemberInternal> EnsureSysSeller(IServiceProvider sp)
+		public static async Task<long> EnsureSysSeller(IServiceProvider sp)
 		{
+			await sp.Resolve<IRoleManager>().RoleEnsure(
+				"seller",
+				"系统卖家"
+				);
+
+			var re=await sp.Resolve<IUserManager>().UserEnsure(
+				"acc",
+				"sysseller",
+				"system",
+				"系统卖家",
+				new[] { "seller" }
+				);
 			//var svc = sp.Resolve<IMemberService>();
 			//var u = await svc.MemberEnsure(
 			//		sp,
@@ -54,7 +72,7 @@ namespace Hygou.Setup
 			//		new[]{"admin", "seller", "provider" }
 			//		);
 			//return u;
-			return Task.FromResult((MemberInternal)null);
+			return re.Id;
 		}
 		public static async Task Initialize(IServiceProvider ServiceProvider, EnvironmentType EnvType)
 		{
@@ -70,7 +88,7 @@ namespace Hygou.Setup
 				   ScopeId,
 				   s =>
 				   {
-					   s.DefaultSellerId = sysseller.Id;
+					   s.DefaultSellerId = sysseller;
 				   })
 				   );
 			//await InitAccounting(scope);
@@ -85,7 +103,7 @@ namespace Hygou.Setup
 			
 			var prdtypes = await ServiceProvider.Invoke((IProductTypeManager m)=>ProductTypeInitializer.Create(m));
 			var colls = await ServiceProvider.Invoke(((IProductCategoryManager cm,IProductItemManager im, IServiceInstanceManager sim) arg) => 
-				ProductCategoryInitializer.Create(arg.sim, arg.cm, arg.im, sysseller.Id, ScopeId, prdtypes));
+				ProductCategoryInitializer.Create(arg.sim, arg.cm, arg.im, sysseller, ScopeId, prdtypes));
 
 			var prdctns = await ServiceProvider.Invoke((IContentManager cm)=> ProductContentInitializer.Create(cm, colls));
 

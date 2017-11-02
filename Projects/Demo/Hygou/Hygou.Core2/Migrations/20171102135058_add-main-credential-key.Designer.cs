@@ -14,8 +14,8 @@ using System;
 namespace Hygou.Core2.Migrations
 {
     [DbContext(typeof(HygouDbContext))]
-    [Migration("20171102113423_init")]
-    partial class init
+    [Migration("20171102135058_add-main-credential-key")]
+    partial class addmaincredentialkey
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -90,8 +90,7 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Client", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<long>("Id");
 
                     b.Property<long>("ClientConfigId");
 
@@ -104,21 +103,28 @@ namespace Hygou.Core2.Migrations
                     b.Property<DateTime>("CreatedTime");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(2000);
+                        .HasMaxLength(200);
 
                     b.Property<string>("FrontChannelLogoutUri");
 
-                    b.Property<string>("Icon");
+                    b.Property<string>("Icon")
+                        .HasMaxLength(100);
 
-                    b.Property<string>("Image");
+                    b.Property<string>("Image")
+                        .HasMaxLength(100);
 
                     b.Property<string>("InternalRemarks");
 
                     b.Property<byte>("LogicState");
 
+                    b.Property<string>("Memo")
+                        .HasMaxLength(200);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100);
+
+                    b.Property<long>("OwnerId");
 
                     b.Property<string>("PostLogoutRedirectUris");
 
@@ -127,8 +133,14 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
 
+                    b.Property<long?>("ScopeId");
+
                     b.Property<string>("SubTitle")
                         .HasMaxLength(100);
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -136,11 +148,21 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
+                    b.Property<long>("UpdatorId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientConfigId");
 
+                    b.HasIndex("CreatedTime");
+
                     b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ScopeId");
+
+                    b.HasIndex("UpdatorId");
 
                     b.ToTable("SysAuthClient");
                 });
@@ -172,8 +194,7 @@ namespace Hygou.Core2.Migrations
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClientConfig", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<long>("Id");
 
                     b.Property<int>("AbsoluteRefreshTokenLifetime");
 
@@ -213,17 +234,35 @@ namespace Hygou.Core2.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
+                    b.Property<long>("OwnerId");
+
                     b.Property<bool>("RequireClientSecret");
 
                     b.Property<bool>("RequireConsent");
 
+                    b.Property<long?>("ScopeId");
+
                     b.Property<int>("SlidingRefreshTokenLifetime");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<DateTime>("UpdatedTime");
 
+                    b.Property<long>("UpdatorId");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedTime");
+
                     b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ScopeId");
+
+                    b.HasIndex("UpdatorId");
 
                     b.ToTable("SysAuthClientConfig");
                 });
@@ -510,6 +549,14 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Icon")
                         .HasMaxLength(100);
 
+                    b.Property<string>("MainClaimTypeId")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<string>("MainCredential")
+                        .IsRequired()
+                        .HasMaxLength(200);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100);
@@ -527,17 +574,9 @@ namespace Hygou.Core2.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<string>("SignupClaimTypeId")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
                     b.Property<long?>("SignupClientId");
 
                     b.Property<string>("SignupExtraArgument")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("SignupIdentValue")
-                        .IsRequired()
                         .HasMaxLength(200);
 
                     b.Property<DateTime>("UpdatedTime");
@@ -546,12 +585,9 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("CreatedTime");
 
-                    b.HasIndex("SignupClaimTypeId")
-                        .IsUnique();
-
                     b.HasIndex("SignupClientId");
 
-                    b.HasIndex("SignupIdentValue")
+                    b.HasIndex("MainClaimTypeId", "MainCredential")
                         .IsUnique();
 
                     b.ToTable("SysAuthUser");

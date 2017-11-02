@@ -14,7 +14,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Data;
-using SF.Data.Models;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
@@ -24,7 +23,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(ClientConfig))]
-	public class ClientConfig:ObjectEntityBase<long>
+	public class ClientConfig:SF.Entities.DataModels.ObjectEntityBase<long>
 	{
 
 		[Comment("发送用户声明", "When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint. Defaults to false.")]

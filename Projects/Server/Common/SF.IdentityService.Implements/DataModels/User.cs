@@ -25,25 +25,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(User))]
-	public class User<TUser,TUserCredential, TClaimValue, TUserRole> : IEntityWithId<long>
+	public class User<TUser,TUserCredential, TClaimValue, TUserRole> :
+		SF.Entities.DataModels.UIObjectEntityBase
 		where TUser: User<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TUserCredential : UserCredential<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TClaimValue : UserClaimValue<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TUserRole : UserRole<TUser, TUserCredential, TClaimValue, TUserRole>
 	{
-		[Key]
-		[DatabaseGenerated(DatabaseGeneratedOption.None)]
-		[Comment("ID")]
-		public long Id { get; set; }
-
-		[MaxLength(100)]
-		[Comment("名称")]
-		[Required]
-		public virtual string Name { get; set; }
-
-		[MaxLength(100)]
-		[Comment("图标")]
-		public virtual string Icon { get; set; }
 
 		[MaxLength(30)]
 		[Comment("电话")]
@@ -54,35 +42,22 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Required]
 		public virtual string PasswordHash { get; set; }
 
-		[Comment("逻辑状态")]
-		public virtual EntityLogicState ObjectState { get; set; }
-
 		[MaxLength(100)]
 		[Required]
 		[Comment("安全标识")]
 		public virtual string SecurityStamp { get; set; }
 
-		[Index]
-		[Comment("创建时间")]
-		[CreatedTime]
-		public virtual DateTime CreatedTime { get; set; }
-
-
-		[Comment("更新时间")]
-		[UpdatedTime]
-		public virtual DateTime UpdatedTime { get; set; }
-
-		[Index(Order = 1,IsUnique =true)]
+		[Index(Name="MainCredential",Order = 1,IsUnique =true)]
 		[Comment("注册标识类型")]
 		[Required]
 		[MaxLength(100)]
-		public virtual string SignupClaimTypeId { get; set; }
+		public virtual string MainClaimTypeId { get; set; }
 
 		[MaxLength(200)]
-		[Index(Order = 2, IsUnique = true)]
+		[Index(Name = "MainCredential", Order = 2, IsUnique = true)]
 		[Comment("注册标识值")]
 		[Required]
-		public virtual string SignupIdentValue { get; set; }
+		public virtual string MainCredential { get; set; }
 
 		[MaxLength(200)]
 		[Comment("注册附加参数")]

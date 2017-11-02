@@ -14,7 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Data;
-using SF.Data.Models;
+using SF.Entities.DataModels;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;

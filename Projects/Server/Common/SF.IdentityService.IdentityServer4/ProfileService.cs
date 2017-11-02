@@ -37,7 +37,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			if (!id.HasValue)
 				return;
 			var desc = await Users.AsQueryable()
-				.Where(u => u.Id == id.Value && u.ObjectState==Entities.EntityLogicState.Enabled)
+				.Where(u => u.Id == id.Value && u.LogicState==Entities.EntityLogicState.Enabled)
 				.Select(u => new {
 					name = u.Name,
 					icon = u.Icon
@@ -62,7 +62,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			}
 			var state= await Users.AsQueryable()
 				.Where(u => u.Id == id.Value)
-				.Select(u => new { state = u.ObjectState })
+				.Select(u => new { state = u.LogicState })
 				.SingleOrDefaultAsync();
 			context.IsActive = state?.state == Entities.EntityLogicState.Enabled;
 		}

@@ -313,8 +313,7 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthClientConfig",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     AbsoluteRefreshTokenLifetime = table.Column<int>(type: "int", nullable: false),
                     AccessTokenLifetime = table.Column<int>(type: "int", nullable: false),
                     AllowOfflineAccess = table.Column<bool>(type: "bit", nullable: false),
@@ -332,10 +331,14 @@ namespace Hygou.Core2.Migrations
                     InternalRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     RequireClientSecret = table.Column<bool>(type: "bit", nullable: false),
                     RequireConsent = table.Column<bool>(type: "bit", nullable: false),
+                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SlidingRefreshTokenLifetime = table.Column<int>(type: "int", nullable: false),
-                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
+                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatorId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -683,25 +686,29 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthClient",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     ClientConfigId = table.Column<long>(type: "bigint", nullable: false),
                     ClientSecrets = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     ClientUri = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     FrontChannelLogoutUri = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Image = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     InternalRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
+                    Memo = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     PostLogoutRedirectUris = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RedirectUris = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SubTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatorId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -1052,15 +1059,15 @@ namespace Hygou.Core2.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false),
                     CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    MainClaimTypeId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    MainCredential = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     ObjectState = table.Column<byte>(type: "tinyint", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    SignupClaimTypeId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     SignupClientId = table.Column<long>(type: "bigint", nullable: true),
                     SignupExtraArgument = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    SignupIdentValue = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -1691,9 +1698,29 @@ namespace Hygou.Core2.Migrations
                 column: "ClientConfigId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SysAuthClient_CreatedTime",
+                table: "SysAuthClient",
+                column: "CreatedTime");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SysAuthClient_Name",
                 table: "SysAuthClient",
                 column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthClient_OwnerId",
+                table: "SysAuthClient",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthClient_ScopeId",
+                table: "SysAuthClient",
+                column: "ScopeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthClient_UpdatorId",
+                table: "SysAuthClient",
+                column: "UpdatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthClientClaimValue_ClientId",
@@ -1706,9 +1733,29 @@ namespace Hygou.Core2.Migrations
                 column: "TypeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SysAuthClientConfig_CreatedTime",
+                table: "SysAuthClientConfig",
+                column: "CreatedTime");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SysAuthClientConfig_Name",
                 table: "SysAuthClientConfig",
                 column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthClientConfig_OwnerId",
+                table: "SysAuthClientConfig",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthClientConfig_ScopeId",
+                table: "SysAuthClientConfig",
+                column: "ScopeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthClientConfig_UpdatorId",
+                table: "SysAuthClientConfig",
+                column: "UpdatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthClientGrant_OperationId",
@@ -1837,21 +1884,21 @@ namespace Hygou.Core2.Migrations
                 column: "CreatedTime");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthUser_SignupClaimTypeId",
+                name: "IX_SysAuthUser_MainClaimTypeId",
                 table: "SysAuthUser",
-                column: "SignupClaimTypeId",
+                column: "MainClaimTypeId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthUser_MainCredential",
+                table: "SysAuthUser",
+                column: "MainCredential",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthUser_SignupClientId",
                 table: "SysAuthUser",
                 column: "SignupClientId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SysAuthUser_SignupIdentValue",
-                table: "SysAuthUser",
-                column: "SignupIdentValue",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthUserClaimValue_TypeId",

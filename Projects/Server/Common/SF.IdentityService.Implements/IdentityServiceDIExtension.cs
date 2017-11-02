@@ -239,6 +239,7 @@ namespace SF.Core.ServiceManagement
 					};
 				}
 				);
+
 			var ClientManager = ServiceProvider.Resolve<IClientManager>();
 			await ClientManager.EnsureEntity(
 				await ClientManager.QuerySingleEntityIdent(new ClientQueryArgument { Name = "内部系统" }),
@@ -255,29 +256,48 @@ namespace SF.Core.ServiceManagement
 				);
 
 			var RoleManager = ServiceProvider.Resolve<IRoleManager>();
-			await RoleManager.EnsureEntity(
-				await RoleManager.QuerySingleEntityIdent(new RoleQueryArgument { Id=new ObjectKey<string> { Id = "superadmin" } }),
-				() => new RoleEditable
-				{
-					Id="superadmin"				
-				},
-				e =>
-				{
-					e.Name = "超级管理员";
-					e.Grants = allGrants;
-					
-				}
+
+			await RoleManager.RoleEnsure(
+				"superadmin",
+				"超级管理员",
+				allGrants
+			);
+			await RoleManager.RoleEnsure(
+				"sysadmin",
+				"系统管理员",
+				allGrants
+			);
+			await RoleManager.RoleEnsure(
+				"admin",
+				"管理员",
+				allGrants
 			);
 
+			
+
 			var UserManager = ServiceProvider.Resolve<IUserManager>();
-			var PasswordHasher= ServiceProvider.Resolve<IPasswordHasher>();
-			var stamp = Bytes.Random(16);
 			var superadmin = await UserManager.UserEnsure(
 				"acc",
 				"superadmin",
 				"system",
 				"超级管理员",
 				new[] {"superadmin"}
+				);
+
+			var sysadmin = await UserManager.UserEnsure(
+				"acc",
+				"sysadmin",
+				"system",
+				"系统管理员",
+				new[] { "sysadmin" }
+				);
+
+			var admin = await UserManager.UserEnsure(
+				"acc",
+				"admin",
+				"system",
+				"管理员",
+				new[] { "admin" }
 				);
 
 		}

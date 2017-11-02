@@ -127,7 +127,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			PropertyInfo DataModelProperty
 			)
 		{
-			if (ActionType != DataActionType.Update && ActionType != DataActionType.Create && ActionType!=DataActionType.Delete)
+			if (ActionType != DataActionType.Update &&  ActionType!=DataActionType.Delete)
 				return null;
 			if(EntityProperty==null)
 				return null;

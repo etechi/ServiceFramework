@@ -119,6 +119,10 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			}
 			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier) => this;
 		}
+
+		static string Desc(PropertyInfo EntityProperty, PropertyInfo DataModelProperty)
+			=> $"一对多关系修改支持{EntityProperty.DeclaringType.FullName}.{EntityProperty.Name}=>{DataModelProperty.DeclaringType.FullName}.{DataModelProperty.Name}";
+
 		public IEntityPropertyModifier GetPropertyModifier(
 			DataActionType ActionType, 
 			Type EntityType, 
@@ -127,7 +131,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			PropertyInfo DataModelProperty
 			)
 		{
-			if (ActionType != DataActionType.Update && ActionType != DataActionType.Create && ActionType!=DataActionType.Delete)
+			if (ActionType != DataActionType.Update  && ActionType!=DataActionType.Delete)
 				return null;
 			if(EntityProperty==null)
 				return null;
@@ -137,28 +141,30 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 				return null;
 
 			var childEntityType = EntityProperty.PropertyType.GenericTypeArguments[0];
+			if (!childEntityType.IsClass)
+				throw new NotSupportedException($"{Desc(EntityProperty,DataModelProperty)} 中的子实体{childEntityType.FullName}不是引用类型");
 			var childModelType = DataModelProperty.PropertyType.GenericTypeArguments[0];
-			if (!childEntityType.IsClass || !childModelType.IsClass)
-				return null;
+			if ( !childModelType.IsClass)
+				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 中的数据对象{childModelType.FullName}不是引用类型");
 
 			var inversePropertyAttr = DataModelProperty.GetCustomAttribute<InversePropertyAttribute>();
 			if (inversePropertyAttr == null)
-				return null;
+				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 中的实体属性{DataModelProperty.Name}没有定义InverseProperty特性");
 
 			var ForeignProperty = childModelType.GetProperty(inversePropertyAttr.Property);
 			if (ForeignProperty == null)
-				return null;
+				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 中的数据对象未定义外键属性{inversePropertyAttr.Property}");
 
 			if (ForeignProperty.PropertyType != DataModelType)
-				return null;
+				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 中的数据对象外键属性类型({ForeignProperty.PropertyType.FullName})和父对象类型不同");
 
 			var ForeignKeyPropAttr = ForeignProperty.GetCustomAttribute<ForeignKeyAttribute>();
 			if (ForeignKeyPropAttr == null)
-				return null;
+				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 中的数据对象外键属性未定义外键字段特性(ForeignKeyAttribute)");
 
 			var ForeignKeyProp = childModelType.GetProperty(ForeignKeyPropAttr.Name);
 			if (ForeignKeyProp == null)
-				return null;
+				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 中的数据对象中不到ForeignKeyAttribute指定的外键字段{ForeignKeyPropAttr.Name}");
 
 			var argChildModel = Expression.Parameter(childModelType);
 			var argParentKey = Expression.Parameter(ForeignKeyProp.PropertyType);
@@ -176,10 +182,10 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 				).Where(p => p.Name != ForeignKeyProp.Name).ToArray();
 
 			if (childModelKeys.Length==0 || childModelKeys.Length != childEntityKeys.Length)
-				return null;
+				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 实体和数据对象的主键数目不同");
 
 			if (childEntityKeys.Zip(childModelKeys, (l, r) => l.Name != r.Name || l.PropertyType != r.PropertyType).Any(r=>r))
-				return null;
+				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 实体和数据对象的主键名称或类型不同");
 
 
 			return (IEntityPropertyModifier)Activator.CreateInstance(
