@@ -13,16 +13,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Auth.IdentityServices.Models;
+using SF.Metadata;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SF.Entities
+namespace SF.Auth.IdentityServices.Internals
 {
-	public interface IEntityWithScope
-	{
-		long? ServiceDataScopeId { get; }
-	}
+	
+
 }
+

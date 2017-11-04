@@ -25,47 +25,25 @@ using System.Security.Claims;
 namespace SF.Auth.IdentityServices.Models
 {
 	
-	[Comment("角色")]
-	public class Role: ObjectEntityBase<string>
+	[Comment("授权范围")]
+	public class ScopeInternal: ObjectEntityBase<string>
 	{
 
 	}
-	public class Grant
+	public class ScopeEditable : ScopeInternal
 	{
+		public IEnumerable<ScopeResource> Resources { get; set; }
+	}
+	public class ScopeResource
+	{
+		[Comment("资源ID")]
+		[EntityIdent(typeof(ResourceInternal), nameof(ResouceName))]
 		[Key]
-		[Comment("操作资源ID")]
-		[EntityIdent(typeof(ResourceInternal), nameof(ResourceName))]
 		public string ResourceId { get; set; }
 
-		[TableVisible]
+		[Comment("资源名称")]
 		[Ignore]
-		public string ResourceName { get; set; }
-
-		[Key]
-		[Comment("操作区域ID")]
-		[EntityIdent(typeof(OperationInternal), nameof(OperationName))]
-		public string OperationId { get; set; }
-
-		[TableVisible]
-		[Ignore]
-		public string OperationName { get; set; }
-	}
-	public class RoleEditable : Role
-	{
-		public IEnumerable<ClaimValue> Claims { get; set; }
-		public IEnumerable<Grant> Grants { get; set; }
-	}
-	public class UserRole
-	{
-
-		[Comment("类型ID")]
-		[EntityIdent(typeof(Role), nameof(RoleName))]
-		[Key]
-		public string RoleId { get; set; }
-
-		[Comment("类型")]
-		[Ignore]
-		public string RoleName { get; set; }
+		public string ResouceName { get; set; }
 
 
 	}

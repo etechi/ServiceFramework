@@ -13,16 +13,18 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SF.Entities
-{
-	public interface IEntityWithScope
-	{
-		long? ServiceDataScopeId { get; }
-	}
-}
+/*
+ * Scope
+ *		ApiResource			-> features
+ *			UserClaimTypes
+ *		IdentityResource	-> user properties
+ *			UserClaimTypes
+ *	Client
+ *		AllowedScopes
+ *  
+ *  Profile
+ *		Claims
+ * 
+ *  Token
+ *		Claims
+ */

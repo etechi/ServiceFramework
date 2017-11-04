@@ -13,62 +13,38 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Data;
 using SF.Data.Models;
-using SF.Entities;
-using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Auth.IdentityServices.Models
+namespace SF.Auth.IdentityServices.DataModels
 {
-	
-	[Comment("角色")]
-	public class Role: ObjectEntityBase<string>
-	{
-
-	}
-	public class Grant
+	[Comment("授权范围权限")]
+	[Table(nameof(ScopeResource))]
+	public class ScopeResource
 	{
 		[Key]
-		[Comment("操作资源ID")]
-		[EntityIdent(typeof(ResourceInternal), nameof(ResourceName))]
+		[Comment("授权范围ID")]
+		[Column(Order =1)]
+		public string ScopeId { get; set; }
+
+		[ForeignKey(nameof(ScopeId))]
+		public Scope Scope { get; set; }
+
+		[Key]
+		[Comment("资源ID")]
+		[Column(Order = 2)]
+		[MaxLength(100)]
+		[Required]
 		public string ResourceId { get; set; }
 
-		[TableVisible]
-		[Ignore]
-		public string ResourceName { get; set; }
-
-		[Key]
-		[Comment("操作区域ID")]
-		[EntityIdent(typeof(OperationInternal), nameof(OperationName))]
-		public string OperationId { get; set; }
-
-		[TableVisible]
-		[Ignore]
-		public string OperationName { get; set; }
-	}
-	public class RoleEditable : Role
-	{
-		public IEnumerable<ClaimValue> Claims { get; set; }
-		public IEnumerable<Grant> Grants { get; set; }
-	}
-	public class UserRole
-	{
-
-		[Comment("类型ID")]
-		[EntityIdent(typeof(Role), nameof(RoleName))]
-		[Key]
-		public string RoleId { get; set; }
-
-		[Comment("类型")]
-		[Ignore]
-		public string RoleName { get; set; }
+		[ForeignKey(nameof(ResourceId))]
+		public Resource Resource { get; set; }
 
 
 	}
-	
 }
-

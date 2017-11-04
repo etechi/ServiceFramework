@@ -29,11 +29,17 @@ namespace SF.Auth.IdentityServices.DataModels
 		[Required]
 		public override string Id { get; set; }
 
+		[Comment("是否是标识资源")]
+		public bool IsIdentityResource { get; set; }
+
 		[InverseProperty(nameof(ResourceRequiredClaim.Resource))]
 		public ICollection<ResourceRequiredClaim> RequiredClaims { get; set; }
 
 		[InverseProperty(nameof(ResourceSupportedOperation.Resource))]
 		public ICollection<ResourceSupportedOperation> SupportedOperations { get; set; }
+
+		[InverseProperty(nameof(ScopeResource.Resource))]
+		public ICollection<ScopeResource> Scopes { get; set; }
 	}
 
 

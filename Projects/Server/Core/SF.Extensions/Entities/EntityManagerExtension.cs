@@ -155,6 +155,23 @@ namespace SF.Entities
 				(TEditable e) => e.ContainerId=ParentId
 				);
 
+		public static async Task<TEditable> Ensure<TManager, TKey, TEditable>(
+			this TManager Manager,
+			TKey Id,
+			Action<TEditable> Updater
+			) where TKey:IEquatable<TKey>
+			where TEditable : class,new()
+			where TManager : IEntityEditableLoader<ObjectKey<TKey>, TEditable>,
+							IEntityUpdator<TEditable>,
+							IEntityCreator<ObjectKey<TKey>, TEditable>
+		{
+			return await Manager.EnsureEntity(
+				ObjectKey.From(Id),
+				() =>Entity<ObjectKey<TKey>>.GetKey<TEditable>(ObjectKey.From(Id)),
+				Updater
+				);
+
+		}
 		public static async Task<TEditable> EnsureEntity<TManager,TKey, TEditable>(
 			this TManager Manager,
 			TKey Id,

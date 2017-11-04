@@ -46,7 +46,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			}
 		}
 		
-		public IEntityPropertyQueryConverter GetPropertyConverter(PropertyInfo DataModelProperty, PropertyInfo EntityProperty,QueryMode QueryMode)
+		public IEntityPropertyQueryConverter GetPropertyConverter(Type DataModelType, PropertyInfo DataModelProperty, Type EntityType, PropertyInfo EntityProperty,QueryMode QueryMode)
 		{
 			if (QueryMode == QueryMode.Edit)
 				return null;
@@ -62,13 +62,12 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			});
 			if (fkField == null)
 				return null;
-			var modelType = DataModelProperty.ReflectedType;
 
-			var modelFkField = modelType.GetProperty(fkField.Name);
+			var modelFkField = DataModelType.GetProperty(fkField.Name);
 			if (modelFkField == null)
 				return null;
 
-			var modelSingleRelationProp = modelType.AllPublicInstanceProperties().FirstOrDefault(p =>
+			var modelSingleRelationProp = DataModelType.AllPublicInstanceProperties().FirstOrDefault(p =>
 			  {
 				  var fk=p.GetCustomAttribute<ForeignKeyAttribute>();
 				  return fk != null && fk.Name == fkField.Name;

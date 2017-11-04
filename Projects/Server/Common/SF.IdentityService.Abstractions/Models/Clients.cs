@@ -28,25 +28,18 @@ namespace SF.Auth.IdentityServices.Models
 	public class ClientConfigInternal : ObjectEntityBase<long>
 	{
 	}
-	public class Grant
+	
+	public class ClientScope
 	{
 		[Key]
-		[Comment("操作资源ID")]
-		[EntityIdent(typeof(ResourceInternal),nameof(ResourceName))]
-		public string ResourceId { get; set; }
+		[EntityIdent(typeof(ScopeInternal),nameof(ScopeName))]
+		[Comment("范围")]
+		public string ScopeId { get; set; }
 
+		[Comment("范围")]
 		[TableVisible]
-		[Ignore]
-		public string ResourceName { get; set; }
-
-		[Key]
-		[Comment("操作区域ID")]
-		[EntityIdent(typeof(OperationInternal), nameof(OperationName))]
-		public string OperationId { get; set; }
-
-		[TableVisible]
-		[Ignore]
-		public string OperationName { get; set; }
+		[Hidden]
+		public string ScopeName { get; set; }
 	}
 	public class ClientConfigEditable: ClientConfigInternal
 	{ 
@@ -101,8 +94,8 @@ namespace SF.Auth.IdentityServices.Models
 		// 摘要:
 		//     Specifies the api scopes that the client is allowed to request. If empty, the
 		//     client can't access any scope
-		[Comment("允许操作")]
-		public IEnumerable<Grant> Grants { get; set; }
+		[Comment("允许请求范围")]
+		public IEnumerable<ClientScope> Scopes { get; set; }
 
 		[Comment("离线访问", " Gets or sets a value indicating whether [allow offline access]. Defaults to false.")]
 		public bool AllowOfflineAccess { get; set; }

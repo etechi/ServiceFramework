@@ -13,16 +13,36 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Auth.IdentityServices.Internals;
+using SF.Auth.IdentityServices.Models;
+using SF.Core;
+using SF.Core.ServiceManagement;
+using SF.Core.Times;
+using SF.Data;
+using SF.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using SF.Auth.IdentityServices;
 
-namespace SF.Entities
+namespace SF.Auth.IdentityServices.Managers
 {
-	public interface IEntityWithScope
+	public class ScopeManager:
+		AutoModifiableEntityManager<
+			ObjectKey<string>,
+			Models.ScopeInternal,
+			Models.ScopeInternal,
+			ScopeQueryArgument,
+			Models.ScopeEditable,
+			DataModels.Scope
+			>,
+		IScopeManager
 	{
-		long? ServiceDataScopeId { get; }
+		public ScopeManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		{
+		}
+
 	}
+
 }

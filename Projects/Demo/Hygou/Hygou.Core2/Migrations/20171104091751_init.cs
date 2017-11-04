@@ -79,7 +79,7 @@ namespace Hygou.Core2.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SubTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -108,7 +108,7 @@ namespace Hygou.Core2.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SubTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -136,7 +136,7 @@ namespace Hygou.Core2.Migrations
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatorId = table.Column<long>(type: "bigint", nullable: false)
@@ -223,7 +223,7 @@ namespace Hygou.Core2.Migrations
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatorId = table.Column<long>(type: "bigint", nullable: false)
@@ -258,7 +258,7 @@ namespace Hygou.Core2.Migrations
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatorId = table.Column<long>(type: "bigint", nullable: false)
@@ -279,7 +279,7 @@ namespace Hygou.Core2.Migrations
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatorId = table.Column<long>(type: "bigint", nullable: false)
@@ -299,7 +299,7 @@ namespace Hygou.Core2.Migrations
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatorId = table.Column<long>(type: "bigint", nullable: false)
@@ -334,7 +334,7 @@ namespace Hygou.Core2.Migrations
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     RequireClientSecret = table.Column<bool>(type: "bit", nullable: false),
                     RequireConsent = table.Column<bool>(type: "bit", nullable: false),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SlidingRefreshTokenLifetime = table.Column<int>(type: "int", nullable: false),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -360,7 +360,7 @@ namespace Hygou.Core2.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SubTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -382,12 +382,13 @@ namespace Hygou.Core2.Migrations
                     Icon = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Image = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     InternalRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsIdentityResource = table.Column<bool>(type: "bit", nullable: false),
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
                     Memo = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SubTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -409,7 +410,7 @@ namespace Hygou.Core2.Migrations
                     LogicState = table.Column<byte>(type: "tinyint", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatorId = table.Column<long>(type: "bigint", nullable: false)
@@ -417,6 +418,26 @@ namespace Hygou.Core2.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SysAuthRole", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SysAuthScope",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    InternalRemarks = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LogicState = table.Column<byte>(type: "tinyint", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    OwnerId = table.Column<long>(type: "bigint", nullable: false),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
+                    UpdatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatorId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SysAuthScope", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -493,7 +514,7 @@ namespace Hygou.Core2.Migrations
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     ServiceId = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     ServiceIdent = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     ServiceType = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -594,7 +615,7 @@ namespace Hygou.Core2.Migrations
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     PublishDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SubTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -657,7 +678,7 @@ namespace Hygou.Core2.Migrations
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     ParentId = table.Column<long>(type: "bigint", nullable: true),
                     Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     ServiceId = table.Column<long>(type: "bigint", nullable: true),
                     SubTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
@@ -703,7 +724,7 @@ namespace Hygou.Core2.Migrations
                     PostLogoutRedirectUris = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     RedirectUris = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Remarks = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SubTitle = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
@@ -717,37 +738,6 @@ namespace Hygou.Core2.Migrations
                         name: "FK_SysAuthClient_SysAuthClientConfig_ClientConfigId",
                         column: x => x.ClientConfigId,
                         principalTable: "SysAuthClientConfig",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SysAuthClientGrant",
-                columns: table => new
-                {
-                    ClientConfigId = table.Column<long>(type: "bigint", nullable: false),
-                    ResourceId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    OperationId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SysAuthClientGrant", x => new { x.ClientConfigId, x.ResourceId, x.OperationId });
-                    table.ForeignKey(
-                        name: "FK_SysAuthClientGrant_SysAuthClientConfig_ClientConfigId",
-                        column: x => x.ClientConfigId,
-                        principalTable: "SysAuthClientConfig",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SysAuthClientGrant_SysAuthOperation_OperationId",
-                        column: x => x.OperationId,
-                        principalTable: "SysAuthOperation",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SysAuthClientGrant_SysAuthResource_ResourceId",
-                        column: x => x.ResourceId,
-                        principalTable: "SysAuthResource",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -879,6 +869,54 @@ namespace Hygou.Core2.Migrations
                         name: "FK_SysAuthRoleGrant_SysAuthRole_RoleId",
                         column: x => x.RoleId,
                         principalTable: "SysAuthRole",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SysAuthClientScope",
+                columns: table => new
+                {
+                    ClientConfigId = table.Column<long>(type: "bigint", nullable: false),
+                    ScopeId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SysAuthClientScope", x => new { x.ClientConfigId, x.ScopeId });
+                    table.ForeignKey(
+                        name: "FK_SysAuthClientScope_SysAuthClientConfig_ClientConfigId",
+                        column: x => x.ClientConfigId,
+                        principalTable: "SysAuthClientConfig",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SysAuthClientScope_SysAuthScope_ScopeId",
+                        column: x => x.ScopeId,
+                        principalTable: "SysAuthScope",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SysAuthScopeResource",
+                columns: table => new
+                {
+                    ScopeId = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    ResourceId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SysAuthScopeResource", x => new { x.ScopeId, x.ResourceId });
+                    table.ForeignKey(
+                        name: "FK_SysAuthScopeResource_SysAuthResource_ResourceId",
+                        column: x => x.ResourceId,
+                        principalTable: "SysAuthResource",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SysAuthScopeResource_SysAuthScope_ScopeId",
+                        column: x => x.ScopeId,
+                        principalTable: "SysAuthScope",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -1068,8 +1106,8 @@ namespace Hygou.Core2.Migrations
                     OwnerId = table.Column<long>(type: "bigint", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
-                    ScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SecurityStamp = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    ServiceDataScopeId = table.Column<long>(type: "bigint", nullable: true),
                     SignupClientId = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     SignupExtraArgument = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     TimeStamp = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
@@ -1401,9 +1439,9 @@ namespace Hygou.Core2.Migrations
                 column: "PublishDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CommonDocument_ScopeId",
+                name: "IX_CommonDocument_ServiceDataScopeId",
                 table: "CommonDocument",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CommonDocument_UpdatorId",
@@ -1436,9 +1474,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CommonDocumentAuthor_ScopeId",
+                name: "IX_CommonDocumentAuthor_ServiceDataScopeId",
                 table: "CommonDocumentAuthor",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CommonDocumentAuthor_UpdatorId",
@@ -1461,9 +1499,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CommonDocumentCategory_ScopeId",
+                name: "IX_CommonDocumentCategory_ServiceDataScopeId",
                 table: "CommonDocumentCategory",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CommonDocumentCategory_UpdatorId",
@@ -1491,9 +1529,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CommonDocumentTag_ScopeId",
+                name: "IX_CommonDocumentTag_ServiceDataScopeId",
                 table: "CommonDocumentTag",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CommonDocumentTag_UpdatorId",
@@ -1501,11 +1539,11 @@ namespace Hygou.Core2.Migrations
                 column: "UpdatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CommonDocumentTag_ScopeId_Name",
+                name: "IX_CommonDocumentTag_ServiceDataScopeId_Name",
                 table: "CommonDocumentTag",
-                columns: new[] { "ScopeId", "Name" },
+                columns: new[] { "ServiceDataScopeId", "Name" },
                 unique: true,
-                filter: "[ScopeId] IS NOT NULL");
+                filter: "[ServiceDataScopeId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CommonDocumentTagRef_TagId",
@@ -1563,9 +1601,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Member_ScopeId",
+                name: "IX_Member_ServiceDataScopeId",
                 table: "Member",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Member_UpdatorId",
@@ -1598,9 +1636,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MgrAdmin_ScopeId",
+                name: "IX_MgrAdmin_ServiceDataScopeId",
                 table: "MgrAdmin",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MgrAdmin_UpdatorId",
@@ -1623,9 +1661,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MgrMenu_ScopeId",
+                name: "IX_MgrMenu_ServiceDataScopeId",
                 table: "MgrMenu",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MgrMenu_UpdatorId",
@@ -1633,9 +1671,9 @@ namespace Hygou.Core2.Migrations
                 column: "UpdatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MgrMenu_ScopeId_Ident",
+                name: "IX_MgrMenu_ServiceDataScopeId_Ident",
                 table: "MgrMenu",
-                columns: new[] { "ScopeId", "Ident" });
+                columns: new[] { "ServiceDataScopeId", "Ident" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_MgrMenuItem_CreatedTime",
@@ -1663,9 +1701,9 @@ namespace Hygou.Core2.Migrations
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MgrMenuItem_ScopeId",
+                name: "IX_MgrMenuItem_ServiceDataScopeId",
                 table: "MgrMenuItem",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MgrMenuItem_UpdatorId",
@@ -1689,9 +1727,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthClaimType_ScopeId",
+                name: "IX_SysAuthClaimType_ServiceDataScopeId",
                 table: "SysAuthClaimType",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthClaimType_UpdatorId",
@@ -1719,9 +1757,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthClient_ScopeId",
+                name: "IX_SysAuthClient_ServiceDataScopeId",
                 table: "SysAuthClient",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthClient_UpdatorId",
@@ -1754,9 +1792,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthClientConfig_ScopeId",
+                name: "IX_SysAuthClientConfig_ServiceDataScopeId",
                 table: "SysAuthClientConfig",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthClientConfig_UpdatorId",
@@ -1764,14 +1802,9 @@ namespace Hygou.Core2.Migrations
                 column: "UpdatorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthClientGrant_OperationId",
-                table: "SysAuthClientGrant",
-                column: "OperationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SysAuthClientGrant_ResourceId",
-                table: "SysAuthClientGrant",
-                column: "ResourceId");
+                name: "IX_SysAuthClientScope_ScopeId",
+                table: "SysAuthClientScope",
+                column: "ScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthOperation_CreatedTime",
@@ -1789,9 +1822,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthOperation_ScopeId",
+                name: "IX_SysAuthOperation_ServiceDataScopeId",
                 table: "SysAuthOperation",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthOperation_UpdatorId",
@@ -1819,9 +1852,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthResource_ScopeId",
+                name: "IX_SysAuthResource_ServiceDataScopeId",
                 table: "SysAuthResource",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthResource_UpdatorId",
@@ -1855,9 +1888,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthRole_ScopeId",
+                name: "IX_SysAuthRole_ServiceDataScopeId",
                 table: "SysAuthRole",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthRole_UpdatorId",
@@ -1885,6 +1918,36 @@ namespace Hygou.Core2.Migrations
                 column: "ResourceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SysAuthScope_CreatedTime",
+                table: "SysAuthScope",
+                column: "CreatedTime");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthScope_Name",
+                table: "SysAuthScope",
+                column: "Name");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthScope_OwnerId",
+                table: "SysAuthScope",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthScope_ServiceDataScopeId",
+                table: "SysAuthScope",
+                column: "ServiceDataScopeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthScope_UpdatorId",
+                table: "SysAuthScope",
+                column: "UpdatorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SysAuthScopeResource_ResourceId",
+                table: "SysAuthScopeResource",
+                column: "ResourceId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SysAuthUser_CreatedTime",
                 table: "SysAuthUser",
                 column: "CreatedTime");
@@ -1900,9 +1963,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysAuthUser_ScopeId",
+                name: "IX_SysAuthUser_ServiceDataScopeId",
                 table: "SysAuthUser",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysAuthUser_SignupClientId",
@@ -1971,9 +2034,9 @@ namespace Hygou.Core2.Migrations
                 column: "OwnerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SysServiceInstance_ScopeId",
+                name: "IX_SysServiceInstance_ServiceDataScopeId",
                 table: "SysServiceInstance",
-                column: "ScopeId");
+                column: "ServiceDataScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SysServiceInstance_ServiceIdent",
@@ -2038,7 +2101,7 @@ namespace Hygou.Core2.Migrations
                 name: "SysAuthClientClaimValue");
 
             migrationBuilder.DropTable(
-                name: "SysAuthClientGrant");
+                name: "SysAuthClientScope");
 
             migrationBuilder.DropTable(
                 name: "SysAuthOperationRequiredClaim");
@@ -2054,6 +2117,9 @@ namespace Hygou.Core2.Migrations
 
             migrationBuilder.DropTable(
                 name: "SysAuthRoleGrant");
+
+            migrationBuilder.DropTable(
+                name: "SysAuthScopeResource");
 
             migrationBuilder.DropTable(
                 name: "SysAuthUserClaimValue");
@@ -2102,6 +2168,9 @@ namespace Hygou.Core2.Migrations
 
             migrationBuilder.DropTable(
                 name: "SysAuthResource");
+
+            migrationBuilder.DropTable(
+                name: "SysAuthScope");
 
             migrationBuilder.DropTable(
                 name: "SysAuthClaimType");

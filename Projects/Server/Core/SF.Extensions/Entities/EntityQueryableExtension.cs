@@ -27,7 +27,7 @@ namespace SF.Entities
 			where T : IEntityWithScope
 		{
 			var sid = ServiceInstanceDescriptor?.DataScopeId;
-			return q.Where(i => i.ScopeId == sid);
+			return q.Where(i => i.ServiceDataScopeId == sid);
 		}
 
 		

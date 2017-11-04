@@ -33,7 +33,7 @@ namespace Hygou.Site.Controllers
 	}
 	public class AdminController : Controller
 	{
-		//[Authorize("admin")]
+		[Authorize]
 		public ActionResult Index()
 		{
 			return View(

@@ -41,7 +41,7 @@ namespace SF.Common.Documents.DataModels
 	{
 	
 		[Index("ScopedName",IsUnique =true,Order =1)]
-        public override long? ScopeId { get; set; }
+        public override long? ServiceDataScopeId { get; set; }
 
 
 		[Index("ScopedName", IsUnique = true, Order = 2)]

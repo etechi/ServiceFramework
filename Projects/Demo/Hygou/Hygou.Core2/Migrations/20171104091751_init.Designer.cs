@@ -14,7 +14,7 @@ using System;
 namespace Hygou.Core2.Migrations
 {
     [DbContext(typeof(HygouDbContext))]
-    [Migration("20171102161430_init")]
+    [Migration("20171104091751_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,7 +24,7 @@ namespace Hygou.Core2.Migrations
                 .HasAnnotation("ProductVersion", "2.0.0-rtm-26452")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("MemberInvitation_3", b =>
+            modelBuilder.Entity("MemberInvitation_2", b =>
                 {
                     b.Property<long>("Id");
 
@@ -62,7 +62,7 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<long>("OwnerId");
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -81,7 +81,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -134,7 +134,7 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<string>("SubTitle")
                         .HasMaxLength(100);
@@ -161,7 +161,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -243,7 +243,7 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<bool>("RequireConsent");
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<int>("SlidingRefreshTokenLifetime");
 
@@ -263,30 +263,25 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
                     b.ToTable("SysAuthClientConfig");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClientGrant", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClientScope", b =>
                 {
                     b.Property<long>("ClientConfigId");
 
-                    b.Property<string>("ResourceId")
+                    b.Property<string>("ScopeId")
                         .HasMaxLength(100);
 
-                    b.Property<string>("OperationId")
-                        .HasMaxLength(100);
+                    b.HasKey("ClientConfigId", "ScopeId");
 
-                    b.HasKey("ClientConfigId", "ResourceId", "OperationId");
+                    b.HasIndex("ScopeId");
 
-                    b.HasIndex("OperationId");
-
-                    b.HasIndex("ResourceId");
-
-                    b.ToTable("SysAuthClientGrant");
+                    b.ToTable("SysAuthClientScope");
                 });
 
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Operation", b =>
@@ -321,7 +316,7 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<string>("SubTitle")
                         .HasMaxLength(100);
@@ -346,7 +341,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -384,6 +379,8 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<string>("InternalRemarks");
 
+                    b.Property<bool>("IsIdentityResource");
+
                     b.Property<byte>("LogicState");
 
                     b.Property<string>("Memo")
@@ -398,7 +395,7 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<string>("SubTitle")
                         .HasMaxLength(100);
@@ -423,7 +420,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -473,7 +470,7 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<long>("OwnerId");
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -492,7 +489,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -543,6 +540,62 @@ namespace Hygou.Core2.Migrations
                     b.ToTable("SysAuthRoleGrant");
                 });
 
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Scope", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(100);
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("InternalRemarks");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long>("OwnerId");
+
+                    b.Property<long?>("ServiceDataScopeId");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long>("UpdatorId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedTime");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ServiceDataScopeId");
+
+                    b.HasIndex("UpdatorId");
+
+                    b.ToTable("SysAuthScope");
+                });
+
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ScopeResource", b =>
+                {
+                    b.Property<string>("ScopeId");
+
+                    b.Property<string>("ResourceId")
+                        .HasMaxLength(100);
+
+                    b.HasKey("ScopeId", "ResourceId");
+
+                    b.HasIndex("ResourceId");
+
+                    b.ToTable("SysAuthScopeResource");
+                });
+
             modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.User", b =>
                 {
                     b.Property<long>("Id");
@@ -580,11 +633,11 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("PhoneNumber")
                         .HasMaxLength(30);
 
-                    b.Property<long?>("ScopeId");
-
                     b.Property<string>("SecurityStamp")
                         .IsRequired()
                         .HasMaxLength(100);
+
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<string>("SignupClientId")
                         .HasMaxLength(100);
@@ -608,7 +661,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("SignupClientId");
 
@@ -1085,7 +1138,7 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<string>("SubTitle")
                         .HasMaxLength(100);
@@ -1116,7 +1169,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("PublishDate");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -1158,7 +1211,7 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<string>("SubTitle")
                         .HasMaxLength(100);
@@ -1183,7 +1236,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -1225,7 +1278,7 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<string>("SubTitle")
                         .HasMaxLength(100);
@@ -1250,7 +1303,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -1275,7 +1328,7 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<long>("OwnerId");
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -1293,13 +1346,13 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
-                    b.HasIndex("ScopeId", "Name")
+                    b.HasIndex("ServiceDataScopeId", "Name")
                         .IsUnique()
-                        .HasFilter("[ScopeId] IS NOT NULL");
+                        .HasFilter("[ServiceDataScopeId] IS NOT NULL");
 
                     b.ToTable("CommonDocumentTag");
                 });
@@ -1333,7 +1386,7 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<long>("OwnerId");
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -1351,7 +1404,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -1531,7 +1584,7 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<string>("ServiceId")
                         .IsRequired()
@@ -1570,7 +1623,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("ServiceIdent");
 
@@ -1618,7 +1671,7 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<long>("OwnerId");
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -1636,7 +1689,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -1750,7 +1803,7 @@ namespace Hygou.Core2.Migrations
 
                     b.Property<long>("OwnerId");
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
@@ -1768,11 +1821,11 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
-                    b.HasIndex("ScopeId", "Ident");
+                    b.HasIndex("ServiceDataScopeId", "Ident");
 
                     b.ToTable("MgrMenu");
                 });
@@ -1820,7 +1873,7 @@ namespace Hygou.Core2.Migrations
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
 
-                    b.Property<long?>("ScopeId");
+                    b.Property<long?>("ServiceDataScopeId");
 
                     b.Property<long?>("ServiceId");
 
@@ -1851,7 +1904,7 @@ namespace Hygou.Core2.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
@@ -1879,21 +1932,16 @@ namespace Hygou.Core2.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClientGrant", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClientScope", b =>
                 {
                     b.HasOne("SF.Auth.IdentityServices.DataModels.ClientConfig", "ClientConfig")
-                        .WithMany("Grants")
+                        .WithMany("Scopes")
                         .HasForeignKey("ClientConfigId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Operation", "Operation")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.Scope", "Scope")
                         .WithMany()
-                        .HasForeignKey("OperationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
+                        .HasForeignKey("ScopeId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -1964,6 +2012,19 @@ namespace Hygou.Core2.Migrations
                     b.HasOne("SF.Auth.IdentityServices.DataModels.Role", "Role")
                         .WithMany("Grants")
                         .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ScopeResource", b =>
+                {
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.Resource", "Resource")
+                        .WithMany("Scopes")
+                        .HasForeignKey("ResourceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.Scope", "Scope")
+                        .WithMany("Resources")
+                        .HasForeignKey("ScopeId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

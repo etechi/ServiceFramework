@@ -38,7 +38,9 @@ namespace SF.Entities.AutoEntityProvider
 	{
 		int Priority { get; }
 		IEntityPropertyQueryConverter GetPropertyConverter(
+			Type DataModelType,
 			PropertyInfo DataModelProperty,
+			Type EntityType,
 			PropertyInfo EntityProperty,
 			QueryMode QueryMode
 			);

@@ -28,11 +28,29 @@ namespace SF.Auth.IdentityServices.Models
 	[Comment("资源")]
 	public class ResourceInternal : UIObjectEntityBase<string>
 	{
+		[Comment("标识资源")]
+		public bool IsIdentityResource { get; set; }
+	}
+
+	public class ResourceRequiredClaim
+	{
+		[Key]
+		[Comment("申明类型")]
+		[EntityIdent(typeof(ClaimType),nameof(ClaimTypeName))]
+		[Required]
+		[TableVisible]
+		public string ClaimTypeId { get; set; }
+
+		[Comment("申明类型")]
+		[TableVisible]
+		[Hidden]
+		public string ClaimTypeName { get; set; }
 	}
 	[Comment("资源")]
 	public class ResourceEditable : ResourceInternal
 	{ 
 		public IEnumerable<ResourceOperationInternal> SupportedOperations { get; set; }
+		public IEnumerable<ResourceRequiredClaim> RequiredClaims { get; set; }
 	}
 
 	[Comment("资源操作")]

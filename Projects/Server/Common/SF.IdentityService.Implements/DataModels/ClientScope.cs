@@ -23,8 +23,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(ClientGrant))]
-	public class ClientGrant 
+	[Table(nameof(ClientScope))]
+	public class ClientScope
 	{
 		[Key]
 		[Comment("客户端ID")]
@@ -36,24 +36,15 @@ namespace SF.Auth.IdentityServices.DataModels
 
 
 		[Key]
-		[Comment("操作资源ID")]
+		[Comment("资源范围ID")]
 		[Column(Order = 2)]
 		[MaxLength(100)]
 		[Required]
-		public string ResourceId { get; set; }
+		public string ScopeId { get; set; }
 
-		[ForeignKey(nameof(ResourceId))]
-		public Resource Resource { get; set; }
+		[ForeignKey(nameof(ScopeId))]
+		public Scope Scope { get; set; }
 
-		[Key]
-		[Comment("操作区域ID")]
-		[Column(Order = 3)]
-		[MaxLength(100)]
-		[Required]
-		public string OperationId { get; set; }
-
-		[ForeignKey(nameof(OperationId))]
-		public Operation Operation { get; set; }
 
 	}
 }

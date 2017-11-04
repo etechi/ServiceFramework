@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using IdentityServer4;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +37,20 @@ namespace SF.AspNetCore.Auth
 			services.AddAuthentication(
 				CookieAuthenticationDefaults.AuthenticationScheme
 				)
+				.AddOpenIdConnect("oidc", "OpenID Connect", options =>
+				{
+					options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+					options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+					options.RequireHttpsMetadata = false;
+					options.Authority = "http://localhost:52706";
+					options.ClientId = "local.internal";
+
+					options.TokenValidationParameters = new TokenValidationParameters
+					{
+						NameClaimType = "name",
+						RoleClaimType = "role"
+					};
+				})
 				.AddCookie(opt =>
 				{
 					opt.Cookie.HttpOnly = true;
@@ -44,81 +59,81 @@ namespace SF.AspNetCore.Auth
 					opt.Cookie.Name = "sf-sess";
 					opt.LoginPath = "/user/signin";
 					//opt.TicketDataFormat
-				}
-			);
-			services.AddAuthentication(
-				"admin"
-				)
-				.AddCookie("admin", opt =>
-				{
-					opt.Cookie.HttpOnly = true;
-					opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-					opt.Cookie.Path = "/admin/";
-					opt.Cookie.Name = "sf-sess-admin";
-					opt.LoginPath = "/admin/signin";
-					opt.Cookie.Expiration = TimeSpan.FromHours(1);
-				}
-			);
+				})
+				;
+			//services.AddAuthentication(
+			//	"admin"
+			//	)
+			//	.AddCookie("admin", opt =>
+			//	{
+			//		opt.Cookie.HttpOnly = true;
+			//		opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+			//		opt.Cookie.Path = "/admin/";
+			//		opt.Cookie.Name = "sf-sess-admin";
+			//		opt.LoginPath = "/admin/signin";
+			//		opt.Cookie.Expiration = TimeSpan.FromHours(1);
+			//	}
+			//);
 
 
 
-			var securityKey = "12faod919&^*%1212";
+			//var securityKey = "12faod919&^*%1212";
 
-			var tokenValidationParameters = new TokenValidationParameters
-			{
-				// The signing key must match!
-				ValidateIssuerSigningKey = true,
-				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey)),
+			//var tokenValidationParameters = new TokenValidationParameters
+			//{
+			//	// The signing key must match!
+			//	ValidateIssuerSigningKey = true,
+			//	IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey)),
 
-				// Validate the JWT Issuer (iss) claim
-				ValidateIssuer = true,
-				ValidIssuer = "SFServer",
+			//	// Validate the JWT Issuer (iss) claim
+			//	ValidateIssuer = true,
+			//	ValidIssuer = "SFServer",
 
-				// Validate the JWT Audience (aud) claim
-				ValidateAudience = true,
-				ValidAudience = "SFServer",
+			//	// Validate the JWT Audience (aud) claim
+			//	ValidateAudience = true,
+			//	ValidAudience = "SFServer",
 
-				// Validate the token expiry
-				ValidateLifetime = true,
+			//	// Validate the token expiry
+			//	ValidateLifetime = true,
 
-				// If you want to allow a certain amount of clock drift, set that here:
-				ClockSkew = TimeSpan.Zero,
-				IssuerSigningKeys=null
+			//	// If you want to allow a certain amount of clock drift, set that here:
+			//	ClockSkew = TimeSpan.Zero,
+			//	IssuerSigningKeys=null
 
-			}; 
-			services.AddAuthentication(
-				JwtBearerDefaults.AuthenticationScheme
-				)
-				.AddJwtBearer(opt =>
-				{
-					opt.TokenValidationParameters = tokenValidationParameters;
-				});
+			//}; 
+			//services.AddAuthentication(
+			//	JwtBearerDefaults.AuthenticationScheme
+			//	)
+			//	.AddJwtBearer(opt =>
+			//	{
+			//		opt.TokenValidationParameters = tokenValidationParameters;
+			//	});
 
-			services.AddAuthorization(options =>
-			{
-				//options.DefaultPolicy =
-				//	new AuthorizationPolicyBuilder("default")
-				//	.RequireAuthenticatedUser()
-				//	.Build();
+			//services.AddAuthorization(options =>
+			//{
+			//	//options.DefaultPolicy =
+			//	//	new AuthorizationPolicyBuilder("default")
+			//	//	.RequireAuthenticatedUser()
+			//	//	.Build();
 
-				options.AddPolicy("admin-bizness", policy =>
-				{
-					policy
-						.RequireAuthenticatedUser()
-						.RequireRole("bizadmin")
-						.AddAuthenticationSchemes("admin-bizness")
-						;
+			//	options.AddPolicy("admin-bizness", policy =>
+			//	{
+			//		policy
+			//			.RequireAuthenticatedUser()
+			//			.RequireRole("bizadmin")
+			//			.AddAuthenticationSchemes("admin-bizness")
+			//			;
 
-				});
-				options.AddPolicy("admin-system", policy =>
-				{
-					policy
-					.RequireAuthenticatedUser()
-					.RequireRole("sysadmin")
-					.AddAuthenticationSchemes("admin-system");
-				});
+			//	});
+			//	options.AddPolicy("admin-system", policy =>
+			//	{
+			//		policy
+			//		.RequireAuthenticatedUser()
+			//		.RequireRole("sysadmin")
+			//		.AddAuthenticationSchemes("admin-system");
+			//	});
 
-			});
+			//});
 
 
 

@@ -27,7 +27,7 @@ namespace SF.Management.MenuServices.Entity.DataModels
 		where TMenuItem : MenuItem<TMenu, TMenuItem>
 	{
 		[Index("ident",Order =1)]
-		public override long? ScopeId { get; set; }
+		public override long? ServiceDataScopeId { get; set; }
 
 		[Index("ident",Order =2)]
 		[Required]

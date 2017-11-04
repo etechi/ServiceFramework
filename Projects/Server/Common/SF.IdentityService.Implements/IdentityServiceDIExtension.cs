@@ -44,7 +44,8 @@ namespace SF.Core.ServiceManagement
 					.Add<IOperationManager, OperationManager>("AuthOperation","操作",typeof(OperationInternal))
 					.Add<IResourceManager, ResourceManager>("AuthResource", "资源", typeof(ResourceInternal))
 					.Add<IRoleManager, RoleManager>("AuthRole", "身份", typeof(Role))
-					.Add<IUserManager, UserManager>("AuthUser", "用户", typeof(UserInternal))
+					.Add<IUserManager, UserManager>("AuthUser", "用户", typeof(UserInternal),typeof(SF.Auth.User))
+					.Add<IScopeManager, ScopeManager>("AuthScope", "授权范围", typeof(ScopeInternal))
 				//.Add<IDocumentService, DocumentService>()
 				);
 
@@ -74,7 +75,9 @@ namespace SF.Core.ServiceManagement
 				typeof(SF.Auth.IdentityServices.DataModels.Client),
 				typeof(SF.Auth.IdentityServices.DataModels.ClientConfig),
 				typeof(SF.Auth.IdentityServices.DataModels.ClientClaimValue),
-				typeof(SF.Auth.IdentityServices.DataModels.ClientGrant),
+				typeof(SF.Auth.IdentityServices.DataModels.ClientScope),
+				typeof(SF.Auth.IdentityServices.DataModels.Scope),
+				typeof(SF.Auth.IdentityServices.DataModels.ScopeResource),
 				typeof(SF.Auth.IdentityServices.DataModels.Operation),
 				typeof(SF.Auth.IdentityServices.DataModels.OperationRequiredClaim),
 				typeof(SF.Auth.IdentityServices.DataModels.Resource),
@@ -103,33 +106,39 @@ namespace SF.Core.ServiceManagement
 
 			await sim.DefaultService<IUserManager, UserManager>(null)
 				.WithDisplay("用户")
-				.WithMenuItems("身份和权限")
+				.WithMenuItems("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 
 			await sim.DefaultService<IRoleManager, RoleManager>(null)
 				.WithDisplay("用户角色")
-				.WithMenuItems("身份和权限")
+				.WithMenuItems("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 			await sim.DefaultService<IResourceManager, ResourceManager>(null)
 				.WithDisplay("资源")
-				.WithMenuItems("身份和权限")
+				.WithMenuItems("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 			await sim.DefaultService<IOperationManager, OperationManager>(null)
 				.WithDisplay("操作")
-				.WithMenuItems("身份和权限")
+				.WithMenuItems("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
+
+			await sim.DefaultService<IScopeManager, ScopeManager>(null)
+				.WithDisplay("授权范围")
+				.WithMenuItems("系统管理/身份和权限")
+				.Ensure(ServiceProvider, ScopeId);
+
 			await sim.DefaultService<IClientManager, ClientManager>(null)
 				.WithDisplay("客户端")
-				.WithMenuItems("身份和权限")
+				.WithMenuItems("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 			await sim.DefaultService<IClientConfigManager, ClientConfigManager>(null)
 				.WithDisplay("客户端配置")
-				.WithMenuItems("身份和权限")
+				.WithMenuItems("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 
 			await sim.DefaultService<IClaimTypeManager, ClaimTypeManager>(null)
 				.WithDisplay("凭证申明类型")
-				.WithMenuItems("身份和权限")
+				.WithMenuItems("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 
 			await sim.DefaultService<IUserCredentialStorage, UserCredentialStorage>(null)
@@ -148,6 +157,9 @@ namespace SF.Core.ServiceManagement
 				("sub","本地ID"),
 				("phone","电话"),
 				("address","地址"),
+				("name","姓名"),
+				("icon","图标"),
+				("image","头像"),
 				("wx.open","微信开放平台"),
 				("wx.mp","微信公众号"),
 				("wx.uid","微信统一ID")
@@ -160,6 +172,7 @@ namespace SF.Core.ServiceManagement
 					ict =>
 					{
 						ict.Name = ct.Item2;
+						
 					}
 					);
 			}
@@ -216,23 +229,53 @@ namespace SF.Core.ServiceManagement
 					);
 			}
 
-			var allGrants = (from r in resPermissions
-							 from o in r.AvailableOperations
-							 select new Grant
-							 {
-								 OperationId = o,
-								 ResourceId = r.Id
-							 }
-							   ).ToArray();
+			
+
+			foreach (var idres in predefinedClaimTypes)
+			{
+				await ResourceManager.Ensure<IResourceManager, string, ResourceEditable>(
+					"id:"+idres.Item1,
+					r =>
+					{
+						r.Name =
+						r.Title = idres.Item2;
+						r.IsIdentityResource = true;
+						r.RequiredClaims = new[] { new ResourceRequiredClaim { ClaimTypeId = idres.Item1 } };
+					});
+			}
+			await ResourceManager.Ensure<IResourceManager, string, ResourceEditable>(
+					"profile",
+					r =>
+					{
+						r.Title =
+						r.Name = "用户信息";
+						
+						r.IsIdentityResource = true;
+						r.RequiredClaims = predefinedClaimTypes.Select(id => new ResourceRequiredClaim { ClaimTypeId = id.Item1 }).ToArray();
+					});
+
+			var scopeManager = ServiceProvider.Resolve<IScopeManager>();
+			var allResourceIds = (await ResourceManager.QueryAllAsync()).Select(i => i.Id).ToArray();
+			var allResourceScope = await scopeManager.Ensure<IScopeManager,string,ScopeEditable>(
+				"all",
+				e =>
+				{
+					e.Name = "所有资源";
+					e.Resources = allResourceIds.Select(i => new ScopeResource { ResourceId = i });
+				});
+
 
 			var ClientConfigManager =ServiceProvider.Resolve<IClientConfigManager>();
-			var unlimitedConfig=await ClientConfigManager.EnsureEntity(
-				await ClientConfigManager.QuerySingleEntityIdent(new ClientConfigQueryArgument { Name = "无限访问" }),
+			var allResConfig=await ClientConfigManager.EnsureEntity(
+				await ClientConfigManager.QuerySingleEntityIdent(new ClientConfigQueryArgument { Name = "所有资源" }),
 				() => new ClientConfigEditable{},
 				e =>
 				{
-					e.Name = "无限访问";
-					e.Grants = allGrants;
+					e.Name = "所有";
+					e.Scopes = new[]
+					{
+						new ClientScope{ScopeId=allResourceScope.Id}
+					};
 					e.AllowedGrantTypes = new[]
 					{
 						"ClientCredentials",
@@ -250,7 +293,10 @@ namespace SF.Core.ServiceManagement
 				e =>
 				{
 					e.Name = "客户终端";
-					e.Grants = new Grant[] { };
+					e.Scopes = new[]
+					{
+						new ClientScope{ScopeId=allResourceScope.Id}
+					};
 					e.AllowedGrantTypes = new[]
 					{
 						"ClientCredentials",
@@ -263,8 +309,8 @@ namespace SF.Core.ServiceManagement
 				}
 				);
 			var ClientManager = ServiceProvider.Resolve<IClientManager>();
-			await ClientManager.ClientEnsure("local.internal", "内部系统", unlimitedConfig.Id, "system");
-			await ClientManager.ClientEnsure("admin.console", "管理控制台", unlimitedConfig.Id, "system");
+			await ClientManager.ClientEnsure("local.internal", "内部系统", allResConfig.Id, "system");
+			await ClientManager.ClientEnsure("admin.console", "管理控制台", allResConfig.Id, "system");
 
 			await ClientManager.ClientEnsure("browser.pc", "PC浏览器", customerConfig.Id, "system");
 			await ClientManager.ClientEnsure("browser.wx", "微信浏览器", customerConfig.Id, "system");
@@ -272,6 +318,17 @@ namespace SF.Core.ServiceManagement
 			await ClientManager.ClientEnsure("app.android", "安卓", customerConfig.Id, "system");
 			await ClientManager.ClientEnsure("app.ios", "IOS", customerConfig.Id, "system");
 			await ClientManager.ClientEnsure("app.other", "其他浏览器", customerConfig.Id, "system");
+
+
+			var allGrants = (from r in resPermissions
+							 from o in r.AvailableOperations
+							 select new Grant
+							 {
+								 OperationId = o,
+								 ResourceId = r.Id
+							 }
+				 ).ToArray();
+
 
 			var RoleManager = ServiceProvider.Resolve<IRoleManager>();
 

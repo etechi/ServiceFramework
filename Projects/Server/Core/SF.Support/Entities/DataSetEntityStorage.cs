@@ -804,7 +804,7 @@ namespace SF.Entities
 			int BatchCount = 100
 			)
 			where TModel : class, IEntityWithScope
-			=> Storage.RemoveAllAsync<TKey,TEditable,TModel>(Remove, m => m.ScopeId == ScopeId, BatchCount);
+			=> Storage.RemoveAllAsync<TKey,TEditable,TModel>(Remove, m => m.ServiceDataScopeId == ScopeId, BatchCount);
  
 	}
 	public interface IReadOnlyEntityHelper<TKey,TReadOnlyTemp, TReadOnly, TQueryArgument, TModel>

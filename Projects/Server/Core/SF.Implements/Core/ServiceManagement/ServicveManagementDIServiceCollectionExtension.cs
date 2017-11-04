@@ -58,8 +58,8 @@ namespace SF.Core.ServiceManagement
 			sc.AddScoped<IServiceInstanceLister, Storages.DBServiceSource>();
 
 			sc.AddDefaultMenuItems(
-				"system",
-				"系统服务",
+				"default",
+				"系统管理/系统服务",
 				new SF.Management.MenuServices.MenuItem {
 					Name = "系统服务定义",
 					Action = SF.Management.MenuServices.MenuActionType.EntityManager,

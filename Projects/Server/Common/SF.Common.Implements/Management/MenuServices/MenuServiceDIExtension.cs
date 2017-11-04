@@ -103,7 +103,7 @@ namespace SF.Core.ServiceManagement
 				EntityMenuService<SF.Management.MenuServices.Entity.DataModels.Menu, SF.Management.MenuServices.Entity.DataModels.MenuItem>
 				>(null)
 			.WithMenuItems(
-				"菜单管理"
+				"系统管理/菜单管理"
 				);
 
 		public static async Task NewMenu(

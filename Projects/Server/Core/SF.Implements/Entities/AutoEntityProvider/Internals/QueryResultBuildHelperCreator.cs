@@ -219,10 +219,10 @@ namespace SF.Entities.AutoEntityProvider.Internals
 		}
 		
 		
-		IEntityPropertyQueryConverter FindValueConverter(PropertyInfo srcProp,PropertyInfo dstProp)
+		IEntityPropertyQueryConverter FindValueConverter(PropertyInfo srcProp, PropertyInfo dstProp)
 		{
 			return PropertyQueryConverterProviders
-				.Select(p => p.GetPropertyConverter(srcProp, dstProp, QueryMode))
+				.Select(p => p.GetPropertyConverter(SrcType, srcProp,DstType, dstProp, QueryMode))
 				.FirstOrDefault(c => c != null);
 		}
 

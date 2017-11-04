@@ -47,8 +47,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 				{
 					cfg = c.ClientConfig,
 					cli=c,
-					scopes=from g in c.ClientConfig.Grants
-						   select g.ResourceId+"."+g.OperationId
+					scopes=c.ClientConfig.Scopes.Select(s=>s.ScopeId)
 				}).SingleOrDefaultAsync();
 			if (re == null) return null;
 			var cfg = re.cfg;

@@ -78,13 +78,13 @@ namespace SF.Core.ServiceManagement
 			where TImplement : AdminManager<TInternal, TEditable, TQueryArgument, TAdmin>, TService
 			=> sim.DefaultService<TService, TImplement>(
 				new { }
-				).WithMenuItems("系统管理员");
+				).WithMenuItems("系统管理/管理员");
 
 		public static IServiceInstanceInitializer<IAdminManager> NewAdminService(
 			this IServiceInstanceManager sim
 			)
 			=> sim.DefaultService<IAdminManager, AdminManager>(
 				new { }
-				).WithMenuItems("系统管理员");
+				).WithMenuItems("系统管理/管理员");
 	}
 }

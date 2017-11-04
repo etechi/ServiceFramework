@@ -63,21 +63,21 @@ namespace SF.Core.ServiceManagement
 		{
 			return sim.DefaultService<ISiteManager, SiteManager>(new { })
 				.WithMenuItems(
-					"内容管理"
+					"系统管理/前端管理"
 					);
 		}
 		public static IServiceInstanceInitializer<ISiteTemplateManager> NewSiteTemplateManager(this IServiceInstanceManager sim)
 		{
 			return sim.DefaultService<ISiteTemplateManager, SiteTemplateManager>(new { })
 				.WithMenuItems(
-					"内容管理"
+					"系统管理/前端管理"
 					);
 		}
 		public static IServiceInstanceInitializer<IContentManager> NewSiteContentManager(this IServiceInstanceManager sim)
 		{
 			return sim.DefaultService<IContentManager, ContentManager>(new { })
 				.WithMenuItems(
-					"内容管理"
+					"系统管理/前端管理"
 					);
 		}
 	}

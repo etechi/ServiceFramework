@@ -243,20 +243,25 @@ namespace SF.Auth.IdentityServices
 				);
 			return null;
 		}
-		async Task<ClaimsPrincipal> CreatePrincipal(long Id)
+		Task<ClaimsPrincipal> CreatePrincipal(long Id)
 		{
-			var data = await Setting.IdentStorage.Value.Load(Id);
+			//var data = await Setting.IdentStorage.Value.Load(Id);
 
-			return new ClaimsPrincipal(
+			return Task.FromResult(new ClaimsPrincipal(
 				new ClaimsIdentity(
-					data.Claims.Select(c => new Claim(c.TypeName, c.Value)).WithFirst(
-						new Claim("id",data.Id.ToString()),
-						new Claim(ClaimTypes.Name, data.Name),
-						new Claim(ClaimTypes.Role, data.Roles.Join(" "))
-						),
+					new[] { new Claim("sub", Id.ToString())},
 					"SFAuth"
 					)
-				);
+				));
+
+				//	data.Claims.Select(c => new Claim(c.TypeName, c.Value)).WithFirst(
+				//		new Claim("id",data.Id.ToString()),
+				//		new Claim(ClaimTypes.Name, data.Name),
+				//		new Claim(ClaimTypes.Role, data.Roles.Join(" "))
+				//		),
+				//	"SFAuth"
+				//	)
+				//);
 
 		}
 		public Task<string> CreateAccessToken(long Id,DateTime? Expires)
