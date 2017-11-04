@@ -73,7 +73,7 @@ namespace SF.Core.ServiceManagement.Internals
 								ServiceFactory.Create(
 									-1 - impl.idx,
 									null,
-									new Lazy<long?>(()=>null),
+									()=>null,
 									decl,
 									impl.impl,
 									ServiceType,

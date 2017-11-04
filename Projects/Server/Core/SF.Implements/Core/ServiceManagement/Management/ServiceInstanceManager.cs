@@ -158,7 +158,7 @@ namespace SF.Core.ServiceManagement.Management
 				var factory = ServiceFactory.Create(
 					Id,
 					ParentId,
-					new Lazy<long?>(()=>null),
+					()=>null,
 					decl,
 					impl,
 					decl.ServiceType,

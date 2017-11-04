@@ -25,8 +25,9 @@ namespace SF.Core.ServiceManagement.Internals
 	{
 		public long InstanceId { get; }
 		public long? ParentInstanceId { get; }
-		Lazy<long?> LazyDataScopeId { get; }
-		public long? DataScopeId => LazyDataScopeId.Value;
+		Func<long?> LazyDataScopeId { get; }
+		public long? DataScopeId => 
+			LazyDataScopeId();
 		public bool IsManaged => InstanceId > 0;
 		public IServiceDeclaration ServiceDeclaration { get; }
 		public IServiceImplement ServiceImplement { get; }
@@ -37,7 +38,7 @@ namespace SF.Core.ServiceManagement.Internals
 		public ServiceFactory(
 			long Id,
 			long? ParentServiceId,
-			Lazy<long?> LazyDataScopeId,
+			Func<long?> LazyDataScopeId,
 			IServiceDeclaration ServiceDeclaration,
 			IServiceImplement ServiceImplement,
 			IServiceCreateParameterTemplate CreateParameterTemplate,
@@ -107,7 +108,7 @@ namespace SF.Core.ServiceManagement.Internals
 		public static IServiceFactory Create(
 			long Id,
 			long? ParentId,
-			Lazy<long?> LazyDataScopeId,
+			Func<long?> LazyDataScopeId,
 			IServiceDeclaration decl,
 			IServiceImplement impl,
 			Type ServiceType, 
