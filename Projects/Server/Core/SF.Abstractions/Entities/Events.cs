@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 namespace SF.Entities
 {
 	
-	public class EntityModified<TEntity>
+	public class EntityChanged<TEntity>
 	{
 		
 

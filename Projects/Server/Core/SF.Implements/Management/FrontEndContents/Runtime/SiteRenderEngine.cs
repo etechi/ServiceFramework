@@ -32,7 +32,7 @@ namespace SF.Management.FrontEndContents.Runtime
 	public class SiteRenderEngine :
 		SiteRenderEngine<Content, SF.Management.FrontEndContents.Site, SiteTemplate>
 	{
-		public SiteRenderEngine(ILogService LogService, IEventSubscriber<EntityModified<Content>> OnContentModified, IEventSubscriber<EntityModified<FrontEndContents.Site>> OnSiteTemplateModified, IEventSubscriber<EntityModified<SiteTemplate>> OnSiteModified) : base(LogService, OnContentModified, OnSiteTemplateModified, OnSiteModified)
+		public SiteRenderEngine(ILogService LogService, IEventSubscriber<EntityChanged<Content>> OnContentModified, IEventSubscriber<EntityChanged<FrontEndContents.Site>> OnSiteTemplateModified, IEventSubscriber<EntityChanged<SiteTemplate>> OnSiteModified) : base(LogService, OnContentModified, OnSiteTemplateModified, OnSiteModified)
 		{
 		}
 	}
@@ -49,9 +49,9 @@ namespace SF.Management.FrontEndContents.Runtime
 		public ILogger Logger { get; }
 		public SiteRenderEngine(
 			ILogService LogService,
-			IEventSubscriber<EntityModified< TContent>> OnContentModified,
-			IEventSubscriber<EntityModified<TSite>> OnSiteTemplateModified,
-			IEventSubscriber<EntityModified<TSiteTemplate>> OnSiteModified
+			IEventSubscriber<EntityChanged< TContent>> OnContentModified,
+			IEventSubscriber<EntityChanged<TSite>> OnSiteTemplateModified,
+			IEventSubscriber<EntityChanged<TSiteTemplate>> OnSiteModified
 			)
 		{
 			this.Logger = LogService.GetLogger("UI管理器");

@@ -546,7 +546,7 @@ namespace SF.Entities
 					Storage.DataContext.Set<TModel>().Add(Context.Model);
 					Storage.AddPostAction(() =>
 						Storage.EventEmitter.Emit(
-							new EntityModified<TEditable>()
+							new EntityChanged<TEditable>()
 							{
 								Entity=Context.Editable,
 								Action = DataActionType.Create,
@@ -559,7 +559,7 @@ namespace SF.Entities
 						);
 					Storage.AddPostAction(() =>
 						Storage.EventEmitter.Emit(
-							new EntityModified< TEditable>()
+							new EntityChanged< TEditable>()
 							{
 								Entity = Context.Editable,
 								Action = DataActionType.Create,
@@ -637,7 +637,7 @@ namespace SF.Entities
 
 					Storage.AddPostAction(() =>
 						Storage.EventEmitter.Emit(
-							new EntityModified<TEditable>()
+							new EntityChanged<TEditable>()
 							{
 								Entity = Entity,
 								Action = DataActionType.Update,
@@ -650,7 +650,7 @@ namespace SF.Entities
 						);
 					Storage.AddPostAction(() =>
 						Storage.EventEmitter.Emit(
-							new EntityModified<TEditable>()
+							new EntityChanged<TEditable>()
 							{
 								Entity=Entity,
 								Action = DataActionType.Update,
@@ -717,7 +717,7 @@ namespace SF.Entities
 
 					Storage.AddPostAction(() =>
 						Storage.EventEmitter.Emit(
-							new EntityModified<TEditable>()
+							new EntityChanged<TEditable>()
 							{
 								Entity= editable,
 								Action = DataActionType.Delete,
@@ -730,7 +730,7 @@ namespace SF.Entities
 						);
 					Storage.AddPostAction(() =>
 						Storage.EventEmitter.Emit(
-							new EntityModified<TEditable>()
+							new EntityChanged<TEditable>()
 							{
 								Entity = editable,
 								Action = DataActionType.Delete,
