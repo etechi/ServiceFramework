@@ -20,6 +20,6 @@ namespace SF.Entities
 {
 	public interface IEntityBatchLoadable<TKey, TEntity>
 	{
-		Task<TEntity[]> GetAsync(TKey[] Ids);
+		Task<TEntity[]> BatchGetAsync(TKey[] Ids);
 	}
 }

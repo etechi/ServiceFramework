@@ -36,10 +36,11 @@ namespace SF.Entities
 	public class QueryArgument<TKey> :
 		IQueryArgument<TKey>
 	{
-		[Comment("ID")]
 		public TKey Id { get; set; }
 
 	}
+
+
 	public class QueryArgument :
 		QueryArgument<ObjectKey<long>>
 	{
@@ -48,10 +49,11 @@ namespace SF.Entities
 	{
 		[Comment("名称")]
 		[MaxLength(100)]
-		public string Name { get; set; }
+		[StringContains]
+		public virtual string Name { get; set; }
 
 		[Comment("逻辑状态")]
-		public EntityLogicState? LogicState { get; set; }
+		public virtual EntityLogicState? LogicState { get; set; }
 
 	}
 }

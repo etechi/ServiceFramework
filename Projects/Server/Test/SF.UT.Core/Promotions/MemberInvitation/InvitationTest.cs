@@ -372,7 +372,7 @@ namespace SF.UT.Promotions.Invitations
 						//Assert.Equal(dst, o);
 
 
-						var oss = await svc.GetAsync(new[] { rid });
+						var oss = await svc.BatchGetAsync(new[] { rid });
 						Assert.True(Poco.DeepEquals(new[] { dst }, oss));
 						//Assert.Equal(dst, oss[0]);
 

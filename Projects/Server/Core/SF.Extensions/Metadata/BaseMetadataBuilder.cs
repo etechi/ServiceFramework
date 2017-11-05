@@ -189,7 +189,7 @@ namespace SF.Metadata
 				re.BaseTypes = baseTypes.ToArray();
 			var props=GenerateTypeProperties(type);
 			re.Properties = props.Length > 0 ? props : null;
-			LoadAttributes(re,type.GetCustomAttributes(true).Cast<Attribute>(), type);
+			LoadAttributes(re,type.GetCustomAttributes().Cast<Attribute>(), type);
 			return re;
 		}
 		public virtual string FormatTypeName(Type type)
@@ -290,7 +290,7 @@ namespace SF.Metadata
         }
 		public virtual Models.Property GenerateTypeProperty(PropertyInfo prop,object DefaultValueObject)
 		{
-			var attrs = prop.GetCustomAttributes(true).Cast<Attribute>();
+			var attrs = prop.GetCustomAttributes();
 			var prop_type = prop.PropertyType;
             bool optional;
 			if (prop_type.IsGeneric() && 

@@ -55,8 +55,8 @@ namespace SF.Core.ServiceManagement
 			
 			public override Property GenerateTypeProperty(PropertyInfo prop, object DefaultValueObject)
 			{
-				return TryGenerateManagedServiceProperty(this,ServiceDetector, prop.PropertyType, prop.Name,prop.GetCustomAttributes(true)) ??
-					TryGenerateDictionaryToArrayProperty(this,  prop.PropertyType, prop.Name, prop.GetCustomAttributes(true)) ??
+				return TryGenerateManagedServiceProperty(this,ServiceDetector, prop.PropertyType, prop.Name,prop.GetCustomAttributes()) ??
+					TryGenerateDictionaryToArrayProperty(this,  prop.PropertyType, prop.Name, prop.GetCustomAttributes()) ??
 					base.GenerateTypeProperty(prop, DefaultValueObject);
 			}
 		}
@@ -131,15 +131,15 @@ namespace SF.Core.ServiceManagement
 		}
 		SF.Metadata.Models.Property GenerateArgsProperty(System.Type Type, ParameterInfo Arg, IMetadataBuilder Builder)
 		{
-			return TryGenerateManagedServiceProperty(Builder, Metadata, Arg.ParameterType,Arg.Name,Arg.GetCustomAttributes(true)) ??
-				TryGenerateDictionaryToArrayProperty(Builder, Arg.ParameterType, Arg.Name, Arg.GetCustomAttributes(true))??
+			return TryGenerateManagedServiceProperty(Builder, Metadata, Arg.ParameterType,Arg.Name,Arg.GetCustomAttributes()) ??
+				TryGenerateDictionaryToArrayProperty(Builder, Arg.ParameterType, Arg.Name, Arg.GetCustomAttributes())??
 				Builder.LoadAttributes(
 					new Property
 					{
 						Name=Arg.Name,
 						Type=Builder.TryGenerateAndAddType(Arg.ParameterType).Name
 					},
-					Arg.GetCustomAttributes(true).Cast<System.Attribute>(),
+					Arg.GetCustomAttributes(),
 					null
 					);
 		}

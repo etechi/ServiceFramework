@@ -145,7 +145,7 @@ namespace SF.Auth.IdentityServices.Managers
 					{
 						ClaimTypeId=obj.MainClaimTypeId,
 						Credential=obj.MainCredential,
-						BindTime=Now
+						CreatedTime=Now
 					}
 				};
 		}

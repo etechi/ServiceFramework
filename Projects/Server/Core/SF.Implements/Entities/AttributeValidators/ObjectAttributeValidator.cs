@@ -56,7 +56,7 @@ namespace SF.Entities.AttributeValidators
 			{
 				var re=base.EvalPropExpression(src, PropPathExpr, PropPath, Prop);
 				var exprs = new List<Expression>(
-					from attr in Prop.GetCustomAttributes(true).Cast<Attribute>()
+					from attr in Prop.GetCustomAttributes()
 					let vv = ValueValidatorDict.Get(attr.GetType())
 					where vv != null
 					let validatorType = typeof(IValueValidator<,>).MakeGenericType(vv.ValueType, attr.GetType())

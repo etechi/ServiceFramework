@@ -50,7 +50,7 @@ namespace SF.Core.ServiceManagement.Management
 						  }).ToDictionary(t=>t.Id);
 		}
 
-		public Task<ServiceDeclaration[]> GetAsync(ObjectKey<string>[] Ids)
+		public Task<ServiceDeclaration[]> BatchGetAsync(ObjectKey<string>[] Ids)
 		{
 			return Task.FromResult(
 				Ids

@@ -26,6 +26,7 @@ namespace SF.Auth.IdentityServices.Models
 {
 	
 	[Comment("角色")]
+	[EntityObject]
 	public class Role: ObjectEntityBase<string>
 	{
 
@@ -53,6 +54,7 @@ namespace SF.Auth.IdentityServices.Models
 	public class RoleEditable : Role
 	{
 		public IEnumerable<ClaimValue> Claims { get; set; }
+		[TableRows]
 		public IEnumerable<Grant> Grants { get; set; }
 	}
 	public class UserRole

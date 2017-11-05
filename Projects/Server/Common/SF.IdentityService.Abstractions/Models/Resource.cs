@@ -19,6 +19,7 @@ using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
@@ -26,8 +27,11 @@ namespace SF.Auth.IdentityServices.Models
 {
 
 	[Comment("资源")]
+	[EntityObject]
 	public class ResourceInternal : UIObjectEntityBase<string>
 	{
+		[ReadOnly(false)]
+		public override string Id { get; set; }
 		[Comment("标识资源")]
 		public bool IsIdentityResource { get; set; }
 	}
@@ -43,13 +47,18 @@ namespace SF.Auth.IdentityServices.Models
 
 		[Comment("申明类型")]
 		[TableVisible]
-		[Hidden]
+		[Ignore]
 		public string ClaimTypeName { get; set; }
 	}
 	[Comment("资源")]
 	public class ResourceEditable : ResourceInternal
 	{ 
+		[Comment("可用操作")]
+		[TableRows]
 		public IEnumerable<ResourceOperationInternal> SupportedOperations { get; set; }
+
+		[Comment("所需申明")]
+		[TableRows]
 		public IEnumerable<ResourceRequiredClaim> RequiredClaims { get; set; }
 	}
 
@@ -62,11 +71,13 @@ namespace SF.Auth.IdentityServices.Models
 		public string OperationId { get; set; }
 
 		[Comment("操作名称")]
+		[Ignore]
 		public string OperationName { get; set; }
 
 	}
 
 	[Comment("操作范围")]
+	[EntityObject]
 	public class OperationInternal : UIObjectEntityBase<string>
 	{
 		

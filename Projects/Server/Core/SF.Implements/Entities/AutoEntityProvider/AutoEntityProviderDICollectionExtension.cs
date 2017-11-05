@@ -155,7 +155,7 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, DefaultQueryConverterProvider>();
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, SingleRelationQueryConverterProvider>();
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, MultipleRelationQueryConverterProvider>();
-
+			sc.AddSingleton<IEntityPropertyQueryConverterProvider, SkipWhenDefaultQueryConverterProvider>();
 
 			sc.AddSingleton<IDataSetAutoEntityProviderCache, DataSetAutoEntityProviderCache>();
 			sc.AddTransient<IDataSetAutoEntityProviderFactory, DataSetAutoEntityProviderFactory>();

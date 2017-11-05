@@ -33,7 +33,6 @@ namespace SF.Entities
 	{
 		[Key]
 		[Comment("标识")]
-		[ReadOnly(true)]
 		[TableVisible]
 		public T Id { get; set; }
 

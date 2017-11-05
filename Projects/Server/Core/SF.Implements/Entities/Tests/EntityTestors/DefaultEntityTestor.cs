@@ -92,7 +92,7 @@ namespace SF.Entities.Tests.EntityTestors
 			}
 
 			//检查批量实体获取
-			var batchDetails = await svc.GetAsync(createIdents);
+			var batchDetails = await svc.BatchGetAsync(createIdents);
 			Assert.Equal("批量获取的实体和单独获取的实体不符",details, batchDetails);
 
 

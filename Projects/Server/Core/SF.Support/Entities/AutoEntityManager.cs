@@ -72,7 +72,7 @@ namespace SF.Entities.AutoEntityProvider
 			return AutoEntityProvider.GetAsync(Id);
 		}
 
-		public Task<TDetail[]> GetAsync(TKey[] Ids)
+		public Task<TDetail[]> BatchGetAsync(TKey[] Ids)
 		{
 			return AutoEntityProvider.GetAsync(Ids);
 		}

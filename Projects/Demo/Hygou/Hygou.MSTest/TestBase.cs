@@ -1,4 +1,4 @@
-﻿#region Apache License Version 2.0
+#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -13,25 +13,39 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth;
-using SF.Entities;
-using SF.Metadata;
 using System;
-namespace SF.Auth.IdentityServices.Managers
-{
-	public class ClientConfigQueryArgument : ObjectQueryArgument<ObjectKey<long>>
-	{
-	}
+using System.Reflection;
+using System.Linq.Expressions;
+using System.Collections.Generic;
 
-	[EntityManager]
-	[Authorize("admin")]
-	[NetworkService]
-	[Comment("客户端配置管理")]
-	public interface IClientConfigManager :
-		IEntityManager<ObjectKey<long>,Models.ClientConfigEditable>,
-		IEntitySource<ObjectKey<long>, Models.ClientConfigInternal, ClientConfigQueryArgument>
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using SF.Data;
+using Xunit;
+using SF.Applications;
+using SF.Core.Hosting;
+using SF.Core.ServiceManagement;
+using System.Threading.Tasks;
+
+namespace Hygou.UT
+{
+	public class TestBase : IDisposable
 	{
+		public IAppInstance AppInstance { get; }
+		public Task<T> Scope<A0,T>(Func<A0, Task<T>> Action)
+			=> AppInstance.ServiceProvider.WithScope(Action);
+
+
+		public TestBase()
+		{
+			AppInstance = TestApp.Builder(EnvironmentType.Development).Build();
+		}
+
+		public void Dispose()
+		{
+			AppInstance.Dispose();
+		}
 	}
+	
 
 }
-

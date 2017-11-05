@@ -21,17 +21,18 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class UserQueryArgument : QueryArgument<long>
+	public class UserQueryArgument : ObjectQueryArgument<ObjectKey<long>>
 	{	
 		[Comment("注册账号")]
 		public string MainCredential { get; set; }
 
 		[Comment("注册类型")]
+		[EntityIdent(typeof(ClaimType))]
 		public string MainClaimTypeId { get; set; }
 
 		[Comment("姓名")]
 		[StringContains]
-		public string Name { get; set; }
+		public override string Name { get; set; }
 	}
 
 	[EntityManager]

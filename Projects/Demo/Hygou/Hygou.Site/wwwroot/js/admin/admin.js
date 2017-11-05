@@ -12030,7 +12030,7 @@ function buildRenderByApi(renderProvider, lib, controller, action, itemAdjuster,
     else if (act.Parameters.length > 1 || Meta.isAtomType(act.Parameters[0].Type))
         formItem = newFormItemSetFromParams(act.Parameters, { lib: lib, pathEntities: [], itemAdjuster: itemAdjuster });
     else if (act.Parameters.length == 1)
-        formItem = FormBuilder.newFormItemSetFromType("", act.Parameters[0].Name, lib.type(act.Parameters[0].Type), null, null, { lib: lib, pathEntities: [lib.type(act.Parameters[0].Type)], itemAdjuster: itemAdjuster });
+        formItem = FormBuilder.newFormItemSetFromType("", act.Parameters[0].Name, lib.type(act.Parameters[0].Type), null, null, { editMode: args.editMode, lib: lib, pathEntities: [lib.type(act.Parameters[0].Type)], itemAdjuster: itemAdjuster });
     var render = FieldBuilder.buildFields(renderProvider, lib, formItem, args.hertMode, args.editMode, args.readonly);
     return render;
 }
@@ -16038,7 +16038,7 @@ exports.IdentityManagement = {
     //
     Create: function (
         //
-        //类型:SF.Auth.Users.Models.IdentityEditable
+        //类型:SF.Auth.Identities.Models.IdentityEditable
         Entity, __opts) {
         return _invoker('IdentityManagement', 'Create', null, Entity, __opts);
     },
@@ -16046,7 +16046,7 @@ exports.IdentityManagement = {
     //
     Update: function (
         //
-        //类型:SF.Auth.Users.Models.IdentityEditable
+        //类型:SF.Auth.Identities.Models.IdentityEditable
         Entity, __opts) {
         return _invoker('IdentityManagement', 'Update', null, Entity, __opts);
     },
@@ -16062,7 +16062,7 @@ exports.IdentityManagement = {
     //
     Query: function (
         //
-        //类型:SF.Auth.Users.IdentityQueryArgument
+        //类型:SF.Auth.Identities.IdentityQueryArgument
         Arg, __opts) {
         return _invoker('IdentityManagement', 'Query', null, Arg, __opts);
     },
@@ -16070,7 +16070,7 @@ exports.IdentityManagement = {
     //
     QueryIdents: function (
         //
-        //类型:SF.Auth.Users.IdentityQueryArgument
+        //类型:SF.Auth.Identities.IdentityQueryArgument
         Arg, __opts) {
         return _invoker('IdentityManagement', 'QueryIdents', null, Arg, __opts);
     },
@@ -16092,7 +16092,7 @@ exports.Identity = {
     //
     Signin: function (
         //
-        //类型:SF.Auth.Users.SigninArgument
+        //类型:SF.Auth.Identities.SigninArgument
         Arg, __opts) {
         return _invoker('Identity', 'Signin', null, Arg, __opts);
     },
@@ -16105,7 +16105,7 @@ exports.Identity = {
     //
     SendPasswordRecorveryCode: function (
         //
-        //类型:SF.Auth.Users.SendPasswordRecorveryCodeArgument
+        //类型:SF.Auth.Identities.SendPasswordRecorveryCodeArgument
         Arg, __opts) {
         return _invoker('Identity', 'SendPasswordRecorveryCode', null, Arg, __opts);
     },
@@ -16113,7 +16113,7 @@ exports.Identity = {
     //
     ResetPasswordByRecoveryCode: function (
         //
-        //类型:SF.Auth.Users.ResetPasswordByRecorveryCodeArgument
+        //类型:SF.Auth.Identities.ResetPasswordByRecorveryCodeArgument
         Arg, __opts) {
         return _invoker('Identity', 'ResetPasswordByRecoveryCode', null, Arg, __opts);
     },
@@ -16121,7 +16121,7 @@ exports.Identity = {
     //
     SetPassword: function (
         //
-        //类型:SF.Auth.Users.SetPasswordArgument
+        //类型:SF.Auth.Identities.SetPasswordArgument
         Arg, __opts) {
         return _invoker('Identity', 'SetPassword', null, Arg, __opts);
     },
@@ -16129,7 +16129,7 @@ exports.Identity = {
     //
     UpdateIdentity: function (
         //
-        //类型:SF.Auth.Users.Models.Identity
+        //类型:SF.Auth.Identities.Models.Identity
         Identity, __opts) {
         return _invoker('Identity', 'UpdateIdentity', null, Identity, __opts);
     },
@@ -16147,7 +16147,7 @@ exports.Identity = {
     //
     SendCreateIdentityVerifyCode: function (
         //
-        //类型:SF.Auth.Users.SendCreateIdentityVerifyCodeArgument
+        //类型:SF.Auth.Identities.SendCreateIdentityVerifyCodeArgument
         Arg, __opts) {
         return _invoker('Identity', 'SendCreateIdentityVerifyCode', null, Arg, __opts);
     },
@@ -16155,7 +16155,7 @@ exports.Identity = {
     //
     CreateIdentity: function (
         //
-        //类型:SF.Auth.Users.CreateIdentityArgument
+        //类型:SF.Auth.Identities.CreateIdentityArgument
         Arg, 
         //
         //类型:bool
@@ -16182,7 +16182,7 @@ exports.Member = {
     //
     Signup: function (
         //
-        //类型:SF.Auth.Users.CreateIdentityArgument
+        //类型:SF.Auth.Identities.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('Member', 'Signup', null, Arg, __opts);
     },
@@ -16199,7 +16199,7 @@ exports.MemberManagement = {
     //
     CreateUser: function (
         //
-        //类型:SF.Auth.Users.CreateIdentityArgument
+        //类型:SF.Auth.Identities.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('MemberManagement', 'CreateUser', null, Arg, __opts);
     },
@@ -16272,7 +16272,7 @@ exports.SysAdminManagement = {
     //
     CreateUser: function (
         //
-        //类型:SF.Auth.Users.CreateIdentityArgument
+        //类型:SF.Auth.Identities.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('SysAdminManagement', 'CreateUser', null, Arg, __opts);
     },
@@ -16345,7 +16345,7 @@ exports.SysAdmin = {
     //
     Signup: function (
         //
-        //类型:SF.Auth.Users.CreateIdentityArgument
+        //类型:SF.Auth.Identities.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('SysAdmin', 'Signup', null, Arg, __opts);
     },
@@ -16362,7 +16362,7 @@ exports.BizAdminManagement = {
     //
     CreateUser: function (
         //
-        //类型:SF.Auth.Users.CreateIdentityArgument
+        //类型:SF.Auth.Identities.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('BizAdminManagement', 'CreateUser', null, Arg, __opts);
     },
@@ -16435,7 +16435,7 @@ exports.BizAdmin = {
     //
     Signup: function (
         //
-        //类型:SF.Auth.Users.CreateIdentityArgument
+        //类型:SF.Auth.Identities.CreateIdentityArgument
         Arg, __opts) {
         return _invoker('BizAdmin', 'Signup', null, Arg, __opts);
     },
@@ -17058,7 +17058,7 @@ exports.MemberInvitationManagement = {
     //
     Query: function (
         //
-        //类型:SF.Promotions.MemberInvitations.MemberInvitationQueryArgument
+        //类型:SF.Users.Promotions.MemberInvitations.MemberInvitationQueryArgument
         Arg, __opts) {
         return _invoker('MemberInvitationManagement', 'Query', null, Arg, __opts);
     },
@@ -17066,7 +17066,7 @@ exports.MemberInvitationManagement = {
     //
     QueryIdents: function (
         //
-        //类型:SF.Promotions.MemberInvitations.MemberInvitationQueryArgument
+        //类型:SF.Users.Promotions.MemberInvitations.MemberInvitationQueryArgument
         Arg, __opts) {
         return _invoker('MemberInvitationManagement', 'QueryIdents', null, Arg, __opts);
     },
@@ -17095,7 +17095,7 @@ exports.MemberInvitationManagement = {
     //
     Create: function (
         //
-        //类型:SF.Promotions.MemberInvitations.Models.MemberInvitationInternal
+        //类型:SF.Users.Promotions.MemberInvitations.Models.MemberInvitationInternal
         Entity, __opts) {
         return _invoker('MemberInvitationManagement', 'Create', null, Entity, __opts);
     },
@@ -17103,7 +17103,7 @@ exports.MemberInvitationManagement = {
     //
     Update: function (
         //
-        //类型:SF.Promotions.MemberInvitations.Models.MemberInvitationInternal
+        //类型:SF.Users.Promotions.MemberInvitations.Models.MemberInvitationInternal
         Entity, __opts) {
         return _invoker('MemberInvitationManagement', 'Update', null, Entity, __opts);
     },
@@ -18226,6 +18226,9 @@ var EntityEditor = (function (_super) {
                     });
                 }
             }
+            else if (typeof (id) == "object") {
+                args = id;
+            }
             else {
                 var p0type = lib.type(act.Parameters[0].Type);
                 var props = lib.allTypeProperties(p0type);
@@ -18236,7 +18239,8 @@ var EntityEditor = (function (_super) {
             }
         }
         return lib.call(this.props.controller, act.Name, args, { serviceId: this.props.serviceId }).then(function (re) {
-            lib.restoreDefaultValues(re, lib.type(act.Type), true);
+            if (re)
+                lib.restoreDefaultValues(re, lib.type(act.Type), true);
             return re;
         });
         var _b, _c;
@@ -37978,8 +37982,9 @@ var attrs = (_a = {},
             throw "关键字只能是简单字段:" + item.formField;
         item.isKeyField = true;
     },
-    _a["System.ComponentModel.ReadOnlyAttribute"] = function (item, values) {
-        item.componentProps.disabled = true;
+    _a["System.ComponentModel.ReadOnlyAttribute"] = function (item, values, ctx) {
+        if (values.IsReadOnly || ctx.editMode)
+            item.componentProps.disabled = true;
     },
     _a["System.ComponentModel.DataAnnotations.RangeAttribute"] = function (item, values) {
         if (item.itemType == FI.FormItemType.Array) {
@@ -39048,7 +39053,7 @@ function loadEntity(value, entity, propEntity, dynamicEntityType) {
     var args = {};
     var values = value instanceof Array ? value : (value + '').split('-');
     act.Parameters.forEach(function (p, i) { return args[p.Name] = values[i]; });
-    return apicall.call(c.Name, act.Name, args, null, null).then(function (re) {
+    return apicall.call(c.Name, act.Name, null, args, null).then(function (re) {
         if (!re)
             return {
                 text: "找不到：" + entity + "-" + value,
@@ -39413,7 +39418,7 @@ var LargeMultipleEntityPicker = (function (_super) {
         var args = {};
         var values = (value + '').split('-');
         act.Parameters.forEach(function (p, i) { return args[p.Name] = values[i]; });
-        return apicall.call(c.Name, act.Name, args, null, null).then(function (re) {
+        return apicall.call(c.Name, act.Name, null, args, null).then(function (re) {
             if (!re) {
                 return { index: index, text: "找不到：" + entity + "-" + value };
             }

@@ -1,4 +1,4 @@
-﻿#region Apache License Version 2.0
+#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -13,35 +13,56 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Metadata;
 using System;
-using System.ComponentModel;
+using System.Reflection;
+using System.Linq.Expressions;
+using System.Collections.Generic;
+
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SF.Data;
+using SF.Core.Hosting;
+using SF.Core.ServiceManagement;
+using SF.Core.ServiceFeatures;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace SF.Auth.IdentityServices.Models
+namespace Hygou.UT
 {
-	public class UserCredential
+	[TestClass]
+	public class EnvInitializer : TestBase
 	{
-		[Key]
-		[Column(Order=1)]
-		[EntityIdent(typeof(ClaimType))]
-		[TableVisible]
-		[Comment("类型")]
-		public string ClaimTypeId { get; set; }
-		[TableVisible]
-		[Ignore]
-		public long UserId { get; set; }
-		[Key]
-		[Column(Order = 2)]
-		[Comment("凭证值")]
-		public string Credential { get; set; }
-		[Comment("创建时间")]
-		[ReadOnly(true)]
-		public DateTime CreatedTime { get; set; }
-		[Comment("确认时间")]
-		public DateTime? ConfirmedTime { get; set; }
+		[TestMethod]
+		public async Task InitServices()
+		{
+			await Scope(async (IServiceProvider sp) =>
+				{
+					await sp.InitServices("service");
+					return 0;
+				}
+				);
+		}
+		[TestMethod]
+		public async Task InitProducts()
+		{
+			await Scope(async (IServiceProvider sp) =>
+			{
+				await sp.InitServices("product");
+				return 0;
+			}
+				);
+		}
+		[TestMethod]
+		public async Task InitData()
+		{
+			await Scope(async (IServiceProvider sp) =>
+			{
+				await sp.InitServices("data");
+				return 0;
+			}
+				);
+		}
 	}
+	
 
 }
-

@@ -19,11 +19,8 @@ using SF.Metadata;
 using System;
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class ResourceQueryArgument : QueryArgument<ObjectKey<string>>
+	public class ResourceQueryArgument : ObjectQueryArgument<ObjectKey<string>>
 	{
-		[Comment("资源名称")]
-		[StringContains]
-		public string Name { get; set; }
 	}
 
 	[EntityManager]

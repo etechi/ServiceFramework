@@ -19,10 +19,8 @@ using SF.Metadata;
 using System;
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class ScopeQueryArgument : QueryArgument<ObjectKey<string>>
+	public class ScopeQueryArgument : ObjectQueryArgument<ObjectKey<string>>
 	{
-		[Comment("名称")]
-		public string Name { get; set; }
 	}
 
 	[EntityManager]

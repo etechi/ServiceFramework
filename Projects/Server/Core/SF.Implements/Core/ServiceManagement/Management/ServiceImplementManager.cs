@@ -53,7 +53,7 @@ namespace SF.Core.ServiceManagement.Management
 			this.Items = sis.ToDictionary(t => t.Id);
 		}
 
-		public Task<ServiceImplement[]> GetAsync(ObjectKey<string>[] Ids)
+		public Task<ServiceImplement[]> BatchGetAsync(ObjectKey<string>[] Ids)
 		{
 			return Task.FromResult(
 				Ids

@@ -67,6 +67,8 @@ namespace SF.Data
 		{
 			if (state == null)
 				return null;
+			if (typeof(V) == typeof(string) && ((string)(object)state.Id).IsNullOrWhiteSpace())
+				return null;
 			return Expression.Equal(prop, Expression.Constant(state.Id));
 		}
 
@@ -133,7 +135,7 @@ namespace SF.Data
 			Expression prop
 			)
 		{
-			if (state == null)
+			if (!state.HasValue)
 				return Expression.NotEqual(prop, Expression.Constant(EntityLogicState.Deleted));
 			return Expression.Equal(prop, Expression.Constant(state.Value));
 		}

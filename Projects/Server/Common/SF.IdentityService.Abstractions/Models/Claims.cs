@@ -19,15 +19,19 @@ using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
 namespace SF.Auth.IdentityServices.Models
 {
-	
+
+	[EntityObject]
 	[Comment("凭证类型")]
 	public class ClaimType : ObjectEntityBase<string>
 	{
+		[ReadOnly(false)]
+		public override string Id { get; set; }
 	}
 	
 

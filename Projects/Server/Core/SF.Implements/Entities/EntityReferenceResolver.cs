@@ -85,7 +85,7 @@ namespace SF.Entities
 				{
 					var mel = manager as IEntityBatchLoadable<ObjectKey<TKey>, TEntity>;
 					if (mel != null)
-						return (await mel.GetAsync(
+						return (await mel.BatchGetAsync(
 							Idents.Select(id =>new ObjectKey<TKey> { Id = (TKey)Convert.ChangeType(id, typeof(TKey)) }).ToArray()
 							))
 							.Select(ins => CreateReference(ins, EntityIdent,ServiceId))

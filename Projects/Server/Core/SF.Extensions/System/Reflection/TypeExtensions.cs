@@ -174,18 +174,26 @@ namespace System.Reflection
 			return ti.GetCustomAttribute<T>();
 		}
 #endif
-		public static IEnumerable<Attribute> GetCustomAttributes(this Type type, bool inherit)
-		{
-			return type.GetTypeInfo().GetCustomAttributes(inherit).Cast<Attribute>();
-		}
-		public static IEnumerable<T> GetCustomAttributes<T>(this Type type, bool inherit)
-		{
-			return type.GetTypeInfo().GetCustomAttributes(inherit).Where(a => a is T).Cast<T>();
-		}
-		public static T GetCustomAttribute<T>(this Type type, bool inherit = true) where T : Attribute
-		{
-			return (T)type.GetTypeInfo().GetCustomAttributes(inherit).FirstOrDefault(a => a is T);
-		}
+		//public static IEnumerable<Attribute> GetCustomAttributes(this Type type)
+		//{
+		//	return type.GetTypeInfo().GetCustomAttributes().Cast<Attribute>();
+		//}
+		//public static IEnumerable<T> GetCustomAttributes<T>(this Type type) where T:Attribute
+		//{
+		//	return type.GetTypeInfo().GetCustomAttributes<T>();
+		//}
+		//public static IEnumerable<Attribute> GetCustomAttributes(this Type type, bool inherit)
+		//{
+		//	return type.GetTypeInfo().GetCustomAttributes(inherit).Cast<Attribute>();
+		//}
+		//public static IEnumerable<T> GetCustomAttributes<T>(this Type type, bool inherit)
+		//{
+		//	return type.GetTypeInfo().GetCustomAttributes(inherit).Where(a => a is T).Cast<T>();
+		//}
+		//public static T GetCustomAttribute<T>(this Type type) where T : Attribute
+		//{
+		//	return (T)type.GetTypeInfo().GetCustomAttribute(typeof(T));
+		//}
 		public static bool IsEnumType(this Type type)
 		{
 			return type.GetTypeInfo().IsEnum;
@@ -449,7 +457,7 @@ namespace System.Reflection
 			if (CommentDict.TryGetValue(Info, out attr)) return attr;
 			var type = Info as Type;
 			var c = (type==null?
-					Info.GetCustomAttribute<SF.Metadata.CommentAttribute>(true): 
+					Info.GetCustomAttribute<SF.Metadata.CommentAttribute>(): 
 					type.AllInterfaces()
 						.WithFirst(type)
 						.Select(i=>i.GetCustomAttribute<SF.Metadata.CommentAttribute>())

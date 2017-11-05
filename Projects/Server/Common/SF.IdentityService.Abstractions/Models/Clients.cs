@@ -25,6 +25,7 @@ using System.Security.Claims;
 namespace SF.Auth.IdentityServices.Models
 {
 	[Comment("认证客户端配置")]
+	[EntityObject]
 	public class ClientConfigInternal : ObjectEntityBase<long>
 	{
 	}
@@ -38,7 +39,7 @@ namespace SF.Auth.IdentityServices.Models
 
 		[Comment("范围")]
 		[TableVisible]
-		[Hidden]
+		[Ignore]
 		public string ScopeName { get; set; }
 	}
 	public class ClientConfigEditable: ClientConfigInternal
@@ -95,6 +96,7 @@ namespace SF.Auth.IdentityServices.Models
 		//     Specifies the api scopes that the client is allowed to request. If empty, the
 		//     client can't access any scope
 		[Comment("允许请求范围")]
+		[TableRows]
 		public IEnumerable<ClientScope> Scopes { get; set; }
 
 		[Comment("离线访问", " Gets or sets a value indicating whether [allow offline access]. Defaults to false.")]
@@ -147,17 +149,20 @@ namespace SF.Auth.IdentityServices.Models
 	}
 
 	[Comment("认证客户端")]
+	[EntityObject]
 	public class ClientInternal : UIObjectEntityBase<string>
 	{
+		[Comment("配置")]
 		[EntityIdent(typeof(ClientConfigInternal),nameof(ClientConfigName))]
 		public long ClientConfigId { get; set; }
 
 		[Comment("配置")]
 		[TableVisible]
-		[Hidden]
+		[Ignore]
 		public string ClientConfigName { get; set; }
 
 		[Comment("客户端密钥")]
+		[MaxLength(100)]
 		public string Secret { get; set; }
 
 	}

@@ -46,12 +46,14 @@ namespace SF.Auth.IdentityServices.Managers
 					MainClaimTypeId = ClaimTypeId,
 					MainCredential = Credential
 				}),
-				() => new UserEditable(),
+				() => new UserEditable()
+				{
+					PasswordHash = Password
+				},
 				u => {
 					u.Name = Name;
 					u.MainClaimTypeId = ClaimTypeId;
 					u.MainCredential = Credential;
-					u.PasswordHash = Password;
 					u.Roles = (roles ?? Array.Empty<string>()).Select(r => new UserRole { RoleId = r }).ToArray();
 				}
 			);

@@ -16537,7 +16537,7 @@
   exports.validate = validate;
   function getJumpBackUrl(key) {
       if (!key) {
-          return getJumpBackUrl("ReturnUrl=") ||
+          return getJumpBackUrl("returnUrl=") ||
               getJumpBackUrl("jump=");
       }
       var l = window.location.href;

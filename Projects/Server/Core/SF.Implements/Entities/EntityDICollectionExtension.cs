@@ -30,7 +30,9 @@ namespace SF.Core.ServiceManagement
 		static IEntityMetadata CreateMetadata(string GroupIdent,string GroupName,IEntityServiceDescriptor desc)
 		{
 			Type ManagerType = desc.ServiceType;
-			var Ident = desc.Ident ?? GroupIdent;// ManagerType.GetFirstInterfaceAttribute<EntityManagerAttribute>()?.Ident;
+			var Ident = desc.Ident;// ManagerType.GetFirstInterfaceAttribute<EntityManagerAttribute>()?.Ident;
+			if (Ident.IsNullOrWhiteSpace())
+				throw new ArgumentNullException($"必须定义实体标识：{Json.Stringify(desc)}");
 
 			var interfaces = ManagerType.AllInterfaces().Where(i=>i.IsGeneric()).ToDictionary(i=>i.GetGenericTypeDefinition());
 			var Loadable = interfaces.Get(typeof(IEntityLoadable<,>));

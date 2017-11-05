@@ -26,17 +26,24 @@ namespace SF.Auth.IdentityServices.Models
 {
 	
 	[Comment("授权范围")]
+	[EntityObject]
 	public class ScopeInternal: ObjectEntityBase<string>
 	{
 
 	}
 	public class ScopeEditable : ScopeInternal
 	{
+		[Comment("授权资源")]
+		[TableRows]
 		public IEnumerable<ScopeResource> Resources { get; set; }
+
+		//[Comment("授权资源")]
+		//[EntityIdent(typeof(ResourceInternal))]
+		//public IEnumerable<string> Resources { get; set; }
 	}
 	public class ScopeResource
 	{
-		[Comment("资源ID")]
+		[Comment("资源")]
 		[EntityIdent(typeof(ResourceInternal), nameof(ResouceName))]
 		[Key]
 		public string ResourceId { get; set; }

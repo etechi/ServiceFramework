@@ -41,7 +41,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 			}
 			public IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, IEntityServiceContext ServiceContext, TQueryArgument Arg)
 			{
-				var cond = GetFilter.Value(Arg);
+				var cond = GetFilter.Value(Arg); 
 				if (cond == null) return Query;
 				return Query.Where(cond);
 			}
@@ -50,7 +50,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 		public IPropertyQueryFilterProvider[] PropertyQueryFilterProviders { get; }
 		public PropQueryFilterProvider(IEnumerable<IPropertyQueryFilterProvider> PropertyQueryFilterProviders)
 		{
-			this.PropertyQueryFilterProviders = PropertyQueryFilterProviders.ToArray();
+			this.PropertyQueryFilterProviders = PropertyQueryFilterProviders.OrderBy(p=>p.Priority).ToArray();
 		}
 		static MethodInfo MethodLambda { get; } = typeof(Expression).GetMethods(
 			nameof(Expression.Lambda),
@@ -129,7 +129,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 					var getfilter = Expression.Lambda<Func<TQueryArgument, Expression<Func<TDataModel, bool>>>>(
 							body,
 							argQuery
-						).Compile();
+						).Compile(); 
 
 					return getfilter;
 				})
