@@ -261,7 +261,7 @@ namespace SF.Core.ServiceManagement
 				e =>
 				{
 					e.Name = "所有资源";
-					e.Resources = allResourceIds.Select(i => new ScopeResource { ResourceId = i });
+					e.Resources = allResourceIds;//.Select(i => new ScopeResource { ResourceId = i });
 				});
 
 

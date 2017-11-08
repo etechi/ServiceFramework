@@ -144,6 +144,7 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IEntityPropertyModifierProvider, DefaultPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, JsonDataPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, MultipleRelationPropertyModifierProvider>();
+			sc.AddSingleton<IEntityPropertyModifierProvider, MultipleRelationIdentPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, SingleRelationPropertyModifierProvider>();
 			sc.AddSingleton<IEntityModifierProvider, PropertyEntityModifierProvider>();
 			sc.AddSingleton<IEntityModifierCache, EntityModifierCache>();
@@ -155,6 +156,7 @@ namespace SF.Core.ServiceManagement
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, DefaultQueryConverterProvider>();
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, SingleRelationQueryConverterProvider>();
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, MultipleRelationQueryConverterProvider>();
+			sc.AddSingleton<IEntityPropertyQueryConverterProvider, MultipleRelationIdentQueryConverterProvider>();
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, SkipWhenDefaultQueryConverterProvider>();
 
 			sc.AddSingleton<IDataSetAutoEntityProviderCache, DataSetAutoEntityProviderCache>();

@@ -28,50 +28,60 @@ using System.Threading.Tasks;
 
 namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 {
-	public class MultipleRelationPropertyModifierProvider : IEntityPropertyModifierProvider
+	public class MultipleRelationIdentPropertyModifierProvider : IEntityPropertyModifierProvider
 	{
 		IEntityModifierCache EntityModifierCache { get; }
-		
-		public MultipleRelationPropertyModifierProvider(IEntityModifierCache EntityModifierCache)
+		class EmptyEntity {
+			public static EmptyEntity Instance { get; } = new EmptyEntity();
+		}
+
+		public MultipleRelationIdentPropertyModifierProvider(IEntityModifierCache EntityModifierCache)
 		{
 			this.EntityModifierCache = EntityModifierCache;
 		}
-		class EntityPropertyModifier<TParentKey, TEntity,TModel, TChildEntity,TChildModel> : 
-			IAsyncEntityPropertyModifier<IEnumerable<TChildEntity>, ICollection<TChildModel>>
+		class EntityPropertyModifier<TParentKey, TEntity,TModel, TChildEntityIdent,TChildModel> : 
+			IAsyncEntityPropertyModifier<IEnumerable<TChildEntityIdent>, ICollection<TChildModel>>
 			where TChildModel:class,new()
 			where TModel:class
 			where TParentKey:IEquatable<TParentKey>
 		{
-			Lazy<(IEntityModifier<TChildEntity, TChildModel>, IEntityModifier<TChildEntity, TChildModel>, IEntityModifier<TChildEntity, TChildModel>)> LazyModifiers { get; }
+			Lazy<(IEntityModifier<EmptyEntity, TChildModel>, IEntityModifier<EmptyEntity, TChildModel>, IEntityModifier<EmptyEntity, TChildModel>)> LazyModifiers { get; }
 			PropertyInfo ForeignKeyProperty { get; }
 			Action<TChildModel,TParentKey> FuncSetParentKey { get; }
-			Func<TChildModel,TChildEntity,bool> FuncChildEqual { get; }
+			Func<TChildModel,TChildEntityIdent,bool> FuncChildEqual { get; }
 			Action<TChildModel,int> FuncSetItemOrder { get; }
-
+			Action<TChildModel, TChildEntityIdent> FuncSetItemKey { get; }
 			public EntityPropertyModifier(
 				IEntityModifierCache EntityModifierCache, 
 				PropertyInfo ForeignKeyProperty,
 				Action<TChildModel, TParentKey> FuncSetParentKey,
-				Func<TChildModel, TChildEntity, bool> FuncChildEqual,
+				Func<TChildModel, TChildEntityIdent, bool> FuncChildEqual,
+				Action<TChildModel,TChildEntityIdent> FuncSetItemKey,
 				Action<TChildModel, int> FuncSetItemOrder
 				)
 			{
+				this.FuncSetItemKey = FuncSetItemKey;
 				this.FuncChildEqual = FuncChildEqual;
 				this.FuncSetParentKey = FuncSetParentKey;
 				this.ForeignKeyProperty = ForeignKeyProperty;
 				this.FuncSetItemOrder = FuncSetItemOrder;
-				LazyModifiers = new Lazy<(IEntityModifier<TChildEntity, TChildModel>, IEntityModifier<TChildEntity, TChildModel>, IEntityModifier<TChildEntity, TChildModel>)>(
+				LazyModifiers = new Lazy<(IEntityModifier<EmptyEntity, TChildModel>, IEntityModifier<EmptyEntity, TChildModel>, IEntityModifier<EmptyEntity, TChildModel>)>(
 					() =>
 					(
-					EntityModifierCache.GetEntityModifier<TChildEntity, TChildModel>(DataActionType.Create),
-					EntityModifierCache.GetEntityModifier<TChildEntity, TChildModel>(DataActionType.Update),
-					EntityModifierCache.GetEntityModifier<TChildEntity, TChildModel>(DataActionType.Delete)
+					EntityModifierCache.GetEntityModifier<EmptyEntity, TChildModel>(DataActionType.Create),
+					EntityModifierCache.GetEntityModifier<EmptyEntity, TChildModel>(DataActionType.Update),
+					EntityModifierCache.GetEntityModifier<EmptyEntity, TChildModel>(DataActionType.Delete)
 					)
 					);
 			}
 			public int MergePriority => 0;
 			public int ExecutePriority => 1000; //最后执行
-			public async Task<ICollection<TChildModel>> Execute(IEntityServiceContext Manager, IEntityModifyContext Context, ICollection<TChildModel> OrgValue, IEnumerable<TChildEntity> Value)
+			public async Task<ICollection<TChildModel>> Execute(
+				IEntityServiceContext Manager, 
+				IEntityModifyContext Context, 
+				ICollection<TChildModel> OrgValue, 
+				IEnumerable<TChildEntityIdent> Value
+				)
 			{
 				if (Value == null && Context.Action!=ModifyAction.Delete)
 					return OrgValue;
@@ -99,24 +109,26 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					(d,e)=>FuncChildEqual(d,e.v),
 					async e =>
 					{
-						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitCreate(e.v,null);
+						var ctx = new EntityModifyContext<EmptyEntity, TChildModel>();
+						ctx.InitCreate(EmptyEntity.Instance, null);
 						await create.Execute(Manager, ctx);
+						FuncSetItemKey(ctx.Model, e.v);
 						FuncSetParentKey(ctx.Model, parentKey);
 						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
 						return ctx.Model;
 					},
 					async (d, e) =>
 					{
-						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitUpdate(d, e.v, null);
+						var ctx = new EntityModifyContext<EmptyEntity, TChildModel>();
+						ctx.InitUpdate(d, EmptyEntity.Instance, null);
+						FuncSetItemKey(ctx.Model, e.v);
 						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
 						await update.Execute(Manager, ctx);
 					},
 					async d =>
 					{
-						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitRemove(d, default(TChildEntity), null);
+						var ctx = new EntityModifyContext<EmptyEntity, TChildModel>();
+						ctx.InitRemove(d, null, null);
 						await remove.Execute(Manager, ctx);
 					}
 					);
@@ -126,7 +138,7 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 		}
 
 		static string Desc(PropertyInfo EntityProperty, PropertyInfo DataModelProperty)
-			=> $"一对多关系修改支持{EntityProperty.DeclaringType.FullName}.{EntityProperty.Name}=>{DataModelProperty.DeclaringType.FullName}.{DataModelProperty.Name}";
+			=> $"一对多关系ID修改支持{EntityProperty.DeclaringType.FullName}.{EntityProperty.Name}=>{DataModelProperty.DeclaringType.FullName}.{DataModelProperty.Name}";
 
 		public IEntityPropertyModifier GetPropertyModifier(
 			DataActionType ActionType, 
@@ -145,8 +157,8 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			if(!DataModelProperty.PropertyType.IsGenericTypeOf(typeof(ICollection<>)) )
 				return null;
 
-			var childEntityType = EntityProperty.PropertyType.GenericTypeArguments[0];
-			if (childEntityType.IsConstType())
+			var childEntityIdentType = EntityProperty.PropertyType.GenericTypeArguments[0];
+			if (!childEntityIdentType.IsConstType())
 				return null;
 
 			var childModelType = DataModelProperty.PropertyType.GenericTypeArguments[0];
@@ -174,36 +186,31 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 
 			var argChildModel = Expression.Parameter(childModelType);
 			var argParentKey = Expression.Parameter(ForeignKeyProp.PropertyType);
-			var argChildEntity = Expression.Parameter(childEntityType);
+			var argChildIdent = Expression.Parameter(childEntityIdentType);
 			
 			var childModelKeys = ((IReadOnlyList<PropertyInfo>)typeof(Entity<>)
 				.MakeGenericType(childModelType)
 				.GetProperty(nameof(Entity<string>.KeyProperties))
 				.GetValue(null)).Where(p => p.Name != ForeignKeyProp.Name).ToArray();
 
-			var childEntityKeys = ((IReadOnlyList<PropertyInfo>)typeof(Entity<>)
-				.MakeGenericType(childEntityType)
-				.GetProperty(nameof(Entity<string>.KeyProperties))
-				.GetValue(null)
-				).Where(p => p.Name != ForeignKeyProp.Name).ToArray();
 
-			if (childModelKeys.Length==0 || childModelKeys.Length != childEntityKeys.Length)
+			if (childModelKeys.Length != 1)
 				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 实体和数据对象的主键数目不同");
 
-			if (childEntityKeys.Zip(childModelKeys, (l, r) => l.Name != r.Name || l.PropertyType != r.PropertyType).Any(r=>r))
-				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 实体和数据对象的主键名称或类型不同");
+			if (childModelKeys[0].PropertyType!=childEntityIdentType)
+				throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 实体和数据对象的主键类型不同");
 
 
 			Delegate SetIndex = null;
 			var ItemOrderProp = childModelType.AllPublicInstanceProperties().FirstOrDefault(p => p.GetCustomAttribute<ItemOrderAttribute>() != null);
 			if (ItemOrderProp != null)
 			{
-				if(ItemOrderProp.PropertyType!=typeof(int))
+				if (ItemOrderProp.PropertyType != typeof(int))
 					throw new NotSupportedException($"{Desc(EntityProperty, DataModelProperty)} 排位字段类型必须为整形");
 				var argIndex = Expression.Parameter(typeof(int));
 				SetIndex = argChildModel.SetProperty(ItemOrderProp, argIndex).Compile(
-					typeof(Action<,>).MakeGenericType(argChildModel.Type,typeof(int)),
-					argChildModel, 
+					typeof(Action<,>).MakeGenericType(argChildModel.Type, typeof(int)),
+					argChildModel,
 					argIndex
 					);
 			}
@@ -213,25 +220,21 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					ForeignKeyProp.PropertyType,
 					EntityType,
 					DataModelType,
-					childEntityType,
+					childEntityIdentType,
 					childModelType
 					),
 					EntityModifierCache,
 					ForeignKeyProp,
 					argChildModel.SetProperty(ForeignKeyProp,argParentKey)
 						.Compile(argChildModel,argParentKey),
-					childModelKeys.Zip(
-						childEntityKeys,
-						(m,e)=>argChildModel.GetMember(m).Equal(argChildEntity.GetMember(e))
-						)
-						.Aggregate(
-							(l,r)=>Expression.AndAlso(l,r)
-							)
-						.Compile(
-							argChildModel, argChildEntity
-							),
+					argChildModel.GetMember(childModelKeys[0]).Equal(argChildIdent)
+						.Compile(argChildModel, argChildIdent),
+					argChildModel.SetProperty(childModelKeys[0], argChildIdent).Compile(
+						typeof(Action<,>).MakeGenericType(argChildModel.Type, childEntityIdentType),
+						argChildModel,
+						argChildIdent
+						),
 					SetIndex
-
 					);
 		}
 	}

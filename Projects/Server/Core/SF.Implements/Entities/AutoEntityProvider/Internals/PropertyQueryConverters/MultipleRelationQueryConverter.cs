@@ -43,12 +43,23 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 					typeof(IEnumerable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
 					typeof(Func<,>).MakeGenericType<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>()
 				);
+			static MethodInfo MethodOrderBy { get; } = typeof(Enumerable)
+				.GetMethodExt(
+					nameof(Enumerable.OrderBy),
+					BindingFlags.Public | BindingFlags.Static,
+					typeof(IEnumerable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
+					typeof(Func<,>).MakeGenericType<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>()
+				);
 			MethodInfo MethodSelectSpec { get; }
-			PropertyInfo SrcProperty { get; }
-			public MultipleRelationConverter(IQueryResultBuildHelper<E, R> QueryResultBuildHelper)
+			MethodInfo MethodOrderBySpec { get; }
+			PropertyInfo SrcOrderItemProperty { get; }
+			public MultipleRelationConverter(IQueryResultBuildHelper<E, R> QueryResultBuildHelper, PropertyInfo SrcOrderItemProperty)
 			{
 				MethodSelectSpec = MethodSelect.MakeGenericMethod(typeof(E),typeof(T));
+				MethodOrderBySpec = SrcOrderItemProperty == null ? null : MethodOrderBy.MakeGenericMethod(SrcOrderItemProperty.ReflectedType, SrcOrderItemProperty.PropertyType);
+
 				this.QueryResultBuildHelper = (IQueryResultBuildHelper < E, T, R > )QueryResultBuildHelper;
+				this.SrcOrderItemProperty = SrcOrderItemProperty;
 			}
 
 			static ParameterExpression ArgItem { get; } = Expression.Parameter(typeof(E));
@@ -56,15 +67,29 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			{
 				if (Level == 3)
 					return null;
-				return Expression.Call(
+				var exp = src.GetMember(srcProp);
+				if (SrcOrderItemProperty != null)
+					exp = Expression.Call(
+						null,
+						MethodOrderBySpec,
+						exp,
+						Expression.Lambda(
+						ArgItem.GetMember(SrcOrderItemProperty),
+						ArgItem
+						)
+					);
+				exp= Expression.Call(
 					null,
 					MethodSelectSpec,
-					src.GetMember(srcProp),
+					exp,
 					Expression.Lambda<Func<E, T>>(
 						QueryResultBuildHelper.BuildEntityMapper(ArgItem, Level + 1),
 						ArgItem
 					)
 				);
+				
+				return exp;
+
 			}
 
 			public async Task<IEnumerable<R>> TempToDest(object src, IEnumerable<T> value)
@@ -73,7 +98,11 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 				return await QueryResultBuildHelper.ResultMapper(value.ToArray());
 			}
 		}
-		static IEntityPropertyQueryConverter CreateConverter<E,R>(IQueryResultBuildHelperCache QueryResultBuildHelperCache, QueryMode QueryMode)
+		static IEntityPropertyQueryConverter CreateConverter<E,R>(
+			IQueryResultBuildHelperCache QueryResultBuildHelperCache, 
+			QueryMode QueryMode,
+			PropertyInfo SrcOrderItemProperty
+			)
 		{
 			var helper = QueryResultBuildHelperCache.GetHelper<E, R>(QueryMode);
 			if (helper == null)
@@ -87,7 +116,8 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 					helperWithTemp.GenericTypeArguments[1],
 					typeof(R)
 					), 
-					helper
+					helper,
+					SrcOrderItemProperty
 					);
 		}
 		static MethodInfo MethodCreateConverter { get; } = typeof(MultipleRelationQueryConverterProvider)
@@ -95,7 +125,8 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 				nameof(CreateConverter), 
 				BindingFlags.Static | BindingFlags.NonPublic, 
 				typeof(IQueryResultBuildHelperCache),
-				typeof(QueryMode)
+				typeof(QueryMode),
+				typeof(PropertyInfo)
 			).IsNotNull();
 
 		IQueryResultBuildHelperCache QueryResultBuildHelperCache { get; }
@@ -121,10 +152,16 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 
 			var ModelItemType = DataModelProperty.PropertyType.GenericTypeArguments[0];
 			var EntityItemType = EntityProperty.PropertyType.GenericTypeArguments[0];
+			if (EntityItemType.IsConstType() || EntityItemType.GetCustomAttribute<EntityIdentAttribute>() != null)
+				return null;
+
+			var SrcOrderItemProperty = ModelItemType
+				.AllPublicInstanceProperties()
+				.FirstOrDefault(p => p.GetCustomAttribute<ItemOrderAttribute>() != null);
 
 			return (IEntityPropertyQueryConverter)MethodCreateConverter.MakeGenericMethod(ModelItemType,EntityItemType).Invoke(
 				null,
-				new object[] { QueryResultBuildHelperCache, QueryMode }
+				new object[] { QueryResultBuildHelperCache, QueryMode, SrcOrderItemProperty }
 				);
 
 			/*

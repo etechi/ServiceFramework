@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Data;
 using SF.Entities;
+using SF.Entities.AutoEntityProvider;
 using SF.Metadata;
 using System;
 using System.Collections.Generic;
@@ -59,6 +60,8 @@ namespace SF.Entities.DataModels
 		[Comment("排位")]
 		[TableVisible]
 		[Index("container", Order = 2)]
+		[ItemOrder]
+		[Ignore]
 		public virtual int ItemOrder { get; set; }
 
 		[Comment("容器")]

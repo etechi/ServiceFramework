@@ -398,6 +398,10 @@ namespace System.Linq.Expressions
 		{
 			return Expression.Lambda(e, from a in args select (ParameterExpression)a).Compile();
 		}
+		public static Delegate Compile(this Expression e, Type DelegateType,params Expression[] args)
+		{
+			return Expression.Lambda(DelegateType, e, from a in args select (ParameterExpression)a).Compile();
+		}
 		public static Expression<T> Lambda<T>(this Expression e, params Expression[] args)
 		{
 			return Expression.Lambda<T>(e, from a in args select (ParameterExpression)a);
