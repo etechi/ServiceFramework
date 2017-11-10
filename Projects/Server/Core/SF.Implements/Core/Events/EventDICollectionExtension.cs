@@ -29,7 +29,7 @@ namespace SF.Core.ServiceManagement
 	{
 		public static IServiceCollection AddEventServices(this IServiceCollection sc)
 		{
-			var em = new EventManager();
+			var em = new EventManager(null);
 			sc.AddSingleton<IEventEmitter>(r=>em);
 			sc.AddSingleton<ISourceResolver>(r => em);
 			sc.Add(typeof(IEventSubscriber<>), typeof(EventSubscriber<>), ServiceImplementLifetime.Scoped);

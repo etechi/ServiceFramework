@@ -24,18 +24,18 @@ namespace SF.Core.Events
 {	
 	public static class TaskEventService
 	{
-        public static IDisposable Start(
+        public static IDisposable Start<TEvent>(
             this ISourceResolver SourceResolver,
             string EventSourceName,
 			string EventTypeName,
-            Func<object, Task> EventCallback,
+            Func<TEvent, Task> EventCallback,
             Action CleanupCallback=null,
             Func<bool> IsStopped=null
-            )
+            ) where TEvent:class,IEvent
 		{
             var disposable = SourceResolver
                 .GetObservable(EventSourceName, EventTypeName)
-                .Subscribe(e =>
+                .Subscribe<TEvent>(e =>
                 {
                     if (IsStopped?.Invoke() ?? false)
                         return Task.CompletedTask;

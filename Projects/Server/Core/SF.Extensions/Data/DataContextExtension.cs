@@ -46,38 +46,35 @@ namespace SF.Data
 		public static void RemoveRange<T>(this IDataContext Context, IEnumerable<T> Entity) where T : class
 			=> Context.Set<T>().RemoveRange(Entity);
 
-		public static async Task<T> UseTransaction< T>(
+		public static Task<T> UseTransaction< T>(
 			this IDataContext Context,
 			string TransMessage,
 			Func<DbTransaction,Task<T>> Action
 			)
 		{
 			var tm = Context.TransactionScopeManager;
-			using (var ts = await tm.CreateScope(TransMessage, TransactionScopeMode.RequireTransaction))
-			{
-				var tran = tm.CurrentDbTransaction;
-				var provider = Context.Provider;
-				var orgTran = provider.Transaction;
-				if (orgTran == tran)
+			return tm.UseTransaction(
+				TransMessage,
+				async s =>
 				{
-					var re = await Action(tran);
-					await ts.Commit();
-					return re;
-				}
+					var tran = tm.CurrentDbTransaction;
+					var provider = Context.Provider;
+					var orgTran = provider.Transaction;
+					if (orgTran == tran)
+						return await Action(tran);
 
-				provider.Transaction = tran;
-				try
-				{
-					var re= await Action(tran);
-					await ts.Commit();
-					return re;
+					provider.Transaction = tran;
+					try
+					{
+						return await Action(tran);
+					}
+					finally
+					{
+						provider.Transaction = orgTran;
+					}
+
 				}
-				finally
-				{
-					provider.Transaction = orgTran;
-				}
-				
-			}
+			);
 		}
 	}
 }

@@ -242,19 +242,22 @@ namespace SF.Entities
 		{
 			var paging = new Paging { Count = BatchCount };
 			var arg = QueryArgument ?? new TQueryArgument();
-			for(;;)
+			for(; ; )
 			{
-				using (var scope = await transScopeManager.CreateScope("批量删除", TransactionScopeMode.RequireTransaction))
-				{
-					var re = await Manager.QueryIdentsAsync(arg, paging);
-					var ids = re.Items.ToArray();
-					foreach (var id in ids)
-						await Manager.RemoveAsync(id);
-
-					await scope.Commit();
-					if (ids.Length == 0)
-						break;
-				}
+				var left=await transScopeManager.UseTransaction(
+					"批量删除", 
+					async s =>
+					 {
+						 var re = await Manager.QueryIdentsAsync(arg, paging);
+						 var ids = re.Items.ToArray();
+						 foreach (var id in ids)
+							 await Manager.RemoveAsync(id);
+						 return ids.Length;
+					 }, 
+					 TransactionScopeMode.RequireTransaction
+					);
+				if (left == 0)
+					break;
 			}
 		}
 	

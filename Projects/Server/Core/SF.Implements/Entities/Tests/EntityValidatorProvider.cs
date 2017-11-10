@@ -42,7 +42,7 @@ namespace SF.Entities.Tests
 			protected TestResult Validate(TExpect Expect, TTest Test)
 			{
 				var ars = new List<TestResult>();
-				var ident = typeof(TTest).FullName+":"+Entity<TTest>.GetIdentString(Test);
+				var ident = typeof(TTest).FullName+":"+Entity<TTest>.GetIdentValues(Test);
 				FuncValidator(Expect, Test, ident ,ars);
 				return TestResult.Merge(ars);
 			}

@@ -158,7 +158,7 @@ namespace SF.Entities
 			var ctx = NewModifyContext();
 			var re =await InternalUpdateAsync(ctx,obj);
 			if (!re)
-				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Entity<TEditable>.GetIdentString(obj)}");
+				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Entity<TEditable>.GetIdentValues(obj)}");
 		}
 		protected virtual async Task<bool> InternalUpdateAsync(IModifyContext Context,TEditable obj)
 		{
@@ -292,7 +292,7 @@ namespace SF.Entities
 			var ctx = NewModifyContext();
 			var re = await InternalUpdateAsync(ctx, obj);
 			if (!re)
-				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Entity<TEditable>.GetIdentString(obj)}");
+				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Entity<TEditable>.GetIdentValues(obj)}");
 		}
 		protected virtual async Task<bool> InternalUpdateAsync(IModifyContext Context, TEditable obj)
 		{

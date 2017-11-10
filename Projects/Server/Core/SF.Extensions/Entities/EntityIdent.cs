@@ -56,7 +56,8 @@ namespace SF.Entities
 				foreach (var Part in Parts)
 				{
 					sb.Append('-');
-					EncodePart(Part, 0, Part.Length, sb);
+					if(Part!=null)
+						EncodePart(Part, 0, Part.Length, sb);
 				}
 			return sb.ToString();
 		}

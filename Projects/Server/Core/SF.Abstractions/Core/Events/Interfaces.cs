@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,19 @@ namespace SF.Core.Events
 {
 	public interface IEvent
 	{
-		long? IdentityId { get; }
+		long? EventId { get; }
 		long? ServiceId { get; }
+		string EventSource { get; }
+		string EventType { get; }
+		DateTime EventTime { get; }
+	}
+	public abstract class CommonEvent : IEvent
+	{
+		public DateTime EventTime { get; set; }
+		public long? EventId { get; set; }
+		public string EventSource { get; set; }
+		public string EventType { get; set; }
+		public long? ServiceId { get; set; }
 	}
 
 	public interface IEventValidator<T>
@@ -36,10 +48,21 @@ namespace SF.Core.Events
 	{
 		void Wait(Func<T,Task> Callback);
 	}
-
+	public enum EventDeliveryPolicy
+	{
+		[Comment("无保证")]
+		NoGuarantee,
+		[Comment("最多一次")]
+		AtMostOnce,
+		[Comment("最少一次")]
+		AtLeastOnce,
+		[Comment("刚好一次")]
+		JustOnce
+	}
 	public interface IEventObservable
     {
-        IDisposable Subscribe(Func<object,Task> observer);
+        IDisposable Subscribe<TEvent>(string SubscriberIdent,Func<TEvent, Task> observer, EventDeliveryPolicy Policy)
+			where TEvent:class,IEvent;
     }
     public interface IEventSource
     {
@@ -53,7 +76,7 @@ namespace SF.Core.Events
 
 	public interface IEventEmitter
 	{
-		Task Emit(object Event,bool SyncMode=true);
+		Task Emit(IEvent Event,bool SyncMode=true);
 	}
    
 }

@@ -17,20 +17,55 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using SF.Metadata;
 using System.Threading.Tasks;
+using SF.Core.Events;
 
 namespace SF.Entities
 {
-	
-	public class EntityChanged<TEntity>
+	public abstract class EntityEvent : CommonEvent
 	{
-		
-
-		public DataActionType Action { get; set; }
-		public long? ServiceId { get; set; }
-		public TEntity Entity { get; set; }
-		public DateTime Time { get; set; }
+		public abstract Type EntityType { get; }
 		public Data.PostActionType PostActionType { get; set; }
+		public DataActionType Action { get; set; }
+		public string EntityIdent { get; set; }
+		public Exception Exception { get; set; }
 
-		
+		object _CachedEntityInstance;
+		public object GetCachedEntityInstance() => _CachedEntityInstance;
+		public void SetCachedEntityInstance(object Instance) {
+			if (Instance != null && !EntityType.IsAssignableFrom(Instance.GetType()))
+				throw new ArgumentException($"类型错误,实体事件定义类型为:{EntityType},实际提供为:{Instance.GetType()}");
+			_CachedEntityInstance = Instance;
+		}
+		public EntityEvent() { }
+		public EntityEvent(object CachedEntity)
+		{
+			SetCachedEntityInstance(CachedEntity);
+		}
 	}
+	public class EntityChanged<TEntity> : EntityEvent
+	{
+		public EntityChanged()
+		{
+		}
+
+		public EntityChanged(TEntity Entity) : base(Entity)
+		{
+		}
+
+		public override Type EntityType => typeof(TEntity);
+		
+		public TEntity GetEntity()=>(TEntity)GetCachedEntityInstance();
+		public void SetEntity(TEntity Entity) => SetCachedEntityInstance(Entity);
+	}
+	//public abstract class EntityRelationEvent : EntityEvent
+	//{
+	//	public abstract Type RelatedEntityType { get; }
+	//}
+	//public class EntityRelationChanged<TEntity, TRelatedEntityType> : EntityRelationEvent
+	//{
+	//	public override Type EntityType => typeof(TEntity);
+	//	public override Type RelatedEntityType => typeof(TEntity);
+	//	public TEntity Entity { get; set; }
+	//	public TRelatedEntityType RelatedEntity { get; set; }
+	//}
 }

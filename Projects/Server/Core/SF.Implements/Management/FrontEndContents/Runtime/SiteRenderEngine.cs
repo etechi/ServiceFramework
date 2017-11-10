@@ -65,18 +65,18 @@ namespace SF.Management.FrontEndContents.Runtime
 
 			OnContentModified.Wait(e =>
 			{
-				Contents.TryRemove(e.Entity.Id, out var c);
+				Contents.TryRemove(EntityIdents.Parse<long>(e.EntityIdent ).Id1, out var c);
 				return Task.CompletedTask;
 			});
 
 			OnSiteTemplateModified.Wait(e =>
 			{
-				SiteBinds.TryRemove(e.Entity.Id, out var site);
+				SiteBinds.TryRemove(EntityIdents.Parse<string>(e.EntityIdent).Id1, out var site);
 				return Task.CompletedTask;
 			});
 			OnSiteModified.Wait(e =>
 			{
-				Sites.TryRemove(e.Entity.Id, out var s);
+				Sites.TryRemove(EntityIdents.Parse<long>(e.EntityIdent).Id1, out var s);
 				return Task.CompletedTask;
 			});
 

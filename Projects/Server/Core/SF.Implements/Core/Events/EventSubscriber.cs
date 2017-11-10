@@ -25,23 +25,40 @@ namespace SF.Core.Events
 	{
 		IDisposable _Disposable;
 		object EventHandler;
-		public EventSubscriber(ISourceResolver SourceResolver)
+		public EventSubscriber(ISourceResolver SourceResolver,
+			string EventSource,
+			string EventType, 
+			string SubscriberIdent=null,
+			EventDeliveryPolicy Policy=EventDeliveryPolicy.NoGuarantee
+			)
 		{
-			var pair = typeof(T).FullName.LastSplit2('.');
-			var observer = SourceResolver.GetSource(pair.Item1)?.GetObservable(pair.Item2);
-			_Disposable = observer.Subscribe(async o =>
-			 {
-				  var eh = EventHandler;
-				  if (eh == null)
-					  return;
-				  var ol = EventHandler as List<Func<T, Task>>;
-				  if (ol == null)
-					  await ((Func<T, Task>)EventHandler)((T)o);
-				  else
-					  foreach (var h in ol)
-						  await h((T)o);
+			if (EventSource == null && EventType==null)
+			{
+				(EventSource,EventType) = typeof(T).FullName.LastSplit2('.');
+			}
+			else if(EventSource==null || EventType==null)
+			{
+				throw new ArgumentException($"必须同时设置事件源和类型");
+			}
+			var observer = SourceResolver.GetSource(EventSource)?.GetObservable(EventType);
 
-			 });
+			_Disposable = observer.Subscribe<IEvent>(
+				SubscriberIdent,
+				async o =>
+				 {
+					  var eh = EventHandler;
+					  if (eh == null)
+						  return;
+					  var ol = EventHandler as List<Func<T, Task>>;
+					  if (ol == null)
+						  await ((Func<T, Task>)EventHandler)((T)o);
+					  else
+						  foreach (var h in ol)
+							  await h((T)o);
+
+				 },
+				 Policy
+				 );
 		}
 
 		public void Dispose()

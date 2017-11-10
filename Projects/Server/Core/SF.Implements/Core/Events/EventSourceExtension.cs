@@ -24,38 +24,43 @@ namespace SF.Core.Events
 	
 	public static class EventSourceExtension
     {
+		public static IDisposable Subscribe<TEvent>(this IEventObservable Observable,Func<TEvent,Task> observer) where TEvent:class,IEvent
+		{
+			return Observable.Subscribe(null, observer, EventDeliveryPolicy.NoGuarantee);
+		}
 		public static IEventObservable GetObservable(this ISourceResolver Resolver, string Source, string Type)
 		{
 			return Resolver.GetSource(Source).GetObservable(Type);
 		}
-		public static IDisposable Subscribe(this ISourceResolver Resolver, string Source,string Type, Func<object,Task> Callback)
+		
+		public static IDisposable Subscribe<TEvent>(this ISourceResolver Resolver, string Source,string Type, Func<TEvent,Task> Callback)
+			where TEvent:class,IEvent
 		{
 			return Resolver.GetObservable(Source,Type)
 				.Subscribe(Callback);
 		}
-		public static IDisposable Subscribe(this ISourceResolver Resolver, string Source, Func<object, Task> Callback)
+		public static IDisposable Subscribe<TEvent>(this ISourceResolver Resolver, string Source, Func<TEvent, Task> Callback)
+			where TEvent : class, IEvent
 		{
 			return Resolver.Subscribe(Source, null, Callback);
 		}
-
+		
 		public static IDisposable Filter(
 			this ISourceResolver Resolver,
 			string Source,
 			string Type,
 			IEventEmitter Emiter,
-			Func<object, object> Filter,
+			Func<IEvent, Task<IEvent>> Filter,
             bool OutputSyncMode=false
 			)
 		{
 			return Resolver.Subscribe(
                 Source, 
                 Type, 
-                e =>
+                async (IEvent e) =>
                 {
-                    var re = Filter(e);
-                    if (re == null)
-                        return Task.CompletedTask;
-                    return Emiter.Emit(re, OutputSyncMode);
+                    var newEvent = await Filter(e);
+                    await Emiter.Emit(newEvent,OutputSyncMode);
                 }
                 );
 		}

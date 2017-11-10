@@ -174,21 +174,22 @@ namespace SF.Biz.Products.Entity
 
 			foreach(var c in Removed)
 				await DataSet.Context.Set< TCategoryItem>().RemoveRangeAsync(i => i.CategoryId == c.Id);
-			ServiceContext.AddPostAction(() =>
-			{
-				foreach (var c in Removed)
+			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				TransactionCommitNotifyType.AfterCommit,
+				(t, ex) =>
 				{
-					Notifier.NotifyCategoryChanged(c.Id);
-					Notifier.NotifyCategoryChildrenChanged(c.Id);
-					Notifier.NotifyCategoryItemsChanged(c.Id);
+					foreach (var c in Removed)
+					{
+						Notifier.NotifyCategoryChanged(c.Id);
+						Notifier.NotifyCategoryChildrenChanged(c.Id);
+						Notifier.NotifyCategoryItemsChanged(c.Id);
+					}
+					foreach (var id in Updated)
+					{
+						Notifier.NotifyCategoryChanged(id);
+						Notifier.NotifyCategoryChildrenChanged(id);
+					}
 				}
-				foreach (var id in Updated)
-				{
-					Notifier.NotifyCategoryChanged(id);
-					Notifier.NotifyCategoryChildrenChanged(id);
-				}
-			},
-			PostActionType.AfterCommit
 			);
 			//return BatchMapModelToEditable(re.AsQueryable(DataSet.Context.Provider)).ToArray();
 		}
@@ -229,10 +230,12 @@ namespace SF.Biz.Products.Entity
 			Category.ItemCount = Items.Length;
 			//DataSet.Update(c);
 			//await DataContext.SaveChangesAsync();
-			ServiceContext.AddPostAction(
-				() =>Notifier.NotifyCategoryItemsChanged(Category.Id),
-				PostActionType.AfterCommit
-				);
+			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				TransactionCommitNotifyType.AfterCommit,
+				(t, ex) =>
+				{
+					Notifier.NotifyCategoryItemsChanged(Category.Id);
+				});
 		}
         protected override IContextQueryable<TEditable> OnMapModelToDetail(IContextQueryable<TCategory> Query)
 		{
@@ -274,13 +277,13 @@ namespace SF.Biz.Products.Entity
             var orgTags = Model.Tag;
             var newTags = ctx.Editable.Tag;
 
-			ServiceContext.AddPostAction(() =>
-            {
-                foreach (var tag in ((orgTags ?? "") + ";" + (newTags ?? ";")).SplitAndNormalizae(';'))
-                    Notifier.NotifyCategoryTag(tag);
-            },
-			PostActionType.AfterCommit
-			);
+			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				TransactionCommitNotifyType.AfterCommit,
+				(t, ex) =>
+				{
+					foreach (var tag in ((orgTags ?? "") + ";" + (newTags ?? ";")).SplitAndNormalizae(';'))
+						Notifier.NotifyCategoryTag(tag);
+				});
 			if (npid != opid)
 			{
 				await DataSet.ValidateTreeParent(
@@ -292,19 +295,24 @@ namespace SF.Biz.Products.Entity
 						.Select(c => c.ParentId.HasValue?c.ParentId.Value:0)
 					);
 
-				ServiceContext.AddPostAction(() =>
-				{
-					if (opid != 0)
-						Notifier.NotifyCategoryChildrenChanged(opid);
-					if (npid != 0 && npid != opid)
-						Notifier.NotifyCategoryChildrenChanged(npid);
-				},
-				PostActionType.AfterCommit);
+				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+					TransactionCommitNotifyType.AfterCommit,
+					(t, ex) =>
+					{
+						if (opid != 0)
+							Notifier.NotifyCategoryChildrenChanged(opid);
+						if (npid != 0 && npid != opid)
+							Notifier.NotifyCategoryChildrenChanged(npid);
+					}
+					);
 			}
 			if(Model.Id!=0)
-				ServiceContext.AddPostAction(
-					() =>Notifier.NotifyCategoryChanged(Model.Id),
-					PostActionType.AfterCommit
+				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+					TransactionCommitNotifyType.AfterCommit,
+					(t, ex) =>
+					{
+						Notifier.NotifyCategoryChanged(Model.Id);
+					}
 					);
 			OnUpdateModel(Model, obj, ServiceContext.Now);
 
@@ -338,15 +346,16 @@ namespace SF.Biz.Products.Entity
 			var Model = ctx.Model;
 			DataContext.Set<TCategoryItem>().RemoveRange(Model.Items);
             var tags = Model.Tag;
-			ServiceContext.AddPostAction(() =>
-			{
-				Notifier.NotifyCategoryChanged(Model.Id);
-				Notifier.NotifyCategoryChildrenChanged(Model.Id);
-				Notifier.NotifyCategoryItemsChanged(Model.Id);
-                foreach (var tag in tags.SplitAndNormalizae(';'))
-                    Notifier.NotifyCategoryTag(tag);
-            },
-			PostActionType.AfterCommit
+			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				TransactionCommitNotifyType.AfterCommit,
+				(t, ex) =>
+				{
+					Notifier.NotifyCategoryChanged(Model.Id);
+					Notifier.NotifyCategoryChildrenChanged(Model.Id);
+					Notifier.NotifyCategoryItemsChanged(Model.Id);
+					foreach (var tag in tags.SplitAndNormalizae(';'))
+						Notifier.NotifyCategoryTag(tag);
+			}
 			);
 			return base.OnRemoveModel(ctx);
 		}

@@ -229,23 +229,26 @@ namespace SF.Core.ServiceManagement.Management
 			{
 				var orgParentId = m.ContainerId;
 				m.ContainerId = e.ContainerId;
-				ServiceContext.AddPostAction(async () =>
-				{
-					await ServiceContext.EventEmitter.Emit(
-						new InternalServiceChanged
-						{
-							ScopeId = orgParentId,
-							ServiceType = m.ServiceType
-						});
-					await ServiceContext.EventEmitter.Emit(
-						new InternalServiceChanged
-						{
-							ScopeId = e.ContainerId,
-							ServiceType = m.ServiceType
-						}
-						);
-				},
-				PostActionType.AfterCommit
+				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+					TransactionCommitNotifyType.AfterCommit,
+					async (t,ex) =>
+					{
+						await ServiceContext.EventEmitter.Emit(
+							new InternalServiceChanged
+							{
+								EventTime =ServiceContext.Now,
+								ScopeId = orgParentId,
+								ServiceType = m.ServiceType
+							});
+						await ServiceContext.EventEmitter.Emit(
+							new InternalServiceChanged
+							{
+								EventTime = ServiceContext.Now,
+								ScopeId = e.ContainerId,
+								ServiceType = m.ServiceType
+							}
+							);
+					}
 				);
 			}
 			
@@ -258,28 +261,31 @@ namespace SF.Core.ServiceManagement.Management
 				i => i.ItemOrder,
 				(i, p) => i.ItemOrder = p
 				) || m.ServiceIdent != e.ServiceIdent)
-				ServiceContext.AddPostAction(async () =>
-					await ServiceContext.EventEmitter.Emit(
-						new InternalServiceChanged
-						{
-							ScopeId = m.ContainerId,
-							ServiceType = m.ServiceType
-						})
-					,
-					PostActionType.AfterCommit);
+				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+					TransactionCommitNotifyType.AfterCommit,
+					async (t, ex) =>
+					{
+						await ServiceContext.EventEmitter.Emit(
+							new InternalServiceChanged
+							{
+								ScopeId = m.ContainerId,
+								ServiceType = m.ServiceType
+							});
+					});
 			m.ServiceIdent = e.ServiceIdent;
 
-			ServiceContext.AddPostAction(async () =>
-			{
-				await ServiceContext.EventEmitter.Emit(
-					new ServiceInstanceChanged
-					{
-						Id = m.Id
-					}
-				);
-				Logger.Info("ServiceInstance Saved:{0}", Json.Stringify(m));
-			},
-			PostActionType.AfterCommit);
+			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				TransactionCommitNotifyType.AfterCommit,
+				async (t, ex) =>
+				{
+					await ServiceContext.EventEmitter.Emit(
+						new ServiceInstanceChanged
+						{
+							Id = m.Id
+						}
+					);
+					Logger.Info("ServiceInstance Saved:{0}", Json.Stringify(m));
+				});
 		}
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{

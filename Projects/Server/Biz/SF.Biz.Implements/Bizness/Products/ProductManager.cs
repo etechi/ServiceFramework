@@ -210,13 +210,14 @@ namespace SF.Biz.Products.Entity
             if (Model.Id!=0)
 			{
 				var notifier = this.ItemNotifier.Value;
-				ServiceContext.AddPostAction(() =>
-				{
-					notifier.NotifyProductChanged(Model.Id);
-					notifier.NotifyProductContentChanged(Model.Id);
-				},
-				PostActionType.AfterCommit
-				);
+				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+					TransactionCommitNotifyType.AfterCommit,
+					(t, ex) =>
+					{ 
+						notifier.NotifyProductChanged(Model.Id);
+						notifier.NotifyProductContentChanged(Model.Id);
+					}
+					);
 
 				var defaultItemId = await DataContext
 					.Set<TItem>().AsQueryable()
@@ -248,15 +249,16 @@ namespace SF.Biz.Products.Entity
                             DataContext.Remove(e);
 						}
 						);
-					ServiceContext.AddPostAction(() =>
-					{
-						foreach (var i in Added)
-							notifier.NotifyCategoryItemsChanged(i);
-						foreach (var i in Removed)
-							notifier.NotifyCategoryItemsChanged(i);
-					},
-					PostActionType.AfterCommit
-					);
+					ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+						TransactionCommitNotifyType.AfterCommit,
+						(t, ex) =>
+						{ 
+								foreach (var i in Added)
+								notifier.NotifyCategoryItemsChanged(i);
+							foreach (var i in Removed)
+								notifier.NotifyCategoryItemsChanged(i);
+						}
+						);
 				}
 			}
 		}
@@ -288,13 +290,13 @@ namespace SF.Biz.Products.Entity
 			};
             var notifier = this.ItemNotifier.Value;
             if(obj.CategoryIds!=null)
-				ServiceContext.AddPostAction(() =>
-                {
-                    foreach (var cid in obj.CategoryIds)
-                            notifier.NotifyCategoryItemsChanged(cid);
-                },
-				PostActionType.AfterCommit
-				);
+				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+					TransactionCommitNotifyType.AfterCommit,
+					(t, ex) =>
+					{ 
+						foreach (var cid in obj.CategoryIds)
+								notifier.NotifyCategoryItemsChanged(cid);
+					});
 		}
 		protected override IContextQueryable<TProduct> OnLoadChildObjectsForUpdate(ObjectKey<long> Id, IContextQueryable<TProduct> query)
 		{
@@ -338,13 +340,13 @@ namespace SF.Biz.Products.Entity
 			DataContext.Remove(prd.Detail);
 
 			var notifier = this.ItemNotifier.Value;
-			ServiceContext.AddPostAction(() =>
-			{
-				foreach (var ci in cids)
-					notifier.NotifyCategoryItemsChanged(ci);
-			},
-			PostActionType.AfterCommit
-			);
+			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				TransactionCommitNotifyType.AfterCommit,
+				(t, ex) =>
+				{
+					foreach (var ci in cids)
+						notifier.NotifyCategoryItemsChanged(ci);
+				});
 			await base.OnRemoveModel(ctx);
 		}
 		

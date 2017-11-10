@@ -48,28 +48,6 @@ namespace SF.Entities
 	}
 	public static class DataSetEntityStorage
 	{
-		public static void AddPostAction(
-			this IEntityServiceContext Storage,
-			Action action,
-			PostActionType Type
-			) 
-		{
-			Storage.DataContext.TransactionScopeManager.CurrentScope.AddPostAction(
-				action,
-				Type
-				);
-		}
-		public static void AddPostAction(
-			this IEntityServiceContext Storage,
-			Func<Task> action,
-			PostActionType Type
-			)
-		{
-			Storage.DataContext.TransactionScopeManager.CurrentScope.AddPostAction(
-				action,
-				Type
-				);
-		}
 		public static Task<T> UseTransaction<T>(
 			this IEntityServiceContext Storage,
 			string TransMessage,
@@ -470,6 +448,89 @@ namespace SF.Entities
 		}
 		#endregion
 
+
+		#region Events
+
+
+		public static void PostChangedEvents<TEntity>(
+			this IEntityServiceContext Manager,
+			TEntity Entity,
+			DataActionType DataActionType,
+			IEntityMetadata meta=null
+			)
+		{
+			if (meta == null)
+			{
+				meta = Manager.EntityMetadataCollection.FindByEntityType(typeof(TEntity));
+				if (meta == null)
+					throw new ArgumentException($"找不到类型{typeof(TEntity)}相关的实体");
+			}
+			Manager.DataContext.TransactionScopeManager.AddCommitTracker(
+				TransactionCommitNotifyType.BeforeCommit | TransactionCommitNotifyType.AfterCommit,
+				async (t, e) =>
+				{
+					if (e != null && t== TransactionCommitNotifyType.BeforeCommit)
+						return;
+					var eve = new EntityChanged<TEntity>(Entity)
+					{
+						Action = DataActionType,
+						ServiceId = Manager.ServiceInstanceDescroptor?.InstanceId,
+						EventTime = Manager.Now,
+						EntityIdent = Entity<TEntity>.GetStrIdent(meta.Ident, Entity),
+						Exception=e
+					};
+
+					if (t == TransactionCommitNotifyType.BeforeCommit)
+					{
+						eve.PostActionType = PostActionType.AfterCommit;
+						await Manager.EventEmitter.Emit( eve);
+					}
+					else if (t == TransactionCommitNotifyType.AfterCommit)
+					{
+						eve.PostActionType = PostActionType.AfterCommit;
+						await Manager.EventEmitter.Emit(eve);
+					}
+				}
+			);
+		}
+		//public static void PostEntityRelationChangedEvents<TEntity, TRelatedEntity>(
+		//	this IEntityServiceContext Manager,
+		//	TEntity Entity,
+		//	TRelatedEntity RelatedEntity,
+		//	DataActionType DataActionType
+		//	)
+		//{
+		//	Manager.AddPostAction(() =>
+		//		Manager.EventEmitter.Emit(
+		//			new EntityRelationChanged<TEntity,TRelatedEntity>()
+		//			{
+		//				Entity = Entity,
+		//				Action = DataActionType,
+		//				ServiceId = Manager.ServiceInstanceDescroptor?.InstanceId,
+		//				Time = Manager.Now,
+		//				PostActionType = PostActionType.BeforeCommit,
+		//				RelatedEntity= RelatedEntity
+		//			}
+		//		),
+		//		PostActionType.BeforeCommit
+		//	);
+		//	Manager.AddPostAction(() =>
+		//		Manager.EventEmitter.Emit(
+		//			new EntityRelationChanged<TEntity, TRelatedEntity>()
+		//			{
+		//				Entity = Entity,
+		//				Action = DataActionType,
+		//				ServiceId = Manager.ServiceInstanceDescroptor?.InstanceId,
+		//				Time = Manager.Now,
+		//				PostActionType = PostActionType.AfterCommit,
+		//				RelatedEntity = RelatedEntity
+		//			},
+		//			false
+		//		),
+		//		PostActionType.AfterCommit
+		//	);
+		//}
+		#endregion
 		#region Create
 
 		public static void InitCreate<TModel, TEntity>(
@@ -544,33 +605,7 @@ namespace SF.Entities
 						await UpdateModel(Context);
 
 					Storage.DataContext.Set<TModel>().Add(Context.Model);
-					Storage.AddPostAction(() =>
-						Storage.EventEmitter.Emit(
-							new EntityChanged<TEditable>()
-							{
-								Entity=Context.Editable,
-								Action = DataActionType.Create,
-								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
-								Time = Storage.Now,
-								PostActionType=PostActionType.BeforeCommit
-							}
-							),
-							PostActionType.BeforeCommit
-						);
-					Storage.AddPostAction(() =>
-						Storage.EventEmitter.Emit(
-							new EntityChanged< TEditable>()
-							{
-								Entity = Context.Editable,
-								Action = DataActionType.Create,
-								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
-								Time = Storage.Now,
-								PostActionType = PostActionType.AfterCommit
-							},
-							false
-							),
-							PostActionType.AfterCommit
-						);
+					Storage.PostChangedEvents<TEditable>(Context.Editable,DataActionType.Create);
 					await Storage.DataContext.SaveChangesAsync();
 					return Entity<TModel>.GetKey<TKey>(Context.Model);
 				});
@@ -617,7 +652,7 @@ namespace SF.Entities
 			Storage.PermissionValidate(Operations.Update);
 
 			return await Storage.UseTransaction(
-				$"编辑实体{typeof(TModel).Comment().Name}:{Entity<TEditable>.GetIdentString(Entity)}",
+				$"编辑实体{typeof(TModel).Comment().Name}:{Entity<TEditable>.GetIdentValues(Entity)}",
 				async (trans) =>
 				{
 					var q = Storage.DataContext.Set<TModel>().AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Entity));
@@ -635,33 +670,8 @@ namespace SF.Entities
 						await UpdateModel(Context);
 					Storage.DataContext.Set<TModel>().Update(Context.Model);
 
-					Storage.AddPostAction(() =>
-						Storage.EventEmitter.Emit(
-							new EntityChanged<TEditable>()
-							{
-								Entity = Entity,
-								Action = DataActionType.Update,
-								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
-								Time = Storage.Now,
-								PostActionType = PostActionType.BeforeCommit
-							}
-							),
-							PostActionType.BeforeCommit
-						);
-					Storage.AddPostAction(() =>
-						Storage.EventEmitter.Emit(
-							new EntityChanged<TEditable>()
-							{
-								Entity=Entity,
-								Action = DataActionType.Update,
-								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
-								Time = Storage.Now,
-								PostActionType = PostActionType.AfterCommit
-							},
-							false
-							),
-							PostActionType.AfterCommit
-						);
+					Storage.PostChangedEvents<TEditable>(Context.Editable, DataActionType.Update);
+
 
 					await Storage.DataContext.SaveChangesAsync();
 					return true;
@@ -715,33 +725,7 @@ namespace SF.Entities
 						await RemoveModel(Context);
 					Storage.DataContext.Set<TModel>().Remove(Context.Model);
 
-					Storage.AddPostAction(() =>
-						Storage.EventEmitter.Emit(
-							new EntityChanged<TEditable>()
-							{
-								Entity= editable,
-								Action = DataActionType.Delete,
-								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
-								Time = Storage.Now,
-								PostActionType = PostActionType.BeforeCommit
-							}
-							),
-							PostActionType.BeforeCommit
-						);
-					Storage.AddPostAction(() =>
-						Storage.EventEmitter.Emit(
-							new EntityChanged<TEditable>()
-							{
-								Entity = editable,
-								Action = DataActionType.Delete,
-								ServiceId = Storage.ServiceInstanceDescroptor?.InstanceId,
-								Time = Storage.Now,
-								PostActionType = PostActionType.AfterCommit
-							},
-							false
-							),
-							PostActionType.AfterCommit
-						);
+					Storage.PostChangedEvents<TEditable>(Context.Editable, DataActionType.Delete);
 
 					await Storage.DataContext.SaveChangesAsync();
 					return true;
@@ -779,21 +763,24 @@ namespace SF.Entities
 			for (; ; )
 			{
 				var batchIndex = 0;
-				using (var scope = await tsm.CreateScope($"批量删除{typeof(TModel).Comment()}", TransactionScopeMode.RequireTransaction))
-				{
-					var ids = await Storage.UseTransaction($"查询批量删除主键{batchIndex++}",async (trans) =>
+				var left = await tsm.UseTransaction(
+					$"批量删除{typeof(TModel).Comment()}", async s =>
 					{
-						var q = Storage.DataContext.Set<TModel>().AsQueryable();
-						if (Condition != null)
-							q = q.Where(Condition);
-						return await q.Select(Entity<TModel>.KeySelector<TKey>()).Take(BatchCount).ToArrayAsync();
-					});
-					foreach (var id in ids)
-						await Remove(id);
-					await scope.Commit();
-					if (ids.Length < BatchCount)
-						break;
-				}
+						var ids = await Storage.UseTransaction($"查询批量删除主键{batchIndex++}", async (trans) =>
+						 {
+							 var q = Storage.DataContext.Set<TModel>().AsQueryable();
+							 if (Condition != null)
+								 q = q.Where(Condition);
+							 return await q.Select(Entity<TModel>.KeySelector<TKey>()).Take(BatchCount).ToArrayAsync();
+						 });
+						foreach (var id in ids)
+							await Remove(id);
+						return ids.Length;
+					}, 
+					TransactionScopeMode.RequireTransaction
+				);
+				if (left < BatchCount)
+					break;
 			}
 		}
 

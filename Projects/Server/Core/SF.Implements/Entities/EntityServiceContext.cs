@@ -46,6 +46,7 @@ namespace SF.Entities
 		IQueryFilterCache _QueryFilterCache;
 		IPagingQueryBuilderCache _PagingQueryBuilderCache;
 		IEntityModifierCache _EntityModifierCache;
+		IEntityMetadataCollection _EntityMetadataCollection;
 		public IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 
 		DateTime _Now;
@@ -88,6 +89,7 @@ namespace SF.Entities
 		public IQueryResultBuildHelperCache QueryResultBuildHelperCache => Resolve(ref _QueryResultBuildHelperCache);
 		public IEntityModifierCache EntityModifierCache => Resolve(ref _EntityModifierCache);
 		public IPagingQueryBuilderCache PagingQueryBuilderCache => Resolve(ref _PagingQueryBuilderCache);
+		public IEntityMetadataCollection EntityMetadataCollection => Resolve(ref _EntityMetadataCollection);
 
 		public IEntityMetadata EntityMetadata
 		{
@@ -95,8 +97,7 @@ namespace SF.Entities
 			{
 				if (_EntityMetadata == null)
 				{
-					var metas = ServiceProvider.Resolve<IEntityMetadataCollection>();
-					_EntityMetadata = metas.FindByManagerType(GetType());
+					_EntityMetadata = EntityMetadataCollection.FindByManagerType(GetType());
 				}
 				return _EntityMetadata;
 			}

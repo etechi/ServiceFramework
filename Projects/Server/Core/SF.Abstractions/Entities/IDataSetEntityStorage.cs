@@ -63,6 +63,7 @@ namespace SF.Entities
 		IClientService ClientService { get; }
 		IAccessToken AccessToken { get; }
 		IEntityMetadata EntityMetadata { get; }
+		IEntityMetadataCollection EntityMetadataCollection { get; }
 		IScoped<IDataContext> ScopedDataContext { get; }
 		IQueryResultBuildHelperCache QueryResultBuildHelperCache { get; }
 		IPagingQueryBuilderCache PagingQueryBuilderCache { get; }

@@ -32,26 +32,55 @@ namespace SF.Data
 			IsolationLevel IsolationLevel = IsolationLevel.ReadCommitted
 			)
 		{
-			using(var scope =await ScopeManager.CreateScope(Message,Mode,IsolationLevel))
+			var re = default(T);
+			await ScopeManager.UseTransaction(
+				Message,
+				async s =>
+				{
+					re = await Callback(s);
+				},
+				Mode,
+				IsolationLevel
+				);
+			return re;
+		}
+		class CommitTracker : ITransactionCommitTracker
+		{
+			public TransactionCommitNotifyType TrackNotifyTypes { get; }
+			public Func<TransactionCommitNotifyType,Exception,Task> Callback { get; }
+			public CommitTracker(TransactionCommitNotifyType TrackNotifyTypes, Func<TransactionCommitNotifyType, Exception,Task> Callback)
 			{
-				var re=await Callback(scope);
-				await scope.Commit();
-				return re;
+				this.TrackNotifyTypes = TrackNotifyTypes;
+				this.Callback = Callback;
+			}
+			public Task Notify(TransactionCommitNotifyType Type, Exception Exception)
+			{
+				return Callback(Type, Exception);
 			}
 		}
-		public static async Task UseTransaction(
-			this ITransactionScopeManager ScopeManager,
-			string Message,
-			Func<ITransactionScope, Task> Callback,
-			TransactionScopeMode Mode = TransactionScopeMode.RequireTransaction,
-			IsolationLevel IsolationLevel = IsolationLevel.ReadCommitted
+		public static void AddCommitTracker(
+			this ITransactionScopeManager ScopeManager, 
+			TransactionCommitNotifyType TrackNotifyTypes, 
+			Func<TransactionCommitNotifyType, Exception, Task> Callback
 			)
 		{
-			using (var scope = await ScopeManager.CreateScope(Message, Mode, IsolationLevel))
-			{
-				await Callback(scope);
-				await scope.Commit();
-			}
+			ScopeManager.AddCommitTracker(new CommitTracker(TrackNotifyTypes, Callback));
+		}
+		public static void AddCommitTracker(
+			this ITransactionScopeManager ScopeManager,
+			TransactionCommitNotifyType TrackNotifyTypes,
+			Action<TransactionCommitNotifyType, Exception> Callback
+			)
+		{
+			ScopeManager.AddCommitTracker(
+				new CommitTracker(
+					TrackNotifyTypes, 
+					(t,e)=> {
+						Callback(t, e);
+						return Task.CompletedTask;
+					}
+				)
+			);
 		}
 	}
   

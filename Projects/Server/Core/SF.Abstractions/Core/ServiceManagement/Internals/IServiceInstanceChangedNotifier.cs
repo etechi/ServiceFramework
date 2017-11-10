@@ -13,13 +13,15 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Core.Events;
+
 namespace SF.Core.ServiceManagement.Internals
 {
-	public class ServiceInstanceChanged
+	public class ServiceInstanceChanged : CommonEvent
 	{
 		public long Id { get; set; }
 	}
-	public class InternalServiceChanged
+	public class InternalServiceChanged : CommonEvent
 	{
 		public long? ScopeId { get; set; }
 		public string ServiceType { get; set; }

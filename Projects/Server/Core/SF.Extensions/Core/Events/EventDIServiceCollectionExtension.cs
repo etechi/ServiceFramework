@@ -23,6 +23,7 @@ namespace SF.Core.ServiceManagement
 {
 	public static class EventDIServiceCollectionExtension
 	{
+		
 		//class EventValidator<T> : IEventValidator<T>
 		//{
 		//	public IServiceProvider ServiceProvider { get; }

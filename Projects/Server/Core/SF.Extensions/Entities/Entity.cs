@@ -78,7 +78,9 @@ namespace SF.Entities
 		);
 
 		public static object[] GetIdents(T e) => LazyGetIdents.Value(e);
-		public static string GetIdentString(T e) => GetIdents(e)?.Join(",");
+		public static string GetIdentValues(T e) => GetIdents(e)?.Join(",");
+		public static string GetStrIdent(string Type,T e) => 
+			EntityIdents.Build(Type, GetIdents(e).Select(o => o?.ToString()));
 
 
 

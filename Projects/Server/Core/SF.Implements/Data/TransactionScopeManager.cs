@@ -27,169 +27,156 @@ namespace SF.Data
     {
 		DbConnection Connection { get; }
 
-		public DbTransaction CurrentDbTransaction => _Transaction;
+		public DbTransaction CurrentDbTransaction => _DBTransaction;
 
 		public TransactionScopeManager(DbConnection Connection)
         {
             this.Connection = Connection;
         }
 
-		class ActionItem
-		{
-			public PostActionType ActionType { get; set; }
-			public Action Func { get; set; }
-			public Func<Task> AsyncFunc { get; set; }
-		}
 		class Scope : ITransactionScope
         {
             public TransactionScopeManager Manager { get; }
             public Scope PrevScope { get; }
             public string Message { get; }
-            bool _Completed;
+			public int Level { get; }
             public bool IsRollbacking { get { return Manager._IsRollbacking; } }
-			List<ActionItem> _PostActions;
-
-			public Scope(TransactionScopeManager Manager, Scope PrevScope,string Message)
+			public Scope(TransactionScopeManager Manager, Scope PrevScope,string Message,int Level)
             {
+				this.Level = Level;
                 this.Manager = Manager;
                 this.PrevScope = PrevScope;
                 this.Message = Message;
             }
-            public async Task Commit()
-            {
-                if (_Completed)
-                    throw new InvalidOperationException();
-                if (Manager._TopScope != this)
-                    throw new InvalidCastException();
-				if (PrevScope == null)
-				{
-					await ExecutePostActionsAsync(PostActionType.BeforeCommit);
-					Manager._Transaction.Commit();
-					await ExecutePostActionsAsync(PostActionType.AfterCommit);
-				}
-                _Completed = true;
-            }
-
-            public void Dispose()
-            {
-                if (Manager._TopScope != this)
-                    throw new InvalidCastException();
-
-                Manager._TopScope = PrevScope;
-                if (Manager._TopScope == null)
-                {
-                    var isRollbacking = Manager._IsRollbacking;
-                    Manager._IsRollbacking = false;
-                    var trans = Manager._Transaction;
-                    Manager._Transaction = null;
-                    using (trans)
-                    {
-						if (!_Completed)
-						{
-							if (!isRollbacking)
-								try
-								{
-									trans.Rollback();
-								}
-								catch { }
-						}
-					}
-					if (!_Completed)
-						ExecutePostActions(PostActionType.AfterCommitOrRollback);
-				}
-                else
-                {
-                    if (_Completed)
-                        return;
-                    if (!Manager._IsRollbacking)
-                    {
-                        Manager._IsRollbacking = true;
-                        try
-                        {
-                            Manager._Transaction.Rollback();
-						}
-                        catch { }
-                    }
-                }
-            }
-
-			public void AddPostAction(
-				Action action,
-				PostActionType ActionType
-				)
-			{
-				var pas = Manager._TopScope._PostActions;
-				if (pas == null)
-					Manager._TopScope._PostActions = pas = new List<ActionItem>();
-				pas.Add(new ActionItem { Func = action, ActionType = ActionType });
-			}
-			public void AddPostAction(
-			   Func<Task> action,
-				PostActionType ActionType
-			   )
-			{
-				var pas = Manager._TopScope._PostActions;
-				if (pas == null)
-					Manager._TopScope._PostActions = pas = new List<ActionItem>();
-				pas.Add(new ActionItem { AsyncFunc = action, ActionType = ActionType });
-			}
-			async Task ExecutePostActionsAsync(PostActionType ActionType)
-			{
-				if (_PostActions == null)
-					return;
-				foreach (var action in _PostActions)
-					if (action.ActionType==PostActionType.AfterCommitOrRollback && ActionType!=PostActionType.BeforeCommit ||
-						action.ActionType==ActionType
-						)
-					{
-						action.Func?.Invoke();
-						if (action.AsyncFunc != null)
-							await action.AsyncFunc();
-					}
-			}
-			void ExecutePostActions(PostActionType ActionType)
-			{
-				if (_PostActions == null)
-					return;
-				if (_PostActions.Any(a => a.AsyncFunc != null))
-				{
-					Task.Run(() => ExecutePostActions(ActionType)).Wait();
-					return;
-				}
-				foreach (var action in _PostActions)
-					if (action.ActionType == PostActionType.AfterCommitOrRollback && ActionType != PostActionType.BeforeCommit ||
-						action.ActionType == ActionType
-						)
-						action.Func?.Invoke();
-			}
 		}
 		
-		DbTransaction _Transaction;
+		DbTransaction _DBTransaction;
         Scope _TopScope;
         bool _IsRollbacking;
+		Exception _Exception;
 		public ITransactionScope CurrentScope => _TopScope;
+		List<ITransactionCommitTracker> _CommitTrackers;
 
-		public async Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode,System.Data.IsolationLevel IsolationLevel)
+		public void AddCommitTracker(
+			ITransactionCommitTracker Tracker
+			)
+		{
+			if (_TopScope == null)
+				throw new InvalidOperationException("当前没有事务在执行");
+
+			var pas = _CommitTrackers;
+			if (pas == null)
+				_CommitTrackers = pas = new List<ITransactionCommitTracker>();
+			pas.Add(Tracker);
+		}
+
+
+		async Task TraceCommitAsync(List<ITransactionCommitTracker> trackers, TransactionCommitNotifyType Type, Exception exception)
+		{
+			if (trackers == null)
+				return;
+			foreach (var tracker in trackers)
+			{
+				if ((tracker.TrackNotifyTypes & Type) == Type)
+					await tracker.Notify(Type, exception);
+			}
+		}
+		async Task EndScope()
+		{
+			var scope = _TopScope;
+			_TopScope = scope.PrevScope;
+			//顶层事务范围
+			if (_TopScope == null)
+			{
+				var expr = _Exception;
+				var isRollbacking = _IsRollbacking;
+				var trans = _DBTransaction;
+				var trackers = _CommitTrackers;
+				_CommitTrackers = null;
+				_Exception = null;
+				_IsRollbacking = false;
+				_DBTransaction = null;
+
+				using (trans)
+				{
+					//内部已经rollback
+					if (isRollbacking)
+						await TraceCommitAsync(trackers,TransactionCommitNotifyType.Rollback, expr);
+					//没有错误
+					else if (expr == null)
+					{
+						await TraceCommitAsync(trackers, TransactionCommitNotifyType.BeforeCommit, null);
+						try
+						{
+							trans.Commit();
+							await TraceCommitAsync(trackers, TransactionCommitNotifyType.AfterCommit, null);
+						}
+						catch (Exception e)
+						{
+							await TraceCommitAsync(trackers, TransactionCommitNotifyType.AfterCommit, e);
+							throw;
+						}
+					}
+					//内部没有rollback，但顶级有异常
+					else
+					{
+						try
+						{
+							trans.Rollback();
+						}
+						finally
+						{
+							await TraceCommitAsync(trackers, TransactionCommitNotifyType.Rollback, expr);
+						}
+					}
+				}
+			}
+			//内部事务范围
+			else if (_Exception==null)
+				return;
+			else if (!_IsRollbacking)
+			{
+				_IsRollbacking = true;
+				_DBTransaction.Rollback();
+			}
+		}
+		public async Task UseTransaction(
+			string Message,
+			Func<ITransactionScope,Task> Action, 
+			TransactionScopeMode Mode,
+			System.Data.IsolationLevel IsolationLevel
+			)
         {
-            if (Mode == TransactionScopeMode.RequireNewTransaction && _Transaction != null)
+            if (Mode == TransactionScopeMode.RequireNewTransaction && _DBTransaction != null)
                 throw new InvalidOperationException("事务已存在");
-			if (_Transaction == null)
+			if (_DBTransaction == null)
 			{
 				if (Connection.State == System.Data.ConnectionState.Closed)
 					await Connection.OpenAsync();
-				_Transaction = Connection.BeginTransaction(IsolationLevel);
-
+				_DBTransaction = Connection.BeginTransaction(IsolationLevel);
 			}
-            _TopScope = new Scope(this, _TopScope, Message);
-			return (ITransactionScope)_TopScope;
+			_TopScope = new Scope(this, _TopScope, Message, (_TopScope?.Level ?? -1) + 1);
+			try
+			{
+				await Action(_TopScope);
+			}
+			catch(Exception e)
+			{
+				_Exception = e;
+				throw e;
+			}
+			finally
+			{
+				await EndScope();
+			}
         }
 
         public void Dispose()
         {
-            if (_Transaction != null)
+            if (_DBTransaction != null)
             {
-                var trans = _Transaction;
-                _Transaction = null;
+                var trans = _DBTransaction;
+                _DBTransaction = null;
                 using (trans)
                 {
                     trans.Rollback();

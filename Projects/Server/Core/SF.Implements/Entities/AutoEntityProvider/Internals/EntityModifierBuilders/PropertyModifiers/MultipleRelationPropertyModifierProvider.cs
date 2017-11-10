@@ -71,6 +71,8 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			}
 			public int MergePriority => 0;
 			public int ExecutePriority => 1000; //×îºóÖ´ÐÐ
+
+			
 			public async Task<ICollection<TChildModel>> Execute(IEntityServiceContext Manager, IEntityModifyContext Context, ICollection<TChildModel> OrgValue, IEnumerable<TChildEntity> Value)
 			{
 				if (Value == null && Context.Action!=ModifyAction.Delete)
@@ -92,7 +94,9 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					)
 					).ToArrayAsync();
 
-				var newItems = Value.Select((v, i) => (v, i)).ToArray();		
+				var newItems = Value.Select((v, i) => (v, i)).ToArray();
+				var childMeta = Manager.EntityMetadataCollection.FindByEntityType(typeof(TChildEntity));
+
 				await set.MergeAsync(
 					orgItems,
 					newItems,
@@ -104,6 +108,8 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 						await create.Execute(Manager, ctx);
 						FuncSetParentKey(ctx.Model, parentKey);
 						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
+
+						Manager.PostChangedEvents( ctx.Editable, DataActionType.Create, childMeta);
 						return ctx.Model;
 					},
 					async (d, e) =>
@@ -112,12 +118,14 @@ namespace SF.Entities.AutoEntityProvider.Internals.PropertyModifiers
 						ctx.InitUpdate(d, e.v, null);
 						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
 						await update.Execute(Manager, ctx);
+						Manager.PostChangedEvents(ctx.Editable, DataActionType.Update, childMeta);
 					},
 					async d =>
 					{
 						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitRemove(d, default(TChildEntity), null);
+						ctx.InitRemove(d, Entity<TChildModel>.GetKey<TChildEntity>(d), null);
 						await remove.Execute(Manager, ctx);
+						Manager.PostChangedEvents(ctx.Editable, DataActionType.Delete, childMeta);
 					}
 					);
 				return OrgValue;

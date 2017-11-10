@@ -31,7 +31,7 @@ gulp.task("build", (cb) => {
 
 gulp.task("build-release", (cb) => {
     call_webpack({
-    	admin: './SFAdminSite/index.tsx',
+        admin: './SFAdminSite/index.tsx',
     }, true, false, cb);
 });
 gulp.task("build-webapi-all-interface", (cb) => {

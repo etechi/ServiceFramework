@@ -43,21 +43,35 @@ namespace SF.Data
 		AfterCommit,
 		AfterCommitOrRollback
 	}
-    public interface ITransactionScope : IDisposable
-    {
-        string Message { get; }
-        Task Commit();
-        bool IsRollbacking { get; }
+	public interface ITransactionScope 
+	{
+		int Level { get; }
+		string Message { get; }
+		//Task Commit();
+		bool IsRollbacking { get; }
 
-		void AddPostAction(Action action, PostActionType Type=PostActionType.AfterCommit);
-		void AddPostAction(Func<Task> action, PostActionType Type = PostActionType.AfterCommit);
+	}
+	[Flags]
+	public enum TransactionCommitNotifyType
+	{
+		None=0,
+		BeforeCommit=1,
+		AfterCommit=2,
+		Rollback=4
+	}
+	public interface ITransactionCommitTracker
+	{
+		TransactionCommitNotifyType TrackNotifyTypes { get; }
+		Task Notify(TransactionCommitNotifyType Type, Exception Exception);
 	}
 	public interface ITransactionScopeManager : IDisposable
     {
 		DbTransaction CurrentDbTransaction { get; }
-		ITransactionScope CurrentScope { get; }
-		Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode, IsolationLevel IsolationLevel=IsolationLevel.ReadCommitted);
-    }
+		Task UseTransaction(string Message, Func<ITransactionScope,Task> Action,TransactionScopeMode Mode, IsolationLevel IsolationLevel = IsolationLevel.ReadCommitted);
+		void AddCommitTracker(ITransactionCommitTracker Tracker);
+
+		//Task<ITransactionScope> CreateScope(string Message,TransactionScopeMode Mode, IsolationLevel IsolationLevel=IsolationLevel.ReadCommitted);
+	}
 
 	[AttributeUsage(AttributeTargets.Method)]
 	public class TransactionScopeAttribute : InterceptAttribute
