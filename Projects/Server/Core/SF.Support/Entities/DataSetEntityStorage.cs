@@ -24,6 +24,7 @@ using System.Data.Common;
 using System.Collections.Generic;
 using SF.Auth;
 using SF.Auth.Permissions;
+using SF.Core.Events;
 
 namespace SF.Entities
 {
@@ -463,32 +464,39 @@ namespace SF.Entities
 			{
 				meta = Manager.EntityMetadataCollection.FindByEntityType(typeof(TEntity));
 				if (meta == null)
-					throw new ArgumentException($"找不到类型{typeof(TEntity)}相关的实体");
+					return;
+					//throw new ArgumentException($"找不到类型{typeof(TEntity)}相关的实体");
 			}
+			IEventEmitter ee = null;
 			Manager.DataContext.TransactionScopeManager.AddCommitTracker(
-				TransactionCommitNotifyType.BeforeCommit | TransactionCommitNotifyType.AfterCommit,
+				TransactionCommitNotifyType.BeforeCommit | 
+				TransactionCommitNotifyType.AfterCommit | 
+				TransactionCommitNotifyType.Rollback,
 				async (t, e) =>
 				{
-					if (e != null && t== TransactionCommitNotifyType.BeforeCommit)
-						return;
-					var eve = new EntityChanged<TEntity>(Entity)
+					switch (t)
 					{
-						Action = DataActionType,
-						ServiceId = Manager.ServiceInstanceDescroptor?.InstanceId,
-						EventTime = Manager.Now,
-						EntityIdent = Entity<TEntity>.GetStrIdent(meta.Ident, Entity),
-						Exception=e
-					};
-
-					if (t == TransactionCommitNotifyType.BeforeCommit)
-					{
-						eve.PostActionType = PostActionType.AfterCommit;
-						await Manager.EventEmitter.Emit( eve);
-					}
-					else if (t == TransactionCommitNotifyType.AfterCommit)
-					{
-						eve.PostActionType = PostActionType.AfterCommit;
-						await Manager.EventEmitter.Emit(eve);
+						case TransactionCommitNotifyType.BeforeCommit:
+							ee=await Manager.EventEmitService.Create(
+								new EntityChanged<TEntity>(Entity)
+								{
+									ServiceId = Manager.ServiceInstanceDescroptor?.InstanceId,
+									//Source=meta.Ident,
+									Ident= Entity<TEntity>.GetStrIdent(meta.Ident, Entity),
+									Time=Manager.Now,
+									Exception = e,
+									Action= DataActionType
+									//Type=DataActionType.ToString()
+								});
+							break;
+						case TransactionCommitNotifyType.AfterCommit:
+							await ee?.Commit();
+							break;
+						case TransactionCommitNotifyType.Rollback:
+							await ee?.Cancel(e);
+							break;
+						default:
+							throw new NotSupportedException();
 					}
 				}
 			);

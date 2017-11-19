@@ -57,7 +57,7 @@ namespace SF.Entities
 		IEntityReferenceResolver DataEntityResolver { get; }
 		ITimeService TimeService { get; }
 		ILogger GetLogger(Type Type);
-		IEventEmitter EventEmitter { get; }
+		IEventEmitService EventEmitService { get; }
 		IServiceProvider ServiceProvider { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 		IClientService ClientService { get; }

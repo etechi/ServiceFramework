@@ -21,43 +21,42 @@ using System.Threading.Tasks;
 
 namespace SF.Core.Events
 {
-	public class EventSubscriber<T> : IEventSubscriber<T>,IDisposable
+	public class EventSubscriber<TEvent> : IEventSubscriber<TEvent>,IDisposable where TEvent:class,IEvent
 	{
 		IDisposable _Disposable;
 		object EventHandler;
-		public EventSubscriber(ISourceResolver SourceResolver,
+		public EventSubscriber(IEventSubscribeService SubscribeService,
 			string EventSource,
 			string EventType, 
 			string SubscriberIdent=null,
 			EventDeliveryPolicy Policy=EventDeliveryPolicy.NoGuarantee
 			)
 		{
-			if (EventSource == null && EventType==null)
+			if(EventSource==null && EventType==null)
 			{
-				(EventSource,EventType) = typeof(T).FullName.LastSplit2('.');
+				var et = typeof(TEvent);
+				EventSource = et.Namespace;
+				EventType = et.Name;
 			}
-			else if(EventSource==null || EventType==null)
-			{
-				throw new ArgumentException($"必须同时设置事件源和类型");
-			}
-			var observer = SourceResolver.GetSource(EventSource)?.GetObservable(EventType);
+			var observer = SubscribeService.GetObservable(EventSource,EventType);
 
-			_Disposable = observer.Subscribe<IEvent>(
+			_Disposable = observer.Subscribe(
 				SubscriberIdent,
-				async o =>
+				Policy,
+				new DelegateEventObserver<TEvent>(
+				 async o =>
 				 {
 					  var eh = EventHandler;
 					  if (eh == null)
 						  return;
-					  var ol = EventHandler as List<Func<T, Task>>;
+					  var ol = EventHandler as List<Func<IEventInstance<TEvent>, Task>>;
 					  if (ol == null)
-						  await ((Func<T, Task>)EventHandler)((T)o);
+						  await ((Func<IEventInstance<TEvent>, Task>)EventHandler)(o);
 					  else
 						  foreach (var h in ol)
-							  await h((T)o);
+							  await h(o);
 
-				 },
-				 Policy
+				 })
 				 );
 		}
 
@@ -66,15 +65,15 @@ namespace SF.Core.Events
 			Disposable.Release(ref _Disposable);
 		}
 
-		public void Wait(Func<T, Task> Callback)
+		public void Wait(Func<IEventInstance<TEvent>, Task> Callback)
 		{
 			if (EventHandler == null)
 				EventHandler = Callback;
 			else
 			{
-				var ol = EventHandler as List<Func<T, Task>>;
+				var ol = EventHandler as List<Func<IEventInstance<TEvent>, Task>>;
 				if (ol == null)
-					EventHandler = new List<Func<T, Task>> { (Func<T, Task>)EventHandler, Callback };
+					EventHandler = new List<Func<IEventInstance<TEvent>, Task>> { (Func<IEventInstance<TEvent>, Task>)EventHandler, Callback };
 				else
 					ol.Add(Callback);
 			}

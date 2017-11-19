@@ -13,44 +13,26 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Core.Times;
+using SF.Data;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Threading;
 
 namespace SF.Core.Events
-{	
-	public static class TaskEventService
+{
+	class EventQueueProvider : IEventQueueProvider
 	{
-        public static IDisposable Start<TEvent>(
-            this IEventSubscribeService SourceResolver,
-            string EventSourceName,
-			string EventTypeName,
-            Func<IEventInstance<TEvent>, Task> EventCallback,
-            Action CleanupCallback=null,
-            Func<bool> IsStopped=null
-            ) where TEvent:class,IEvent
+		public EventQueueProvider()
 		{
-            var disposable = SourceResolver
-                .GetObservable(EventSourceName, EventTypeName)
-                .Subscribe<TEvent>(e =>
-                {
-                    if (IsStopped?.Invoke() ?? false)
-                        return Task.CompletedTask;
-                    return EventCallback(e);
-                });
-            if (CleanupCallback == null)
-                return disposable;
-
-            return Disposable.Combine(
-                disposable,
-                Disposable.FromAction(CleanupCallback)
-                );
 		}
-       
 
-    }
-	
+		public IEventQueue<TEvent> GetQueue<TEvent>(string Source, string Type, string Subscriber, EventDeliveryPolicy Policy, IEventObserver<TEvent> Observer) where TEvent : IEvent
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

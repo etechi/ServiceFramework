@@ -44,9 +44,9 @@ namespace SF.Core.ServiceManagement.Storages
 		Dictionary<string, SortedList<int,Config> > ServiceList { get; } = new Dictionary<string, SortedList<int, Config>>();
 		Dictionary<long, Config> Configs { get; } = new Dictionary<long, Config>();
 
-		public IEventEmitter EventEmitter { get; }
+		public IEventEmitService EventEmitter { get; }
 
-		public MemoryServiceSource(IEventEmitter EventEmitter)
+		public MemoryServiceSource(IEventEmitService EventEmitter)
 		{
 			this.EventEmitter = EventEmitter;
 		}
@@ -112,12 +112,12 @@ namespace SF.Core.ServiceManagement.Storages
 				{
 					ScopeId = ParentId,
 					ServiceType = ServiceType
-				});
+				}).Wait();
 			EventEmitter.Emit(
 				new ServiceInstanceChanged
 				{
 					Id = Id
-				});
+				}).Wait();
 			return cfg;
 		}
 		public Config SetConfig<I,T>(long Id, object Settings,int Priority=-1,long? ParentId=null,string Name=null)

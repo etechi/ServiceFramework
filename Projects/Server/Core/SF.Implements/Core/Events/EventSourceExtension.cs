@@ -24,43 +24,49 @@ namespace SF.Core.Events
 	
 	public static class EventSourceExtension
     {
-		public static IDisposable Subscribe<TEvent>(this IEventObservable Observable,Func<TEvent,Task> observer) where TEvent:class,IEvent
+		public static async Task Emit<TEvent>(this IEventEmitService Service,TEvent Event) where TEvent:class,IEvent
 		{
-			return Observable.Subscribe(null, observer, EventDeliveryPolicy.NoGuarantee);
+			var e = await Service.Create(Event);
+			await e.Commit();
 		}
-		public static IEventObservable GetObservable(this ISourceResolver Resolver, string Source, string Type)
+		public static IDisposable Subscribe<TEvent>(this IEventObservable Observable,Func<IEventInstance<TEvent>,Task> observer) where TEvent:class,IEvent
 		{
-			return Resolver.GetSource(Source).GetObservable(Type);
+			return Observable.Subscribe(null, EventDeliveryPolicy.NoGuarantee,new DelegateEventObserver<TEvent>(observer));
+		}
+		public static IEventObservable GetObservable(this IEventSubscribeService Resolver, string Source, string Type)
+		{
+			return Resolver.GetObservable(Source,Type);
 		}
 		
-		public static IDisposable Subscribe<TEvent>(this ISourceResolver Resolver, string Source,string Type, Func<TEvent,Task> Callback)
+		public static IDisposable Subscribe<TEvent>(this IEventSubscribeService Resolver, string Source,string Type, Func<IEventInstance<TEvent>, Task> Callback)
 			where TEvent:class,IEvent
 		{
 			return Resolver.GetObservable(Source,Type)
 				.Subscribe(Callback);
 		}
-		public static IDisposable Subscribe<TEvent>(this ISourceResolver Resolver, string Source, Func<TEvent, Task> Callback)
+		public static IDisposable Subscribe<TEvent>(this IEventSubscribeService Resolver, string Source, Func<IEventInstance<TEvent>, Task> Callback)
 			where TEvent : class, IEvent
 		{
 			return Resolver.Subscribe(Source, null, Callback);
 		}
 		
-		public static IDisposable Filter(
-			this ISourceResolver Resolver,
+		public static IDisposable Filter<TSrcEvent,TDstEvent>(
+			this IEventSubscribeService Resolver,
 			string Source,
 			string Type,
-			IEventEmitter Emiter,
-			Func<IEvent, Task<IEvent>> Filter,
-            bool OutputSyncMode=false
+			IEventEmitService EmitService,
+			Func<IEventInstance<TSrcEvent>, Task<TDstEvent>> Filter
 			)
+			where TSrcEvent: class, IEvent
+			where TDstEvent: class, IEvent
 		{
-			return Resolver.Subscribe(
+			return Resolver.Subscribe<TSrcEvent>(
                 Source, 
                 Type, 
-                async (IEvent e) =>
+                async se =>
                 {
-                    var newEvent = await Filter(e);
-                    await Emiter.Emit(newEvent,OutputSyncMode);
+					var de=await EmitService.Create(await Filter(se));
+					await de.Commit();
                 }
                 );
 		}

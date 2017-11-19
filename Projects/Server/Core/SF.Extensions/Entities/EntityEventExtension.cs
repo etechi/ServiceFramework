@@ -30,23 +30,23 @@ namespace SF.Entities
 {
 	public static class EntityEventExtension
 	{
-		public static async Task<E> LoadEntity<K,E>(this EntityEvent e,Func<K,Task<E>> Loader)
+		public static async Task<E> LoadEntity<K,E>(this EntityChanged<E> e,Func<K,Task<E>> Loader)
 		{
-			if (typeof(E).IsAssignableFrom(e.EntityType))
-				throw new ArgumentException($"指定实体类型{typeof(E)}与事件实体类型不匹配{e.EntityType}");
-			var i = e.GetCachedEntityInstance();
+			//if (typeof(E).IsAssignableFrom(e.EntityType))
+			//	throw new ArgumentException($"指定实体类型{typeof(E)}与事件实体类型不匹配{e.EntityType}");
+			var i = e.GetCachedEntity();
 			if (i != null)
 				return (E)i;
-			var key = Json.Parse<K>(e.EntityIdent);
+			var key = Json.Parse<K>(e.Ident);
 			var r =await Loader(key);
 			if (r.IsDefault()) return default(E);
-			e.SetCachedEntityInstance(r);
+			e.SetCachedEntity(r);
 			return (E)r;
 		}
-		public static Task<E> LoadEntity<K, E>(this EntityEvent e, IEntityEditableLoader<K, E> Loader)
+		public static Task<E> LoadEntity<K, E>(this EntityChanged<E> e, IEntityEditableLoader<K, E> Loader)
 			=> e.LoadEntity<K,E>(k => Loader.LoadForEdit(k));
 
-		public static Task<E> LoadEntity<K, E>(this EntityEvent e, IServiceProvider Services)
+		public static Task<E> LoadEntity<K, E>(this EntityChanged<E> e, IServiceProvider Services)
 			=> e.LoadEntity<K, E>(k => Services.Resolve< IEntityEditableLoader < K, E >>().LoadForEdit(k));
 
 	}

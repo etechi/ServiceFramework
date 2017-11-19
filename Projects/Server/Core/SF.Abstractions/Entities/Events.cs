@@ -21,42 +21,35 @@ using SF.Core.Events;
 
 namespace SF.Entities
 {
-	public abstract class EntityEvent : CommonEvent
+	public class EntityChanged<TEntity> : IEvent
 	{
-		public abstract Type EntityType { get; }
-		public Data.PostActionType PostActionType { get; set; }
-		public DataActionType Action { get; set; }
-		public string EntityIdent { get; set; }
+		public Type EventType => typeof(TEntity);
+		public string Ident { get; set; }
 		public Exception Exception { get; set; }
+		public long? ServiceId { get; set; }
 
-		object _CachedEntityInstance;
-		public object GetCachedEntityInstance() => _CachedEntityInstance;
-		public void SetCachedEntityInstance(object Instance) {
-			if (Instance != null && !EntityType.IsAssignableFrom(Instance.GetType()))
-				throw new ArgumentException($"类型错误,实体事件定义类型为:{EntityType},实际提供为:{Instance.GetType()}");
-			_CachedEntityInstance = Instance;
-		}
-		public EntityEvent() { }
-		public EntityEvent(object CachedEntity)
+		public DateTime Time { get; set; }
+
+		static string EntityTypeFullName { get; } = typeof(TEntity).FullName;
+		public string Source => EntityTypeFullName;
+		public string Type => "SF.Entities.EntityChanged";
+		public DataActionType Action { get; set; }
+		public string TraceIdent { get; set; }
+
+		object _CachedEntity;
+		public void SetCachedEntity(object Instance)
 		{
-			SetCachedEntityInstance(CachedEntity);
+			_CachedEntity = Instance;
+		}
+		public object GetCachedEntity() => _CachedEntity;
+
+		public EntityChanged() { }
+		public EntityChanged(object CachedEntity)
+		{
+			SetCachedEntity(CachedEntity);
 		}
 	}
-	public class EntityChanged<TEntity> : EntityEvent
-	{
-		public EntityChanged()
-		{
-		}
-
-		public EntityChanged(TEntity Entity) : base(Entity)
-		{
-		}
-
-		public override Type EntityType => typeof(TEntity);
-		
-		public TEntity GetEntity()=>(TEntity)GetCachedEntityInstance();
-		public void SetEntity(TEntity Entity) => SetCachedEntityInstance(Entity);
-	}
+	
 	//public abstract class EntityRelationEvent : EntityEvent
 	//{
 	//	public abstract Type RelatedEntityType { get; }

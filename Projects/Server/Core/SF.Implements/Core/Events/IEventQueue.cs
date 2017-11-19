@@ -13,27 +13,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Reflection;
-using SF.Metadata;
-using SF.Entities;
-using SF.Core.Events;
-
-namespace SF.Core.ServiceManagement
+using System;
+namespace SF.Core.Events
 {
-	public static class EventDICollectionExtension
+	public interface IEventQueue <TEvent> : IEventObserver<TEvent>,IDisposable where TEvent:IEvent
 	{
-		public static IServiceCollection AddEventServices(this IServiceCollection sc)
-		{
-			sc.AddSingleton<IEventEmitService, EventManager>();
-			sc.AddSingleton<IEventSubscribeService>(sp => (IEventSubscribeService)sp.Resolve<IEventEmitService>());
-			sc.AddSingleton<IEventQueueProvider, EventQueueProvider>();
-			sc.Add(typeof(IEventSubscriber<>), typeof(EventSubscriber<>), ServiceImplementLifetime.Scoped);
-			return sc;
-		}
 	}
 }

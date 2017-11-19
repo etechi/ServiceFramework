@@ -24,19 +24,39 @@ namespace SF.Core.Events
 {
 	public interface IEvent
 	{
-		long? EventId { get; }
-		long? ServiceId { get; }
-		string EventSource { get; }
-		string EventType { get; }
-		DateTime EventTime { get; }
+		DateTime Time { get; }
+		string Source { get; }
+		string Type { get; }
+		string TraceIdent { get; }
 	}
-	public abstract class CommonEvent : IEvent
+
+	public class CommonEvent : IEvent
 	{
-		public DateTime EventTime { get; set; }
-		public long? EventId { get; set; }
-		public string EventSource { get; set; }
-		public string EventType { get; set; }
-		public long? ServiceId { get; set; }
+		public CommonEvent()
+		{
+			var t = GetType();
+			Source = t.Namespace;
+			Type = t.Name;
+		}
+		public DateTime Time { get; set; }
+		public string Source { get; set; }
+		public string Type { get; set; }
+		public string TraceIdent { get; set; }
+	}
+	public interface IEventInstance<TEvent>
+		where TEvent:IEvent
+	{
+		long Id { get; }
+		TEvent Event { get; }
+	}
+
+	
+	public interface IEventEmitter 
+	{
+		long Id { get; }
+		IEvent Event { get; }
+		Task Cancel(Exception Exception);
+		Task Commit();
 	}
 
 	public interface IEventValidator<T>
@@ -44,9 +64,9 @@ namespace SF.Core.Events
 		Task<bool> Validate(T Event);
 	}
 
-	public interface IEventSubscriber<T>
+	public interface IEventSubscriber<TEvent> where TEvent:IEvent
 	{
-		void Wait(Func<T,Task> Callback);
+		void Wait(Func<IEventInstance<TEvent>,Task> Callback);
 	}
 	public enum EventDeliveryPolicy
 	{
@@ -61,24 +81,32 @@ namespace SF.Core.Events
 		[Comment("刚好一次")]
 		JustOnce
 	}
+	public interface IEventObserver<TEvent> where TEvent:IEvent
+	{
+		Task<object> Prepare(IEventInstance<TEvent> EventInstance);
+		Task Commit(IEventInstance<TEvent> EventInstance,object Context);
+		Task Cancel(IEventInstance<TEvent> EventInstance, object Context, Exception Exception);
+	}
 	public interface IEventObservable
     {
-        IDisposable Subscribe<TEvent>(string SubscriberIdent,Func<TEvent, Task> observer, EventDeliveryPolicy Policy)
+        IDisposable Subscribe<TEvent>(
+			string SubscriberIdent,
+			EventDeliveryPolicy Policy,
+			IEventObserver<TEvent> Observer
+			)
 			where TEvent:class,IEvent;
     }
-    public interface IEventSource
-    {
-		IEventObservable GetObservable(string Type);
-    }
 
-	public interface ISourceResolver
+	public interface IEventSubscribeService
 	{
-		IEventSource GetSource(string Name);
+		IEventObservable GetObservable(string Source,string Type);
 	}
 
-	public interface IEventEmitter
+
+	public interface IEventEmitService
 	{
-		Task Emit(IEvent Event);
+		Task<IEventEmitter> Create<TEvent>(TEvent Event) where TEvent : IEvent;
+
 	}
    
 }

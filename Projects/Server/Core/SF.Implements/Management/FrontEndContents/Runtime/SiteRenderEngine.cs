@@ -32,7 +32,12 @@ namespace SF.Management.FrontEndContents.Runtime
 	public class SiteRenderEngine :
 		SiteRenderEngine<Content, SF.Management.FrontEndContents.Site, SiteTemplate>
 	{
-		public SiteRenderEngine(ILogService LogService, IEventSubscriber<EntityChanged<Content>> OnContentModified, IEventSubscriber<EntityChanged<FrontEndContents.Site>> OnSiteTemplateModified, IEventSubscriber<EntityChanged<SiteTemplate>> OnSiteModified) : base(LogService, OnContentModified, OnSiteTemplateModified, OnSiteModified)
+		public SiteRenderEngine(
+			ILogService LogService, 
+			IEventSubscriber<EntityChanged<Content>> OnContentModified, 
+			IEventSubscriber<EntityChanged<FrontEndContents.Site>> OnSiteTemplateModified, 
+			IEventSubscriber<EntityChanged<SiteTemplate>> OnSiteModified
+			) : base(LogService, OnContentModified, OnSiteTemplateModified, OnSiteModified)
 		{
 		}
 	}
@@ -65,18 +70,18 @@ namespace SF.Management.FrontEndContents.Runtime
 
 			OnContentModified.Wait(e =>
 			{
-				Contents.TryRemove(EntityIdents.Parse<long>(e.EntityIdent ).Id1, out var c);
+				Contents.TryRemove(EntityIdents.Parse<long>(e.Event.Ident ).Id1, out var c);
 				return Task.CompletedTask;
 			});
 
 			OnSiteTemplateModified.Wait(e =>
 			{
-				SiteBinds.TryRemove(EntityIdents.Parse<string>(e.EntityIdent).Id1, out var site);
+				SiteBinds.TryRemove(EntityIdents.Parse<string>(e.Event.Ident).Id1, out var site);
 				return Task.CompletedTask;
 			});
 			OnSiteModified.Wait(e =>
 			{
-				Sites.TryRemove(EntityIdents.Parse<long>(e.EntityIdent).Id1, out var s);
+				Sites.TryRemove(EntityIdents.Parse<long>(e.Event.Ident).Id1, out var s);
 				return Task.CompletedTask;
 			});
 

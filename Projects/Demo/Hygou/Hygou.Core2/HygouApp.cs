@@ -30,6 +30,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data.Common;
 using SF.Data.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Hygou
 {
@@ -74,7 +75,10 @@ namespace Hygou
 				.OnEnvType(e => e != EnvironmentType.Utils, (sp)=>
 				{
 					var ctx = sp.Resolve<HygouDbContext>();
-					Task.Run(() => ctx.Database.MigrateAsync()).Wait();
+					Task.Run(async () =>
+					{
+						await ctx.Database.MigrateAsync();
+					}).Wait();
 					return null;
 				});
 			return builder;
@@ -97,7 +101,8 @@ namespace Hygou
 			Services.AddEFCoreDataEntity((sp, conn) => sp.Resolve<HygouDbContext>());
 			Services.AddDataContext(new SF.Data.DataSourceConfig
 			{
-				ConnectionString = "data source=.\\SQLEXPRESS;initial catalog=sf-demo-hygou;user id=sa;pwd=system;MultipleActiveResultSets=True;App=EntityFramework"
+				//ConnectionString = "data source=.\\SQLEXPRESS;initial catalog=sf-demo-hygou;user id=sa;pwd=system;MultipleActiveResultSets=True;App=EntityFramework"
+				ConnectionString = "Data Source=127.0.0.1,1433;User ID=sa;pwd=system;initial catalog=sf-demo-hygou;MultipleActiveResultSets=True;App=EntityFramework"
 			});
 
 

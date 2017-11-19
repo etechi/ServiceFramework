@@ -13,242 +13,85 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Core.Times;
+using SF.Data;
 using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SF.Core.Events
 {
-	public interface IEventQueue{
-		Task Enqueue(object Event);
-	}
-	public interface IEventInstance
+	class CommonEventInstance<TEvent> : IEventInstance<TEvent>
+		where TEvent : IEvent
 	{
-		string Source { get; }
-		string Type { get; }
-		string Subscriber { get; }
-		string EventId { get; }
-		object Event { get; }
+		public long Id { get; set; }
+
+		public TEvent Event { get; set; }
 	}
-	public interface IEventQueueProvider
-	{
-		IEventQueue GetQueue(
-			string Source,
-			string Type,
-			string Subscriber,
-			Func<IEventInstance,Task> EventEmiter,
-			EventDeliveryPolicy Policy
-			);
-	}
-	class SubscriberSet : IEventObservable
-	{
-		class Subscriber : IDisposable
-		{
-			public string Ident;
-			public int Index;
-			public EventDeliveryPolicy Policy;
-			public Func<object, Task> Observer;
-			public SubscriberSet Set;
-			public void Dispose()
-			{
-				Set.RemoveSubscriber(Index);
-			}
-		}
 
-		Subscriber[] _SyncSubscribers;
-		int _SyncSubscriberCount;
-		ConcurrentDictionary<string, Subscriber> _SyncSubscriberDict;
-
-		Subscriber[] _AsyncSubscribers;
-		int _AsyncSubscriberCount;
-
-
-		string Type { get; }
-		EventSource Source { get; }
-
-		public SubscriberSet(EventSource Source, string Type)
-		{
-			this.Source = Source;
-			this.Type = Type;
-		}
-
-		async Task Emit(Subscriber[] ss, IEvent Event)
-		{
-			if (ss == null)
-				return;
-			var l = ss.Length;
-			//多线程下可能会有重复项目
-			var hash = new HashSet<Subscriber>();
-			for (var i = 0; i < l; i++)
-			{
-				var s = ss[i];
-				if (s == null)
-					break;
-				if (hash.Add(s))
-					await s.Observer(Event);
-			}
-		}
-
-		public async Task Emit(IEvent Event)
-		{
-			await Emit(_SyncSubscribers, Event);
-			if (_AsyncSubscriberCount > 0)
-				Task.Run(()=>Emit(_AsyncSubscribers, Event));
-		}
-		public async Task EmitQueueEvent(IEventInstance ei)
-		{
-			if (!_SyncSubscriberDict.TryGetValue(ei.Subscriber, out var s))
-				throw new ArgumentException($"事件源{Source.Name}的类型{Type}中找不到事件处理器:{ei.Subscriber},事件:{ei.EventId}");
-			await s.Observer(ei.Event);
-		}
-		public IDisposable Subscribe<TEvent>(string Ident,Func<TEvent, Task> observer,EventDeliveryPolicy Policy)
-			where TEvent:class,IEvent
-		{
-			Func<object, Task> callback;
-			if (Policy == EventDeliveryPolicy.NoGuarantee)
-			{
-				callback = o =>
-				{
-					return observer((TEvent)o);
-				};
-			}
-			else {
-				if (Ident.IsNullOrWhiteSpace())
-					throw new ArgumentException("需要提供订阅ID");
-				var queue = Source.GetEventQueue(Type, Ident, Policy);
-				callback = queue.Enqueue;
-			}
-			lock (this)
-			{
-				var l = _SyncSubscribers?.Length ?? 0;
-				if (_SyncSubscriberCount == l)
-					Array.Resize(ref _SyncSubscribers, (l == 0 ? 16 : l) * 2);
-				var subscriber = new Subscriber
-				{
-					Ident=Ident,
-					Policy=Policy,
-					Index = _SyncSubscriberCount,
-					Observer = callback,
-					Set = this
-				};
-				_SyncSubscribers[_SyncSubscriberCount] = subscriber;
-				_SyncSubscriberCount++;
-
-				if (Policy != EventDeliveryPolicy.NoGuarantee)
-					_SyncSubscriberDict[Ident] = subscriber;
-
-				return subscriber;
-			}
-		}
-		void RemoveSubscriber(int Index)
-		{
-			lock (this)
-			{
-				if(Index<0 || Index>=_SyncSubscriberCount)
-					throw new ArgumentException();
-				var last = _SyncSubscriberCount - 1;
-				var s = _SyncSubscribers[last];
-				if (Index < last)
-                {
-                    _SyncSubscribers[Index] = s;
-                    s.Index = Index;
-                }
-                _SyncSubscribers[last] = null;
-				_SyncSubscriberCount = last;
-				_SyncSubscriberDict.TryRemove(s.Ident, out var ts);
-			}
-		}
-	}
-	class EventSource : IEventSource
-	{
-		public ConcurrentDictionary<string, SubscriberSet> TypedSubscribers { get; } = new ConcurrentDictionary<string, SubscriberSet>();
-		public SubscriberSet UntypedSubscribers { get; }
-		public EventManager Manager { get; }
-		public string Name { get; }
-		public EventSource(EventManager Manager,string Name)
-		{
-			this.Manager = Manager;
-			this.Name = Name;
-			UntypedSubscribers = new SubscriberSet(this,null);
-		}
-		public async Task Emit(IEvent Event)
-		{
-			SubscriberSet ss;
-			if (TypedSubscribers.TryGetValue(Event.EventType, out ss))
-				await ss.Emit(Event);
-
-			await UntypedSubscribers.Emit(Event);
-		}
-		public async Task EmitQueueEvent(IEventInstance ei)
-		{
-			if (ei.Type.IsNullOrWhiteSpace())
-				await UntypedSubscribers.EmitQueueEvent(ei);
-			else if (TypedSubscribers.TryGetValue(ei.Type, out var s))
-				await s.EmitQueueEvent(ei);
-			else
-				throw new ArgumentException($"事件源{Name}中找不到事件类型:{ei.Type}, 订阅器:{ei.Subscriber},事件:{ei.EventId}");
-		}
-		public IEventObservable GetObservable(string Type)
-		{
-			if (Type == null)
-				return UntypedSubscribers;
-
-			SubscriberSet ss;
-			if (TypedSubscribers.TryGetValue(Type, out ss))
-				return ss;
-			ss = new SubscriberSet(this,Type);
-			return TypedSubscribers.GetOrAdd(Type, ss);
-		}
-		public IEventQueue GetEventQueue(string Type,string SubscriberIdent, EventDeliveryPolicy Polic)
-		{
-			return Manager.GetEventQueue(Name,Type,SubscriberIdent, Polic);
-		}
-	}
 	public class EventManager :
-		IEventEmitter,
-		ISourceResolver
+		IEventEmitService,
+		IEventSubscribeService
 	{
-		ConcurrentDictionary<string, EventSource> EventSources { get; } = new ConcurrentDictionary<string, EventSource>();
+
+		ConcurrentDictionary<(string, string), EventObservable> SourceTypeLimitedObservables { get; } = new ConcurrentDictionary<(string, string), EventObservable>();
+		ConcurrentDictionary<string, EventObservable> TypeLimitedObservables { get; } = new ConcurrentDictionary<string, EventObservable>();
+		ConcurrentDictionary<string, EventObservable> SourceLimitedObservables { get; } = new ConcurrentDictionary<string, EventObservable>();
+		EventObservable UnlimitedObservables { get; }
+
 		IEventQueueProvider EventQueueProvider { get; }
-		public EventManager(IEventQueueProvider EventQueueProvider)
+		IIdentGenerator IdentGenerator { get; }
+		public EventManager(IEventQueueProvider EventQueueProvider, IIdentGenerator IdentGenerator)
 		{
 			this.EventQueueProvider = EventQueueProvider;
+			this.IdentGenerator = IdentGenerator;
+			this.UnlimitedObservables = new EventObservable(this, null, null);
 		}
 
-		Task EmitEvent(
-            ConcurrentDictionary<string, EventSource> ess,
-			IEvent Event
-            )
-        {
-            EventSource es;
-			if (ess.TryGetValue(Event.EventSource, out es))
-                return es.Emit(Event);
-            else
-                return Task.CompletedTask;
-        }
-        public Task Emit(IEvent Event,bool SyncMode)
+		public IEventObservable GetObservable(string Source, string Type)
 		{
-            if (Event == null)
-                throw new ArgumentNullException();
-            if (SyncMode)
-                return EmitEvent(EventSources, Event);
-            else
-            {
-                Task.Run(() => EmitEvent(EventSources,  Event));
-                return Task.CompletedTask;
-            }
-		}
-		public async Task EmitQueueEvent(IEventInstance ei)
-		{
-			if (EventSources.TryGetValue(ei.Source, out var es))
-				await es.EmitQueueEvent(ei);
+			if (Source == null)
+			{
+				if (Type == null)
+					return UnlimitedObservables;
+				else
+					return TypeLimitedObservables.GetOrAdd(Type, t => new EventObservable(this, null, t));
+			}
+			else if (Type == null)
+				return SourceLimitedObservables.GetOrAdd(Source, s => new EventObservable(this, s, null));
 			else
-				throw new ArgumentException($"找不到事件源{ei.Source}, 事件类型:{ei.Type}，订阅器:{ei.Subscriber},事件:{ei.EventId}");
+				return SourceTypeLimitedObservables.GetOrAdd((Source,Type), k => new EventObservable(this, k.Item1, k.Item2));
 		}
-		public IEventQueue GetEventQueue(string Source,string Type, string SubscriberIdent, EventDeliveryPolicy Policy)
+
+
+		IEnumerable<EventObservable> GetObservables(string Source,string Type)
+		{
+			if (SourceTypeLimitedObservables.TryGetValue((Source, Type), out var s1))
+				yield return s1;
+			if (TypeLimitedObservables.TryGetValue(Type, out var s2))
+				yield return s2;
+			if (SourceLimitedObservables.TryGetValue(Source, out var s3))
+				yield return s3;
+			yield return UnlimitedObservables;
+		}
+
+		IEnumerable<IEventObserver<TEvent>> GetEventObservers<TEvent>(string Source,string Type,bool Sync) where TEvent:IEvent
+		{
+			foreach (var eo in GetObservables(Source, Type))
+				foreach (var o in eo.GetObservers<TEvent>(Sync))
+					yield return o;
+		}
+
+		public IEventQueue<TEvent> GetEventQueue<TEvent>(
+			string Source,
+			string Type, 
+			string SubscriberIdent, 
+			EventDeliveryPolicy Policy,
+			IEventObserver<TEvent> Observer
+			) where TEvent:IEvent
 		{
 			if (EventQueueProvider == null)
 				throw new NotSupportedException();
@@ -256,17 +99,68 @@ namespace SF.Core.Events
 				Source ,
 				Type ,
 				SubscriberIdent,
-				EmitQueueEvent,
-				Policy
+				Policy,
+				Observer
 				);
 		}
-		public IEventSource GetSource(string Name)
+		
+		class EventEmitter<TEvent> : IEventEmitter where TEvent : IEvent
 		{
-			EventSource es;
-			if (EventSources.TryGetValue(Name, out es))
-				return es;
-			es = new EventSource(this,Name);
-			return EventSources.GetOrAdd(Name, es);
+			public EventManager EventManager { get; set; }
+			public IEventInstance<TEvent> EventInstance { get; set; }
+			public List<(IEventObserver<TEvent>, object)> Results { get; set; }
+
+			public IEvent Event => EventInstance.Event;
+			public long Id => EventInstance.Id;
+
+
+			public async Task Cancel(Exception Exception)
+			{
+				foreach (var (o, c) in Results)
+					await o.Cancel(EventInstance, c, Exception);
+			}
+
+			void CommitAsync()
+			{
+				Task.Run(async () =>
+				{
+					var Event = EventInstance.Event;
+					foreach (var o in EventManager.GetEventObservers<TEvent>(Event.Source, Event.Type, false))
+					{
+						var ctx =await o.Prepare(EventInstance);
+						await o.Commit(EventInstance, ctx);
+					}
+				});
+			}
+			public async Task Commit()
+			{
+				foreach (var (o, c) in Results)
+					await o.Commit(EventInstance,c);
+				CommitAsync();
+			}
+		
+		}
+		public async Task<IEventEmitter> Create<TEvent>(TEvent Event) where TEvent : IEvent
+		{
+			var obs = GetObservables(Event.Source, Event.Type).ToArray();
+
+			var ei = new CommonEventInstance<TEvent>
+			{
+				Id = await IdentGenerator.GenerateAsync($"Event/{Event.Source}/{Event.Type}"),
+				Event = Event
+			};
+
+			var ps = new List<(IEventObserver<TEvent>, object)>();
+
+			foreach (var o in GetEventObservers<TEvent>(Event.Source, Event.Type, true))
+				ps.Add((o, await o.Prepare(ei)));
+
+			return new EventEmitter<TEvent>
+			{
+				EventInstance=ei,
+				Results=ps,
+				EventManager = this
+			};
 		}
 	}
 }
