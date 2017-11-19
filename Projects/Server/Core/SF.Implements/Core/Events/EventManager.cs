@@ -45,12 +45,12 @@ namespace SF.Core.Events
 	}
 	class SubscriberSet : IEventObservable
 	{
-		class Subscriber: IDisposable
+		class Subscriber : IDisposable
 		{
 			public string Ident;
 			public int Index;
 			public EventDeliveryPolicy Policy;
-			public Func<object,Task> Observer;
+			public Func<object, Task> Observer;
 			public SubscriberSet Set;
 			public void Dispose()
 			{
@@ -58,9 +58,14 @@ namespace SF.Core.Events
 			}
 		}
 
-		Subscriber[] _subscribers;
-		ConcurrentDictionary<string, Subscriber> _subscriberDict;
-		int _count;
+		Subscriber[] _SyncSubscribers;
+		int _SyncSubscriberCount;
+		ConcurrentDictionary<string, Subscriber> _SyncSubscriberDict;
+
+		Subscriber[] _AsyncSubscribers;
+		int _AsyncSubscriberCount;
+
+
 		string Type { get; }
 		EventSource Source { get; }
 
@@ -70,15 +75,14 @@ namespace SF.Core.Events
 			this.Type = Type;
 		}
 
-		public async Task Emit(IEvent Event)
+		async Task Emit(Subscriber[] ss, IEvent Event)
 		{
-			var ss = _subscribers;
-			if (ss== null)
+			if (ss == null)
 				return;
 			var l = ss.Length;
 			//多线程下可能会有重复项目
 			var hash = new HashSet<Subscriber>();
-			for(var i=0;i<l;i++)
+			for (var i = 0; i < l; i++)
 			{
 				var s = ss[i];
 				if (s == null)
@@ -87,9 +91,16 @@ namespace SF.Core.Events
 					await s.Observer(Event);
 			}
 		}
+
+		public async Task Emit(IEvent Event)
+		{
+			await Emit(_SyncSubscribers, Event);
+			if (_AsyncSubscriberCount > 0)
+				Task.Run(()=>Emit(_AsyncSubscribers, Event));
+		}
 		public async Task EmitQueueEvent(IEventInstance ei)
 		{
-			if (!_subscriberDict.TryGetValue(ei.Subscriber, out var s))
+			if (!_SyncSubscriberDict.TryGetValue(ei.Subscriber, out var s))
 				throw new ArgumentException($"事件源{Source.Name}的类型{Type}中找不到事件处理器:{ei.Subscriber},事件:{ei.EventId}");
 			await s.Observer(ei.Event);
 		}
@@ -112,22 +123,22 @@ namespace SF.Core.Events
 			}
 			lock (this)
 			{
-				var l = _subscribers?.Length ?? 0;
-				if (_count == l)
-					Array.Resize(ref _subscribers, (l == 0 ? 16 : l) * 2);
+				var l = _SyncSubscribers?.Length ?? 0;
+				if (_SyncSubscriberCount == l)
+					Array.Resize(ref _SyncSubscribers, (l == 0 ? 16 : l) * 2);
 				var subscriber = new Subscriber
 				{
 					Ident=Ident,
 					Policy=Policy,
-					Index = _count,
+					Index = _SyncSubscriberCount,
 					Observer = callback,
 					Set = this
 				};
-				_subscribers[_count] = subscriber;
-				_count++;
+				_SyncSubscribers[_SyncSubscriberCount] = subscriber;
+				_SyncSubscriberCount++;
 
 				if (Policy != EventDeliveryPolicy.NoGuarantee)
-					_subscriberDict[Ident] = subscriber;
+					_SyncSubscriberDict[Ident] = subscriber;
 
 				return subscriber;
 			}
@@ -136,18 +147,18 @@ namespace SF.Core.Events
 		{
 			lock (this)
 			{
-				if(Index<0 || Index>=_count)
+				if(Index<0 || Index>=_SyncSubscriberCount)
 					throw new ArgumentException();
-				var last = _count - 1;
-				var s = _subscribers[last];
+				var last = _SyncSubscriberCount - 1;
+				var s = _SyncSubscribers[last];
 				if (Index < last)
                 {
-                    _subscribers[Index] = s;
+                    _SyncSubscribers[Index] = s;
                     s.Index = Index;
                 }
-                _subscribers[last] = null;
-				_count = last;
-				_subscriberDict.TryRemove(s.Ident, out var ts);
+                _SyncSubscribers[last] = null;
+				_SyncSubscriberCount = last;
+				_SyncSubscriberDict.TryRemove(s.Ident, out var ts);
 			}
 		}
 	}

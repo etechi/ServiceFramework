@@ -52,6 +52,8 @@ namespace SF.Core.Events
 	{
 		[Comment("无保证")]
 		NoGuarantee,
+		[Comment("尽力保证")]
+		TryBest,
 		[Comment("最多一次")]
 		AtMostOnce,
 		[Comment("最少一次")]
@@ -76,7 +78,7 @@ namespace SF.Core.Events
 
 	public interface IEventEmitter
 	{
-		Task Emit(IEvent Event,bool SyncMode=true);
+		Task Emit(IEvent Event);
 	}
    
 }
