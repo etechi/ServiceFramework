@@ -20,6 +20,7 @@ using System.Reflection;
 using SF.Sys.Reflection;
 using SF.Sys.Entities;
 using SF.Sys.Comments;
+using SF.Sys.Services.Management.Models;
 
 namespace SF.Sys.Services.Management
 {
@@ -73,7 +74,7 @@ namespace SF.Sys.Services.Management
 			var comment = ImplementType.Comment();
 			e.Title = Title ?? e.Name;
 			e.ContainerId = ParentId;
-			e.Description = Description ?? comment?.Description;
+			e.Description = Description ?? comment?.Summary;
 			e.Setting = Json.Stringify(Setting);
 		}
 		public static Task<ObjectKey<long>> TryGetDefaultService<I>(

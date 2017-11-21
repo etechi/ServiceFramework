@@ -19,7 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Core.CallPlans
+namespace SF.Sys.CallPlans
 {
 
 	public static class ICallPlanProviderExtension

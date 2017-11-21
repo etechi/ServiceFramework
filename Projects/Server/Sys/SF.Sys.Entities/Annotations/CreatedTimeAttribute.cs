@@ -14,14 +14,12 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.ComponentModel.DataAnnotations;
-using SF.Sys.Entities.Annotations;
 using System.Threading.Tasks;
 
-namespace SF.Sys.Entities.AutoEntityProvider
+namespace SF.Sys.Entities.Annotations
 {
 	[AttributeUsage(AttributeTargets.Property)]
-	public class ServiceScopeIdAttribute:Attribute
+	public class CreatedTimeAttribute:Attribute
 	{	
 	}
 }

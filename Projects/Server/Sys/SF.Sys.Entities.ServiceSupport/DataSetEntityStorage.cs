@@ -22,10 +22,12 @@ using System.Reflection;
 using System.Linq.Expressions;
 using System.Data.Common;
 using System.Collections.Generic;
-using SF.Auth;
+using SF.Sys.Auth;
 using SF.Core.Events;
 using SF.Sys.Data;
 using SF.Sys.Comments;
+using SF.Sys.Auth.Permissions;
+using SF.Sys.Linq;
 
 namespace SF.Sys.Entities
 {
@@ -171,7 +173,7 @@ namespace SF.Sys.Entities
 				return Array.Empty<TReadOnlyEntity>();
 			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
-				$"批量载入实体：{typeof(TModel).Comment().Name}",
+				$"批量载入实体：{typeof(TModel).Comment().Title}",
 				async (trans) =>
 				{
 					return await Query(
@@ -261,7 +263,7 @@ namespace SF.Sys.Entities
 		{
 			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
-				$"查询实体主键：{typeof(TModel).Comment().Name}",
+				$"查询实体主键：{typeof(TModel).Comment().Title}",
 				async (trans) =>
 				{
 					var q = Storage.DataContext.Set<TModel>().AsQueryable(true);
@@ -287,7 +289,7 @@ namespace SF.Sys.Entities
 		{
 			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
-				$"查询实体主键：{typeof(TModel).Comment().Name}",
+				$"查询实体主键：{typeof(TModel).Comment().Title}",
 				async (trans) =>
 				{
 					var q = Storage.DataContext.Set<TModel>().AsQueryable(true);
@@ -315,7 +317,7 @@ namespace SF.Sys.Entities
 		{
 			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
-				$"查询实体{typeof(TModel).Comment().Name}",
+				$"查询实体{typeof(TModel).Comment().Title}",
 				async (trans) =>
 				{
 					var q = Storage.DataContext.Set<TModel>().AsQueryable(true);
@@ -424,7 +426,7 @@ namespace SF.Sys.Entities
 				return default(TEditable);
 			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
-				$"载入编辑实体{typeof(TModel).Comment().Name}:{Entity<TKey>.GetIdents(Key)?.Join(",")}",
+				$"载入编辑实体{typeof(TModel).Comment().Title}:{Entity<TKey>.GetIdents(Key)?.Join(",")}",
 				async (trans) =>
 				{
 					return await MapModelToEditable(Storage.DataContext.Set<TModel>().AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Key)));
@@ -440,7 +442,7 @@ namespace SF.Sys.Entities
 				return default(TEditable);
 			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
-				$"载入编辑实体{typeof(TModel).Comment().Name}:{Entity<TKey>.GetIdents(Key)?.Join(",")}",
+				$"载入编辑实体{typeof(TModel).Comment().Title}:{Entity<TKey>.GetIdents(Key)?.Join(",")}",
 				async (trans) =>
 				{
 					return await Storage.QueryResultBuildHelperCache.GetHelper<TModel,TEditable>(QueryMode.Edit).QuerySingleOrDefault(
@@ -595,7 +597,7 @@ namespace SF.Sys.Entities
 			Storage.PermissionValidate(Operations.Create);
 
 			return await Storage.UseTransaction(
-				$"新建实体{typeof(TModel).Comment().Name}",
+				$"新建实体{typeof(TModel).Comment().Title}",
 				async (trans) =>
 				{
 					Context.InitCreate<TModel,TEditable>(Entity, ExtraArgument);
@@ -661,7 +663,7 @@ namespace SF.Sys.Entities
 			Storage.PermissionValidate(Operations.Update);
 
 			return await Storage.UseTransaction(
-				$"编辑实体{typeof(TModel).Comment().Name}:{Entity<TEditable>.GetIdentValues(Entity)}",
+				$"编辑实体{typeof(TModel).Comment().Title}:{Entity<TEditable>.GetIdentValues(Entity)}",
 				async (trans) =>
 				{
 					var q = Storage.DataContext.Set<TModel>().AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Entity));
@@ -717,7 +719,7 @@ namespace SF.Sys.Entities
 			Storage.PermissionValidate(Operations.Remove);
 
 			return await Storage.UseTransaction(
-				$"删除实体{typeof(TModel).Comment().Name}:{Id}",
+				$"删除实体{typeof(TModel).Comment().Title}:{Id}",
 				async (trans) =>
 				{
 					var q = Storage.DataContext.Set<TModel>().AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Id));

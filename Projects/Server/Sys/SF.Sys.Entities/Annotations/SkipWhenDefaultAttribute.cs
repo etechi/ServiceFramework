@@ -14,24 +14,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
+using SF.Sys.Entities.Annotations;
+using System.Threading.Tasks;
 
 namespace SF.Sys.Entities.Annotations
 {
-	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Interface)]
-	public class AuthorizeAttribute : Attribute
-	{
-		public string Roles { get; set; }
-		public AuthorizeAttribute():this(null)
-		{
-
-		}
-		public AuthorizeAttribute(string Roles =null)
-		{
-			this.Roles = Roles;
-		}
+	[AttributeUsage(AttributeTargets.Property)]
+	public class SkipWhenDefaultAttribute:Attribute
+	{	
 	}
-
-	
 }

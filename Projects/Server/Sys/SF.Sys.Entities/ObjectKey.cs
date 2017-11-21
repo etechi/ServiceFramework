@@ -65,5 +65,12 @@ namespace SF.Sys.Entities
 
 		//public static implicit  operator ObjectKey<long>(long id)=>new ObjectKey<long> { Id=id};
 	}
-	
+	public static class ObjectKey
+	{
+		public static ObjectKey<T> From<T>(T Id)
+			where T : IEquatable<T>
+		{
+			return new ObjectKey<T> { Id = Id };
+		}
+	}
 }

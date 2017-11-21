@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SF.Data;
 using System.Reflection;
+using SF.Sys.Comments;
 
 namespace SF.Sys.Entities
 {
@@ -183,7 +184,7 @@ namespace SF.Sys.Entities
 
 		protected virtual Task<TEditable> OnMapModelToEditable(IContextQueryable<TModel> Query)
 		{
-			return Query.Select(ADT.Poco.MapExpression<TModel, TEditable>()).SingleOrDefaultAsync();
+			return Query.Select(Poco.MapExpression<TModel, TEditable>()).SingleOrDefaultAsync();
 		}
 
 		public virtual Task<TEditable> LoadForEdit(TKey Key)

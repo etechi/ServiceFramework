@@ -13,10 +13,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Entities;
-using SF.Entities.AutoEntityProvider;
-using SF.Metadata;
+using SF.Sys.Data;
+using SF.Sys.Entities;
+using SF.Sys.Entities.Annotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -29,16 +28,22 @@ namespace SF.Entities.DataModels
 		IItemEntityOrder
 		where TKey : IEquatable<TKey>
 	{
-		[Comment("容器ID")]
+		/// <summary>
+		/// 容器
+		/// </summary>
 		[Index("container",Order =1)]
 		public virtual TContainerKey ContainerId { get; set; }
 
-		[Comment("排位")]
+		/// <summary>
+		/// 排位
+		/// </summary>
 		[TableVisible]
 		[Index("container", Order = 2)]
 		public virtual int ItemOrder { get; set; }
-		
-		[Comment("容器")]
+
+		/// <summary>
+		/// 容器
+		/// </summary>
 		[ForeignKey(nameof(ContainerId))]
 		public virtual TContainer Container { get; set; }
 	}
@@ -53,18 +58,24 @@ namespace SF.Entities.DataModels
 		IItemEntityOrder
 		where TKey : IEquatable<TKey>
 	{
-		[Comment("容器ID")]
+		/// <summary>
+		/// 容器
+		/// </summary>
 		[Index("container", Order = 1)]
 		public virtual TContainerKey ContainerId { get; set; }
 
-		[Comment("排位")]
+		/// <summary>
+		/// 排位
+		/// </summary>
 		[TableVisible]
 		[Index("container", Order = 2)]
 		[ItemOrder]
 		[Ignore]
 		public virtual int ItemOrder { get; set; }
 
-		[Comment("容器")]
+		/// <summary>
+		/// 容器
+		/// </summary>
 		[ForeignKey(nameof(ContainerId))]
 		public virtual TContainer Container { get; set; }
 	}

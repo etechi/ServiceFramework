@@ -18,10 +18,10 @@ using System.ComponentModel.DataAnnotations;
 using SF.Sys.Entities.Annotations;
 using System.Threading.Tasks;
 
-namespace SF.Sys.Entities.AutoEntityProvider
+namespace SF.Sys.Entities.Annotations
 {
 	[AttributeUsage(AttributeTargets.Property)]
-	public class SkipWhenDefaultAttribute:Attribute
+	public class ServiceScopeIdAttribute:Attribute
 	{	
 	}
 }

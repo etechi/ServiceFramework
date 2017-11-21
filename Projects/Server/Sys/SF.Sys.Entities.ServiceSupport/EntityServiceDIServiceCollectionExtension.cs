@@ -16,11 +16,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Data;
-using SF.Entities;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
+using SF.Sys.Entities;
+using SF.Sys.Reflection;
+using SF.Sys.Linq;
+using SF.Sys.Auth.Permissions;
+using SF.Sys.Services;
 
 namespace SF.Sys.Services
 {

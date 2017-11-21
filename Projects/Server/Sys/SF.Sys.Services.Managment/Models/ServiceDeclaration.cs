@@ -13,8 +13,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Entities;
-using SF.Metadata;
+using SF.Sys.Entities;
+using SF.Sys.Entities.Annotations;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -25,33 +25,45 @@ namespace SF.Sys.Services.Management.Models
 		IEntityWithId<string>,
 		IEntityWithName
 	{
+		/// <summary>
+		/// ID
+		/// </summary>
 		[Key]
-		[Comment("ID")]
 		[ReadOnly(true)]
 		[TableVisible]
 		public string Id { get; set; }
 
-		[Comment("类型")]
+		/// <summary>
+		/// 类型
+		/// </summary>
 		[ReadOnly(true)]
 		[TableVisible]
 		public string Type { get; set; }
 
-		[Comment("名称")]
+		/// <summary>
+		/// 名称
+		/// </summary>
 		[ReadOnly(true)]
 		[TableVisible]
 		public string Name { get; set; }
 
-		[Comment("描述")]
+		/// <summary>
+		/// 描述
+		/// </summary>
 		[ReadOnly(true)]
 		[TableVisible]
 		public string Description { get; set; }
 
+		/// <summary>
+		/// 分组
+		/// </summary>
 		[ReadOnly(true)]
-		[Comment("分组")]
 		[TableVisible]
 		public string Group { get; set; }
 
-		[Comment("是否禁用")]
+		/// <summary>
+		/// 是否禁用
+		/// </summary>
 		[TableVisible]
 		public bool Disabled { get; set; }
 	}

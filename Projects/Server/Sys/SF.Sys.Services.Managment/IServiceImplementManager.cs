@@ -17,6 +17,7 @@ using SF.Sys.Entities;
 using System;
 using SF.Sys.Entities.Annotations;
 using SF.Sys.Services.Management.Models;
+using SF.Sys.Auth;
 
 namespace SF.Sys.Services.Management
 {

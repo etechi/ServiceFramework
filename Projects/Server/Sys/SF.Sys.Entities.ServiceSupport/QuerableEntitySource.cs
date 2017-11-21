@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SF.Data;
+using SF.Sys.Linq;
 
 namespace SF.Sys.Entities
 {
@@ -74,7 +75,7 @@ namespace SF.Sys.Entities
 		}
 		protected virtual IContextQueryable<TSummaryTemp> OnMapModelToSummary(IContextQueryable<TModel> Query)
 		{
-			return Query.Select(ADT.Poco.MapExpression<TModel, TSummaryTemp>());
+			return Query.Select(Poco.MapExpression<TModel, TSummaryTemp>());
 		}
 		protected abstract Task<TEntitySummary[]> OnPrepareSummaries(TSummaryTemp[] Internals);
 

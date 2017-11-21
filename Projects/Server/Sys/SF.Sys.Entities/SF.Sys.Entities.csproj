@@ -4,6 +4,16 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.Entities.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+    <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Entities.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove=".licenseheader" />
   </ItemGroup>
@@ -11,6 +21,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
     <ProjectReference Include="..\SF.Sys.Linq.ContextQueryable\SF.Sys.Linq.ContextQueryable.csproj" />
+    <ProjectReference Include="..\SF.Sys.Linq.Expressions\SF.Sys.Linq.Expressions.csproj" />
+    <ProjectReference Include="..\SF.Sys.Serialization\SF.Sys.Serialization.csproj" />
     <ProjectReference Include="..\SF.Sys.Validation\SF.Sys.Validation.csproj" />
   </ItemGroup>
 

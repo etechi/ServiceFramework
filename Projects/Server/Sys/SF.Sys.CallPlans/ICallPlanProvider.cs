@@ -19,7 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Core.CallPlans
+namespace SF.Sys.CallPlans
 {
 	/// <summary>
 	/// 执行时抛出此异常将引发重复调用，可用于实现重复定时器

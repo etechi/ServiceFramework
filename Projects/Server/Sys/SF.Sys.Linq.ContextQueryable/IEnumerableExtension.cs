@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Linq
 {
-	public static class ContextQueryable
+	public static class ContextQueryableExtension
 	{
 		class SimpleContextQueryable<T> : IContextQueryable<T>, IOrderedContextQueryable<T>
 		{

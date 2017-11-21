@@ -17,12 +17,10 @@ using System.Threading.Tasks;
 using System;
 using SF.Core.ServiceManagement;
 using System.Linq;
-using SF.Data;
-using SF.Core.Times;
 using SF.Core.Events;
-using SF.Sys.Logging;
 using SF.Sys.Data;
 using SF.Sys.Services;
+using SF.Sys.Entities.AutoEntityProvider;
 
 namespace SF.Sys.Entities
 {
@@ -55,8 +53,8 @@ namespace SF.Sys.Entities
 	{
 		IIdentGenerator IdentGenerator { get; }
 		IEntityReferenceResolver DataEntityResolver { get; }
-		ITimeService TimeService { get; }
-		ILogger GetLogger(Type Type);
+		//ITimeService TimeService { get; }
+		//ILogger GetLogger(Type Type);
 		IEventEmitService EventEmitService { get; }
 		IServiceProvider ServiceProvider { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
@@ -67,8 +65,8 @@ namespace SF.Sys.Entities
 		IScoped<IDataContext> ScopedDataContext { get; }
 		IQueryResultBuildHelperCache QueryResultBuildHelperCache { get; }
 		IPagingQueryBuilderCache PagingQueryBuilderCache { get; }
-		//IQueryFilterCache QueryFilterCache { get; }
-		//IEntityModifierCache EntityModifierCache { get; }
+		IQueryFilterCache QueryFilterCache { get; }
+		IEntityModifierCache EntityModifierCache { get; }
 		IDataContext DataContext { get; }
 		DateTime Now { get; }
 	}

@@ -13,9 +13,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Core.ServiceManagement.Management;
+using SF.Data.Models;
 using SF.Entities;
-using SF.Metadata;
 using SF.Sys.Entities;
 using SF.Sys.Entities.Annotations;
 using System.Collections.Generic;
@@ -25,7 +24,7 @@ namespace SF.Sys.Services.Management.Models
 {
 	[EntityObject]
 	public class ServiceInstance : 
-		SF.Data.Models.UIObjectEntityBase<long>
+		UIObjectEntityBase<long>
 	{
 		/// <summary>
 		/// 服务标识

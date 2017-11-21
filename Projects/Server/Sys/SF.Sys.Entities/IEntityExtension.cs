@@ -21,6 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using SF.Sys.Reflection;
+using SF.Sys.Linq.Expressions;
 
 namespace SF.Sys.Entities
 {

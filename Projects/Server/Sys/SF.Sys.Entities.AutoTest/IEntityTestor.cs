@@ -14,6 +14,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Core.ServiceManagement;
+using SF.Sys.Services;
+using SF.Sys.Services.Management;
 using System;
 using System.Collections.Generic;
 using System.Linq;

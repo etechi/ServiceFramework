@@ -13,14 +13,13 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Core.CallPlans;
+using SF.Sys.CallPlans;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Core.ServiceManagement;
-namespace SF.Core.ServiceManagement
+namespace SF.Sys.Services
 {
 	
 	public static class CallPlansDIServiceCollectionExtension

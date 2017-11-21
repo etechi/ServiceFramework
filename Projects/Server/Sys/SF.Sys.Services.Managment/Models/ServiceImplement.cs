@@ -13,9 +13,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Core.ServiceManagement.Management;
 using SF.Entities;
-using SF.Metadata;
+using SF.Sys.Entities;
+using SF.Sys.Entities.Annotations;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -24,44 +24,60 @@ namespace SF.Sys.Services.Management.Models
 	[EntityObject]
 	public class ServiceImplement: IEntityWithId<string>, IEntityWithName
 	{
+		/// <summary>
+		/// ID
+		/// </summary>
 		[Key]
-		[Comment("ID")]
 		[ReadOnly(true)]
 		[TableVisible]
 		public string Id { get; set; }
 
-		[Comment("名称")]
+		/// <summary>
+		/// 名称
+		/// </summary>
 		[ReadOnly(true)]
 		[TableVisible]
 		public string Type { get; set; }
 
-		[Comment("名称")]
+		/// <summary>
+		/// 名称
+		/// </summary>
 		[ReadOnly(true)]
 		[TableVisible]
 		public string Name { get; set; }
 
-		[Comment("描述")]
+		/// <summary>
+		/// 描述
+		/// </summary>
 		[ReadOnly(true)]
 		[TableVisible]
 		public string Description { get; set; }
 
-		[Comment("分组")]
+		/// <summary>
+		/// 分组
+		/// </summary>
 		[ReadOnly(true)]
 		[TableVisible]
 		public string Group { get; set; }
 
-		[Comment("是否禁用")]
+		/// <summary>
+		/// 是否禁用
+		/// </summary>
 		[TableVisible]
 		public bool Disabled { get; set; }
 
-		[Comment("服务定义")]
+		/// <summary>
+		/// 服务定义
+		/// </summary>
 		[EntityIdent(typeof(ServiceDeclaration), nameof(DeclarationName))]
 		[ReadOnly(true)]
 		public string DeclarationId { get; set; }
 
+		/// <summary>
+		/// 服务定义
+		/// </summary>
 		[Ignore]
-		[TableVisible]
-		[Comment("服务定义")]
+		[TableVisible]		
 		public string DeclarationName { get; set; }
 	}
 }

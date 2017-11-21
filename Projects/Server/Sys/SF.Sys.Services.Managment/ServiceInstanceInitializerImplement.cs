@@ -19,6 +19,10 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Collections;
+using SF.Sys.Entities;
+using SF.Sys.Comments;
+using SF.Sys.Services.Management;
+using SF.Sys.Services.Management.Models;
 
 namespace SF.Sys.Services
 {
@@ -33,7 +37,7 @@ namespace SF.Sys.Services
 			long _ServiceId;
 			public ServiceBuilder(Func<IServiceProvider, long?, ServiceInstanceConfig, Task<long>> builder)
 			{
-				Config.Name = typeof(T).Comment().Name;
+				Config.Name = typeof(T).Comment().Title;
 				this.Builder = builder;
 			}
 			public async Task<long> Ensure(IServiceProvider ServiceProvider, long? ParentId)
@@ -141,18 +145,18 @@ namespace SF.Sys.Services
 			sii.Config.Ident = Ident;
 			return sii;
 		}
-		public static T WithLogicState<T>(this T sii, EntityLogicState State)
-			where T : IServiceInstanceInitializer
-		{
-			sii.Config.LogicState = State;
-			return sii;
-		}
-		public static T Enabled<T>(this T sii)
-			where T: IServiceInstanceInitializer
-		{
-			sii.Config.LogicState = EntityLogicState.Enabled;
-			return sii;
-		}
+		//public static T WithLogicState<T>(this T sii, EntityLogicState State)
+		//	where T : IServiceInstanceInitializer
+		//{
+		//	sii.Config.LogicState = State;
+		//	return sii;
+		//}
+		//public static T Enabled<T>(this T sii)
+		//	where T: IServiceInstanceInitializer
+		//{
+		//	sii.Config.LogicState = EntityLogicState.Enabled;
+		//	return sii;
+		//}
 		public static IServiceInstanceInitializer<I> DefaultService<I, T>(
 			this IServiceInstanceManager manager,
 			object cfg,
@@ -180,7 +184,7 @@ namespace SF.Sys.Services
 					Title:scfg.Title,
 					Description:scfg.Description,
 					ServiceIdent:scfg.Ident,
-					State: scfg.LogicState
+					State: EntityLogicState.Enabled
 					),
 				cfg,
 				childServices
@@ -218,7 +222,7 @@ namespace SF.Sys.Services
 		static IServiceInstanceInitializer<I> CreateService<I, T>(
 			this IServiceInstanceManager manager,
 			Func<long?, Task<long>> FindService,
-			Func<long?, object, ServiceInstanceConfig, Task<Models.ServiceInstanceEditable>> ServiceCreator,
+			Func<long?, object, ServiceInstanceConfig, Task<ServiceInstanceEditable>> ServiceCreator,
 			object cfg,
 			IServiceInstanceInitializer[] childServices
 			) where T : I
@@ -305,7 +309,7 @@ namespace SF.Sys.Services
 			long? ParentId=null
 			) where T : I =>
 			sc.InitService(
-				Name ?? "初始化"+typeof(T).Comment().Name,
+				Name ?? "初始化"+typeof(T).Comment().Title,
 				(sp, sim) =>
 					sim.DefaultService<I,T>(Config),
 				ParentId

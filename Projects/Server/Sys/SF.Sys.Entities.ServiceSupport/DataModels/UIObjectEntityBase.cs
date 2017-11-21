@@ -13,8 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Metadata;
+using SF.Sys.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,32 +29,53 @@ namespace SF.Entities.DataModels
     public abstract class UIObjectEntityBase<K> : ObjectEntityBase<K>,IUIObjectEntity
 		where K:IEquatable<K>
 	{
-		[Comment("标题", "用于UI显示")]
+		///<title>标题</title>
+		/// <summary>
+		/// 用于UI显示
+		/// </summary>
 		[MaxLength(100)]
 		[Required]
 		public virtual string Title { get; set; }
 
-		[Comment("副标题", "用于UI显示")]
+		///<title>副标题</title>
+		/// <summary>
+		/// 用于UI显示
+		/// </summary>
 		[MaxLength(100)]
 		public virtual string SubTitle { get; set; }
 
-		[Comment("提示", "用于UI显示")]
+		///<title>提示</title>
+		/// <summary>
+		/// 用于UI显示
+		/// </summary>
 		[MaxLength(100)]
 		public virtual string Remarks { get; set; }
 
-		[Comment("说明", "用于UI显示")]
+		///<title>说明</title>
+		/// <summary>
+		/// 用于UI显示
+		/// </summary>
 		[MaxLength(200)]
 		public virtual string Description { get; set; }
 
-		[Comment("备注", "内部使用，不用于UI显示")]
+		///<title>备注</title>
+		/// <summary>
+		/// 内部使用，不用于UI显示
+		/// </summary>
 		[MaxLength(200)]
 		public virtual string Memo { get; set; }
 
-		[Comment("图片","大尺寸图片")]
+		///<title>图片</title>
+		/// <summary>
+		/// 用于UI显示
+		/// </summary>
 		[MaxLength(100)]
 		public virtual string Image { get; set; }
 
-		[Comment("图标", "小尺寸图片")]
+		///<title>图标</title>
+		/// <summary>
+		/// 用于UI显示
+		/// </summary>
 		[MaxLength(100)]
 		public virtual string Icon { get; set; }
 

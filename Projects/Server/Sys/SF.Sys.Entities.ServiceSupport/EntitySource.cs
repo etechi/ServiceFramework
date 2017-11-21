@@ -20,10 +20,13 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using SF.Data;
 using SF.Core.Times;
-using SF.Core.Logging;
 using SF.Core.ServiceManagement;
 using System.Collections.Generic;
-using SF.ADT;
+using SF.Sys.Services;
+using SF.Sys.Logging;
+using SF.Sys.Data;
+using SF.Sys.Linq;
+using SF.Sys.Collections.Generic;
 
 namespace SF.Sys.Entities
 {
@@ -38,7 +41,7 @@ namespace SF.Sys.Entities
 			get
 			{
 				if (_Logger == null)
-					_Logger = ServiceContext.GetLogger(GetType());
+					_Logger = (ILogger)ServiceContext.ServiceProvider.GetService(typeof(ILogger<>).MakeGenericType(GetType()));
 				return _Logger;
 			}
 		}
@@ -166,7 +169,7 @@ namespace SF.Sys.Entities
 		}
 		protected virtual IContextQueryable<TTemp> OnMapModelToInternal(IContextQueryable<TModel> Query)
 		{
-			return Query.Select(ADT.Poco.MapExpression<TModel, TTemp>());
+			return Query.Select(Poco.MapExpression<TModel, TTemp>());
 		}
 		protected abstract Task<TEntityDetail[]> OnPrepareInternals(TTemp[] Internals);
 		public async Task<TEntityDetail> GetAsync(TKey Id)

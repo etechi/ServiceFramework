@@ -65,18 +65,18 @@ namespace SF.Sys.Entities
 		IPropertyQueryFilter GetFilter<TDataModel,TQueryArgument>(PropertyInfo queryProp);
 		int Priority { get; }
 	}
-	//public interface IQueryFilter<TDataModel, TQueryArgument>
-	//{
-	//	int Priority { get; }
-	//	IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, IEntityServiceContext Context, TQueryArgument Arg);
-	//}
-	//public interface IQueryFilterProvider
-	//{
-	//	IQueryFilter<TDataModel, TQueryArgument> GetFilter<TDataModel, TQueryArgument>();
-	//}
-	//public interface IQueryFilterCache : IQueryFilterProvider
-	//{
-	//}
+	public interface IQueryFilter<TDataModel, TQueryArgument>
+	{
+		int Priority { get; }
+		IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, IEntityServiceContext Context, TQueryArgument Arg);
+	}
+	public interface IQueryFilterProvider
+	{
+		IQueryFilter<TDataModel, TQueryArgument> GetFilter<TDataModel, TQueryArgument>();
+	}
+	public interface IQueryFilterCache : IQueryFilterProvider
+	{
+	}
 
 	public interface IPagingQueryBuilder<T>
 	{

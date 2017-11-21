@@ -13,9 +13,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Entities.AutoEntityProvider;
-using SF.Metadata;
+using SF.Sys.Data;
+using SF.Sys.Entities;
+using SF.Sys.Entities.Annotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -37,49 +37,70 @@ namespace SF.Entities.DataModels
 		where K:IEquatable<K>
 	{
 
-		[Comment("Id")]
+		/// <summary>
+		/// Id
+		/// </summary>
 		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public virtual K Id { get; set; }
 
-		[Comment("名称")]
+		/// <summary>
+		/// 名称
+		/// </summary>
 		[MaxLength(100)]
 		[Index]
 		[Required]
 		public virtual string Name { get; set; }
 
-		[Comment("区域")]
+		/// <summary>
+		/// 区域
+		/// </summary>
 		[Index]
 		[ServiceScopeId]
 		public virtual long? ServiceDataScopeId { get; set; }
 
-		[Comment("对象状态")]
+		/// <summary>
+		/// 对象状态
+		/// </summary>
 		public virtual EntityLogicState LogicState { get; set; }
 
-		[Comment("所有人")]
+		/// <summary>
+		/// 所有人
+		/// </summary>
 		[Index]
 		public virtual long OwnerId { get; set; }
 
-		[Comment("创建时间")]
+		/// <summary>
+		/// 创建时间
+		/// </summary>
 		[Index]
 		[CreatedTime]
 		public virtual DateTime CreatedTime { get; set; }
 
-		
-		[Comment("修改人")]
+
+		/// <summary>
+		/// 修改人
+		/// </summary>
 		[Index]
 		public virtual long UpdatorId { get; set; }
 
-		[Comment("修改时间")]
+		/// <summary>
+		/// 修改时间
+		/// </summary>
 		[UpdatedTime]
 		public virtual DateTime UpdatedTime { get; set; }
 
-		[Comment("内部备注")]
+		/// <summary>
+		/// 内部备注
+		/// </summary>
 		public virtual string InternalRemarks { get; set; }
-	
+
+		/// <summary>
+		/// 乐观锁时间戳
+		/// </summary>
 		[ConcurrencyCheck]
 		[Timestamp]
-		[Comment(Name = "乐观锁时间戳")]
+		
 		public virtual byte[] TimeStamp { get; set; }
 
 	}

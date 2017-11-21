@@ -4,14 +4,24 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Services.Management.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.Services.Management.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove=".licenseheader" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Comments\SF.Sys.Comments.csproj" />
+    <ProjectReference Include="..\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
     <ProjectReference Include="..\SF.Sys.Entities\SF.Sys.Entities.csproj" />
     <ProjectReference Include="..\SF.Sys.Events\SF.Sys.Events.csproj" />
+    <ProjectReference Include="..\SF.Sys.ServiceFeatures\SF.Sys.ServiceFeatures.csproj" />
   </ItemGroup>
 
   <ItemGroup>

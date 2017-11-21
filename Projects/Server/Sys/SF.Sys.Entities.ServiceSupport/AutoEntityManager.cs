@@ -16,7 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System;
 using System.Threading.Tasks;
 
-namespace SF.Entities.AutoEntityProvider
+namespace SF.Sys.Entities.AutoEntityProvider
 {
 	public class AutoEntityManager<TKey, TDetail, TSummary, TEditable, TQueryArgument,TDataModel> :
 		AutoEntityManager<TKey, TDetail, TSummary, TEditable, TQueryArgument>
