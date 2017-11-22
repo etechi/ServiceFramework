@@ -19,7 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SF.Sys.ServiceFeatures\SF.Sys.ServiceFeatures.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
+    <ProjectReference Include="..\SF.Sys.Threading\SF.Sys.Threading.csproj" />
   </ItemGroup>
 
 </Project>

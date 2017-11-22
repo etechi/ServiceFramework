@@ -25,12 +25,12 @@ namespace SF.Sys.CallPlans.Runtime
 		ICallPlanProvider
 	{
 		public ICallPlanStorage Storage { get; }
-		public Times.ITimeService TimeService { get; }
+		public TimeServices.ITimeService TimeService { get; }
 		public Lazy<ICallDispatcher> CallScheduler { get; }
 		public CallableFactory CallableFactory { get; }
 		public CallPlanProvider(
-			ICallPlanStorage Storage, 
-			Times.ITimeService TimeService, 
+			ICallPlanStorage Storage,
+			TimeServices.ITimeService TimeService, 
 			Lazy<ICallDispatcher> Scheduler,
 			CallableFactory CallableFactory
 			)

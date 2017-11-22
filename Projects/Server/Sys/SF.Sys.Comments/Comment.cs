@@ -34,7 +34,7 @@ namespace SF.Sys.Comments
 			this.Group = Group;
 			this.Remarks = Remarks;
 			this.Order = Order;
-			this.Prompts = Prompts;
+			this.Prompt = Prompts;
 		}
 		public override string ToString()
 		{
@@ -42,7 +42,7 @@ namespace SF.Sys.Comments
 		}
 		public string Id { get; }
 		public string Summary { get; }
-		public string Prompts { get; }
+		public string Prompt { get; }
 		public string Group { get; }
 		public string Title { get; }
 		public int Order { get; }

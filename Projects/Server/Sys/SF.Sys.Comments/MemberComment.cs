@@ -55,7 +55,7 @@ namespace SF.Sys.Comments
 					$"{gta.Select(a => a.Comment().Summary).Join(" ")} {c.Summary}",
 					$"{gta.Select(a => a.Comment().Group).Join(" ")} {c.Group}",
 					$"{gta.Select(a => a.Comment().Remarks).Join(" ")} {c.Remarks}",
-					$"{gta.Select(a => a.Comment().Prompts).Join(" ")} {c.Prompts}"
+					$"{gta.Select(a => a.Comment().Prompt).Join(" ")} {c.Prompt}"
 					);
 			}
 

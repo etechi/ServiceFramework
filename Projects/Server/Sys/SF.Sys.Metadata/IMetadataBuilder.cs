@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Comments;
 using SF.Sys.Serialization;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,6 @@ namespace SF.Sys.Metadata
 		Models.Type GenerateAndAddType(Type type);
 		Models.Property GenerateTypeProperty(System.Reflection.PropertyInfo prop, object DefaultValueObject);
 		Models.Property[] GenerateTypeProperties(Type type);
-		T LoadAttributes<T>(T item, IEnumerable<Attribute> attrs, object attrSource, Predicate<Attribute> predicate = null) where T : Models.Entity;
+		T LoadAttributes<T>(T item, IEnumerable<Attribute> attrs, object attrSource,Comment Comment, Predicate<Attribute> predicate = null) where T : Models.Entity;
 	}
 }

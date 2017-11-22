@@ -13,23 +13,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth;
+using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities;
-using SF.Sys.Entities.Annotations;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-namespace SF.Data.Models
+namespace SF.Entities.Models
 {
 
 
-    public abstract class EventEntityBase<K> : IEntityWithId<K>, IEventEntity
+	public abstract class EventEntityBase<K> : IEntityWithId<K>, IEventEntity
 		where K:IEquatable<K>
 	{
 		/// <summary>

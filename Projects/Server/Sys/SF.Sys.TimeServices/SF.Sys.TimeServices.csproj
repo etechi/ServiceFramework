@@ -18,4 +18,8 @@
     <None Remove=".licenseheader" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -15,10 +15,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Data;
 using SF.Sys.Entities;
-using SF.Sys.Entities.Annotations;
+using SF.Sys.Annotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace SF.Entities.DataModels
 {
 

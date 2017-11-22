@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System;
 using System.ComponentModel.DataAnnotations;
 using SF.Sys.Entities.Annotations;
+using SF.Sys.Annotations;
 
 namespace SF.Sys.Entities
 {

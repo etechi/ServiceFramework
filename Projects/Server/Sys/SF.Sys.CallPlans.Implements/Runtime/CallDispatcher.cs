@@ -15,7 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Logging;
 using SF.Sys.Services;
-using SF.Sys.Times;
+using SF.Sys.TimeServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace SF.Sys.CallPlans.Runtime
 		public ILogger Logger { get; }
 		public IServiceScopeFactory ScopeFactory { get; }
 		public ITimeService TimeService { get; set; }
-		public CallDispatcher(ILogger<CallDispatcher> Logger, IServiceScopeFactory ScopeFactory, Times.ITimeService TimeService)
+		public CallDispatcher(ILogger<CallDispatcher> Logger, IServiceScopeFactory ScopeFactory, TimeServices.ITimeService TimeService)
 		{
 			this.Logger = Logger;
 			this.TimeService = TimeService;

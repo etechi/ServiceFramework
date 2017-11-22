@@ -18,8 +18,4 @@
     <None Remove=".licenseheader" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SF.Sys.Reflection.TypeBuilder\SF.Sys.Reflection.TypeBuilder.csproj" />
-  </ItemGroup>
-
 </Project>

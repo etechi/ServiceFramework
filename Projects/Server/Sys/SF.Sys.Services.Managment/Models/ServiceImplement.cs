@@ -13,9 +13,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Entities;
+using SF.Sys.Annotations;
 using SF.Sys.Entities;
-using SF.Sys.Entities.Annotations;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 

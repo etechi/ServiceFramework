@@ -21,10 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SF.Sys.Annotations\SF.Sys.Annotations.csproj" />
     <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
     <ProjectReference Include="..\SF.Sys.Linq.ContextQueryable\SF.Sys.Linq.ContextQueryable.csproj" />
     <ProjectReference Include="..\SF.Sys.Linq.Expressions\SF.Sys.Linq.Expressions.csproj" />
     <ProjectReference Include="..\SF.Sys.Serialization\SF.Sys.Serialization.csproj" />
+    <ProjectReference Include="..\SF.Sys.Test\SF.Sys.Test.csproj" />
     <ProjectReference Include="..\SF.Sys.Validation\SF.Sys.Validation.csproj" />
   </ItemGroup>
 

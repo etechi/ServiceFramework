@@ -22,46 +22,15 @@ using System.Linq.Expressions;
 using System.Collections;
 using System.Reflection;
 
-/// <summary>
-/// asdasdasd111111111111111111111
-/// </summary>
-namespace System.Linq.TypeExpressions
+namespace SF.Sys.Reflection
 {
 
-	/// <summary>
-	/// asdas121212
-	/// </summary>
 	public class CustomAttributeExpression
 	{
-		/// <summary>
-		/// asdasdad
-		/// </summary>
-		/// <title>asdasdas</title>
-		/// <title>asdasdasd</title>
-		/// <remarks>asdasd</remarks>
 		public ConstructorInfo Constructor { get; }
-		/// <summary>
-		/// asdasda
-		/// </summary>
 		public IEnumerable<object> Arguments { get; }
-		/// <summary>
-		/// asdasdasd
-		/// </summary>
 		public IEnumerable<PropertyInfo> InitProperties { get; }
-		/// <summary>
-		/// asdasdasdasdasd
-		/// </summary>
 		public IEnumerable<object> InitPropertyValues { get; }
-		/// <summary>
-		/// asdasdadad
-		/// </summary>
-		/// <param name="Constructor">
-		///		<summary>asdasd</summary>
-		///		<remarks>asdfasdfasdfasdfas</remarks>
-		/// </param>
-		/// <param name="Arguments">asdasd</param>
-		/// <param name="InitProperties"></param>
-		/// <param name="InitPropertyValues"></param>
 		public CustomAttributeExpression(
 			ConstructorInfo Constructor,
 			IEnumerable<object> Arguments = null,
@@ -75,9 +44,6 @@ namespace System.Linq.TypeExpressions
 			this.InitPropertyValues = InitPropertyValues ?? Array.Empty<object>();
 		}
 	}
-	/// <summary>
-	/// asdasdasd
-	/// </summary>
 	public abstract class MemberExpression
 	{
 		public List<CustomAttributeExpression> CustomAttributes { get; } = new List<CustomAttributeExpression>();
