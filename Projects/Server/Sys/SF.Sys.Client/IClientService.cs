@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SF.Clients
+namespace SF.Sys.Clients
 {
 	public interface IAccessToken
 	{

@@ -13,11 +13,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Core.ServiceManagement;
-using System;
 namespace SF.Sys.Entities
 {
-	
+
 	public interface IEntitySource<TKey,TEntitySummary,TEntityDetail, TQueryArgument> :
 		IEntityLoadable<TKey, TEntityDetail>,
 		IEntityBatchLoadable<TKey, TEntityDetail>,

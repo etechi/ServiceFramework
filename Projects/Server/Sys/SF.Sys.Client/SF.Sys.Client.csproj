@@ -6,11 +6,17 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Client.xml</DocumentationFile>
-  </PropertyGroup>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+	</PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.Client.xml</DocumentationFile>
-  </PropertyGroup>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="AccessTokenHandler.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove=".licenseheader" />

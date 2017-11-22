@@ -19,7 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Core.Events
+namespace SF.Sys.Events
 {
 	public interface IEvent
 	{

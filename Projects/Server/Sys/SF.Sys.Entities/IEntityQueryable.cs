@@ -13,7 +13,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Core.ServiceManagement;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Entities

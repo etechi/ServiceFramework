@@ -6,11 +6,13 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Validation.xml</DocumentationFile>
-  </PropertyGroup>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+	</PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.Validation.xml</DocumentationFile>
-  </PropertyGroup>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+	</PropertyGroup>
 
   <ItemGroup>
     <None Remove=".licenseheader" />
@@ -20,6 +22,7 @@
     <ProjectReference Include="..\SF.Sys.Auth\SF.Sys.Auth.csproj" />
     <ProjectReference Include="..\SF.Sys.Entities\SF.Sys.Entities.csproj" />
     <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />
+    <ProjectReference Include="..\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
   </ItemGroup>
 

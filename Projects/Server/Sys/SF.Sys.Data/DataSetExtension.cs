@@ -17,9 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
-using SF.Core.ServiceManagement;
 using SF.Sys.Services;
 using SF.Sys.Linq.Expressions;
 using SF.Sys.Collections.Generic;
@@ -27,7 +25,7 @@ using SF.Sys.ADT;
 
 namespace SF.Sys.Data
 {
-	
+
 	public static class DataSetExtension
 	{
 		public static void AddRange<T>(this IDataSet<T> set, IEnumerable<T> items, Action<T> init = null) where T : class

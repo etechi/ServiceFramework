@@ -53,19 +53,21 @@ namespace SF.Sys.CallPlans
 	}
 	public interface ICallPlanProvider
 	{
-        /// <summary>
-        /// 创建一个调用计划
-        /// </summary>
-        /// <remarks>CallableName+CallContext必须全局唯一</remarks>
-        /// <param name="CallableName">被调过程名称</param>
-        /// <param name="CallContext">调用上下文</param>
-        /// <param name="CallArgument">调用参数</param>
-        /// <param name="Exception">调用时异常</param>
-        /// <param name="Title">调用标题</param>
-        /// <param name="CallTime">调用时间，如果为DateTime.Min时，立即调用</param>
-        /// <param name="ExpireSeconds">出错时重复尝试的最长时间，超过此时间后，调用被放弃，单位：秒</param>
-        /// <param name="DelaySecondsOnError">出错时延时时间，单位：秒</param>
-        /// <returns></returns>
+		/// <summary>
+		/// 创建一个调用计划
+		/// </summary>
+		/// <remarks>CallableName+CallContext必须全局唯一</remarks>
+		/// <param name="CallableName">被调过程名称</param>
+		/// <param name="CallContext">调用上下文</param>
+		/// <param name="CallArgument">调用参数</param>
+		/// <param name="Exception">调用时异常</param>
+		/// <param name="Title">调用标题</param>
+		/// <param name="CallTime">调用时间，如果为DateTime.Min时，立即调用</param>
+		/// <param name="ExpireSeconds">出错时重复尝试的最长时间，超过此时间后，调用被放弃，单位：秒</param>
+		/// <param name="DelaySecondsOnError">出错时延时时间，单位：秒</param>
+		/// <param name="SkipExecute"></param>
+		/// <param name="CallData"></param>
+		/// <returns></returns>
 		Task<bool> Schedule(
 			string CallableName,
 			string CallContext,
@@ -89,13 +91,14 @@ namespace SF.Sys.CallPlans
             string CallContext
             );
 
-        /// <summary>
-        /// 立即执行
-        /// </summary>
-        /// <remarks>CallableName+CallContext必须全局唯一</remarks>
-        /// <param name="CallableName">被调过程名称</param>
-        /// <param name="CallContext">调用上下文</param>
-        Task Execute(
+		/// <summary>
+		/// 立即执行
+		/// </summary>
+		/// <remarks>CallableName+CallContext必须全局唯一</remarks>
+		/// <param name="CallableName">被调过程名称</param>
+		/// <param name="CallContext">调用上下文</param>
+		/// <param name="CallData"></param>
+		Task Execute(
             string CallableName,
             string CallContext,
 			object CallData

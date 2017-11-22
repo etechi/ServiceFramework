@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.Entities.Annotations;
+using SF.Sys.NetworkService;
 using System;
 
 namespace SF.Sys.Services.Management

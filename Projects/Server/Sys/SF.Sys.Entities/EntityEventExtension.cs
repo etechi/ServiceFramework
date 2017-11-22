@@ -15,15 +15,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.Threading.Tasks;
 using System;
-using SF.Core.ServiceManagement;
-using System.Linq;
-using System.Reflection;
-using System.Linq.Expressions;
-using System.Data.Common;
-using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using SF.Core;
 using SF.Sys.Services;
 
 namespace SF.Sys.Entities

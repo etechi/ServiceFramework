@@ -15,7 +15,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.Threading.Tasks;
 using System;
-using SF.Core.ServiceManagement;
 
 namespace SF.Sys.Entities
 {

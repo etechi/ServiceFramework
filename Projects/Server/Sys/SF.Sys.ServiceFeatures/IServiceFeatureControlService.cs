@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Auth;
 using SF.Sys.Entities.Annotations;
+using SF.Sys.NetworkService;
 using System;
 using System.Collections.Generic;
 using System.Text;

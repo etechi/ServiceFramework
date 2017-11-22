@@ -18,6 +18,7 @@ using System;
 using SF.Sys.Entities.Annotations;
 using SF.Sys.Services.Management.Models;
 using SF.Sys.Auth;
+using SF.Sys.NetworkService;
 
 namespace SF.Sys.Services.Management
 {

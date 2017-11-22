@@ -13,15 +13,12 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SF.Sys.Entities.Annotations
+namespace SF.Common.MenuServices
 {
-	[AttributeUsage(AttributeTargets.Interface)]
-	public class NetworkServiceAttribute : Attribute
+	public interface IDefaultMenuCollection
 	{
+		void AddMenuItems(string MenuIdent,string Path,MenuItem[] Items);
+		string[] MenuIdents { get; }
+		MenuItem[] GetMenuItems(string MenuIdent);
 	}
-	
 }

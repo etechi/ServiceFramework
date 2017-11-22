@@ -15,12 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
-using SF.Data;
-using SF.Core.Times;
-using SF.Core.ServiceManagement;
 using System.Collections.Generic;
 using SF.Sys.Services;
 using SF.Sys.Logging;

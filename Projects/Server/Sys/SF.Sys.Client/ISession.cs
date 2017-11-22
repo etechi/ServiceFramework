@@ -15,7 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.Collections.Generic;
 
-namespace SF.Clients
+namespace SF.Sys.Clients
 {
 	//public interface ISession
 	//{

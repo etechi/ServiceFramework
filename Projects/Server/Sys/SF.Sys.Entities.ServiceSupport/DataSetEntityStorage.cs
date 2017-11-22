@@ -15,19 +15,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.Threading.Tasks;
 using System;
-using SF.Core.ServiceManagement;
 using System.Linq;
-using SF.Data;
-using System.Reflection;
 using System.Linq.Expressions;
 using System.Data.Common;
-using System.Collections.Generic;
-using SF.Sys.Auth;
-using SF.Core.Events;
 using SF.Sys.Data;
 using SF.Sys.Comments;
 using SF.Sys.Auth.Permissions;
 using SF.Sys.Linq;
+using SF.Sys.Events;
 
 namespace SF.Sys.Entities
 {

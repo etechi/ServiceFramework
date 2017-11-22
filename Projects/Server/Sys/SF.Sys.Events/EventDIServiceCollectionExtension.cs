@@ -18,8 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Core.Events;
-namespace SF.Core.ServiceManagement
+namespace SF.Sys.Services
 {
 	public static class EventDIServiceCollectionExtension
 	{
