@@ -17,17 +17,29 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Metadata;
-using SF.Entities;
-using SF.Data;
+using SF.Sys.Entities;
+using SF.Sys.Data;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
 	public class Item :
 		Item<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
 	{ }
+
+	/// <summary>
+	/// 商品
+	/// </summary>
+	/// <typeparam name="TProduct"></typeparam>
+	/// <typeparam name="TProductDetail"></typeparam>
+	/// <typeparam name="TProductType"></typeparam>
+	/// <typeparam name="TCategory"></typeparam>
+	/// <typeparam name="TCategoryItem"></typeparam>
+	/// <typeparam name="TPropertyScope"></typeparam>
+	/// <typeparam name="TProperty"></typeparam>
+	/// <typeparam name="TPropertyItem"></typeparam>
+	/// <typeparam name="TItem"></typeparam>
+	/// <typeparam name="TProductSpec"></typeparam>
 	[Table("BizProductItem")]
-    [Comment(GroupName = "产品服务", Name = "商品")]
     public class Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>:
 		IEntityWithId<long>
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -41,43 +53,62 @@ namespace SF.Biz.Products.Entity.DataModels
 		where TItem : Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
     {
-        [Key]
-        [Display(Name ="ID")]
+		/// <summary>
+		/// ID
+		/// </summary>
+		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public long Id { get; set; }
 
+		/// <summary>
+		/// 产品ID
+		/// </summary>
 		[Index]
-        [Display(Name = "产品ID")]
         public long ProductId { get; set; }
 
 		[ForeignKey(nameof(ProductId))]
 		public TProduct Product { get; set; }
 
-        [Display(Name = "分类标签")]
-        public string CategoryTags { get; set; }
+		/// <summary>
+		/// 分类标签
+		/// </summary>
+		public string CategoryTags { get; set; }
 
+		/// <summary>
+		/// 卖家ID
+		/// </summary>
 		[Index]
-        [Display(Name = "卖家ID")]
         public long SellerId { get; set; }
 
+		/// <summary>
+		/// 源商品ID
+		/// </summary>
 		[Index]
-        [Display(Name = "源商品ID")]
         public long? SourceItemId { get; set; }
 
 		[ForeignKey(nameof(SourceItemId))]
 		public TItem SourceItem { get; set; }
 
-        [Display(Name = "源等级")]
-        public int SourceLevel { get; set; }
+		/// <summary>
+		/// 源等级
+		/// </summary>
+		public int SourceLevel { get; set; }
 
-        [Display(Name = "价格", Description = "默认使用产品图片")]
+		/// <summary>
+		/// 价格
+		/// </summary>
         public decimal? Price { get; set; }
+		///<title>图片</title>
+		/// <summary>
+		/// 默认使用产品图片
+		/// </summary>
 		[MaxLength(100)]
-        [Display(Name = "图片",Description ="默认使用产品图片")]
         public string Image { get; set; }
 
+		/// <summary>
+		/// 标题
+		/// </summary>
 		[MaxLength(100)]
-        [Display(Name = "标题", Description = "默认使用产品标题")]
         public string Title { get; set; }
 
 		[InverseProperty(nameof(SourceItem))]
@@ -86,12 +117,18 @@ namespace SF.Biz.Products.Entity.DataModels
 		[InverseProperty(nameof(CategoryItem<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>.Item))]
 		public ICollection<TCategoryItem> CategoryItems { get; set; }
 
-        [Display(Name = "逻辑状态")]
-        public EntityLogicState ObjectState { get; set; }
+		/// <summary>
+		/// 逻辑状态
+		/// </summary>
+		public EntityLogicState ObjectState { get; set; }
 
-        [Display(Name = "创建时间")]
-        public DateTime CreatedTime { get; set; }
-        [Display(Name = "修改时间")]
-        public DateTime UpdatedTime { get; set; }
+		/// <summary>
+		/// 创建时间
+		/// </summary>
+		public DateTime CreatedTime { get; set; }
+		/// <summary>
+		/// 修改时间
+		/// </summary>
+		public DateTime UpdatedTime { get; set; }
 	}
 }

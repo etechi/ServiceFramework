@@ -13,8 +13,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Entities;
-using SF.Metadata;
+using SF.Sys.Annotations;
+using SF.Sys.Entities;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -26,20 +26,26 @@ namespace SF.Biz.Products
 		IEntityWithId<long>,
 		IEntityWithName
 	{
-		[Comment(Name ="ID")]
+		/// <summary>
+		/// ID
+		/// </summary>
 		[TableVisible]
 		[Key]
 		[ReadOnly(true)]
 		public long Id { get; set; }
 
-		[Comment(Name = "名称")]
+		/// <summary>
+		/// 名称
+		/// </summary>
 		[TableVisible]
 		[Required]
 		[StringLength(100)]
 		public string Name { get; set; }
 
 
-		[Comment(Name = "标题")]
+		/// <summary>
+		/// 标题
+		/// </summary>
 		[TableVisible]
 		[Required]
 		[StringLength(100)]
@@ -47,19 +53,25 @@ namespace SF.Biz.Products
 
 
 
-		[Comment(Name = "图片")]
+		/// <summary>
+		/// 图片
+		/// </summary>
 		[Layout(0, 1)]
 		[Image]
 		public string Image { get; set; }
 
-		[Comment(Name = "图标")]
+		/// <summary>
+		/// 图标
+		/// </summary>
 		[Layout(0, 2)]
 		[Image]
 		public string Icon { get; set; }
 
+		/// <summary>
+		/// 产品数量
+		/// </summary>
 		[TableVisible]
 		[ReadOnly(true)]
-		[Comment(Name ="产品数量")]
 		public int ProductCount { get; set; }
 
 		[Ignore]
@@ -68,16 +80,22 @@ namespace SF.Biz.Products
     }
 	public class ProductTypeEditable : ProductType
 	{
-		[Comment(Name = "状态")]
+		/// <summary>
+		/// 状态
+		/// </summary>
 		[Required]
 		public EntityLogicState ObjectState { get; set; }
 
+		/// <summary>
+		/// 显示排位
+		/// </summary>
 		[ReadOnly(true)]
-		[Comment(Name = "显示排位")]
         [Optional]
         public int Order { get; set; }
 
-		[Comment(Name = "单位")]
+		/// <summary>
+		/// 单位
+		/// </summary>
 		[TableVisible]
 		[Required]
 		[StringLength(4)]
@@ -85,7 +103,9 @@ namespace SF.Biz.Products
 	}
 	public class ProductTypeInternal : ProductTypeEditable
 	{
-		[Comment(Name = "更新时间")]
+		/// <summary>
+		/// 更新时间
+		/// </summary>
 		[TableVisible]
 		public DateTime UpdatedTime { get; set; }
 		public DateTime CreatedTime { get; set; }

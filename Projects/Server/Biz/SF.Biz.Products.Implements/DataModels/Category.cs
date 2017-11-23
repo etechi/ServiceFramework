@@ -13,21 +13,33 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Data;
+using SF.Sys.Entities;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Metadata;
-using SF.Data;
-using SF.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
 	public class Category :
 		Category<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
 	{ }
+
+	/// <summary>
+	/// 产品分类
+	/// </summary>
+	/// <typeparam name="TProduct"></typeparam>
+	/// <typeparam name="TProductDetail"></typeparam>
+	/// <typeparam name="TProductType"></typeparam>
+	/// <typeparam name="TCategory"></typeparam>
+	/// <typeparam name="TCategoryItem"></typeparam>
+	/// <typeparam name="TPropertyScope"></typeparam>
+	/// <typeparam name="TProperty"></typeparam>
+	/// <typeparam name="TPropertyItem"></typeparam>
+	/// <typeparam name="TItem"></typeparam>
+	/// <typeparam name="TProductSpec"></typeparam>
 	[Table("BizProductCategory")]
-    [Comment(GroupName = "产品服务", Name = "产品分类")]
     public class Category<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>:
 		IEntityWithId<long>		
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -41,61 +53,87 @@ namespace SF.Biz.Products.Entity.DataModels
 		where TItem : Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
     {
-        [Key]
-        [Display(Name="分类ID")]
+		/// <summary>
+		/// 分类ID
+		/// </summary>
+		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public long Id {get;set;}
 
+		/// <summary>
+		/// 标签
+		/// </summary>
 		[Index]
 		[MaxLength(20)]
-        [Display(Name = "标签")]
         public string Tag { get; set; }
 
+		/// <summary>
+		/// 父分类ID
+		/// </summary>
 		[Index]
-        [Display(Name = "父分类ID")]
         public long? ParentId { get; set; }
 
 		[ForeignKey(nameof(ParentId))]
 		public TCategory Parent { get; set; }
 
-        [Display(Name = "排位")]
+		/// <summary>
+		/// 排位
+		/// </summary>
         public int Order { get; set; }
 
+		/// <summary>
+		/// 名称
+		/// </summary>
 		[Required]
 		[MaxLength(100)]
-        [Display(Name = "名称")]
         public string Name{get;set;}
 
+		/// <summary>
+		/// 标题
+		/// </summary>
 		[MaxLength(100)]
-        [Display(Name = "标题")]
         public string Title { get; set; }
 
+		/// <summary>
+		/// 描述
+		/// </summary>
 		[MaxLength(100)]
-        [Display(Name = "描述")]
         public string Description { get; set; }
 
+		/// <summary>
+		/// 图标
+		/// </summary>
 		[MaxLength(100)]
-        [Display(Name = "图标")]
         public string Icon { get; set; }
 
+		/// <summary>
+		/// 图片
+		/// </summary>
 		[MaxLength(100)]
-        [Display(Name = "图片")]
         public string Image { get; set; }
 
-        [MaxLength(200)]
-        [Display(Name = "PC广告图链接")]
+		/// <summary>
+		/// PC广告图链接
+		/// </summary>
+		[MaxLength(200)]
         public string BannerUrl { get; set; }
 
-        [MaxLength(200)]
-        [Display(Name = "PC广告图")]
+		/// <summary>
+		/// PC广告图
+		/// </summary>
+		[MaxLength(200)]
         public string BannerImage { get; set; }
 
-        [MaxLength(200)]
-        [Display(Name = "移动广告图")]
+		/// <summary>
+		/// 移动广告图
+		/// </summary>
+		[MaxLength(200)]
         public string MobileBannerImage { get; set; }
 
-        [MaxLength(200)]
-        [Display(Name = "移动广告图链接")]
+		/// <summary>
+		/// 移动广告图链接
+		/// </summary>
+		[MaxLength(200)]
         public string MobileBannerUrl { get; set; }
 
 		[InverseProperty(nameof(CategoryItem<TProduct,TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>.Category))]
@@ -104,19 +142,29 @@ namespace SF.Biz.Products.Entity.DataModels
 		[InverseProperty(nameof(Category<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>.Parent))]
 		public ICollection<TCategory> Children { get; set; }
 
+		/// <summary>
+		/// 所用者ID
+		/// </summary>
 		[Index]
-        [Display(Name = "所用者ID")]
         public long OwnerUserId { get; set; }
 
-        [Display(Name = "项目数量")]
+		/// <summary>
+		/// 项目数量
+		/// </summary>
         public int ItemCount { get; set; }
 
-        [Display(Name = "创建时间")]
-        public DateTime CreatedTime { get; set; }
-        [Display(Name = "更新时间")]
-        public DateTime UpdatedTime { get; set; }
+		/// <summary>
+		/// 创建时间
+		/// </summary>
+		public DateTime CreatedTime { get; set; }
+		/// <summary>
+		/// 更新时间
+		/// </summary>
+		public DateTime UpdatedTime { get; set; }
 
-        [Display(Name = "对象逻辑状态")]
-        public EntityLogicState ObjectState { get; set; }
+		/// <summary>
+		/// 对象逻辑状态
+		/// </summary>
+		public EntityLogicState ObjectState { get; set; }
 	}
 }

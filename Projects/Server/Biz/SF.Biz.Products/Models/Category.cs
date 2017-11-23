@@ -64,68 +64,101 @@ namespace SF.Biz.Products
         [Layout(4)]
         public long SellerId { get; set; }
 
-        [EntityIdent(typeof(CategoryInternal), nameof(ParentName), IsTreeParentId = true, ScopeField = nameof(SellerId))]
-		[Comment(Name = "父目录")]
+		/// <summary>
+		/// 父目录
+		/// </summary>
+		[EntityIdent(typeof(CategoryInternal), nameof(ParentName), IsTreeParentId = true, ScopeField = nameof(SellerId))]
         [Layout(5)]
         public long? ParentId { get; set; }
 
-		[Comment(Name = "父目录")]
+		/// <summary>
+		/// 父目录
+		/// </summary>
 		[Ignore]
 		[TableVisible]
         [Layout(6)]
         public string ParentName { get; set; }
 
-		
+
+		///<title>标签</title>
+		/// <summary>
+		/// 用于控制前端显示的标签，一般留空即可
+		/// </summary>
 		[TableVisible]
-		[Comment(Name = "标签",Description ="用于控制前端显示的标签，一般留空即可")]
 		[StringLength(50)]
         [Layout(7)]
         public string Tag { get; set; }
 
+		///<title>描述</title>
+		/// <summary>
+		/// 商品分类的描述，供前端显示使用
+		/// </summary>
 		[StringLength(100)]
-		[Comment(Name = "描述",Description = "商品分类的描述，供前端显示使用")]
         [Layout(8)]
         public string Description { get; set; }
 
+		///<title>图片</title>
+		/// <summary>
+		/// 商品分类的大图片，供前端显示使用
+		/// </summary>
 		[Image]
-		[Comment(Name = "图片", Description = "商品分类的大图片，供前端显示使用")]
         [Layout(9)]
         public string Image { get; set; }
 
+		///<title>图标</title>
+		/// <summary>
+		/// 商品分类的小图片，供前端显示使用
+		/// </summary>
 		[Image]
-		[Comment(Name = "图标", Description = "商品分类的小图片，供前端显示使用")]
         [Layout(10)]
         public string Icon { get; set; }
 
-        [Comment(Name = "广告图", Description = "PC栏目页面广告图")]
+		///<title>广告图</title>
+		/// <summary>
+		/// PC栏目页面广告图
+		/// </summary>
         [Layout(11)]
         [Image]
         [MaxLength(200)]
         public string BannerImage { get; set; }
 
-        [Comment(Name = "广告图链接", Description = "PC栏目页面广告图链接")]
+		///<title>广告图链接</title>
+		/// <summary>
+		/// PC栏目页面广告图链接
+		/// </summary>
         [Layout(12)]
         [MaxLength(200)]
         public string BannerUrl { get; set; }
 
-        [Comment(Name = "移动站广告图", Description = "移动站栏目页面广告图")]
+		///<title>移动站广告图</title>
+		/// <summary>
+		/// 移动站栏目页面广告图
+		/// </summary>
         [Layout(13)]
         [Image]
         [MaxLength(200)]
         public string MobileBannerImage { get; set; }
 
-        [Comment(Name = "移动站广告图链接", Description = "移动栏目页面广告图链接")]
+		///<title>移动站广告图链接</title>
+		/// <summary>
+		/// 移动栏目页面广告图链接
+		/// </summary>
         [Layout(14)]
         [MaxLength(200)]
         public string MobileBannerUrl { get; set; }
 
 
-        [Comment(Name = "列表排位",Description ="商品分类在分类列表中的排位，小的在前")]
+		///<title>列表排位</title>
+		/// <summary>
+		/// 商品分类在分类列表中的排位，小的在前
+		/// </summary>
 		[TableVisible]
         [Optional]
         public int Order { get; set; }
 
-		[Comment(Name = "对象状态")]
+		/// <summary>
+		/// 对象状态
+		/// </summary>
 		[TableVisible]
 		[Required]
 		public EntityLogicState ObjectState { get; set; }

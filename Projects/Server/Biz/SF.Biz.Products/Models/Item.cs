@@ -13,8 +13,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Entities;
-using SF.Metadata;
+using SF.Sys.Annotations;
+using SF.Sys.Entities;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -25,35 +25,47 @@ namespace SF.Biz.Products
 		IEntityWithId<long>,
 		IEntityWithName
 	{
-        [Key]
+		/// <summary>
+		/// ID
+		/// </summary>
+		[Key]
         [ReadOnly(true)]
-        [Comment(Name ="ID")]
         [TableVisible]
 		public long Id { get; set; }
         
         [Ignore]
         public long? SourceItemId { get; set; }
 
-        [Ignore]
-        [Comment(Name ="产品")]
+		/// <summary>
+		/// 产品
+		/// </summary>
+		[Ignore]
         [EntityIdent(typeof(ProductInternal),"Title")]
         [TableVisible]
         public long ProductId { get; set; }
 
-        [Comment(Name = "图片")]
-        [Image]
+		/// <summary>
+		/// 图片
+		/// </summary>
+		[Image]
         public string Image { get; set; }
 
-        [Comment(Name = "标题")]
-        [TableVisible]
+		/// <summary>
+		/// 标题
+		/// </summary>
+		[TableVisible]
         public string Title { get; set; }
 
-        [Comment(Name ="价格")]
-        [TableVisible]
+		/// <summary>
+		/// 价格
+		/// </summary>
+		[TableVisible]
         public decimal? Price { get; set; }
 
-        [Comment(Name ="卡密")]
-        [TableVisible]
+		/// <summary>
+		/// 卡密
+		/// </summary>
+		[TableVisible]
         public bool IsVirtual { get; set; }
 		string IEntityWithName.Name { get => Title; set { Title = value; } }
 	}

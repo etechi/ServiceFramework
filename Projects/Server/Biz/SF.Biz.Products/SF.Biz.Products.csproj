@@ -18,4 +18,15 @@
     <None Remove=".licenseheader" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\SF.Common.Members\SF.Common.Members.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Entities\SF.Sys.Entities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.Annotations">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\system.componentmodel.annotations\4.4.0\ref\netstandard2.0\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

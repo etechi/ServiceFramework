@@ -15,16 +15,28 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Metadata;
-using SF.Data;
+using SF.Sys.Data;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
 	public class PropertyItem :
 		PropertyItem<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
 	{ }
+
+	/// <summary>
+	/// 产品属性项
+	/// </summary>
+	/// <typeparam name="TProduct"></typeparam>
+	/// <typeparam name="TProductDetail"></typeparam>
+	/// <typeparam name="TProductType"></typeparam>
+	/// <typeparam name="TCategory"></typeparam>
+	/// <typeparam name="TCategoryItem"></typeparam>
+	/// <typeparam name="TPropertyScope"></typeparam>
+	/// <typeparam name="TProperty"></typeparam>
+	/// <typeparam name="TPropertyItem"></typeparam>
+	/// <typeparam name="TItem"></typeparam>
+	/// <typeparam name="TProductSpec"></typeparam>
 	[Table("BizProductPropertyItem")]
-    [Comment(GroupName = "产品服务", Name = "产品属性项")]
     public class PropertyItem<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
 		where TProductDetail : ProductDetail<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -37,23 +49,27 @@ namespace SF.Biz.Products.Entity.DataModels
 		where TItem : Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
     {
-        [Key]
+		/// <summary>
+		/// 属性ID
+		/// </summary>
+		[Key]
 		[Column(Order = 1)]
 		[Index("order", Order = 1)]
-        [Display(Name = "属性ID")]
         public long PropertyId { get; set; }
 
+		/// <summary>
+		/// 产品ID
+		/// </summary>
 		[Key]
 		[Column(Order = 2)]
 		[Index]
-        [Display(Name = "产品ID")]
         public long ProductId { get; set; }
-
+		/// <summary>
+		/// 排位
+		/// </summary>
 		[Index("order", Order = 2)]
 		[NotMapped]
-        [Display(Name = "排位")]
         public double Order { get; set; }
-
 
 
 		[ForeignKey(nameof(ProductId))]

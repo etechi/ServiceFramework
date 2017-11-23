@@ -17,10 +17,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
-using SF.Entities;
-using SF.Data;
-using SF.Biz.Products.Entity.DataModels;
+using SF.Sys.Entities;
+using SF.Sys.Data;
+using SF.Sys.ADT;
+using SF.Sys;
+using SF.Sys.Linq;
 
 namespace SF.Biz.Products.Entity
 {
@@ -140,7 +141,7 @@ namespace SF.Biz.Products.Entity
 			var Removed = new List<TCategory>();
 			var Updated = new List<long>();
 
-			foreach (var n in ADT.Tree.AsEnumerable(Items, ii => ii.Children).Where(n => n.Id == 0))
+			foreach (var n in Tree.AsEnumerable(Items, ii => ii.Children).Where(n => n.Id == 0))
 				n.Id = await IdentGenerator.GenerateAsync<TCategory>();
 
 			var re= DataSet.MergeTree(

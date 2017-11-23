@@ -15,14 +15,25 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Metadata;
 namespace SF.Biz.Products.Entity.DataModels
 {
 	public class ProductDetail :
 		ProductDetail<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
 	{ }
+	/// <summary>
+	/// 产品详细
+	/// </summary>
+	/// <typeparam name="TProduct"></typeparam>
+	/// <typeparam name="TProductDetail"></typeparam>
+	/// <typeparam name="TProductType"></typeparam>
+	/// <typeparam name="TCategory"></typeparam>
+	/// <typeparam name="TCategoryItem"></typeparam>
+	/// <typeparam name="TPropertyScope"></typeparam>
+	/// <typeparam name="TProperty"></typeparam>
+	/// <typeparam name="TPropertyItem"></typeparam>
+	/// <typeparam name="TItem"></typeparam>
+	/// <typeparam name="TProductSpec"></typeparam>
 	[Table("BizProductDetail")]
-    [Comment(GroupName = "产品服务", Name = "产品详细")]
     public class ProductDetail<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
 		where TProductDetail : ProductDetail<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -35,17 +46,23 @@ namespace SF.Biz.Products.Entity.DataModels
 		where TItem : Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
     {
-        [Key]
+		/// <summary>
+		/// ID
+		/// </summary>
+		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		[ForeignKey(nameof(Product))]
-        [Display(Name ="ID")]
 		public long Id {get; set;}
 
-        [Display(Name = "产品图片")]
-        public string Images { get; set; }
+		/// <summary>
+		/// 产品图片
+		/// </summary>
+		public string Images { get; set; }
 
-        [Display(Name = "产品描述")]
-        public string Detail { get; set; }
+		/// <summary>
+		/// 产品描述
+		/// </summary>
+		public string Detail { get; set; }
 
 		
 		public TProduct Product { get; set; }

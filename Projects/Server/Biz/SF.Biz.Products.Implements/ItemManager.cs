@@ -17,9 +17,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using SF.Biz.Products.Entity.DataModels;
-using SF.Entities;
-using SF.Data;
-
+using SF.Sys.Entities;
+using SF.Sys;
+using SF.Sys.Data;
 namespace SF.Biz.Products.Entity
 {
 	public class ItemManager :

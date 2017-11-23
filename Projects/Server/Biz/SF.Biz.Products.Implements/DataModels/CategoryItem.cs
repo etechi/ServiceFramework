@@ -15,16 +15,27 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Data;
-using SF.Metadata;
+using SF.Sys.Data;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
 	public class CategoryItem :
 		CategoryItem<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
 	{ }
+	/// <summary>
+	/// 产品分类项目
+	/// </summary>
+	/// <typeparam name="TProduct"></typeparam>
+	/// <typeparam name="TProductDetail"></typeparam>
+	/// <typeparam name="TProductType"></typeparam>
+	/// <typeparam name="TCategory"></typeparam>
+	/// <typeparam name="TCategoryItem"></typeparam>
+	/// <typeparam name="TPropertyScope"></typeparam>
+	/// <typeparam name="TProperty"></typeparam>
+	/// <typeparam name="TPropertyItem"></typeparam>
+	/// <typeparam name="TItem"></typeparam>
+	/// <typeparam name="TProductSpec"></typeparam>
 	[Table("BizProductCategoryItem")]
-    [Comment(GroupName = "产品服务", Name = "产品分类项目")]
     public class CategoryItem<TProduct,TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
 		where TProductDetail : ProductDetail<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -37,23 +48,29 @@ namespace SF.Biz.Products.Entity.DataModels
 		where TItem : Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
     {
-        [Key]
+		/// <summary>
+		/// 分类ID
+		/// </summary>
+		[Key]
 		[Column(Order = 1)]
 		[Index("order",Order=1)]
-        [Display(Name ="分类ID")]
 		public long CategoryId { get; set; }
 
 		[ForeignKey(nameof(CategoryId))]
 		public TCategory Category { get; set; }
 
+		/// <summary>
+		/// 项目ID
+		/// </summary>
 		[Key]
 		[Column(Order = 2)]
 		[Index]
-        [Display(Name = "项目ID")]
         public long ItemId { get; set; }
 
+		/// <summary>
+		/// 排位
+		/// </summary>
 		[Index("order", Order = 2)]
-        [Display(Name = "排位")]
         public long Order { get; set; }
 
 		[ForeignKey(nameof(ItemId))]

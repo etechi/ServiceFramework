@@ -17,17 +17,28 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Data;
-using SF.Metadata;
-using SF.Entities;
+using SF.Sys.Entities;
+using SF.Sys.Data;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
 	public class Product :
 		Product<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
 	{ }
+	/// <summary>
+	/// 产品
+	/// </summary>
+	/// <typeparam name="TProduct"></typeparam>
+	/// <typeparam name="TProductDetail"></typeparam>
+	/// <typeparam name="TProductType"></typeparam>
+	/// <typeparam name="TCategory"></typeparam>
+	/// <typeparam name="TCategoryItem"></typeparam>
+	/// <typeparam name="TPropertyScope"></typeparam>
+	/// <typeparam name="TProperty"></typeparam>
+	/// <typeparam name="TPropertyItem"></typeparam>
+	/// <typeparam name="TItem"></typeparam>
+	/// <typeparam name="TProductSpec"></typeparam>
 	[Table("BizProduct")]
-    [Comment(GroupName = "产品服务", Name = "产品")]
     public class Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>:
 		IEntityWithId<long>
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -41,11 +52,16 @@ namespace SF.Biz.Products.Entity.DataModels
 		where TItem : Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
     {
-        [Key]
-        [Display(Name="Id")]
+		/// <summary>
+		/// Id
+		/// </summary>
+		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public long Id{get; set;}
 
+		/// <summary>
+		/// 对象逻辑状态
+		/// </summary>
 		[Index("all_new",Order=1)]
 		[Index("all_price", Order = 1)]
 		[Index("all_visited", Order = 1)]
@@ -55,8 +71,7 @@ namespace SF.Biz.Products.Entity.DataModels
 		[Index("all_type_price", Order = 1)]
 		[Index("all_type_visited", Order = 1)]
 		[Index("all_type_order", Order = 1)]
-		[Index("all_type_sell", Order = 1)]
-        [Display(Name="对象逻辑状态")]
+		[Index("all_type_sell", Order = 1)]        
         public EntityLogicState ObjectState { get; set; }
 
 		[Index("all_type_new", Order = 2)]
@@ -69,60 +84,90 @@ namespace SF.Biz.Products.Entity.DataModels
 
 		public TProductType Type { get; set; }
 
+		/// <summary>
+		/// 产品名称
+		/// </summary>
 		[MaxLength(100)]
 		[Required]
-        [Display(Name = "产品名称")]
         public string Name { get; set; }
 
+		/// <summary>
+		/// 产品标题
+		/// </summary>
 		[MaxLength(100)]
 		[Required]
-        [Display(Name = "产品标题")]
         public string Title { get; set; }
 
-        [Display(Name = "图片")]
-        public string Image { get; set; }
+		/// <summary>
+		/// 图片
+		/// </summary>
+		public string Image { get; set; }
 
-        [Display(Name = "虚拟产品",Description ="如卡密")]
+		///<title>虚拟产品</title>
+		/// <summary>
+		/// 如卡密
+		/// </summary>
         public bool IsVirtual { get; set; }
 
-        [Display(Name = "市场价")]
-        public decimal MarketPrice { get; set; }
+		/// <summary>
+		/// 市场价
+		/// </summary>
+		public decimal MarketPrice { get; set; }
 
+		/// <summary>
+		/// 售价
+		/// </summary>
 		[Index("all_price", Order = 2)]
 		[Index("all_type_price", Order = 3)]
-        [Display(Name = "售价")]
         public decimal Price { get; set; }
 
-        [Display(Name = "禁止使用优惠券")]
-        public bool CouponDisabled { get; set; }
+		/// <summary>
+		/// 禁止使用优惠券
+		/// </summary>
+		public bool CouponDisabled { get; set; }
 
-        [Index("all_visited", Order = 2)]
-		[Index("all_type_visited", Order = 3)]
-        [Display(Name = "访问次数")]
+		/// <summary>
+		/// 访问次数
+		/// </summary>
+		[Index("all_visited", Order = 2)]
+		[Index("all_type_visited", Order = 3)]        
         public int Visited { get; set; }
-
+		/// <summary>
+		/// 销售次数
+		/// </summary>
 		[Index("all_sell", Order = 2)]
 		[Index("all_type_sell", Order = 3)]
-        [Display(Name = "销售次数")]
+
         public int SellCount { get; set; }
 
+		/// <summary>
+		/// 排位
+		/// </summary>
 		[Index("all_order", Order = 2)]
 		[Index("all_type_order", Order = 3)]
-        [Display(Name = "排位")]
         public double Order { get; set; }
 
+		/// <summary>
+		/// 上架时间
+		/// </summary>
 		[Index("all_new", Order = 2)]
 		[Index("all_type_new", Order = 3)]
-        [Display(Name = "上架时间")]
         public DateTime? PublishedTime { get; set; }
 
-        [Display(Name = "创建时间")]
-        public DateTime CreatedTime { get; set; }
-        [Display(Name = "更新时间")]
-        public DateTime UpdatedTime { get; set; }
+		/// <summary>
+		/// 创建时间
+		/// </summary>
+		public DateTime CreatedTime { get; set; }
 
+		/// <summary>
+		/// 更新时间
+		/// </summary>
+		public DateTime UpdatedTime { get; set; }
+
+		/// <summary>
+		/// 所有者ID
+		/// </summary>
 		[Index]
-        [Display(Name = "所有者ID")]
         public long OwnerUserId { get; set; }
 
 		[InverseProperty(nameof(Item<TProduct,TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>.Product))]
@@ -134,15 +179,19 @@ namespace SF.Biz.Products.Entity.DataModels
 		[ForeignKey(nameof(Id))]
 		public TProductDetail Detail { get; set; }
 
-        [Display(Name = "乐观锁时间戳")]
-        [ConcurrencyCheck]
+		/// <summary>
+		/// 乐观锁时间戳
+		/// </summary>
+		[ConcurrencyCheck]
         [Timestamp]
         public byte[] TimeStamp { get; set; }
 
         [InverseProperty(nameof(ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem, TProductSpec>.Product))]
         public ICollection<TProductSpec> Specs { get; set; }
 
-		[Display(Name = "自动发货规格")]
+		/// <summary>
+		/// 自动发货规格
+		/// </summary>
 		public long? VIADSpecId { get; set; }
 
 	}

@@ -14,18 +14,16 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
-using SF.Data;
-using SF.Core.ServiceManagement;
-using SF.Entities;
-using SF.Core;
-using SF.Core.Events;
-using SF.Core.ServiceManagement.Internals;
-using SF.Metadata;
+using SF.Sys.Services;
+using SF.Sys.Annotations;
+using SF.Sys.Events;
+using SF.Sys.Services.Internals;
+using SF.Sys.Data;
+using SF.Sys.Entities;
+using SF.Sys;
+
 namespace SF.Biz.Products.Entity
 {
 	public class ItemSource : 

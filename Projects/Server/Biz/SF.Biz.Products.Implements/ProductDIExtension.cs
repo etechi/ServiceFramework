@@ -16,13 +16,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Biz.Products;
 using SF.Biz.Products.Entity;
-using SF.Core.Hosting;
-using SF.Core.ServiceManagement.Management;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using SF.Sys.Services.Management;
 
-namespace SF.Core.ServiceManagement
+namespace SF.Sys.Services
 {
 	public static class ProductDIExtension
 	{

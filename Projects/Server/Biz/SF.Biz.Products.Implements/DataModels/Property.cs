@@ -16,17 +16,28 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Metadata;
-using SF.Data;
-using SF.Entities;
+using SF.Sys.Data;
+using SF.Sys.Entities;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
 	public class Property :
 		Property<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
 	{ }
+	/// <summary>
+	/// 产品属性
+	/// </summary>
+	/// <typeparam name="TProduct"></typeparam>
+	/// <typeparam name="TProductDetail"></typeparam>
+	/// <typeparam name="TProductType"></typeparam>
+	/// <typeparam name="TCategory"></typeparam>
+	/// <typeparam name="TCategoryItem"></typeparam>
+	/// <typeparam name="TPropertyScope"></typeparam>
+	/// <typeparam name="TProperty"></typeparam>
+	/// <typeparam name="TPropertyItem"></typeparam>
+	/// <typeparam name="TItem"></typeparam>
+	/// <typeparam name="TProductSpec"></typeparam>
 	[Table("BizProductProperty")]
-    [Comment(GroupName = "产品服务", Name = "产品属性")]
     public class Property<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
 		where TProductDetail : ProductDetail<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -39,42 +50,57 @@ namespace SF.Biz.Products.Entity.DataModels
 		where TItem : Item<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
         where TProductSpec : ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
     {
-        [Display(Name="ID")]
+        
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		public long Id { get; set; }
 
+		/// <summary>
+		/// 分区ID
+		/// </summary>
 		[Index]
-        [Display(Name = "分区ID")]
         public long ScopeId { get; set; }
 
+		/// <summary>
+		/// 产品类型ID
+		/// </summary>
 		[Index("name", IsUnique = true, Order = 1)]
-        [Display(Name = "产品类型ID")]
         public long TypeId { get; set; }
 
+		/// <summary>
+		/// 父属性ID
+		/// </summary>
 		[Index("name", IsUnique = true, Order = 2)]
 		[Index("order", Order = 1)]
-        [Display(Name = "父属性ID")]
         public long? ParentId { get; set; }
 
+		/// <summary>
+		/// 属性名
+		/// </summary>
 		[Index("name", IsUnique = true, Order = 3)]
 		[Required]
 		[MaxLength(50)]
-        [Display(Name = "属性名")]
         public string Name { get; set; }
 
-        [Display(Name = "属性图标")]
-        public string Icon { get; set; }
-        [Display(Name = "属性图片")]
+		/// <summary>
+		/// 属性图标
+		/// </summary>
+		public string Icon { get; set; }
+		/// <summary>
+		/// 属性图片
+		/// </summary>
 
-        public string Image { get; set; }
+		public string Image { get; set; }
 
-        [Display(Name = "对象逻辑状态")]
+		/// <summary>
+		/// 对象逻辑状态
+		/// </summary>
 
-        public EntityLogicState ObjectState { get; set; }
+		public EntityLogicState ObjectState { get; set; }
 
-
+		/// <summary>
+		/// 排位
+		/// </summary>
 		[Index("order", Order = 2)]
-        [Display(Name = "排位")]
         public int Order { get; set; }
 
 

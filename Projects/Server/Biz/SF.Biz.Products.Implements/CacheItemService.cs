@@ -16,11 +16,10 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
-using SF.Entities;
+using SF.Sys.Entities;
 
 namespace SF.Biz.Products
 {

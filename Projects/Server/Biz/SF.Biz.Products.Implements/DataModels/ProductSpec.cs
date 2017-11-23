@@ -16,17 +16,28 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Metadata;
-using SF.Entities;
-using SF.Data;
+using SF.Sys.Entities;
+using SF.Sys.Data;
 
 namespace SF.Biz.Products.Entity.DataModels
 {
 	public class ProductSpec :
 		ProductSpec<Product, ProductDetail, ProductType, Category, CategoryItem, PropertyScope, Property, PropertyItem, Item, ProductSpec>
 	{ }
+	/// <summary>
+	/// 产品规格
+	/// </summary>
+	/// <typeparam name="TProduct"></typeparam>
+	/// <typeparam name="TProductDetail"></typeparam>
+	/// <typeparam name="TProductType"></typeparam>
+	/// <typeparam name="TCategory"></typeparam>
+	/// <typeparam name="TCategoryItem"></typeparam>
+	/// <typeparam name="TPropertyScope"></typeparam>
+	/// <typeparam name="TProperty"></typeparam>
+	/// <typeparam name="TPropertyItem"></typeparam>
+	/// <typeparam name="TItem"></typeparam>
+	/// <typeparam name="TProductSpec"></typeparam>
 	[Table("BizProductSpec")]
-    [Comment(GroupName = "产品服务", Name = "产品规格")]
     public class ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>:
 		IEntityWithId<long>
 		where TProduct : Product<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
@@ -41,7 +52,6 @@ namespace SF.Biz.Products.Entity.DataModels
         where TProductSpec : ProductSpec<TProduct, TProductDetail, TProductType, TCategory, TCategoryItem, TPropertyScope, TProperty, TPropertyItem, TItem,TProductSpec>
     {
 		[Key]
-        [Display(Name="Id")]
 		public long Id{get; set;}
 
         [Index]
@@ -50,33 +60,47 @@ namespace SF.Biz.Products.Entity.DataModels
         [ForeignKey(nameof(ProductId))]
         public TProduct Product { get; set; }
 
-
-        [Required]
+		/// <summary>
+		/// 名称
+		/// </summary>
+		[Required]
         [MaxLength(100)]
-        [Display(Name = "名称")]
         public string Name { get; set; }
 
-        [MaxLength(200)]
-
-        [Display(Name = "图片")]
+		/// <summary>
+		/// 图片
+		/// </summary>
+		[MaxLength(200)]
         public string Image { get; set; }
 
-        [Display(Name = "描述")]
-        public string Desc { get; set; }
+		/// <summary>
+		/// 描述
+		/// </summary>
+		public string Desc { get; set; }
 
-        [Display(Name = "逻辑状态")]
-        public EntityLogicState ObjectState { get; set; }
+		/// <summary>
+		/// 逻辑状态
+		/// </summary>
+		public EntityLogicState ObjectState { get; set; }
 
-        [Display(Name = "创建时间")]
-        public DateTime CreatedTime { get; set; }
+		/// <summary>
+		/// 创建时间
+		/// </summary>
+		public DateTime CreatedTime { get; set; }
 
-        [Display(Name = "修改时间")]
-        public DateTime UpdatedTime { get; set; }
+		/// <summary>
+		/// 修改时间
+		/// </summary>
+		public DateTime UpdatedTime { get; set; }
 
-        [Display(Name = "排位")]
-        public int Order { get; set; }
+		/// <summary>
+		/// 排位
+		/// </summary>
+		public int Order { get; set; }
 
-		[Display(Name = "自动发货规格")]
+		/// <summary>
+		/// 自动发货规格
+		/// </summary>
 		public long? VIADSpecId { get; set; }
 
 
