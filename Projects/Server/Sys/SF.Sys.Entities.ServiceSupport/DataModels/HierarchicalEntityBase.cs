@@ -20,7 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Entities.DataModels
+namespace SF.Sys.Entities.DataModels
 {
 
 	public abstract class ItemEntityBase<TKey, TContainerKey, TContainer> :

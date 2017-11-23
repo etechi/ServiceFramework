@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.ADT.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.ADT.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove=".licenseheader" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="microsoft.aspnetcore.authentication.cookies" Version="2.0.1" />
+    <PackageReference Include="microsoft.aspnetcore.diagnostics" Version="2.0.1" />
+    <PackageReference Include="microsoft.aspnetcore.httpoverrides" Version="2.0.1" />
+    <PackageReference Include="microsoft.aspnetcore.mvc" Version="2.0.1" />
+    <PackageReference Include="microsoft.aspnetcore.StaticFiles" Version="2.0.1" />
+    <PackageReference Include="microsoft.visualstudio.web.browserlink" Version="2.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SF.Sys.Client\SF.Sys.Client.csproj" />
+    <ProjectReference Include="..\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
+    <ProjectReference Include="..\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -31,6 +31,11 @@ namespace SF.Sys.Services
 
 			return sc;
 		}
+		public static IServiceCollection AddDefaultDeviceDetector(this IServiceCollection sc)
+		{
+			sc.AddSingleton<IClientDeviceTypeDetector, DefaultDeviceTypeDetector>();
+			return sc;
+		}
 		//public static IServiceCollection AddAccessTokenHandler(this IServiceCollection sc,
 		//	string Issuer,
 		//	string securityKey,
@@ -47,6 +52,6 @@ namespace SF.Sys.Services
 		//	sc.AddSingleton<IAccessTokenHandler, AccessTokenHandler>();
 		//	return sc;
 		//}
-		
+
 	}
 }

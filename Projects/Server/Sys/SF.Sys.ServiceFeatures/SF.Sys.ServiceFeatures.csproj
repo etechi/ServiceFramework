@@ -15,10 +15,6 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <None Remove=".licenseheader" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Auth\SF.Sys.Auth.csproj" />
     <ProjectReference Include="..\SF.Sys.Entities\SF.Sys.Entities.csproj" />
     <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />

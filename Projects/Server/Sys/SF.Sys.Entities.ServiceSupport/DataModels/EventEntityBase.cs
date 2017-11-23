@@ -18,7 +18,7 @@ using SF.Sys.Entities;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-namespace SF.Entities.DataModels
+namespace SF.Sys.Entities.DataModels
 {
 
 	public abstract class EventEntityBase<K> : IEntityWithId<K>, IEventEntity

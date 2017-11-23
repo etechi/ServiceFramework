@@ -21,6 +21,6 @@ namespace SF.Sys.Services
 {
 	public interface IServiceCollection :
 		IList<ServiceDescriptor>, ICollection<ServiceDescriptor>, IEnumerable<ServiceDescriptor>
-	{	
+	{
 	}
 }

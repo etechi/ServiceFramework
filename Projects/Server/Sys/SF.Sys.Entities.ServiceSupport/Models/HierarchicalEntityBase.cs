@@ -18,7 +18,7 @@ using SF.Sys.Entities;
 using SF.Sys.Entities.Annotations;
 using System;
 using System.Collections.Generic;
-namespace SF.Entities.Models
+namespace SF.Sys.Entities.Models
 {
 	public abstract class ItemEntityBase<TKey, TContainerKey, TContainer> :
 		ObjectEntityBase<TKey>,

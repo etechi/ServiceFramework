@@ -17,7 +17,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Entities.DataModels;
+using SF.Sys.Entities.DataModels;
 using SF.Sys.Data;
 
 namespace SF.Sys.MenuServices.Entity.DataModels

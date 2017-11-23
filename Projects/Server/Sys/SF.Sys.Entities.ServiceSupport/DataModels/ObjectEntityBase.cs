@@ -27,7 +27,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Entities.DataModels
+namespace SF.Sys.Entities.DataModels
 {
 
     public abstract class ObjectEntityBase<K> : 

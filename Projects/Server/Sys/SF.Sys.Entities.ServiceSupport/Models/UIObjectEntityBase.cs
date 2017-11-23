@@ -18,7 +18,7 @@ using SF.Sys.Entities;
 using SF.Sys.Entities.Annotations;
 using System;
 using System.ComponentModel.DataAnnotations;
-namespace SF.Entities.Models
+namespace SF.Sys.Entities.Models
 {
 	public class InternalData
 	{

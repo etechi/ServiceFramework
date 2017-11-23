@@ -15,7 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.Threading.Tasks;
 
-namespace SF.KB.PhoneNumbers
+namespace SF.Common.PhoneNumberValidators
 {
 	public interface IPhoneNumberValidator
     {

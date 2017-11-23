@@ -24,7 +24,7 @@ namespace SF.Sys.Services.Management.DataModels
 	/// 服务实例
 	/// </summary>
 	[Table("SysServiceInstance")]
-	public class ServiceInstance : SF.Entities.DataModels.UITreeNodeEntityBase<ServiceInstance>
+	public class ServiceInstance : SF.Sys.Entities.DataModels.UITreeNodeEntityBase<ServiceInstance>
 	{
 		//[ForeignKey(nameof(ServiceCategoryItem))]
 		//public override long Id { get => base.Id; set => base.Id = value; }

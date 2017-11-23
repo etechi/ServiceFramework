@@ -19,7 +19,7 @@ using SF.Sys.Entities;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-namespace SF.Entities.Models
+namespace SF.Sys.Entities.Models
 {
 
 
