@@ -14,31 +14,42 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Auth.IdentityServices.Models;
-using SF.Entities;
-using SF.Metadata;
-using System;
-using System.Threading.Tasks;
+using SF.Sys.Annotations;
+using SF.Sys.Auth;
+using SF.Sys.Entities;
+using SF.Sys.NetworkService;
 
 namespace SF.Auth.IdentityServices.Managers
 {
 	public class UserQueryArgument : ObjectQueryArgument<ObjectKey<long>>
-	{	
-		[Comment("注册账号")]
+	{
+		/// <summary>
+		/// 注册账号
+		/// </summary>
 		public string MainCredential { get; set; }
 
-		[Comment("注册类型")]
+		/// <summary>
+		/// 注册类型
+		/// </summary>
 		[EntityIdent(typeof(ClaimType))]
 		public string MainClaimTypeId { get; set; }
 
-		[Comment("姓名")]
+		/// <summary>
+		/// 姓名
+		/// </summary>
 		[StringContains]
 		public override string Name { get; set; }
 	}
 
+	/// <summary>
+	/// 用户管理
+	/// </summary>
+	/// <typeparam name="TInternal"></typeparam>
+	/// <typeparam name="TEditable"></typeparam>
+	/// <typeparam name="TQueryArgument"></typeparam>
 	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
-	[Comment("用户管理")]
 	public interface IUserManager<TInternal,TEditable,TQueryArgument> :
 		IEntityManager<ObjectKey<long>,TEditable>,
 		IEntitySource<ObjectKey<long>, TInternal, TQueryArgument>,

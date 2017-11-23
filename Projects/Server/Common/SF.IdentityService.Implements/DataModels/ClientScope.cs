@@ -13,11 +13,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Entities.DataModels;
-using SF.Metadata;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,17 +21,20 @@ namespace SF.Auth.IdentityServices.DataModels
 	[Table(nameof(ClientScope))]
 	public class ClientScope
 	{
+		/// <summary>
+		/// 客户端ID
+		/// </summary>
 		[Key]
-		[Comment("客户端ID")]
 		[Column(Order =1)]
 		public long ClientConfigId { get; set; }
 
 		[ForeignKey(nameof(ClientConfigId))]
 		public ClientConfig ClientConfig { get; set; }
 
-
+		/// <summary>
+		/// 资源范围ID
+		/// </summary>
 		[Key]
-		[Comment("资源范围ID")]
 		[Column(Order = 2)]
 		[MaxLength(100)]
 		[Required]

@@ -1,0 +1,54 @@
+﻿@using SF.AspNetCore.Mvc
+@using SF.Services.Settings
+@{
+	var setting = Html.Setting<HygouSetting>();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>@ViewBag.Title </title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+
+	@*@Html.CDNStyle("~/bundles/desktop/css")*@
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()css/3party/slick.css" />
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()css/3party/slick-theme.css" />
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()vender/massets/global/plugins/font-awesome/css/font-awesome.css" />
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()css/defaultStyle.css" />
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()css/desktop/index.css" />
+	<link rel="shortcut icon" href="/favicon.ico" />
+</head>
+<body class="preload">
+
+	<div class="user-page">
+		<div class="head">
+			@Html.Partial("_Logo")
+		</div>
+		<div class="container">
+			@RenderBody()
+		</div>
+	</div>
+
+	<footer>
+        @*@Html.Partial("_TailerArticles")*@
+        @Html.Partial("_TailerFooter")
+		@*@Html.Partial("_TailerLinks")*@
+	</footer>
+	@*@Html.CDNScript("~/bundles/desktop/js")*@
+	<script type="text/javascript" src="@Html.ResBase()js/browserDetect.js"></script>
+	<script type="text/javascript" src="@Html.ResBase()lib/jquery/dist/jquery.min.js"></script>
+	<script type="text/javascript" src="@Html.ResBase()lib/jquery-validation/dist/jquery.validate.min.js"></script>
+	@*"~/scripts/jquery.validate.js" ,
+		"~/scripts/jquery.ui.widget.js" ,
+		"~/scripts/jquery.iframe-transport.js" ,
+		"~/scripts/jquery.fileupload.js" ,*@
+	<script type="text/javascript" src="@Html.ResBase()lib/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="@Html.ResBase()js/desktop.js"></script>
+
+	@RenderSection("scripts", required: false)
+
+    @Html.Partial("_SystemTailer")
+</body>
+</html>

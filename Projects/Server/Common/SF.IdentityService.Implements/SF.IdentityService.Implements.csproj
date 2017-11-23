@@ -4,6 +4,15 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\SF.IdentityService.Implements.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Auth\Users1\**" />
     <Compile Remove="Bizness\**" />
@@ -21,16 +30,22 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
-    <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.csproj" />
-    <ProjectReference Include="..\..\Core\SF.Support\SF.Support.csproj" />
-    <ProjectReference Include="..\SF.Common.Abstractions\SF.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Extensions\SF.Sys.Extensions.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.MenuServices\SF.Sys.MenuServices.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Security\SF.Sys.Security.csproj" />
+    <ProjectReference Include="..\SF.Common.PhoneNumberValidator\SF.Common.PhoneNumberValidator.csproj" />
+    <ProjectReference Include="..\SF.Common.TextMessages\SF.Common.TextMessages.csproj" />
     <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
-    <ProjectReference Include="..\SF.IdentityService.Extensions\SF.IdentityService.Extensions.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.Annotations">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

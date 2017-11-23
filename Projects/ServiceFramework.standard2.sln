@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{66A4F4E4-6A67-479D-8650-013BD4A3913B}"
 EndProject
@@ -222,6 +222,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Products.Implements", "Server\Biz\SF.Biz.Products.Implements\SF.Biz.Products.Implements.csproj", "{902564BC-E203-4214-ABEC-FEB2A8942A37}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Biz.Products", "Server\Biz\SF.Biz.Products\SF.Biz.Products.csproj", "{C1FE68FC-1D90-4D2A-BCED-7CCC7A3D79C7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SFShop", "SFShop", "{B363C20C-D687-45A5-9229-9DFED4728DE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -730,6 +732,7 @@ Global
 		{662314A3-FC0C-4041-AF05-1587418AC85D} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
 		{902564BC-E203-4214-ABEC-FEB2A8942A37} = {7FB34344-E354-4075-8F29-A0AAD2EF72D4}
 		{C1FE68FC-1D90-4D2A-BCED-7CCC7A3D79C7} = {7FB34344-E354-4075-8F29-A0AAD2EF72D4}
+		{B363C20C-D687-45A5-9229-9DFED4728DE1} = {2EB92F6A-F55C-4B5C-9BB1-A74CFEE13C84}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CEC16A9-B2F8-4F62-83CD-A3938068964F}

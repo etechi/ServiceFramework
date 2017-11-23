@@ -1,0 +1,70 @@
+﻿@model CrowdMall.Bizness.Trades.Models.Trade
+@{
+    var Setting = Html.Setting<CrowdMallSetting>();
+    var DepositRecord = (CrowdMall.Bizness.Accounting.Models.DepositRecord) ViewBag.DepositRecord;
+}
+<div class="recharge container" id="recharge">
+
+    <ol class="breadcrumb">
+        <li><a href="/">首页</a></li>
+        <li><a href="/user/">个人中心</a></li>
+        <li class="active">夺宝成功</li>
+    </ol>
+    <div class="panel result-panel">
+        <div class="result-content">
+            @if (Model.EndType == ServiceProtocol.Biz.Trades.TradeEndType.SellerCancelled)
+            {
+                <h3 style="line-height:1.5">
+                    @Model.EndReason<br/>
+                    @if (Model.DepositRecordId != null)
+                    {
+                        <div>充值金额@(DepositRecord.Amount.ToString("0"))元已退款，预计2-3个工作日后到账。</div>
+                    }
+                </h3>
+            }
+            else if (Model.EndType == ServiceProtocol.Biz.Trades.TradeEndType.InProcessing)
+            {
+                <h3><span class="glyphicon glyphicon-ok"></span> 正在夺宝，请稍后在夺宝记录中查看结果</h3>
+            }
+            else if (Model.EndType == ServiceProtocol.Biz.Trades.TradeEndType.Completed)
+            {
+                <h3><span class="glyphicon glyphicon-ok"></span> 夺宝成功</h3>
+            }
+            else
+            {
+                <h3><span class="glyphicon glyphicon-remove text-danger"></span> 交易失败</h3>
+            }
+            <dl>
+                <dt>夺宝时间</dt>
+                <dd>@(Model.CreatedTime.ToString("yyyy-MM-dd HH:mm"))</dd>
+                <dt>使用云币</dt>
+                <dd>@(Model.SettlementAmount.ToString("0"))个</dd>
+                @if (Model.DiscountDesc != null && Model.EndType != ServiceProtocol.Biz.Trades.TradeEndType.SellerCancelled)
+                {
+                <dt>优惠券</dt>
+                <dd>@(Model.DiscountDesc)</dd>
+                }
+                <dt>交易号</dt>
+                <dd>@Model.Ident</dd>
+                @if (Model.EndType != ServiceProtocol.Biz.Trades.TradeEndType.Completed &&
+                    Model.EndType != ServiceProtocol.Biz.Trades.TradeEndType.InProcessing
+                )
+                {
+                    <dt>交易失败原因</dt>
+                    <dd>@Model.EndReason </dd>
+                }
+            </dl>
+
+            <a class="btn btn-primary" href="/">返回首页 <span id="timeleft"></span></a>
+           @if (!string.IsNullOrWhiteSpace(Setting.TradeEndLink))
+           {
+                <a class="btn btn-default" href="@Setting.TradeEndLink">@Setting.TradeEndLinkText</a>
+           }
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        window.boot("user-trade-completed");
+    </script>
+}

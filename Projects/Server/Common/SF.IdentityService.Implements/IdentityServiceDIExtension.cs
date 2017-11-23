@@ -13,20 +13,19 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Metadata;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SF.Core.ServiceManagement;
 using SF.Auth.IdentityServices.Managers;
 using SF.Auth.IdentityServices.Models;
 using SF.Auth.IdentityServices;
-using SF.Core.ServiceManagement.Management;
 using SF.Auth.IdentityServices.Internals;
 using SF.Auth.IdentityServices.UserCredentialProviders;
 using System;
-using SF.Entities;
 using System.Linq;
-using SF.Services.Security;
+using SF.Sys.Services;
+using SF.Sys.Services.Management;
+using SF.Sys.Entities;
+using SF.Sys.Linq;
 
 namespace SF.Core.ServiceManagement
 {
@@ -44,7 +43,7 @@ namespace SF.Core.ServiceManagement
 					.Add<IOperationManager, OperationManager>("AuthOperation","操作",typeof(OperationInternal))
 					.Add<IResourceManager, ResourceManager>("AuthResource", "资源", typeof(ResourceInternal))
 					.Add<IRoleManager, RoleManager>("AuthRole", "身份", typeof(Role))
-					.Add<IUserManager, UserManager>("AuthUser", "用户", typeof(UserInternal),typeof(SF.Auth.User))
+					.Add<IUserManager, UserManager>("AuthUser", "用户", typeof(UserInternal),typeof(SF.Sys.Auth.User))
 					.Add<IScopeManager, ScopeManager>("AuthScope", "授权范围", typeof(ScopeInternal))
 				//.Add<IDocumentService, DocumentService>()
 				);
@@ -182,12 +181,12 @@ namespace SF.Core.ServiceManagement
 
 			//初始化操作
 			var OperationManager = ServiceProvider.Resolve<IOperationManager>();
-			foreach (var o in ServiceProvider.Resolve<IEnumerable<SF.Auth.Permissions.IOperation>>()
+			foreach (var o in ServiceProvider.Resolve<IEnumerable<Sys.Auth.Permissions.IOperation>>()
 				.WithFirst(
-					new SF.Auth.Permissions.Operation(SF.Auth.Permissions.Operations.Read, "查看", "查看对象"),
-					new SF.Auth.Permissions.Operation(SF.Auth.Permissions.Operations.Create, "新建", "新建对象"),
-					new SF.Auth.Permissions.Operation(SF.Auth.Permissions.Operations.Update, "修改", "修改对象"),
-					new SF.Auth.Permissions.Operation(SF.Auth.Permissions.Operations.Remove, "删除", "删除对象")
+					new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Read, "查看", "查看对象"),
+					new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Create, "新建", "新建对象"),
+					new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Update, "修改", "修改对象"),
+					new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Remove, "删除", "删除对象")
 					))
 			{
 				await OperationManager.EnsureEntity(
@@ -206,7 +205,7 @@ namespace SF.Core.ServiceManagement
 			}
 			//初始化资源
 			var ResourceManager = ServiceProvider.Resolve<IResourceManager>();
-			var resPermissions = ServiceProvider.Resolve<IEnumerable<SF.Auth.Permissions.IResource>>();
+			var resPermissions = ServiceProvider.Resolve<IEnumerable<Sys.Auth.Permissions.IResource>>();
 			foreach (var o in resPermissions)
 			{
 				await ResourceManager.EnsureEntity(

@@ -13,18 +13,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using SF.Metadata;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
-using SF.Data;
 using System.Linq;
-using SF.Core.ServiceManagement.Management;
-using SF.Entities;
-using SF.Auth.IdentityServices.Internals;
-using System;
+using SF.Sys.Data;
+using SF.Sys.Entities;
+using SF.Sys.Linq;
 
 namespace SF.Auth.IdentityServices.IdentityServer4Impl
 {

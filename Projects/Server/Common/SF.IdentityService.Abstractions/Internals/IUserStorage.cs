@@ -14,54 +14,73 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Auth.IdentityServices.Models;
-using SF.Metadata;
-using System;
+using SF.Sys.Auth;
+using SF.Sys.Clients;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SF.Auth.IdentityServices.Internals
 {
 	public class UserCreateArgument
 	{
-		[Comment("用户信息")]
+		/// <summary>
+		/// 用户信息
+		/// </summary>
 		[Required]
 		public User User { get; set; }
 
+		/// <summary>
+		/// 密码哈希
+		/// </summary>
 		[Required]
-		[Comment("密码哈希")]
 		public string PasswordHash { get; set; }
 
+		/// <summary>
+		/// 安全戳
+		/// </summary>
 		[Required]
-		[Comment("安全戳")]
 		public byte[] SecurityStamp { get; set; }
 
+		/// <summary>
+		/// 访问源
+		/// </summary>
 		[Required]
-		[Comment("访问源")]
-		public Clients.IUserAgent AccessSource { get; set; }
+		public IUserAgent AccessSource { get; set; }
 
+		/// <summary>
+		/// 登录凭证
+		/// </summary>
 		[Required]
-		[Comment("登录凭证")]
 		[MaxLength(100)]
 		public string CredentialValue { get; set; }
 
-		[Comment("登录凭证提供者")]
+		/// <summary>
+		/// 登录凭证提供者
+		/// </summary>
 		public string ClaimTypeId { get; set; }
 
-		[Comment("用户角色")]
+		/// <summary>
+		/// 用户角色
+		/// </summary>
 		public string[] Roles { get; set; }
 
-		[Comment("用户申明")]
+		/// <summary>
+		/// 用户申明
+		/// </summary>
 		public ClaimValue[] ClaimValues { get; set; }
 
-		[Comment("注册附加参数")]
+		/// <summary>
+		/// 注册附加参数
+		/// </summary>
 		[MaxLength(200)]
 		public Dictionary<string,string> ExtraArgument { get; set; }
 		
 	}
 
-	[Comment("用户身份数据")]
+	/// <summary>
+	/// 用户身份数据
+	/// </summary>
 	public class UserData
 	{
 		public long Id { get; set; }

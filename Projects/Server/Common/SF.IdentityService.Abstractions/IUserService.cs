@@ -13,8 +13,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth.IdentityServices.Models;
-using SF.Metadata;
+using SF.Sys.Auth;
+using SF.Sys.NetworkService;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -22,19 +22,29 @@ namespace SF.Auth.IdentityServices
 {
 	public class SigninArgument
 	{
-		[Comment("用户")]
+		/// <summary>
+		/// 用户
+		/// </summary>
 		public string Ident { get; set; }
 
-		[Comment("密码")]
+		/// <summary>
+		/// 密码
+		/// </summary>
 		public string Password { get; set; }
 
-		[Comment("过期时间")]
+		/// <summary>
+		/// 过期时间
+		/// </summary>
 		public int? Expires { get; set; }
 
-		[Comment("人工操作验证码")]
+		/// <summary>
+		/// 人工操作验证码
+		/// </summary>
 		public string CaptchaCode { get; set; }
 
-		[Comment("是否返回身份令牌")]
+		/// <summary>
+		/// 是否返回身份令牌
+		/// </summary>
 		public bool ReturnToken { get; set; }
 		
 	}
@@ -42,129 +52,223 @@ namespace SF.Auth.IdentityServices
 
 	public class SendPasswordRecorveryCodeArgument
 	{
-		[Comment("身份验证服务")]
+		/// <summary>
+		/// 身份验证服务
+		/// </summary>
 		public string CredentialProvider { get; set; }
 
-		[Comment("人工操作验证码")]
+		/// <summary>
+		/// 人工操作验证码
+		/// </summary>
 		public string CaptchaCode { get; set; }
 
-		[Comment("用户")]
+		/// <summary>
+		/// 用户
+		/// </summary>
 		public string Credential { get; set; }
 	}
 	public class ResetPasswordByRecorveryCodeArgument
 	{
-		[Comment("身份验证服务")]
+		/// <summary>
+		/// 身份验证服务
+		/// </summary>
 		public string CredentialProvider { get; set; }
 
-		[Comment("用户")]
+		/// <summary>
+		/// 用户
+		/// </summary>
 		public string Credential { get; set; }
 
-		[Comment("验证码")]
+		/// <summary>
+		/// 验证码
+		/// </summary>
 		public string VerifyCode { get; set; }
 
-		[Comment("新密码")]
+		/// <summary>
+		/// 新密码
+		/// </summary>
 		public string NewPassword { get; set; }
 
-		[Comment("是否返回身份令牌")]
+		/// <summary>
+		/// 是否返回身份令牌
+		/// </summary>
 		public bool ReturnToken { get; set; }
 	}
 	public class SignupArgument
 	{
-		[Comment("身份验证服务ID")]
+		/// <summary>
+		/// 身份验证服务ID
+		/// </summary>
 		public string CredentialProvider { get; set; }
 
-		[Comment("身份信息")]
+		/// <summary>
+		/// 身份信息
+		/// </summary>
 		public User User { get; set; }
 
-		[Comment("用户")]
+		/// <summary>
+		/// 用户
+		/// </summary>
 		public string Credential { get; set; }
 
-		[Comment("密码")]
+		/// <summary>
+		/// 密码
+		/// </summary>
 		public string Password { get; set; }
 
-		[Comment("人工操作验证码")]
+		/// <summary>
+		/// 人工操作验证码
+		/// </summary>
 		public string CaptchaCode { get; set; }
 
-		[Comment("验证码")]
+		/// <summary>
+		/// 验证码
+		/// </summary>
 		public string VerifyCode { get; set; }
 
-		[Comment("是否返回身份令牌")]
+		/// <summary>
+		/// 是否返回身份令牌
+		/// </summary>
 		public bool ReturnToken { get; set; }
 
-		[Comment("过期时间")]
+		/// <summary>
+		/// 过期时间
+		/// </summary>
 		public int? Expires { get; set; }
 
 		public string[] Roles { get; set; }
 
-		[Comment("附加参数")]
+		/// <summary>
+		/// 附加参数
+		/// </summary>
 		public Dictionary<string,string> ExtraArgument{get;set;}
 	}
 
 	public class SendCreateIdentityVerifyCodeArgument
 	{
-		[Comment("身份验证服务")]
+		/// <summary>
+		/// 身份验证服务
+		/// </summary>
 		public string CredentialProvider { get; set; }
 
-		[Comment("人工操作验证码")]
+		/// <summary>
+		/// 人工操作验证码
+		/// </summary>
 		public string Credetial { get; set; }
 
-		[Comment("人工操作验证码")]
+		/// <summary>
+		/// 人工操作验证码
+		/// </summary>
 		public string CaptchaCode { get; set; }
 	}
 
 	public class SetPasswordArgument
 	{
-		[Comment("就密码")]
+		/// <summary>
+		/// 就密码
+		/// </summary>
 		public string OldPassword { get; set; }
 
-		[Comment("新密码")]
+		/// <summary>
+		/// 新密码
+		/// </summary>
 		public string NewPassword { get; set; }
 
-		[Comment("是否返回身份令牌")]
+		/// <summary>
+		/// 是否返回身份令牌
+		/// </summary>
 		public bool ReturnToken { get; set; }
 	}
 
 
+	/// <summary>
+	/// 用户服务
+	/// </summary>
 	[NetworkService]
-	[Comment("用户服务")]
 	public interface IUserService
     {
-		[Comment("获取当前用户ID")]
+		/// <summary>
+		/// 获取当前用户ID
+		/// </summary>
+		/// <returns></returns>
 		[Authorize]
 		Task<long?> GetCurUserId();
 
-		[Comment("获取当前用户")]
+		/// <summary>
+		/// 获取当前用户
+		/// </summary>
+		/// <returns></returns>
 		Task<User> GetCurUser();
 
-		[Comment("登录")]
+		/// <summary>
+		/// 登录
+		/// </summary>
+		/// <param name="Arg"></param>
+		/// <returns></returns>
 		Task<string> Signin(SigninArgument Arg);
 
-		[Comment("注销")]
+		/// <summary>
+		/// 注销
+		/// </summary>
+		/// <returns></returns>
 		Task Signout();
 
-		[Comment("发送忘记密码验证消息")]
+		/// <summary>
+		/// 发送忘记密码验证消息
+		/// </summary>
+		/// <param name="Arg"></param>
+		/// <returns></returns>
 		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
 
-		[Comment("使用验证消息重置密码")]
+		/// <summary>
+		/// 使用验证消息重置密码
+		/// </summary>
+		/// <param name="Arg"></param>
+		/// <returns></returns>
 		Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg);
 
-		[Comment("设置密码")]
+		/// <summary>
+		/// 设置密码
+		/// </summary>
+		/// <param name="Arg"></param>
+		/// <returns></returns>
 		Task<string> SetPassword(SetPasswordArgument Arg);
 
 
-		[Comment("修改用户信息")]
+		/// <summary>
+		/// 修改用户信息
+		/// </summary>
+		/// <param name="User"></param>
+		/// <returns></returns>
 		Task Update(User User);
 
-		[Comment("从访问令牌提取身份ID")]
+		/// <summary>
+		/// 从访问令牌提取身份ID
+		/// </summary>
+		/// <param name="AccessToken"></param>
+		/// <returns></returns>
 		Task<long> ValidateAccessToken(string AccessToken);
 
-		[Comment("发送用户创建验证信息")]
+		/// <summary>
+		/// 发送用户创建验证信息
+		/// </summary>
+		/// <param name="Arg"></param>
+		/// <returns></returns>
 		Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg);
 
-		[Comment("注册用户")]
+		/// <summary>
+		/// 注册用户
+		/// </summary>
+		/// <param name="Arg"></param>
+		/// <param name="VerifyCode"></param>
+		/// <returns></returns>
 		Task<string> Signup(SignupArgument Arg, bool VerifyCode);
 
-		[Comment("根据用户ID获取身份信息")]
+		/// <summary>
+		/// 根据用户ID获取身份信息
+		/// </summary>
+		/// <param name="Id"></param>
+		/// <returns></returns>
 		Task<User> GetUser(long Id);
 	}
 

@@ -1,0 +1,20 @@
+﻿@model SF.Management.FrontEndContents.Mvc.RenderModel
+@using SF.AspNetCore.Mvc
+@{
+    var uri = Html.GetCurrentUrl();
+}
+@foreach (var item in Model.Content.Items)
+{
+    var curi = new Uri(uri, item.Uri);
+    var className = curi == uri ? "active" : "";
+
+    <li>
+        <a class="@className" href="@item.Uri">
+            @if (!string.IsNullOrEmpty(@item.Image))
+            {
+                <img src="@Html.Media(item.Image,"s0x48")" />
+            }
+            @item.Title1
+        </a>
+    </li>
+}

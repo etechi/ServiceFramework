@@ -17,17 +17,7 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="MicrosoftExtensions\DIServiceCollection.cs" />
-    <Compile Remove="MicrosoftExtensions\MSDIExtensions.cs" />
-    <Compile Remove="MicrosoftExtensions\ScopeFactory.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove=".licenseheader" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>

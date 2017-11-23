@@ -1,0 +1,54 @@
+﻿@{ 
+	Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+
+<div class="tabs" id="bonuspoint-history">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" v-bind:class="{active:state==0}" v-on:click="setState(0)"><a href="javascript:;" role="tab">积分来源</a></li>
+        <li role="presentation" v-bind:class="{active:state==1}" v-on:click="setState(1)"><a href="javascript:;" role="tab">积分消费</a></li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active">
+            <div v-if="false" class="loading">正在载入... </div>
+            <div class="filter-panel" v-cloak>
+                <div class="row">
+                    <div class="col-sm-1 label">时间：</div>
+                    <div class="col-sm-11">
+                        <ul class="options">
+                            <li v-for="tr in timeRanges" v-on:click="setTimeRange(tr)" v-bind:class="{active:tr==curTimeRange}">{{tr.name}}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <data-table v-cloak :version="version" :total="total" >
+                <table v-cloak class="grid">
+                    <tr>
+                        <th class="name">获得时间</th>
+                        <th>{{state==0?'积分来源':'积分用途'}}</th>
+                        <th>{{state==0?'获得积分':'使用积分'}}</th>
+                        <th>积分余额</th>
+                    </tr>
+                    <tr v-if="!recs.length">
+                        <td colspan="4">
+                            <div v-if="state==0" class="empty">还没有积分记录， <a href="/">马上夺宝赚积分！</a></div>
+                            <div v-if="state==1" class="empty">还没有积分消费记录</div>
+                        </td>
+                    </tr>
+                    <tr v-for="i in recs">
+                        <td>{{i.Time}}</td>
+                        <td class="name">{{i.Desc}}</td>
+                        <td>{{i.Adjust}}</td>
+                        <td>{{i.CurValue}}</td>
+                    </tr>
+                </table>
+            </data-table>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+	<script>
+		window.boot("promotion-bonuspoint");
+	</script>
+}

@@ -1,0 +1,225 @@
+﻿@{
+    ViewBag.Title = "双十二";
+    var RewardItems = (ServiceProtocol.Biz.Promotion.Activities.ActivityRewardItemDesc[])ViewBag.RewardItems;
+    var GrantStatus = (ServiceProtocol.Biz.Promotion.Activities.GrantActivityStatus)ViewBag.GrantStatus;
+    var TimeRange = (ServiceProtocol.ObjectManager.DateQueryRange)ViewBag.TimeRange;
+}
+@section header{
+    <link href="~/css/ActivityPC/A20161212/Assets/css/" rel="stylesheet" type="text/css" />
+}
+
+<!--顶部横条-->
+<div class="xtop">
+    <div class="t-main">
+        <span class="t-right"><a href="/">&lt;&lt;&nbsp;返回首页</a></span>
+        <a href="/" title="返回首页"><img src="Assets/images/logo.jpg" /></a>
+    </div>
+</div>
+<div class="m1">
+    <div class="container">
+        <div id="countdown">
+            <div id="cd-day"></div>
+            <div id="cd-hour"></div>
+            <div id="cd-minute"></div>
+            <div id="cd-second"></div>
+        </div>
+        <button id="rule2">活动规则</button>
+    </div>
+
+</div>
+<div class="m2">
+    <div class="container">
+        <div id="new-rewards">
+            <div id="scroll">
+            </div>
+        </div>
+    </div>
+    <div id="left">@GrantStatus.Left</div>
+    <div id="end">活动已经结束了，等下次机会吧~</div>
+</div>
+<div class="m3">
+    <div class="wheel">
+        <a class="recharge" href="/account/recharge?title=继续抽奖&jump=/activity/a20161212">获取抽奖机会 &gt;&gt;</a>
+        <div class="items">
+            @{var idx = 1;}
+            @foreach (var item in RewardItems)
+            {
+                <div class="ri ri@(idx++)" rid="@item.Id">
+                    <img src="@Html.Media(item.Image,"c70")" />
+                    <span>@item.Name</span>
+                </div>
+            }
+            <div class="cover ri1"></div>
+            <div class="cover ri2"></div>
+            <div class="cover ri3"></div>
+            <div class="cover ri4"></div>
+            <div class="cover ri5"></div>
+            <div class="cover ri6"></div>
+            <div class="cover ri7"></div>
+            <div class="cover ri8"></div>
+            <div class="cover ri9"></div>
+            <div class="cover ri10"></div>
+            <div class="cover ri11"></div>
+            <div class="cover ri12"></div>
+            <button id="start"></button>
+        </div>
+    </div>
+</div>
+<div class="m4">
+    <div>
+        <button id="rewards">查看我的奖品</button>
+        <button id="rule">活动规则</button>
+    </div>
+</div>
+<div class="modal fade simple" id="dlg-rule" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" id="dialog-body">
+                <span data-dismiss="modal" class="close fa fa-remove"></span>
+                <h2>活动规则</h2>
+                <div class="content">
+                    <p>1. 单笔充值满12元，获得一次抽奖机会</p>
+                    <p>2. 抽奖机会可叠加</p>
+                    <p>3. 活动时间:2016.12.12当天23:59之前</p>
+                </div>
+                <div class="text-center">
+                    <a href="/account/recharge?title=继续抽奖&jump=/activity/a20161212" class="recharge btn btn-primary">去充值</a>
+                    <button data-dismiss="modal" class="btn btn-default">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade simple" id="dlg-rewards" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" id="dialog-body">
+                <span data-dismiss="modal" class="close fa fa-remove"></span>
+                <h2>获奖记录</h2>
+                <div class="table">
+                    <div class="head">
+                        <div>已获得奖品</div>
+                        <div>获奖时间</div>
+                    </div>
+                    <div id="reward-items"></div>
+                </div>
+                <div class="text-center">
+                    <a target="_blank" href="/user/win#activity" class="btn btn-primary">领取实物和充值卡奖品</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade simple" id="dlg-no-rewards" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" id="dialog-body">
+                <span data-dismiss="modal" class="close fa fa-remove"></span>
+                <h2>获奖记录</h2>
+                <p>
+                   您还没有中过奖哦~充值后可获得抽奖机会，快去试试手气吧！
+                </p>
+                <div class="text-center">
+                    <a href="/account/recharge?title=继续抽奖&jump=/activity/a20161212" class="recharge btn btn-primary">马上充值</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade simple" id="dlg-no-left" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" id="dialog-body">
+                <span data-dismiss="modal" class="close fa fa-remove"></span>
+                <h2>温馨提示</h2>
+                <div class="content">
+                    <p class="center">
+                        亲~很遗憾！<br />
+                        您的抽奖机会已经用完了<br/>
+                        您可以去充值<br/>
+                        继续获得抽奖机会
+                    </p>
+                </div>
+                <div class="text-center">
+                    <a href="/account/recharge?title=继续抽奖&jump=/activity/a20161212" class="recharge btn btn-primary">获得抽奖机会</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade simple" id="dlg-no-recharge" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" id="dialog-body">
+                <span data-dismiss="modal" class="close fa fa-remove"></span>
+                <h2>温馨提示</h2>
+                <div class="content">
+                    <p class="center">
+                        不好意思~<br />
+                        只有<b>单笔充值满12元</b><br />
+                        才可以抽奖哦！
+                    </p>
+                </div>
+                <div class="text-center">
+                    <a href="/account/recharge?title=继续抽奖&jump=/activity/a20161212" class="recharge btn btn-primary">获得抽奖机会</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade simple" id="dlg-alert" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" id="dialog-body">
+                <span data-dismiss="modal" class="close fa fa-remove"></span>
+                <h2>温馨提示</h2>
+                <div class="content">
+                    <p class="center" id="dlg-alert-info"></p>
+                </div>
+                <div class="text-center">
+                    <button data-dismiss="modal" class="btn btn-primary">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade simple" id="dlg-win" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body" id="dialog-body">
+                <span data-dismiss="modal" class="close fa fa-remove"></span>
+                <h2>恭喜您获得</h2>
+                <h4 id="win-title"></h4>
+                <img id="win-image" src="~/css/desktop/images/empty.gif"/>
+                <div class="text-center">
+                    <button data-dismiss="modal" id="next" class="btn btn-primary">继续抽奖</button>
+                    <button data-dismiss="modal" id="rewards2" class="btn btn-primary">我的奖品</button>
+                </div>
+                <hr/>
+                <div class="tail">
+                    <h5>温馨提示：</h5>
+                    <ul>
+                        <li>1.中得云币系统将会自动发送到中奖用户</li>
+                        <li>2.实物礼品请填写收货地址和收货人信息</li>
+                        <li>3.话费卡选择运营商后系统将卡号卡密发送到中奖账号</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.Partial("../User/_SigninModal")
+
+@section scripts{
+    <script>
+        var timeRange={begin:@TimeRange.Begin.Value.ToJsTime(),end:@TimeRange.End.Value.ToJsTime()};
+        var grantStatus=@(Html.Raw(ServiceProtocol.Json.Encode(GrantStatus)));
+        var itemCount=12;
+        window.boot("user-signin", {jump:false});
+    </script>
+    <script src="Assets/js/js.js"></script>
+
+}

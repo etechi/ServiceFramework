@@ -13,19 +13,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data.Models;
-using SF.Entities;
-using SF.Entities.AutoEntityProvider;
-using SF.Metadata;
-using System;
+using SF.Sys.Annotations;
+using SF.Sys.Entities.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 
 namespace SF.Auth.IdentityServices.Models
 {
-	
-	[Comment("角色")]
+
+	/// <summary>
+	/// 角色
+	/// </summary>
 	[EntityObject]
 	public class Role: ObjectEntityBase<string>
 	{
@@ -33,8 +31,10 @@ namespace SF.Auth.IdentityServices.Models
 	}
 	public class Grant
 	{
+		/// <summary>
+		/// 操作资源ID
+		/// </summary>
 		[Key]
-		[Comment("操作资源ID")]
 		[EntityIdent(typeof(ResourceInternal), nameof(ResourceName))]
 		public string ResourceId { get; set; }
 
@@ -42,8 +42,10 @@ namespace SF.Auth.IdentityServices.Models
 		[Ignore]
 		public string ResourceName { get; set; }
 
-		[Key]
-		[Comment("操作区域ID")]
+		/// <summary>
+		/// 操作区域ID
+		/// </summary>
+		[Key]		
 		[EntityIdent(typeof(OperationInternal), nameof(OperationName))]
 		public string OperationId { get; set; }
 
@@ -60,12 +62,16 @@ namespace SF.Auth.IdentityServices.Models
 	public class UserRole
 	{
 
-		[Comment("类型ID")]
+		/// <summary>
+		/// 类型ID
+		/// </summary>
 		[EntityIdent(typeof(Role), nameof(RoleName))]
 		[Key]
 		public string RoleId { get; set; }
 
-		[Comment("类型")]
+		/// <summary>
+		/// 类型
+		/// </summary>
 		[Ignore]
 		public string RoleName { get; set; }
 

@@ -1,0 +1,43 @@
+﻿@{ 
+	Layout = "../Shared/_OtherUserLayout.cshtml";
+}
+
+<div class="tabs" id="user-expose">
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active"><a href="#shared" aria-controls="shared" role="tab" data-toggle="tab">晒单列表</a></li>
+	</ul>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="shared" >
+            <data-table v-cloak :version="version" :total="total" :hide-paging="true">
+                <table v-cloak class="grid">
+                    <tr>
+                        <th>奖品图片</th>
+                        <th style="min-width:240px">奖品名称</th>
+                        <th width="120">晒单时间</th>
+                        <th>分享内容</th>
+                        <th width="100">操作</th>
+                    </tr>
+                    <tr v-for="r in recs">
+                        <td><a href="/item/{{r.TargetId}}-{{r.Round}}" target="_blank"><img v-bind:src="'@Html.ResBase()r/'+r.Item.Image+'?format=c90'" /></a></td>
+                        <td><a href="/item/{{r.TargetId}}-{{r.Round}}" target="_blank">{{r.Item.Title}}</a></td>
+                        <td>{{r.CreatedTime}}</td>
+                        <td>
+                            <div>{{r.Title}}</div>
+                            <div>{{r.Content}}</div>
+                        </td>
+                        <td><a href="/other/shareddetail/{{r.Id}}" target="_blank">查看详细</a></td>
+                    </tr>
+                    <tr v-if="!recs.length">
+                        <td colspan="5">还没有分享记录！</td>
+                    </tr>
+                </table>
+            </data-table>
+        </div>
+	</div>
+</div>
+
+@section scripts{
+	<script>
+		window.boot("user-expose",{user:@ViewBag.User.Id});
+	</script>
+}

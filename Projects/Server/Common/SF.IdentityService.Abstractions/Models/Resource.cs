@@ -13,70 +13,88 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data.Models;
-using SF.Entities;
-using SF.Entities.AutoEntityProvider;
-using SF.Metadata;
-using System;
+using SF.Sys.Annotations;
+using SF.Sys.Entities.Models;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 
 namespace SF.Auth.IdentityServices.Models
 {
 
-	[Comment("资源")]
+	/// <summary>
+	/// 资源
+	/// </summary>
 	[EntityObject]
 	public class ResourceInternal : UIObjectEntityBase<string>
 	{
 		[ReadOnly(false)]
 		public override string Id { get; set; }
-		[Comment("标识资源")]
+		/// <summary>
+		/// 标识资源
+		/// </summary>
 		public bool IsIdentityResource { get; set; }
 	}
 
 	public class ResourceRequiredClaim
 	{
+		/// <summary>
+		/// 申明类型
+		/// </summary>
 		[Key]
-		[Comment("申明类型")]
 		[EntityIdent(typeof(ClaimType),nameof(ClaimTypeName))]
 		[Required]
 		[TableVisible]
 		public string ClaimTypeId { get; set; }
 
-		[Comment("申明类型")]
+		/// <summary>
+		/// 申明类型
+		/// </summary>
 		[TableVisible]
 		[Ignore]
 		public string ClaimTypeName { get; set; }
 	}
-	[Comment("资源")]
+	/// <summary>
+	/// 资源
+	/// </summary>
 	public class ResourceEditable : ResourceInternal
-	{ 
-		[Comment("可用操作")]
+	{
+		/// <summary>
+		/// 可用操作
+		/// </summary>
 		[TableRows]
 		public IEnumerable<ResourceOperationInternal> SupportedOperations { get; set; }
 
-		[Comment("所需申明")]
+		/// <summary>
+		/// 所需申明
+		/// </summary>
 		[TableRows]
 		public IEnumerable<ResourceRequiredClaim> RequiredClaims { get; set; }
 	}
 
-	[Comment("资源操作")]
+	/// <summary>
+	/// 资源操作
+	/// </summary>
 	public class ResourceOperationInternal
 	{
+		/// <summary>
+		/// 操作
+		/// </summary>
 		[EntityIdent(typeof(OperationInternal),nameof(OperationName))]
-		[Comment("操作")]
 		[Key]
 		public string OperationId { get; set; }
 
-		[Comment("操作名称")]
+		/// <summary>
+		/// 操作名称
+		/// </summary>
 		[Ignore]
 		public string OperationName { get; set; }
 
 	}
 
-	[Comment("操作范围")]
+	/// <summary>
+	/// 操作范围
+	/// </summary>
 	[EntityObject]
 	public class OperationInternal : UIObjectEntityBase<string>
 	{

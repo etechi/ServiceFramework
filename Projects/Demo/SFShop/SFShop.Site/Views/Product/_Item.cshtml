@@ -1,0 +1,64 @@
+﻿
+@model SF.Biz.Products.IItem
+@using SF.AspNetCore.Mvc
+
+@{
+	var item = Model;
+	var ImageSize = 200;// Convert.ToInt32(ViewData.Get("ImageSize", 200));
+	var href = (ViewData.ContainsKey("Mobile") ? "/m" : "") + "/item/" + item.ItemId;
+	var target = ViewData.ContainsKey("Mobile") ? "_self" : "_blank";
+}
+
+<li class="product-item list-item">
+    @*@if (item.CurRound.PriceUnit == 10)
+    {
+        <img class="product-tag10" src="@Html.ResBase()css/desktop/images/tag10.png" />
+    }*@
+    <a class="img" href="@href" target="@target">
+        @if (ViewData.ContainsKey("NoDelayImage"))
+        {
+            <img src="@Html.Media(item.Image, "c" + ImageSize)" width="@ImageSize" height="@ImageSize" />
+        }
+        else
+        {
+            <img src="@Html.ResBase()css/desktop/images/empty.gif" data-src="@Html.Media(item.Image, "c" + ImageSize)" width="@ImageSize" height="@ImageSize" class="lazy" />
+        }
+    </a>
+    <div class="info">
+        <a href="@href" target="@target">
+            <h5>@((ViewData.ContainsKey("HideRound") ? "" : "(第" + 1 + "期)") + item.Title)</h5>
+        </a>
+        <span class="price">价值：￥@(Math.Round(item.MarketPrice))</span>
+        @*<div class="product-status">
+            <div>
+                <div style="width:@(30)%"></div>
+            </div>
+            <ul>
+                <li>
+                    <div>30</div>
+                    <div>已夺宝人次</div>
+                </li>
+                @if (!ViewData.ContainsKey("HideTotal"))
+                {
+                <li>
+                    <div>100</div>
+                    <div>总需人次</div>
+                </li>
+                }
+                <li>
+                    <div>70</div>
+                    <div>剩余人次</div>
+                </li>
+            </ul>
+        </div>*@
+        <div class="btns">
+            @*<button data-action="buy" data-item="@item.ItemId" class="btn btn-primary btn-product-buy">立即夺宝</button>*@
+            <a href="@href" target="@target" class="btn btn-primary btn-product-buy">@(ViewData.ContainsKey("HideBuyText") ? "" : "立即购买")</a>
+            @if (!ViewData.ContainsKey("hideAddToCart"))
+            {
+                <button data-action="addToCart" data-item="@item.ItemId" class="btn btn-default btn-add"><span class="fa fa-cart-plus"></span></button>
+            }
+        </div>
+    </div>
+
+</li>

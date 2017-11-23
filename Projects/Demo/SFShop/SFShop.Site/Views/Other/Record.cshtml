@@ -1,0 +1,77 @@
+﻿@{ 
+	Layout = "../Shared/_OtherUserLayout.cshtml";
+	var user = (CrowdMall.Bizness.Auth.Models.User)ViewBag.User;
+}
+<div class="tabs" id="trade-history">
+	<ul class="nav nav-tabs" role="tablist">
+		<li role="presentation" class="active" ><a href="javascript:;" role="tab">夺宝记录</a></li>
+	</ul>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active">
+			<div v-if="false" class="loading">正在载入... </div>
+            <data-table v-cloak :version="version" :total="total" :hide-paging="true">
+                <table class="grid">
+                    <tr>
+                        <th>商品图片</th>
+                        <th class="name">商品名称</th>
+                        <th>夺宝状态</th>
+                        <th>参与人次</th>
+                        <th>夺宝号码</th>
+                        <th>操作</th>
+                    </tr>
+                    <tr v-if="!recs.length">
+                        <td colspan="6"><div class="empty">还没有夺宝记录， <a href="/">马上夺宝！</a></div></td>
+                    </tr>
+                    <tr v-for="i in recs">
+                        <td><a href="/item/{{i.ProductId}}-{{i.Round}}" target="_blank"><img v-bind:src="'@Html.ResBase()r/'+i.Image+'?format=s120'" /></a></td>
+                        <td class="name">
+                            <div><a href="/item/{{i.ProductId}}-{{i.Round}}" target="_blank">(第{{i.Round}}期){{i.Title}}</a></div>
+                            <div>总需：{{i.Total}}</div>
+                            <div v-if="i.WinSummary">
+                                <div>
+                                    获奖者：
+                                    <a href="/other/{{i.WinSummary.User.Id}}">{{i.WinSummary.User.NickName}}</a>
+                                    (本期共参与{{i.WinSummary.Quantity}}人次)
+                                </div>
+                                <div>幸运号码：{{i.WinSummary.Code}}</div>
+                                <div>揭晓时间：{{i.OpenTime}}</div>
+                            </div>
+                            <div v-if="!i.WinSummary" class="product-status">
+                                <div class="bar">
+                                    <div class="selled" v-bind:style="{width:(i.ProductSelled*100/i.Total)+'%'}"></div>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <div>{{i.ProductSelled}}</div>
+                                        <div>已夺宝人次</div>
+                                    </li>
+                                    <li>
+                                        <div>{{i.Total}}</div>
+                                        <div>总需人次</div>
+                                    </li>
+                                    <li>
+                                        <div>{{i.Total-i.ProductSelled}}</div>
+                                        <div>剩余人次</div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div>夺宝时间：{{i.Time}}</div>
+                        </td>
+                        <td>{{i.State}}</td>
+                        <td>{{i.Quantity}}人次</td>
+                        <td class="codes">
+                            {{i.Codes}}
+                        </td>
+                        <td><a href="/item/{{i.ProductId}}-{{i.Round}}">查看详情</a></td>
+                    </tr>
+                </table>
+            </data-table>
+        </div>
+	</div>
+</div>
+
+@section scripts{
+<script>
+	window.boot("trade-history",{user:@user.Id});
+</script>
+}

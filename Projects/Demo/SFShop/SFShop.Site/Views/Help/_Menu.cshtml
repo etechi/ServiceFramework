@@ -1,0 +1,25 @@
+﻿@{ 
+    var cats = (IEnumerable<SF.Common.Documents.Category>)ViewBag.Categories;
+    var CurrentDocId = ViewBag.CurrentDocId;
+}
+<div class="help-menu">
+	<h3>帮助中心</h3>
+	<ul>
+		@foreach (var cat in cats){
+			<li>
+				<div class="help-category-item">@cat.Name</div>
+				<ul class="doc-list">
+					@foreach (var doc in cat.Items)
+					{
+						<li class="doc-item @(doc.Id==CurrentDocId?"active":"")">
+							<a href="/help/doc/@doc.Id">
+								@doc.Name
+							</a>
+						</li>
+					}
+				</ul>
+			</li>
+		}
+	</ul>
+    <a class="btn btn-primary feedback" href="/help/feedback">用户反馈</a>
+</div>

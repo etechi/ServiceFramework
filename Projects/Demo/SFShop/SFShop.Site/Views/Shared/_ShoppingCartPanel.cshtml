@@ -1,0 +1,22 @@
+﻿    <div class="icon" v-if="items.length">{{iconCount}}</div>
+    <div v-if="items.length" class="cart-list"  v-bind:style="{top:panelTop,height:panelHeight}">
+        <h4>我的购物车</h4>
+        <ul>
+            <li v-for="item in items" class="clearfix">
+                <a class="image" href="/item/{{item.ItemId}}" target="_blank"><img v-bind:src="item.imgLink" /></a>
+                <a class="title" href="/item/{{item.ItemId}}" target="_blank">
+                    {{item.Title}}
+                    <span v-if="item.CFPriceUnit!=1" class="stress"><br/>({{item.CFPriceUnit}}元专区)</span>
+                </a>
+                <div class="info">
+                    <div><span class="stress">{{item.Quantity}}人次</span></div>
+                    <button class="btn btn-link btn-sm" v-on:click="remove(item)">删除</button>
+                </div>
+            </li>
+        </ul>
+        <div class="status">
+            <a class="btn btn-primary btn-sm" href="/cart">查看清单并结算</a>
+            <span>共<b>{{items.length}}</b>件商品</span>
+            <span>总计<b>{{total}}</b>个云币</span>
+        </div>
+    </div>

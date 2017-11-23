@@ -1,0 +1,74 @@
+﻿@{ 
+    Layout = null;
+    var sysSetting = Html.Setting<ServiceProtocol.SystemSetting>();
+    var setting = Html.Setting<CrowdMall.CrowdMallSetting>();
+    var couponSetting = Html.Setting<ServiceProtocol.Biz.Promotion.Coupons.CouponSetting>();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>@setting.SiteName</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport" />
+	 @Html.CDNStyle("~/bundles/mobile/css")
+	<link rel="shortcut icon" href="/favicon.ico" />
+</head>
+<body>
+    <div id="app">
+        <div class="app-loading">
+            <div>
+                <h1>@setting.SiteName</h1>
+                <p id="ld">载入中</p>
+            </div>
+            <div class="sk-circle">
+                <div class="sk-circle1 sk-child"></div>
+                <div class="sk-circle2 sk-child"></div>
+                <div class="sk-circle3 sk-child"></div>
+                <div class="sk-circle4 sk-child"></div>
+                <div class="sk-circle5 sk-child"></div>
+                <div class="sk-circle6 sk-child"></div>
+                <div class="sk-circle7 sk-child"></div>
+                <div class="sk-circle8 sk-child"></div>
+                <div class="sk-circle9 sk-child"></div>
+                <div class="sk-circle10 sk-child"></div>
+                <div class="sk-circle11 sk-child"></div>
+                <div class="sk-circle12 sk-child"></div>
+            </div>
+            <script>
+                (function () {
+                    var e = document.getElementById('ld');
+                    var idx = 0;
+                    var t = setInterval(function () {
+                        if (!e.offsetHeight) clearInterval(t);
+                        else e.innerHTML = "载入中" + "...".substr(0, (++idx % 4));
+                    }, 1000);
+                })();
+            </script>
+        </div>
+    </div>
+    @{
+        var cnzz = setting.CNZZSiteIdent?.Trim() ?? "";
+    }
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script type="text/javascript" >
+        var settings = {
+            DebugMode: @(sysSetting.DebugMode?"true":"false"),
+            DebugId:@sysSetting.DebugUserId,
+            CNZZSiteIdent: "@(cnzz)",
+            MainCategoryId:@setting.MainCategoryId,
+            MaxDiscount:@couponSetting.MaxDiscountPercent,
+            ResBase:"@Html.ResBase()",
+            TradeEndLink:"@setting.TradeEndMobileLink",
+            TradeEndLinkText:"@setting.TradeEndMobileLinkText"
+        };
+        //window.onerror = function(sMessage,sUrl,sLine){
+        //    alert(sMessage+":"+sUrl+":"+sLine);
+        //};
+    </script>
+    @Html.CDNScript("~/bundles/mobile/js")
+</body>
+</html>
+
+
+

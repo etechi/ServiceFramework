@@ -1,0 +1,142 @@
+﻿@import "../defaultStyle.scss";
+div.open-page{
+    h3{
+        padding-bottom:10px;
+        border-bottom:2px solid $gray;
+        margin-right:10px;
+    }
+   div.soon{
+       float:left;
+       width:260px;
+       >ul{
+           background-color:$grayBG;
+           margin:0;
+           padding:1px 0 0 0;
+           border-radius:3px;
+           >li{
+               margin:10px;
+               background-color:#fff;
+               float:none;
+               width:auto;
+               padding:10px;
+               a.btn-primary{
+                   width:160px;
+               }
+           }
+           >li:hover{
+               padding:9px;
+           }
+       }
+   }
+   div.round-list{
+       float:left;
+       width:900px
+   }
+
+   li.product-round{
+        width:33%;
+        position:relative;
+        padding:30px;
+        height:511px;
+        img{
+            display:block;
+            margin:15px auto;
+        }
+        h5{
+            margin:0 0 8px 0;
+            padding:0;
+            font-size:$fontSize;
+            overflow: hidden;
+	        text-overflow: ellipsis;
+	        white-space: nowrap;
+	        height:16px;
+        }
+        span.price{
+            display:block;
+            font-size:12px;
+            color:$grayDark;
+            margin:0 0 10px;
+        }
+         div.result{
+            margin:0 -28px 0 -28px;
+            height:195px;
+        }
+        div.syncing{
+            padding:60px 0;
+            font-size:20px;
+        }
+        div.pending{
+            padding:50px;
+            font-size:20px;
+        }
+        div.clock{
+            text-align:center;
+            padding:25px 20px 20px;
+            font-size:20px;
+            span{margin-right:20px; font-size:30px}
+            color:$grayDark;
+        }
+        ins.timer{
+            margin:10px 0 40px;
+            b{font-size:30px}
+            i{font-size:30px;margin:0 3px 0 -8px}
+        }
+        div.win{
+            font-size:12px;
+            background-color:$grayBG;
+            padding:20px 25px 24px;
+            img{
+                float:left;
+                margin:10px 0 0 0;
+            }
+            dl{
+                b{
+                    color:$primaryBGColorDark;
+                }
+                margin:0 0 0 60px;
+                padding:4px 0 0 0;
+                dt{
+                    float:left;
+                    font-weight:normal;
+                    padding-right:6px;
+                }
+                dd{
+                    display:block;
+                    margin-bottom:4px;
+                    overflow: hidden;
+	                text-overflow: ellipsis;
+	                white-space: nowrap;
+	                height:18px;
+                }
+            }
+            a.btn{
+                padding-top:7px;
+                margin:10px 0 0 60px;
+                width:180px;
+                height:36px;
+                background-color:#fff;
+                span:last-child{
+                    display:none;
+                }
+                span:first-child{
+                    color:$primaryBGColorDark;
+                }
+            }
+            a.btn:hover{
+                background-color:$primaryBGColorDark;
+                border-color:$primaryBGColorDark;
+                span:first-child{
+                    display:none;
+                }
+                span:last-child{
+                    display:inline;
+                    color:#fff;
+                }
+            }
+        }
+    }
+       li.product-round:hover{
+        padding:30px 28px 28px 30px;
+    }
+
+}

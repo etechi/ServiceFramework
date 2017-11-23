@@ -13,11 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Entities.DataModels;
-using SF.Metadata;
-using System;
-using System.Collections.Generic;
+using SF.Sys.Data;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -27,8 +23,10 @@ namespace SF.Auth.IdentityServices.DataModels
 	public class ClientClaimValue : BaseClaimValue
 	{
 
+		/// <summary>
+		/// 客户端ID
+		/// </summary>
 		[Index]
-		[Comment("客户端ID")]
 		[MaxLength(100)]
 		[Required]
 		public string ClientId { get; set; }

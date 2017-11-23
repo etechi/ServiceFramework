@@ -1,0 +1,9 @@
+﻿@{ 
+	Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+@{Html.RenderPartial("HistoryPartial");}
+@section scripts{
+<script>
+	window.boot("trade-history");
+</script>
+}

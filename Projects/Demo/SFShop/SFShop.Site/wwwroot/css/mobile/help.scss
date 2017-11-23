@@ -1,0 +1,14 @@
+﻿@import "./defaultStyle.scss";
+
+div.help-page{
+    h3{
+        font-size:20px;
+        padding: 10px 10px;
+    }
+    div.help-doc-content{
+        border-top:1px solid $grayLight;
+        color:$colorLight;
+        padding:20px;
+        line-height:1.8;
+    }
+}

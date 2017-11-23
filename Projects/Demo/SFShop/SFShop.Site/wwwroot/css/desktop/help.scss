@@ -1,0 +1,113 @@
+﻿@import "../defaultStyle.scss";
+div.help-center{
+   >div.help-menu{
+       margin:60px 0 ;
+       float:left;
+       width:230px;
+       border:1px solid $grayLight;
+       h3{
+           color:$primaryBGColorDark;
+           text-align:center;
+           padding:0;
+           margin:20px;
+       }
+       >ul{
+           margin:0;
+           padding:0;
+           >li{
+                div.help-category-item{
+                    font-weight:bold;
+                    padding:10px;
+                    background-color:$grayBG;
+                }
+                ul.doc-list{
+                    margin:0;
+                    padding:0;
+                    li.doc-item{
+                        a{
+                            display:block;
+                            padding:10px 20px;
+                        }
+                    }
+                    li.doc-item.active{
+                        a,a:visited{
+                            background-color:$primaryBGColorDark;
+                            color:#fff !important;
+                        }
+                    }
+                }
+           }
+       }
+       >a.feedback{
+           width:210px;
+           margin:30px 0 8px 8px;
+           padding-top:10px;
+           height:40px;
+       }
+   }
+   form.feedback{
+       span.help-block{
+           top:30px;
+       }
+   }
+   div.help-doc{
+       margin-left:250px;
+       .breadcrumb{
+           height:30px;
+           margin:20px 0 10px ;
+           .active{
+               color:$primaryBGColorDark;
+           }
+       }
+       div.help-content{
+           padding:40px 40px 80px;
+           border:1px solid $grayLight;
+           h3.help-title{
+               color:$primaryBGColorDark;
+               padding:0 0 0 20px;
+               margin:0 0 20px;
+               border-left:5px solid $primaryBGColorDark;
+           }
+           div.help-body{
+               border-top:2px solid $gray;
+               padding:20px 0 0;
+               color:$colorLight;
+               line-height:2;
+               font-size:16px;
+               min-height:465px;
+               h3{
+                   color:#fff;
+                   background-color:$primaryBGColorDark;
+                   width:150px;
+                   text-align:center;
+                   padding:10px 20px;;
+               }
+               .m-helpcenter-main{
+                   margin-bottom:100px;
+                }
+               .m-helpcenter-pic{
+                   float:right;
+               }
+               h4{
+                   color:$primaryBGColorDark;
+                   border-left:3px solid $primaryBGColorDark;
+                   padding:5px 20px;
+                   
+               }
+               span.index{
+                   background-color:$primaryBGColorDark;
+                   color:#fff;
+                   border-radius:50%;
+                   width:23px;
+                   height:23px;
+                   display:inline-block;
+                   margin-right:10px;
+                   font-size:14px;
+                   text-align:center;
+                   vertical-align:baseline;
+                   padding-top:0px;
+               }
+           }
+       }
+   }
+}

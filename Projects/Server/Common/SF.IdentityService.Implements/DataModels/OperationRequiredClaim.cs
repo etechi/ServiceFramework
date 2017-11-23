@@ -13,10 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Metadata;
-using System;
-using System.Collections.Generic;
+using SF.Sys.Data;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -25,17 +22,21 @@ namespace SF.Auth.IdentityServices.DataModels
 	[Table(nameof(OperationRequiredClaim))]
 	public class OperationRequiredClaim
 	{
+		/// <summary>
+		/// 操作Id
+		/// </summary>
 		[Column(Order =1)]
 		[Key]
-		[Comment("操作Id")]
 		public string OperationId { get; set; }
 
 		[ForeignKey(nameof(OperationId))]
 		public Resource Resource { get; set; }
 
+		/// <summary>
+		/// 申明类型Id
+		/// </summary>
 		[Column(Order = 2)]
 		[Key]
-		[Comment("申明类型Id")]
 		[Index]
 		public string ClaimTypeId { get; set; }
 

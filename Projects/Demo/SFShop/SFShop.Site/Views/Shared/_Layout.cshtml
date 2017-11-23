@@ -1,0 +1,46 @@
+﻿@using SF.AspNetCore.Mvc
+@using SF.Services.Settings
+
+@{ 
+	var setting = Html.Setting<HygouSetting>();
+	var siteSetting = Html.Setting<AppSiteSetting>();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>@(ViewBag.Title==null?"": ViewBag.Title+" - ")@siteSetting.SiteName</title>
+	<meta charset="utf-8" />
+    <meta http-equiv="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()css/3party/slick.css"/>
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()css/3party/slick-theme.css"/>
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()vender/massets/global/plugins/font-awesome/css/font-awesome.css"/>
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()css/defaultStyle.css"/>
+	<link rel="stylesheet" type="text/css" href="@Html.ResBase()css/desktop/index.css"/>
+	<link rel="shortcut icon" href="/favicon.ico" />
+    @RenderSection("header", required: false)
+</head>
+<body class="preload">
+    @Html.Partial("_Header")
+
+    @RenderBody()
+
+    @Html.Partial("_Tailer")
+    
+	<script type="text/javascript" src="@Html.ResBase()js/browserDetect.js"></script>
+	<script type="text/javascript" src="@Html.ResBase()lib/jquery/dist/jquery.min.js"></script>
+	<script type="text/javascript" src="@Html.ResBase()lib/jquery-validation/dist/jquery.validate.min.js"></script>
+			@*"~/scripts/jquery.validate.js" ,
+			"~/scripts/jquery.ui.widget.js" ,
+			"~/scripts/jquery.iframe-transport.js" ,
+			"~/scripts/jquery.fileupload.js" ,*@
+	<script type="text/javascript" src="@Html.ResBase()lib/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="@Html.ResBase()js/desktop.js"></script>
+	
+	@RenderSection("scripts", required: false)
+	@Html.Partial("_SystemTailer")
+</body>
+</html>

@@ -13,9 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Metadata;
-using System;
+using SF.Sys.Annotations;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,28 +21,48 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(ClientConfig))]
-	public class ClientConfig:SF.Entities.DataModels.ObjectEntityBase<long>
+	public class ClientConfig:SF.Sys.Entities.DataModels.ObjectEntityBase<long>
 	{
-
-		[Comment("发送用户声明", "When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint. Defaults to false.")]
+		///<title>发送用户声明</title>
+		/// <summary>
+		/// When requesting both an id token and access token, should the user claims always be added to the id token instead of requring the client to use the userinfo endpoint. Defaults to false.
+		/// </summary>
 		public bool AlwaysIncludeUserClaimsInIdToken { get; set; }
 
-		[Comment("身份令牌超时", "Lifetime of identity token in seconds (defaults to 300 seconds / 5 minutes)")]
+		///<title>身份令牌超时</title>
+		/// <summary>
+		/// Lifetime of identity token in seconds (defaults to 300 seconds / 5 minutes)
+		/// </summary>
 		public int IdentityTokenLifetime { get; set; }
 
-		[Comment("访问令牌超时", "Lifetime of access token in seconds (defaults to 3600 seconds / 1 hour)")]
+		///<title>访问令牌超时</title>
+		/// <summary>
+		/// Lifetime of access token in seconds (defaults to 3600 seconds / 1 hour)
+		/// </summary>
 		public int AccessTokenLifetime { get; set; }
 
-		[Comment("授权码超时", "Lifetime of authorization code in seconds (defaults to 300 seconds / 5 minutes)")]
+		///<title>授权码超时</title>
+		/// <summary>
+		/// Lifetime of authorization code in seconds (defaults to 300 seconds / 5 minutes)
+		/// </summary>
 		public int AuthorizationCodeLifetime { get; set; }
 
-		[Comment("更新令牌绝对超时", "Maximum lifetime of a refresh token in seconds. Defaults to 2592000 seconds /30 days")]
+		///<title>更新令牌绝对超时</title>
+		/// <summary>
+		/// Maximum lifetime of a refresh token in seconds. Defaults to 2592000 seconds /30 days
+		/// </summary>
 		public int AbsoluteRefreshTokenLifetime { get; set; }
 
-		[Comment("更新令牌间隔超时", "Sliding lifetime of a refresh token in seconds. Defaults to 1296000 seconds / 15 days")]
+		///<title>更新令牌间隔超时</title>
+		/// <summary>
+		/// Sliding lifetime of a refresh token in seconds. Defaults to 1296000 seconds / 15 days
+		/// </summary>
 		public int SlidingRefreshTokenLifetime { get; set; }
 
-		[Comment("授权超时", "Lifetime of a user consent in seconds. Defaults to null (no expiration)")]
+		///<title>授权超时</title>
+		/// <summary>
+		/// Lifetime of a user consent in seconds. Defaults to null (no expiration)
+		/// </summary>
 		public int? ConsentLifetime { get; set; }
 		////
 		//// 摘要:
@@ -64,7 +82,10 @@ namespace SF.Auth.IdentityServices.DataModels
 		////     The lifetime will not exceed AbsoluteRefreshTokenLifetime.
 		//public TokenExpiration RefreshTokenExpiration { get; set; }
 
-		[Comment("客户端声明前缀", " Gets or sets a value to prefix it on client claim types. Defaults to client_.")]
+		///<title>客户端声明前缀</title>
+		/// <summary>
+		///  Gets or sets a value to prefix it on client claim types. Defaults to client_.
+		/// </summary>
 		[MaxLength(100)]
 		public string ClientClaimsPrefix { get; set; }
 		////
@@ -81,23 +102,38 @@ namespace SF.Auth.IdentityServices.DataModels
 		[InverseProperty(nameof(ClientScope.ClientConfig))]
 		public ICollection<ClientScope> Scopes { get; set; }
 
-		[Comment("离线访问", " Gets or sets a value indicating whether [allow offline access]. Defaults to false.")]
+		///<title>离线访问</title>
+		/// <summary>
+		///  Gets or sets a value indicating whether [allow offline access]. Defaults to false.
+		/// </summary>
 		public bool AllowOfflineAccess { get; set; }
 
 
-		[Comment("是否需要密钥", "If set to false, no client secret is needed to request tokens at the token endpoint (defaults to true)")]
+		///<title>是否需要密钥</title>
+		/// <summary>
+		/// If set to false, no client secret is needed to request tokens at the token endpoint (defaults to true)
+		/// </summary>
 		public bool RequireClientSecret { get; set; }
 
 
-		[Comment("跨域设置", "Gets or sets the allowed CORS origins for JavaScript clients.")]
+		///<title>跨域设置</title>
+		/// <summary>
+		/// Gets or sets the allowed CORS origins for JavaScript clients.
+		/// </summary>
 		[MaxLength(200)]
 		[JsonData(typeof(string[]))]
 		public string AllowedCorsOrigins { get; set; }
 
-		[Comment("是否需要授权", "Specifies whether a consent screen is required (defaults to true)")]
+		///<title>是否需要授权</title>
+		/// <summary>
+		/// Specifies whether a consent screen is required (defaults to true)
+		/// </summary>
 		public bool RequireConsent { get; set; }
-		
-		[Comment("授权类型","Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit,Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit. ")]
+
+		///<title>授权类型</title>
+		/// <summary>
+		/// Specifies the allowed grant types (legal combinations of AuthorizationCode, Implicit,Hybrid, ResourceOwner, ClientCredentials). Defaults to Implicit. 
+		/// </summary>
 		[JsonData(typeof(string[]))]
 		public string AllowedGrantTypes { get; set; }
 		////
@@ -118,13 +154,22 @@ namespace SF.Auth.IdentityServices.DataModels
 		//public bool AllowAccessTokensViaBrowser { get; set; }
 		//
 
-		[Comment("需要注销会话", "Specifies is the user's session id should be sent to the FrontChannelLogoutUri. (defaults to true)")]
+		///<title>是否记住授权</title>
+		/// <summary>
+		/// Specifies is the user's session id should be sent to the FrontChannelLogoutUri. (defaults to true)
+		/// </summary>
 		public bool FrontChannelLogoutSessionRequired { get; set; }
 
-		[Comment("是否记住授权", "Specifies whether user can choose to store consent decisions (defaults to true)")]
+		///<title>发送用户声明</title>
+		/// <summary>
+		/// Specifies whether user can choose to store consent decisions (defaults to true)
+		/// </summary>
 		public bool AllowRememberConsent { get; set; }
 
-		[Comment("是否需要注销会话", "Specifies is the user's session id should be sent to the BackChannelLogoutUri Defaults to true.")]
+		///<title>是否需要注销会话</title>
+		/// <summary>
+		/// Specifies is the user's session id should be sent to the BackChannelLogoutUri Defaults to true.
+		/// </summary>
 		public bool BackChannelLogoutSessionRequired { get; set; }
 
 	}

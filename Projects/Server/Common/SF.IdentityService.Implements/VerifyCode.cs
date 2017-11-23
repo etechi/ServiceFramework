@@ -14,11 +14,12 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Auth.IdentityServices.Internals;
-using SF.Metadata;
 
 namespace SF.Auth.IdentityServices
 {
-	[Comment("验证码")]
+	/// <summary>
+	/// 验证码
+	/// </summary>
 	public class VerifyCode
 	{
 		public ConfirmMessageType Type { get; set; }

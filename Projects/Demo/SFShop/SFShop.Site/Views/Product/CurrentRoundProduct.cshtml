@@ -1,0 +1,268 @@
+﻿@model CrowdMall.Bizness.Products.IItem
+@{
+    var Item = Model;
+    var CurRound = Item.CurRound;
+}
+<div class="container body-content product-detail">
+    <div class="head clearfix">
+        <div class="history">
+            <div class="head">揭晓信息</div>
+            <div class="body" id="round-history-panel" v-cloak>
+                <div class="no-history" v-if="!curRound">尚无获奖记录</div>
+
+                <div class="waiting" v-if="curRound && (curRound.State=='OpenWaiting' || curRound.State=='Opening')">
+                    <div>谁会是本期的幸运儿呢？</div>
+
+                    <div class="pending" v-if="curRound.State=='Opening'">
+                        彩票中心通讯延时，请稍后
+                    </div>
+                    <div class="syncing" v-if="curRound.State=='OpenWaiting' && syncing">
+                        正在计算，请稍后
+                    </div>
+                    <div class="clock" v-if="curRound.State=='OpenWaiting' && !syncing">
+                        <span class="fa fa-clock-o"></span>
+                        <div>揭晓倒计时</div>
+                        <ins id="round_timer" class="timer">
+                            <b></b><b></b><i>：</i><b></b><b></b><i>：</i><b></b><b></b>
+                        </ins>
+                    </div>
+                </div>
+                <div class="win" v-if="curRound && curRound.State=='Opened'">
+                    <a class="user" href="/other/{{curRound.WinSummary.User.Id}}" target="_blank">
+                        <img v-bind:src="'@Html.ResBase()r/'+curRound.WinSummary.User.Image+'?format=c100'" />
+                    </a>
+                    <div class="name">恭喜<a class="user" href="/other/{{curRound.WinSummary.User.Id}}" target="_blank">{{curRound.WinSummary.User.NickName}}</a>获得该期奖品</div>
+                    <dl>
+                        <dt>幸运号码:</dt>
+                        <dd><b>{{curRound.WinSummary.Code}}</b></dd>
+                        <dt>参与人次:</dt>
+                        <dd><b>{{curRound.WinSummary.Quantity}}</b>人次</dd>
+                        <dt>揭晓时间:</dt>
+                        <dd>{{curRound.OpenTime}}</dd>
+                        <dt>夺宝时间:</dt>
+                        <dd>{{curRound.WinSummary.TradeTime}}</dd>
+                    </dl>
+                </div>
+                <div class="tail" v-if="curRound">
+                    <div><a class="btn btn-default" href="/item/{{curRound.ProductId}}-{{curRound.Round}}">查看详情</a></div>
+                    <div>
+                        <ul class="options rounds clearfix">
+                            <li v-for="r in rounds" v-bind:class="{active:r==round}" v-on:click="showRound(r)">第{{r}}期</li>
+                        </ul>
+                        <div>
+                            <button data-action="rounds-prev-page" class="btn btn-default" v-if="hasPrevPage" v-on:click="prevPage()">上一页</button>
+                            <button data-action="rounds-next-page" class="btn btn-default" v-if="hasNextPage" v-on:click="nextPage()">下一页</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="detail ">
+            <ol class="breadcrumb">
+                <li><a href="/">首页</a></li>
+                <li><a href="/cat/">全部商品</a></li>
+                @*<li><a href="/products/@Model.Type.Id">@Model.Type.Title</a></li>*@
+                <li class="active">商品详情</li>
+            </ol>
+            <div class="image-list" id="image-list">
+                <div class="image">
+                    <img id="product-image" src="@Html.Media(Model.Images.First().Image,"s380")" />
+                </div>
+                <ul>
+                    @{ var first = true;}
+                    @foreach (var img in Model.Images.Take(4))
+                    {
+                        <li class="@(first?"active":"")">
+                            <span class="fa fa-angle-up"></span>
+                            <img src="@Html.Media(img.Image,"s80")" />
+                        </li>
+                        first = false;
+                    }
+                </ul>
+            </div>
+            <div class="desc">
+                <h2>(第@(CurRound.Round)期)@Item.Title@(Item.OnSale?"":"(已下架)")</h2>
+                <div class="price">价值: ￥@((int)Item.MarketPrice)</div>
+                <div class="product-status">
+                    <div>
+                        <div style="width:@(CurRound.Selled*100 / CurRound.Total)%"></div>
+                    </div>
+                    <ul>
+                        <li>
+                            <div>@CurRound.Selled</div>
+                            <div>已参与</div>
+                        </li>
+                        <li>
+                            <div>@CurRound.Total</div>
+                            <div>总需人次</div>
+                        </li>
+                        <li>
+                            <div>@(CurRound.Total - CurRound.Selled)</div>
+                            <div>剩余人次</div>
+                        </li>
+                    </ul>
+                </div>
+                @if (Item.OnSale)
+                {
+                <div id="quantity-panel" class="quantity">
+                    <div class="title pull-left">夺宝：</div>
+                    <div class="input-group input-group-sm pull-left">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" data-action="decQuantity"><i class="fa fa-minus"></i></button>
+                        </span>
+                        <input type="text" class="form-control" id="quantity" maxlength="6" value="1" data-toggle="tooltip" data-max-per-round="@CurRound.LimitPerRoundPerUser" data-process="@CurRound.Selled" data-total="@CurRound.Total">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" data-action="incQuantity" type="button"><i class="fa fa-plus"></i></button>
+                        </span>
+                    </div>
+                    <div class="pull-left special">
+                        @if (CurRound.Total - CurRound.Selled >= 10)
+                        {
+                            <button class="btn btn-default btn-sm" id="buy-10" data-action="setQuantity" data-value="10">10</button>
+                        }
+                        @if (CurRound.Total - CurRound.Selled >= 20)
+                        {
+                            <button class="btn btn-default btn-sm" id="buy-20" data-action="setQuantity" data-value="20">20</button>
+                        }
+                        @if (CurRound.Total - CurRound.Selled >= 50)
+                        {
+                            <button class="btn btn-default btn-sm" id="buy-50" data-action="setQuantity" data-value="50">50</button>
+                        }
+                        @if (CurRound.Total - CurRound.Selled >= 100)
+                        {
+                            <button class="btn btn-default btn-sm" id="buy-100" data-action="setQuantity" data-value="100">100</button>
+                        }
+                        @if (!CurRound.LimitPerRoundPerUser.HasValue)
+                        {
+                        <button class="btn btn-default btn-sm" id="buy-all" data-action="setQuantity" data-value="@(CurRound.Total - CurRound.Selled)">包尾</button>
+                        }
+                        <span>人次</span>
+                    </div>
+                </div>
+                }
+                <div class="actions">
+                    <button id="buy" disabled="@(!Item.OnSale)" class="btn btn-primary" data-action="buy">立即夺宝</button>
+                    <button id="add-to-cart" disabled="@(!Item.OnSale)" class="btn btn-default" data-action="addToCart">加入购物车</button>
+                </div>
+                <ul class="features">
+                    <li>公平公正公开</li>
+                    <li>品质保障</li>
+                    <li>全国派送</li>
+                    <li>权益保障</li>
+                </ul>
+                <div class="user-status" id="user-codes">
+                    <a href="/user/signin">请登录后查看您的夺宝号码</a>
+                </div>
+                <div>
+                    <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone" title="分享到QQ空间"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_tqq" data-cmd="tqq" title="分享到腾讯微博"></a><a href="#" class="bds_renren" data-cmd="renren" title="分享到人人网"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="allCodes" tabindex="-1" role="dialog" aria-labelledby="allCodesLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="allCodesLabel">所有夺宝号码</h4>
+                    </div>
+                    <div class="modal-body"><ul id="allCodesContent"></ul></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="tabs">
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#detail" role="tab" aria-controls="shared" data-toggle="tab">产品详情</a></li>
+            <li role="presentation"><a href="#records" id="records-tab" role="tab" aria-controls="records" data-toggle="tab">所有参与记录</a></li>
+            <li role="presentation"><a href="#shares" id="shares-tab" role="tab" aria-controls="shares" data-toggle="tab">晒单</a></li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="detail">
+                <ul>
+                    @foreach (var i in Model.Descs)
+                    {
+                        <li>
+                            <img src="~/css/desktop/images/empty.gif" data-src="@Html.Media(i.Image)" class="lazy" />
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="records">
+                <div id="trade-item-records">
+                    <data-table v-cloak :version="version" :total="total">
+                        <table class="grid">
+                            <tr>
+                                <th>时间</th>
+                                <th>昵称</th>
+                                <th>参与人次</th>
+                                <th width="100">@*IP*@</th>
+                                <th width="100">@*来源*@</th>
+                            </tr>
+                            <tr v-if="!items.length">
+                                <td colspan="5" class="empty-list">暂时没有参与记录 </td>
+                            </tr>
+                            <tr v-for="t in items">
+                                <td>{{t.Time}}</td>
+                                <td>
+                                    <a href="/other/{{t.UserId}}" class="user" target="_blank">
+                                        <img v-bind:src="'@Html.ResBase()r/'+t.UserIcon+'?format=c20'" />
+                                        {{t.NickName}}
+                                    </a>
+                                </td>
+                                <td>{{t.Quantity}}</td>
+                                <td width="100">@*{{t.OpAddress}}*@</td>
+                                <td width="100">@*{{t.OpDevice}}*@</td>
+                            </tr>
+                        </table>
+                    </data-table>
+                </div>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="shares">
+                <div  id="product-share-list">
+                    <data-table v-cloak :version="version" :total="total">
+                        <ul>
+                            <li v-if="!items.length" class="empty-list">
+                                暂时没有晒单记录
+                            </li>
+                            <li v-for="i in items">
+                                <div class="user">
+                                    <a href="/other/{{i.AuthorId}}" target="_blank">
+                                        <img v-bind:src="'@Html.ResBase()r/'+i.UserIcon+'?format=c100'" />
+                                        <div>{{i.UserNick}}</div>
+                                    </a>
+                                </div>
+                                <div class="share">
+                                    <div class="head">
+                                        <div class="pull-right">{{i.CreatedTime}}</div>
+                                        <div class="title">
+                                            <a href="/other/shareddetail/{{i.Id}}" target="_blank">
+                                                <span>第{{i.Round}}期晒单</span>{{i.Title}}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="content">{{i.Content}}</div>
+                                        <ul class="clearfix">
+                                            <li v-for="img in i.Images">
+                                                <img v-bind:src="'/r/'+img.image+'?format=c140'" />
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </data-table>
+                 </div>
+            </div>
+        </div>
+
+    </div>
+    @{ Html.UIBlock("推荐产品"); }
+</div>
+@section scripts{
+    <script>
+        window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "2", "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+
+        window.boot("product-cur-round", {item:@Model.ItemId, product:@Model.ProductId,round:@Model.CurRound.Round});
+    </script>
+}

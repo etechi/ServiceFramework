@@ -1,0 +1,8 @@
+﻿@model SF.Management.FrontEndContents.Mvc.RenderModel
+@using SF.AspNetCore.Mvc
+<ul class="clearfix">
+    @foreach (var item in Model.Content.Items)
+    {
+       <li><a href="@item.Uri" target="@item.UriTarget">@item.Title1</a></li>
+    }
+</ul>

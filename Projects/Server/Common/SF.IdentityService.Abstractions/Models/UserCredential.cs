@@ -13,7 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Metadata;
+using SF.Sys.Annotations;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -23,23 +23,32 @@ namespace SF.Auth.IdentityServices.Models
 {
 	public class UserCredential
 	{
+		/// <summary>
+		/// 类型
+		/// </summary>
 		[Key]
 		[Column(Order=1)]
 		[EntityIdent(typeof(ClaimType))]
 		[TableVisible]
-		[Comment("类型")]
 		public string ClaimTypeId { get; set; }
 		[TableVisible]
 		[Ignore]
 		public long UserId { get; set; }
+
+		/// <summary>
+		/// 凭证值
+		/// </summary>
 		[Key]
 		[Column(Order = 2)]
-		[Comment("凭证值")]
 		public string Credential { get; set; }
-		[Comment("创建时间")]
+		/// <summary>
+		/// 创建时间
+		/// </summary>
 		[ReadOnly(true)]
 		public DateTime CreatedTime { get; set; }
-		[Comment("确认时间")]
+		/// <summary>
+		/// 确认时间
+		/// </summary>
 		public DateTime? ConfirmedTime { get; set; }
 	}
 

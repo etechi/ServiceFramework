@@ -13,11 +13,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Entities;
-using SF.Entities.AutoEntityProvider;
-using SF.Metadata;
-using System;
+using SF.Sys.Annotations;
+using SF.Sys.Data;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -26,49 +23,64 @@ namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(User))]
 	public class User<TUser,TUserCredential, TClaimValue, TUserRole> :
-		SF.Entities.DataModels.ObjectEntityBase
+		SF.Sys.Entities.DataModels.ObjectEntityBase
 		where TUser: User<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TUserCredential : UserCredential<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TClaimValue : UserClaimValue<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TUserRole : UserRole<TUser, TUserCredential, TClaimValue, TUserRole>
 	{
 
+		/// <summary>
+		/// 电话
+		/// </summary>
 		[MaxLength(30)]
-		[Comment("电话")]
 		public virtual string PhoneNumber { get; set; }
-
+		/// <summary>
+		/// 密码哈希
+		/// </summary>
 		[MaxLength(100)]
-		[Comment("密码哈希")]
 		[Required]
 		public virtual string PasswordHash { get; set; }
 
-		[Comment("图标")]
+		/// <summary>
+		/// 图标
+		/// </summary>
 		[MaxLength(100)]
 		public virtual string Icon { get; set; }
 
-		[Comment("头像")]
+		/// <summary>
+		/// 头像
+		/// </summary>
 		[MaxLength(100)]
 		public virtual string Image { get; set; }
 
+		/// <summary>
+		/// 安全标识
+		/// </summary>
 		[MaxLength(100)]
 		[Required]
-		[Comment("安全标识")]
 		public virtual string SecurityStamp { get; set; }
 
+		/// <summary>
+		/// 注册标识类型
+		/// </summary>
 		[Index(Name="MainCredential",Order = 1,IsUnique =true)]
-		[Comment("注册标识类型")]
 		[Required]
 		[MaxLength(100)]
 		public virtual string MainClaimTypeId { get; set; }
 
+		/// <summary>
+		/// 注册标识值
+		/// </summary>
 		[MaxLength(200)]
 		[Index(Name = "MainCredential", Order = 2, IsUnique = true)]
-		[Comment("注册标识值")]
 		[Required]
 		public virtual string MainCredential { get; set; }
 
+		/// <summary>
+		/// 注册附加参数
+		/// </summary>
 		[MaxLength(200)]
-		[Comment("注册附加参数")]
 		[JsonData(typeof(Dictionary<string,string>))]
 		public virtual string SignupExtraArgument { get; set; }
 

@@ -1,0 +1,20 @@
+﻿@using SF.AspNetCore.Mvc
+@using SF.Services.Settings
+
+@{ 
+    var setting = Html.Setting<CustomServiceSetting>();
+    var items = setting.CSQQ.SplitAndNormalizae().Select(s => s.Split2(':'));
+}    
+<div class="right-chat-panel" >
+        <h4>联系客服</h4>
+        <ul>
+            @foreach(var item in items) { 
+            <li>
+                <a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=@(item.Item1)&site=qq&menu=yes">
+                    <img border="0" src="http://wpa.qq.com/pa?p=2:@(item.Item1):41" alt="点击这里给我发消息" title="点击这里给我发消息" />
+                    @item.Item2
+                </a>
+            </li>
+            }
+        </ul>
+    </div>

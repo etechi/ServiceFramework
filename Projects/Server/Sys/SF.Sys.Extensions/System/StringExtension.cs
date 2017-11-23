@@ -242,7 +242,7 @@ namespace SF.Sys
 		static readonly System.Text.RegularExpressions.Regex _reg_replace =
 			new System.Text.RegularExpressions.Regex("\\{[^\\}]+\\}");
 
-		public static string Replace(this string tmpl, IDictionary<string, object> args)
+		public static string Replace(this string tmpl, IReadOnlyDictionary<string, string> args)
 		{
 			if (tmpl == null)
 				return string.Empty;
@@ -254,8 +254,7 @@ namespace SF.Sys
 				var i = key.IndexOf(':');
 				var default_value = i == -1 ? null : key.Substring(i + 1);
 				key = i == -1 ? key : key.Substring(0, i);
-				object re;
-				if (args.TryGetValue(key, out re) && re!=null)
+				if (args.TryGetValue(key, out string re) && re != null)
 					return re.ToString();
 				if (default_value != null)
 					return default_value;

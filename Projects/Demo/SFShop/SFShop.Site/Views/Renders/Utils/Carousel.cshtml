@@ -1,0 +1,24 @@
+﻿@model SF.Management.FrontEndContents.Mvc.RenderModel
+@using SF.AspNetCore.Mvc
+@{
+
+}
+<ins class="rc carousel" type="utils.carousel">
+	@foreach(var item in Model.Content.Items)
+	{
+		if (item.Uri == null)
+		{
+			<div class="item" style="background-image:url(@Html.Media(item.Image))">
+				<p>@item.Title1</p>
+			</div>
+		}
+		else
+		{
+			<a href="@item.Uri" target="@(item.UriTarget??"self")">
+				<div class="item" style="background-image:url(@Html.Media(item.Image))">
+					<p>@item.Title1</p>
+				</div>
+			</a>
+		}
+	}
+</ins>

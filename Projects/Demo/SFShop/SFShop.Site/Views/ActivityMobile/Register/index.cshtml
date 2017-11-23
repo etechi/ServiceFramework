@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "新手福利 注册就送红包";
+    var query = "?"+Request.QueryString;
+}
+@section header{
+}
+<div class="content">
+    <img class="bg" src="~/content/ActivityMobile/Register/Assets/bg1.jpg" />
+    <a href="/m/sys/signin@(Html.Raw(query))" id="a">
+        <img class="bg" src="~/content/ActivityMobile/Register/Assets/bg2.jpg" />
+    </a>
+    <img class="bg" src="~/content/ActivityMobile/Register/Assets/bg3.jpg" />
+    <img class="bg" src="~/content/ActivityMobile/Register/Assets/bg4.jpg" />
+    <img class="bg" src="~/content/ActivityMobile/Register/Assets/bg5.jpg" />
+    <a href="/m/sys/signin@(Html.Raw(query))" id="b">
+        <img class="bg" src="~/content/ActivityMobile/Register/Assets/bg6.jpg" />
+    </a>
+</div>
+@section scripts{
+    <script>
+        function check (e) {
+            if (window.document.cookie.indexOf("sp.user") != -1) {
+                e.preventDefault();
+                alert("您已领取过红包。");
+                window.location.href = "/m/";
+            }
+        }
+        document.getElementById("a").addEventListener("click", check);
+        document.getElementById("b").addEventListener("click", check);
+    </script>
+    }
+

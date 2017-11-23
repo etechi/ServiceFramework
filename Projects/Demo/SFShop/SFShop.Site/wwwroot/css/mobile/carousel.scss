@@ -1,0 +1,37 @@
+﻿.carousel{
+    min-height:230px;
+    overflow:visible;
+    button.slick-prev{
+        left:50px;
+        z-index:200;
+        opacity:0.3;
+    }   
+    button.slick-prev:hover{
+        opacity:0.8;
+    }   
+    button.slick-prev:before{
+        font-size:40px;
+    }   
+     button.slick-next{
+        right:60px;
+        opacity:0.3
+    }
+     button.slick-next:hover{
+        opacity:0.8;
+    }   
+    button.slick-next:before{
+        font-size:40px;
+    }
+    ul.slick-dots{
+        bottom:10px;
+        button:before{
+            font-size:12px;
+        }
+    }
+    div.item {
+        margin:0;
+        img{
+            width:100%;
+        }
+    }
+}

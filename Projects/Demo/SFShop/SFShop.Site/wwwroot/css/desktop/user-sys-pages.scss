@@ -1,0 +1,78 @@
+﻿@import "../defaultStyle.scss";
+div.user-page {
+    background-image: url(/css/desktop/images/login_bg.jpg);
+    background-position: center;
+    height: 848px;
+    padding: 60px;
+
+    div.head {
+        text-align: center;
+    }
+
+    div.container {
+        width: 320px;
+        padding: 30px 0;
+    }
+}
+div.signin-panel{
+    position:relative;
+}
+div.signup-panel{
+    margin-bottom:10px;
+    div.message{
+    }
+}
+div.reset-password-panel{
+    h3{
+        text-align:center;
+    }
+    form.reset-password{
+        margin:0 auto;
+    }
+}
+    /*>div:first-child{
+        position:fixed;
+        left:0;
+        top:0;
+        right:0;
+        bottom:0;
+        opacity:0.1;
+        background-color:#000;
+        z-index:1000;
+    }*/
+
+#dlg-signup{
+    img.dlg-logo {
+        margin-bottom:20px;
+    }
+    span.help-block{
+        left:-30px;
+        top:43px;
+    }
+}
+#dlg-signin{
+    img.dlg-logo {
+        margin-bottom:20px;
+    }
+    span.help-block{
+        left:-30px;
+        top:43px;
+    }
+}
+#wx-signin-qr{
+    position:absolute;
+    left:-380px;
+    top:-50px;
+    width:350px;
+    background-color:$grayBGLight;
+    padding:20px;
+   border:1px solid $grayLight;
+   border-radius:4px;
+   text-align:center;
+   display:none;
+   >span{
+       color:$primaryBGColor;
+   }
+}
+#wx-signin-qr-container{
+}

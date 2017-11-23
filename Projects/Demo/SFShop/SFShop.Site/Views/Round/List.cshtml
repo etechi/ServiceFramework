@@ -1,0 +1,109 @@
+﻿@model ServiceProtocol.ObjectManager.QueryResult<CrowdMall.Bizness.CrowdFounding.Models.CFRound>
+@{
+	var items = (ServiceProtocol.ObjectManager.QueryResult<CrowdMall.Bizness.Products.IItem>)ViewBag.Items;
+}
+<div class="container open-page">
+	
+	<div class="product-list round-list">
+		<h3>
+			最新揭晓
+		</h3>
+		<ul class="items">
+			@foreach (var item in Model.Items)
+			{
+				<li class="product-round list-item">
+					<div>
+						<a href="/item/@item.ProductId-@item.Round" target="_blank">
+							<img src="@Html.Media(item.Image,"c200")" />
+							<h5>(第@(item.Round)期)@item.Title</h5>
+						</a>
+						<span class="price">价值：￥@(Math.Round(item.MarketPrice))</span>
+					</div>
+					<div class="result">
+						@if (item.State == CrowdMall.DataModels.CFState.Opening)
+						{
+							<div class="pending">
+								彩票中心通讯延时，请稍后
+							</div>
+						}
+						else if (item.State == CrowdMall.DataModels.CFState.OpenWaiting)
+						{
+
+							<div class="clock"><span class="fa fa-clock-o"></span>揭晓倒计时</div>
+							<ins class="timer" type="utils.round-timer" data-cfg="[1,@item.ProductId,@item.Round,@item.ExpectOpenTime.Value.ToJsTime()]">
+								<b></b><b></b><i>：</i><b></b><b></b><i>：</i><b></b><b></b>
+							</ins>
+						}
+						else if (item.State == CrowdMall.DataModels.CFState.Opened)
+						{
+							<div class="win">
+								<a href="/other/@item.WinSummary.User.Id" target="_blank"><img src="/r/@item.WinSummary.User.Image?format=c40" /></a>
+								<dl>
+									<dt>获得者:</dt>
+									<dd><a class="user" href="/other/@item.WinSummary.User.Id" target="_blank">@item.WinSummary.User.NickName</a></dd>
+									<dt>幸运号码:</dt>
+									<dd><b>@item.WinSummary.Code</b></dd>
+									<dt>本期参与:</dt>
+									<dd><b>@item.WinSummary.Quantity</b> 人次</dd>
+									<dt>揭晓时间:</dt>
+									<dd>@item.OpenTime.Value.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+								</dl>
+								<a class="btn btn-default" href="/item/@item.ProductId-@item.Round" target="_blank">
+									<span>回报率:@((1.0 * item.Total / item.WinSummary.Quantity).ToString("0.00"))倍</span>
+									<span>查看详情</span>
+								</a>
+							</div>
+						}
+					</div>
+				</li>
+			}
+		</ul>
+	</div>
+	<div class="soon">
+		<h3>
+			即将揭晓
+		</h3>
+		<ul>
+			@foreach (var item in items.Items)
+            {
+                @Html.Partial("../Product/_Item", item)
+				@*<li class="product-item">
+					<a href="/item/@item.ItemId" target="_blank">
+						<img src="/r/@item.Image?format=c200" />
+						<h5>(第@(item.CurRound.Round)期)@item.Title</h5>
+					</a>
+					<span class="price">价值：￥@(Math.Round(item.MarketPrice))</span>
+					@if (item.CurRound != null)
+				{
+						<div class="product-status">
+							<div>
+								<div style="width:@(item.CurRound.Selled * 100 / item.CurRound.Total)%"></div>
+							</div>
+							<ul>
+								<li>
+									<div>@item.CurRound.Selled</div>
+									<div>已夺宝人次</div>
+								</li>
+								<li>
+									<div>@item.CurRound.Total</div>
+									<div>总需人次</div>
+								</li>
+								<li>
+									<div>@(item.CurRound.Total - item.CurRound.Selled)</div>
+									<div>剩余人次</div>
+								</li>
+							</ul>
+						</div>
+				}
+					<button data-action="buy" data-quantity="@(item.CurRound.Total - item.CurRound.Selled)" data-item="@item.ItemId" class="btn btn-primary btn-product-buy">我来包尾</button>
+				</li>*@
+			}
+		</ul>
+	</div>
+</div>
+
+@section scripts{
+	<script>
+		window.boot("round-list");
+	</script>
+}

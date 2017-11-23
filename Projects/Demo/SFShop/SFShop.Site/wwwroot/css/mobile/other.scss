@@ -1,0 +1,33 @@
+﻿@import "./defaultStyle.scss";
+
+.other-user-frame{
+    div.user{
+        background-color:#222;
+        text-align:center;
+        padding:20px;
+        color:#fff;
+        img{
+            border-radius:50%;
+            margin-bottom:10px;
+        }
+    }
+    ul.hert-menu{
+        li{width:33%}
+        }
+}
+
+.other-trade-item{
+    a.follow{
+        float:right;
+        color:$primaryBGColorDark;
+        border:1px solid $primaryBGColorDark;
+        font-size:12px;
+        padding:2px 4px;
+        border-radius:2px;
+    }
+}
+div.other-share-item{
+    padding:10px 10px 30px;
+    p{color:$colorLight;}
+    border-bottom:1px solid $gray;
+}

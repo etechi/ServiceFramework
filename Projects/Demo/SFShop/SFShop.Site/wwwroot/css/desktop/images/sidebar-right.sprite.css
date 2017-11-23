@@ -1,0 +1,63 @@
+/*
+This is an example of how to use the image sprite in your own CSS files
+*/
+.sidebar-right {
+	background-image: url('sidebar-right.sprite.jpg');
+	background-repeat: no-repeat;
+	display: block;
+}
+.sidebar-right.sbr-cart-active {
+	width: 35px;
+	height: 123px;
+	background-position: -10px -10px;
+}
+.sidebar-right.sbr-cart {
+	width: 35px;
+	height: 123px;
+	background-position: -10px -143px;
+}
+.sidebar-right.sbr-coca-active {
+	width: 125px;
+	height: 35px;
+	background-position: -10px -276px;
+}
+.sidebar-right.sbr-coca {
+	width: 35px;
+	height: 35px;
+	background-position: -10px -321px;
+}
+.sidebar-right.sbr-feedback-active {
+	width: 125px;
+	height: 35px;
+	background-position: -10px -366px;
+}
+.sidebar-right.sbr-feedback {
+	width: 35px;
+	height: 35px;
+	background-position: -10px -411px;
+}
+.sidebar-right.sbr-head {
+	width: 35px;
+	height: 159px;
+	background-position: -10px -456px;
+}
+.sidebar-right.sbr-qr-active {
+	width: 35px;
+	height: 35px;
+	background-position: -10px -625px;
+}
+.sidebar-right.sbr-qr {
+	width: 35px;
+	height: 35px;
+	background-position: -10px -670px;
+}
+.sidebar-right.sbr-top-active {
+	width: 125px;
+	height: 35px;
+	background-position: -10px -715px;
+}
+.sidebar-right.sbr-top {
+	width: 35px;
+	height: 35px;
+	background-position: -10px -760px;
+}

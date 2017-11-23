@@ -13,18 +13,16 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Core;
-using SF.Core.ServiceManagement;
-using SF.Core.Times;
-using SF.Data;
-using SF.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Auth.IdentityServices;
 using SF.Auth.IdentityServices.Models;
 using SF.Auth.IdentityServices.Internals;
+using SF.Sys.Entities;
+using SF.Sys;
+using SF.Sys.Data;
+using SF.Sys.Auth;
 using SF.Services.Security;
 
 namespace SF.Auth.IdentityServices.Managers

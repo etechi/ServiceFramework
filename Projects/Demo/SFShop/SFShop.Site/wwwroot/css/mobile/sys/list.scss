@@ -1,0 +1,256 @@
+﻿@import "../defaultStyle.scss";
+
+div.page-list{
+    border-top:1px solid $grayLight;
+    margin-bottom:16px;
+    box-shadow: 0 1px 3px RGBA(0,0,0,.1);
+} 
+div.page-list.with-space{
+    margin-left:10px;
+    margin-right:10px;
+    border-left:1px solid $grayLight;
+    border-right:1px solid $grayLight;
+    border-radius:4px;
+}
+div.page-list.no-border{
+    border:none;
+    box-shadow:none;
+    >div:last-child{
+        border-bottom:none;
+    }
+}
+.page-list-item{
+    border-bottom:1px solid $grayLight;
+   
+}
+.page-list-head{    
+    background-color:#fff;
+    color:$colorLight;
+    display:block;
+    padding:16px 12px;
+    font-size:$fontSize;
+    span.nav{
+        float:right;
+        color:$grayLight;
+        margin:1px 0 0 0;
+    }
+    span.note{
+        float:right;
+        font-size:$fontSize;
+        margin:0px 16px 0 0;
+        color:$gray;
+        font-weight:normal;
+    }
+    span.title{
+        padding:4px 0 0 0;
+    }
+    .icon{
+        margin-right:10px;
+    }
+    span.content{
+        float:right;
+        margin-right:8px;
+    }
+
+}
+.page-list-head.image{
+    line-height:45px;
+    vertical-align:central;
+    span.nav{
+        margin-top:20px;
+    }
+    span.content{
+        img{
+            border-radius:2px;
+        }
+    }
+}
+a.page-list-head{
+    span.content{
+        color:#28f;
+    }
+}
+.page-list-button {
+    display:block;
+    padding:10px;
+    width:100%;
+    background-color:#fff;
+}
+input.page-list-textbox,textarea.page-list-textbox {
+    display:block;
+    padding:14px;
+    width:100%;
+    background-color:#fff;
+    border:none;
+    border-bottom:1px solid $grayLight !important;
+
+}
+div.page-list-textbox {
+    background-color:#fff;
+    border-bottom:1px solid $grayLight !important;
+    >span:first-child{
+        display:block;
+        float:left;
+        margin:14px 0 0 10px;
+    }
+    >div{
+        margin-left:30px;
+        input{
+            display:block;
+            width:100%;
+            padding:14px;
+            border:none;        
+        }
+    }
+
+}
+textarea.page-list-textarea {
+    display:block;
+    padding:14px;
+    width:100%;
+    background-color:#fff;
+    border:none;
+    border-bottom:1px solid $grayLight !important;
+
+}
+div.page-list-textarea {
+    background-color:#fff;
+    border-bottom:1px solid $grayLight !important;
+    >span:first-child{
+        display:block;
+        float:left;
+        margin:14px 0 0 10px;
+    }
+    >div{
+        margin-left:30px;
+        textarea{
+            display:block;
+            width:100%;
+            padding:14px;
+            border:none;        
+        }
+    }
+}
+select.page-list-select{
+    display:block;
+    padding:14px;
+    width:100%;
+    background-color:#fff;
+    border:none;
+    border-bottom:1px solid $grayLight !important;
+
+}
+div.page-list-select {
+    background-color:#fff;
+    border-bottom:1px solid $grayLight !important;
+    >span:first-child{
+        display:block;
+        float:left;
+        margin:14px 0 0 10px;
+    }
+    >div{
+        margin-left:30px;
+        select{
+            display:block;
+            width:100%;
+            padding:14px;
+            border:none;        
+        }
+    }
+
+}
+
+.page-body{
+    >.page-list:first-child{
+       margin-top:10px;
+    }
+}
+
+.image-list-editor{
+    li{
+        float:left;
+        display:block;
+        width:20%;
+        text-align:center;
+        img{
+            display:block;
+            margin:0 auto;
+        }
+
+    }
+    li.uploader{
+        text-align:center;
+        width:50px;
+        height:50px;
+        border:1px solid $gray;
+        border-radius:3px;
+        span{
+            font-size:26px;
+            margin:10px 12px;
+            display:block;
+        }
+    }
+}
+
+.page-list-item{
+    .image-list-editor{
+        margin:10px;
+    }
+    >div:last-child{
+        .placeholder{
+            margin:10px 10px;
+        }
+    }
+} 
+.page-list-checkbox{
+    .nav{
+        font-size:20px;
+        color:$primaryBGColorDark !important;
+        margin:0 20px !important;
+    }
+}
+
+.page-list-number{
+    padding:10px;
+    >span.title{
+        display:inline-block;
+        padding:4px 0 0 4px;
+    }
+
+    div.input{
+        width:100px;
+        border-radius:2px;
+        padding:0;
+        overflow:hidden;
+        margin-right:6px;
+
+        button{
+            float:left;
+            width:26px;
+            height:26px;
+            border:1px solid $gray;
+            font-size:12px;
+            font-weight:bold;
+            padding:0 !important;
+            border-radius:2px;
+            background-color:#fff;
+            font-size:20px;
+            color:$grayDark;
+        }
+        input{
+            float:left;
+            text-align:center;
+            border:none;
+            width:46px;
+            height:26px;
+        }
+    }
+}
+
+div.page-list-row{
+    >div,>input,>button{
+        float:left;
+        width:50%;
+        height:45px;
+    }
+}

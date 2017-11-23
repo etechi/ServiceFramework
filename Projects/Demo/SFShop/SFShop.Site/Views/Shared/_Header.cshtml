@@ -1,0 +1,133 @@
+﻿@using SF.AspNetCore.Mvc
+@using SF.Services.Settings
+@{
+	var showCatMenu = (bool?)ViewBag.ShowCatMenu ?? false;
+	var setting = Html.Setting<HygouSetting>();
+	var csSetting = Html.Setting<CustomServiceSetting>();
+	var qqs = csSetting.CSQQ.SplitAndNormalizae().Select(s => s.Split2(':'));
+}
+<div class="head">
+    <div class="top">
+        <div class="container">
+            <ul class="left">
+                @*@if (!string.IsNullOrWhiteSpace(setting.CSPhoneNumber))
+            {
+                <li>
+                    <i class="fa fa-phone"></i>
+                    @setting.CSPhoneNumber
+                </li>
+            }
+            @if (!string.IsNullOrWhiteSpace(setting.CSOnlineService))
+            {
+                <li>
+                    <i class="fa fa-headphones"></i>
+                    <a href="@setting.CSOnlineService" target="_blank">在线客服</a>
+                </li>
+            }
+            @if (!string.IsNullOrWhiteSpace(setting.CSWeichatLink))
+            {
+                <li>
+                    <a href="@setting.CSWeichatLink" target="_blank">关注我们</a>
+                </li>
+            }
+            @if (!string.IsNullOrWhiteSpace(setting.CSWeiboLink))
+            {
+                <li>
+                    <a href="@setting.CSWeiboLink">新浪微博</a>
+                </li>
+            }*@
+                <li>
+                    欢迎来到好云购商城！
+                </li>
+                <li>
+                    <span>在线客服：</span>
+                    @foreach (var q in qqs)
+                    {
+                        @*<img style="CURSOR:pointer" onclick="javascript:window.open('http://b.qq.com/webc.htm?new=0&sid=3073352980&o=http://1.hygou.com/&q=7', '_blank', 'height=502, width=644,toolbar=no,scrollbars=no,menubar=no,status=no');" border="0" src="http://wpa.qq.com/pa?p=1:3073352980:10" alt="曼玉">*@
+                        <a class="qq-chat" target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=@(q.Item1)&site=qq&menu=yes">
+                            <img border="0" src="http://wpa.qq.com/pa?p=2:@(q.Item1):52" al alt="点击这里给我发消息" title="点击这里给我发消息" />
+                            @q.Item2
+                        </a>
+                    }
+                </li>
+                <li>
+                    @Html.Partial("_BrowserAlert")
+
+                </li>
+            </ul>
+            <ul class="right">
+
+                <li id="head-signup">
+                    <a class="primary" href="/user/signup">免费注册</a>
+                </li>
+                <li id="head-signin">
+                    <a href="/user/signin">登录</a>
+                </li>
+                <li id="head-user" class="hidden"></li>
+                <li id="head-signout" class="hidden">
+                    <a href="/user/signout">退出</a>
+                </li>
+                <li>
+                    <a href="/user">我的好云购</a>
+                </li>
+                <li>
+                    <a href="/account/recharge">充值</a>
+                </li>
+                <li>
+                    <a href="/help">帮助</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="container">
+        <div class="brand">
+            @Html.Partial("_Logo")
+            <img class="brcode" src="~/css/desktop/images/qr.jpg" />
+            <div class="user-menu">
+                <div>
+                    <div>
+                        <img id="head-user-icon" width="40" src="@Html.ResBase()css/desktop/images/empty.gif" />
+                        <a href="/user">我的好云购</a>
+                        <span class="fa fa-angle-down"></span>
+                        <span class="fa fa-angle-up"></span>
+                    </div>
+                    <ul>
+                        <li><a href="/trade/history">夺宝记录</a></li>
+                        <li><a href="/user/win">中奖纪录</a></li>
+                        <li><a href="/user/expose">晒单</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="search">
+                <form action="/search" method="post">
+                    <input type="text" name="key" value="@ViewBag.Keyword" placeholder="搜索您需要的商品" />
+                    <span class="fa fa-search"></span>
+                    <button type="submit" class="btn btn-primary" id="hd-search">搜索</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="menu" id="hd-menubar">
+    <div class="container">
+        <div class="category">
+            <a id="hd-cat-menu" class="btn btn-primary" href="/cat">
+                <img src="@Html.ResBase()css/desktop/images/product-cat.png" />
+                商品分类
+            </a>
+            <div class="items @(showCatMenu?"show":"")">
+                <div class="bg"></div>
+                <ul>
+                    @{ Html.UIBlock("头部产品分类菜单"); }
+                </ul>
+            </div>
+        </div>
+        <div class="list">
+            <ul>
+                @{ Html.UIBlock("头部主菜单"); }
+            </ul>
+        </div>
+    </div>
+</div>
+
+    @Html.Partial("_RightPanel")

@@ -1,0 +1,79 @@
+﻿@{
+    ViewBag.Title = "好云购充值活动-300万元送完即止！充得多送的多！！";
+    var Items = ViewBag.Items as CrowdMall.Bizness.Products.IItem[];
+}
+@section header{
+    <style>
+        .content {
+            background: #ad2525;
+        }
+        #recharge{
+
+        }
+        #role{
+
+        }
+    </style>
+}
+
+<div class="content">
+    <a href="javascript:;" id="head">
+        <img class="bg" src="~/content/ActivityMobile/Recharge/Assets/1.gif" />
+    </a>
+    <a href="/m/user/recharge">
+        <img class="bg" src="~/content/ActivityMobile/Recharge/Assets/2.gif" />
+    </a>
+    <br/>
+    <br />
+    <br />
+    <img class="bg" src="~/content/ActivityMobile/Recharge/Assets/c1.png" />
+    <br />
+    <div class="data-list product-list">
+        <div class="items clearfix">
+            @foreach (var item in Items.Take(4))
+            {
+                @Html.Partial("../Product/_ItemMobile", item)
+            }
+        </div>
+    </div>
+    <br />
+    <br />
+    <img class="bg" src="~/content/ActivityMobile/Recharge/Assets/c2.png" />
+    <br />
+    <div class="data-list product-list">
+        <div class="items clearfix">
+            @foreach (var item in Items.Skip(4).Take(4))
+            {
+                @Html.Partial("../Product/_ItemMobile", item)
+            }
+        </div>
+    </div>
+    <br />
+    <br />
+    <img class="bg" src="~/content/ActivityMobile/Recharge/Assets/c3.png" />
+    <br />
+    <div class="data-list product-list">
+        <div class="items clearfix">
+            @foreach (var item in Items.Skip(8).Take(4))
+            {
+                @Html.Partial("../Product/_ItemMobile", item)
+            }
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+<div class="overlay" style="display:none" id="role">
+   <div></div>
+    <div>
+        <img src="~/content/ActivityMobile/Recharge/Assets/5.png" />
+        <a href="javascript:;" id="close">&nbsp</a>
+        <a href="/m/user/recharge" id="recharge">&nbsp</a>
+    </div>
+</div>
+@section scripts{
+<script>
+    $("#head").on("click", function () { $("#role").show() });
+    $("#close").on("click", function () { $("#role").hide() });
+</script>
+}

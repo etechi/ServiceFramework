@@ -1,0 +1,42 @@
+﻿@import "./defaultStyle.scss";
+.user-address-list {
+    .addr-item {
+        border-bottom: 1px solid $grayLight;
+        border-top: 1px solid $grayLight;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px RGBA(0,0,0,.1);
+        padding: 20px 20px;
+        background-image: url(/css/mobile/images/address.jpg);
+        background-position: top;
+        background-repeat: repeat-x;
+
+        .is-default {
+            color: $grayDark;
+            float: right;
+        }
+
+        a {
+            display: block;
+            border-right: 1px solid $grayLight;
+            margin-right: 40px;
+        }
+
+        button {
+            background-color: transparent;
+            font-size: $inputFontSize;
+            display: block;
+            position: absolute;
+            font-size: 30px;
+            color: $grayLight;
+            padding: 20px 20px 0 0;
+            right: 10px;
+        }
+
+        .name {
+            border-bottom: 1px dotted $grayLight;
+            padding: 10px 0;
+            margin-bottom: 10px;
+            margin-right: 10px;
+        }
+    }
+}

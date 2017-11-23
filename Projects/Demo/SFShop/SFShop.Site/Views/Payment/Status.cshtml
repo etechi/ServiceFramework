@@ -1,0 +1,42 @@
+﻿@model ServiceProtocol.Biz.Payments.CollectSession
+@{
+	
+}
+<div class="container qrcode">
+	<h3>
+		请在新窗口中支付 <b>@Model.Request.Amount.ToString("0")</b> 元。
+	</h3>
+	@if (Model.Response.CompletedTime.HasValue)
+	{
+	<div class="alert alert-info">
+		本订单已于@(Model.Response.CompletedTime.Value.ToString("yyyy-MM-dd HH:mm"))完成支付
+	</div>
+	}
+	<div class="status">
+		<dl>
+			<dt>支付订单: </dt>
+			<dd>@Model.Request.Ident</dd>
+			<dt>创建时间: </dt>
+			<dd>@Model.CreateTime.ToString("yyyy-MM-dd HH:mm")</dd>
+            <dt>支付时间: </dt>
+            <dd>@(Model.Response.CompletedTime.HasValue? Model.Response.CompletedTime.Value.ToString("yyyy-MM-dd HH:mm"):"未支付")</dd>
+           <dt>在线客服: </dt>
+            <dd><a href="javascript:;" data-action="chat">马上联系</a></dd>
+			<dt>客服电话: </dt>
+			<dd>@(Html.Setting<CrowdMall.CrowdMallSetting>().CSPhoneNumber)</dd>
+		</dl>
+	</div>
+    <div class="actions">
+        请您在新打开的页面中完成支付，然后根据情况点击下面按钮：<br/>
+
+        <a class="btn btn-primary" href="@Request.Url">已完成支付</a>
+        <a class="btn btn-default" href="javascript:;" onclick="history.back();">已取消支付</a>
+    </div>
+</div>
+@section scripts{
+	<script src="~/scripts/jquery.signalR-2.2.0.js"></script>
+	<script src="~/signalr/hubs"></script>
+	<script>
+		boot("payment-status", { id: "@(Model.Response.CompletedTime.HasValue?"":Model.Request.Ident)",redirect:"@Model.Request.HttpRedirect" });
+	</script>
+}

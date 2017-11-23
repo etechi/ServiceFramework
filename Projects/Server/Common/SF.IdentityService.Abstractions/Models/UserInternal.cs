@@ -13,83 +13,105 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data.Models;
-using SF.Entities;
-using SF.Entities.AutoEntityProvider;
-using SF.Metadata;
-using System;
+using SF.Sys.Annotations;
+using SF.Sys.Entities.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 
 namespace SF.Auth.IdentityServices.Models
 {
 	[EntityObject]
 	public class UserInternal : ObjectEntityBase
 	{
-		[Comment("创建标识")]
+		/// <summary>
+		/// 创建标识
+		/// </summary>
 		[Required]
 		[MaxLength(100)]
 		[TableVisible]
 		public string MainCredential  { get; set; }
 
-		[Comment("创建标识类型")]
+		/// <summary>
+		/// 创建标识类型
+		/// </summary>
 		[MaxLength(100)]
 		[Required]
 		[EntityIdent(typeof(ClaimType),nameof(MainClaimTypeName))]
 		public string MainClaimTypeId { get; set; }
 
+		/// <summary>
+		/// 创建标识类型
+		/// </summary>
 		[MaxLength(100)]
 		[Ignore]
-		[Comment("创建标识类型")]
 		public string MainClaimTypeName { get; set; }
 	}
 
 	public class UserEditable : UserInternal
 	{
-		[Comment("图标")]
+		/// <summary>
+		/// 图标
+		/// </summary>
 		[MaxLength(100)]
 		[Image]
 		public string Icon { get; set; }
 
-		[Comment("头像")]
+		/// <summary>
+		/// 头像
+		/// </summary>
 		[MaxLength(100)]
 		[Image]
 		public string Image { get; set; }
 
+		/// <summary>
+		/// 密码
+		/// </summary>
 		[SkipWhenDefault]
-		[Comment("重置密码")]
 		[MaxLength(100)]
 		public string PasswordHash { get; set; }
 
+		/// <summary>
+		/// 安全标识
+		/// </summary>
 		[SkipWhenDefault]
-		[Comment("安全标识")]
 		[Ignore]
 		[MaxLength(100)]
 		public string SecurityStamp { get; set; }
 
-		[Comment("登录凭证")]
+		/// <summary>
+		/// 登录凭证
+		/// </summary>
 		[TableRows]
 		public IEnumerable<UserCredential> Credentials { get; set; }
 
-		[Comment("附加参数")]
+		/// <summary>
+		/// 附加参数
+		/// </summary>
 		public Dictionary<string,string> SignupExtraArgument { get; set; }
 
+		/// <summary>
+		/// 申明
+		/// </summary>
 		[Ignore]
-		[Comment("申明")]
 		[TableRows]
 		public IEnumerable<ClaimValue> Claims { get; set; }
 
+		/// <summary>
+		/// 角色
+		/// </summary>
 		[Ignore]
-		[Comment("角色")]
 		[TableRows]
 		public IEnumerable<UserRole> Roles { get; set; }
 
-		[Comment("客户端")]
+		/// <summary>
+		/// 客户端
+		/// </summary>
 		[EntityIdent(typeof(ClientInternal),nameof(SignupClientName))]
 		public long? SignupClientId { get; set; }
 
-		[Comment("客户端")]
+		/// <summary>
+		/// 客户端
+		/// </summary>
 		[Ignore]
 		[TableVisible]
 		public string SignupClientName { get; set; }

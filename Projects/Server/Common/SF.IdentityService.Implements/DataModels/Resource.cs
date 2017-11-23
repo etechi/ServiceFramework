@@ -13,9 +13,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Metadata;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -23,13 +20,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(Resource))]
-	public class Resource : SF.Entities.DataModels.UIObjectEntityBase<string>
+	public class Resource : SF.Sys.Entities.DataModels.UIObjectEntityBase<string>
 	{
 		[MaxLength(100)]
 		[Required]
 		public override string Id { get; set; }
 
-		[Comment("是否是标识资源")]
+		/// <summary>
+		/// 是否是标识资源
+		/// </summary>
 		public bool IsIdentityResource { get; set; }
 
 		[InverseProperty(nameof(ResourceRequiredClaim.Resource))]

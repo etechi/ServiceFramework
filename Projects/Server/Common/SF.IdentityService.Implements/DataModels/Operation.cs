@@ -13,9 +13,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Metadata;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,7 +21,7 @@ namespace SF.Auth.IdentityServices.DataModels
 {
 
 	[Table(nameof(Operation))]
-	public class Operation : SF.Entities.DataModels.UIObjectEntityBase<string>
+	public class Operation : SF.Sys.Entities.DataModels.UIObjectEntityBase<string>
 	{
 		[MaxLength(100)]
 		[Required]

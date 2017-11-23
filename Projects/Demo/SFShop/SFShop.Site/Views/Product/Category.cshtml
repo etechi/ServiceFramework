@@ -1,0 +1,106 @@
+﻿@model SF.Entities.QueryResult<SF.Biz.Products.IItem>
+@using SF.AspNetCore.Mvc
+@{
+	var showStatus = true;
+	var Categories = (SF.Biz.Products.ICategoryCached[])ViewBag.Categories;
+	var curCatId = (int?)ViewBag.CurCatId;
+	var mainCatId = (int)ViewBag.MainCategoryId;
+	var curType = Categories.Where(t => t.Id == curCatId).FirstOrDefault();
+	var Keyword = ViewBag.Keyword as string;
+}
+<div class="container body-content product-category">
+	<ol class="breadcrumb">
+		<li><a href="/">首页</a></li>
+		@if (curType == null)
+		{
+			<li class="active">全部商品</li>
+		}
+		else
+		{
+			<li><a href="/cat/">全部商品</a></li>
+			<li class="active">@curType.Title</li>
+		}
+	</ol>
+	<div class="types">
+		@if (curType == null)
+		{
+			<div class="head">全部商品</div>
+		}
+		else
+		{
+			<div class="head">
+				@curType.Title
+				(共@(curType.ItemCount)件商品)
+			</div>
+		}
+		<ul>
+			@foreach (var cat in Categories)
+			{
+				<li class="@(curCatId==cat.Id?"active":"")">
+					<a href="/cat/@cat.Id">
+						<img src="@Html.Media(cat.Image,"c64")" />
+						<span>@cat.Title</span>
+					</a>
+				</li>
+			}
+		</ul>
+
+	</div>
+	<div class="products">
+		<div class="toolbar">
+			@*<button class="btn btn-primary buy-all" data-action="buyAll" data-type="@curCatId">全部参与</button>*@
+			<span>排序：</span>
+            <button class="btn btn-default active" data-action="sort" data-method="hot">人气商品</button>
+            <button class="btn btn-default" data-action="sort" data-method="left">剩余人次</button>
+            <button class="btn btn-default" data-action="sort" data-method="new">最新商品</button>
+            <button class="btn btn-default" data-action="sort" data-method="price-up">总需人次<span class="fa fa-arrow-up"></span></button>
+            <button class="btn btn-default" data-action="sort" data-method="price-down">总需人次<span class="fa fa-arrow-down"></span></button>
+		</div>
+		<ul class="items clearfix" id="list">
+			@foreach (var item in Model.Items)
+            {
+                @Html.Partial("_Item", item)
+				@*<li class="product-item list-item">
+					<a href="/item/@item.ItemId" target="_blank">
+						<img src="~/css/desktop/images/empty.gif" data-src="/r/@item.Image?format=c200" width="200" height="200" class="lazy" />
+						<h5>(第@(item.CurRound.Round)期)@item.Title</h5>
+					</a>
+					<span class="price">价值：￥@(Math.Round(item.MarketPrice))</span>
+					<div class="product-status">
+						<div>
+							<div style="width:@(item.CurRound.Selled * 100 / item.CurRound.Total)%"></div>
+						</div>
+						<ul>
+							<li>
+								<div>@item.CurRound.Selled</div>
+								<div>已夺宝人次</div>
+							</li>
+							<li>
+								<div>@item.CurRound.Total</div>
+								<div>总需人次</div>
+							</li>
+							<li>
+								<div>@(item.CurRound.Total - item.CurRound.Selled)</div>
+								<div>剩余人次</div>
+							</li>
+						</ul>
+					</div>
+                    <a href="/item/@item.ItemId" target="_blank" class="btn btn-primary btn-product-buy">立即夺宝</a>
+                    <button data-action="addToCart" data-item="@item.ItemId" class="btn btn-default btn-add"><span class="fa fa-cart-plus"></span></button>
+				</li>*@
+			}
+		</ul>
+		<div class="more @(Model.Items.Count()<40?"hidden":"")" data-action="more" id="more">
+			更多...
+		</div>
+		<div class="loading hidden" id="loading">
+			加载中...
+		</div>
+	</div>
+</div>
+@section scripts{
+	@Html.Partial("_ItemHBTemplate")
+	<script>
+		window.boot("product-category",{mcat:@mainCatId, cat:@(curCatId ?? 0),loaded:@Model.Items.Count(),key:"@Keyword"});
+	</script>
+}

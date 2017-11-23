@@ -13,48 +13,54 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data.Models;
-using SF.Entities;
-using SF.Entities.AutoEntityProvider;
-using SF.Metadata;
+using SF.Sys.Annotations;
+using SF.Sys.Entities.Models;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 
 namespace SF.Auth.IdentityServices.Models
 {
-
+	/// <summary>
+	/// 凭证类型
+	/// </summary>
 	[EntityObject]
-	[Comment("凭证类型")]
 	public class ClaimType : ObjectEntityBase<string>
 	{
 		[ReadOnly(false)]
 		public override string Id { get; set; }
 	}
-	
 
 
-	[Comment("凭证参数值")]
+
+	/// <summary>
+	/// 凭证参数值
+	/// </summary>
 	public class ClaimValue
 	{
-		[Comment("类型ID")]
+		/// <summary>
+		/// 类型ID
+		/// </summary>
 		[EntityIdent(typeof(ClaimType), nameof(TypeName))]
 		[TableVisible]
 		public string TypeId { get; set; }
 
-		[Comment("类型")]
+		/// <summary>
+		/// 类型
+		/// </summary>
 		[Ignore]
 		[TableVisible]
 		public string TypeName { get; set; }
 
 
-		[Comment("凭证值")]
+		/// <summary>
+		/// 凭证值
+		/// </summary>
 		[TableVisible]
 		public string Value { get; set; }
 
-		[Comment("发行时间")]
+		/// <summary>
+		/// 发行时间
+		/// </summary>
 		public DateTime IssueTime { get; set; }
 	}
 

@@ -1,0 +1,10 @@
+﻿[
+  {
+    "outputFile": "wwwroot/css/admin/index.css",
+    "inputFile": "client/SFAdminSite/styles/index.scss",
+    "minify": {
+      "enabled": false
+    }
+  }
+
+]

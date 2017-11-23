@@ -1,0 +1,38 @@
+﻿@model ServiceProtocol.Biz.Payments.QrCodePaymentStatus
+@{
+	var platform = (CrowdMall.Bizness.Payments.Models.PaymentPlatformInternal)ViewBag.Platform;
+}
+<div class="container qrcode">
+	<h3>
+		支付金额<b>@Model.Amount.ToString("0")</b> 元，  请使用微信扫码下方二维码完成支付
+	</h3>
+	@if (Model.CompletedTime.HasValue)
+	{
+	<div class="alert alert-info">
+		本订单已于@(Model.CompletedTime.Value.ToString("yyyy-MM-dd HH:mm:ss"))完成支付
+	</div>
+	}
+	<div class="imgs clearfix">
+		<img class="qrcode" src="@ViewBag.QRImageLink" />
+		<img class="platform" src="~/css/desktop/images/wphone.jpg" />
+	</div>
+	<div class="status">
+		<dl>
+			<dt>支付订单: </dt>
+			<dd>@Model.Ident</dd>
+			<dt>创建时间: </dt>
+			<dd>@Model.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+            <dt>在线客服: </dt>
+            <dd><a href="javascript:;" data-action="chat">马上联系</a></dd>
+			<dt>客服电话: </dt>
+			<dd>@(Html.Setting<CrowdMall.CrowdMallSetting>().CSPhoneNumber)</dd>
+		</dl>
+	</div>
+</div>
+@section scripts{
+	<script src="~/scripts/jquery.signalR-2.2.0.js"></script>
+	<script src="~/signalr/hubs"></script>
+	<script>
+		boot("payment-qrcode", { id: "@(Model.CompletedTime.HasValue?"":Model.Ident)",redirect:"@Model.HttpRedirect" });
+	</script>
+}

@@ -13,8 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Metadata;
+using SF.Sys.Data;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -26,11 +25,12 @@ namespace SF.Auth.IdentityServices.DataModels
 
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
 		[Key]
-		[Comment("Id")]
 		public long Id { get; set; }
 
+		/// <summary>
+		/// 类型ID
+		/// </summary>
 		[Index]
-		[Comment("类型ID")]
 		[Required]
 		[MaxLength(100)]
 		public string TypeId { get; set; }
@@ -38,13 +38,19 @@ namespace SF.Auth.IdentityServices.DataModels
 		[ForeignKey(nameof(TypeId))]
 		public ClaimType Type { get; set; }
 
-		[Comment("声明值")]
+		/// <summary>
+		/// 声明值
+		/// </summary>
 		public string Value { get; set; }
 
-		[Comment("创建时间")]
+		/// <summary>
+		/// 创建时间
+		/// </summary>
 		public DateTime CreateTime { get; set; }
 
-		[Comment("修改时间")]
+		/// <summary>
+		/// 修改时间
+		/// </summary>
 		public DateTime UpdateTime { get; set; }
 	}
 }

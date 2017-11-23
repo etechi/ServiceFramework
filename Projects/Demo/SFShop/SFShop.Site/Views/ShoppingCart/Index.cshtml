@@ -1,0 +1,150 @@
+﻿@{ 
+    var couponSetting = Html.Setting<ServiceProtocol.Biz.Promotion.Coupons.CouponSetting>();
+}
+<div class="container body-content shopping-cart" id="shopping-cart">
+	@*<h3>我的购物车</h3>*@
+    <br/>
+    <br />
+	<div v-if="false" class="loading">
+		载入中...
+	</div>
+    <table v-cloak>
+        <tr class="head">
+            <th class="check"></th>
+            <th class="image"></th>
+            <th class="name">商品</th>
+            <th class="left">剩余人次</th>
+            <th class="quantity">夺宝人次</th>
+            <th class="amount">小计</th>
+            <th class="cmd">操作</th>
+        </tr>
+        <tr class="item" v-for="item in items" track-by="ItemId">
+            <td class="check"><input type="checkbox" name="item" v-model="item.Selected" /></td>
+            <td class="image"><a href="/item/{{item.ItemId}}" target="_blank"><img v-bind:src="'@Html.ResBase()r/' + item.Image + '?format=c100x80'" /></a></td>
+            <td class="name">
+                <a href="/item/{{item.ItemId}}" target="_blank">(第{{item.CFRound}}期){{item.Title}}<span v-if="item.Disabled">(已下架)</span></a>
+                <div class="intro">总需<span class="cf-total">{{item.CFTotal}}</span>人次参与,还剩<span class="cf-left">{{item.CFLeft}}</span>人次</div>
+                <div v-if="item.CFPriceUnit!=1" class="price">{{item.CFPriceUnit}}元专区</div>
+            </td>
+            <td class="left">{{item.CFLeft}}</td>
+            <td class="quantity">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" v-on:click="dec(item)"><span class="fa fa-minus"></span></span>
+                    <input class="form-control" maxlength="20" type="text" v-model="item.Quantity" number />
+                    <span class="input-group-addon" v-on:click="inc(item)"><span class="fa fa-plus"></span></span>
+                </div>
+                <div class="stress" v-if="item.CFLimitPerRoundPerUser && item.CFLimitPerRoundPerUser==item.CFRoundBuyCount">您已达本期人次上限</div>
+                <div v-if="item.CFLimitPerRoundPerUser && item.CFRoundBuyCount && item.CFLimitPerRoundPerUser>item.CFRoundBuyCount">本期您已夺宝{{item.CFRoundBuyCount}}人次</div>
+            </td>
+            <td class="amount">{{item.Total}}</td>
+            <td class="cmd">
+                <button data-action="remove" class="btn btn-link" v-on:click="remove(item)">删除</button>
+            </td>
+        </tr>
+        <tr v-if="!items.length">
+            <td colspan="7" class="empty"> <a href="/">购物车里还没东西哦，马上夺宝！</a></td>
+        </tr>
+        <tr>
+            <td class="batch" colspan="2">
+                <input type="checkbox" v-model="allSelected" /> 全选
+                <button class="btn btn-link" v-on:click="removeSelected()">删除</button>
+            </td>
+            <td class="summary" colspan="5">
+                支付总额: <span>{{total}}</span>云币
+            </td>
+        </tr>
+        <tr style="height:60px" v-if="coupons && coupons.length">
+            <td class="payment-coupon" colspan="5">
+                <div class="use-coupon">
+                    <input v-bind:disabled="couponDisabled" type="checkbox" v-model="useCoupon" />
+                    使用优惠券：
+                </div>
+                <select class="form-control" v-bind:disabled="!useCoupon" v-model="coupon">
+                    <option v-for="c in coupons" v-bind:value="c">{{c.Name}} ({{c.ExpireTime}}到期) </option>
+                </select>
+                <div v-if="couponCountVisible && !couponDisabled" class="input-group input-group-sm">
+                    <span class="input-group-addon" v-on:click="decCoupon()"><span class="fa fa-minus"></span></span>
+                    <input class="form-control" maxlength="10" type="text" v-model="couponCount" number v-bind:disabled="!couponMaxCount" />
+                    <span class="input-group-addon" v-on:click="incCoupon()"><span class="fa fa-plus"></span></span>
+                </div>
+                <span class="stress" v-if="couponDisabled">购物车中有特殊商品，不能使用优惠券</span>
+                @*<span v-if="useCoupon && coupon && couponMaxCount">(最多可用{{couponMaxCount}}张,抵扣{{couponMaxAmount}}云币)</span>*@
+                <span class="stress" v-if="useCoupon && coupon && coupon.LeftCount>1 && couponMaxCount &&discountLimited">可用红包已达上限</span>
+                <span class="stress" v-if="useCoupon && coupon && !couponMaxCount">满{{couponMinAmount}}云币可使用</span>
+            </td>
+            <td class="summary" colspan="2">
+                <div v-if="useCoupon && coupon && coupon.ConditionValue<=total">可抵扣: <span>{{couponTotal}}</span>云币</div>
+                <div v-if="useCoupon && coupon && coupon.ConditionValue>total">支付总额超过{{coupon.ConditionValue}}云币时可用</div>
+            </td>
+        </tr>
+        <tr style="height:60px">
+            <td class="payment-balance" colspan="4">
+                <input type="checkbox" v-model="useBalance" />
+                使用账户余额支付，账户余额：<span>{{balance}}</span>云币
+            </td>
+            <td class="summary" colspan="3">
+                <div v-if="useBalance">
+                    使用余额支付<span>{{balanceTotal}}</span>云币
+                </div>
+            </td>
+        </tr>
+        <tr v-if="!useBalance || depositAmount>0">
+            <td class="payment-deposit-list" colspan="4">
+                账户余额不足，请选择以下方式购买更多网盘来获得云币。<br />
+                支付方式：<br />
+                <ul class="options">
+                    <li v-for="p in paymentPlatforms" v-bind:class="{active:curPlatform==p}" v-bind:id="'pp-'+p.Id" v-on:click="selectPlatform(p)"><img v-bind:src="'/r/'+p.Icon" />{{p.Name}}</li>
+                </ul>
+            </td>
+            <td class="payment-deposit-status" colspan="3">
+                使用<span class="type">{{curPaymentName}}</span>支付<span class="value">{{depositAmount}}</span>云币
+            </td>
+        </tr>
+        <tr v-if="activities.length">
+            <td colspan="7">
+                <label>立即夺宝可参与活动：<span class="text-warning">(活动可能变动，实际结果以活动记录列表为准)</span></label>
+                <div>
+                    <ul class="activity-result-list">
+                        <li v-for="a in activities" class="activity-result">
+                            <div class="end" v-show="a.end">活动截止：{{a.end}}</div>
+                            <h4>{{a.name}}</h4>
+                            <div>
+                                <div>活动说明:</div>
+                                <div class="desc">{{a.desc}}</div>
+                            </div>
+                            <ul>
+                                <li v-for="r in a.results">{{r.name}} x {{r.count}}</li>
+                                <li v-if="!a.results.length">夺宝更多，就可以参加活动哦！</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" class="submit">
+                <div>
+                    <input type="checkbox" v-model="termsAccepted" />
+                    我已阅读并同意<a href="/help/doc/pc-terms" target="_blank" id="termsLink">《服务协议》</a><br />
+                    <span class="stress">夺宝有风险，参与需谨慎&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                </div>
+                <button id="pay" class="btn btn-primary" v-bind:disabled="executing || !enabled" v-on:click="submit">确认支付</button>
+                <div v-if="message" class="text-danger text-right">{{message}}</div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" class="help">
+                夺宝注意事项: <br />
+                1.单笔订单支付必须超过@(Math.Ceiling(100 / couponSetting.MaxDiscountPercent) - 1)云币才能使用红包，且红包使用总额不能超过订单支付总额的@(couponSetting.MaxDiscountPercent.ToString("0"))%。<br />
+                2.若红包使用超过订单总额@(couponSetting.MaxDiscountPercent.ToString("0"))%，超出部分不做退还。当订单总额@(couponSetting.MaxDiscountPercent.ToString("0"))%出现小数点时，抵用额度默认向下取整。<br />
+                3.不同活动获得的红包不可叠加，同一活动获得的红包可叠加使用。<br />
+            </td>
+        </tr>
+    </table>
+</div>
+@Html.Partial("../Shared/_Dialog");
+@section scripts{
+	<script>
+		window.boot("shopping-cart", {maxDiscount:@couponSetting.MaxDiscountPercent});
+	</script>
+}

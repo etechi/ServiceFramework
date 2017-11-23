@@ -1,0 +1,159 @@
+﻿@import "./defaultStyle.scss";
+.user-invite-page {
+    div.head {
+        background-image: url(/css/mobile/images/summary_bg.png);
+        background-size: cover;
+        height: 150px;
+        color: #fff;
+        position: relative;
+
+        div {
+            position: relative;
+            width: 300px;
+            height: 150px;
+            margin: 0 auto;
+
+            dl {
+                text-align: center;
+
+                dt {
+                    font-weight: normal;
+                }
+
+                dd {
+                    > b {
+                        font-size: 40px;
+                        color: #fff;
+                    }
+
+                    > span {
+                        position: absolute;
+                        bottom: 10px;
+                        width: 40px;
+                        margin-left: -10px;
+                        font-size: 12px;
+                    }
+                }
+            }
+
+            > dl.amount {
+                position: absolute;
+                left: 0;
+                top: 30px;
+            }
+
+            > dl.invited {
+                position: absolute;
+                left: 190px;
+                top: 30px;
+            }
+        }
+
+        > a {
+            display: block;
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            color: #fff;
+        }
+    }
+
+    div.actions {
+        text-align: center;
+
+        > button {
+            margin: 30px auto;
+            width: 200px;
+            height: 40px;
+            display: block;
+        }
+    }
+
+    div.qr-image {
+        border-top: 1px solid $gray;
+        text-align: center;
+    }
+
+    div.share-panel {
+        > div {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        > div:first-child {
+            z-index: 10000;
+            background-color: #000;
+            opacity: 0.95;
+        }
+
+        > div:last-child {
+            z-index: 10001;
+            width: 386px;
+            max-width: 90%;
+            right: 0;
+            left: auto;
+            background-image: url(/css/mobile/images/share.png);
+            background-size: contain;
+            background-position: right top;
+            background-repeat: no-repeat;
+        }
+    }
+
+    div.poster-panel {
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 10000;
+        background-color: #000;
+
+        > img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+            margin: auto auto;
+        }
+
+        > span.fa {
+            position: absolute;
+            display: block;
+            font-size: 24px;
+            z-index: 10002;
+            color: #222;
+            top: 10px;
+            right: 10px;
+            background: #ddd;
+            border-radius: 50%;
+            padding: 7px 10px;
+            width: 40px;
+            height: 40px;
+            opacity: 0.9
+        }
+
+        > div.help {
+            position: absolute;
+            z-index: 10001;
+            top: auto;
+            bottom: 50px;
+            left: 0;
+            right: 0;
+            text-align: center;
+
+            > div {
+                width: 300px;
+                border-radius: 6px;
+                background: #000;
+                color: #fff;
+                height: 50px;
+                margin: 0 auto;
+                padding-top: 15px;
+                opacity: 0.8;
+                font-size: 16px;
+            }
+        }
+    }
+}

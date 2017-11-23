@@ -13,11 +13,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Data.Models;
-using SF.Metadata;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,16 +21,20 @@ namespace SF.Auth.IdentityServices.DataModels
 	[Table(nameof(RoleGrant))]
 	public class RoleGrant 
 	{
+		/// <summary>
+		/// 客户端ID
+		/// </summary>
 		[Key]
-		[Comment("客户端ID")]
 		[Column(Order =1)]
 		public string RoleId { get; set; }
 
 		[ForeignKey(nameof(RoleId))]
 		public Role Role { get; set; }
 
+		/// <summary>
+		/// 操作资源ID
+		/// </summary>
 		[Key]
-		[Comment("操作资源ID")]
 		[Column(Order = 2)]
 		[MaxLength(100)]
 		[Required]
@@ -44,8 +43,10 @@ namespace SF.Auth.IdentityServices.DataModels
 		[ForeignKey(nameof(ResourceId))]
 		public Resource Resource { get; set; }
 
+		/// <summary>
+		/// 操作区域ID
+		/// </summary>
 		[Key]
-		[Comment("操作区域ID")]
 		[Column(Order = 3)]
 		[MaxLength(100)]
 		[Required]

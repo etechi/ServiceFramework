@@ -1,0 +1,26 @@
+﻿@{ 
+	var UserId = ((CrowdMall.Bizness.Auth.Models.User)ViewBag.User).Id;
+	var routeValues = ViewContext.RequestContext.RouteData.Values;
+	var cur_action = routeValues.Get("action") as string;
+	var cur_controller = routeValues.Get("controller") as string;
+	var cur_page = (cur_controller+"/"+(cur_action ?? "index")).ToLower();
+}
+<div  class="user-admin-menu">
+	<ul>
+		<li class="@(cur_page=="other/record"?"active":"")">
+			<a href="/other/record/@UserId">
+				<img src="~/css/desktop/images/usermenu/menu-trade-record.png" /> 夺宝记录
+			</a>
+		</li>
+		<li class="@(cur_page=="other/win"?"active":"")">
+			<a href="/other/win/@UserId">
+				<img src="~/css/desktop/images/usermenu/menu-win.png" />中奖记录
+			</a>
+		</li>
+		<li class="@(cur_page=="other/shared"?"active":"")">
+			<a href="/other/shared/@UserId">
+				<img src="~/css/desktop/images/usermenu/menu-expose.png" />晒单列表
+			</a>
+		</li>
+	</ul>
+</div>

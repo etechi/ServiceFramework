@@ -13,16 +13,13 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using IdentityServer4.Services;
 using IdentityServer4.Stores;
-using SF.Metadata;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
-using System;
-using SF.Data;
 using System.Linq;
-using SF.Core;
+using SF.Sys.Data;
+using SF.Sys.Entities;
+using SF.Sys;
 
 namespace SF.Auth.IdentityServices.IdentityServer4Impl
 {
@@ -42,7 +39,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 
 			var re = await (
 				from c in Clients.AsQueryable()
-				where c.Id == clientId && c.LogicState == Entities.EntityLogicState.Enabled
+				where c.Id == clientId && c.LogicState == EntityLogicState.Enabled
 				select new
 				{
 					cfg = c.ClientConfig,
@@ -77,7 +74,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 				AllowOfflineAccess = cfg.AllowOfflineAccess,
 				//Properties = re.Properties,
 				//BackChannelLogoutUri = re.BackChannelLogoutUri,
-				Enabled = cli.LogicState == Entities.EntityLogicState.Enabled,
+				Enabled = cli.LogicState == EntityLogicState.Enabled,
 				ClientId = cli.Id.ToString(),
 				//ProtocolType = re.ProtocolType,
 				ClientSecrets = new[] { new Secret(cli.ClientSecrets) },

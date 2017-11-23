@@ -29,19 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Server\Applications\SF.App.Core\SF.App.Core.csproj" />
-    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Extensions\SF.Biz.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Implements\SF.Biz.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Abstractions\SF.Common.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Extensions\SF.Common.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Implements\SF.Common.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Abstractions\SF.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Extensions\SF.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Implements\SF.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Interception\SF.Interception.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Support\SF.Support.csproj" />
-    <ProjectReference Include="..\..\..\Server\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.csproj" />
     <ProjectReference Include="..\..\Common\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
   </ItemGroup>
 

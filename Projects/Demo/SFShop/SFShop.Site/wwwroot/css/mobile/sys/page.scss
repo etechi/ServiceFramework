@@ -1,0 +1,80 @@
+﻿@import "../defaultStyle.scss";
+
+div.page-container{
+    padding-top:40px;
+    div.page-head{
+        position:fixed;
+        height:40px;
+        left:0;
+        right:0;
+        top:0;
+        background-color:$grayBG;
+        padding:10px;
+        box-shadow: 0 1px 3px RGBA(0,0,0,.2);
+        z-index:10;
+        >span{
+            float:left;
+            font-size:20px;
+            color:$gray;
+            width:20px;
+            height:20px;
+            display:block;
+        }
+         >span:first-child{
+            float:right;
+        }
+        >div{
+            text-align:center;
+            font-size:16px;
+            margin:0 60px;
+        }
+        button{
+            background-color:transparent;
+        }
+        button.cancel{
+            float:left;
+
+        }
+        button.submit{
+            float:right;
+            color:$primaryBGColorDark;
+        }
+    }
+    div.page-head-message{
+        span.fa{
+            margin-right:4px;
+        }
+        text-align:center;
+        color:$primaryBGColorDark;
+        padding:10px;
+        background-color:$grayBGLight;
+    }
+    div.page-body{
+        padding-bottom:48px;
+    }
+    div.page-body:last-child{
+        padding-bottom:0;
+    }
+}
+
+div.page-list{
+
+}
+div.page-list-item{
+
+}
+.page-tail-item{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    display:block;
+    height:48px;
+    background-color:$primaryBGColorDark;
+    color:#fff !important;
+    text-align:center;
+    line-height:48px;
+    vertical-align:middle;
+    font-size:$inputFontSize;
+    width:100%;
+}

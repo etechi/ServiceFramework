@@ -29,7 +29,6 @@ using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Data.Common;
-using SF.Data.EntityFrameworkCore;
 
 namespace SF.Applications
 {

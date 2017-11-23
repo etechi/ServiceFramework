@@ -14,14 +14,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using IdentityServer4.Services;
-using SF.Metadata;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityServer4.Models;
-using SF.Data;
 using System.Linq;
 using System.Security.Claims;
-using System;
+using SF.Sys.Data;
+using SF.Sys.Auth;
+using SF.Sys.Entities;
+using SF.Sys;
+using SF.Sys.Linq;
+
 namespace SF.Auth.IdentityServices.IdentityServer4Impl
 {
 	public class ProfileService : IProfileService
@@ -39,7 +42,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 
 			var desc = await (
 				from u in Users.AsQueryable()
-				where u.Id == id.Value && u.LogicState == Entities.EntityLogicState.Enabled
+				where u.Id == id.Value && u.LogicState == EntityLogicState.Enabled
 				select new {
 					name = u.Name,
 					icon = u.Icon,
@@ -83,7 +86,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 
 			var re = await (
 				from u in Users.AsQueryable()
-				where u.Id == id.Value && u.LogicState == Entities.EntityLogicState.Enabled
+				where u.Id == id.Value && u.LogicState == EntityLogicState.Enabled
 				select new {
 					userClaims = from uc in u.ClaimValues
 									where types.Contains(uc.TypeId)
@@ -129,7 +132,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 				.Where(u => u.Id == id.Value)
 				.Select(u => new { state = u.LogicState })
 				.SingleOrDefaultAsync();
-			context.IsActive = state?.state == Entities.EntityLogicState.Enabled;
+			context.IsActive = state?.state == EntityLogicState.Enabled;
 		}
 	}
 }

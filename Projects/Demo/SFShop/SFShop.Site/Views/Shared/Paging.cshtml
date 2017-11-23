@@ -1,0 +1,53 @@
+﻿@*@model ext.controllers.mvc.paging
+@{
+	var size = 3;
+	var begin = Model.current - size;
+	var end = Model.current + size;
+	if (begin < 1) { end += 1 - begin; begin = 1; }
+	if (end > Model.count) { begin -= end - Model.count; end = Model.count; }
+	if (begin < 1) { begin = 1; }
+	if (begin != 1) { begin++; }
+	if (end != Model.count) { end--; }
+
+}
+@if (end > begin)
+{
+	<ul class="paging list-inline">
+		@if (Model.current != 1)
+		{
+			<li class="slibing"><a href="@(string.Format(Model.url,Model.current - 1))">&lt;</a></li>
+		}
+
+		@if (begin > 1)
+		{
+			<li><a href="@(string.Format(Model.url,1))">1</a></li>
+			if (begin > 2)
+			{
+				<li class="skip"><span>...</span></li>
+			}
+		}
+		@for (var i = begin; i <= end; i++)
+		{
+			if (i == Model.current)
+			{
+				<li class="current">@i</li>
+			}
+			else
+			{
+				<li><a href="@(string.Format(Model.url,i))">@i</a></li>
+			}
+		}
+		@if (end < Model.count)
+		{
+			if (end < Model.count - 1)
+			{
+				<li class="skip"><span>...</span></li>
+			}
+			<li><a href="@(string.Format(Model.url,Model.count))">@Model.count</a></li>
+		}
+		@if (Model.current != Model.count)
+		{
+			<li class="slibing"><a href="@(string.Format(Model.url,Model.current + 1))">&gt;</a></li>
+		}
+	</ul>
+}*@		

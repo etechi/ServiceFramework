@@ -1,0 +1,19 @@
+﻿@{
+	var setting = Html.Setting<CrowdMallSetting>();
+	var user = (CrowdMall.Bizness.Auth.Models.User)ViewBag.User;
+	string id = user.Id.ToString();
+	string nick = user.NickName;
+	string image = Html.Media(user.Image?? setting.DefaultUserImage, "c80");
+}
+<div class="user-admin-head"> 
+	<div class="container">
+		<div class="icon">
+			<img src="@image" />
+		</div>
+		<div class="info">
+			<div class="line1">@nick </div>
+			<div class="line2">
+			</div>
+		</div>
+	</div>
+</div>

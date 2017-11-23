@@ -1,0 +1,45 @@
+﻿@import "../defaultStyle.scss";
+div.product-collection{
+   div.head{
+       padding:1px;
+       height:250px;
+       background-position:center;
+   }
+   div.products{
+       margin-top:10px;
+       div.toolbar{
+           padding:20px;
+           button.buy-all{
+               float:right;
+
+           }
+           button{
+               border:none;
+           }
+           button.active{
+               background-color:$primaryBGColorDark;
+               color:#fff;
+           }
+       }
+	   ul.items{
+             margin:0;
+             padding:0;
+	    }
+       div.more{
+           color:$primaryBGColor;
+           text-align:center;
+           margin-top:20px;
+           padding:20px;
+           font-size:20px;
+           cursor:pointer;
+       }
+       div.loading{
+           color:$primaryBGColor;
+           text-align:center;
+           margin-top:20px;
+           padding:20px;
+           font-size:20px;
+       }
+    }
+}
+    

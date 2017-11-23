@@ -13,20 +13,22 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth;
-using SF.Entities;
-using SF.Metadata;
-using System;
+using SF.Sys.Annotations;
+using SF.Sys.Auth;
+using SF.Sys.Entities;
+using SF.Sys.NetworkService;
 namespace SF.Auth.IdentityServices.Managers
 {
 	public class ScopeQueryArgument : ObjectQueryArgument<ObjectKey<string>>
 	{
 	}
 
+	/// <summary>
+	/// 授权范围
+	/// </summary>
 	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
-	[Comment("授权范围")]
 	public interface IScopeManager :
 		IEntityManager<ObjectKey<string>,Models.ScopeEditable>,
 		IEntitySource<ObjectKey<string>, Models.ScopeInternal, ScopeQueryArgument>

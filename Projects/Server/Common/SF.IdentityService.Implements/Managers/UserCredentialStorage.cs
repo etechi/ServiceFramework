@@ -15,10 +15,10 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Auth.IdentityServices.Internals;
 using SF.Auth.IdentityServices.Models;
-using SF.Core.ServiceManagement;
-using SF.Core.Times;
-using SF.Data;
-using SF.Entities;
+using SF.Sys;
+using SF.Sys.Data;
+using SF.Sys.Services;
+using SF.Sys.TimeServices;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -70,7 +70,7 @@ namespace SF.Auth.IdentityServices.Managers
 				});
 				await DataSet.Context.SaveChangesAsync();
 			}
-			return ADT.Poco.Map<TUserCredential, UserCredential>(exist);
+			return Poco.Map<TUserCredential, UserCredential>(exist);
 
 		}
 
@@ -78,7 +78,7 @@ namespace SF.Auth.IdentityServices.Managers
 		{
 			return await DataSet.FirstOrDefaultAsync(
 				i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential,
-				ADT.Poco.MapExpression<TUserCredential, UserCredential>()
+				Poco.MapExpression<TUserCredential, UserCredential>()
 				);
 		}
 
@@ -113,7 +113,7 @@ namespace SF.Auth.IdentityServices.Managers
 		{
 			return await DataSet.QueryAsync(
 				i => i.ClaimTypeId == ClaimTypeId && i.UserId == UserId,
-				ADT.Poco.MapExpression<TUserCredential, UserCredential>()
+				Poco.MapExpression<TUserCredential, UserCredential>()
 				);
 		}
 

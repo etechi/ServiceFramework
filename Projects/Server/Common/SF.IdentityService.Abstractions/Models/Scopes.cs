@@ -13,19 +13,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data.Models;
-using SF.Entities;
-using SF.Entities.AutoEntityProvider;
-using SF.Metadata;
-using System;
+using SF.Sys.Annotations;
+using SF.Sys.Entities.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
 
 namespace SF.Auth.IdentityServices.Models
 {
-	
-	[Comment("授权范围")]
+
+	/// <summary>
+	/// 授权范围
+	/// </summary>
 	[EntityObject]
 	public class ScopeInternal: ObjectEntityBase<string>
 	{
@@ -37,18 +35,24 @@ namespace SF.Auth.IdentityServices.Models
 		//[TableRows]
 		//public IEnumerable<ScopeResource> Resources { get; set; }
 
-		[Comment("授权资源")]
+		/// <summary>
+		/// 授权资源
+		/// </summary>
 		[EntityIdent(typeof(ResourceInternal))] 
 		public IEnumerable<string> Resources { get; set; }
 	}
 	public class ScopeResource
 	{
-		[Comment("资源")]
+		/// <summary>
+		/// 资源
+		/// </summary>
 		[EntityIdent(typeof(ResourceInternal), nameof(ResouceName))]
 		[Key]
 		public string ResourceId { get; set; }
 
-		[Comment("资源名称")]
+		/// <summary>
+		/// 资源名称
+		/// </summary>
 		[Ignore]
 		public string ResouceName { get; set; }
 

@@ -13,10 +13,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Data;
-using SF.Entities.DataModels;
-using SF.Metadata;
-using System;
+using SF.Sys.Data;
+using SF.Sys.Entities.DataModels;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -38,21 +36,36 @@ namespace SF.Auth.IdentityServices.DataModels
 		[InverseProperty(nameof(ClientClaimValue.Client))]
 		public ICollection<ClientClaimValue> ClaimValues { get; set; }
 
-		[Comment("客户端密钥", " Client secrets - only relevant for flows that require a secret")]
+		///<title>客户端密钥</title>
+		/// <summary>
+		///  Client secrets - only relevant for flows that require a secret
+		/// </summary>
 		[MaxLength(200)]
 		public string ClientSecrets { get; set; }
 
-		[Comment("客户端Url", "URI to further information about client (used on consent screen)")]
+		///<title>客户端Url</title>
+		/// <summary>
+		/// URI to further information about client (used on consent screen
+		/// </summary>
 		[MaxLength(200)]
 		public string ClientUri { get; set; }
 
-		[Comment("登录跳转地址", "Specifies allowed URIs to return tokens or authorization codes to")]
+		///<title>登录跳转地址</title>
+		/// <summary>
+		/// Specifies allowed URIs to return tokens or authorization codes to
+		/// </summary>
 		public string RedirectUris { get; set; }
 
-		[Comment("注销跳转地址", "Specifies allowed URIs to redirect to after logout")]
+		///<title>注销跳转地址</title>
+		/// <summary>
+		/// Specifies allowed URIs to redirect to after logout
+		/// </summary>
 		public string PostLogoutRedirectUris { get; set; }
 
-		[Comment("前端注销跳转地址", "Specifies logout URI at client for HTTP front-channel based logout.")]
+		///<title>前端注销跳转地址</title>
+		/// <summary>
+		/// Specifies logout URI at client for HTTP front-channel based logout
+		/// </summary>
 		public string FrontChannelLogoutUri { get; set; }
 
 	}

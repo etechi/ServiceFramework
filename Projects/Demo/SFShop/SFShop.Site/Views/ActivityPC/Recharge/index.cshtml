@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "好云购充值活动-300万元送完即止！充得多送的多！！";
+    var Items = ViewBag.Items as CrowdMall.Bizness.Products.IItem[];
+}
+@section header{
+    <link href="~/content/ActivityPC/Recharge/Assets/css/style.css" rel="stylesheet" type="text/css" />
+}
+<!--顶部横条-->
+<div class="top">
+    <div class="t-main">
+        <!--好云购logo-->
+        <h1 class="logo"><a href="/" title="返回首页"><img src="~/content/ActivityPC/Recharge/Assets/images/logo.jpg" /></a></h1>
+        <span class="t-right"><a href="/">&lt;&lt;&nbsp;返回首页</a></span>
+    </div>
+</div>
+<!--内容区域-->
+<div class="main">
+    <div class="Banner">
+        <div class="rule"><a href="javascript:;" id="show">活动规则</a></div>
+        <div class="banner-button">
+            <div class="recharge"><a href="/account/recharge"><span class="but-l"></span><span class="but-m">立即充值</span><span class="but-r"></span></a></div>
+            <div class="commodity"><a href="@Request.Url#3F"><span class="but-l"></span><span class="but-m">十元购豪车</span><span class="but-r"></span></a></div>
+        </div>
+    </div>
+    <div class="shopping">
+        <div class="shopping-main">
+            <div class="floor-box">
+                <a style="width:0px; height:0px;" name="1F"></a>
+                <h2><img src="~/content/ActivityPC/Recharge/Assets/images/title01.png" width="707" /></h2>
+                <ul class="items">
+                    @foreach (var item in Items.Take(4))
+                    {
+                        @Html.Partial("../Product/_Item", item, new ViewDataDictionary { { "HideAddToCart", true } });
+                    }
+                </ul>
+            </div>
+            <div class="floor-box">
+                <h2><img src="~/content/ActivityPC/Recharge/Assets/images/title02.png" width="707"/></h2>
+                <ul class="items">
+                    @foreach (var item in Items.Skip(4).Take(4))
+            {
+                        @Html.Partial("../Product/_Item", item, new ViewDataDictionary { { "HideAddToCart", true } });
+
+            }
+                </ul>
+            </div>
+            
+            <div class="floor-box">
+                <h2><a name="3F"><img src="~/content/ActivityPC/Recharge/Assets/images/title03.png" width="707" /></a></h2>
+                <ul class="items">
+                    @foreach (var item in Items.Skip(8).Take(4))
+            {
+                        @Html.Partial("../Product/_Item", item, new ViewDataDictionary { { "HideAddToCart", true } });
+            }
+                </ul>
+            </div>
+            <div class="Return"><a href="@Request.Url#">返回顶部</a></div>
+        </div>
+    </div>
+</div>
+<div id="rule-box" style="display:none;">
+    <div style="position: fixed; top: 0px;left: 0px;width: 100%;height: 100%;overflow: hidden;background: rgb(0, 0, 0);opacity: 0.7;z-index: 20001;"></div>
+    <div class="g-bd">
+        <div class="Close" id="hide"></div>
+        <div class="rule-font">
+            <p style="font-size:14px;" >为了热烈庆祝好云购平台正式对外上线，从即日起，只要单笔充值满50元即可再额外获得1个“5云币”红包，充值满100元送2个“5云币”红包，多充多送！红包总数一共30万个，送完即止！！！</p>
+            <p style="font-size:14px;">
+                1、单笔充值满50元即可额外获得1个“5云币”红包；<br />
+                2、本次活动红包可以重复领取，只要单笔充值满50元，即可自动获得；单笔充值满100元，即可获得2个“5云币”红包，依次类推，最高单笔充值10000元，可获得200个“5云币”红包<br />
+                3、红包总数一共30万个，领完即止；<br />
+                4、本活动解释权归属好云购平台所有<br />
+            </p>
+        </div>
+        <p style="text-align:center; margin-top:20px;"><a href="/account/recharge">立即充值</a></p>
+        <div class="g-bda"></div>
+    </div>
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#hide").click(function () {
+                $("#rule-box").hide();
+            });
+            $("#show").click(function () {
+                $("#rule-box").show();
+            });
+        });
+    </script>
+}

@@ -14,14 +14,12 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Auth.IdentityServices.Internals;
+using SF.Common.PhoneNumberValidators;
 using SF.Common.TextMessages;
-using SF.Core.ServiceManagement;
-using SF.KB.PhoneNumbers;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
-
+using SF.Sys;
 namespace SF.Auth.IdentityServices.UserCredentialProviders
 {
 	public class PhoneNumberUserCredentialProvider :
@@ -67,10 +65,7 @@ namespace SF.Auth.IdentityServices.UserCredentialProviders
 				Ident,
 				new Message
 				{
-					Body=SimpleTemplate.Eval(
-						ConfirmMessageSetting.GetTemplate(Type),
-						args
-					),
+					Body= ConfirmMessageSetting.GetTemplate(Type).Replace(args),
 					Arguments=args,
 					TrackEntityId=TrackIdent
 				}

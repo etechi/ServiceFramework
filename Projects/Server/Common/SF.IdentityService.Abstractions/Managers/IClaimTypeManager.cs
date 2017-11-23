@@ -13,11 +13,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Auth;
-using SF.Entities;
-using SF.Metadata;
-using System;
-using System.ComponentModel.DataAnnotations;
+
+using SF.Sys.Annotations;
+using SF.Sys.Auth;
+using SF.Sys.Entities;
+using SF.Sys.NetworkService;
 
 namespace SF.Auth.IdentityServices.Managers
 {
@@ -25,10 +25,12 @@ namespace SF.Auth.IdentityServices.Managers
 	{
 	}
 
+	/// <summary>
+	/// 申明类型管理
+	/// </summary>
 	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
-	[Comment("申明类型管理")]
 	public interface IClaimTypeManager :
 		IEntityManager<ObjectKey<string>,Models.ClaimType>,
 		IEntitySource<ObjectKey<string>, Models.ClaimType, ClaimTypeQueryArgument>

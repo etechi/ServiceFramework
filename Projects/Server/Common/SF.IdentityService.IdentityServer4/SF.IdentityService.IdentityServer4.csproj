@@ -4,6 +4,16 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <DocumentationFile>bin\Debug\netstandard2.0\SF.IdentityService.IdentityServer4.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\SF.IdentityService.IdentityServer4.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -13,11 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\SF.Abstractions\SF.Abstractions.csproj" />
-    <ProjectReference Include="..\..\Core\SF.Extensions\SF.Extensions.csproj" />
-    <ProjectReference Include="..\..\Core\SF.Support\SF.Support.csproj" />
-    <ProjectReference Include="..\..\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj" />
-    <ProjectReference Include="..\SF.Common.Abstractions\SF.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Services.MSDI\SF.Sys.Services.MSDI.csproj" />
     <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
     <ProjectReference Include="..\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
   </ItemGroup>

@@ -1,0 +1,204 @@
+﻿@{ 
+	Layout = "../Shared/_UserAdminLayout.cshtml";
+}
+<div class="tabs">
+	<ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#win-records" aria-controls="win-record" role="tab" data-toggle="tab">夺宝获奖记录</a></li>
+        <li role="presentation"><a href="#objectprize" aria-controls="objectprize" id="objectprize-link" role="tab" data-toggle="tab">活动奖品</a></li>
+	</ul>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="win-records">
+			<div v-if="false" class="loading">正在载入... </div>
+            <data-table v-cloak :version="version" :total="total">
+                <div>注：发货时间为当日10:00～21:00，21:00后中奖的用户，我们将在第二天10:00为您发货</div>
+                <br/>
+                <table v-cloak class="grid">
+                    <tr>
+                        <th>获奖图片</th>
+                        <th style="text-align:left">奖品名称</th>
+                        <th>收货地址/规格</th>
+                        <th style="width:130px">物流信息</th>
+                        <th style="min-width:130px">操作</th>
+                    </tr>
+                    <tr v-for="r in recs">
+                        <td><a v-bind:href="'/item/'+r.Round.ProductId+'-'+r.Round.Round" target="_blank"><img v-bind:src="'@Html.ResBase()r/'+r.Round.Image+'?format=c90'" /></a></td>
+                        <td style="text-align:left;width:30%">
+                            <div><a v-bind:href="'/item/'+r.Round.ProductId+'-'+r.Round.Round" target="_blank">(第{{r.Round.Round}}期){{r.Round.Title}}</a></div>
+                            <dl class="status">
+                                <dt>共需：</dt>
+                                <dd>{{r.Round.Total}}人次</dd>
+                                <dt>获奖号码：</dt>
+                                <dd>{{r.Round.WinSummary.Code}},总共参与了{{r.Round.WinSummary.Quantity}}人次</dd>
+                                <dt>夺宝时间：</dt>
+                                <dd>{{r.Round.WinSummary.TradeTime}}</dd>
+                                <dt>揭晓时间：</dt>
+                                <dd>{{r.Round.OpenTime}}</dd>
+                                <dt>交易编号：</dt>
+                                <dd>{{r.TradeIdent}}</dd>
+                            </dl>
+                        </td>
+                        <td>
+                            <div v-if="r.ProductSpecName">
+                                规格：{{r.ProductSpecName}}
+                            </div>
+                            <div v-if="r.Status && r.Status.Location">
+                                <div>{{r.Status.ContactName}} ({{r.Status.ContactPhone}}) </div>
+                                <div>{{r.Status.Location}}</div>
+                                <div>{{r.Status.Address}}</div>
+                            </div>
+                            <div v-if="r.Status && !r.Status.Location && !r.ProductSpecName">
+                                --
+                            </div>
+                            <div v-if="!r.Status">
+                                <select v-if="r.specs" class="form-control" v-model="r.spec">
+                                    <option value="">请选择规格</option>
+                                    <option v-for="a in r.specs" v-bind:value="a.Id">{{a.Name}}</option>
+                                </select>
+                                <select v-if="!r.IsVirtual" class="form-control" v-model="r.addr">
+                                    <option value="">请选择收货地址</option>
+                                    <option v-for="a in addrs" v-bind:value="a.Id">{{a.ContactName}} {{a.Address}}</option>
+                                </select>
+                                <br/>
+                                <a v-if="!r.IsVirtual" class="btn btn-primary" href="/user/address?ReturnUrl=/user/win">添加新地址</a>
+                            </div>
+                        </td>
+                        <td>
+                            <div v-if="r.Status && r.Status.State && r.Status.State!='CodeWaiting'">
+                                <div>{{r.Status.TransportName}}</div>
+                                <div>{{r.Status.TransportCode}}</div>
+                            </div>
+                            <div v-if="!r.Status || !r.Status.State || r.Status.State=='CodeWaiting'">
+                                --
+                            </div>
+                        </td>
+                        <td>
+                            <div v-if="!r.Status && !r.IsVirtual">
+                                <div>请您确认收件地址</div>
+                                <div><button class="btn btn-primary" v-bind:disabled="!r.addr || r.specs && !r.spec" v-on:click="verifyAddress(r)">确认地址</button></div>
+                            </div>
+                            <div v-if="!r.Status && r.IsVirtual && r.specs">
+                                <div>请您确认奖品规格</div>
+                                <div><button class="btn btn-primary" v-bind:disabled="r.specs && !r.spec" v-on:click="verifyAddress(r)">确认规格</button></div>
+                            </div>
+                            <div v-if="!r.Status && r.IsVirtual && !r.specs">
+                                <div><button class="btn btn-primary" v-on:click="verifyAddress(r)">申请发货</button></div>
+                            </div>
+                            <div v-if="r.Status && (!r.Status.State || r.Status.State=='CodeWaiting')">等待发货</div>
+                            <div v-if="r.Status && r.Status.State=='Delivering'">
+                                <div>等待收货</div>
+                                <button v-if="r.Status.HasObjectItem" class="btn btn-primary" v-on:click="verifyReceived(r)">确认收货</button>
+                                <button v-if="r.Status.HasVirtualItem" class="btn btn-primary" v-on:click="readToken(r)">确认查看</button>
+                            </div>
+                            <div v-if="r.Status && r.Status.State=='Received'">
+                                <div>已收货</div>
+                                <button v-if="r.Status.HasVirtualItem" class="btn btn-primary" v-on:click="readToken(r)">确认查看</button>
+                           </div>
+                        </td>
+                    </tr>
+                    <tr v-if="!recs.length">
+                        <td colspan="5">您还没有获奖记录！</td>
+                    </tr>
+                </table>
+           </data-table>
+        </div>
+        <div role="tabpanel" class="tab-pane" id="objectprize">
+            <div v-if="false" class="loading">正在载入... </div>
+            <data-table v-cloak :version="version" :total="total">
+                <div>注：发货时间为当日10:00～21:00，21:00后中奖的用户，我们将在第二天10:00为您发货</div>
+                <br />
+
+                <table v-cloak class="grid">
+                    <tr>
+                        <th>奖品图片</th>
+                        <th style="text-align:left">奖品名称</th>
+                        <th>收货地址/规格</th>
+                        <th>物流信息</th>
+                        <th>操作</th>
+                    </tr>
+                    <tr v-for="r in recs">
+                        <td><img v-bind:src="'/r/'+r.Record.ObjectPrizeImage+'?format=c90'" /></td>
+                        <td style="text-align:left;width:30%">
+                            <div>{{r.Record.ObjectPrizeName}}</div>
+                            <dl class="status">
+                                <dt>奖品来源：</dt>
+                                <dd>{{r.Record.SrcDesc}}</dd>
+                                <dt>奖品数量：</dt>
+                                <dd>{{r.Record.Quantity}}</dd>
+                                <dt>中奖时间：</dt>
+                                <dd>{{r.Record.Time}}</dd>
+                            </dl>
+                        </td>
+                        <td>
+                            <div v-if="r.Record.ObjectPrizeSpec">
+                                规格：{{r.Record.ObjectPrizeSpec}}
+                            </div>
+                            <div v-if="r.Status && r.Status.Location">
+                                <div>{{r.Status.ContactName}} ({{r.Status.ContactPhone}}) </div>
+                                <div>{{r.Status.Location}}</div>
+                                <div>{{r.Status.Address}}</div>
+                            </div>
+                            <div v-if="r.Status && !r.Status.Location && !r.Record.ObjectPrizeSpec">
+                                --
+                            </div>
+                            <div v-if="!r.Status">
+                                <select v-if="r.specs" class="form-control" v-model="r.spec">
+                                    <option value="">请选择奖品规格</option>
+                                    <option v-for="a in r.specs" v-bind:value="a.Id">{{a.Name}}</option>
+                                </select>
+                                <select v-if="!r.Record.IsVirtualItem" class="form-control" v-model="r.addr">
+                                    <option value="">请选择收货地址</option>
+                                    <option v-for="a in addrs" v-bind:value="a.Id">{{a.ContactName}} {{a.Address}}</option>
+                                </select>
+                                <br />
+                                <a v-if="!r.Record.IsVirtualItem" class="btn btn-primary" href="/user/address">添加新地址</a>
+                            </div>
+                        </td>
+                        <td>
+                            <div v-if="r.Status && r.Status.State && r.Status.State!='CodeWaiting'">
+                                <div>{{r.Status.TransportName}}</div>
+                                <div>{{r.Status.TransportCode}}</div>
+                            </div>
+                            <div v-if="!r.Status || !r.Status.State || r.Status.State=='CodeWaiting'">
+                                --
+                            </div>
+                        </td>
+                        <td>
+                            <div v-if="!r.Status && !r.Record.IsVirtualItem">
+                                <div>请您确认收件地址</div>
+                                <div><button class="btn btn-primary" v-bind:disabled="!r.addr || r.specs && !r.spec" v-on:click="verifyAddress(r)">确认地址</button></div>
+                            </div>
+                            <div v-if="!r.Status && r.Record.IsVirtualItem && r.specs">
+                                <div>请您确认奖品规格</div>
+                                <div><button class="btn btn-primary" v-bind:disabled="r.specs && !r.spec" v-on:click="verifyAddress(r)">确认规格</button></div>
+                            </div>
+                            <div v-if="!r.Status && r.Record.IsVirtualItem && !r.specs">
+                                <div><button class="btn btn-primary" v-on:click="verifyAddress(r)">申请发货</button></div>
+                            </div>
+                            <div v-if="r.Status && (!r.Status.State || r.Status.State=='CodeWaiting')">等待发货</div>
+                            <div v-if="r.Status && r.Status.State=='Delivering'">
+                                <div>等待收货</div>
+                                <button v-if="r.Status.HasObjectItem" class="btn btn-primary" v-on:click="verifyReceived(r)">确认收货</button>
+                                <button v-if="r.Status.HasVirtualItem" class="btn btn-primary" v-on:click="readToken(r)">确认查看</button>
+                            </div>
+                            <div v-if="r.Status && r.Status.State=='Received'">
+                                <div>已收货</div>
+                                <button v-if="r.Status.HasVirtualItem" class="btn btn-primary" v-on:click="readToken(r)">确认查看</button>
+                           </div>
+                        </td>
+                    </tr>
+                    <tr v-if="!recs.length">
+                        <td colspan="5">您还没有实物奖品！</td>
+                    </tr>
+                </table>
+            </data-table>
+        </div>
+	</div>
+
+</div>
+@Html.Partial("../Shared/_Dialog");
+
+@section scripts{
+	<script>
+		window.boot("user-win-records");
+	</script>
+}

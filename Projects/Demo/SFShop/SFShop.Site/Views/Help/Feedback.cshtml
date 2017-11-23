@@ -1,0 +1,31 @@
+﻿<div class="help-center clearfix container">
+	@Html.Partial("_Menu")
+	<div class="help-doc">
+		<ol class="breadcrumb">
+			<li><a href="/">首页</a></li>
+			<li><a href="/help/">帮助中心</a></li>
+			<li class="active">用户反馈</li>
+		</ol>
+		<div class="help-content">
+            <form class="feedback big" style="width:600px">
+                <div class="form-group">
+                    <label>标题:</label>
+                    <input class="form-control" placeholder="请填写反馈标题" name="title" type="text" />
+                </div>
+                <div class="form-group">
+                    <label>内容:</label>
+                    <textarea class="form-control" placeholder="请填写反馈内容" name="content" rows="6"></textarea>
+                </div>
+                <div style="text-align:center">
+                    <div class="message"></div>
+                    <button type="submit" style="width:200px;margin:auto" class="btn btn-primary submit">提交反馈</button>
+                </div>
+            </form>
+        </div>
+	</div>
+</div>
+@section scripts{
+    <script>
+	window.boot("help-feedback");
+    </script>
+}
