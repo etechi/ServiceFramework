@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{66A4F4E4-6A67-479D-8650-013BD4A3913B}"
 EndProject
@@ -178,6 +178,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Sys.Data.Implements", "Server\Sys\SF.Sys.Data.Implements\SF.Sys.Data.Implements.csproj", "{05073C3F-3BA0-4983-9122-BC65A9F69564}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Sys.Entities.Implements", "Server\Sys\SF.Sys.Entities.Implements\SF.Sys.Entities.Implements.csproj", "{9403E6F2-52B7-4B90-A231-508E1230151F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Common.FrontEndContents.Implements", "Server\Common\SF.Common.FrontEndContents.Implements\SF.Common.FrontEndContents.Implements.csproj", "{5FDF6464-44FC-4217-9E2C-6ED00DCFD465}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Sys.MenuServices.Implements", "Server\Sys\SF.Sys.MenuServices.Implements\SF.Sys.MenuServices.Implements.csproj", "{41290767-CB8C-4658-8B37-F723CA913811}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF.Common.Media.Implements", "Server\Common\SF.Common.Media.Implements\SF.Common.Media.Implements.csproj", "{B65ADAB5-2DB0-4CCF-8F12-F1B523006882}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -489,6 +495,18 @@ Global
 		{9403E6F2-52B7-4B90-A231-508E1230151F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9403E6F2-52B7-4B90-A231-508E1230151F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9403E6F2-52B7-4B90-A231-508E1230151F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FDF6464-44FC-4217-9E2C-6ED00DCFD465}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FDF6464-44FC-4217-9E2C-6ED00DCFD465}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FDF6464-44FC-4217-9E2C-6ED00DCFD465}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FDF6464-44FC-4217-9E2C-6ED00DCFD465}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41290767-CB8C-4658-8B37-F723CA913811}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41290767-CB8C-4658-8B37-F723CA913811}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41290767-CB8C-4658-8B37-F723CA913811}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41290767-CB8C-4658-8B37-F723CA913811}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B65ADAB5-2DB0-4CCF-8F12-F1B523006882}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B65ADAB5-2DB0-4CCF-8F12-F1B523006882}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B65ADAB5-2DB0-4CCF-8F12-F1B523006882}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B65ADAB5-2DB0-4CCF-8F12-F1B523006882}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -571,6 +589,9 @@ Global
 		{831045C0-C25F-4910-B836-E336AC28E1DC} = {A44372D6-E1A5-47C8-ADC3-5DA147B11A1F}
 		{05073C3F-3BA0-4983-9122-BC65A9F69564} = {A44372D6-E1A5-47C8-ADC3-5DA147B11A1F}
 		{9403E6F2-52B7-4B90-A231-508E1230151F} = {A44372D6-E1A5-47C8-ADC3-5DA147B11A1F}
+		{5FDF6464-44FC-4217-9E2C-6ED00DCFD465} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
+		{41290767-CB8C-4658-8B37-F723CA913811} = {A44372D6-E1A5-47C8-ADC3-5DA147B11A1F}
+		{B65ADAB5-2DB0-4CCF-8F12-F1B523006882} = {21ADA552-95B6-443B-BEDB-8A420182B2E3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8CEC16A9-B2F8-4F62-83CD-A3938068964F}

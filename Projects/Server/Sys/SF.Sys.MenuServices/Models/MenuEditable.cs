@@ -14,25 +14,18 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
-using SF.Sys.Entities.Annotations;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
-namespace SF.Common.FrontEndContents.Friendly
+namespace SF.Sys.MenuServices.Models
 {
-	public class TextItem : LinkItemBase
+
+	public class MenuEditable : Menu
     {
 		/// <summary>
-		/// 文字1
+		/// 菜单项
 		/// </summary>
-		[Required]
-        [Layout(1)]
-        public string Text1 { get; set; }
-
-		/// <summary>
-		/// 文字2
-		/// </summary>
-		[Layout(2)]
-        public string Text2 { get; set; }
-
-    }
+		[TreeNodes]
+		public IEnumerable<MenuItem> Items { get; set; }
+	}
 }
+

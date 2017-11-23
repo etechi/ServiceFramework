@@ -13,26 +13,42 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.Entities.Annotations;
-using System.ComponentModel.DataAnnotations;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SF.Common.FrontEndContents.Friendly
+namespace SF.Common.FrontEndContents.Runtime
 {
-	public class TextItem : LinkItemBase
-    {
-		/// <summary>
-		/// 文字1
-		/// </summary>
-		[Required]
-        [Layout(1)]
-        public string Text1 { get; set; }
 
-		/// <summary>
-		/// 文字2
-		/// </summary>
-		[Layout(2)]
-        public string Text2 { get; set; }
 
-    }
+	class Block
+	{
+		public string Id { get; private set; }
+		public string Name { get; private set; }
+		public BlockContent[] Contents { get; private set; }
+
+		public static Block Create(
+			SiteConfigModels.SiteModel siteModel,
+			SiteConfigModels.PageModel pageModel,
+			SiteConfigModels.BlockModel model,
+			SiteLoadContext loadContext
+			)
+		{
+			var contents = model.contents
+				.Where(c => !(c.disabled ?? false))
+				.Select(cm => BlockContent.Create(siteModel, pageModel, model, cm, loadContext))
+				.Where(bc => bc != null)
+				.ToArray();
+
+			return new Block
+			{
+				Id = model.ident,
+				Name = model.name,
+				Contents = contents
+			};
+		}
+	}
+	
 }

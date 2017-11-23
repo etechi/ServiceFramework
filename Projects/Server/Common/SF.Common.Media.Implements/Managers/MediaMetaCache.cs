@@ -13,26 +13,33 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.Entities.Annotations;
-using System.ComponentModel.DataAnnotations;
+using SF.Sys.Caching;
+using System;
 
-namespace SF.Common.FrontEndContents.Friendly
+namespace SF.Common.Media
 {
-	public class TextItem : LinkItemBase
-    {
-		/// <summary>
-		/// 文字1
-		/// </summary>
-		[Required]
-        [Layout(1)]
-        public string Text1 { get; set; }
-
-		/// <summary>
-		/// 文字2
-		/// </summary>
-		[Layout(2)]
-        public string Text2 { get; set; }
-
-    }
+	/// <summary>
+	/// 媒体元信息缓存
+	/// </summary>
+	public class MediaMetaCache : IMediaMetaCache
+	{
+		public ILocalCache<IMediaMeta> Cache { get; }
+		public MediaMetaCache(ILocalCache<IMediaMeta> cache)
+		{
+			Cache = cache;
+		}
+		
+        public void Remove(string Id)
+        {
+            Cache.Remove(Id);
+        }
+		public IMediaMeta TryGet(string Id)
+		{
+			return Cache.Get(Id) as IMediaMeta;
+		}
+		public IMediaMeta GetOrAdd(IMediaMeta Media)
+		{
+			return Cache.AddOrGetExisting(Media.Id, Media, TimeSpan.FromHours(1)) as IMediaMeta ?? Media;
+		}
+	}
 }

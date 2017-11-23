@@ -13,26 +13,48 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.Entities.Annotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using SF.Sys.Data;
+using SF.Sys.Entities;
 
-namespace SF.Common.FrontEndContents.Friendly
+namespace SF.Common.FrontEndContents.DataModels
 {
-	public class TextItem : LinkItemBase
-    {
+
+	/// <summary>
+	/// 站点配置
+	/// </summary>
+	/// <typeparam name="TSite"></typeparam>
+	/// <typeparam name="TSiteTemplate"></typeparam>
+	[Table("FrontSite")]
+    public class Site<TSite, TSiteTemplate> :
+		IEntityWithId<string>
+		where TSite : Site<TSite, TSiteTemplate>
+		where TSiteTemplate : SiteTemplate<TSite, TSiteTemplate>
+	{
 		/// <summary>
-		/// 文字1
+		/// Id
 		/// </summary>
-		[Required]
-        [Layout(1)]
-        public string Text1 { get; set; }
+		[Key]
+		[MaxLength(100)]
+		public string Id{get;set;}
 
 		/// <summary>
-		/// 文字2
+		/// 站点名称
 		/// </summary>
-		[Layout(2)]
-        public string Text2 { get; set; }
+		[MaxLength(100)]
+        public string Name { get; set; }
 
-    }
+		/// <summary>
+		/// 站点模板ID
+		/// </summary>
+		[Index]
+        public long TemplateId{get;set;}
+
+		[ForeignKey(nameof(TemplateId))]
+		public TSiteTemplate Template { get; set; }
+	}
+
+	public class Site : Site<Site, SiteTemplate>
+	{ }
 }

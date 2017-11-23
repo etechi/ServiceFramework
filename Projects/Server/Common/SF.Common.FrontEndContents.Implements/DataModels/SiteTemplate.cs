@@ -13,26 +13,44 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.Entities.Annotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using SF.Sys.Entities;
 
-namespace SF.Common.FrontEndContents.Friendly
+namespace SF.Common.FrontEndContents.DataModels
 {
-	public class TextItem : LinkItemBase
-    {
+
+	/// <summary>
+	/// 站点模板
+	/// </summary>
+	/// <typeparam name="TSite"></typeparam>
+	/// <typeparam name="TSiteTemplate"></typeparam>
+	[Table("FrontSiteTemplate")]
+	public class SiteTemplate<TSite,TSiteTemplate> :
+		IEntityWithId<long>
+		where TSite: Site<TSite,TSiteTemplate>
+		where TSiteTemplate : SiteTemplate<TSite,TSiteTemplate>
+	{
 		/// <summary>
-		/// 文字1
+		/// ID
+		/// </summary>
+		[Key]
+		public long Id { get; set; }
+
+		/// <summary>
+		/// 模板名称
 		/// </summary>
 		[Required]
-        [Layout(1)]
-        public string Text1 { get; set; }
+		[MaxLength(100)]
+        public string Name{get;set;}
 
 		/// <summary>
-		/// 文字2
+		/// 模板配置数据
 		/// </summary>
-		[Layout(2)]
-        public string Text2 { get; set; }
+		public string Data { get; set; }
+	}
 
-    }
+	public class SiteTemplate : SiteTemplate<Site, SiteTemplate>
+	{ }
+
 }

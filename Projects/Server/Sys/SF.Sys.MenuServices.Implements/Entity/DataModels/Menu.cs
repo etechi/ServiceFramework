@@ -13,26 +13,33 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.Entities.Annotations;
+using SF.Entities.DataModels;
+using SF.Sys.Data;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Common.FrontEndContents.Friendly
+namespace SF.Sys.MenuServices.Entity.DataModels
 {
-	public class TextItem : LinkItemBase
-    {
-		/// <summary>
-		/// 文字1
-		/// </summary>
+	[Table("MgrMenu")]
+	public class Menu<TMenu,TMenuItem> : ObjectEntityBase
+		where TMenu : Menu<TMenu, TMenuItem>
+		where TMenuItem : MenuItem<TMenu, TMenuItem>
+	{
+		[Index("ident",Order =1)]
+		public override long? ServiceDataScopeId { get; set; }
+
+		[Index("ident",Order =2)]
 		[Required]
-        [Layout(1)]
-        public string Text1 { get; set; }
+		[MaxLength(100)]
+		public string Ident { get; set; }
 
-		/// <summary>
-		/// 文字2
-		/// </summary>
-		[Layout(2)]
-        public string Text2 { get; set; }
 
-    }
+		[InverseProperty(nameof(MenuItem<TMenu, TMenuItem>.Menu))]
+		public ICollection<TMenuItem> Items { get; set; }
+	}
+
+	public class Menu : Menu<Menu, MenuItem>
+	{ }
 }
+

@@ -14,25 +14,36 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
-using SF.Sys.Entities.Annotations;
-using System.ComponentModel.DataAnnotations;
+using SF.Sys.Entities;
+using SF.Sys.NetworkService;
+using System.Threading.Tasks;
 
-namespace SF.Common.FrontEndContents.Friendly
+namespace SF.Sys.MenuServices
 {
-	public class TextItem : LinkItemBase
-    {
+	public class MenuQueryArgument : Entities.IQueryArgument<ObjectKey<long>>
+	{
+		public ObjectKey<long> Id { get; set; }
 		/// <summary>
-		/// 文字1
+		/// 名称
 		/// </summary>
-		[Required]
-        [Layout(1)]
-        public string Text1 { get; set; }
-
+		public string Name { get; set; }
 		/// <summary>
-		/// 文字2
+		/// 标识
 		/// </summary>
-		[Layout(2)]
-        public string Text2 { get; set; }
+		public string Ident { get; set; }
+	}
+	/// <summary>
+	/// 菜单管理
+	/// </summary>
+	[NetworkService]
+	[EntityManager]
+	[Category("系统管理", "系统菜单")]
+	public interface IMenuService :
+		Entities.IEntitySource<ObjectKey<long>, Models.Menu, MenuQueryArgument>,
+		Entities.IEntityManager<ObjectKey<long>, Models.MenuEditable>
+	{
+		Task<MenuItem[]> GetMenu(string Ident);
+	}
 
-    }
 }
+

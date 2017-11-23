@@ -13,26 +13,23 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Entities.Models;
 using SF.Sys.Annotations;
-using SF.Sys.Entities.Annotations;
 using System.ComponentModel.DataAnnotations;
 
-namespace SF.Common.FrontEndContents.Friendly
+namespace SF.Sys.MenuServices.Models
 {
-	public class TextItem : LinkItemBase
-    {
+	[EntityObject]
+	public class Menu : ObjectEntityBase<long>
+	{
+		///<title>菜单引用标识</title>
 		/// <summary>
-		/// 文字1
+		/// 默认菜单：业务管理后台:bizness,系统管理后台:system"
 		/// </summary>
+		[MaxLength(100)]
 		[Required]
-        [Layout(1)]
-        public string Text1 { get; set; }
+		public string Ident { get; set; }
+	}
 
-		/// <summary>
-		/// 文字2
-		/// </summary>
-		[Layout(2)]
-        public string Text2 { get; set; }
-
-    }
 }
+
