@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hygou.Setup
+namespace SFShop.Setup
 {
 	public class ProductContentInitializer
 	{

@@ -50,11 +50,7 @@ namespace SF.Sys.Services
 				);
 			return sc;
 		}
-		public static IServiceCollection AddDynamicTypeBuilder(this IServiceCollection sc)
-		{
-			sc.AddSingleton<IDynamicTypeBuilder, DynamicTypeBuilder>();
-			return sc;
-		}
+		
 	}
 
 }

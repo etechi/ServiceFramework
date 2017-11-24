@@ -31,7 +31,7 @@ using System.Threading.Tasks;
 using SF.Common.Members;
 using SF.Auth.IdentityServices.Managers;
 using SF.Entities;
-namespace Hygou.Setup
+namespace SFShop.Setup
 {
 	public class SystemInitializer
 	{

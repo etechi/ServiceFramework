@@ -12,27 +12,5 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Extensions\SF.Biz.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Implements\SF.Biz.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Abstractions\SF.Common.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Extensions\SF.Common.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Extensions\SF.IdentityService.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.IdentityServer4\SF.IdentityService.IdentityServer4.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Abstractions\SF.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Extensions\SF.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Implements\SF.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Interception\SF.Interception.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Support\SF.Support.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.UnitTest\SF.UnitTest.csproj" />
-    <ProjectReference Include="..\..\..\Server\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.csproj" />
-    <ProjectReference Include="..\..\..\Server\Test\SF.UT.Core\SF.UT.Core.csproj" />
-    <ProjectReference Include="..\Hygou.Bizness\Hygou.Bizness.csproj" />
-    <ProjectReference Include="..\Hygou.Core2\Hygou.Core2.csproj" />
-  </ItemGroup>
 
 </Project>

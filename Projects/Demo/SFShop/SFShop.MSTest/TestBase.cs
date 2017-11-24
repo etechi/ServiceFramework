@@ -27,7 +27,7 @@ using SF.Core.Hosting;
 using SF.Core.ServiceManagement;
 using System.Threading.Tasks;
 
-namespace Hygou.UT
+namespace SFShop.UT
 {
 	public class TestBase : IDisposable
 	{

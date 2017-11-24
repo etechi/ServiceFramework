@@ -27,7 +27,7 @@ using SF.Sys.Services.Management;
 using SF.Sys.Entities;
 using SF.Sys.Linq;
 
-namespace SF.Core.ServiceManagement
+namespace SF.Sys.Services
 {
 	public static class IdentityServiceDIExtension 
 	{

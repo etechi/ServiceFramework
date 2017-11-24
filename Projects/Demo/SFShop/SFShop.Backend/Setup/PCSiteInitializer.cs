@@ -24,7 +24,7 @@ using SF.Services.Settings;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Hygou.Setup
+namespace SFShop.Setup
 {
 	public static class PCSiteInitializer
 	{

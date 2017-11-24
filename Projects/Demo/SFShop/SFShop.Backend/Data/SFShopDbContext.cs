@@ -1,4 +1,4 @@
-#region Apache License Version 2.0
+﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -14,20 +14,16 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
-using SF.Sys.ServiceFeatures;
-using SF.Sys.Services;
+using Microsoft.EntityFrameworkCore;
 
-namespace SF.Sys.Services
+namespace SFShop.Data
 {
-	public static class ServiceFeatureDICollectionExtension
+	public class SFShopDbContext : DbContext
 	{
-		public static void AddServiceFeatureControl(
-					this IServiceCollection sc
-					)
-		{
-			sc.AddScoped<IServiceFeatureControlService, ServiceFeatureControlService>();
-			
-		}
+		public SFShopDbContext(DbContextOptions<SFShopDbContext> options)
+			: base(options)
+		{ }
+
 	}
 
 }

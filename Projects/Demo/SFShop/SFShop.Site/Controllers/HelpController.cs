@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 using SF.Management.FrontEndContents.Mvc;
 using SF.Core.ServiceManagement;
 
-namespace Hygou.Site.Controllers
+namespace SFShop.Site.Controllers
 {
 	public class HelpController : BaseController
 	{

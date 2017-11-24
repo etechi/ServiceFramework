@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Hosting.Implements.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Security.xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
 	</PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.Hosting.Implements.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.Security.xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
 	</PropertyGroup>
 
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
+    <ProjectReference Include="..\SF.Sys.Security\SF.Sys.Security.csproj" />
     <ProjectReference Include="..\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
   </ItemGroup>

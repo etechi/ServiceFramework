@@ -16,7 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Sys.Logging;
 using SF.Sys.Services;
 
-namespace SF.Core.ServiceManagement
+namespace SF.Sys.Services
 {
 	public static class LoggerDIServiceCollectionService
 	{

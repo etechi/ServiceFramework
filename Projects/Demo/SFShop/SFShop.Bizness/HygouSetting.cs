@@ -13,33 +13,34 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Biz.Products;
-using SF.Metadata;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace Hygou
+using SF.Biz.Products;
+using SF.Common.Members.Models;
+using SF.Sys.Annotations;
+using System.ComponentModel.DataAnnotations;
+
+namespace SFShop
 {
-    public class HygouSetting
+	public class SFShopSetting
     {
+		///<title>PC站点默认帮助文档</title>
+		/// <summary>
+		/// 默认帮助中心文档
+		/// </summary>
+		/// <group>帮助中心</group>
 		[Required]
-		[Comment(GroupName = "帮助中心", Name = "PC站点默认帮助文档", Description = "默认帮助中心文档")]
 		public long PCHelpCenterDefaultDocId { get; set; }
 
-
+		///<title>主产品目录</title>
+		/// <group>产品</group>
 		[Required]
-		[Comment(GroupName = "产品", Name = "主产品目录", Description = "主产品目录")]
 		[EntityIdent(typeof(ProductInternal))]
 		public long MainProductCategoryId { get; set; }
 
+		///<title>默认卖家</title>
+		/// <group>产品</group>
 		[Required]
-		[Comment(GroupName = "产品", Name = "默认卖家")]
-		[EntityIdent(typeof(SF.Common.Members.Models.MemberInternal))]
+		[EntityIdent(typeof(MemberInternal))]
 		public long DefaultSellerId { get; set; }
 
 

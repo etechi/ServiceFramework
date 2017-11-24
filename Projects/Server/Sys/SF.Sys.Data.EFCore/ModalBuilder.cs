@@ -24,6 +24,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 using SF.Sys.Reflection;
+using SF.Sys.Data.EntityFrameworkCore;
+using SF.Sys.Data;
 
 namespace SF.Sys.Data.EntityFrameworkCore
 {
@@ -35,7 +37,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 	class DataModelCustomizer : ModelCustomizer
 	{
 #if NETSTANDARD2_0
-		public DataModelCustomizer( ModelCustomizerDependencies dependencies) : base(dependencies)
+		public DataModelCustomizer(ModelCustomizerDependencies dependencies) : base(dependencies)
 		{
 		}
 #endif
@@ -57,13 +59,13 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		public EntityItem[] EntityItems { get; }
 		public DataModalInitializer(EntityItem[] EntityItems)
 		{
-			
+
 			this.EntityItems = EntityItems;
 		}
-		void BuildIndex(EntityItem item,EntityTypeBuilder builder)
+		void BuildIndex(EntityItem item, EntityTypeBuilder builder)
 		{
 			var indexs = (
-					from p in item.Type.GetProperties(BindingFlags.Public | BindingFlags.Instance  | BindingFlags.FlattenHierarchy)
+					from p in item.Type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy)
 					from idx in p.GetCustomAttributes().Where(a => a is IndexAttribute).Cast<IndexAttribute>()
 					let rec = new {
 						name = idx.Name ?? p.Name,
@@ -71,7 +73,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 						unique = idx.IsUnique,
 						clustered = idx.IsClustered,
 						order = idx.Order,
-						level =p.DeclaringType.GetInheritLevel()
+						level = p.DeclaringType.GetInheritLevel()
 					}
 					group rec by rec.name into g
 					select new
@@ -79,8 +81,8 @@ namespace SF.Sys.Data.EntityFrameworkCore
 						name = g.Key,
 						unique = g.Any(i => i.unique),
 						clustered = g.Any(i => i.clustered),
-						fields = g.GroupBy(a=>a.field)
-								.Select(gi=>gi.OrderByDescending(i=>i.level).First())
+						fields = g.GroupBy(a => a.field)
+								.Select(gi => gi.OrderByDescending(i => i.level).First())
 								.OrderBy(i => i.order)
 								.Select(i => i.field)
 								.ToArray()
@@ -95,7 +97,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		{
 			var keys = (from p in item.Type
 				.GetProperties(
-					BindingFlags.Public | BindingFlags.Instance| BindingFlags.FlattenHierarchy
+					BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy
 					)
 						where p.GetCustomAttribute<KeyAttribute>(true) != null
 						let col = p.GetCustomAttribute<ColumnAttribute>(true)
@@ -123,7 +125,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 				TryBuildCompositPrimaryKey(item, builder);
 				BuildIndex(item, builder);
 			}
-			
+
 		}
 	}
 	class DataModalLoaderExtension : IDbContextOptionsExtension
@@ -158,11 +160,28 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		}
 #endif
 	}
+}
+namespace SF.Sys.Services
+{ 
 	public static class DbContextOptionBuilderExtension
 	{
+		public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddEFCoreDbContext<TDbContext>(
+			this Microsoft.Extensions.DependencyInjection.IServiceCollection Services,
+			Action<IServiceProvider, DbContextOptionsBuilder> config
+			) where TDbContext:DbContext
+		{
+			Services.AddDbContext<TDbContext>(
+				(IServiceProvider isp, DbContextOptionsBuilder options) =>
+					{
+						LoadDataModels(options, isp);
+						config(isp, options);
+					},
+				ServiceLifetime.Transient
+				);
+			return Services;
+		}
 		public static DbContextOptionsBuilder LoadDataModels(this DbContextOptionsBuilder Builder,IServiceProvider sp)
 		{
-
 			//System.Diagnostics.Debugger.Launch();
 			Builder.ReplaceService<IModelCustomizer, DataModelCustomizer>();
 			var models = sp.GetService<IEnumerable<IEntityDataModelSource>>().Select(ms => ms.DataModels)

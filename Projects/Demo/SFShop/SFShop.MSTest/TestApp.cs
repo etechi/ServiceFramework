@@ -28,7 +28,7 @@ using SF.Core.ServiceManagement;
 using SF.Core.NetworkService;
 using SF.Clients;
 
-namespace Hygou.UT
+namespace SFShop.UT
 { 
 	public static class TestApp
 	{

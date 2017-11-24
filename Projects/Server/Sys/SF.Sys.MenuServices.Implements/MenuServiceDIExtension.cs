@@ -27,7 +27,7 @@ using SF.Sys.Services.Management;
 using SF.Sys.Linq;
 using SF.Sys;
 
-namespace SF.Core.ServiceManagement
+namespace SF.Sys.Services
 {
 	public static class MenuServicesDIExtension
 	{

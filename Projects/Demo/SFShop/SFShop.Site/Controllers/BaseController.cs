@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 using SF.Core.ServiceManagement;
 using SF.Management.FrontEndContents;
 
-namespace Hygou.Site.Controllers
+namespace SFShop.Site.Controllers
 {
 	public class BaseController : Controller
 	{

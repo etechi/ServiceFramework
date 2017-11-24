@@ -29,10 +29,10 @@ using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using SF.Data.EntityFrameworkCore;
-using Hygou.Setup;
+using SFShop.Setup;
 using SF.Services.Settings;
 
-namespace Hygou
+namespace SFShop
 {	
 	public static class HygouDIExtensions
 	{

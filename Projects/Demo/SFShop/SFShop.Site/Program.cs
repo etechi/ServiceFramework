@@ -23,7 +23,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Hygou
+namespace SFShop
 {
     public class Program
     {

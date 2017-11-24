@@ -1,4 +1,4 @@
-#region Apache License Version 2.0
+﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -13,21 +13,32 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-
-using SF.Sys.ServiceFeatures;
+using SF.Sys.Hosting;
 using SF.Sys.Services;
+using SF.Sys.Services.Management;
+using System;
+using System.Threading.Tasks;
 
-namespace SF.Sys.Services
+namespace SFShop.ServiceSetup
 {
-	public static class ServiceFeatureDICollectionExtension
+	public static class BizServiceSetup
 	{
-		public static void AddServiceFeatureControl(
-					this IServiceCollection sc
-					)
+		public static IServiceCollection AddBizServices(this IServiceCollection Services, EnvironmentType EnvType)
 		{
-			sc.AddScoped<IServiceFeatureControlService, ServiceFeatureControlService>();
-			
+
+			Services.AddProductServices();
+
+			Services.InitServices("业务服务", InitServices);
+			return Services;
+		}
+		static async Task InitServices(IServiceProvider sp, IServiceInstanceManager sim, long? ParentId)
+		{
+			await sim.NewProductItemManager().Ensure(sp, ParentId);
+			await sim.NewProductManager().Ensure(sp, ParentId);
+			await sim.NewProductCategoryManager().Ensure(sp, ParentId);
+			await sim.NewProductTypeManager().Ensure(sp, ParentId);
 		}
 	}
+
 
 }

@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Authorization;
 using SF.Core.ServiceManagement;
 
 
-namespace Hygou.Site.Controllers 
+namespace SFShop.Site.Controllers 
 {
 	public class AdminModel
 	{

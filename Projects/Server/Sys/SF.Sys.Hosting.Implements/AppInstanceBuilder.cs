@@ -13,12 +13,10 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using SF.Sys.ServiceFeatures;
 using SF.Sys.Logging;
 using SF.Sys.Services;
+using System;
+using System.Collections.Generic;
 
 namespace SF.Sys.Hosting
 {

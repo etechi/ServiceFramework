@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Hygou.Setup
+namespace SFShop.Setup
 {
 	public static class DocInitializer
 	{

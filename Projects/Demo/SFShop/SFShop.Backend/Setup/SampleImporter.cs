@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 using SF.Core.ServiceManagement;
 using SF.Services.Settings;
 
-namespace Hygou.Setup
+namespace SFShop.Setup
 {
 	public static class SampleImporter
 	{

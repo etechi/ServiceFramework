@@ -31,7 +31,7 @@ using IdentityServer4.Stores;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Hygou
+namespace SFShop
 {
     public class Startup
     {

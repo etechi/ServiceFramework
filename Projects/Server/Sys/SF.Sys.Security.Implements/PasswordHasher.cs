@@ -13,28 +13,29 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using SF.Data;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.ComponentModel.DataAnnotations;
-using JetBrains.Annotations;
 
-namespace Hygou
+
+using SF.Services.Security;
+
+namespace SF.Sys.Security
 {
-	public class HygouDbContext : DbContext
+	public class PasswordHasher : IPasswordHasher
 	{
-		public HygouDbContext(DbContextOptions<HygouDbContext> options)
-			: base(options)
-		{ }
-
+		public byte[] GlobalPassword { get; }
+		/// <summary>
+		/// 全局密钥
+		/// </summary>
+		/// <param name="GlobalPassword"></param>
+		public PasswordHasher(
+			
+			string GlobalPassword
+			)
+		{
+			this.GlobalPassword = GlobalPassword.UTF8Bytes();
+		}
+		public string Hash(string Password,byte[] SecurityStamp)
+		{
+			return Password.UTF8Bytes().Concat(SecurityStamp, GlobalPassword).CalcHash(SF.Hash.Sha1()).Hex();
+		}
 	}
-
 }

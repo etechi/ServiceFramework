@@ -1,4 +1,4 @@
-#region Apache License Version 2.0
+﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -13,21 +13,24 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-
-using SF.Sys.ServiceFeatures;
+using SF.Sys.Hosting;
 using SF.Sys.Services;
+using SF.Sys.Services.Management;
+using System;
+using System.Threading.Tasks;
 
-namespace SF.Sys.Services
+namespace SFShop.ServiceSetup
 {
-	public static class ServiceFeatureDICollectionExtension
+	public static class SFShopServiceSetup
 	{
-		public static void AddServiceFeatureControl(
-					this IServiceCollection sc
-					)
+		public static IServiceCollection AddSFShopServices(this IServiceCollection Services, EnvironmentType EnvType)
 		{
-			sc.AddScoped<IServiceFeatureControlService, ServiceFeatureControlService>();
-			
+
+			Services.AddSFShopSettings();
+			return Services;
 		}
+		
 	}
+
 
 }

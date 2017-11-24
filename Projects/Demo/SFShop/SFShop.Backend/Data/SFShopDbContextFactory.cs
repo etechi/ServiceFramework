@@ -1,4 +1,4 @@
-#region Apache License Version 2.0
+﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -14,20 +14,21 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
-using SF.Sys.ServiceFeatures;
-using SF.Sys.Services;
 
-namespace SF.Sys.Services
+using Microsoft.EntityFrameworkCore.Design;
+using SF.Sys.Hosting;
+
+namespace SFShop.Data
 {
-	public static class ServiceFeatureDICollectionExtension
+	public class SFShopDbContextFactory : IDesignTimeDbContextFactory<SFShopDbContext>
 	{
-		public static void AddServiceFeatureControl(
-					this IServiceCollection sc
-					)
+		IAppInstance Instance { get; } = HygouApp.Setup(EnvironmentType.Utils).Build();
+
+		public SFShopDbContext CreateDbContext(string[] args)
 		{
-			sc.AddScoped<IServiceFeatureControlService, ServiceFeatureControlService>();
-			
+			return Instance.ServiceProvider.Resolve<SFShopDbContext>();
 		}
 	}
+
 
 }

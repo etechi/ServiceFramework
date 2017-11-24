@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 using SF.AspNetCore;
 using SF.Services.Settings;
 
-namespace Hygou.Site.Controllers 
+namespace SFShop.Site.Controllers 
 {
 	public class HomeController : BaseController
 	{

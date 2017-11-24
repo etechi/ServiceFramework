@@ -15,13 +15,10 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Auth.IdentityServices.Internals;
 using SF.Auth.IdentityServices.Models;
-using SF.Core.ServiceManagement;
 using SF.Sys;
 using SF.Sys.Auth;
 using SF.Sys.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 namespace SF.Auth.IdentityServices

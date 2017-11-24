@@ -20,7 +20,7 @@ using SF.Sys.Tests.ValueAsserts;
 using SF.Sys.Tests.SampleGenerators;
 using SF.Sys.Tests.NumberValueTypes;
 
-namespace SF.Sys.Services.Management
+namespace SF.Sys.Services
 {
 	public static class TestDIExtension
 	{

@@ -13,33 +13,21 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using SF.Data;
-using SF.Data.EntityFrameworkCore;
+using SF.Sys.Hosting;
+using SF.Sys.Settings;
+using SFShop;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using System.Threading.Tasks;
 
-using System.Data.Common;
-using Microsoft.EntityFrameworkCore.Design;
-using SF.Core.ServiceManagement;
-using SF.Core.Hosting;
-
-namespace Hygou
+namespace SF.Sys.Services
 {
-	public class HygouDbContextFactory : IDesignTimeDbContextFactory<HygouDbContext>
+	public static class SFShopDIExtensions
 	{
-		IAppInstance Instance { get; } = HygouApp.Setup(SF.Core.Hosting.EnvironmentType.Utils).Build();
-
-		public HygouDbContext CreateDbContext(string[] args)
+		public static IServiceCollection AddSFShopSettings(this IServiceCollection sc)
 		{
-			return Instance.ServiceProvider.Resolve<HygouDbContext>();
+			sc.AddSetting<SFShopSetting>();
+			return sc;
 		}
+	
 	}
-
-
 }

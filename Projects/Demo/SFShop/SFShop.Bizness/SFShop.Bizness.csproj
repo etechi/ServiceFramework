@@ -4,22 +4,27 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\SFShop.Bizness.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\SFShop.Bizness.xml</DocumentationFile>
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Abstractions\SF.Biz.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Extensions\SF.Biz.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Implements\SF.Biz.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Abstractions\SF.Common.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Extensions\SF.Common.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Implements\SF.Common.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Extensions\SF.IdentityService.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Abstractions\SF.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Extensions\SF.Extensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Implements\SF.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Interception\SF.Interception.csproj" />
-    <ProjectReference Include="..\..\..\Server\Core\SF.Support\SF.Support.csproj" />
-    <ProjectReference Include="..\..\..\Server\Implements\SF.Core.MicrosoftExtensions\SF.Core.MicrosoftExtensions.csproj" />
-    <ProjectReference Include="..\..\..\Server\Implements\SF.Data.Storage.EFCore\SF.Data.Storage.EFCore.csproj" />
+    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Products\SF.Biz.Products.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Members\SF.Common.Members.csproj" />
+    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Annotations\SF.Sys.Annotations.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.Annotations">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 
 </Project>

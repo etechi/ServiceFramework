@@ -23,7 +23,7 @@ using SF.Services.Settings;
 using SF.Biz.Products;
 using SF.Entities;
 
-namespace Hygou.Site.Controllers 
+namespace SFShop.Site.Controllers 
 {
 	public class UserController : BaseController
 	{

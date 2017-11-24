@@ -19,7 +19,7 @@ using SF.Common.Members.Models;
 using SF.Sys.Services;
 using SF.Sys.Services.Management;
 
-namespace SF.Core.ServiceManagement
+namespace SF.Sys.Services
 {
 	public static class MemberServiceDIExtension
 	{

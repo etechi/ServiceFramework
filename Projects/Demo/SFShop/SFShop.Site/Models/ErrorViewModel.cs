@@ -15,7 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 
-namespace Hygou.Models
+namespace SFShop.Models
 {
     public class ErrorViewModel
     {

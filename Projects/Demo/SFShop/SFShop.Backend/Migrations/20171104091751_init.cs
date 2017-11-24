@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 
-namespace Hygou.Core2.Migrations
+namespace SFShop.Core2.Migrations
 {
     public partial class init : Migration
     {
