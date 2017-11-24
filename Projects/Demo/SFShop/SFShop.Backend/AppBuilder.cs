@@ -28,7 +28,7 @@ using System;
 namespace SFShop
 {
 
-	public static class SFShopApp 
+	public static class AppBuilder 
 	{
 		public static ILogService LogService()
 		{
@@ -36,7 +36,7 @@ namespace SFShop
 			ls.AddDebug();
 			return ls;
 		}
-		public static IAppInstanceBuilder Setup(
+		public static IAppInstanceBuilder Build(
 			EnvironmentType EnvType,
 			Microsoft.Extensions.DependencyInjection.IServiceCollection MSServices=null, 
 			ILogService logService=null

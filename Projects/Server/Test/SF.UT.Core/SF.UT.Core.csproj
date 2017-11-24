@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;NETCORE;NETCOREAPP2_0</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;NETCORE;NETCOREAPP2_0;NETCOREAPP2_0</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -28,8 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Server\Applications\SF.App.Core\SF.App.Core.csproj" />
     <ProjectReference Include="..\..\Common\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Services.Runtime\SF.Sys.Services.Runtime.csproj" />
   </ItemGroup>
 
   <ItemGroup>

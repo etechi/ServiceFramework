@@ -13,28 +13,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Hosting;
+using SF.Sys.NetworkService;
 using System;
-using System.Reflection;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SF.Data;
-using Xunit;
-using SF.Applications;
-using SF.Core.Hosting;
-using SF.Core.ServiceManagement;
-using SF.Core.NetworkService;
-using SF.Clients;
-
+using SF.Sys.Services;
 namespace SFShop.UT
-{ 
+{
 	public static class TestApp
 	{
 		public static IAppInstanceBuilder Builder(EnvironmentType envType=EnvironmentType.Production)
 		{
-			return HygouApp.Setup(envType).
+			return AppBuilder.Build(envType).
 				With(sc =>
 				{
 					var rootPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\..\\Hygou.Site\\");

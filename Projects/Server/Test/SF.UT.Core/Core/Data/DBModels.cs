@@ -13,18 +13,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Reflection;
-using System.Linq.Expressions;
 using System.Collections.Generic;
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using SF.Data;
 
 namespace SF.UT.Data.DataModels
 {
-	using IndexAttribute = SF.Data.IndexAttribute;
+	using IndexAttribute = SF.Sys.Data.IndexAttribute;
 
 	[ComplexType]
 	public class Location

@@ -15,22 +15,22 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using Microsoft.AspNetCore.Mvc;
 using SF.Common.Documents;
-using SF.Entities;
-using SF.Services.Settings;
+using SF.Sys.Entities;
+using SF.Sys.Services;
+using SF.Sys.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Management.FrontEndContents.Mvc;
-using SF.Core.ServiceManagement;
+using SF.Sys.Collections.Generic;
 
 namespace SFShop.Site.Controllers
 {
 	public class HelpController : BaseController
 	{
-		public HygouSetting Setting { get; }
+		public AppSetting Setting { get; }
 		public SF.Common.Documents.IDocumentService DocService { get; }
-		public HelpController(ISettingService<HygouSetting> Setting, NamedServiceResolver<SF.Common.Documents.IDocumentService> DocServiceResolver)
+		public HelpController(ISettingService<AppSetting> Setting, NamedServiceResolver<SF.Common.Documents.IDocumentService> DocServiceResolver)
 		{
 			this.Setting = Setting.Value;
 			this.DocService = DocServiceResolver("pc-help");

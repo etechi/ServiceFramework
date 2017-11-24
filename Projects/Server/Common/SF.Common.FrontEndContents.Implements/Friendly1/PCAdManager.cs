@@ -14,24 +14,34 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using SF.Sys.Settings;
 
-using Microsoft.EntityFrameworkCore.Design;
-using SF.Sys.Hosting;
-using SF.Sys.Services;
-using System.Diagnostics;
-
-namespace SFShop.Data
+namespace SF.Common.FrontEndContents.Friendly
 {
-	public class SFShopDbContextFactory : IDesignTimeDbContextFactory<SFShopDbContext>
+	public class PCAdManager :
+		PCAdManager<Content, IContentManager>
 	{
-		IAppInstance Instance { get; } = AppBuilder.Build(EnvironmentType.Utils).Build();
-
-		public SFShopDbContext CreateDbContext(string[] args)
+		public PCAdManager(ISettingService<FriendlyContentSetting> SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
 		{
-			Debugger.Launch();
-			return Instance.ServiceProvider.Resolve<SFShopDbContext>();
 		}
 	}
+	
+	public class PCAdManager<TContent, TContentManager> :
+		ImageItemGroupListManager<TContent,TContentManager>,
+		IPCAdManager
+		where TContent : Content
+		where TContentManager : IContentManager<TContent>
+	{
+		ISettingService<FriendlyContentSetting> SettingService { get; }
+		public PCAdManager(
+			ISettingService<FriendlyContentSetting> SettingService,
+			IContentManager<TContent> ContentManager
+			) : base(ContentManager)
+		{
+			this.SettingService = SettingService;
+		}
 
+		protected override string ContentGroup=> SettingService.Value.PCAdCategory;
+	}
 
 }

@@ -14,26 +14,22 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SF.Core.ServiceManagement;
-using SF.Core.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
-using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Authorization;
-using SF.AspNetCore;
-using IdentityServer4.Stores;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using SF.Sys.AspNetCore;
+using SF.Sys.Hosting;
+using SF.Sys.Services;
+using SF.Auth.IdentityServices;
+using IdentityServer4.Stores;
 
 namespace SFShop
 {
-    public class Startup
+	public class Startup
     {
         public Startup(IConfiguration configuration)
         {
@@ -48,25 +44,25 @@ namespace SFShop
 			services.AddAspNetCoreSystemServices();
 			services.AddMvc()
 				.AddJsonOptions(
-					s => SF.Core.Serialization.Newtonsoft.JsonSerializer.ApplySetting(
+					s => SF.Sys.Serialization.Newtonsoft.JsonSerializer.ApplySetting(
 						s.SerializerSettings,
-						new SF.Core.Serialization.JsonSetting
+						new SF.Sys.Serialization.JsonSetting
 						{
 							IgnoreDefaultValue = true,
 							WithType = false
 						})
 				);
 
-			var ins = HygouApp.Setup(SF.Core.Hosting.EnvironmentType.Production, services)
-				.With(sc =>
+			var ins = AppBuilder.Build(SF.Sys.Hosting.EnvironmentType.Production, services)
+				.With((SF.Sys.Services.IServiceCollection sc) =>
 					sc.AddAspNetCoreSupport()
-					.AddAccessTokenHandler(
-						"HYGOU",
-						"123456",
-						null,
-						null
-						)
-					)
+					//.AddAccessTokenHandler(
+					//	"HYGOU",
+					//	"123456",
+					//	null,
+					//	null
+					//	)
+				)
 				.OnEnvType(
 					t=>t!=EnvironmentType.Utils,
 					sc=>

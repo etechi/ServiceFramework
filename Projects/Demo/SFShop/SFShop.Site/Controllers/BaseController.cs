@@ -14,12 +14,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SF.Common.FrontEndContents;
 using System.Threading.Tasks;
-using SF.Core.ServiceManagement;
-using SF.Management.FrontEndContents;
+using SF.Sys.Services;
 
 namespace SFShop.Site.Controllers
 {

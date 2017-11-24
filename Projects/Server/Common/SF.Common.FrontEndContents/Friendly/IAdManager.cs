@@ -17,50 +17,16 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 namespace SF.Common.FrontEndContents.Friendly
 {
 	/// <summary>
-	/// PC头部菜单
+	/// PC广告管理
 	/// </summary>
-	public interface IPCHeadMenuManager : IImageTextItemGroupManager
-	{
+	public interface IPCAdManager : IItemGroupListManager<ImageItem>
+	{ }
+	/// <summary>
+	/// 移动端广告管理
+	/// </summary>
+	public interface IMobileAdManager : IItemGroupListManager<ImageItem>
+	{ }
 
-	}
-	/// <summary>
-	/// PC产品分类菜单
-	/// </summary>
-	public interface IPCProductCategoryMenuManager : IImageTextItemGroupManager
-	{
 
-	}
-	/// <summary>
-	/// 移动端产品分类菜单
-	/// </summary>
-	public interface IMobileProductCategoryMenuManager : IImageTextItemGroupManager
-	{
 
-	}
-
-	/// <summary>
-	/// PC首页幻灯片
-	/// </summary>
-	public interface IPCHomeSilderManager : IImageItemGroupManager
-	{
-	}
-	/// <summary>
-	/// 移动端首页幻灯片
-	/// </summary>
-	public interface IMobileHomeSilderManager : IImageItemGroupManager
-	{
-	}
-	/// <summary>
-	/// 移动端引导页
-	/// </summary>
-	public interface IMobileImageLandingPageManager : IImageItemGroupManager
-	{
-	}
-	/// <summary>
-	/// PC尾部菜单
-	/// </summary>
-	public interface IPCTailMenuManager : ITextGroupTextItemGroupManager
-	{
-
-	}
 }

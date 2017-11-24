@@ -13,33 +13,35 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 
+using SF.Sys.Settings;
 
-namespace SFShop.Site.Controllers
+namespace SF.Common.FrontEndContents.Friendly
 {
-	public class AdminModel
+
+	public class PCTailMenuManager :
+		PCTailMenuManager<Content, IContentManager>
 	{
-		public long IdentityServiceId { get; set; }
-		public string Type { get; set; }
+		public PCTailMenuManager(ISettingService<FriendlyContentSetting> SettingService, IContentManager ContentManager) : base(SettingService, ContentManager)
+		{
+		}
 	}
-	public class AdminController : Controller
+
+	public class PCTailMenuManager<TContent, TContentManager> :
+		TextGroupTextItemGroupManager<TContent, TContentManager>,
+		IPCTailMenuManager
+		where TContent : Content
+		where TContentManager : IContentManager<TContent>
 	{
-		[Authorize]
-		public ActionResult Index()
+		ISettingService<FriendlyContentSetting> SettingService { get; }
+		public PCTailMenuManager(
+			ISettingService<FriendlyContentSetting> SettingService,
+			IContentManager<TContent> ContentManager
+			) : base(ContentManager)
 		{
-			return View(
-					"Index",
-					new AdminModel
-					{
-						Type = "default"
-					}
-				);
+			this.SettingService = SettingService;
 		}
-		public ActionResult Signin()
-		{
-			return Index();
-		}
+
+		protected override long EntityId => SettingService.Value.PCHomeTailMenuId;
 	}
 }

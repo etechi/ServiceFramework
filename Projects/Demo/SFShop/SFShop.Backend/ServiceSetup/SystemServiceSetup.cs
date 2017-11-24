@@ -80,7 +80,7 @@ namespace SFShop.ServiceSetup
 			Services.AddDataContext(new SF.Sys.Data.DataSourceConfig
 			{
 				//ConnectionString = "data source=.\\SQLEXPRESS;initial catalog=sf-demo-hygou;user id=sa;pwd=system;MultipleActiveResultSets=True;App=EntityFramework"
-				ConnectionString = "Data Source=127.0.0.1,1433;User ID=sa;pwd=system;initial catalog=sf-demo-hygou;MultipleActiveResultSets=True;App=EntityFramework"
+				ConnectionString = "Data Source=127.0.0.1,1433;User ID=sa;pwd=system;initial catalog=sf-demo-site;MultipleActiveResultSets=True;App=EntityFramework"
 			});
 
 

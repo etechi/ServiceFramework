@@ -15,22 +15,35 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 
 
-using Microsoft.EntityFrameworkCore.Design;
-using SF.Sys.Hosting;
-using SF.Sys.Services;
-using System.Diagnostics;
-
-namespace SFShop.Data
+namespace SF.Common.FrontEndContents.Friendly
 {
-	public class SFShopDbContextFactory : IDesignTimeDbContextFactory<SFShopDbContext>
-	{
-		IAppInstance Instance { get; } = AppBuilder.Build(EnvironmentType.Utils).Build();
 
-		public SFShopDbContext CreateDbContext(string[] args)
+	public abstract class ImageItemGroupListManager<TContent, TContentManager> :
+		BaseItemGroupListManager<TContent, TContentManager, ImageItem>,
+		IItemGroupListManager<ImageItem>
+		where TContent : Content
+		where TContentManager : IContentManager<TContent>
+	{
+		public ImageItemGroupListManager(
+			IContentManager<TContent> ContentManager
+			) : base(ContentManager)
 		{
-			Debugger.Launch();
-			return Instance.ServiceProvider.Resolve<SFShopDbContext>();
 		}
+		protected override ImageItem ContentToItem(ContentItem i)
+			=> new ImageItem
+			{
+				Link = i.Uri,
+				LinkTarget = LinkTargetConvert.ToFriendly(i.UriTarget),
+				Image = i.Image
+			};
+		protected override ContentItem ItemToContent(ImageItem it)
+			=>
+			new ContentItem
+			{
+				Image = it.Image,
+				Uri = it.Link,
+				UriTarget = LinkTargetConvert.FromFriendly(it.LinkTarget),
+			};
 	}
 
 

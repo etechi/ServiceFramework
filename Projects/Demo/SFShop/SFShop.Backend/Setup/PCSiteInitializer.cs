@@ -14,15 +14,15 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Biz.Products;
-using SF.Core;
-using SF.Core.ServiceManagement.Management;
-using SF.Entities;
-using SF.Management.FrontEndContents;
-using SF.Management.FrontEndContents.Friendly;
-using SF.Management.FrontEndContents.SiteConfigModels;
-using SF.Services.Settings;
+using SF.Common.FrontEndContents;
+using SF.Sys.Services.Management;
 using System.Linq;
 using System.Threading.Tasks;
+using SF.Sys.Settings;
+using SF.Common.FrontEndContents.Friendly;
+using SF.Common.FrontEndContents.SiteConfigModels;
+using SF.Sys;
+using SF.Sys.Entities;
 
 namespace SFShop.Setup
 {

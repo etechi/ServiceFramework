@@ -14,23 +14,36 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using SF.Biz.Products;
+using SF.Common.Members.Models;
+using SF.Sys.Annotations;
+using System.ComponentModel.DataAnnotations;
 
-using Microsoft.EntityFrameworkCore.Design;
-using SF.Sys.Hosting;
-using SF.Sys.Services;
-using System.Diagnostics;
-
-namespace SFShop.Data
+namespace SFShop
 {
-	public class SFShopDbContextFactory : IDesignTimeDbContextFactory<SFShopDbContext>
-	{
-		IAppInstance Instance { get; } = AppBuilder.Build(EnvironmentType.Utils).Build();
+	public class AppSetting
+    {
+		///<title>PC站点默认帮助文档</title>
+		/// <summary>
+		/// 默认帮助中心文档
+		/// </summary>
+		/// <group>帮助中心</group>
+		[Required]
+		public long PCHelpCenterDefaultDocId { get; set; }
 
-		public SFShopDbContext CreateDbContext(string[] args)
-		{
-			Debugger.Launch();
-			return Instance.ServiceProvider.Resolve<SFShopDbContext>();
-		}
+		///<title>主产品目录</title>
+		/// <group>产品</group>
+		[Required]
+		[EntityIdent(typeof(ProductInternal))]
+		public long MainProductCategoryId { get; set; }
+
+		///<title>默认卖家</title>
+		/// <group>产品</group>
+		[Required]
+		[EntityIdent(typeof(MemberInternal))]
+		public long DefaultSellerId { get; set; }
+
+
 	}
 
 

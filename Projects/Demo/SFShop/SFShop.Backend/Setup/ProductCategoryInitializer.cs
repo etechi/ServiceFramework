@@ -14,14 +14,12 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Biz.Products;
-using SF.Core.ServiceManagement.Management;
-using SF.Entities;
-using SF.Services.Settings;
+using SF.Sys.Entities;
+using SF.Sys.Services.Management;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using SF.Sys.Settings;
 namespace SFShop.Setup
 {
 	public class ProductCategoryInitializer
@@ -222,7 +220,7 @@ namespace SFShop.Setup
 			//await scope.ProductCategorySetItems(cnew.Id, pids_newuser);
 
 
-			await ServiceInstanceManager.UpdateSetting<HygouSetting>(
+			await ServiceInstanceManager.UpdateSetting<AppSetting>(
 			   ScopeId,
 			   s =>
 			   {

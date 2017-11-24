@@ -14,14 +14,13 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Biz.Products;
-using SF.Entities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Core.ServiceManagement;
-using SF.Services.Settings;
+using SF.Sys.Settings;
+using SF.Sys.Entities;
+using SF.Sys.Services;
 
 namespace SFShop.Setup
 {
@@ -50,8 +49,8 @@ namespace SFShop.Setup
 				IProductManager productManager,
 				IProductItemManager itemManager,
 				IProductTypeManager ProductTypeManager,
-				SF.Core.Hosting.IFilePathResolver pathResolver,
-				ISettingService<HygouSetting> setting
+				SF.Sys.Hosting.IFilePathResolver pathResolver,
+				ISettingService<AppSetting> setting
 				) svcs
 			) =>
 				ImportSamples(
@@ -67,8 +66,8 @@ namespace SFShop.Setup
 			IProductManager productManager,
 			IProductItemManager itemManager,
 			IProductTypeManager ProductTypeManager,
-			SF.Core.Hosting.IFilePathResolver pathResolver,
-			HygouSetting setting
+			SF.Sys.Hosting.IFilePathResolver pathResolver,
+			AppSetting setting
 			)
 		{
             var list = System.IO.File.ReadAllLines(pathResolver.Resolve("root://StaticResources/产品数据/产品清单.csv"),Encoding.GetEncoding("GBK")).Skip(1).Select(l =>

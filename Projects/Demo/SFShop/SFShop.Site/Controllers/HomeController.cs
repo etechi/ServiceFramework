@@ -15,13 +15,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using SF.AspNetCore;
-using SF.Services.Settings;
+using SF.Sys.Settings;
+using SF.Sys.AspNetCore;
 
-namespace SFShop.Site.Controllers 
+namespace SFShop.Site.Controllers
 {
 	public class HomeController : BaseController
 	{

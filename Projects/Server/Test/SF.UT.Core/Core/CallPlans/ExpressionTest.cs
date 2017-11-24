@@ -15,16 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using Xunit;
-using System.Linq;
-using System.Collections.Generic;
-using System.Reflection;
 using System.Linq.Expressions;
-using SF.Core.ServiceManagement;
-using SF.Core.ServiceManagement.Storages;
-using SF.Core.CallPlans;
-using System.Threading.Tasks;
-using SF.Entities;
-using SF.Core;
 
 namespace SF.UT.Core
 {

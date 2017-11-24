@@ -15,25 +15,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using Xunit;
-using System.Reflection;
-using System.Linq.Expressions;
-using System.Collections.Generic;
+using SF.Sys.Services;
 #if NETCORE
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using SF.Data.EntityFrameworkCore;
 #else
 using System.Data.Entity;
 
 #endif
 
-using SF.Data;
 using System.Linq;
-using SF.Core.ServiceManagement;
-using System.Data.Common;
-using System.Data.SqlClient;
-using System.Threading.Tasks;
 
 namespace SF.UT.Data
 {
@@ -58,7 +47,7 @@ namespace SF.UT.Data
 	class EFStartup {
 		public IServiceProvider ConfigureService()
 		{
-			var isc = new SF.Core.ServiceManagement.ServiceCollection();
+			var isc = new ServiceCollection();
 			isc.AddMicrosoftMemoryCacheAsLocalCache();
 			isc.UseMemoryManagedServiceSource();
 			isc.AddDataModules<DataModels.User, DataModels.Post>();

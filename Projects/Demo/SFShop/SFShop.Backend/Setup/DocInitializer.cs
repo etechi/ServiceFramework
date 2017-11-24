@@ -15,17 +15,15 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Common.Documents;
 using SF.Common.Documents.Management;
-using SF.Core.Hosting;
-using SF.Core.ServiceManagement;
-using SF.Core.ServiceManagement.Management;
-using SF.Entities;
-using SF.Management.FrontEndContents;
-using SF.Management.FrontEndContents.Friendly;
-using SF.Services.Settings;
+using SF.Common.FrontEndContents;
+using SF.Sys.Hosting;
+using SF.Sys.Services.Management;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SF.Sys.Services;
+using SF.Sys.Settings;
+using SF.Common.FrontEndContents.Friendly;
 
 namespace SFShop.Setup
 {
@@ -47,7 +45,7 @@ namespace SFShop.Setup
                 null,
 				FilePathResolver.Resolve($"root://StaticResources/帮助文档/PC文档")
                 );
-			await sim.UpdateSetting<HygouSetting>(
+			await sim.UpdateSetting<AppSetting>(
 			   ScopeId,
 			   s =>
 			   {

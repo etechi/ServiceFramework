@@ -26,7 +26,7 @@ namespace SFShop.ServiceSetup
 		public static IServiceCollection AddSFShopServices(this IServiceCollection Services, EnvironmentType EnvType)
 		{
 
-			Services.AddSFShopSettings();
+			Services.AddAppBiznessSettings();
 			return Services;
 		}
 		

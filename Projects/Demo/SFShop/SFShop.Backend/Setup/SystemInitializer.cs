@@ -15,22 +15,16 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 
 using SF.Biz.Products;
-using SF.Core;
-using SF.Core.Hosting;
-using SF.Core.ServiceManagement;
-using SF.Core.ServiceManagement.Management;
-using SF.Management.FrontEndContents;
-using SF.Services.Settings;
-using SF.Management.Admins;
-using SF.Common.Members.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using SF.Common.Members;
 using SF.Auth.IdentityServices.Managers;
-using SF.Entities;
+using SF.Sys.Hosting;
+using SF.Sys.Services;
+using SF.Sys.Entities;
+using SF.Sys.Services.Management;
+using SF.Sys.Settings;
+using SF.Common.FrontEndContents;
+
 namespace SFShop.Setup
 {
 	public class SystemInitializer
@@ -84,7 +78,7 @@ namespace SFShop.Setup
 			var sysseller = await EnsureSysSeller(ServiceProvider);
 
 			await ServiceProvider.Invoke(async (IServiceInstanceManager sim) =>
-				await sim.UpdateSetting<HygouSetting>(
+				await sim.UpdateSetting<AppSetting>(
 				   ScopeId,
 				   s =>
 				   {

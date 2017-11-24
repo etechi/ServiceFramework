@@ -14,25 +14,22 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.AspNetCore;
-using SF.Services.Settings;
 using SF.Biz.Products;
-using SF.Entities;
+using SF.Sys.Settings;
+using SF.Sys.Entities;
 
-namespace SFShop.Site.Controllers 
+namespace SFShop.Site.Controllers
 {
 	public class ProductController : BaseController
 	{
 
 		public IItemService ItemService { get; }
-		public HygouSetting Setting { get; }
+		public AppSetting Setting { get; }
 		public ProductController(
 			IItemService ItemService,
-			 ISettingService<HygouSetting> Setting
+			 ISettingService<AppSetting> Setting
 			)
 		{
 			this.Setting = Setting.Value;

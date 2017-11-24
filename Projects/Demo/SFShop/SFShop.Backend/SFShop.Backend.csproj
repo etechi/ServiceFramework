@@ -46,6 +46,7 @@
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Services.Runtime\SF.Sys.Services.Runtime.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Services\SF.Sys.Services.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Settings.Supports\SF.Sys.Settings.Supports.csproj" />
+    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Settings\SF.Sys.Settings.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Test.Implements\SF.Sys.Test.Implements.csproj" />
     <ProjectReference Include="..\SFShop.Bizness.Implements\SFShop.Bizness.Implements.csproj" />
     <ProjectReference Include="..\SFShop.Bizness\SFShop.Bizness.csproj" />

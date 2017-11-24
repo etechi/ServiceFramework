@@ -23,4 +23,17 @@
     <Folder Include="wwwroot\css\admin\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Products\SF.Biz.Products.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.Common.WebSiteSupport\SF.Common.WebSiteSupport.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.IdentityServer4\SF.IdentityService.IdentityServer4.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.AspNetCore\SF.Sys.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Settings\SF.Sys.Settings.csproj" />
+    <ProjectReference Include="..\SFShop.Backend\SFShop.Backend.csproj" />
+    <ProjectReference Include="..\SFShop.Bizness.Implements\SFShop.Bizness.Implements.csproj" />
+    <ProjectReference Include="..\SFShop.Bizness\SFShop.Bizness.csproj" />
+  </ItemGroup>
+
 </Project>

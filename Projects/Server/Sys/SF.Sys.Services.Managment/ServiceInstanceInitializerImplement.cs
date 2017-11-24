@@ -152,7 +152,7 @@ namespace SF.Sys.Services
 		//	return sii;
 		//}
 		//public static T Enabled<T>(this T sii)
-		//	where T: IServiceInstanceInitializer
+		//	where T : IServiceInstanceInitializer
 		//{
 		//	sii.Config.LogicState = EntityLogicState.Enabled;
 		//	return sii;

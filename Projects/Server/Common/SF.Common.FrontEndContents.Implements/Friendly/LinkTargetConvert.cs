@@ -14,24 +14,27 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
-using Microsoft.EntityFrameworkCore.Design;
-using SF.Sys.Hosting;
-using SF.Sys.Services;
-using System.Diagnostics;
-
-namespace SFShop.Data
+namespace SF.Common.FrontEndContents.Friendly
 {
-	public class SFShopDbContextFactory : IDesignTimeDbContextFactory<SFShopDbContext>
+	public static class LinkTargetConvert
 	{
-		IAppInstance Instance { get; } = AppBuilder.Build(EnvironmentType.Utils).Build();
-
-		public SFShopDbContext CreateDbContext(string[] args)
+		public static LinkTarget ToFriendly(string target)
 		{
-			Debugger.Launch();
-			return Instance.ServiceProvider.Resolve<SFShopDbContext>();
+			return string.IsNullOrWhiteSpace(target) ? LinkTarget._default :
+				target == "_self" ? LinkTarget._self :
+				LinkTarget._blank;
+		}
+		public static string FromFriendly(LinkTarget target)
+		{
+			return target == LinkTarget._default ? null : target == LinkTarget._self ? "_self" : "_blank";
 		}
 	}
-
-
+	
 }

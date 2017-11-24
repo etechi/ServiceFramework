@@ -13,54 +13,42 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Annotations;
+using SF.Sys.Entities;
+using SF.Sys.Entities.Annotations;
+using SF.Sys.NetworkService;
 
 namespace SF.Common.FrontEndContents.Friendly
 {
-	/// <summary>
-	/// PC头部菜单
-	/// </summary>
-	public interface IPCHeadMenuManager : IImageTextItemGroupManager
+	[EntityManager]
+	[NetworkService]
+	public interface IItemGroupManager<T> : 
+		IEntityInstanceUpdater<ItemGroup<T>>
+		where T:LinkItemBase
+	{ }
+	public interface IImageTextItemGroupManager:
+		IItemGroupManager<ImageTextItem>
 	{
-
-	}
-	/// <summary>
-	/// PC产品分类菜单
-	/// </summary>
-	public interface IPCProductCategoryMenuManager : IImageTextItemGroupManager
-	{
-
-	}
-	/// <summary>
-	/// 移动端产品分类菜单
-	/// </summary>
-	public interface IMobileProductCategoryMenuManager : IImageTextItemGroupManager
-	{
-
 	}
 
-	/// <summary>
-	/// PC首页幻灯片
-	/// </summary>
-	public interface IPCHomeSilderManager : IImageItemGroupManager
+	public interface IImageItemGroupManager :
+		IItemGroupManager<ImageItem>
 	{
 	}
-	/// <summary>
-	/// 移动端首页幻灯片
-	/// </summary>
-	public interface IMobileHomeSilderManager : IImageItemGroupManager
+	public interface ITextGroupTextItemGroupManager:
+		IItemGroupManager<TextGroupItem<TextItem>>
 	{
 	}
-	/// <summary>
-	/// 移动端引导页
-	/// </summary>
-	public interface IMobileImageLandingPageManager : IImageItemGroupManager
-	{
-	}
-	/// <summary>
-	/// PC尾部菜单
-	/// </summary>
-	public interface IPCTailMenuManager : ITextGroupTextItemGroupManager
-	{
 
+	[EntityManager]
+	[NetworkService]
+	public interface IItemGroupListManager<T> :
+		IEntityLoadable<ObjectKey<long>, ItemGroup<T>>,
+		IEntityUpdator<ItemGroup<T>>,
+		IEntityListable<ItemGroup<T>>
+		where T : LinkItemBase
+	{
 	}
+
+
 }
