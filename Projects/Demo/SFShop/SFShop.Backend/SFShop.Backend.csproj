@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+			<RuntimeFrameworkVersion>2.0.3</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -9,9 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="microsoft.entityframeworkcore.sqlserver" Version="2.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
   </ItemGroup>
-
+	
   <ItemGroup>
     <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.MemberInvitations.Implements\SF.Biz.MemberInvitations.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.MemberSources.Implements\SF.Biz.MemberSources.Implements.csproj" />

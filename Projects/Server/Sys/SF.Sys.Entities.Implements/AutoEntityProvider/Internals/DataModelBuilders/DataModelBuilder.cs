@@ -47,7 +47,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.DataModelBuilders
 		IDataModelBuildProvider[] DataModelBuildProviders { get; }
 		NamedServiceResolver<IDataModelAttributeGenerator> DataModelAttributeGeneratorResolver { get; }
 
-		Dictionary<string, TypeExpression> IDataModelBuildContext.TypeExpressions => throw new NotImplementedException();
+		//Dictionary<string, TypeExpression> IDataModelBuildContext.TypeExpressions => throw new NotImplementedException();
 
 		public DataModelBuilder(
 			IMetadataCollection Metadata,

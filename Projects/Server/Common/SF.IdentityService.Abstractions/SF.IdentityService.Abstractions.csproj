@@ -36,8 +36,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Sys\SF.Sys.Annotations\SF.Sys.Annotations.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Auth\SF.Sys.Auth.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Client\SF.Sys.Client.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Entities\SF.Sys.Entities.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
   </ItemGroup>
 

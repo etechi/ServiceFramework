@@ -23,6 +23,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using SF.Sys.Reflection;
 using SF.Sys.Linq.Expressions;
+using System.Collections.Concurrent;
 
 namespace SF.Sys
 {
@@ -302,7 +303,13 @@ namespace SF.Sys
 
 			static Expression BaseGetHashCodeExpression(Expression argColl, Expression x, int level)
 			{
-				var GetHashCodeMethod = x.Type.GetMethod(nameof(object.GetHashCode), BindingFlags.Public | BindingFlags.Instance);
+				var GetHashCodeMethod = x.Type.GetMethod(
+					nameof(object.GetHashCode), 
+					BindingFlags.Public | BindingFlags.Instance,
+					null,
+					Array.Empty<Type>(),
+					null
+					);
 				if(GetHashCodeMethod.DeclaringType!=typeof(object))
 					return Expression.Call(
 						x,
@@ -454,6 +461,68 @@ namespace SF.Sys
 		public static int GetDeepHashCode<T>(T x)
 		{
 			return DeepComparers.GetEqualityComparer<T>().GetHashCode(x);
+		}
+
+
+		static int ObjectDeepCompareGeneric<T>(object x,object y)
+		{
+			return DeepCompare<T>((T)x,(T)y);
+		}
+		static ConcurrentDictionary<Type, Func<object, object, int>> ObjectDeepComparers { get; } = new ConcurrentDictionary<Type, Func<object, object, int>>();
+		public static int ObjectDeepCompare(object x, object y) {
+			if (x == y) return 0;
+			if (x == null)
+				return y == null ? 0 : -1;
+			if (y == null)
+				return 1;
+			var xt = x.GetType();
+			var yt = y.GetType();
+			if (xt != yt)
+			{
+				var re = xt.FullName.CompareTo(yt.FullName);
+				return re == 0 ? 1 : re;
+			}
+			if (!ObjectDeepComparers.TryGetValue(xt, out var h))
+			{
+				h = typeof(Poco)
+					.GetMethodExt(
+						nameof(ObjectDeepCompareGeneric),
+						BindingFlags.Static | BindingFlags.NonPublic,
+						typeof(object),
+						typeof(object)
+						)
+					.MakeGenericMethod(xt)
+					.CreateDelegate<Func<object,object, int>>();
+				h = ObjectDeepComparers.GetOrAdd(xt, h);
+			}
+			return h(x, y);
+		}
+		public static bool ObjectDeepEqual(object x,object y)
+		{
+			return ObjectDeepCompare(x, y) == 0;
+		}
+		static ConcurrentDictionary<Type, Func<object, int>> ObjectHashers{ get; } = new ConcurrentDictionary<Type, Func<object, int>>();
+		static int GetObjectDeepHashCodeGeneric<T>(object x)
+		{
+			return GetDeepHashCode<T>((T)x);
+		}
+		public static int GetObjectDeepHashCode(object x)
+		{
+			if (x == null) return 0;
+			var type = x.GetType();
+			if (!ObjectHashers.TryGetValue(type, out var h))
+			{
+				h=typeof(Poco)
+					.GetMethodExt(
+						nameof(GetObjectDeepHashCodeGeneric), 
+						BindingFlags.Static | BindingFlags.NonPublic, 
+						typeof(object)
+						)
+					.MakeGenericMethod(type)
+					.CreateDelegate<Func<object, int>>();
+				h = ObjectHashers.GetOrAdd(type, h);
+			}
+			return h(x);
 		}
 	}
 }

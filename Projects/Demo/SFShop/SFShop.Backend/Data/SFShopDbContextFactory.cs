@@ -28,7 +28,6 @@ namespace SFShop.Data
 
 		public SFShopDbContext CreateDbContext(string[] args)
 		{
-			Debugger.Launch();
 			return Instance.ServiceProvider.Resolve<SFShopDbContext>();
 		}
 	}

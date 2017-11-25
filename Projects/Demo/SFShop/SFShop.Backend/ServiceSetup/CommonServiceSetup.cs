@@ -34,8 +34,9 @@ namespace SFShop.ServiceSetup
 			Services.AddAdminServices();
 			//Services.AddBizAdminServices();
 			Services.AddFrontEndServices(EnvType);
-			//Services.AddFriendlyFrontEndServices();
+			Services.AddFriendlyFrontEndServices();
 
+			Services.AddDefaultPhoneNumberValidator();
 			Services.AddDocumentServices();
 
 			Services.InitServices("系统服务", InitServices);

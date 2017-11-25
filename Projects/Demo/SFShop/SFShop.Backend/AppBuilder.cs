@@ -24,6 +24,7 @@ using SFShop.Data;
 using SF.Sys.Services;
 using SFShop.ServiceSetup;
 using System;
+using SFShop.Setup;
 
 namespace SFShop
 {
@@ -67,6 +68,12 @@ namespace SFShop
 				.With((sc, envType) => sc.AddBizServices(EnvType))
 				.With((sc, envType) => sc.AddSFShopServices(EnvType))
 				.With((sc, envType) => sc.AddIdentityService())
+				.With((sc,envType) =>
+				{
+					sc.AddInitializer("data", "初始化Hygou数据", sp => SystemInitializer.Initialize(sp, envType));
+					sc.AddInitializer("product", "初始化Hygou产品", sp => SampleImporter.ImportSamples(sp));
+
+				})
 				.OnEnvType(e => e != EnvironmentType.Utils, (sp)=>
 				{
 					var ctx = sp.Resolve<SFShopDbContext>();

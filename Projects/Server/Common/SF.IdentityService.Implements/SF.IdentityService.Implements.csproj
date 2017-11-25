@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Sys\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Extensions\SF.Sys.Extensions.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.MenuServices\SF.Sys.MenuServices.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Security\SF.Sys.Security.csproj" />

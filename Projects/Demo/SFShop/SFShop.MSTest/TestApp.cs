@@ -26,7 +26,7 @@ namespace SFShop.UT
 			return AppBuilder.Build(envType).
 				With(sc =>
 				{
-					var rootPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\..\\Hygou.Site\\");
+					var rootPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\..\\SFShop.Site\\");
 					var binPath = System.IO.Path.Combine(rootPath, "bin\\Debug\\netcoreapp2.0\\");
 					sc.AddTestFilePathStructure(
 						binPath,

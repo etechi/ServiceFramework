@@ -38,6 +38,7 @@ namespace SF.Sys.Services
 		public string Title { get; set; }
 		public string Description { get; set; }
 		public string Ident { get; set; }
+		public bool Enabled { get; set; }
 	}
 	public interface IServiceInstanceInitializer
 	{

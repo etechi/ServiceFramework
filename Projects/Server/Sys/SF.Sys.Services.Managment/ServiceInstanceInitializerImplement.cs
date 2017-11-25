@@ -139,6 +139,12 @@ namespace SF.Sys.Services
 			return sii;
 		}
 		
+		public static T Enabled<T>(this T sii,bool Enabled=true)
+			where T : IServiceInstanceInitializer
+		{
+			sii.Config.Enabled = Enabled;
+			return sii;
+		}
 		public static T WithIdent<T>(this T sii, string Ident)
 			where T: IServiceInstanceInitializer
 		{
@@ -184,7 +190,7 @@ namespace SF.Sys.Services
 					Title:scfg.Title,
 					Description:scfg.Description,
 					ServiceIdent:scfg.Ident,
-					State: EntityLogicState.Enabled
+					State: scfg.Enabled?EntityLogicState.Enabled:EntityLogicState.Disabled
 					),
 				cfg,
 				childServices

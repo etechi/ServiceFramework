@@ -59,8 +59,8 @@ namespace SF.Sys.Services
 				SF.Common.Documents.DataModels.DocumentTagReference
 				>(TablePrefix);
 
-			sc.AddAutoEntityTest(NewDocumentManager);
-			sc.AddAutoEntityTest(NewDocumentCategoryManager);
+			//sc.AddAutoEntityTest(NewDocumentManager);
+			//sc.AddAutoEntityTest(NewDocumentCategoryManager);
 			return sc;
 		}
 

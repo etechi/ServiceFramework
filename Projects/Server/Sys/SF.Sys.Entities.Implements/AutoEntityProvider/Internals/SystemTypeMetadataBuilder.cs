@@ -42,54 +42,75 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 		IEntityMetadata[] EntityMetadatas { get; }
 
 
-		class EntityComparer : IEqualityComparer<(MemberInfo, EntityAttribute[], string[])>
+		class EntityComparer : IEqualityComparer<(MemberInfo member, EntityAttribute[] attrs)>
 		{
 			public static EntityComparer Instance { get; } = new EntityComparer();
-			public bool Equals((MemberInfo, EntityAttribute[], string[]) x, (MemberInfo, EntityAttribute[], string[]) y)
+			public bool Equals((MemberInfo member, EntityAttribute[] attrs) x, (MemberInfo member, EntityAttribute[] attrs) y)
 			{
-				if (x.Item3.Length != y.Item3.Length)
+				if (x.attrs.Length != y.attrs.Length)
 					return false;
-				return x.Item3.Zip(y.Item3, (i, j) => i == j).All(i=>i);
+
+				return x.attrs.Zip(
+					y.attrs,
+					(i, j) => i.Name == j.Name &&
+								i.Values.Count == j.Values.Count &&
+								i.Values.Zip(
+									j.Values,
+									(ivp, jvp) => ivp.Key == jvp.Key && Poco.ObjectDeepEqual(ivp.Value,jvp.Value)
+								).All(v => v)
+					).All(v => v);
 			}
 
-			public int GetHashCode((MemberInfo, EntityAttribute[], string[]) obj)
+			public int GetHashCode((MemberInfo member, EntityAttribute[] attrs) obj)
 			{
-				return obj.Item3.Aggregate(0, (s, i) => s ^ i.GetHashCode());
+				return obj.attrs.Aggregate(
+					0,
+					(s, i) =>
+						s ^
+						i.Name.GetHashCode() ^
+						i.Values.Aggregate(
+							0,
+							(si, ii) =>
+								si ^
+								ii.Key.GetHashCode() ^
+								Poco.GetObjectDeepHashCode(ii.Value)
+							)
+					);
 			}
 		}
 
-		EntityAttribute[] MergeAttributes(IGrouping<string,(MemberInfo,EntityAttribute)> attrs)
+		EntityAttribute[] MergeAttributes(IGrouping<string,(MemberInfo member,EntityAttribute attr)> attrs)
 		{
 			if(attrs.Key=="#Comment")
 			{
 				var values =
-					(from a in attrs
-					 from p in a.Item2.Values
-					 let lev = a.Item1.DeclaringType.GetInheritLevel()
+					from a in attrs
+					 from p in a.attr.Values
+					 let lev = a.member.DeclaringType.GetInheritLevel()
 					 group (value: p.Value, lev: lev) by p.Key into g
-					 select (g.Key, value: g.OrderByDescending(i => i.lev).Select(i => i.value).First())
-				).ToDictionary(i => i.Key, i => i.value);
+					 select (key: g.Key, value: g.OrderByDescending(i => i.lev).Select(i => i.value).First())
+					;
 				return new[] { new EntityAttribute(attrs.Key, values) };
 			}
 
-			var gs= attrs.GroupBy(a => a.Item1, a => a.Item2)
-				.Select(g=>(g.Key,g.ToArray(),g.Select(i=>i.ToString()).OrderBy(i=>i).ToArray()))
+			var gs= attrs.GroupBy(a => a.member, a => a.attr)
+				.Select(g => (member: g.Key,attrs:g.OrderBy(a=>a.Name).ToArray()))
 				.Distinct(EntityComparer.Instance)
 				.ToArray();
 			if (gs.Length != 1)
 			{
-				if (gs[0].Item1 is PropertyInfo)
+				if (gs[0].member is PropertyInfo)
 					throw new InvalidOperationException(
 						"不同属性定义的特性不一致：\n" +
-						gs.Select(i => i.Item1.DeclaringType.FullName + "." + i.Item1.Name + ":" + i.Item3.Join(";")).Join("\n")
+						gs.Select(i => i.member.ReflectedType.FullName+"/"+i.member.DeclaringType.FullName + "." + i.member.Name + ":" + i.attrs.Join(";")).Join("\n")
 						);
 				else
 					throw new InvalidOperationException(
 						"不同类型定义的特性不一致：\n" +
-						gs.Select(i => ((Type)i.Item1).FullName + ":" + i.Item3.Join(";")).Join("\n")
+						gs.Select(i => ((Type)i.Item1).FullName + ":" + i.attrs.Join(";")).Join("\n")
 						);
 			}
-			return gs[0].Item2;
+			return gs[0].attrs;
 		}
 		EntityAttribute[] MergeMemberAttributes(IEnumerable<MemberInfo> Members)
 		{

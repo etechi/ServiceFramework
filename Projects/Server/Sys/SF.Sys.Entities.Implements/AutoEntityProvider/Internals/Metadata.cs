@@ -26,10 +26,14 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 	{
 		public string Name { get; }
 		public IReadOnlyDictionary<string, object> Values { get; }
-		public EntityAttribute(string Name, IReadOnlyDictionary<string, object> Values)
+		public EntityAttribute(string Name, IEnumerable<(string key, object value)> Values)
 		{
 			this.Name = Name;
-			this.Values = Values;
+			var sl = new SortedList<string, object>();
+			foreach (var (key,value) in Values)
+				sl.Add(key, value);
+			this.Values =sl;
+
 		}
 		public override string ToString()
 		{
@@ -51,12 +55,11 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 			return member.GetCustomAttributes().Cast<Attribute>().Select(a =>
 				new EntityAttribute(
 				a.GetType().FullName,
-				(from p in a.GetType().AllPublicInstanceProperties()
+				from p in a.GetType().AllPublicInstanceProperties()
 				 where p.DeclaringType != typeof(object) && p.DeclaringType != typeof(Attribute)
 				 let value = GetAttributePropertyValue(a, p)
 				 where value != null
-				 select (name: p.Name, value:  value)
-				).ToDictionary(p => p.name, p => p.value)
+				 select (name: p.Name, value: value)
 				)
 			);
 		}

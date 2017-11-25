@@ -13,7 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Entities.DataModels;
+using SF.Sys.Entities.Models;
 using SF.Sys.Annotations;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -33,7 +33,7 @@ namespace SF.Common.Documents.Management
 		/// <summary>
 		/// 父分类
 		/// </summary>
-		public  string ContainerName { get; set; }
+		public override string ContainerName { get; set; }
 	}
 
 	[EntityObject]
@@ -63,7 +63,7 @@ namespace SF.Common.Documents.Management
 		/// 分类名称
 		/// </summary>
 		[TableVisible]
-		public  string ContainerName { get; set; }
+		public override string ContainerName { get; set; }
 
 	}
 	public class DocumentInternal : DocumentBase

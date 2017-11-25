@@ -1,4 +1,4 @@
-﻿#region Apache License Version 2.0
+#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -13,19 +13,47 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-
-using SF.Sys.Entities.Models;
-using SF.Sys.Annotations;
-
-namespace SF.Common.Members.Models
+using System;
+using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using SF.Sys.Services;
+using SF.Sys.ServiceFeatures;
+namespace SFShop.UT
 {
-	/// <summary>
-	/// 会员
-	/// </summary>
-	[EntityObject]
-	public class Member:
-		ObjectEntityBase<long>
+	[TestClass]
+	public class EnvInitializer : TestBase
 	{
+		[TestMethod]
+		public async Task InitServices()
+		{
+			await Scope(async (IServiceProvider sp) =>
+				{
+					await sp.InitServices("service");
+					return 0;
+				}
+				);
+		}
+		[TestMethod]
+		public async Task InitProducts()
+		{
+			await Scope(async (IServiceProvider sp) =>
+			{
+				await sp.InitServices("product");
+				return 0;
+			}
+				);
+		}
+		[TestMethod]
+		public async Task InitData()
+		{
+			await Scope(async (IServiceProvider sp) =>
+			{
+				await sp.InitServices("data");
+				return 0;
+			}
+				);
+		}
 	}
-}
+	
 
+}

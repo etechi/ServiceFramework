@@ -102,7 +102,28 @@ namespace SFShop.Setup
 			IServiceInstanceManager sim,
 			long? ScopeId
 			)
-		{
+		{   
+			//await(sim.NewDocumentService("PC系统文档", "pc-sys")
+			//	.WithDisplay("PC系统文档", "PC系统文档，如关于我们等")
+			//	.Enabled()
+			//	).Ensure(ServiceProvider, ScopeId);
+
+			await (sim.NewDocumentService("PC帮助文档", "pc-help")
+				.WithDisplay("PC帮助文档")
+				.Enabled()
+				).Ensure(ServiceProvider, ScopeId);
+
+			//await(sim.NewDocumentService("移动端系统文档", "m-sys")
+			//	.WithDisplay("移动端系统文档", "移动端系统文档，如关于我们等")
+			//	.Enabled()
+			//	).Ensure(ServiceProvider, ScopeId);
+
+			await (sim.NewDocumentService("移动端帮助文档", "m-help")
+				.WithDisplay("移动端帮助文档")
+				.Enabled()
+				).Ensure(ServiceProvider, ScopeId);
+
+
 			var mHelp = await sim.GetService<IDocumentService>("m-help", ScopeId);
 			
 			await ServiceProvider.Invoke(

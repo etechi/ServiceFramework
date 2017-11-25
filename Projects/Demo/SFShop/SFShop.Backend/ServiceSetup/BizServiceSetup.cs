@@ -27,7 +27,6 @@ namespace SFShop.ServiceSetup
 		{
 
 			Services.AddProductServices();
-
 			Services.InitServices("业务服务", InitServices);
 			return Services;
 		}
