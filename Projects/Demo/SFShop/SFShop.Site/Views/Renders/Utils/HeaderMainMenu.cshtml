@@ -1,7 +1,6 @@
-﻿@model SF.Management.FrontEndContents.Mvc.RenderModel
-@using SF.AspNetCore.Mvc
+﻿@model SF.Common.FrontEndContents.Mvc.RenderModel
 @{
-    var uri = Html.GetCurrentUrl();
+	var uri = Html.GetCurrentUrl();
 }
 @foreach (var item in Model.Content.Items)
 {

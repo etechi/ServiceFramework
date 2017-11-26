@@ -67,6 +67,7 @@ namespace SFShop
 					t=>t!=EnvironmentType.Utils,
 					sc=>
 					{
+						sc.AddFrontSideMvcContentRenderProvider();
 						sc.AddNetworkService();
 						sc.AddAspNetCoreServiceInterface();
 						sc.AddIdentityServer4Support();

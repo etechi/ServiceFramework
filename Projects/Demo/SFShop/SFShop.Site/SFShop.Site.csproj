@@ -30,6 +30,7 @@
     <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.IdentityServer4\SF.IdentityService.IdentityServer4.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.AspNetCore\SF.Sys.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Entities\SF.Sys.Entities.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Settings\SF.Sys.Settings.csproj" />
     <ProjectReference Include="..\SFShop.Backend\SFShop.Backend.csproj" />
     <ProjectReference Include="..\SFShop.Bizness.Implements\SFShop.Bizness.Implements.csproj" />

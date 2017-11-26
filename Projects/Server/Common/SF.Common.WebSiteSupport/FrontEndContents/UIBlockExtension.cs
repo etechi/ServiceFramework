@@ -15,7 +15,6 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using Microsoft.AspNetCore.Mvc.Rendering;
 using SF.Common.FrontEndContents;
-using SF.Sys.Logging;
 using SF.Sys.Services;
 using System;
 
@@ -23,14 +22,14 @@ namespace SF.Sys.AspNetCore.Mvc
 {
 	public static class UIBlockExtension
     {
-		internal static void Log(IServiceProvider ServiceProvider, string message, Exception e = null)
-		{
-			var logservice = ServiceProvider.Resolve<ILogService>();
-			if (logservice == null)
-				return;
-			var logger = logservice.GetLogger("UI管理器");
-			logger.Error(e, message);
-		}
+		//internal static void Log(IServiceProvider ServiceProvider, string message, Exception e = null)
+		//{
+		//	var logservice = ServiceProvider.Resolve<ILogService>();
+		//	if (logservice == null)
+		//		return;
+		//	var logger = logservice.GetLogger("UI管理器");
+		//	logger.Error(e, message);
+		//}
 		
 		public static void UIBlock(this IHtmlHelper htmlHelper, string blockName)
 		{
@@ -38,16 +37,12 @@ namespace SF.Sys.AspNetCore.Mvc
 			var serviceProvider = htmlHelper.ViewContext.HttpContext.RequestServices;
 			var pageContext = (IPageRenderContext)htmlHelper.ViewBag.UIPageRenderContext;
 			if (pageContext == null)
-			{
-				Log(serviceProvider ,$"页面没有载入UI管理器数据,块名：{blockName} URI:{req.Path}");
-				return;
-			}
+				throw new NotSupportedException($"页面没有载入UI管理器数据,块名：{blockName} URI:{req.Path}");
+
 			var block = pageContext.GetBlockRenderContext(blockName);
 			if (block == null)
-			{
-				Log(serviceProvider ,$"UI管理器数据中找不到块：{blockName} URI:{req.Uri()}");
-				return;
-			}
+				throw new NotSupportedException($"UI管理器数据中找不到块：{blockName} URI:{req.Uri()}");
+
 			var providerResolver = serviceProvider.Resolve<NamedServiceResolver<IRenderProvider>>();
 			foreach (var ctn in block.BlockContents)
 			{
@@ -57,21 +52,20 @@ namespace SF.Sys.AspNetCore.Mvc
 					provider = providerResolver(ctn.RenderProvider);
 					if (provider == null)
 					{
-						Log(serviceProvider, $"UI管理器找不到渲染提供者：UI块：{blockName} 渲染提供者:{ctn.RenderProvider} 视图:{ctn.RenderView} 内容区域:{ctn.Name}  URI:{req.Uri()}");
-						continue;
+						throw new NotSupportedException($"UI管理器找不到渲染提供者：UI块：{blockName} 渲染提供者:{ctn.RenderProvider} 视图:{ctn.RenderView} 内容区域:{ctn.Name}  URI:{req.Uri()}");
 					}
 				}
 				catch(Exception e){
-					Log(serviceProvider, $"UI管理器查找渲染提供者时发生异常：UI块：{blockName} 渲染提供者:{ctn.RenderProvider} 视图:{ctn.RenderView} 内容区域:{ctn.Name}  URI:{req.Uri()} 异常:{e.Message}",e);
-					continue;
+					throw new InvalidOperationException(
+						$"UI管理器查找渲染提供者时发生异常：UI块：{blockName} 渲染提供者:{ctn.RenderProvider} 视图:{ctn.RenderView} 内容区域:{ctn.Name}  URI:{req.Uri()} 异常:{e.Message}",e);
 				}
 				try
 				{
 					provider.Render(htmlHelper, ctn.RenderView, ctn.RenderConfig, ctn, ctn.Data);
 				}
 				catch (Exception e){
-					Log(serviceProvider, $"UI管理器渲染时发生异常：UI块：{blockName} 渲染提供者:{ctn.RenderProvider}  视图:{ctn.RenderView} 内容区域:{ctn.Name}  URI:{req.Uri()} 异常:{e.Message}", e);
-					continue;
+					throw new InvalidOperationException(
+						$"UI管理器渲染时发生异常：UI块：{blockName} 渲染提供者:{ctn.RenderProvider}  视图:{ctn.RenderView} 内容区域:{ctn.Name}  URI:{req.Uri()} 异常:{e.Message}", e);
 				}
 			}
 		}
