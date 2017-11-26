@@ -512,7 +512,16 @@ namespace SF.Sys.Reflection
 				throw new ArgumentException();
 			return type.IsGeneric() && type.GetGenericTypeDefinition() == GenericType;
 		}
-
+		public static IEnumerable<Type> BaseTypes(this Type type)
+		{
+			for (var t = type.BaseType; t != null; t = t.BaseType)
+				yield return t;
+		}
+		public static IEnumerable<Type> AllRelatedTypes(this Type type)
+		{
+			if (type.IsInterface) return type.AllInterfaces();
+			return EnumerableEx.From(type).Concat(type.BaseTypes()).Concat(type.AllInterfaces());
+		}
 		public static IEnumerable<Type> AllInterfaces(this Type type)
 		{
 			if(type.IsInterface)

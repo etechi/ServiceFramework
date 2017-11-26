@@ -37,9 +37,8 @@ namespace SF.Sys.Comments
 			var id = Member.GetMemberXmlDocId();
 			var type = Member as Type;
 			var c = (type == null ?
-					XmlCodeDocument.GetComment(type) :
-					type.AllInterfaces()
-						.WithFirst(type)
+					XmlCodeDocument.GetComment(Member) :
+					type.AllRelatedTypes()
 						.Select(i => XmlCodeDocument.GetComment(i))
 						.FirstOrDefault(i => i != null)
 					)

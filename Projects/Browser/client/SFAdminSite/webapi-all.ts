@@ -2454,7 +2454,7 @@ export interface SF$Core$NetworkService$Metadata$Library extends SF$Metadata$Mod
 // 
 export interface SF$Metadata$Models$Library {
 	//
-	//类型:SF.Metadata.Models.Type[]
+	//类型:SF.Sys.Annotations.Models.Type[]
 	Types?: SF$Metadata$Models$Type[];
 }
 // 
@@ -2478,13 +2478,13 @@ export interface SF$Metadata$Models$Type extends SF$Metadata$Models$Entity {
 	//类型:bool
 	IsInterface?: boolean;
 	//
-	//类型:SF.Metadata.Models.Property[]
+	//类型:SF.Sys.Annotations.Models.Property[]
 	Properties?: SF$Metadata$Models$Property[];
 }
 // 
 export interface SF$Metadata$Models$Entity {
 	//
-	//类型:SF.Metadata.Models.Attribute[]
+	//类型:SF.Sys.Annotations.Models.Attribute[]
 	Attributes?: SF$Metadata$Models$Attribute[];
 	//
 	//类型:string
@@ -2553,7 +2553,7 @@ export interface SF$Core$NetworkService$Metadata$Method extends SF$Metadata$Mode
 // 
 export interface SF$Metadata$Models$Method extends SF$Metadata$Models$TypedEntity {
 	//
-	//类型:SF.Metadata.Models.Parameter[]
+	//类型:SF.Sys.Annotations.Models.Parameter[]
 	Parameters?: SF$Metadata$Models$Parameter[];
 }
 // 
