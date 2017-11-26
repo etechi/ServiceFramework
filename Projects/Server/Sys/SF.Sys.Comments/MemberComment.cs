@@ -29,39 +29,42 @@ namespace SF.Sys.Comments
 	{
 		static ConcurrentDictionary<MemberInfo, Comment> CommentDict { get; } 
 			= new ConcurrentDictionary<MemberInfo, Comment>();
-		public static Comment Comment(this MemberInfo Member)
+		public static Comment Comment(this MemberInfo Member, bool GetDefaultComment=true)
 		{
 			Comment comment;
 			if (CommentDict.TryGetValue(Member, out comment))
-				return comment;
+				return GetDefaultComment || !comment.IsDefaultComment ? comment : null;
+
 			var id = Member.GetMemberXmlDocId();
-			var type = Member as Type;
-			var c = (type == null ?
+			var type = Member as Type; 
+			comment = (type == null ?
 					XmlCodeDocument.GetComment(Member) :
 					type.AllRelatedTypes()
 						.Select(i => XmlCodeDocument.GetComment(i))
 						.FirstOrDefault(i => i != null)
-					)
-					?? new Comment(id, Member.ShortName());
-			if (type != null && type.IsGeneric())
+						) ?? new Comment(id, Member.Name,IsDefaultComment:true);
+
+			if (comment!=null && type != null && type.IsGeneric())
 			{
 				var gtd = type.GetGenericTypeDefinition();
 				var gta = type.GenericTypeArguments;
-				var baseName = c.Title.TrimEndTo("<", true, true);
-				c = new Comment(
+				var baseName = comment.Title.TrimEndTo("<", true, true);
+				comment = new Comment(
 					null,
-					$"{gta.Select(a => a.Comment().Title).Join(" ")} {baseName}",
-					$"{gta.Select(a => a.Comment().Summary).Join(" ")} {c.Summary}",
-					$"{gta.Select(a => a.Comment().Group).Join(" ")} {c.Group}",
-					$"{gta.Select(a => a.Comment().Remarks).Join(" ")} {c.Remarks}",
-					$"{gta.Select(a => a.Comment().Prompt).Join(" ")} {c.Prompt}"
+					$"{gta.Select(a => a.Comment()?.Title).Join(" ")} {baseName}",
+					$"{gta.Select(a => a.Comment()?.Summary).Join(" ")} {comment.Summary}",
+					$"{gta.Select(a => a.Comment()?.Group).Join(" ")} {comment.Group}",
+					$"{gta.Select(a => a.Comment()?.Remarks).Join(" ")} {comment.Remarks}",
+					$"{gta.Select(a => a.Comment()?.Prompt).Join(" ")} {comment.Prompt}",
+					IsDefaultComment:comment.IsDefaultComment
 					);
 			}
 
-			return CommentDict.GetOrAdd(
+			comment= CommentDict.GetOrAdd(
 				Member,
-				c
+				comment
 				);
+			return GetDefaultComment || !comment.IsDefaultComment ? comment : null;
 		}
 		
 		public static string FriendlyName(this MemberInfo Info)

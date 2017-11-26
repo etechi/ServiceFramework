@@ -34,7 +34,7 @@ namespace SF.Sys.Comments
 		{
 			if (Type.IsPointer) return GetTypeName(Type.GetElementType()) + "*";
 			else if (Type.IsArray) return GetTypeName(Type.GetElementType()) + "[]";
-			else return Type.FullName;
+			else return Type.Namespace+"."+Type.Name;
 		}
 		static string GetMethodArguments(MethodBase Method)
 		{
@@ -46,19 +46,19 @@ namespace SF.Sys.Comments
 		{
 			if (Member is PropertyInfo prop)
 			{
-				return "P:" + prop.DeclaringType.FullName + "." + prop.Name;
+				return "P:" + GetTypeName(prop.DeclaringType)+ "." + prop.Name;
 			}
 			else if (Member is FieldInfo field)
 			{
-				return "F:" + field.DeclaringType.FullName + "." + field.Name;
+				return "F:" + GetTypeName(field.DeclaringType)+ "." + field.Name;
 			}
 			else if (Member is MethodInfo method)
 			{
-				return "M:" + method.DeclaringType.FullName + "." + method.Name+GetMethodArguments(method);
+				return "M:" + GetTypeName(method.DeclaringType)+ "." + method.Name+GetMethodArguments(method);
 			}
 			else if(Member is ConstructorInfo ctr)
 			{
-				return "M:" + ctr.DeclaringType.FullName + ".#ctor" + GetMethodArguments(ctr);
+				return "M:" + GetTypeName(ctr.DeclaringType)+ ".#ctor" + GetMethodArguments(ctr);
 
 			}
 			else if (Member is Type type)
@@ -80,7 +80,7 @@ namespace SF.Sys.Comments
 			return new Comment(
 				id,
 				title ?? summary,
-				summary,
+				title==null?null: summary,
 				group,
 				remarks,
 				prompts,
@@ -118,7 +118,7 @@ namespace SF.Sys.Comments
 			var id = Member.GetMemberXmlDocId();
 			if (assComments.TryGetValue(id, out var comment))
 				return comment;
-			return new Comment(id, Member.Name);
+			return null;
 		}
 	}
 		

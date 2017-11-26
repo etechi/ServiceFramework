@@ -112,7 +112,7 @@ namespace SF.Sys.Services
 				GroupIdent = GroupIdent,
 				Description = comment?.Summary,
 				Name = comment?.Title ?? desc.Name ?? comment.Title ?? GroupName,
-				GroupName = comment.Group?? GroupName,
+				GroupName = comment?.Group?? GroupName,
 				EntityKeyType = LoadableArgs[0],
 				EntityDetailType = LoadableArgs[1],
 				EntityEditableType = EntityEditable,

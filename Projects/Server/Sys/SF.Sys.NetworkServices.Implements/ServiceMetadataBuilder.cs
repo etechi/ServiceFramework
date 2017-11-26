@@ -81,7 +81,7 @@ namespace SF.Sys.NetworkService
 				},
 				attrs,
 				type,
-				type.Comment()
+				type.Comment(false)
 				);
 
 		}
@@ -156,7 +156,7 @@ namespace SF.Sys.NetworkService
 					HeavyParameter = BuildRule.DetectHeavyParameter(method)?.Name
 				},
 				attrs,
-				method.Comment(),
+				method.Comment(false),
 				null//a=>!HttpMethodAttributes.Contains(a.GetType())
 				);
 		}

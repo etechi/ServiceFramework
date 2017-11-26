@@ -141,7 +141,7 @@ namespace SF.Sys.Linq
 		}
 		public static string Join(this IEnumerable<string> Enumerable, string separator = "")
 		{
-			return string.Join(separator, Enumerable);
+			return string.Join(separator, Enumerable.Where(s=>!s.IsNullOrEmpty()));
 		}
 		public static string Join<T>(this IEnumerable<T> Enumerable, string separator = "")
 		{

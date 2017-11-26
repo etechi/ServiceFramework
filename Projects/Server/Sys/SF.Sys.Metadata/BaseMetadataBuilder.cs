@@ -173,7 +173,7 @@ namespace SF.Sys.Metadata
 							Prompt=da?.Prompt,
 							Group=da?.Group,
 						};
-                        LoadAttributes(i, p.GetCustomAttributes(), p,p.Comment());
+                        LoadAttributes(i, p.GetCustomAttributes(), p,p.Comment(false));
                         return i;
                     })
 					.ToArray();
@@ -193,7 +193,7 @@ namespace SF.Sys.Metadata
 				re.BaseTypes = baseTypes.ToArray();
 			var props=GenerateTypeProperties(type);
 			re.Properties = props.Length > 0 ? props : null;
-			LoadAttributes(re,type.GetCustomAttributes().Cast<Attribute>(), type,type.Comment());
+			LoadAttributes(re,type.GetCustomAttributes().Cast<Attribute>(), type,type.Comment(false));
 			return re;
 		}
 		public virtual string FormatTypeName(Type type)
@@ -338,7 +338,7 @@ namespace SF.Sys.Metadata
             }, 
 			attrs, 
 			prop,
-			prop.Comment()
+			prop.Comment(false)
 			);
 		}
 		protected virtual bool IsRootType(Type type)

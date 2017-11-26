@@ -18,6 +18,7 @@ namespace SF.Sys.Comments
 {
 	public class Comment
 	{
+
 		public Comment(
 			string Id,
 			string Title,
@@ -25,9 +26,11 @@ namespace SF.Sys.Comments
 			string Group = null,
 			string Remarks = null,
 			string Prompts = null,
-			int Order = 0
+			int Order = 0,
+			bool IsDefaultComment=false
 			)
 		{
+			this.IsDefaultComment = IsDefaultComment;
 			this.Id = Id;
 			this.Title = Title;
 			this.Summary = Summary;
@@ -40,6 +43,7 @@ namespace SF.Sys.Comments
 		{
 			return Title + ":" + Summary;
 		}
+		public bool IsDefaultComment { get; }
 		public string Id { get; }
 		public string Summary { get; }
 		public string Prompt { get; }
