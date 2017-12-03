@@ -19,8 +19,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
-using SF.Core.ServiceManagement;
-using SF.Core.ServiceManagement.Storages;
+using SF.Sys.Services;
+using SF.Sys.Services.Storages;
 
 namespace SF.UT.DI
 {

@@ -15,19 +15,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using Xunit;
 using System.Threading.Tasks;
-using SF.UT.Utils;
 using System;
-using SF.Promotions.MemberInvitations;
-using SF.Core.ServiceManagement;
-using SF.Entities;
 using System.Linq;
-using SF.Promotions.MemberInvitations.Models;
-using SF.ADT;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using SF.Core.ServiceFeatures;
-
+using SF.Biz.MemberInvitations;
+using SF.Sys.Tests;
+using SF.Sys.Services;
+using SF.Sys.Services.Management;
+using SF.Biz.MemberInvitations.Models;
+using SF.Sys;
+using SF.Sys.Entities;
+using SF.Sys.ServiceFeatures;
+//using SF.Sys.Entities.
 namespace SF.UT.Promotions.Invitations
 {
 	public class InvitationTests : TestBase

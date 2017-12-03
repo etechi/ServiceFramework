@@ -15,16 +15,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using Xunit;
 using System.Threading.Tasks;
-using SF.UT.Utils;
 using System;
-using SF.Promotions.MemberInvitations;
-using SF.Core.ServiceManagement;
-using SF.Entities;
-using System.Linq;
-using SF.Promotions.MemberInvitations.Models;
-using SF.ADT;
-using SF.Core.NetworkService;
-
+using SF.Sys.NetworkService;
+using SF.Sys.Services;
 namespace SF.UT.Core.NetworkServices
 {
 	public class MetadataTest : TestBase

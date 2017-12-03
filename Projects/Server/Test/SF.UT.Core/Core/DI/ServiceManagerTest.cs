@@ -19,10 +19,10 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq.Expressions;
-using SF.Core.ServiceManagement.Storages;
-using SF.Core.ServiceManagement.Internals;
-using SF.Core.ServiceManagement;
-
+using SF.Sys.Services;
+using SF.Sys.Services.Storages;
+using SF.Sys.Services.Internals;
+using SF.Sys.Services.Management;
 namespace SF.UT
 {
 	public interface IOperator

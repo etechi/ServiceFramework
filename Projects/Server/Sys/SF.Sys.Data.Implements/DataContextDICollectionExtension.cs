@@ -15,15 +15,16 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Data;
 using SF.Sys.Services;
+using System;
 
 namespace SF.Sys.Services
 {
 
 	public static class DataContextCollectionExtension
 	{
-		public static IServiceCollection AddDataContext(this IServiceCollection sc, DataSourceConfig Config)
+		public static IServiceCollection AddDataContext(this IServiceCollection sc,Func<IServiceProvider, DataSourceConfig> Config)
 		{
-			sc.AddSingleton<IDataSource>(new DefaultDataSource(Config));
+			sc.AddSingleton<IDataSource>(sp=>new DefaultDataSource(Config(sp)));
 			sc.AddScoped(sp => sp.Resolve<IDataSource>().Connect());
 
 			sc.AddScoped<SF.Sys.Data.IDataContext, SF.Sys.Data.DataContext>();
