@@ -1,0 +1,225 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" ng-app="metadata" ng-controller="top" style="height:100%">
+<head>
+    <meta charset="utf-8" />
+    <title>{SYSTEM_NAME}WebApi接口</title>
+	<style>
+		li.activable{
+			cursor:pointer;
+		}
+		li.active{
+			background-color:#ccc;
+		}
+		ul{
+			padding:0;
+			margin:0
+		}
+		li{
+			padding:0;
+			margin:0;
+		}
+		body{
+			margin:0;
+			color:#333;
+			padding:51px 0 0 530px;
+			font-size:12px;
+			line-height:2;
+			height:100%;
+			font-family:微软雅黑,Arial;
+		}
+		div.header{
+			height:50px;
+			position:fixed;
+			left:0;
+			top:0;
+			right:0;
+			width:100%;
+			background:#34a4d5;
+			border-bottom:1px solid #ccc;
+		}
+		div.header div.title{
+			font-size:20px;
+			padding:5px 0 0 30px;
+		}
+		div.header div.search{
+			float:right;
+			width:300px;
+			padding-top:10px;
+		}
+		div.content{
+			height:100%;
+		}
+		div.controller-list-column{
+			width:222px;
+			top:51px;
+			left:0;
+			bottom:0;
+			position:fixed;
+			border-right:1px solid #ccc;
+			overflow:auto;
+			padding:4px;
+		}
+		div.action-list-column{
+			width:292px;
+			top:51px;
+			position:fixed;
+			bottom:0;
+			left:230px;			
+			overflow:auto;
+			border-right:1px solid #ccc;
+			padding:4px;
+		}
+		div.action-column{
+			padding:4px;
+		}
+		div.group{
+			background-color:#eee;
+			font-weight:bold;
+			padding:4px;
+		}
+		li.active{
+			color:darkblue;
+			font-weight:bold;
+		}
+		div.arrow{
+			float:right;
+			padding:0 0 0 0;
+			font-family:Calibri;
+			font-size:16px;
+		}
+		table{
+			border-collapse:collapse;
+			border:1px solid #ccc;
+		}
+		td{
+			padding:4px;
+			border:1px solid #ccc;
+		}
+		th{
+			text-align:left;
+			padding:4px;
+			border:1px solid #ccc;
+		}
+		.type-body{
+			padding-left:50px;
+		}
+		hr{
+			border:none;
+			border-bottom:1px solid #ccc;
+		}
+	</style>
+</head>
+<body>
+	<div class="header">
+		<div class="search">
+			搜索：
+			<input placeholder="搜索内容" type="text" ng-model="filter" />
+			<button ng-click="filter=''">清除</button>
+		</div>
+		<div class="title">WebApi接口参考</div>
+	</div>
+	<div class="controller-list-column">
+		<ul>
+			<li ng-repeat="cg in get_controller_groups()">
+				<div class="group">{{cg.Name}}</div>
+				<ul>
+					<li class="activable" ng-class="{active:cur_controller==c}" ng-repeat="c in get_controllers(cg)" ng-click="set_cur_controller(c)">
+						<div class="arrow" ng-show="cur_controller==c">→</div>
+						<div><b>{{c.Name}}</b></div>
+						<div>{{c.Title}}</div>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+	<div class="action-list-column" ng-show="cur_controller">
+		<h3>{{cur_controller.Name}}</h3>
+		<div>{{cur_controller.Title}}</div>
+		<div>{{cur_controller.Description}}</div>
+		<div>{{cur_controller.Prompt}}</div>
+		<div>是否需要登录：{{cur_controller.UserRequired || "false"}}</div>
+		<div>需要角色：{{cur_controller.RolesRequired || "false"}}</div>
+		<div>需要权限：{{cur_controller.PermissionsRequired || "false"}}</div>
+		<ul>
+			<li ng-repeat="ag in get_action_groups(cur_controller)">
+				<div class="group">{{ag.Name}}</div>
+				<ul>
+					<li class="activable" ng-class="{active:cur_action==a}" ng-repeat="a in get_actions(ag)" ng-click="set_cur_action(a)">
+						<div class="arrow" ng-show="cur_action==a">→</div>
+						<div>{{a.Name}}</div>
+						<div>{{a.Title}}</div>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+	<div class="action-column" ng-show="cur_action">
+		<h3>{{cur_action.Name}}</h3>
+		<div>{{cur_action.Title}}</div>
+		<div>{{cur_action.Description}}</div>
+		<div>{{cur_action.Prompt}}</div>
+		<div>是否需要登录：{{cur_action.UserRequired || "false"}}</div>
+		<div>需要角色：{{cur_action.RolesRequired || "false"}}</div>
+		<div>需要权限：{{cur_action.PermissionsRequired || "false"}}</div>
+		<div>支持HTTP请求方式：{{cur_action.HeavyParameter?"POST":"GET"}}</div>
+		<div>返回类型：<a ng-href="#type-{{cur_action.Type}}">{{cur_action.Type}}</a></div>
+		<div>
+			<h4>参数：</h4>
+			<table>
+				<tr>
+					<th>参数名</th>
+					<th>类型</th>
+					<th>URI参数</th>
+					<th>可选</th>
+					<th>标题</th>
+					<th>帮助</th>
+					<th>提示</th>
+				</tr>
+				<tr ng-repeat="param in cur_action.Parameters">
+					<td>{{param.Name}}</td>
+					<td><a ng-href="#type-{{param.Type}}">{{param.Type}}</a></td>
+					<td>{{cur_action.HeavyParameter==param.Name?'否':'是'}}</td>
+					<td>{{param.Optional}}</td>
+					<td>{{param.Title}}</td>
+					<td>{{param.Description}}</td>
+					<td>{{param.Prompt}}</td>
+				</tr>
+			</table>
+		</div>
+
+		<h4 ng-show="cur_action_types.length">参考类型：</h4>
+		<div class="type" ng-repeat="type in cur_action_types">
+			<a name="type-{{type.Name}}"></a>
+			<h4>{{type.Name}} <span ng-show="type.IsArrayType">(数组)</span> <span ng-show="type.IsEnumType">(枚举)</span></h4>
+			<div class="type-body">
+				<div ng-show="type.BaseTypes ">
+					基类型：
+					<div ng-repeat="bt in type.BaseTypes"><a ng-href="#type-{{bt}}">{{bt}}</a></div>
+				</div>
+				<div ng-show="type.IsArrayType">数组元素类型:{{type.ElementType}}</div>
+				<table ng-show="type.Properties && type.Properties.length">
+					<tr>
+						<th>字段名</th>
+						<th>类型</th>
+						<th>可选</th>
+						<th>标题</th>
+						<th>帮助</th>
+						<th>提示</th>
+					</tr>
+					<tr ng-repeat="field in type.Properties">
+						<td>{{field.Name}}</td>
+						<td><a ng-href="#type-{{field.Type}}">{{field.Type}}</a></td>
+						<td>{{field.Optional?"是":""}}</td>
+						<td>{{field.Title}}</td>
+						<td>{{field.Description}}</td>
+						<td>{{field.Prompt}}</td>
+					</tr>
+				</table>
+			</div>
+			<hr />
+		</div>
+	</div>
+	<script src="angular"></script>
+	<script src="script"></script>
+</body>
+</html>

@@ -14,7 +14,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using SF.Sys.IO;
 using SF.Sys.NetworkService.Metadata;
+using System.Reflection;
 
 namespace SF.Sys.NetworkService
 {
@@ -30,7 +32,7 @@ namespace SF.Sys.NetworkService
 			return Library;
 		}
 
-		public string Typescript(bool all = true)
+		public IContent Typescript(bool all = true)
 		{
 			var tb = new TypeScriptProxyBuilder(
 				(c, a) =>
@@ -38,7 +40,44 @@ namespace SF.Sys.NetworkService
 				a.GrantInfo==null
 				);
 			var code = tb.Build(Library);
-			return code;
+			return new StringContent
+			{
+				Content = code,
+				ContentType = "text/javascript",
+			};
+		}
+		static Assembly CurAssembly { get; } = typeof(DefaultServiceMetadataService).Assembly;
+		static string GetResPath(string Path)
+		{
+			return CurAssembly.GetName().Name + ".Html." + Path;
+		}
+		static string ReadResString(string Path)
+		{
+			return CurAssembly.GetManifestResourceStream(GetResPath(Path)).ReadString(null, true, true);
+		}
+		public IContent Angular()
+		{
+			return new StringContent
+			{
+				Content = ReadResString("Scripts.angular.min.js"),
+				ContentType = "text/javascript",
+			};
+		}
+		public IContent Script()
+		{
+			return new StringContent
+			{
+				Content = ReadResString("ApiMetadataView.js"),
+				ContentType = "text/javascript",
+			};
+		}
+		public IContent Html()
+		{
+			return new StringContent
+			{
+				Content = ReadResString("ApiMetadataView.html"),
+				ContentType = "text/html",
+			};
 		}
 
 	}

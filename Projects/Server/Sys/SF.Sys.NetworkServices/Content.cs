@@ -20,14 +20,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Sys.IO;
-namespace SF.Sys.NetworkService
+namespace SF.Sys
 {
 	public abstract class BaseContent : IContent
 	{
 		public string ContentType { get; set; }
 
 		public string FileName { get; set; }
-		public string Encoding { get; set; }
+		public Encoding Encoding { get; set; }
 
 		public virtual async Task<System.IO.Stream> OpenStreamAsync()
 		{
@@ -43,7 +43,7 @@ namespace SF.Sys.NetworkService
 
 		public virtual async Task<string> GetStringAsync()
 		{
-			return (Encoding == null ? System.Text.Encoding.UTF8 : System.Text.Encoding.GetEncoding(Encoding)).GetString(
+			return Encoding.GetString(
 				await GetByteArrayAsync()
 				);
 		}
@@ -51,13 +51,13 @@ namespace SF.Sys.NetworkService
 
 	public class FileContent : BaseContent,IFileContent
 	{
-		public string Path { get; set; }
+		public string FilePath { get; set; }
 
 		public override Task<System.IO.Stream> OpenStreamAsync()
 		{
 			return Task.FromResult(
 				(System.IO.Stream)new System.IO.FileStream(
-					Path, 
+					FilePath, 
 					System.IO.FileMode.Open, 
 					System.IO.FileAccess.Read, 
 					System.IO.FileShare.Read
@@ -85,6 +85,19 @@ namespace SF.Sys.NetworkService
 		{
 			return Task.FromResult(Data);
 		}
+	}
+	public class StringContent : BaseContent
+	{
+		public string Content { get; set; }
+		public override Task<byte[]> GetByteArrayAsync()
+		{
+			return Task.FromResult((Encoding ?? Encoding.UTF8).GetBytes(Content ?? string.Empty));
+		}
+		public override Task<string> GetStringAsync()
+		{
+			return  Task.FromResult(Content);
+		}
+
 	}
 }
 

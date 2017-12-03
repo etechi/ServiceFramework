@@ -19,7 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF
+namespace SF.Sys
 {
 	public interface IContent
 	{
@@ -28,7 +28,7 @@ namespace SF
 		Task<string> GetStringAsync();
 		string ContentType { get; }
 		string FileName { get; }
-		string Encoding { get; }
+		Encoding Encoding { get; }
 	}
     public interface IStreamContent : IContent
 	{
@@ -37,12 +37,17 @@ namespace SF
     }
     public interface IFileContent : IContent
 	{
-		string Path { get; }
+		string FilePath { get; }
 	}
 	public interface IByteArrayContent : IContent
 	{
 		byte[] Data { get; }
 	}
-	
+	public interface IStringContent : IContent {
+		string Content { get; }
+	}
+		
+
+
 }
 

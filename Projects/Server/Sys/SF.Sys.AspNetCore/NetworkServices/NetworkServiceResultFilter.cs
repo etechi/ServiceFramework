@@ -27,29 +27,27 @@ namespace SF.Sys.AspNetCore.NetworkServices
 		public void OnResultExecuted(ResultExecutedContext context)
 		{
 		}
-		IActionResult ProcessHttpContent(HttpContent ctn)
+		IActionResult MapHttpContent(HttpContent ctn)
 		{
-			var sctn = ctn as StringContent;
-			if (sctn != null)
+			if (ctn is System.Net.Http.StringContent sctn)
 				return new ContentResult
 				{
 					Content = sctn.ReadAsStringAsync().Result,
 					ContentType = sctn.Headers.ContentType.MediaType,
 				};
 
-			var ssctn = ctn as System.Net.Http.StreamContent;
-			if (ssctn != null)
+			if(ctn is System.Net.Http.StreamContent ssctn)
 				return new FileStreamResult(
-					sctn.ReadAsStreamAsync().Result,
+					ssctn.ReadAsStreamAsync().Result,
 					new MediaTypeHeaderValue(
-						sctn.Headers.ContentType.MediaType
+						ssctn.Headers.ContentType.MediaType
 						)
 					{
 						Charset = ctn.Headers.ContentType.CharSet
 					}
 					);
-			var fctn = ctn as HttpResponse.FileContent;
-			if (fctn != null)
+
+			if(ctn is HttpResponse.FileContent fctn)
 				return new PhysicalFileResult(
 					fctn.FilePath,
 					new MediaTypeHeaderValue(
@@ -62,10 +60,50 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			return new FileContentResult(
 					ctn.ReadAsByteArrayAsync().Result,
 					new MediaTypeHeaderValue(
-						sctn.Headers.ContentType.MediaType
+						ctn.Headers.ContentType.MediaType
 						)
 					{
 						Charset = ctn.Headers.ContentType.CharSet
+					}
+					);
+		}
+		IActionResult MapContent(IContent ctn)
+		{
+			if (ctn is IStringContent sctn)
+				return new ContentResult
+				{
+					Content = sctn.Content,
+					ContentType = sctn.ContentType
+				};
+
+			if (ctn is IStreamContent ssctn)
+				return new FileStreamResult(
+					ssctn.Stream,
+					new MediaTypeHeaderValue(
+						ssctn.ContentType
+						)
+					{
+						Charset = (ctn.Encoding ?? System.Text.Encoding.UTF8).WebName
+					}
+					);
+
+			if (ctn is IFileContent fctn)
+				return new PhysicalFileResult(
+					fctn.FilePath,
+					new MediaTypeHeaderValue(
+						fctn.ContentType
+						)
+					{
+						Charset = (ctn.Encoding ?? System.Text.Encoding.UTF8).WebName
+					});
+
+			return new FileContentResult(
+					ctn.GetByteArrayAsync().Result,
+					new MediaTypeHeaderValue(
+						ctn.ContentType
+						)
+					{
+						Charset = (ctn.Encoding ?? System.Text.Encoding.UTF8).WebName
 					}
 					);
 		}
@@ -76,22 +114,20 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			foreach (var h in res.Headers)
 				cres.Headers.Add(h.Key, h.Value.ToArray());
 			if(res.Content!=null)
-				context.Result=ProcessHttpContent(res.Content);
+				context.Result=MapHttpContent(res.Content);
 		}
+		
 		public void OnResultExecuting(ResultExecutingContext context)
 		{
 			var or = context.Result as ObjectResult;
 			if (or != null)
 			{
-				var res = or.Value as HttpResponseMessage;
-				if (res != null)
-					ProcessHttpResponseMessage(context, res);
-				else
-				{
-					var ctn = or.Value as HttpContent;
-					if (ctn != null)
-						context.Result = ProcessHttpContent(ctn);
-				}
+				if(or.Value is HttpResponseMessage rm)
+					ProcessHttpResponseMessage(context, rm);
+				else if(or.Value is IContent ictn)
+					context.Result = MapContent(ictn);
+				else if(or.Value is HttpContent ctn)
+					context.Result = MapHttpContent(ctn);
 			}
 		}
 	}

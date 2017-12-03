@@ -18,7 +18,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Sys.NetworkService;
+using SF.Sys;
+
 namespace SF.Common.Media
 {
 	/// <summary>

@@ -16,6 +16,15 @@
 
   <ItemGroup>
     <None Remove=".licenseheader" />
+    <None Remove="Html\ApiMetadataView.html" />
+    <None Remove="Html\ApiMetadataView.js" />
+    <None Remove="Html\Scripts\angular.min.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Html\ApiMetadataView.html" />
+    <EmbeddedResource Include="Html\ApiMetadataView.js" />
+    <EmbeddedResource Include="Html\Scripts\angular.min.js" />
   </ItemGroup>
 
   <ItemGroup>

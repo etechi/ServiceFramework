@@ -167,7 +167,7 @@ namespace SF.Common.Media
                         Name = System.IO.Path.GetFileNameWithoutExtension(file.FileName).LetterOrDigits(),
                         Type = Setting.UploadMediaType
 					};
-                    mc = new Sys.NetworkService.ByteArrayContent
+                    mc = new Sys.ByteArrayContent
 					{
                         Data = data.Data
                     };
@@ -181,7 +181,7 @@ namespace SF.Common.Media
                         Type = Setting.UploadMediaType
                     };
 					using(var s=file.OpenStream())
-						mc = new Sys.NetworkService.ByteArrayContent
+						mc = new Sys.ByteArrayContent
 						{
 							Data = await s.ReadToEndAsync()
 						};
@@ -233,7 +233,7 @@ namespace SF.Common.Media
 				Name = m.Mime,
 				Type = Setting.UploadMediaType
 			};
-			var mc = new Sys.NetworkService.ByteArrayContent
+			var mc = new Sys.ByteArrayContent
 			{
 				Data = img.Data
 			};
@@ -286,7 +286,7 @@ namespace SF.Common.Media
 			if (data == null)
 				return null;
 			if (data is IFileContent)
-				return HttpResponse.File(((IFileContent)data).Path, data.ContentType);
+				return HttpResponse.File(((IFileContent)data).FilePath, data.ContentType);
 			return HttpResponse.ByteArray(
 				await data.GetByteArrayAsync(),
 				data.ContentType

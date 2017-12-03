@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys;
 using SF.Sys.Hosting;
 using SF.Sys.Mime;
 using SF.Sys.NetworkService;
@@ -82,7 +83,7 @@ namespace SF.Common.Media.Storages
 				throw new NotSupportedException();
 			return Task.FromResult(
 				(IContent)new FileContent {
-					Path = fm.Path,
+					FilePath = fm.Path,
 					ContentType=Media.Mime,
 					FileName=Media.Name
 				}

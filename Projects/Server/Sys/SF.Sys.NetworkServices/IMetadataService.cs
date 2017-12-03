@@ -20,6 +20,9 @@ namespace SF.Sys.NetworkService
 	{
 		//[Authorize(Roles ="admin")]
 		Metadata.Library Json();
-		string Typescript(bool all = true);
+		IContent Typescript(bool all = true);
+		IContent Html();
+		IContent Script();
+		IContent Angular();
 	}
 }

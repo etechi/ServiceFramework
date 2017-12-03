@@ -23,17 +23,64 @@ namespace SF.Sys.IO
 {
 	public static class StreamExtension
 	{
-		public static byte[] ReadToEnd(this Stream stream)
+		public static string ReadString(this Stream stream,Encoding Encoding=null, bool detectEncodingFromByteOrderMarks=true, bool Dispose = false)
 		{
-			var ms = new MemoryStream();
-			stream.CopyTo(ms);
-			return ms.ToArray();
+			try
+			{
+				using (var sr = new StreamReader(stream, Encoding ?? Encoding.UTF8, detectEncodingFromByteOrderMarks))
+				{
+					return sr.ReadToEnd();
+				}
+			}
+			finally
+			{
+				if (Dispose)
+					stream.Dispose();
+			}
 		}
-		public static async Task<byte[]> ReadToEndAsync(this Stream stream)
+		public static async Task<string> ReadStringAsync(this Stream stream, Encoding Encoding = null, bool detectEncodingFromByteOrderMarks = true, bool Dispose = false)
 		{
-			var ms = new MemoryStream();
-			await stream.CopyToAsync(ms);
-			return ms.ToArray();
+			try
+			{
+				using (var sr = new StreamReader(stream, Encoding ?? Encoding.UTF8, detectEncodingFromByteOrderMarks))
+				{
+					return await sr.ReadToEndAsync();
+				}
+			}
+			finally
+			{
+				if (Dispose)
+					stream.Dispose();
+			}
+		}
+		public static byte[] ReadToEnd(this Stream stream,bool Dispose=false)
+		{
+			try
+			{
+				var ms = new MemoryStream();
+				stream.CopyTo(ms);
+				return ms.ToArray();
+			}
+			finally
+			{
+				if (Dispose)
+					stream.Dispose();
+			}
+		}
+		public static async Task<byte[]> ReadToEndAsync(this Stream stream,bool Dispose=false)
+		{
+			try
+			{
+				var ms = new MemoryStream();
+				await stream.CopyToAsync(ms);
+				return ms.ToArray();
+			}
+			finally
+			{
+				if (Dispose)
+					stream.Dispose();
+
+			}
 		}
 	}
 }

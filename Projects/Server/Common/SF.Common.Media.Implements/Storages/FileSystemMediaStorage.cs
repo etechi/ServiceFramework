@@ -134,7 +134,7 @@ namespace SF.Common.Media.Storages
 				throw new NotSupportedException();
 			return Task.FromResult(
 				(IContent)new FileContent {
-					Path = fm.Path ,
+					FilePath = fm.Path ,
 					ContentType = Media.Mime,
 					FileName = Media.Name
 				}
@@ -145,9 +145,7 @@ namespace SF.Common.Media.Storages
 		{
 			if (Content == null)
 				throw new ArgumentException();
-			else  if(!(Content is IFileContent) && 
-                !(Content is IByteArrayContent) &&
-                !(Content is IStreamContent))
+			else  if(!(Content is IContent) )
 				throw new ArgumentException();
 
 			var guid = Guid.NewGuid();
@@ -161,22 +159,27 @@ namespace SF.Common.Media.Storages
 			System.IO.Directory.CreateDirectory(basePath);
 			var path = System.IO.Path.Combine(basePath, file_name);
 
-            if(Content is IStreamContent)
-            {
-                using (var fs = new System.IO.FileStream(path, System.IO.FileMode.CreateNew, System.IO.FileAccess.Write, System.IO.FileShare.Read))
-                {
-                    await ((IStreamContent)Content).Stream.CopyToAsync(fs);
-                }
-            }
-			else if (Content is IFileContent)
+
+			if (Content is IFileContent)
 			{
-				System.IO.File.Copy(((IFileContent)Content).Path, path);
+				System.IO.File.Copy(((IFileContent)Content).FilePath, path);
 			}
-			else if(Content is IByteArrayContent)
+			else
 				using (var fs = new System.IO.FileStream(path, System.IO.FileMode.CreateNew, System.IO.FileAccess.Write, System.IO.FileShare.Read))
 				{
-					var buf = ((IByteArrayContent)Content).Data;
-					await fs.WriteAsync(buf, 0, buf.Length);
+					if (Content is IStreamContent sc)
+						await sc.Stream.CopyToAsync(fs);
+					else if (Content is IByteArrayContent bac)
+					{
+						var buf = bac.Data;
+						await fs.WriteAsync(buf, 0, buf.Length);
+					}
+					else
+					{
+						var buf = await Content.GetByteArrayAsync();
+						await fs.WriteAsync(buf, 0, buf.Length);
+					}
+
 				}
 			return $"{date}{id}";
 		}

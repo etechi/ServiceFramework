@@ -44,7 +44,7 @@ namespace SF.Sys.NetworkService
 		public static HttpResponseMessage Text(string Text, string mediaType = "text/plain", Encoding Encoding = null, System.Net.HttpStatusCode Status = System.Net.HttpStatusCode.OK) =>
 			new HttpResponseMessage(Status)
 			{
-				Content = new StringContent(Text, Encoding ?? Encoding.UTF8, mediaType)
+				Content = new System.Net.Http.StringContent(Text, Encoding ?? Encoding.UTF8, mediaType)
 			};
 
 		public static HttpResponseMessage Json<T>(T Object, Encoding Encoding = null, System.Net.HttpStatusCode Status = System.Net.HttpStatusCode.OK) =>
