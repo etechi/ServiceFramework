@@ -21,6 +21,11 @@ namespace SF.Sys.NetworkService
 		//[Authorize(Roles ="admin")]
 		Metadata.Library Json();
 		IContent Typescript(bool all = true);
+		IContent Java(
+			string CommonImports,
+			string PackagePath,
+			bool all = true
+			);
 		IContent Html();
 		IContent Script();
 		IContent Angular();

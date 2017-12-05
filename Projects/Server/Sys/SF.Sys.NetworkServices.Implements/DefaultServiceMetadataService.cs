@@ -46,6 +46,22 @@ namespace SF.Sys.NetworkService
 				ContentType = "text/javascript",
 			};
 		}
+
+		public IContent Java(
+			string CommonImports,
+			string PackagePath, 
+			bool all = true
+			)
+		{
+			var tb = new JavaProxyBuilder(
+				CommonImports,
+				PackagePath,
+				(c, a) =>
+				all ||
+				a.GrantInfo == null
+				);
+			return tb.Build(Library);
+		}
 		static Assembly CurAssembly { get; } = typeof(DefaultServiceMetadataService).Assembly;
 		static string GetResPath(string Path)
 		{

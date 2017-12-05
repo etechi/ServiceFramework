@@ -132,6 +132,9 @@ namespace SF.Sys.NetworkService
 			}
 			BuildClassType(t);
 
+			var za = new System.IO.Compression.ZipArchive(null,System.IO.Compression.ZipArchiveMode.Create);
+			za.CreateEntry("aa").Open();
+
 		}
 		void BuildMethod(Metadata.Service service, Metadata.Method method)
 		{
