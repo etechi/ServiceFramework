@@ -40,7 +40,12 @@ namespace SF.Sys.Comments
 		{
 			var ps = Method.GetParameters();
 			if (ps.Length == 0) return "";
-			return "(" + ps.Select(p => GetTypeName(p.ParameterType)).Join(",") + ")";
+			return "(" + ps.Select(p =>
+			{ 
+				if (p.ParameterType.IsGenericParameter)
+					return "`" + p.ParameterType.GenericParameterPosition;
+				return GetTypeName(p.ParameterType);
+			}).Join(",") + ")";
 		}
 		public static string GetMemberXmlDocId(this MemberInfo Member)
 		{
@@ -77,6 +82,18 @@ namespace SF.Sys.Comments
 			var group = e.Element("group")?.Value?.Trim();
 			var prompts = e.Element("prompt")?.Value?.Trim();
 			var order = e.Element("order")?.Value?.Trim();
+			IReadOnlyDictionary<string, Comment> ps = null;
+			var pes = e.Elements("param");
+			if (pes.Any())
+			{
+				var sl = new SortedList<string, Comment>();
+				foreach (var pe in pes.Select(p=>(name:p.Attribute("name")?.Value.Trim(),value:p.Value?.Trim())).Where(p=>!p.name.IsNullOrEmpty()))
+					sl[pe.name] = new Comment(pe.name, pe.value);
+				if (sl.Count > 0)
+					ps = sl;
+			}
+
+			var returns = e.Element("returns")?.Value.Trim();
 			return new Comment(
 				id,
 				title ?? summary,
@@ -84,7 +101,10 @@ namespace SF.Sys.Comments
 				group,
 				remarks,
 				prompts,
-				order.TryToInt32() ?? 0
+				order.TryToInt32() ?? 0,
+				false,
+				ps,
+				returns
 				);
 		}
 		public static IReadOnlyDictionary<string, Comment> GetAssemblyComments(this Assembly Assembly)

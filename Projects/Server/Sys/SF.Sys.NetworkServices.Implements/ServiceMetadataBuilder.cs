@@ -156,6 +156,7 @@ namespace SF.Sys.NetworkService
 					HeavyParameter = BuildRule.DetectHeavyParameter(method)?.Name
 				},
 				attrs,
+				null,
 				method.Comment(false),
 				null//a=>!HttpMethodAttributes.Contains(a.GetType())
 				);
@@ -174,13 +175,21 @@ namespace SF.Sys.NetworkService
 			if (attrs.Any(a => a is RequiredAttribute))
 				optional = false; 
 
-			return LoadAttributes(new Metadata.Parameter
-			{
-				Name = parameter.Name,
-				Optional=optional,
-				//TransportMode=attrs.Any(a=>a is FromBodyAttribute),
-				Type = ResolveType(param_type)
-			},attrs,parameter,null/*,a=>!(a is FromBodyAttribute)*/);
+
+
+			return LoadAttributes(
+				new Metadata.Parameter
+				{
+					Name = parameter.Name,
+					Optional=optional,
+					//TransportMode=attrs.Any(a=>a is FromBodyAttribute),
+					Type = ResolveType(param_type)
+				},
+				attrs,
+				parameter,
+				parameter.Comment()
+				/*,a=>!(a is FromBodyAttribute)*/
+				);
 		}
 		public SF.Sys.Metadata.Models.Type GetUnknownType()
 		{

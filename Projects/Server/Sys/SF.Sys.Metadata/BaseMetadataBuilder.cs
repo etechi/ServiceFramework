@@ -75,7 +75,11 @@ namespace SF.Sys.Metadata
 				Optional=optional,
 				Type = ResolveType(param_type),
                 DefaultValue= parameter.HasDefaultValue? JsonSerializer.Serialize(parameter.DefaultValue):null
-            }, attrs, parameter,null);
+            }, 
+			attrs, 
+			parameter,
+			parameter.Comment(false)
+			);
 		}
 
 		protected virtual string ResolveResultType(Type type)

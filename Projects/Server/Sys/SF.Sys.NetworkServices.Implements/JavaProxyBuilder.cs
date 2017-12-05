@@ -54,7 +54,7 @@ namespace SF.Sys.NetworkService
 
 			i = type.IndexOf('<');
 			if (i != -1)
-				type=type.Replace('.', '$').Replace('<', '$').Replace(',', '_').Replace('>', '$');
+				type=type.Replace('.', '_').Replace('<', '_').Replace(',', '_').Replace('>', '_');
 
 			switch (type)
 			{
@@ -81,7 +81,7 @@ namespace SF.Sys.NetworkService
 					return false;
 					
 			}
-			sb.AppendLine($"import {PackagePath}.{type};");
+			sb.AppendLine($"import {PackagePath}.{type.Replace('.', '_').Replace('+', '_')};");
 			return true;
 		}
 		static string to_java_type(string type)
@@ -99,7 +99,7 @@ namespace SF.Sys.NetworkService
 
 			i = type.IndexOf('<');
 			if (i != -1)
-				return type.Replace('.', '$').Replace('<', '$').Replace(',', '_').Replace('>', '$');
+				return type.Replace('.', '_').Replace('<', '_').Replace(',', '_').Replace('>', '_');
 
 			
 			switch (type)
@@ -186,8 +186,8 @@ namespace SF.Sys.NetworkService
 				* @return          post请求json方式提交
 				*/
 				sb.AppendLine($"/**");
-				sb.AppendLine(t.Title);
-				sb.AppendLine(t.Description);
+				sb.AppendLine($"* {t.Title}");
+				sb.AppendLine($"* {t.Description}");
 				sb.AppendLine($"*/");
 				sb.Append($"public class {to_java_type(t.Name)}");
 				if (t.BaseTypes != null)
@@ -199,9 +199,10 @@ namespace SF.Sys.NetworkService
 					foreach (var p in t.Properties)
 					{
 						sb.AppendLine($"\t/**");
-						sb.AppendLine($"\t{p.Title}");
-						sb.AppendLine($"\t{p.Description}");
-						sb.AppendLine($"\t类型:{p.Type}");
+						sb.AppendLine($"\t* {p.Title} {(p.Optional?"[可选]":"")}");
+						sb.AppendLine($"\t* {p.Description}");
+						if(p.Optional)sb.AppendLine($"\t* [可选]");
+						sb.AppendLine($"\t* 类型:{p.Type}");
 						sb.AppendLine($"\t*/");
 						sb.AppendLine($"\t{to_java_type(p.Type)} {p.Name};");
 					}
@@ -236,7 +237,7 @@ namespace SF.Sys.NetworkService
 			sb.AppendLine($"* {method.Description}");
 			if (method.Parameters != null)
 				foreach (var p in method.Parameters)
-					sb.AppendLine($"* @param {p.Name} {method.Title} {method.Description}");
+					sb.AppendLine($"* @param {p.Name} {p.Title} {(p.Optional?"[可选] ":"")}{p.Description}");
 			if(method.Type!=null && Types.TryGetValue(method.Type,out SF.Sys.Metadata.Models.Type rt))
 				sb.AppendLine($"* @return {rt.Title} {rt.Description}");
 
@@ -247,7 +248,7 @@ namespace SF.Sys.NetworkService
 			{
 				sb.AppendLine(
 					method.Parameters.Select(p =>
-					$"@Field(\"{p.Name}\") {to_java_type(p.Type)} {p.Name}"
+					$"\t@Field(\"{p.Name}\") {to_java_type(p.Type)} {p.Name}"
 					).Join(",\n")
 				);
 			}

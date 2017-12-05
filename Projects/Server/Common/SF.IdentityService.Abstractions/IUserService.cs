@@ -190,21 +190,21 @@ namespace SF.Auth.IdentityServices
 		/// <summary>
 		/// 获取当前用户ID
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>用户ID</returns>
 		[Authorize]
 		Task<long?> GetCurUserId();
 
 		/// <summary>
 		/// 获取当前用户
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>当前用户实体</returns>
 		Task<User> GetCurUser();
 
 		/// <summary>
 		/// 登录
 		/// </summary>
-		/// <param name="Arg"></param>
-		/// <returns></returns>
+		/// <param name="Arg">登录参数</param>
+		/// <returns>访问令牌</returns>
 		Task<string> Signin(SigninArgument Arg);
 
 		/// <summary>
@@ -216,59 +216,59 @@ namespace SF.Auth.IdentityServices
 		/// <summary>
 		/// 发送忘记密码验证消息
 		/// </summary>
-		/// <param name="Arg"></param>
+		/// <param name="Arg">找回密码参数</param>
 		/// <returns></returns>
-		Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
+		Task SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
 
 		/// <summary>
 		/// 使用验证消息重置密码
 		/// </summary>
 		/// <param name="Arg"></param>
-		/// <returns></returns>
+		/// <returns>访问令牌</returns>
 		Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg);
 
 		/// <summary>
 		/// 设置密码
 		/// </summary>
-		/// <param name="Arg"></param>
-		/// <returns></returns>
+		/// <param name="Arg">重置密码参数</param>
+		/// <returns>访问令牌</returns>
 		Task<string> SetPassword(SetPasswordArgument Arg);
 
 
 		/// <summary>
 		/// 修改用户信息
 		/// </summary>
-		/// <param name="User"></param>
+		/// <param name="User">用户信息实体</param>
 		/// <returns></returns>
 		Task Update(User User);
 
 		/// <summary>
 		/// 从访问令牌提取身份ID
 		/// </summary>
-		/// <param name="AccessToken"></param>
-		/// <returns></returns>
+		/// <param name="AccessToken">访问令牌</param>
+		/// <returns>用户ID</returns>
 		Task<long> ValidateAccessToken(string AccessToken);
 
 		/// <summary>
 		/// 发送用户创建验证信息
 		/// </summary>
-		/// <param name="Arg"></param>
+		/// <param name="Arg">用户创建参数</param>
 		/// <returns></returns>
-		Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg);
+		Task SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg);
 
 		/// <summary>
 		/// 注册用户
 		/// </summary>
-		/// <param name="Arg"></param>
-		/// <param name="VerifyCode"></param>
+		/// <param name="Arg">注册参数</param>
+		/// <param name="VerifyCode">是否验证验证信息</param>
 		/// <returns></returns>
 		Task<string> Signup(SignupArgument Arg, bool VerifyCode);
 
 		/// <summary>
 		/// 根据用户ID获取身份信息
 		/// </summary>
-		/// <param name="Id"></param>
-		/// <returns></returns>
+		/// <param name="Id">用户ID</param>
+		/// <returns>用户实体</returns>
 		Task<User> GetUser(long Id);
 	}
 

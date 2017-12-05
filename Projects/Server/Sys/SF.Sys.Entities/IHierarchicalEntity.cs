@@ -55,8 +55,8 @@ namespace SF.Sys.Entities
 		/// <summary>
 		/// 通过ID获取容器对象
 		/// </summary>
-		/// <param name="Key"></param>
-		/// <returns></returns>
+		/// <param name="Key">容器对象ID</param>
+		/// <returns>容器对象实体</returns>
 		Task<TContainer> LoadContainerAsync(TKey Key);
 	}
 	public interface IContainerItemsListable<TContainerKey, TItem>
@@ -64,9 +64,9 @@ namespace SF.Sys.Entities
 		/// <summary>
 		/// 获取容器中的对象
 		/// </summary>
-		/// <param name="Container"></param>
-		/// <param name="Paging"></param>
-		/// <returns></returns>
+		/// <param name="Container">容器对象ID</param>
+		/// <param name="Paging">分页配置</param>
+		/// <returns>子对象集</returns>
 		Task<QueryResult<TItem>> ListItemsAsync(TContainerKey Container,Paging Paging);
 	}
 
@@ -93,6 +93,12 @@ namespace SF.Sys.Entities
 	/// <typeparam name="TContainer"></typeparam>
 	public interface ITreeContainerListable<TContainerKey, TContainer>
 	{
+		/// <summary>
+		/// 获取容器中的子容器
+		/// </summary>
+		/// <param name="Key">容器对象ID</param>
+		/// <param name="Paging">分页配置</param>
+		/// <returns>子容器对象集</returns>
 		Task<QueryResult<TContainer>> ListChildContainersAsync(TContainerKey Key,Paging Paging);
 	}
 

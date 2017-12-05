@@ -14,6 +14,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
+using System.Collections.Generic;
+
 namespace SF.Sys.Comments
 {
 	public class Comment
@@ -27,7 +29,9 @@ namespace SF.Sys.Comments
 			string Remarks = null,
 			string Prompts = null,
 			int Order = 0,
-			bool IsDefaultComment=false
+			bool IsDefaultComment=false,
+			IReadOnlyDictionary<string, Comment> Parameters=null,
+			string Returns=null
 			)
 		{
 			this.IsDefaultComment = IsDefaultComment;
@@ -38,6 +42,8 @@ namespace SF.Sys.Comments
 			this.Remarks = Remarks;
 			this.Order = Order;
 			this.Prompt = Prompts;
+			this.Parameters = Parameters;
+			this.Returns = Returns;
 		}
 		public override string ToString()
 		{
@@ -52,6 +58,8 @@ namespace SF.Sys.Comments
 		public int Order { get; }
 		public string Remarks { get; }
 		public string ShortName { get; }
+		public IReadOnlyDictionary<string,Comment> Parameters { get; }
+		public string Returns { get; }
 	}
 
 }

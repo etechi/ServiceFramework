@@ -61,15 +61,27 @@ namespace SF.Sys.Entities.Models
 		IItemEntityOrder
 		where TKey : IEquatable<TKey>
 	{
+		/// <summary>
+		/// 容器ID
+		/// </summary>
 		public virtual TContainerKey ContainerId { get; set; }
 
+		/// <summary>
+		/// 容器名
+		/// </summary>
 		[TableVisible]
 		[Ignore]
 		public virtual string ContainerName { get; set; }
 
+		/// <summary>
+		/// 容器
+		/// </summary>
 		[Ignore]
 		public virtual TContainer Container { get; set; }
 
+		/// <summary>
+		/// 排位
+		/// </summary>
 		[TableVisible]
 		[Optional]
 		public virtual int ItemOrder { get; set; }
@@ -87,6 +99,9 @@ namespace SF.Sys.Entities.Models
 		where TItem : IItemEntity<TItemContainerKey>
 		where TContainerKey : IEquatable<TContainerKey>
 	{
+		/// <summary>
+		/// 子对象
+		/// </summary>
 		public virtual IEnumerable<TItem> Items { get; set; }
 	}
 	public abstract class ContainerEntityBase<TItem> :
@@ -100,6 +115,9 @@ namespace SF.Sys.Entities.Models
 		where TItem : IItemEntity<TItemContainerKey>
 		where TContainerKey : IEquatable<TContainerKey>
 	{
+		/// <summary>
+		/// 子项目
+		/// </summary>
 		public virtual IEnumerable<TItem> Items { get; set; }
 	}
 	public abstract class UIContainerEntityBase<TItem> :
@@ -114,6 +132,9 @@ namespace SF.Sys.Entities.Models
 		where TTreeNodeKey : IEquatable<TTreeNodeKey>
 		where TNodeEntity : TreeNodeEntityBase<TNodeEntity, TTreeNodeKey, TTreeParentKey>
 	{
+		/// <summary>
+		/// 子节点
+		/// </summary>
 		[Ignore]
 		public virtual IEnumerable<TNodeEntity> Children { get; set; }
 	}
@@ -130,6 +151,9 @@ namespace SF.Sys.Entities.Models
 		where TTreeNodeKey : IEquatable<TTreeNodeKey>
 		where TNodeEntity : UITreeNodeEntityBase<TNodeEntity, TTreeNodeKey, TTreeParentKey>
 	{
+		/// <summary>
+		/// 子节点
+		/// </summary>
 		public virtual IEnumerable<TNodeEntity> Children { get; set; }
 	}
 	public abstract class UITreeNodeEntityBase<TNodeEntity> :
@@ -165,6 +189,9 @@ namespace SF.Sys.Entities.Models
 		where TNodeEntity : UITreeContainerEntityBase<TNodeEntity, TTreeNodeKey, TTreeParentKey, TItemEntity, TItemContainerKey>
 		where TItemEntity : IItemEntity<TItemContainerKey>
 	{
+		/// <summary>
+		/// 子项目
+		/// </summary>
 		public virtual IEnumerable<TItemEntity> Items { get; set; }
 	}
 

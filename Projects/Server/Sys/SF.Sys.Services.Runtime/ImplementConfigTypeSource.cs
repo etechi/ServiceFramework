@@ -59,8 +59,8 @@ namespace SF.Sys.Services
 			
 			public override Property GenerateTypeProperty(PropertyInfo prop, object DefaultValueObject)
 			{
-				return TryGenerateManagedServiceProperty(this,ServiceDetector, prop.PropertyType, prop.Name,prop.GetCustomAttributes()) ??
-					TryGenerateDictionaryToArrayProperty(this,  prop.PropertyType, prop.Name, prop.GetCustomAttributes()) ??
+				return TryGenerateManagedServiceProperty(this,ServiceDetector, prop.PropertyType, prop.Name,prop.GetCustomAttributes(),prop.Comment()) ??
+					TryGenerateDictionaryToArrayProperty(this,  prop.PropertyType, prop.Name, prop.GetCustomAttributes(), prop.Comment()) ??
 					base.GenerateTypeProperty(prop, DefaultValueObject);
 			}
 		}
@@ -75,7 +75,8 @@ namespace SF.Sys.Services
 			IServiceDetector ServiceDetector, 
 			System.Type Type,
 			string Name,
-			IEnumerable<object> Attributes
+			IEnumerable<object> Attributes,
+			Comment Comment
 			)
 		{
 			var realType = Type.GetGenericArgumentTypeAsLazy()
@@ -100,7 +101,7 @@ namespace SF.Sys.Services
 								}
 						}),
 					prop,
-					null
+					Comment
 					);
 			}
 			return null;
@@ -109,7 +110,8 @@ namespace SF.Sys.Services
 		   IMetadataBuilder Builder,
 		   System.Type Type,
 		   string Name,
-		   IEnumerable<object> Attributes
+		   IEnumerable<object> Attributes,
+		   Comment Comment
 		   )
 		{
 			if (!Type.IsGeneric())
@@ -131,13 +133,13 @@ namespace SF.Sys.Services
 				},
 				Attributes.Cast<System.Attribute>(),
 				null,
-				null
+				Comment
 				);
 		}
 		SF.Sys.Metadata.Models.Property GenerateArgsProperty(System.Type Type, ParameterInfo Arg, IMetadataBuilder Builder)
 		{
-			return TryGenerateManagedServiceProperty(Builder, Metadata, Arg.ParameterType,Arg.Name,Arg.GetCustomAttributes()) ??
-				TryGenerateDictionaryToArrayProperty(Builder, Arg.ParameterType, Arg.Name, Arg.GetCustomAttributes())??
+			return TryGenerateManagedServiceProperty(Builder, Metadata, Arg.ParameterType,Arg.Name,Arg.GetCustomAttributes(),Arg.Comment()) ??
+				TryGenerateDictionaryToArrayProperty(Builder, Arg.ParameterType, Arg.Name, Arg.GetCustomAttributes(), Arg.Comment()) ??
 				Builder.LoadAttributes(
 					new Property
 					{
@@ -146,7 +148,7 @@ namespace SF.Sys.Services
 					},
 					Arg.GetCustomAttributes(),
 					null,
-					null
+					Arg.Comment()
 					);
 		}
 		SF.Sys.Metadata.Models.Type GenerateArgsType(System.Type Type, ParameterInfo[] Args, IMetadataBuilder Builder)

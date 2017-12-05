@@ -27,7 +27,10 @@ namespace SF.Auth.IdentityServices
 
 	public class UserServiceSetting
 	{
-		public bool VerifyCodeVisible { get; set; }
+		/// <summary>
+		/// 跳过验证码检查
+		/// </summary>
+		public bool VerifyCodeDisabled { get; set; }
 
 		public Lazy<ILocalCache<VerifyCode>> VerifyCodeCache { get; set; }
 		public Lazy<IUserStorage> IdentStorage { get; set; }

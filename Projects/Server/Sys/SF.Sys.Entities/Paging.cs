@@ -21,20 +21,59 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Entities
 {
+	/// <summary>
+	/// 排序类型
+	/// </summary>
 	public enum SortOrder
 	{
+		/// <summary>
+		/// 默认
+		/// </summary>
 		Default,
+		/// <summary>
+		/// 升序
+		/// </summary>
 		Asc,
+		/// <summary>
+		/// 降序
+		/// </summary>
 		Desc,
+		/// <summary>
+		/// 随机排序
+		/// </summary>
 		Random
 	}
+	/// <summary>
+	/// 分页配置
+	/// </summary>
     public class Paging
 	{
+		/// <title>起始记录</title>
+		/// <summary>
+		/// 起始记录,从0开始
+		/// </summary>
 		public int Offset { get; set; }
+		/// <summary>
+		/// 返回记录条数
+		/// </summary>
 		public int Count { get; set; }
+		/// <summary>
+		/// 排序方式
+		/// </summary>
 		public string SortMethod { get; set; }
+
+		/// <summary>
+		/// 排序类型
+		/// </summary>
 		public SortOrder SortOrder { get; set; }
+
+		/// <summary>
+		/// 返回总数
+		/// </summary>
 		public bool TotalRequired { get; set; }
+		/// <summary>
+		/// 返回摘要
+		/// </summary>
         public bool SummaryRequired { get; set; }
 
 		public static Paging Single => new Paging

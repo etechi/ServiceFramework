@@ -88,9 +88,9 @@ namespace SF.Auth.IdentityServices
 		}
 
 
-		async Task<string> SendVerifyCode(IUserCredentialProvider CredentialProvider,ConfirmMessageType Type, string Ident, long? UserId, string BizIdent)
+		async Task SendVerifyCode(IUserCredentialProvider CredentialProvider,ConfirmMessageType Type, string Ident, long? UserId, string BizIdent)
 		{
-			var code = Strings.Numbers.Random(6);
+			var code = Setting.VerifyCodeDisabled ? "000000" : Strings.Numbers.Random(6);
 
 			Setting.VerifyCodeCache.Value.Set(
 				$"{ConfirmMessageType.PasswordRecorvery}\n{Ident}\n{UserId}",
@@ -102,8 +102,8 @@ namespace SF.Auth.IdentityServices
 				},
 				Setting.TimeService.Value.Now.AddMinutes(15)
 				);
-			if (Setting.VerifyCodeVisible)
-				return code;
+			if (Setting.VerifyCodeDisabled)
+				return ;
 
 			await CredentialProvider.SendConfirmCode(
 				UserId,
@@ -112,8 +112,6 @@ namespace SF.Auth.IdentityServices
 				Type,
 				BizIdent
 				);
-
-			return null;
 		}
 		VerifyCode CheckVerifyCode(ConfirmMessageType Type,string Ident,long UserId,string Code)
 		{
@@ -122,7 +120,7 @@ namespace SF.Auth.IdentityServices
 				);
 			if (verifyCode == null)
 				throw new PublicInvalidOperationException("请先发送验证码");
-			if (verifyCode.Code != Code)
+			if (verifyCode.Code != Code )
 				throw new PublicDeniedException("验证码错误");
 			return verifyCode;
 		}
@@ -142,7 +140,7 @@ namespace SF.Auth.IdentityServices
 				);
 		}
 
-		public async Task<string> SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg)
+		public async Task SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg)
 		{
 			var provider = GetCredentialProvider(Arg.CredentialProvider);
 
@@ -153,7 +151,7 @@ namespace SF.Auth.IdentityServices
 			var bind = await Setting.CredentialStorage.Value.Find(provider.Ident,  Arg.Credential);
 			if (bind == null)
 				throw new PublicArgumentException("找不到账号");
-			return await SendVerifyCode(
+			 await SendVerifyCode(
 				provider,
 				ConfirmMessageType.PasswordRecorvery, 
 				Arg.Credential, 
@@ -281,7 +279,7 @@ namespace SF.Auth.IdentityServices
 			Setting.CredentialProviderResolver(Provider ?? Setting.DefaultIdentityCredentialProvider);
 
 
-		public async Task<string> SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg)
+		public async Task SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg)
 		{
 			var CredentialProvider = GetCredentialProvider(Arg.CredentialProvider);
 
@@ -289,7 +287,7 @@ namespace SF.Auth.IdentityServices
 			if (err != null)
 				throw new PublicArgumentException(err);
 
-			return await SendVerifyCode(
+			await SendVerifyCode(
 				CredentialProvider,
 				ConfirmMessageType.Signup,
 				Arg.Credetial,

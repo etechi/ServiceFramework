@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Collections.Generic;
 using SF.Sys.Linq;
 using SF.Sys.Reflection;
 using System;
@@ -29,14 +30,37 @@ namespace SF.Sys.Comments
 	{
 		static ConcurrentDictionary<MemberInfo, Comment> CommentDict { get; } 
 			= new ConcurrentDictionary<MemberInfo, Comment>();
+		public static Comment Comment(this ParameterInfo Parameter, bool GetDefaultComment = true)
+		{
+			var p = Comment(Parameter.Member).Parameters?.Get(Parameter.Name);
+			if (p != null || !GetDefaultComment)
+				return p;
+			return new Comment(Parameter.Name, Parameter.Name);
+		}
 		public static Comment Comment(this MemberInfo Member, bool GetDefaultComment=true)
 		{
+			
 			Comment comment;
 			if (CommentDict.TryGetValue(Member, out comment))
 				return GetDefaultComment || !comment.IsDefaultComment ? comment : null;
 
+			var type = Member as Type;
+			if (type != null)
+			{
+				if (type.IsGeneric())
+					type = type.GetGenericTypeDefinition();
+			}
+			else if(Member.DeclaringType.IsGeneric())
+			{
+				if (Member is PropertyInfo p)
+					Member = Member.DeclaringType.GetGenericTypeDefinition().GetProperty(p.Name);
+				else
+					Member = Member.DeclaringType.Module.ResolveMember(Member.MetadataToken);
+			}
+
 			var id = Member.GetMemberXmlDocId();
-			var type = Member as Type; 
+
+			 
 			comment = (type == null ?
 					XmlCodeDocument.GetComment(Member) :
 					type.AllRelatedTypes()

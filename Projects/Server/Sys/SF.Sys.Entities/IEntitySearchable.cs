@@ -22,9 +22,9 @@ namespace SF.Sys.Entities
 		/// <summary>
 		/// 通过关键字搜索对象
 		/// </summary>
-		/// <param name="Key"></param>
-		/// <param name="Paging"></param>
-		/// <returns></returns>
+		/// <param name="Key">搜索关键字</param>
+		/// <param name="Paging">分页参数</param>
+		/// <returns>结果集</returns>
 		Task<QueryResult<TEntity>> SearchAsync(string Key,Paging Paging);
 	}
 }
