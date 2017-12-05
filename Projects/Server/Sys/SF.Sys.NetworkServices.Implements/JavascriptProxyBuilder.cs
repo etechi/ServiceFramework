@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Linq;
 using System;
 using System.Linq;
 using System.Text;
@@ -34,7 +35,7 @@ namespace SF.Sys.NetworkService
         }
 		void BuildMethod(Metadata.Service service, Metadata.Method method)
 		{
-			sb.AppendLine($"{method.Name}:[{(method.HeavyParameter==null?"true":"false")},{method?.Parameters?.Length??0}],");
+			sb.AppendLine($"{method.Name}:[{(method.HeavyMode?"true":"false")},{(method.HeavyMode && (method?.Parameters?.Length??0)==1?"null":$"[{method?.Parameters?.Select(p=>"\""+p.Name+"\"").Join(",")}]")}],");
 		}
 		void BuildService(Metadata.Service service)
 		{
@@ -53,9 +54,18 @@ namespace SF.Sys.NetworkService
 		{
 			sb.AppendLine(@"
 var _invoker=null;
-function buildFunc(svc,method,post,argc){
-	return function(arg){
-		return _invoker(svc,method,post,arg);
+function buildArguments(args,params){
+	if(!params)return args[0];
+	var re={};
+	var c=Math.min(args.length,params.length);
+	for(var i=0;i<c;i++)
+		re[params[i]]=args[i];
+	return re;
+}
+function buildFunc(svc,method,post,params){
+	return function(){
+		var args=buildArguments(arguments,params);
+		return _invoker(svc,method,post,args);
 	}
 }
 

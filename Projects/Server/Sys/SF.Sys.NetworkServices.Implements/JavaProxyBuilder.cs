@@ -241,7 +241,7 @@ namespace SF.Sys.NetworkService
 				sb.AppendLine($"* @return {rt.Title} {rt.Description}");
 
 			sb.AppendLine($"*/");
-			sb.AppendLine($"@{(method.HeavyParameter == null ? "GET" : "POST")}(\"{service.Name}/{method.Name}\")");
+			sb.AppendLine($"@{(method.HeavyMode ? "POST" : "GET")}(\"{service.Name}/{method.Name}\")");
 			sb.AppendLine($"Observable<{to_java_type(method.Type)}> {method.Name}(");
 			if (method.Parameters != null)
 			{

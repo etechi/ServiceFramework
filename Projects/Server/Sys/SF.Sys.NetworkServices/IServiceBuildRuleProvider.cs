@@ -24,7 +24,7 @@ namespace SF.Sys.NetworkService
 		IEnumerable<ParameterInfo> GetMethodParameters(System.Reflection.MethodInfo method);
 		string FormatMethodName(MethodInfo method);
 		string FormatServiceName(System.Type type);
-		ParameterInfo DetectHeavyParameter(MethodInfo method);
+		bool DetectHeavyMode(MethodInfo method);
 		IMetadataAttributeValuesProvider TryGetAttributeValuesProvider(System.Attribute attr);
 	}
 }

@@ -154,28 +154,24 @@ namespace SF.Sys.NetworkService
 			}
 			sb.AppendLine("\t__opts?:ICallOptions");
 			sb.AppendLine($"\t) : PromiseLike<{to_js_type(method.Type)}> {{");
-			sb.AppendLine($"\treturn _invoker(\n\t\t'{service.Name}',\n\t\t'{method.Name}',");
-			if (method.Parameters != null && method.Parameters.Cast<SF.Sys.Metadata.Models.Parameter>().Any(p => p.Name!=method.HeavyParameter))
+			sb.AppendLine($"\treturn _invoker(\n\t\t'{service.Name}',\n\t\t'{method.Name}',{(method.HeavyMode?"true":"false")},");
+			if (method.Parameters == null)
+				sb.Append("null,");
+			else if (method.Parameters.Length == 1 && method.HeavyMode)
 			{
+				sb.Append(method.Parameters[0].Name+",");
+			}
+			else
+			{ 
 				sb.AppendLine("\t\t{");
 				sb.Append("\t\t\t" + 
 					string.Join(",\n\t\t\t",
 					method.Parameters.Cast<SF.Sys.Metadata.Models.Parameter>()
-					.Where(p => p.Name!=method.HeavyParameter)
 					.Select(p => $"{p.Name}:{p.Name}"))
 					);
 				sb.AppendLine();
 				sb.AppendLine("\t\t},");
 			}
-			else
-				sb.AppendLine("\t\tnull,");
-			if (method.HeavyParameter!=null)
-			{
-				sb.AppendLine($"\t\t{method.Parameters.Cast<SF.Sys.Metadata.Models.Parameter>().Where(p => p.Name==method.HeavyParameter).Single().Name},");
-			}
-			else
-				sb.AppendLine("\t\tnull,");
-			sb.AppendLine("\t\t__opts");
 			sb.AppendLine("\t\t);");
 			sb.AppendLine("},");
 		}

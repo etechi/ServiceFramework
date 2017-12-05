@@ -59,7 +59,7 @@ namespace SF.Sys.NetworkService
 		}
 		public IEnumerable<ParameterInfo> GetMethodParameters(System.Reflection.MethodInfo method)
 		{
-			return method.GetParameters().Where(p => p.ParameterType != typeof(Paging));
+			return method.GetParameters();
 
 		}
 		IEnumerable<MethodInfo> GetServiceMethods(System.Type type, HashSet<MethodInfo> methods)
@@ -83,8 +83,6 @@ namespace SF.Sys.NetworkService
 		public static bool IsHeavyParameter(ParameterInfo p)
 		{
 			var t = p.ParameterType;
-			if (t == typeof(Entities.Paging))
-				return false;
 			switch (t.GetTypeCode())
 			{
 				case TypeCode.Boolean:
@@ -113,9 +111,9 @@ namespace SF.Sys.NetworkService
 					return false;
 			}
 		}
-        public ParameterInfo DetectHeavyParameter(MethodInfo method)
+        public bool DetectHeavyMode(MethodInfo method)
 		{
-			return method.GetParameters().LastOrDefault(p => IsHeavyParameter(p));
+			return method.GetParameters().Any(p => IsHeavyParameter(p));
 		}
 
 		public string FormatServiceName(System.Type type)
