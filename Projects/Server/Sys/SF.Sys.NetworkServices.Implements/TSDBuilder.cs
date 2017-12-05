@@ -13,23 +13,27 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Linq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace SF.Sys.NetworkService
 {
 
-	public class TypeScriptProxyBuilder
+	public class TSDBuilder
     {
-
         Func<Metadata.Service, Metadata.Method, bool> ActionFilter { get; }
-
-        StringBuilder sb{get;} = new StringBuilder();
-        public TypeScriptProxyBuilder(Func<Metadata.Service, Metadata.Method, bool> ActionFilter)
-        {
+		Dictionary<string, SF.Sys.Metadata.Models.Type> Types;
+		public string ApiName { get; set; }
+		StringBuilder sb {get;} = new StringBuilder();
+        public TSDBuilder(string RootNamespace,Func<Metadata.Service, Metadata.Method, bool> ActionFilter)
+		{
             this.ActionFilter = ActionFilter;
-        }
+			this.ApiName = RootNamespace;
+
+		}
 		static string to_js_type(string type)
 		{
 			if (type.EndsWith("?"))
@@ -80,9 +84,12 @@ namespace SF.Sys.NetworkService
 		}
 		void BuildEnumType(SF.Sys.Metadata.Models.Type t)
 		{
-			sb.AppendLine($"// {t.Title}");
-			sb.AppendLine($"export type {to_js_type(t.Name)} = {string.Join("|",t.Properties.Select(p => $"'{p.Name}'"))};");
-			sb.AppendLine($"export const {to_js_type(t.Name)}Names={{");
+			sb.AppendLine($"/**");
+			sb.AppendLine($"* {t.Title}");
+			sb.AppendLine($"* {t.Description}");
+			sb.AppendLine($"*/");
+			sb.AppendLine($"type {to_js_type(t.Name)} = {string.Join("|",t.Properties.Select(p => $"'{p.Name}'"))};");
+			sb.AppendLine($"const {to_js_type(t.Name)}Names={{");
 			foreach (var p in t.Properties)
 			{
 				sb.AppendLine($"\t\"{p.Name}\":\"{p.Title ?? p.Name}\",");
@@ -96,8 +103,11 @@ namespace SF.Sys.NetworkService
 		}
 		void BuildClassType(SF.Sys.Metadata.Models.Type t)
 		{
-			sb.AppendLine($"// {t.Title}");
-			sb.Append($"export interface {to_js_type(t.Name)}");
+			sb.AppendLine($"/**");
+			sb.AppendLine($"* {t.Title}");
+			sb.AppendLine($"* {t.Description}");
+			sb.AppendLine($"*/");
+			sb.Append($"interface {to_js_type(t.Name)}");
 			if (t.BaseTypes != null)
 			{
 				sb.Append($" extends {string.Join(",",t.BaseTypes.Select(bt=>to_js_type(bt)))}");
@@ -106,8 +116,11 @@ namespace SF.Sys.NetworkService
 			if (t.Properties != null)
 				foreach (var p in t.Properties)
 				{
-					sb.AppendLine($"\t//{p.Title}");
-					sb.AppendLine($"\t//类型:{p.Type}");
+					sb.AppendLine($"\t/**");
+					sb.AppendLine($"\t* {p.Title} {(p.Optional ? "[可选]" : "")}");
+					sb.AppendLine($"\t* {p.Description}");
+					sb.AppendLine($"\t* 类型:{p.Type}");
+					sb.AppendLine($"\t*/");
 					sb.Append($"\t{p.Name}");
 					if (p.Optional)
 						sb.Append("?");
@@ -131,62 +144,42 @@ namespace SF.Sys.NetworkService
 				return;
 			}
 			BuildClassType(t);
-
 		}
 		void BuildMethod(Metadata.Service service, Metadata.Method method)
 		{
 			//if (!action.HttpMethods.Contains("Post") && !action.HttpMethods.Contains("Get"))
 			//	return;
-			sb.AppendLine($"//{method.Title}");
-			sb.AppendLine($"//{method.Description}");
-			sb.AppendLine($"{method.Name}(");
+			sb.AppendLine($"/**");
+			sb.AppendLine($"* {method.Title}");
+			sb.AppendLine($"* {method.Description}");
+			if (method.Parameters != null)
+				foreach (var p in method.Parameters)
+					sb.AppendLine($"* @param {p.Name} {p.Title} {(p.Optional ? "[可选] " : "")}{p.Description}");
+			if (method.Type != null && Types.TryGetValue(method.Type, out SF.Sys.Metadata.Models.Type rt))
+				sb.AppendLine($"* @return {rt.Title} {rt.Description}");
+
+			sb.AppendLine($"*/");
+			sb.AppendLine($" {method.Name}(");
 			if (method.Parameters != null)
 			{
-				foreach (var p in method.Parameters)
-				{	
-					sb.AppendLine($"\t//{p.Title}");
-					sb.AppendLine($"\t//类型:{p.Type}");
-					sb.Append($"\t{p.Name}");
-					if (p.Optional) sb.Append("?");
-					sb.Append($": {to_js_type(p.Type)}");
-					sb.AppendLine(",");
-				}
+				sb.AppendLine(
+					method.Parameters.Select(p =>
+					$"\t{p.Name}{(p.Optional?"?":"")}:{to_js_type(p.Type)}"
+					).Join(",\n")
+				);
 			}
-			sb.AppendLine("\t__opts?:ICallOptions");
-			sb.AppendLine($"\t) : PromiseLike<{to_js_type(method.Type)}> {{");
-			sb.AppendLine($"\treturn _invoker(\n\t\t'{service.Name}',\n\t\t'{method.Name}',");
-			if (method.Parameters != null && method.Parameters.Cast<SF.Sys.Metadata.Models.Parameter>().Any(p => p.Name!=method.HeavyParameter))
-			{
-				sb.AppendLine("\t\t{");
-				sb.Append("\t\t\t" + 
-					string.Join(",\n\t\t\t",
-					method.Parameters.Cast<SF.Sys.Metadata.Models.Parameter>()
-					.Where(p => p.Name!=method.HeavyParameter)
-					.Select(p => $"{p.Name}:{p.Name}"))
-					);
-				sb.AppendLine();
-				sb.AppendLine("\t\t},");
-			}
-			else
-				sb.AppendLine("\t\tnull,");
-			if (method.HeavyParameter!=null)
-			{
-				sb.AppendLine($"\t\t{method.Parameters.Cast<SF.Sys.Metadata.Models.Parameter>().Where(p => p.Name==method.HeavyParameter).Single().Name},");
-			}
-			else
-				sb.AppendLine("\t\tnull,");
-			sb.AppendLine("\t\t__opts");
-			sb.AppendLine("\t\t);");
-			sb.AppendLine("},");
+			sb.AppendLine($"\t) : PromiseLike<{to_js_type(method.Type)}>;");
 		}
 		void BuildService(Metadata.Service service)
 		{
             var methods = service.Methods.Where(a => ActionFilter(service,a)).ToArray();
             if (methods.Length == 0)
                 return;
-			sb.AppendLine($"//{service.Title}");
-			sb.AppendLine($"//{service.Description}");
-			sb.AppendLine($"export const {service.Name}={{");
+			sb.AppendLine($"/**");
+			sb.AppendLine($"* {service.Title}");
+			sb.AppendLine($"* {service.Description}");
+			sb.AppendLine($"*/");
+			sb.AppendLine($"interface I{service.Name} {{");
 			foreach (var a in methods)
 			{
 				BuildMethod(service, a);
@@ -196,37 +189,27 @@ namespace SF.Sys.NetworkService
 
 		public string Build(Metadata.Library Library)
 		{
-			sb.AppendLine(@"
-export interface IQueryPaging {
-    offset?: number;
-    limit?: number;
-    sortMethod?: string;
-    sortOrder?: ""Asc"" | ""Desc"";
-
-	totalRequired ?: boolean;
-	summaryRequired ?: boolean;
-}
-export interface ICallOptions
-{
-	paging?: IQueryPaging,
-	query?:any,
-	serviceId?:number
-}
-export interface IApiInvoker{
-	(type: string,method: string,query: { [index: string]: any},post: { [index: string]: any}, opts?: ICallOptions) :any
-}
-
-var _invoker:IApiInvoker=null;
-export function setApiInvoker(invoker:IApiInvoker){
-	_invoker=invoker;
-}
-
-");
+			Types = Library.Types.ToDictionary(t => t.Name);
 			foreach (var t in Library.Types)
 				BuildType(t);
 			foreach (var c in Library.Services)
 				BuildService(c);
+
+			sb.AppendLine($"interface I{ApiName}{{");
+			foreach (var s in Library.Services)
+			{
+				sb.AppendLine($"/**");
+				sb.AppendLine($"* {s.Title}");
+				sb.AppendLine($"* {s.Description}");
+				sb.AppendLine($"*/");
+				sb.AppendLine($"{s.Name} : I{s.Name};");
+			}
+			sb.AppendLine("}");
+
+			sb.AppendLine($"export const {ApiName}:I{ApiName};");
+			sb.AppendLine("export function setServiceInvoker(invoker: (service: string, method: string, args: any)=>PromiseLike<any>);");
 			return sb.ToString();
+
 		}
 	}
 

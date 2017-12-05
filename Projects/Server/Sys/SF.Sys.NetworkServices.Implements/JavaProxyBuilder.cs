@@ -201,7 +201,6 @@ namespace SF.Sys.NetworkService
 						sb.AppendLine($"\t/**");
 						sb.AppendLine($"\t* {p.Title} {(p.Optional?"[可选]":"")}");
 						sb.AppendLine($"\t* {p.Description}");
-						if(p.Optional)sb.AppendLine($"\t* [可选]");
 						sb.AppendLine($"\t* 类型:{p.Type}");
 						sb.AppendLine($"\t*/");
 						sb.AppendLine($"\t{to_java_type(p.Type)} {p.Name};");

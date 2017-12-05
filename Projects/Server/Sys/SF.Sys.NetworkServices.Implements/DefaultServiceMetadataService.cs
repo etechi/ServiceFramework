@@ -46,7 +46,36 @@ namespace SF.Sys.NetworkService
 				ContentType = "text/javascript",
 			};
 		}
-
+		public IContent TSD(string ApiName, bool all = true)
+		{
+			var tb = new TSDBuilder(
+				ApiName,
+				(c, a) =>
+				all ||
+				a.GrantInfo == null
+				);
+			var code = tb.Build(Library);
+			return new StringContent
+			{
+				Content = code,
+				ContentType = "text/javascript",
+			};
+		}
+		public IContent Javascript(string ApiName,bool all = true)
+		{
+			var tb = new JavascriptProxyBuilder(
+				ApiName,
+				(c, a) =>
+				all ||
+				a.GrantInfo == null
+				);
+			var code = tb.Build(Library);
+			return new StringContent
+			{
+				Content = code,
+				ContentType = "text/javascript",
+			};
+		}
 		public IContent Java(
 			string CommonImports,
 			string PackagePath, 
