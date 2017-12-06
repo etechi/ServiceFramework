@@ -49,8 +49,9 @@ namespace SF.Sys.Services
 			var re = await sim.QueryAsync(
 				new ServiceInstanceQueryArgument
 				{
-					ContainerId = svc.Id
-				}, Paging.Default
+					ContainerId = svc.Id,
+					Paging= Paging.Default
+				}
 				);
 			foreach (var i in re.Items)
 				await CollectMenuItem(i, sim, svcTypeResolver, EntityMetadataCollection, items);

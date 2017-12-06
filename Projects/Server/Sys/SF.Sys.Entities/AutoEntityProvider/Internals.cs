@@ -128,6 +128,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 	}
 
 	public interface IDataSetAutoEntityProvider<TKey,TDetail, TSummary, TEditable, TQueryArgument>
+		where TQueryArgument:IPagingArgument 
 	{
 		EntityManagerCapability Capabilities { get; }
 		IEntityServiceContext ServiceContext { get; }
@@ -135,8 +136,8 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		Task<TDetail[]> GetAsync(TKey[] Ids);
 		Task<TKey> CreateAsync(TEditable Entity);
 		Task<TEditable> LoadForEdit(TKey Id);
-		Task<QueryResult<TSummary>> QueryAsync(TQueryArgument Arg, Paging paging);
-		Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging);
+		Task<QueryResult<TSummary>> QueryAsync(TQueryArgument Arg);
+		Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg);
 		Task RemoveAllAsync();
 		Task RemoveAsync(TKey Key);
 		Task UpdateAsync(TEditable Entity);
@@ -144,14 +145,14 @@ namespace SF.Sys.Entities.AutoEntityProvider
 
 	public interface IDataSetAutoEntityProviderCache
 	{
-		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument>(IServiceProvider sp);
-		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument,TDataModel>(IServiceProvider sp) where TDataModel : class;
+		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument>(IServiceProvider sp) where TQueryArgument : IPagingArgument;
+		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument,TDataModel>(IServiceProvider sp) where TDataModel : class where TQueryArgument : IPagingArgument;
 	}
 
 	public interface IDataSetAutoEntityProviderFactory
 	{
-		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument>();
-		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument, TDataModel>() where TDataModel:class;
+		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument>() where TQueryArgument : IPagingArgument;
+		IDataSetAutoEntityProvider<TKey, TDetail, TSummary, TEditable, TQueryArgument> Create<TKey, TDetail, TSummary, TEditable, TQueryArgument, TDataModel>() where TDataModel: class where TQueryArgument : IPagingArgument;
 	}
 
 	public interface IValueTypeProvider

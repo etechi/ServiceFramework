@@ -66,7 +66,7 @@ namespace SF.Sys.Services.Management
 			return Task.FromResult(Items.Get(Id.Id));
 		}
 
-		public Task<QueryResult<ServiceDeclaration>> QueryAsync(ServiceDeclarationQueryArgument Arg, Paging paging)
+		public Task<QueryResult<ServiceDeclaration>> QueryAsync(ServiceDeclarationQueryArgument Arg)
 		{
 			var q = Items.Values.AsContextQueryable();
 			if (Arg.Id!=null)
@@ -80,14 +80,14 @@ namespace SF.Sys.Services.Management
 					qi => qi,
 					r => r,
 					PagingQueryBuilder<ServiceDeclaration>.Simple("name",e=>e.Name),
-					paging
+					Arg.Paging
 					)
 					);
 		}
 
-		public async Task<QueryResult<ObjectKey<string>>> QueryIdentsAsync(ServiceDeclarationQueryArgument Arg, Paging paging)
+		public async Task<QueryResult<ObjectKey<string>>> QueryIdentsAsync(ServiceDeclarationQueryArgument Arg)
 		{
-			var re = await QueryAsync(Arg, paging);
+			var re = await QueryAsync(Arg);
 			return re.Select(i =>new ObjectKey<string> { Id = i.Id });
 		}
 	}

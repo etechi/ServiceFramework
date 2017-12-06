@@ -111,9 +111,9 @@ namespace SF.Sys.NetworkService
 					return false;
 			}
 		}
-        public bool DetectHeavyMode(MethodInfo method)
+        public ParameterInfo DetectHeavyParameter(MethodInfo method)
 		{
-			return method.GetParameters().Any(p => IsHeavyParameter(p));
+			return method.GetParameters().FirstOrDefault(p => IsHeavyParameter(p));
 		}
 
 		public string FormatServiceName(System.Type type)

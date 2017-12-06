@@ -250,11 +250,11 @@ namespace SF.Sys.Entities
 		public static async Task<QueryResult<TKey>> QueryIdentsAsync<TKey, TQueryArgument, TModel>(
 			this IEntityServiceContext Storage,
 			TQueryArgument Arg,
-			Paging paging,
-			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
+			Func<IContextQueryable<TModel>, TQueryArgument, IContextQueryable<TModel>> BuildQuery,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder
 			)
 			where TModel : class
+			where TQueryArgument:IPagingArgument
 		{
 			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
@@ -263,11 +263,11 @@ namespace SF.Sys.Entities
 				{
 					var q = Storage.DataContext.Set<TModel>().AsQueryable(true);
 					q = Entity<TModel>.QueryIdentFilter(q, Arg);
-					q = BuildQuery(q, Arg, paging);
+					q = BuildQuery(q, Arg);
 					var re = await q.ToQueryResultAsync(
 						qs => qs.Select(Entity<TModel>.KeySelector<TKey>()),
 						PagingQueryBuilder,
-						paging
+						Arg.Paging
 						);
 					return re;
 				});
@@ -276,11 +276,11 @@ namespace SF.Sys.Entities
 		public static async Task<QueryResult<TKey>> AutoQueryIdentsAsync<TKey, TQueryArgument, TModel>(
 			   this IEntityServiceContext Storage,
 			TQueryArgument Arg,
-			Paging paging,
-			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery = null,
+			Func<IContextQueryable<TModel>, TQueryArgument, IContextQueryable<TModel>> BuildQuery = null,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder = null
 			)
 			where TModel : class
+			where TQueryArgument:IPagingArgument
 		{
 			Storage.PermissionValidate(Operations.Read);
 			return await Storage.UseTransaction(
@@ -290,11 +290,11 @@ namespace SF.Sys.Entities
 					var q = Storage.DataContext.Set<TModel>().AsQueryable(true);
 					q = Storage.QueryFilterCache.GetFilter<TModel, TQueryArgument>().Filter(q, Storage, Arg);
 					if (BuildQuery != null)
-						q = BuildQuery(q, Arg, paging);
+						q = BuildQuery(q, Arg);
 					var re = await q.ToQueryResultAsync(
 						qs => qs.Select(Entity<TModel>.KeySelector<TKey>()),
 						PagingQueryBuilder??Storage.PagingQueryBuilderCache.GetBuilder<TModel>(),
-						paging
+						Arg.Paging
 						);
 					return re;
 				});
@@ -322,44 +322,44 @@ namespace SF.Sys.Entities
 		public static async Task<QueryResult<TReadOnlyEntity>> AutoQueryAsync< TReadOnlyEntity, TQueryArgument, TModel>(
 			   this IEntityServiceContext Storage,
 			TQueryArgument QueryArgument,
-			Paging paging,
-			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery=null,
+			Func<IContextQueryable<TModel>, TQueryArgument,  IContextQueryable<TModel>> BuildQuery=null,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder=null
 			)
 			where TModel : class
+			where TQueryArgument:IPagingArgument
 		{
 			return await Storage.QueryAsync<TReadOnlyEntity, TModel>(async q => {
 				q = Storage.QueryFilterCache.
 					GetFilter<TModel, TQueryArgument>().Filter(q, Storage, QueryArgument);
 				if (BuildQuery != null)
-					q = BuildQuery(q, QueryArgument, paging);
+					q = BuildQuery(q, QueryArgument);
 				return await Storage.QueryResultBuildHelperCache.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Summary)
 					.Query(
 					q,
 					PagingQueryBuilder??Storage.PagingQueryBuilderCache.GetBuilder<TModel>(),
-					paging
+					QueryArgument.Paging
 					);
 			});
 		}
 		public static async Task<QueryResult<TReadOnlyEntity>> QueryAsync<TTempReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
 			   this IEntityServiceContext Storage,
 			TQueryArgument Arg,
-			Paging paging,
-			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
+			Func<IContextQueryable<TModel>, TQueryArgument, IContextQueryable<TModel>> BuildQuery,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder,
 			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 			)
 			where TModel : class
+			where TQueryArgument:IPagingArgument
 		{
 			return await Storage.QueryAsync<TReadOnlyEntity, TModel>(async q => { 
 				q = Entity<TModel>.QueryIdentFilter(q,Arg);
-				q = BuildQuery(q, Arg, paging);
+				q = BuildQuery(q, Arg);
 				var re = await q.ToQueryResultAsync(
 					MapModelToReadOnly,
 					PrepareReadOnly,
 					PagingQueryBuilder,
-					paging
+					Arg.Paging
 					);
 				return re;
 			});
@@ -370,17 +370,16 @@ namespace SF.Sys.Entities
 		public static Task<QueryResult<TReadOnlyEntity>> QueryAsync<TReadOnlyEntity, TQueryArgument, TModel>(
 			   this IEntityServiceContext Storage,
 			TQueryArgument Arg,
-			Paging paging,
-			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
+			Func<IContextQueryable<TModel>, TQueryArgument, IContextQueryable<TModel>> BuildQuery,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly,
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 			)
 			where TModel : class
+			where TQueryArgument:IPagingArgument
 			=> QueryAsync<TReadOnlyEntity,TReadOnlyEntity, TQueryArgument, TModel>(
 				Storage, 
 				Arg, 
-				paging, 
 				BuildQuery,
 				PagingQueryBuilder,
 				MapModelToReadOnly, 
@@ -391,16 +390,15 @@ namespace SF.Sys.Entities
 		public static Task<QueryResult<TReadOnlyEntity>> QueryAsync<TReadOnlyEntity, TQueryArgument, TModel>(
 			   this IEntityServiceContext Storage,
 			TQueryArgument Arg,
-			Paging paging,
-			Func<IContextQueryable<TModel>, TQueryArgument, Paging, IContextQueryable<TModel>> BuildQuery,
+			Func<IContextQueryable<TModel>, TQueryArgument, IContextQueryable<TModel>> BuildQuery,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder,
 			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
 			)
 			where TModel : class
+			where TQueryArgument:IPagingArgument
 			=> QueryAsync<TReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
 				Storage,
 				Arg,
-				paging,
 				BuildQuery,
 				PagingQueryBuilder,
 				MapModelToReadOnly,

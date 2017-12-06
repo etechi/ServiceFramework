@@ -43,10 +43,7 @@ namespace SF.Sys.Entities
 		/// </summary>
 		Random
 	}
-	/// <summary>
-	/// 分页配置
-	/// </summary>
-    public class Paging
+	public class Paging
 	{
 		/// <title>起始记录</title>
 		/// <summary>
@@ -74,7 +71,7 @@ namespace SF.Sys.Entities
 		/// <summary>
 		/// 返回摘要
 		/// </summary>
-        public bool SummaryRequired { get; set; }
+		public bool SummaryRequired { get; set; }
 
 		public static Paging Single => new Paging
 		{
@@ -89,31 +86,31 @@ namespace SF.Sys.Entities
 			Count = 10000
 		};
 		public static Paging Create(
-			IEnumerable<KeyValuePair<string,string>> attrs,
+			IEnumerable<KeyValuePair<string, string>> attrs,
 			int defaultLimit,
-            bool summarySupport=false,
-			string defaultMethod=null,
-			SortOrder defaultOrder=SortOrder.Default,
-			bool totalRequired=false
+			bool summarySupport = false,
+			string defaultMethod = null,
+			SortOrder defaultOrder = SortOrder.Default,
+			bool totalRequired = false
 			)
 		{
 			string offset = null;
 			string count = null;
 			string sortMethod = null;
 			string sortOrder = null;
-            var summaryRequired = false;
-            foreach (var p in attrs)
+			var summaryRequired = false;
+			foreach (var p in attrs)
 			{
 				switch (p.Key)
 				{
-					case "_po":offset = p.Value;break;
-					case "_pl":count = p.Value;break;
-					case "_pm":sortMethod = p.Value;break;
-					case "_ps":sortOrder = p.Value;break;
-					case "_pt":totalRequired =p.Value=="1";break;
-                    case "_pa":summaryRequired = summarySupport && p.Value == "1";break;
+					case "_po": offset = p.Value; break;
+					case "_pl": count = p.Value; break;
+					case "_pm": sortMethod = p.Value; break;
+					case "_ps": sortOrder = p.Value; break;
+					case "_pt": totalRequired = p.Value == "1"; break;
+					case "_pa": summaryRequired = summarySupport && p.Value == "1"; break;
 
-                }
+				}
 			}
 			int o;
 			if (offset == null)
@@ -131,15 +128,43 @@ namespace SF.Sys.Entities
 			{
 				Count = l,
 				Offset = o,
-				TotalRequired= totalRequired,
-                SummaryRequired= summaryRequired,
-                SortMethod = string.IsNullOrWhiteSpace(sortMethod) ? defaultMethod : sortMethod,
-				SortOrder = 
-					sortOrder == "desc" ? SortOrder.Desc : 
-					sortOrder == "asc" ? SortOrder.Asc : 
-					sortOrder == "rand"?SortOrder.Random:
+				TotalRequired = totalRequired,
+				SummaryRequired = summaryRequired,
+				SortMethod = string.IsNullOrWhiteSpace(sortMethod) ? defaultMethod : sortMethod,
+				SortOrder =
+					sortOrder == "desc" ? SortOrder.Desc :
+					sortOrder == "asc" ? SortOrder.Asc :
+					sortOrder == "rand" ? SortOrder.Random :
 					defaultOrder
 			};
+		}
+	}
+	public interface IPagingArgument
+	{
+		Paging Paging { get; set; }
+	}
+	/// <summary>
+	/// 分页配置
+	/// </summary>
+	public class PagingArgument  : IPagingArgument
+	{
+		/// <summary>
+		/// 分页参数
+		/// </summary>
+		public Paging Paging { get; set; }
+	}
+	public static class PagingArgumentExtension
+	{
+		public static TArgument WithPaging<TArgument>(this TArgument arg,Paging Paging) where TArgument:IPagingArgument
+		{
+			arg.Paging = Paging;
+			return arg;
+		}
+		public static TArgument WithDefaultPaging<TArgument>(this TArgument arg, Paging Paging) where TArgument : IPagingArgument
+		{
+			if(arg.Paging==null)
+				arg.Paging = Paging;
+			return arg;
 		}
 	}
 }

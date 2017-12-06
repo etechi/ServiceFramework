@@ -48,7 +48,7 @@ namespace SF.Sys.NetworkService.Metadata
             this.ServiceSysMethod = Method;
         }
 
-        public bool HeavyMode { get; set; }
+        public string HeavyParameter { get; set; }
 
 		public GrantInfo GrantInfo { get; set; }
 	}

@@ -39,6 +39,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 
 		public IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>()
+			where TQueryArgument:IPagingArgument
 		{
 			using (this.ServiceProvider.Resolver().WithScopeService(CurServiceScopeId))
 				return DataSetAutoEntityProviderCache.Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(ServiceProvider);
@@ -46,6 +47,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		public IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		   Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument, TDataModel>()
 			where TDataModel : class
+			where TQueryArgument : IPagingArgument
 		{
 			using (this.ServiceProvider.Resolver().WithScopeService(CurServiceScopeId))
 				return DataSetAutoEntityProviderCache.Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument,TDataModel>(ServiceProvider);
@@ -82,7 +84,8 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		static IDataSetAutoEntityProviderSetting
 			NewSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument, TDataModel>()
 			where TDataModel : class,new()
-			{
+			where TQueryArgument : IPagingArgument
+		{
 			return new DataSetAutoEntityProviderSetting<
 				TKey,
 				TEntityDetail, 
@@ -132,6 +135,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		}
 		public IDataSetAutoEntityProvider<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>  
 			Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>(IServiceProvider sp)
+			where TQueryArgument : IPagingArgument
 		{
 			var tDetail = typeof(TEntityDetail);
 			if (!Creators.TryGetValue(tDetail, out var setting))
@@ -148,6 +152,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		public IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		   Create<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument,TDataModel>(IServiceProvider sp)
 			where TDataModel:class
+			where TQueryArgument : IPagingArgument
 		{
 			var tDetail = typeof(TEntityDetail);
 			if (!Creators.TryGetValue(tDetail, out var setting))

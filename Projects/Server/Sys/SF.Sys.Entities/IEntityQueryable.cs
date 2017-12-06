@@ -18,11 +18,13 @@ using System.Threading.Tasks;
 namespace SF.Sys.Entities
 {
 	public interface IEntityIdentQueryable<TKey,TQueryArgument>
+		where TQueryArgument: IPagingArgument
 	{
-		Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging);
+		Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg);
 	}
 	public interface IEntityQueryable<TEntity, TQueryArgument>
+		where TQueryArgument : IPagingArgument
 	{
-		Task<QueryResult<TEntity>> QueryAsync(TQueryArgument Arg,Paging paging);
+		Task<QueryResult<TEntity>> QueryAsync(TQueryArgument Arg);
 	}
 }

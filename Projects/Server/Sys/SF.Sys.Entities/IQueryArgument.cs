@@ -23,7 +23,7 @@ namespace SF.Sys.Entities
 	{
 
 	}
-	public interface IQueryArgument { }
+	public interface IQueryArgument :IPagingArgument{ }
 	public interface IQueryArgument<TKey>: IQueryArgument
 	{
 		TKey Id { get; }
@@ -32,6 +32,7 @@ namespace SF.Sys.Entities
 		IQueryArgument<TKey>
 	{
 		public TKey Id { get; set; }
+		public Paging Paging { get; set; }
 
 	}
 

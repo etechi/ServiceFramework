@@ -20,9 +20,8 @@ using SF.Sys.NetworkService;
 using System;
 namespace SF.Common.FrontEndContents
 {
-	public class ContentQueryArgument : IQueryArgument<Option<long>>
+	public class ContentQueryArgument : QueryArgument<Option<long>>
 	{
-		public Option<long> Id { get; set; }
 		public string Category { get; set; }
 		public string Name { get; set; }
 	}

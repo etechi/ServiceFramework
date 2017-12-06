@@ -23,6 +23,7 @@ namespace SF.Sys.Entities.Tests
 {
 	class EntityTestHelper<TDetail, TSummary, TEditable, TQueryArgument> :
 			IEntityTestHelper<TDetail, TSummary, TEditable, TQueryArgument>
+		where TQueryArgument:IPagingArgument
 	{
 		IEntityDetailToSummaryConverter<TDetail, TSummary> DetailToSummaryConverter { get; }
 		IEntitySampleGenerator<TEditable>[] NextSampleGenerators { get; }

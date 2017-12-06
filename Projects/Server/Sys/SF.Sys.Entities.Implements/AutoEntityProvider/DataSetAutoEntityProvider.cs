@@ -19,6 +19,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 {
 	class DataSetAutoEntityProvider<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>:
 		IDataSetAutoEntityProvider<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
+		where TQueryArgument:IPagingArgument
 	{
 	
 
@@ -55,14 +56,14 @@ namespace SF.Sys.Entities.AutoEntityProvider
 			return Setting.LoadForEdit(ServiceContext, Id);
 		}
 
-		public Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg)
 		{
-			return Setting.QueryAsync(ServiceContext, Arg, paging);
+			return Setting.QueryAsync(ServiceContext, Arg);
 		}
 
-		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg)
 		{
-			return Setting.QueryIdentsAsync(ServiceContext, Arg, paging); 
+			return Setting.QueryIdentsAsync(ServiceContext, Arg); 
 		}
 
 		public Task RemoveAllAsync()

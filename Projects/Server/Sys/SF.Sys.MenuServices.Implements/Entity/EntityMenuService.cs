@@ -84,7 +84,7 @@ namespace SF.Sys.MenuServices.Entity
 				Ident = m.Ident
 			});
 		}
-		protected override IContextQueryable<TMenu> OnBuildQuery(IContextQueryable<TMenu> Query, MenuQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TMenu> OnBuildQuery(IContextQueryable<TMenu> Query, MenuQueryArgument Arg)
 		{
 			var scopeid = ServiceInstanceDescriptor?.ParentInstanceId;
 			var q = Query.Where(m=>m.ServiceDataScopeId==scopeid)

@@ -22,9 +22,8 @@ using SF.Sys.NetworkService;
 
 namespace SF.Common.Members
 {
-	public class MemberQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class MemberQueryArgument : QueryArgument<ObjectKey<long>>
 	{
-		public ObjectKey<long> Id { get; set; }
 		[StringContains]
 		public string Ident { get; set; }
 		[StringContains]

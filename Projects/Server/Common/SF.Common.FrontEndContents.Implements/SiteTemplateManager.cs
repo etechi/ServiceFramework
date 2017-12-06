@@ -64,7 +64,7 @@ namespace SF.Common.FrontEndContents
 			});
 		}
 
-		protected override IContextQueryable<TSiteTemplate> OnBuildQuery(IContextQueryable<TSiteTemplate> Query, SiteTemplateQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TSiteTemplate> OnBuildQuery(IContextQueryable<TSiteTemplate> Query, SiteTemplateQueryArgument Arg)
 		{
 			return Query.Filter(Arg.Name, c => c.Name);
 			

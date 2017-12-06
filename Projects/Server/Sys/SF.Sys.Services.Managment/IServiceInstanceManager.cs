@@ -23,12 +23,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Sys.Services.Management
 {
-	public class ServiceInstanceQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class ServiceInstanceQueryArgument : QueryArgument<ObjectKey<long>>
 	{
-		/// <summary>
-		/// ID
-		/// </summary>
-		public ObjectKey<long> Id { get; set; }
 
 		/// <summary>
 		/// 服务实例名称

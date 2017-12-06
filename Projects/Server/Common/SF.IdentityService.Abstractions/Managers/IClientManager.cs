@@ -20,9 +20,8 @@ using SF.Sys.NetworkService;
 
 namespace SF.Auth.IdentityServices.Managers
 {
-	public class ClientQueryArgument : IQueryArgument<ObjectKey<string>>
+	public class ClientQueryArgument : QueryArgument<ObjectKey<string>>
 	{
-		public ObjectKey<string> Id { get; set; }
 
 		/// <summary>
 		/// 客户端名称

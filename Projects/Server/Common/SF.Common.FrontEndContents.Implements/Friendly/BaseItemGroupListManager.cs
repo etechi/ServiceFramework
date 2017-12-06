@@ -73,8 +73,9 @@ namespace SF.Common.FrontEndContents.Friendly
 				throw new PublicArgumentException($"未设置{GetType().Comment()}");
 			var re = await ContentManager.QueryAsync(new ContentQueryArgument
 			{
-				Category = ContentGroup
-			}, Paging.Default);
+				Category = ContentGroup,
+				Paging=Paging.Default
+			});
 
 			return re.Items.Select(it => new ItemGroup<TItem>
 			{

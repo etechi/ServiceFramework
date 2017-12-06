@@ -87,16 +87,15 @@ namespace SF.Sys.Entities.AutoTest
 	public class QueryTestCase<TQueryArgument, TSummary>
 	{
 		public TQueryArgument QueryArgument { get; set; }
-		public Paging Paging { get; set; }
 		public IReadOnlyList<TSummary> Results { get; set; }
 	}
-	public interface IEntityQueryArgumentGenerator<TSummary, TQueryArgument>
+	public interface IEntityQueryArgumentGenerator<TSummary, TQueryArgument> where TQueryArgument:IPagingArgument
 	{
 		IEnumerable<QueryTestCase<TQueryArgument, TSummary>> GenerateQueryArgument(IEnumerable<TSummary> Summaries);
 	}
 	public interface IEntityQueryArgumentGeneratorProvider
 	{
-		IEntityQueryArgumentGenerator<TSummary, TQueryArgument> GetQueryArgumentGenerator<TSummary, TQueryArgument>();
+		IEntityQueryArgumentGenerator<TSummary, TQueryArgument> GetQueryArgumentGenerator<TSummary, TQueryArgument>() where TQueryArgument : IPagingArgument;
 	}
 
 

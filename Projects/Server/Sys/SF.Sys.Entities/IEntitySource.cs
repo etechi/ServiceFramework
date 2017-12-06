@@ -21,10 +21,12 @@ namespace SF.Sys.Entities
 		IEntityBatchLoadable<TKey, TEntityDetail>,
 		IEntityQueryable<TEntitySummary, TQueryArgument>,
 		IEntityIdentQueryable<TKey, TQueryArgument>
+		where TQueryArgument : IPagingArgument
 	{
 	}
 	public interface IEntitySource<TKey, TEntity, TQueryArgument> :
 		IEntitySource<TKey, TEntity, TEntity, TQueryArgument>
+		where TQueryArgument : IPagingArgument
 	{
 	}
 	public interface IEntitySource<TKey, TEntity> :

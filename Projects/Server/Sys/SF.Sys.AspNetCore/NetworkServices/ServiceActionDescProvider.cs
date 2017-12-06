@@ -56,52 +56,36 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			string controllerName, 
 			string ActionName, 
 			string HttpMethod,
-			bool HeavyMode,
+			ParameterInfo HeavyParameter,
 			MethodInfo method
 			)
 		{
 			var args = ServiceBuildRule.GetMethodParameters(method).ToArray();
-			List<ParameterDescriptor> ps;
-			if(!HeavyMode || args.Length <= 1)
-			{
-				ps = args.Select(
-					a => new ControllerParameterDescriptor
-					{
-						Name = a.Name,
-						ParameterType = a.ParameterType,
-						ParameterInfo = a,
-						BindingInfo = HeavyMode ? new Microsoft.AspNetCore.Mvc.ModelBinding.BindingInfo
-						{
-							BindingSource = Microsoft.AspNetCore.Mvc.ModelBinding.BindingSource.Body
-						} : null
-					}
-					).Cast<ParameterDescriptor>().ToList();
-			}
-			else
-			{
-				var tb = new DynamicTypeBuilder();
-				var te = new TypeExpression(
-						ActionName + "Arguments",
-						null,
-						TypeAttributes.Public);
-				foreach (var a in args)
-					te.Properties.Add(new PropertyExpression(a.Name,new SystemTypeReference( a.ParameterType), PropertyAttributes.None));
+			//else
+			//{
+			//	var tb = new DynamicTypeBuilder();
+			//	var te = new TypeExpression(
+			//			ActionName + "Arguments",
+			//			null,
+			//			TypeAttributes.Public);
+			//	foreach (var a in args)
+			//		te.Properties.Add(new PropertyExpression(a.Name,new SystemTypeReference( a.ParameterType), PropertyAttributes.None));
 
-				var argType = tb.Build(new[] { te });
-				ps = new List<ParameterDescriptor>
-				{
-					new ControllerParameterDescriptor
-					{
-						Name = a.Name,
-						ParameterType = a.ParameterType,
-						ParameterInfo = a,
-						BindingInfo = HeavyMode ? new Microsoft.AspNetCore.Mvc.ModelBinding.BindingInfo
-						{
-							BindingSource = Microsoft.AspNetCore.Mvc.ModelBinding.BindingSource.Body
-						} : null
-					}
-				};
-			}
+			//	var argType = tb.Build(new[] { te });
+			//	ps = new List<ParameterDescriptor>
+			//	{
+			//		new ControllerParameterDescriptor
+			//		{
+			//			Name = a.Name,
+			//			ParameterType = a.ParameterType,
+			//			ParameterInfo = a,
+			//			BindingInfo = HeavyMode ? new Microsoft.AspNetCore.Mvc.ModelBinding.BindingInfo
+			//			{
+			//				BindingSource = Microsoft.AspNetCore.Mvc.ModelBinding.BindingSource.Form
+			//			} : null
+			//		}
+			//	};
+			//}
 			return new ControllerActionDescriptor
 			{
 				ActionName = ActionName,
@@ -130,9 +114,9 @@ namespace SF.Sys.AspNetCore.NetworkServices
 						Name = a.Name,
 						ParameterType = a.ParameterType,
 						ParameterInfo = a,
-						BindingInfo = HeavyMode ? new Microsoft.AspNetCore.Mvc.ModelBinding.BindingInfo
+						BindingInfo = HeavyParameter?.Name == a.Name ? new Microsoft.AspNetCore.Mvc.ModelBinding.BindingInfo
 						{
-							BindingSource = method.GetParameters().Length==1 ? Microsoft.AspNetCore.Mvc.ModelBinding.BindingSource.Body: Microsoft.AspNetCore.Mvc.ModelBinding.BindingSource.Form
+							BindingSource = Microsoft.AspNetCore.Mvc.ModelBinding.BindingSource.Body
 						} : null
 					}
 					).Cast<ParameterDescriptor>().ToList(),
@@ -148,13 +132,13 @@ namespace SF.Sys.AspNetCore.NetworkServices
 		}
 		ControllerActionDescriptor BuildDescriptorByMethod(Type type,string controllerName,MethodInfo method)
 		{
-			var heavyMode = ServiceBuildRule.DetectHeavyMode(method);
+			var heavyParameter = ServiceBuildRule.DetectHeavyParameter(method);
 			return BuildDescriptor(
 					type,
 					controllerName,
 					ServiceBuildRule.FormatMethodName(method),
-					!method.IsDefined(typeof(HeavyMethodAttribute)) && !heavyMode? "GET" : "POST",
-					heavyMode,
+					!method.IsDefined(typeof(HeavyMethodAttribute)) && heavyParameter ==null? "GET" : "POST",
+					heavyParameter,
 					method
 					);
 			
@@ -164,7 +148,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			if (prop.CanWrite)
 			{
 				var writeMethod = prop.GetSetMethod();
-				var heavyParameter = ServiceBuildRule.DetectHeavyMode(writeMethod);
+				var heavyParameter = ServiceBuildRule.DetectHeavyParameter(writeMethod);
 				yield return BuildDescriptor(
 						type,
 						controllerName,
@@ -182,7 +166,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 						controllerName,
 						prop.Name,
 						"GET",
-						false,
+						null,
 						readMethod
 						);
 			}

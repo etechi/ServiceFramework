@@ -120,7 +120,7 @@ namespace SF.Common.FrontEndContents
 			new PagingQueryBuilder<TContent>(
 				"name",
 				i => i.Add("name", m => m.Name));
-		protected override IContextQueryable<TContent> OnBuildQuery(IContextQueryable<TContent> Query, ContentQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TContent> OnBuildQuery(IContextQueryable<TContent> Query, ContentQueryArgument Arg)
 		{
 			return Query.Filter(Arg.Category,c=>c.Category).Filter(Arg.Name,c=>c.Name);
 		}

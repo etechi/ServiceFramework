@@ -25,6 +25,7 @@ namespace SF.Sys.Entities.Tests
 		where TManager :
 			IEntitySource<TKey, TSummary, TDetail, TQueryArgument>,
 			IEntityManager<TKey, TEditable>
+		where TQueryArgument : IPagingArgument
 	{
 		public EntityTestContext(
 			TManager Manager, 

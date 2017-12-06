@@ -154,13 +154,9 @@ namespace SF.Sys.NetworkService
 			}
 			sb.AppendLine("\t__opts?:ICallOptions");
 			sb.AppendLine($"\t) : PromiseLike<{to_js_type(method.Type)}> {{");
-			sb.AppendLine($"\treturn _invoker(\n\t\t'{service.Name}',\n\t\t'{method.Name}',{(method.HeavyMode?"true":"false")},");
+			sb.AppendLine($"\treturn _invoker(\n\t\t'{service.Name}',\n\t\t'{method.Name}',\"{method.HeavyParameter}\",");
 			if (method.Parameters == null)
 				sb.Append("null,");
-			else if (method.Parameters.Length == 1 && method.HeavyMode)
-			{
-				sb.Append(method.Parameters[0].Name+",");
-			}
 			else
 			{ 
 				sb.AppendLine("\t\t{");

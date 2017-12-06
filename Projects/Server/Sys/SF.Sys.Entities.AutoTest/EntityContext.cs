@@ -26,6 +26,7 @@ namespace SF.Sys.Entities.AutoTest
 		where TManager:
 			IEntitySource<TKey,TSummary,TDetail,TQueryArgument>,
 			IEntityManager<TKey,TEditable>
+		where TQueryArgument:IPagingArgument
 	{
 		TManager Manager { get; }
 		IEntityTestHelper<TDetail,TSummary,TEditable,TQueryArgument> Helper { get; }
@@ -39,12 +40,13 @@ namespace SF.Sys.Entities.AutoTest
 		IEntitySummaryValidator<TDetail, TSummary>,
 		IEntityQueryArgumentGenerator<TSummary, TQueryArgument>,
 		IEntityDetailToSummaryConverter<TDetail, TSummary>
+		where TQueryArgument : IPagingArgument
 	{
 	}
 
 	public interface IEntityTestHelperCache
 	{
-		IEntityTestHelper<TDetail, TSummary, TEditable, TQueryArgument> GetTestHelper<TDetail, TSummary, TEditable, TQueryArgument>();
+		IEntityTestHelper<TDetail, TSummary, TEditable, TQueryArgument> GetTestHelper<TDetail, TSummary, TEditable, TQueryArgument>() where TQueryArgument : IPagingArgument;
 	}
 
 

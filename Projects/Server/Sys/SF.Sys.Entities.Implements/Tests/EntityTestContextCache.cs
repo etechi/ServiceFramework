@@ -52,7 +52,7 @@ namespace SF.Sys.Entities.Tests
 
 		System.Collections.Concurrent.ConcurrentDictionary<(Type, Type, Type, Type), object> Testors { get; }
 			= new System.Collections.Concurrent.ConcurrentDictionary<(Type, Type, Type, Type), object>();
-		public IEntityTestHelper<TDetail, TSummary, TEditable, TQueryArgument> GetTestHelper<TDetail, TSummary, TEditable, TQueryArgument>()
+		public IEntityTestHelper<TDetail, TSummary, TEditable, TQueryArgument> GetTestHelper<TDetail, TSummary, TEditable, TQueryArgument>() where TQueryArgument:IPagingArgument
 		{
 			var key = (typeof(TDetail), typeof(TSummary), typeof(TEditable), typeof(TQueryArgument));
 			if (Testors.TryGetValue(key, out var testor))

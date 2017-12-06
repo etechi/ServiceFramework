@@ -153,7 +153,7 @@ namespace SF.Sys.NetworkService
 						RolesRequired = roles != null && roles.Length > 0 ? roles : ac.RolesRequired,
 						PermissionsRequired = rps != null && rps.Length > 0 ? rps.Select(rp => rp.Resource + ":" + rp.Operation).ToArray() : ac.PermissionsRequired
 					}),
-					HeavyMode = BuildRule.DetectHeavyMode(method)
+					HeavyParameter = BuildRule.DetectHeavyParameter(method)?.Name
 				},
 				attrs,
 				null,

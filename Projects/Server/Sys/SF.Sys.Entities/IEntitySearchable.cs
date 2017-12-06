@@ -17,14 +17,20 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Entities
 {
+	public class SearchArgument : PagingArgument
+	{
+		/// <summary>
+		/// 搜索关键字
+		/// </summary>
+		public string Key { get; set; }
+	}
 	public interface IEntitySearchable<TEntity>
 	{
 		/// <summary>
 		/// 通过关键字搜索对象
 		/// </summary>
-		/// <param name="Key">搜索关键字</param>
-		/// <param name="Paging">分页参数</param>
+		/// <param name="Arg">搜索参数</param>
 		/// <returns>结果集</returns>
-		Task<QueryResult<TEntity>> SearchAsync(string Key,Paging Paging);
+		Task<QueryResult<TEntity>> SearchAsync(SearchArgument Arg);
 	}
 }

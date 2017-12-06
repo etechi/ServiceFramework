@@ -39,6 +39,7 @@ namespace SF.Sys.Entities.Tests.EntityTestors
 		where TKey : new()
 		where TDetail : new()
 		where TEditable : new()
+		where TQueryArgument : IPagingArgument
 	{
 
 		public override async Task Test(ITestContext testContext)
@@ -97,10 +98,10 @@ namespace SF.Sys.Entities.Tests.EntityTestors
 			//检查查询
 			foreach (var qa in ctx.Helper.GenerateQueryArgument(querySeedSummaries))
 			{
-				var re = await svc.QueryAsync(qa.QueryArgument, qa.Paging);
+				var re = await svc.QueryAsync(qa.QueryArgument);
 				Assert.Equal("查询到的结果和期望不符",re.Items.ToArray(), qa.Results);
 
-				var ire = await svc.QueryIdentsAsync(qa.QueryArgument, qa.Paging);
+				var ire = await svc.QueryIdentsAsync(qa.QueryArgument);
 				var eids = qa.Results.Select(i => Entity<TSummary>.GetKey<TKey>(i)).ToArray();
 				Assert.Equal("查询到主键和期望不符",ire.Items.ToArray(), eids);
 			}
@@ -180,6 +181,7 @@ namespace SF.Sys.Entities.Tests.EntityTestors
 			where TKey : new()
 			where TDetail : new()
 			where TEditable : new()
+			where TQueryArgument : IPagingArgument
 		{
 			var c = (TestCase)Case;
 			var managers = AutoTestEntities[c.Metadata.EntityManagerType];

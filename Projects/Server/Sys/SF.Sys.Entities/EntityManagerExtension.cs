@@ -30,7 +30,7 @@ namespace SF.Sys.Entities
 			Func<TKey,T, TQueryArgument> GetQueryArgument,
 			Func<T,T[]> GetChildren,
 			Action<T,TKey> SetIdent
-			)
+			) where TQueryArgument:IPagingArgument
 		{
 			foreach(var it in items)
 			{
@@ -38,7 +38,8 @@ namespace SF.Sys.Entities
 				var id = default(TKey);
 				if (qa != null)
 				{
-					var re = await EntityQueryable.QueryIdentsAsync(qa, Paging.Single);
+					qa.Paging = Paging.Single;
+					var re = await EntityQueryable.QueryIdentsAsync(qa);
 					id = re.Items.FirstOrDefault();
 					if (!EqualityComparer<TKey>.Default.Equals(id, default(TKey)))
 						SetIdent(it, id);
@@ -57,9 +58,9 @@ namespace SF.Sys.Entities
 			this IEntityIdentQueryable<TKey, TQueryArgument> EntityQueryable,
 			TQueryArgument QueryArgument
 			)
-			where TQueryArgument : class
+			where TQueryArgument : class,IPagingArgument
 		{
-			var re = await EntityQueryable.QueryIdentsAsync(QueryArgument, Paging.Default);
+			var re = await EntityQueryable.QueryIdentsAsync(QueryArgument);
 			var res = re.Items.ToArray();
 			if (res.Length == 0)
 				return default(TKey);
@@ -240,15 +241,16 @@ namespace SF.Sys.Entities
 			where TQueryArgument : class, IQueryArgument<TKey>,new()
 			where TManager : IEntityIdentQueryable<TKey, TQueryArgument>, IEntityRemover<TKey>
 		{
-			var paging = new Paging { Count = BatchCount };
 			var arg = QueryArgument ?? new TQueryArgument();
+			if (arg.Paging == null)
+				arg.Paging = new Paging { Count = BatchCount };
 			for(; ; )
 			{
 				var left=await transScopeManager.UseTransaction(
 					"批量删除", 
 					async s =>
 					 {
-						 var re = await Manager.QueryIdentsAsync(arg, paging);
+						 var re = await Manager.QueryIdentsAsync(arg);
 						 var ids = re.Items.ToArray();
 						 foreach (var id in ids)
 							 await Manager.RemoveAsync(id);

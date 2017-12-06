@@ -29,7 +29,7 @@ namespace SF.Sys.Entities.Tests.EntityQueryArgumentGenerators
 
 		System.Collections.Concurrent.ConcurrentDictionary<(Type,Type), object> Creators { get; } = new System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), object>();
 
-		Func<TSummary,TQueryArgument> GetQueryArgumentCreator<TSummary, TQueryArgument>()
+		Func<TSummary,TQueryArgument> GetQueryArgumentCreator<TSummary, TQueryArgument>() where TQueryArgument:IPagingArgument
 		{
 			var key = (typeof(TSummary), typeof(TQueryArgument));
 			if (Creators.TryGetValue(key, out var f))
@@ -55,7 +55,7 @@ namespace SF.Sys.Entities.Tests.EntityQueryArgumentGenerators
 			return (Func<TSummary, TQueryArgument>)Creators.GetOrAdd(key, f);
 		}
 
-		public IEntityQueryArgumentGenerator<TSummary, TQueryArgument> GetQueryArgumentGenerator<TSummary, TQueryArgument>() 
+		public IEntityQueryArgumentGenerator<TSummary, TQueryArgument> GetQueryArgumentGenerator<TSummary, TQueryArgument>()  where TQueryArgument:IPagingArgument
 		{
 			var func = GetQueryArgumentCreator<TSummary, TQueryArgument>();
 			return new EntityQueryArgumentGenerator<TSummary, TQueryArgument>(func);
@@ -63,6 +63,7 @@ namespace SF.Sys.Entities.Tests.EntityQueryArgumentGenerators
 
 		class EntityQueryArgumentGenerator<TSummary, TQueryArgument> :
 			IEntityQueryArgumentGenerator<TSummary, TQueryArgument>
+			where TQueryArgument:IPagingArgument
 		{
 			Func<TSummary,TQueryArgument> ArgCreator { get; }
 			public EntityQueryArgumentGenerator(Func<TSummary, TQueryArgument> ArgCreator)
@@ -77,9 +78,8 @@ namespace SF.Sys.Entities.Tests.EntityQueryArgumentGenerators
 				return Summaries.Select(s =>
 					new QueryTestCase<TQueryArgument, TSummary>
 					{
-						Paging = Paging.Single,
 						Results = new[] { s },
-						QueryArgument = ArgCreator(s)
+						QueryArgument = ArgCreator(s).WithPaging(Paging.Single)
 					});
 			}
 		}

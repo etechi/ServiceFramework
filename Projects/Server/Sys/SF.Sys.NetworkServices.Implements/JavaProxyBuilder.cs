@@ -84,18 +84,18 @@ namespace SF.Sys.NetworkService
 			sb.AppendLine($"import {PackagePath}.{type.Replace('.', '_').Replace('+', '_')};");
 			return true;
 		}
-		static string to_java_type(string type)
+		static string to_java_type(string type,bool ObjectMode=false)
 		{
 			if (type.EndsWith("?"))
-				return to_java_type(type.Substring(0, type.Length - 1));
+				return to_java_type(type.Substring(0, type.Length - 1), ObjectMode);
 
 			var i = type.IndexOf('[');
 			if (i != -1)
-				return to_java_type(type.Substring(0, i)) + type.Substring(i);
+				return to_java_type(type.Substring(0, i), ObjectMode) + type.Substring(i);
 
 			i = type.IndexOf('{');
 			if (i != -1)
-				return "HashMap<string," + to_java_type(type.Substring(0, i)) + ">";
+				return "HashMap<string," + to_java_type(type.Substring(0, i), true) + ">";
 
 			i = type.IndexOf('<');
 			if (i != -1)
@@ -105,30 +105,28 @@ namespace SF.Sys.NetworkService
 			switch (type)
 			{
 				case "string": return "String";
-				case "object":return "any";
+				case "object":return "Object";
 				case "datetime": return "String";
                 case "timespan":return "String";
-                case "long":
+                case "long": 
+				case "ulong": return ObjectMode ? "Long" : "long";
 				case "int":
 				case "short":
 				case "sbyte":
-
-				case "ulong":
 				case "uint":
 				case "ushort":
 				case "byte":
 				case "char":
-					return "int";
+					return ObjectMode ? "Integer" : "int";
 				case "decimal":
 				case "float":
 				case "double":
-					return "double";
+					return ObjectMode ? "Double" : "double";
 				case "bool":
-					return "boolean";
+					return ObjectMode ? "Boolean" : "double";
 				case "void":
-					return "void";
 				case "unknown":
-					return "any";
+					return "Object";
 				default:
 					return type.Replace('.', '_').Replace('+','_');
 			}
@@ -203,7 +201,7 @@ namespace SF.Sys.NetworkService
 						sb.AppendLine($"\t* {p.Description}");
 						sb.AppendLine($"\t* 类型:{p.Type}");
 						sb.AppendLine($"\t*/");
-						sb.AppendLine($"\t{to_java_type(p.Type)} {p.Name};");
+						sb.AppendLine($"\tpublic {to_java_type(p.Type)} {p.Name};");
 					}
 				sb.AppendLine("}");
 			});
@@ -241,8 +239,8 @@ namespace SF.Sys.NetworkService
 				sb.AppendLine($"* @return {rt.Title} {rt.Description}");
 
 			sb.AppendLine($"*/");
-			sb.AppendLine($"@{(method.HeavyMode ? "POST" : "GET")}(\"{service.Name}/{method.Name}\")");
-			sb.AppendLine($"Observable<{to_java_type(method.Type)}> {method.Name}(");
+			sb.AppendLine($"@{(method.HeavyParameter!=null ? "POST" : "GET")}(\"{service.Name}/{method.Name}\")");
+			sb.AppendLine($"Observable<{to_java_type(method.Type,true)}> {method.Name}(");
 			if (method.Parameters != null)
 			{
 				sb.AppendLine(

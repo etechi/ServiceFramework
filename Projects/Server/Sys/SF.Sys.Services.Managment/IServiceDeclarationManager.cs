@@ -22,12 +22,8 @@ using System;
 
 namespace SF.Sys.Services.Management
 {
-	public class ServiceDeclarationQueryArgument : IQueryArgument<ObjectKey<string>>
+	public class ServiceDeclarationQueryArgument : QueryArgument<ObjectKey<string>>
 	{
-		/// <summary>
-		/// ID
-		/// </summary>
-		public ObjectKey<string> Id { get; set; }
 
 		/// <summary>
 		/// 服务定义名称

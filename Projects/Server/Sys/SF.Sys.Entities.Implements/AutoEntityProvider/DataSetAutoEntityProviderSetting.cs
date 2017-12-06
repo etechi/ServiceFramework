@@ -25,6 +25,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 	}
 	public interface IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		: IDataSetAutoEntityProviderSetting
+		where TQueryArgument:IPagingArgument
 	{
 		Task<TKey> CreateAsync(IEntityServiceContext ServiceContext, TEntityEditable Entity);
 		Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id);
@@ -33,9 +34,9 @@ namespace SF.Sys.Entities.AutoEntityProvider
 
 		Task<TEntityEditable> LoadForEdit(IEntityServiceContext ServiceContext, TKey Id);
 
-		Task<QueryResult<TEntitySummary>> QueryAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg, Paging paging);
+		Task<QueryResult<TEntitySummary>> QueryAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg);
 
-		Task<QueryResult<TKey>> QueryIdentsAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg, Paging paging);
+		Task<QueryResult<TKey>> QueryIdentsAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg);
 
 		Task RemoveAllAsync(IEntityServiceContext ServiceContext);
 
@@ -46,6 +47,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 	class DataSetAutoEntityProviderSetting<TKey,TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument,TDataModel>
 		: IDataSetAutoEntityProviderSetting<TKey, TEntityDetail, TEntitySummary, TEntityEditable, TQueryArgument>
 		where TDataModel : class,new()
+		where TQueryArgument:IPagingArgument
 	{
 
 		public Lazy<Func<IServiceProvider, object>> FuncCreateProvider { get; }
@@ -89,14 +91,14 @@ namespace SF.Sys.Entities.AutoEntityProvider
 			return ServiceContext.AutoLoadForEdit<TKey, TEntityEditable, TDataModel>(Id);
 		}
 
-		public Task<QueryResult<TEntitySummary>> QueryAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TEntitySummary>> QueryAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg)
 		{
-			return ServiceContext.AutoQueryAsync<TEntitySummary, TQueryArgument, TDataModel>(Arg, paging);
+			return ServiceContext.AutoQueryAsync<TEntitySummary, TQueryArgument, TDataModel>(Arg);
 		}
 
-		public Task<QueryResult<TKey>> QueryIdentsAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TKey>> QueryIdentsAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg)
 		{
-			return ServiceContext.AutoQueryIdentsAsync<TKey, TQueryArgument, TDataModel>(Arg, paging);
+			return ServiceContext.AutoQueryIdentsAsync<TKey, TQueryArgument, TDataModel>(Arg);
 
 		}
 

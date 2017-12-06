@@ -113,7 +113,7 @@ namespace SF.Sys.Services.Management
 			});
 		}
 
-		protected override IContextQueryable<DataModels.ServiceInstance> OnBuildQuery(IContextQueryable<DataModels.ServiceInstance> Query, ServiceInstanceQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<DataModels.ServiceInstance> OnBuildQuery(IContextQueryable<DataModels.ServiceInstance> Query, ServiceInstanceQueryArgument Arg)
 		{
 			if (Arg.Id != null)
 				return Query.Filter(Arg.Id, i => i.Id);

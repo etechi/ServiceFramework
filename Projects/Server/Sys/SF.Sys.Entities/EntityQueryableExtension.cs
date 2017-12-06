@@ -55,18 +55,20 @@ namespace SF.Sys.Entities
 			this IEntityQueryable<TEntity,TQueryArgument> Queryable
 			)
 			where TEntity:class
-			where TQueryArgument :  new()
+			where TQueryArgument : IPagingArgument, new()
 		{
-			var re = await Queryable.QueryAsync(new TQueryArgument(), Paging.All);
+			var re = await Queryable.QueryAsync(new TQueryArgument() { Paging = Paging.All });
 			return re.Items;
 		}
 		public static async Task<TEntity> QuerySingleAsync<TEntity, TQueryArgument>(
 			this IEntityQueryable<TEntity, TQueryArgument> Queryable,
 			TQueryArgument Arg
 			)
-			where TQueryArgument : new()
+			where TQueryArgument : IPagingArgument,new()
 		{
-			var re = await Queryable.QueryAsync(Arg, Paging.Single);
+			if (Arg.Paging == null)
+				Arg.Paging = Paging.Single;
+			var re = await Queryable.QueryAsync(Arg);
 			return re.Items.FirstOrDefault();
 		}
 

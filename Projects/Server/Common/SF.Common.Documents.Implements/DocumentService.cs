@@ -121,53 +121,53 @@ namespace SF.Common.Documents
 			return await MapModelToPublic(q, true).SingleOrDefaultAsync();
 		}
 
-		public async Task<QueryResult<TDocumentPublic>> SearchAsync(string Key, Paging Paging)
+		public async Task<QueryResult<TDocumentPublic>> SearchAsync(SearchArgument Arg)
 		{
 			var q = LimitedDocuments;
-			if (!string.IsNullOrWhiteSpace(Key))
+			if (!string.IsNullOrWhiteSpace(Arg.Key))
 				q = q.Where(
 					d=>
-					d.Name.Contains(Key) || 
-					d.Description.Contains(Key) || 
-					d.Content.Contains(Key) || 
-					d.SubTitle.Contains(Key) || 
-					d.Remarks.Contains(Key)
+					d.Name.Contains(Arg.Key) || 
+					d.Description.Contains(Arg.Key) || 
+					d.Content.Contains(Arg.Key) || 
+					d.SubTitle.Contains(Arg.Key) || 
+					d.Remarks.Contains(Arg.Key)
 					);
 
 			return await q.ToQueryResultAsync(
 				iq => MapModelToPublic(iq, false),
 				r => r,
 				docPageBuilder,
-				Paging
+				Arg.Paging
 				);
 		}
 
-		public async Task<QueryResult<TDocumentPublic>> ListItemsAsync(long? Container, Paging Paging)
+		public async Task<QueryResult<TDocumentPublic>> ListItemsAsync(ListItemsArgument<long?> Arg)
 		{
 
 			var q = LimitedDocuments;
-			if(Container.HasValue)
+			if(Arg.Container.HasValue)
 				q=q.Where(d => 
-					d.ContainerId == Container 
+					d.ContainerId == Arg.Container 
 					);
 			return await q.ToQueryResultAsync(
 				iq => MapModelToPublic(iq, false),
 				r => r,
 				docPageBuilder,
-				Paging
+				Arg.Paging
 				);
 		}
 
-		public async Task<QueryResult<TCategoryPublic>> ListChildContainersAsync(long? Key, Paging Paging)
+		public async Task<QueryResult<TCategoryPublic>> ListChildContainersAsync(ListItemsArgument<long?> Arg)
 		{
 			var q = LimitedCategories.Where(d=>
-				d.ContainerId == Key
+				d.ContainerId ==Arg.Container
 				);
 			return await q.ToQueryResultAsync(
 				iq => MapModelToPublic(q,false),
 				r => r,
 				catPageBuilder,
-				Paging
+				Arg.Paging
 				);
 		}
 	}

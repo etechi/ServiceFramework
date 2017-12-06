@@ -31,7 +31,7 @@ namespace SF.Sys.Entities
 		ModidifiableEntityManager<TKey, TCategoryPublic, TCategoryTemp, TQueryArgument, TCategoryEditable, TCategoryModel>
 		where TCategoryPublic : class
 		where TCategoryModel : class, new()
-		where TQueryArgument : class,new()
+		where TQueryArgument : class,IPagingArgument, new()
 		where TCategoryEditable : class
 		where TItemKey : IEquatable<TItemKey>
 		where TItemModel : class, IEntityWithId<TItemKey>, new()

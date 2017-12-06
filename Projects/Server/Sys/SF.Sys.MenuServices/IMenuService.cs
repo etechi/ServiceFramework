@@ -20,9 +20,8 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.MenuServices
 {
-	public class MenuQueryArgument : Entities.IQueryArgument<ObjectKey<long>>
+	public class MenuQueryArgument : Entities.QueryArgument<ObjectKey<long>>
 	{
-		public ObjectKey<long> Id { get; set; }
 		/// <summary>
 		/// 名称
 		/// </summary>

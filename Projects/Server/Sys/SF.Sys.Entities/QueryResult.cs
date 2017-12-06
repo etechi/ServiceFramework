@@ -88,7 +88,7 @@ namespace SF.Sys.Entities
 	}
 	public interface IQueryResultBuildHelper<E, R>
 	{
-		Task<QueryResult<R>> Query(IContextQueryable<E> queryable, IPagingQueryBuilder<E> PagingQueryBuilder,Paging paging);
+		Task<QueryResult<R>> Query(IContextQueryable<E> queryable, IPagingQueryBuilder<E> PagingQueryBuilder,Paging Paging);
 		Task<R> QuerySingleOrDefault(IContextQueryable<E> queryable);
 		Expression BuildEntityMapper(Expression src,int Level);
 	}

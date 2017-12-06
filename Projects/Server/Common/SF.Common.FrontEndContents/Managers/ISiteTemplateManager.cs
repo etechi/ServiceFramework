@@ -20,9 +20,8 @@ using SF.Sys.NetworkService;
 
 namespace SF.Common.FrontEndContents
 {
-	public class SiteTemplateQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class SiteTemplateQueryArgument : QueryArgument<ObjectKey<long>>
 	{
-		public ObjectKey<long> Id { get; set; }
 		public string Name { get; set; }
 	}
 	public interface ISiteTemplateManager : ISiteTemplateManager<SiteTemplate>

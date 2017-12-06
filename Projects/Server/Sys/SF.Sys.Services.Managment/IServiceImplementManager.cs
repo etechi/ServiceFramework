@@ -23,12 +23,8 @@ using SF.Sys.Annotations;
 
 namespace SF.Sys.Services.Management
 {
-	public class ServiceImplementQueryArgument : IQueryArgument<ObjectKey<string>>
+	public class ServiceImplementQueryArgument : QueryArgument<ObjectKey<string>>
 	{
-		/// <summary>
-		/// ID
-		/// </summary>
-		public ObjectKey<string> Id { get; set; }
 
 		/// <summary>
 		/// 服务实现名称

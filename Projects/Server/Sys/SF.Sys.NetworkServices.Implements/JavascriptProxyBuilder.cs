@@ -35,7 +35,7 @@ namespace SF.Sys.NetworkService
         }
 		void BuildMethod(Metadata.Service service, Metadata.Method method)
 		{
-			sb.AppendLine($"{method.Name}:[{(method.HeavyMode?"true":"false")},{(method.HeavyMode && (method?.Parameters?.Length??0)==1?"null":$"[{method?.Parameters?.Select(p=>"\""+p.Name+"\"").Join(",")}]")}],");
+			sb.AppendLine($"{method.Name}:[\"{method.HeavyParameter}\",[{method?.Parameters?.Select(p=>"\""+p.Name+"\"").Join(",")}],");
 		}
 		void BuildService(Metadata.Service service)
 		{

@@ -22,6 +22,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		AutoEntityManager<TKey, TDetail, TSummary, TEditable, TQueryArgument>
 		where TDataModel:class
 		where TEditable : class
+		where TQueryArgument:IPagingArgument
 	{
 		public AutoEntityManager(
 			IDataSetAutoEntityProviderFactory DataSetAutoEntityProviderFactory
@@ -47,6 +48,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		IEntityRemover<TKey>,
 		IEntityAllRemover
 		where TEditable : class
+		where TQueryArgument:IPagingArgument
 	{
 		protected IDataSetAutoEntityProvider<TKey,TDetail, TSummary, TEditable, TQueryArgument> AutoEntityProvider { get; }
 		protected IEntityServiceContext ServiceContext => AutoEntityProvider.ServiceContext;
@@ -82,14 +84,14 @@ namespace SF.Sys.Entities.AutoEntityProvider
 			return AutoEntityProvider.LoadForEdit(Id);
 		}
 
-		public Task<QueryResult<TSummary>> QueryAsync(TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TSummary>> QueryAsync(TQueryArgument Arg)
 		{
-			return AutoEntityProvider.QueryAsync(Arg, paging);
+			return AutoEntityProvider.QueryAsync(Arg);
 		}
 
-		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg, Paging paging)
+		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg)
 		{
-			return AutoEntityProvider.QueryIdentsAsync(Arg, paging);
+			return AutoEntityProvider.QueryIdentsAsync(Arg);
 		}
 
 		public Task RemoveAllAsync()

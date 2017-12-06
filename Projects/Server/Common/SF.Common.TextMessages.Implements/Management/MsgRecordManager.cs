@@ -53,7 +53,7 @@ namespace SF.Common.TextMessages.Management
 				TrackEntityId=m.TrackEntityId
 			});
 		}
-		protected override IContextQueryable<DataModels.TextMessageRecord> OnBuildQuery(IContextQueryable<DataModels.TextMessageRecord> Query, MsgRecordQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<DataModels.TextMessageRecord> OnBuildQuery(IContextQueryable<DataModels.TextMessageRecord> Query, MsgRecordQueryArgument Arg)
 		{
 			var scopeid = ServiceInstanceDescriptor.ParentInstanceId;
 			var q = Query.Where(m=>m.ScopeId==scopeid)

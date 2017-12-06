@@ -40,7 +40,7 @@ namespace SF.Sys.Entities
 			"id",
 			b => b.Add("id",Entity<TModel>.SingleKeySelector<TKey>())
 			);
-		protected override IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, QueryArgument<ObjectKey<TKey>> Arg, Paging paging)
+		protected override IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, QueryArgument<ObjectKey<TKey>> Arg)
 		{
 			return Query;
 		}
@@ -50,7 +50,7 @@ namespace SF.Sys.Entities
 		ModidifiableEntityManager<TKey, TPublic, TPublic, TQueryArgument, TEditable, TModel>
 		where TPublic : class
 		where TModel : class, new()
-		where TQueryArgument : class,new()
+		where TQueryArgument : class,IPagingArgument, new()
 		where TEditable : class
 	{
 		public ModidifiableEntityManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
@@ -67,7 +67,7 @@ namespace SF.Sys.Entities
 		IEntityManager<TKey, TEditable>
 		where TPublic : class
 		where TModel : class,new()
-		where TQueryArgument : class,new()
+		where TQueryArgument : class,IPagingArgument, new()
 		where TEditable : class
 	{
 		public interface IModifyContext : IEntityModifyContext<TEditable, TModel>
@@ -195,7 +195,7 @@ namespace SF.Sys.Entities
 		 IEntityManager<TKey, TEditable>
 		 where TDetail : class
 		 where TModel : class, new()
-		 where TQueryArgument : class, new()
+		 where TQueryArgument : class,IPagingArgument, new()
 		 where TEditable : class
 		 where TSummary:class
 	{
