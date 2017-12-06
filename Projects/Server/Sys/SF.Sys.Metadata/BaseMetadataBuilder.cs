@@ -96,12 +96,17 @@ namespace SF.Sys.Metadata
 		}
 		protected virtual Type TryDetectDictType(Type type)
 		{
-			if(type.IsGeneric() && type.GetGenericTypeDefinition()==typeof(IDictionary<,>))
+			if(type.IsGeneric() && 
+				(type.GetGenericTypeDefinition()==typeof(IDictionary<,>) ||
+				type.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>))
+				)
 				return type.GetGenericArguments()[1];
 
 			var interfaces = type.GetInterfaces();
 			var dict_type = interfaces
-				.FirstOrDefault(t => t.IsGeneric() && t.GetGenericTypeDefinition() == typeof(IDictionary<,>));
+				.FirstOrDefault(t => t.IsGeneric() &&
+					(t.GetGenericTypeDefinition() == typeof(IDictionary<,>) ||
+					t.GetGenericTypeDefinition() == typeof(IReadOnlyDictionary<,>)));
 			if (dict_type != null)
 				return dict_type.GetGenericArguments()[1];
 

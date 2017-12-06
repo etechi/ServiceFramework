@@ -35,7 +35,7 @@ namespace SF.Sys.NetworkService
         }
 		void BuildMethod(Metadata.Service service, Metadata.Method method)
 		{
-			sb.AppendLine($"{method.Name}:[\"{method.HeavyParameter}\",[{method?.Parameters?.Select(p=>"\""+p.Name+"\"").Join(",")}],");
+			sb.AppendLine($"{method.Name}:[\"{method.HeavyParameter}\",[{method?.Parameters?.Select(p=>"\""+p.Name+"\"").Join(",")}]],");
 		}
 		void BuildService(Metadata.Service service)
 		{
@@ -62,10 +62,10 @@ function buildArguments(args,params){
 		re[params[i]]=args[i];
 	return re;
 }
-function buildFunc(svc,method,post,params){
+function buildFunc(svc,method,postArg,params){
 	return function(){
 		var args=buildArguments(arguments,params);
-		return _invoker(svc,method,post,args);
+		return _invoker(svc,method,postArg,args);
 	}
 }
 
@@ -75,7 +75,7 @@ for(var sn in svcs){
 	var svc=svcs[sn];
 	var sd=re[sn]={};
 	for(var mn in svc){
-		var m=svc[m];
+		var m=svc[mn];
 		sd[mn]=buildFunc(sn,mn,m[0],m[1]);
 	}
 }

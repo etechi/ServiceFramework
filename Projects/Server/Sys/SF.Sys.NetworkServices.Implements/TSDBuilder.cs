@@ -27,12 +27,13 @@ namespace SF.Sys.NetworkService
         Func<Metadata.Service, Metadata.Method, bool> ActionFilter { get; }
 		Dictionary<string, SF.Sys.Metadata.Models.Type> Types;
 		public string ApiName { get; set; }
+		public string ResultFieldName { get; set; }
 		StringBuilder sb {get;} = new StringBuilder();
-        public TSDBuilder(string RootNamespace,Func<Metadata.Service, Metadata.Method, bool> ActionFilter)
+        public TSDBuilder(string RootNamespace, string ResultFieldName,Func<Metadata.Service, Metadata.Method, bool> ActionFilter)
 		{
             this.ActionFilter = ActionFilter;
 			this.ApiName = RootNamespace;
-
+			this.ResultFieldName = ResultFieldName ?? "data";
 		}
 		static string to_js_type(string type)
 		{
@@ -168,7 +169,7 @@ namespace SF.Sys.NetworkService
 					).Join(",\n")
 				);
 			}
-			sb.AppendLine($"\t) : PromiseLike<{to_js_type(method.Type)}>;");
+			sb.AppendLine($"\t) : PromiseLike<IResult<{to_js_type(method.Type)}>>;");
 		}
 		void BuildService(Metadata.Service service)
 		{
@@ -206,8 +207,9 @@ namespace SF.Sys.NetworkService
 			}
 			sb.AppendLine("}");
 
+			sb.AppendLine($"interface IResult<T>{{ {ResultFieldName}? :T }}");
 			sb.AppendLine($"export const {ApiName}:I{ApiName};");
-			sb.AppendLine("export function setServiceInvoker(invoker: (service: string, method: string, args: any)=>PromiseLike<any>);");
+			sb.AppendLine("export function setServiceInvoker(invoker: (service: string, method: string,postArg:string, args: any)=>PromiseLike<any>);");
 			return sb.ToString();
 
 		}

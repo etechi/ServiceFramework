@@ -46,10 +46,11 @@ namespace SF.Sys.NetworkService
 				ContentType = "text/javascript",
 			};
 		}
-		public IContent TSD(string ApiName, bool all = true)
+		public IContent TSD(string ApiName, string ResultFieldName=null,bool all = true)
 		{
 			var tb = new TSDBuilder(
 				ApiName,
+				ResultFieldName,
 				(c, a) =>
 				all ||
 				a.GrantInfo == null

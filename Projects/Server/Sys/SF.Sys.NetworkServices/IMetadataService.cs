@@ -21,7 +21,7 @@ namespace SF.Sys.NetworkService
 		//[Authorize(Roles ="admin")]
 		Metadata.Library Json();
 		IContent Typescript(bool all = true);
-		IContent TSD(string ApiName, bool all = true);
+		IContent TSD(string ApiName,string ResultFieldName=null, bool all = true);
 		IContent Javascript(string ApiName,  bool all = true);
 		IContent Java(
 			string CommonImports,

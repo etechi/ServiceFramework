@@ -39,6 +39,12 @@ namespace SF.Sys.NetworkService
 			this.PackagePath = PackagePath;
 			this.ActionFilter = ActionFilter;
         }
+		bool IsEnumType(string type)
+		{
+			if (Types.TryGetValue(type, out var t))
+				return t.IsEnumType;
+			return false;
+		}
 		bool TryImport(StringBuilder sb,string type)
 		{
 			if (type.EndsWith("?"))
@@ -52,6 +58,8 @@ namespace SF.Sys.NetworkService
 			if (i != -1)
 				return TryImport(sb,type.Substring(0, i));
 
+			if (IsEnumType(type))
+				return false;
 			i = type.IndexOf('<');
 			if (i != -1)
 				type=type.Replace('.', '_').Replace('<', '_').Replace(',', '_').Replace('>', '_');
@@ -84,7 +92,7 @@ namespace SF.Sys.NetworkService
 			sb.AppendLine($"import {PackagePath}.{type.Replace('.', '_').Replace('+', '_')};");
 			return true;
 		}
-		static string to_java_type(string type,bool ObjectMode=false)
+		string to_java_type(string type,bool ObjectMode=false,bool EscapeEnumName=true)
 		{
 			if (type.EndsWith("?"))
 				return to_java_type(type.Substring(0, type.Length - 1), ObjectMode);
@@ -95,7 +103,10 @@ namespace SF.Sys.NetworkService
 
 			i = type.IndexOf('{');
 			if (i != -1)
-				return "HashMap<string," + to_java_type(type.Substring(0, i), true) + ">";
+				return "HashMap<String," + to_java_type(type.Substring(0, i), true) + ">";
+
+			if (EscapeEnumName && IsEnumType(type))
+				return ObjectMode?"String":"string";
 
 			i = type.IndexOf('<');
 			if (i != -1)
@@ -145,14 +156,20 @@ namespace SF.Sys.NetworkService
 		}
 		void BuildEnumType(SF.Sys.Metadata.Models.Type t)
 		{
-			AddFile(to_java_type(t.Name), (sb) =>
+			AddFile(to_java_type(t.Name,false,false), (sb) =>
 			{
-				sb.AppendLine($"// {t.Title}");
-				sb.AppendLine($"export type {to_java_type(t.Name)} = {string.Join("|", t.Properties.Select(p => $"'{p.Name}'"))};");
-				sb.AppendLine($"export const {to_java_type(t.Name)}Names={{");
+				sb.AppendLine($"/**");
+				sb.AppendLine($"* {t.Title}");
+				sb.AppendLine($"* {t.Description}");
+				sb.AppendLine($"*/");
+				sb.AppendLine($"public class {to_java_type(t.Name,false,false)} {{");
 				foreach (var p in t.Properties)
 				{
-					sb.AppendLine($"\t\"{p.Name}\":\"{p.Title ?? p.Name}\",");
+					sb.AppendLine($"/**");
+					sb.AppendLine($"* {t.Title}");
+					sb.AppendLine($"* {t.Description}");
+					sb.AppendLine($"*/");
+					sb.AppendLine($"\tpublic static final String {p.Name}=\"{p.Name}\";");
 				}
 				sb.AppendLine("}");
 			});
@@ -161,6 +178,21 @@ namespace SF.Sys.NetworkService
 		{
 			//sb.AppendLine($"// {t.Title}");
 			//sb.AppendLine($"export interface {to_js_type(t.Name)} = {{[index:string]:{to_js_type(t.ElementType)}}};");
+		}
+		bool IsOverrideProperty(string Name, SF.Sys.Metadata.Models.Type type)
+		{
+			if (type.BaseTypes == null)
+				return false;
+			foreach(var btn in type.BaseTypes)
+			{
+				if (!Types.TryGetValue(btn, out var bt))
+					continue;
+				if (bt?.Properties?.Any(p => p.Name == Name) ?? false)
+					return true;
+				if (IsOverrideProperty(Name, bt))
+					return true;
+			}
+			return false;
 		}
 		void BuildClassType(SF.Sys.Metadata.Models.Type t)
 		{
@@ -196,6 +228,9 @@ namespace SF.Sys.NetworkService
 				if (t.Properties != null)
 					foreach (var p in t.Properties)
 					{
+						if (IsOverrideProperty(p.Name, t))
+							continue;
+
 						sb.AppendLine($"\t/**");
 						sb.AppendLine($"\t* {p.Title} {(p.Optional?"[可选]":"")}");
 						sb.AppendLine($"\t* {p.Description}");
@@ -245,7 +280,7 @@ namespace SF.Sys.NetworkService
 			{
 				sb.AppendLine(
 					method.Parameters.Select(p =>
-					$"\t@Field(\"{p.Name}\") {to_java_type(p.Type)} {p.Name}"
+					$"\t@{(method.HeavyParameter==p.Name ?"Body":$"Query(\"{p.Name}\")")} {to_java_type(p.Type)} {p.Name}"
 					).Join(",\n")
 				);
 			}
