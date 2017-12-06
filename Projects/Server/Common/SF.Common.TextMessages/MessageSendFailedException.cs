@@ -13,14 +13,29 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System;
 
 namespace SF.Common.TextMessages
 {
-	/// <summary>
-	/// 手机消息服务
-	/// </summary>
-	public interface IPhoneMessageService : ITextMessageService
+	public class MessageSendResult
 	{
+		public MessageSendResult(string Target, string Result, Exception Exception)
+		{
+			this.Target = Target;
+			this.Result = Result;
+			this.Exception = Exception;
+		}
+		public string Target { get; }
+		public string Result { get; }
+		public Exception Exception { get; }
 	}
-
+	public class MessageSendFailedException : PublicException
+	{
+		public MessageSendResult[] Results { get; }
+		public MessageSendFailedException(string message, MessageSendResult[] results, Exception innerException) : base(message, innerException)
+		{
+			Results = results;
+		}
+	}
+	
 }

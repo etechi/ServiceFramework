@@ -13,30 +13,12 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System;
 using System.Threading.Tasks;
 
 namespace SF.Common.TextMessages
 {
-	//public class MessageSendResult
-	//{
-	//	public MessageSendResult(string Target, string Result, Exception Exception)
-	//	{
-	//		this.Target = Target;
-	//		this.Result = Result;
-	//		this.Exception = Exception;
-	//	}
-	//	public string Target { get; }
-	//	public string Result { get; }
-	//	public Exception Exception { get; }
-	//}
-	//public class MessageSendFailedException : PublicException
-	//{
-	//	public MessageSendResult[] Results { get; }
-	//	public MessageSendFailedException(string message, MessageSendResult[] results, Exception innerException) : base(message, innerException)
-	//	{
-	//		Results = results;
-	//	}
-	//}
+	
 	/// <summary>
 	/// 文本消息服务
 	/// </summary>
@@ -44,9 +26,5 @@ namespace SF.Common.TextMessages
 	{
 		Task<long> Send(long? targetId,string target, Message message);
 	}
-	//public interface IMsgBatchProvider :IMsgProvider
-	//{
-	//	Task<MessageSendResult[]> Send(string[] targets, Message message);
- //       int MaxBatchCount { get; }
-	//}
+	
 }

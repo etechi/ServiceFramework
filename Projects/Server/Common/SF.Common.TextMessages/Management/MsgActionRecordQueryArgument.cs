@@ -23,8 +23,13 @@ using SF.Common.TextMessages.Models;
 namespace SF.Common.TextMessages.Management
 {
 
-	public class MsgRecordQueryArgument : QueryArgument<ObjectKey<long>>
+	public class MsgActionRecordQueryArgument : QueryArgument<ObjectKey<long>>
 	{
+		/// <summary>
+		/// 状态
+		/// </summary>
+		public SendStatus? Status { get; set; }
+
 		/// <summary>
 		/// 目标用户
 		/// </summary>
@@ -32,21 +37,26 @@ namespace SF.Common.TextMessages.Management
 		public long? TargeUserId { get; set; }
 
 		/// <summary>
+		/// 发送服务
+		/// </summary>
+		[EntityIdent(typeof(ServiceInstance))]
+		public long? ServiceId { get; set; }
+
+		/// <summary>
 		/// 发送时间
 		/// </summary>
 		public QueryRange<DateTime> Time { get; set; }
+
+		/// <summary>
+		/// 发送对象
+		/// </summary>
+		public string Target { get; set; }
 
 		/// <summary>
 		/// 消息策略
 		/// </summary>
 		[EntityIdent(typeof(MsgPolicy))]
 		public long? PolicyId { get; set; }
-
-		/// <summary>
-		/// 发送服务
-		/// </summary>
-		[EntityIdent(typeof(ServiceInstance))]
-		public long? ServiceId { get; set; }
 
 	}
 

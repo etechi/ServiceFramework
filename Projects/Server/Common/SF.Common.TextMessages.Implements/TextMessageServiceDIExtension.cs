@@ -26,14 +26,14 @@ namespace SF.Sys.Services
 			this IServiceCollection sc
 			)
 		{
-			sc.AddDataModules<SF.Common.TextMessages.Management.DataModels.TextMessageRecord>();
+			sc.AddDataModules<SF.Common.TextMessages.Management.DataModels.MsgActionRecord>();
 			sc.EntityServices(
 				"TextMessageRecord",
 				"文本消息记录",
 				d => d.Add<IMsgRecordManager, EntityMsgRecordManager>("TextMessageRecord","文本消息记录")
 				);
 
-			sc.AddTransient(sp => (ITextMessageLogger)sp.Resolve<IMsgRecordManager>());
+			sc.AddScoped<IMsgLogger,SF.Common.TextMessages.Management.EntityMsgLogger>();
 
 			//sc.AddInitializer(
 			//	"初始化菜单",
@@ -42,11 +42,11 @@ namespace SF.Sys.Services
 			//	);
 			return sc;
 		}
-		public static IServiceCollection AddSimPhoneTextMessageService(this IServiceCollection sc)
-		{
-			sc.AddManagedScoped<IPhoneMessageService, SimPhoneTextMessageService>();
-			return sc;
-		}
+		//public static IServiceCollection AddSimPhoneTextMessageService(this IServiceCollection sc)
+		//{
+		//	sc.AddManagedScoped<IPhoneMessageService, SimPhoneTextMessageService>();
+		//	return sc;
+		//}
 		public static IServiceCollection AddTextMessageServices(this IServiceCollection sc)
 		{
 			sc.AddMsgRecordManager();

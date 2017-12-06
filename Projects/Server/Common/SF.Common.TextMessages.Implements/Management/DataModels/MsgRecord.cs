@@ -18,23 +18,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Sys.Entities.DataModels;
 using SF.Sys.Data;
+using SF.Sys.Annotations;
 
 namespace SF.Common.TextMessages.Management.DataModels
 {
+
 	/// <summary>
 	/// 文本消息记录
 	/// </summary>
-	[Table("CommonTextMessageRecord")]
-	public class TextMessageRecord : EventEntityBase
-	{
-
-
-		/// <summary>
-		/// 发送状态
-		/// </summary>
-		[Index("status", Order = 1)]
-		public SendStatus Status { get; set; }
-
+	[Table("CommonTextMessageRecords")]
+	public class MsgRecord : EventEntityBase
+	{ 
 		/// <summary>
 		/// 目标用户ID
 		/// </summary>
@@ -42,46 +36,26 @@ namespace SF.Common.TextMessages.Management.DataModels
 		public override long? UserId { get; set; }
 
 		/// <summary>
-		/// 消息发送服务ID
+		/// 策略Id
 		/// </summary>
-		[Index("service", Order = 1)]
-		public long ServiceId { get; set; }
+		[Index]
+		public long PolicyId { get; set; }
+		
+		[ForeignKey(nameof(PolicyId))]
+		public MsgPolicy Policy { get; set; }
 
 		/// <summary>
-		/// 发信人
+		/// 名称
 		/// </summary>
 		[MaxLength(100)]
-		public string Sender { get; set; }
-
-		/// <summary>
-		/// 收信人
-		/// </summary>
 		[Required]
-		public string Target { get; set; }
-
-		/// <summary>
-		/// 标题
-		/// </summary>
-		[MaxLength(100)]
-		public string Title { get; set; }
-
-		/// <summary>
-		/// 内容
-		/// </summary>
-		[MaxLength(1000)]
-		public string Body { get; set; }
-
-		/// <summary>
-		/// 消息头部数据
-		/// </summary>
-		[MaxLength(1000)]
-		public string Headers { get; set; }
+		public string Name { get; set; }
 
 		///<title>消息参数</title>
 		/// <summary>
 		/// 用于支持模板化消息发送
 		/// </summary>
-		[MaxLength(1000)]
+		[JsonData]
 		public string Args { get; set; }
 
 		/// <summary>
@@ -91,22 +65,25 @@ namespace SF.Common.TextMessages.Management.DataModels
 		[Index("status", Order = 2)]
 		[Index("user", Order = 2)]
 		[Index("service", Order = 2)]
+		[Display(Name = "")]
 		public override DateTime Time { get; set; }
 
 		/// <summary>
 		/// 完成时间
 		/// </summary>
-		public DateTime? CompletedTime { get; set; }
+		public DateTime? EndTime { get; set; }
+
 
 		/// <summary>
-		/// 错误记录
+		/// 所有动作
 		/// </summary>
-		public string Error { get; set; }
+		public int ActionCount { get; set; }
 
 		/// <summary>
-		/// 单项发送结果
+		/// 完成动作
 		/// </summary>
-		public string Result { get; set; }
+		public int CompletedActionCount { get; set; }
+
 
 		/// <summary>
 		/// 业务跟踪ID
@@ -115,4 +92,5 @@ namespace SF.Common.TextMessages.Management.DataModels
 		public string TrackEntityId { get; set; }
 
 	}
+
 }

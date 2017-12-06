@@ -24,32 +24,31 @@ namespace SF.Common.TextMessages
 	
 	public class Message
 	{
-		public string Title { get; set; }
-		public string Body { get; set; }
-		public string Sender { get; set; }
+		/// <summary>
+		/// 消息名称
+		/// </summary>
+		public string Name { get; set; }
+
+		/// <summary>
+		/// 消息策略
+		/// </summary>
+		public string Policy { get; set; }
+
+		/// <summary>
+		/// 跟踪对象
+		/// </summary>
         public string TrackEntityId { get; set; }
+
+		/// <summary>
+		/// 参数
+		/// </summary>
         public IDictionary<string, string> Arguments { get; set; }
-        public IDictionary<string, string> Headers { get; set; }
 
 		public override string ToString()
 		{
             var sb = new StringBuilder();
-            sb.Append("发信人:");
-            sb.Append(Sender);
-
-            sb.Append(" 跟踪:");
-            sb.Append(TrackEntityId);
-
-            sb.Append(" 标题:");
-            sb.Append(Title??"");
-            if (Headers != null && Headers.Count != 0)
-            {
-                sb.Append(" 头部:");
-                sb.Append(string.Join(";",Headers.Select(h=>h.Key+"="+h.Value)));
-            }
-            sb.Append(" 正文:");
-            sb.Append(Body??"");
-
+			sb.Append($"{Name} {Policy} 跟踪:{TrackEntityId}");
+            
             if (Arguments!= null && Arguments.Count != 0)
             {
                 sb.Append(" 参数:");

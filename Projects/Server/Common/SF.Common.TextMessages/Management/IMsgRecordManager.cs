@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using SF.Common.TextMessages.Models;
 using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Entities;

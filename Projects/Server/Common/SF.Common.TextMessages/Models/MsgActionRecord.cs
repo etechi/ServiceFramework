@@ -18,12 +18,11 @@ using SF.Sys.Entities.Models;
 using SF.Sys.Services.Management.Models;
 using System;
 
-namespace SF.Common.TextMessages.Management
+namespace SF.Common.TextMessages.Models
 {
 	[EntityObject]
-	public class MsgRecord : EventEntityBase
+	public class MsgActionRecord : EventEntityBase
 	{
-
 		/// <summary>
 		/// 状态
 		/// </summary>
@@ -63,13 +62,8 @@ namespace SF.Common.TextMessages.Management
 		/// 内容
 		/// </summary>
 		[MultipleLines]
-		public string Body { get; set; }
+		public string Content { get; set; }
 
-		/// <summary>
-		/// 消息头部
-		/// </summary>
-		[MultipleLines]
-		public string Headers { get; set; }
 
 		/// <summary>
 		/// 消息参数
@@ -99,6 +93,17 @@ namespace SF.Common.TextMessages.Management
 		/// </summary>
 		[EntityIdent]
 		public string TrackEntityId { get; set; }
+
+		/// <summary>
+		/// 消息记录
+		/// </summary>
+		[EntityIdent(typeof(MsgRecord),nameof(MsgRecordName))]
+		public long MsgRecordId { get; set; }
+
+		/// <summary>
+		/// 消息记录
+		/// </summary>
+		public string MsgRecordName { get;set;}
 	}
 
 }

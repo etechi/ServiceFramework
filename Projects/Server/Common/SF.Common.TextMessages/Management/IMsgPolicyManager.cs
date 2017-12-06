@@ -14,13 +14,22 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
-namespace SF.Common.TextMessages
+using SF.Common.TextMessages.Models;
+using SF.Sys.Annotations;
+using SF.Sys.Auth;
+using SF.Sys.Entities;
+using SF.Sys.NetworkService;
+
+namespace SF.Common.TextMessages.Management
 {
 	/// <summary>
-	/// 手机消息服务
+	/// 文本消息记录
 	/// </summary>
-	public interface IPhoneMessageService : ITextMessageService
+	[EntityManager]
+	[Authorize("admin")]
+	[NetworkService]
+	public interface IPolicyManager : 
+		IEntityManager<MsgPolicy, MsgPolicyQueryArgument>
 	{
 	}
-
 }
