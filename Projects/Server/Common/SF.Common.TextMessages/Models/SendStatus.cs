@@ -14,7 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
-namespace SF.Common.TextMessages.Management
+namespace SF.Common.TextMessages.Models
 {
 	public enum SendStatus
 	{
@@ -25,7 +25,7 @@ namespace SF.Common.TextMessages.Management
 		/// <summary>
 		/// 发送成功
 		/// </summary>
-		Completed,
+		Success,
 		/// <summary>
 		/// 发送失败
 		/// </summary>

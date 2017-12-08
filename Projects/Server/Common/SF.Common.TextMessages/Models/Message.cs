@@ -25,11 +25,6 @@ namespace SF.Common.TextMessages
 	public class Message
 	{
 		/// <summary>
-		/// 消息名称
-		/// </summary>
-		public string Name { get; set; }
-
-		/// <summary>
 		/// 消息策略
 		/// </summary>
 		public string Policy { get; set; }
@@ -42,12 +37,12 @@ namespace SF.Common.TextMessages
 		/// <summary>
 		/// 参数
 		/// </summary>
-        public IDictionary<string, string> Arguments { get; set; }
+        public IReadOnlyDictionary<string, object> Arguments { get; set; }
 
 		public override string ToString()
 		{
             var sb = new StringBuilder();
-			sb.Append($"{Name} {Policy} 跟踪:{TrackEntityId}");
+			sb.Append($" {Policy} 跟踪:{TrackEntityId}");
             
             if (Arguments!= null && Arguments.Count != 0)
             {

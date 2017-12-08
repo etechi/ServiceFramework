@@ -66,7 +66,13 @@ namespace SF.Common.TextMessages.Models
 		/// </summary>
 		[EntityIdent(typeof(ServiceInstance),ScopeValue =typeof(IMsgProvider))]
 		public long ProviderId { get; set; }
-		
+
+		/// <summary>
+		/// 发送目标模板
+		/// </summary>
+		[MaxLength(100)]
+		public string TargetTemplate { get; set; }
+
 		/// <summary>
 		/// 标题模板
 		/// </summary>

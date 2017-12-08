@@ -13,14 +13,26 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys;
+using SF.Sys.Entities;
+using System.Linq;
+using System.Threading.Tasks;
+using SF.Sys.Data;
+using SF.Sys.Services;
+using System;
+using System.Collections.Generic;
+using SF.Common.TextMessages.Models;
 
-namespace SF.Common.TextMessages
+namespace SF.Common.TextMessages.Management
 {
-	/// <summary>
-	/// 手机消息服务
-	/// </summary>
-	public interface IPhoneMessageService : ITextMessageService
+	public class EntityMsgPolicyManager :
+		SF.Sys.Entities.AutoModifiableEntityManager<ObjectKey<long>, MsgPolicy, MsgPolicy, MsgPolicyQueryArgument, MsgPolicy, DataModels.MsgPolicy>,
+		IMsgPolicyManager
 	{
+		
+		public EntityMsgPolicyManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		{
+		}
 	}
 
 }

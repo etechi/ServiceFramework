@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 
 using SF.Common.TextMessages;
+using SF.Common.TextMessages.EMailProviders;
 using SF.Common.TextMessages.Management;
 
 namespace SF.Sys.Services
@@ -22,24 +23,25 @@ namespace SF.Sys.Services
 	public static class TextMessageServicesDIExtension
 	{
 		
-		public static IServiceCollection AddMsgRecordManager(
+		public static IServiceCollection AddTextMessageServices(
 			this IServiceCollection sc
 			)
 		{
 			sc.AddDataModules<SF.Common.TextMessages.Management.DataModels.MsgActionRecord>();
 			sc.EntityServices(
-				"TextMessageRecord",
-				"文本消息记录",
-				d => d.Add<IMsgRecordManager, EntityMsgRecordManager>("TextMessageRecord","文本消息记录")
+				"TextMessage",
+				"文本消息",
+				d => 
+				d.Add<IMsgRecordManager, EntityMsgRecordManager>("TextMessageRecord","文本消息记录")
+				.Add<IMsgActionRecordManager, EntityMsgActionRecordManager>("TextMessageActionRecord", "文本消息发送录")
+				.Add<IMsgPolicyManager, EntityMsgPolicyManager>("TextMessagePolicy", "文本消息发生策略")
 				);
 
-			sc.AddScoped<IMsgLogger,SF.Common.TextMessages.Management.EntityMsgLogger>();
+			sc.AddSingleton<IMsgArgumentFactory, MsgArgumentFactory>();
+			sc.AddSingleton<IMsgLogger,EntityMsgLogger>();
 
-			//sc.AddInitializer(
-			//	"初始化菜单",
-			//	sp=>Init(sp,DefaultMenu),
-			//	int.MaxValue
-			//	);
+			sc.AddManagedTransient<IMsgProvider, SystemEMailProvider>();
+			sc.AddSingleton<ITextMessageService, MsgService>();
 			return sc;
 		}
 		//public static IServiceCollection AddSimPhoneTextMessageService(this IServiceCollection sc)
@@ -47,13 +49,6 @@ namespace SF.Sys.Services
 		//	sc.AddManagedScoped<IPhoneMessageService, SimPhoneTextMessageService>();
 		//	return sc;
 		//}
-		public static IServiceCollection AddTextMessageServices(this IServiceCollection sc)
-		{
-			sc.AddMsgRecordManager();
-			sc.AddSimPhoneTextMessageService();
-
-			return sc;
-		}
-
+		
 	}
 }

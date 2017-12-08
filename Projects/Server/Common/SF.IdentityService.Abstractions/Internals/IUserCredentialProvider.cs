@@ -19,10 +19,10 @@ namespace SF.Auth.IdentityServices.Internals
 {
 	public enum ConfirmMessageType
 	{
-		Signin,
-		Signup,
-		PasswordRecorvery,
-		Confirm
+		登录,
+		注册,
+		找回密码,
+		验证
 	}
     public interface IUserCredentialProvider
     {

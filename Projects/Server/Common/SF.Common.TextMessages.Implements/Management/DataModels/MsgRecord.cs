@@ -19,6 +19,7 @@ using System.ComponentModel.DataAnnotations;
 using SF.Sys.Entities.DataModels;
 using SF.Sys.Data;
 using SF.Sys.Annotations;
+using SF.Common.TextMessages.Models;
 
 namespace SF.Common.TextMessages.Management.DataModels
 {
@@ -35,6 +36,10 @@ namespace SF.Common.TextMessages.Management.DataModels
 		[Index("user", Order = 1)]
 		public override long? UserId { get; set; }
 
+
+		[MaxLength(100)]
+		[Required]
+		public string PolicyIdent { get; set; }
 		/// <summary>
 		/// 策略Id
 		/// </summary>
@@ -44,12 +49,6 @@ namespace SF.Common.TextMessages.Management.DataModels
 		[ForeignKey(nameof(PolicyId))]
 		public MsgPolicy Policy { get; set; }
 
-		/// <summary>
-		/// 名称
-		/// </summary>
-		[MaxLength(100)]
-		[Required]
-		public string Name { get; set; }
 
 		///<title>消息参数</title>
 		/// <summary>
@@ -84,12 +83,19 @@ namespace SF.Common.TextMessages.Management.DataModels
 		/// </summary>
 		public int CompletedActionCount { get; set; }
 
-
 		/// <summary>
 		/// 业务跟踪ID
 		/// </summary>
 		[MaxLength(100)]
 		public string TrackEntityId { get; set; }
+
+		/// <summary>
+		/// 发送状态
+		/// </summary>
+		public SendStatus Status { get; set; }
+
+		[MaxLength(1000)]
+		public string Error { get; set; }
 
 	}
 

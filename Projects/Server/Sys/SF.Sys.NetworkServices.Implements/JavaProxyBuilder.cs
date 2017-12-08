@@ -106,7 +106,7 @@ namespace SF.Sys.NetworkService
 				return "HashMap<String," + to_java_type(type.Substring(0, i), true) + ">";
 
 			if (EscapeEnumName && IsEnumType(type))
-				return ObjectMode?"String":"string";
+				return "String";
 
 			i = type.IndexOf('<');
 			if (i != -1)

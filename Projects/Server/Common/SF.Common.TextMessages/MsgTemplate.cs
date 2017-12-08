@@ -56,7 +56,7 @@ namespace SF.Common.TextMessages
     }
     public static class MsgTemplateExtension
     {
-        public static string EvalTemplate(this MsgTemplate[] Templates,string Content,IReadOnlyDictionary<string,string> Args)
+        public static string EvalTemplate(this MsgTemplate[] Templates,string Content,IReadOnlyDictionary<string,object> Args)
         {
             if (Templates == null || Templates.Length == 0)
                 return Content;
@@ -66,7 +66,7 @@ namespace SF.Common.TextMessages
             return Content;
         }
    
-        public static MsgEvalResult EvalTemplate(this MsgTemplateEx[] Templates, string Content, IReadOnlyDictionary<string, string> Args)
+        public static MsgEvalResult EvalTemplate(this MsgTemplateEx[] Templates, string Content, IReadOnlyDictionary<string, object> Args)
         {
             if (Templates == null || Templates.Length == 0)
                 return null;

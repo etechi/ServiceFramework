@@ -18,6 +18,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Sys.Entities.DataModels;
 using SF.Sys.Data;
+using SF.Common.TextMessages.Models;
 
 namespace SF.Common.TextMessages.Management.DataModels
 {
@@ -35,16 +36,10 @@ namespace SF.Common.TextMessages.Management.DataModels
 		[Index]
 		public long ServiceId { get; set; }
 
-
 		/// <summary>
 		/// 接收方
 		/// </summary>
 		public string Target { get; set; }
-
-		/// <summary>
-		/// 发送方
-		/// </summary>
-		public string Sender { get; set; }
 
 		/// <summary>
 		/// 标题
@@ -71,11 +66,13 @@ namespace SF.Common.TextMessages.Management.DataModels
 		/// <summary>
 		/// 错误信息
 		/// </summary>
+		[MaxLength(1000)]
 		public string Error { get; set; }
 
 		/// <summary>
 		/// 发送结果
 		/// </summary>
+		[MaxLength(1000)]
 		public string Result { get; set; }
 
 		/// <summary>

@@ -240,25 +240,26 @@ namespace SF.Sys
 
 
 		static readonly System.Text.RegularExpressions.Regex _reg_replace =
-			new System.Text.RegularExpressions.Regex("\\{[^\\}]+\\}");
+			new System.Text.RegularExpressions.Regex("\\{([^:\\}]+)(:[^:\\}]+)?(:[^:\\}]+)?\\}");
 
-		public static string Replace(this string tmpl, IReadOnlyDictionary<string, string> args)
+		public static string Replace(this string tmpl, IReadOnlyDictionary<string, object> args)
 		{
-			if (tmpl == null)
-				return string.Empty;
+			if (tmpl == null) return null;
 			return _reg_replace.Replace(tmpl, match =>
 			{
-				var key = match.Groups[0].Value;
-				key = key.Substring(1, key.Length - 2).Trim();
-
-				var i = key.IndexOf(':');
-				var default_value = i == -1 ? null : key.Substring(i + 1);
-				key = i == -1 ? key : key.Substring(0, i);
-				if (args.TryGetValue(key, out string re) && re != null)
-					return re.ToString();
-				if (default_value != null)
-					return default_value;
-				return match.Groups[0].Value;
+				var grps = match.Groups;
+				var gc = grps.Count;
+				var key = grps[1].Value;
+				
+				if (args.TryGetValue(key, out object re) && re != null)
+				{
+					var format = gc > 2 ? grps[2].Value.Substring(1) : null;
+					if (format != null && re is IFormattable f)
+						return f.ToString(format, null);
+					else
+						return re.ToString();
+				}
+				return gc > 3 ? grps[3].Value.Substring(1) : string.Empty;
 			});
 		}
 	}

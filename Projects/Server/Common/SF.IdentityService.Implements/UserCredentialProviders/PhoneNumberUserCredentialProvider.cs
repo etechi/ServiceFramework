@@ -26,16 +26,13 @@ namespace SF.Auth.IdentityServices.UserCredentialProviders
 		IUserCredentialProvider
 	{
 		public Lazy<IPhoneNumberValidator> PhoneNumberValidator { get; }
-		public Lazy<IPhoneMessageService> TextMessageService { get; }
-		public ConfirmMessageTemplateSetting ConfirmMessageSetting { get; }
+		public Lazy<ITextMessageService> TextMessageService { get; }
 		public PhoneNumberUserCredentialProvider(
 			Lazy<IPhoneNumberValidator> PhoneNumberValidator,
-			Lazy<IPhoneMessageService> TextMessageService,
-			ConfirmMessageTemplateSetting ConfirmMessageSetting
+			Lazy<ITextMessageService> TextMessageService
 			)
 		{
 			this.PhoneNumberValidator = PhoneNumberValidator;
-			this.ConfirmMessageSetting = ConfirmMessageSetting;
 			this.TextMessageService = TextMessageService;
 		}
 		public long ClaimTypeId => 0;
@@ -52,20 +49,23 @@ namespace SF.Auth.IdentityServices.UserCredentialProviders
 		}
 		
 		public  async Task<long> SendConfirmCode(
-			 long? IdentityId, string Ident, string Code, ConfirmMessageType Type, string TrackIdent)
+			 long? IdentityId, 
+			 string Ident, 
+			 string Code, 
+			 ConfirmMessageType Type, 
+			 string TrackIdent
+			)
 		{
-
-			var args = new Dictionary<string, string> {
+			var args = new Dictionary<string, object> {
 				{"手机号", Ident },
 				{"验证码", Code },
-				{"业务序号",TrackIdent }
+				{"业务流水",TrackIdent }
 			};
 			var re= await TextMessageService.Value.Send(
 				IdentityId,
-				Ident,
 				new Message
 				{
-					Body= ConfirmMessageSetting.GetTemplate(Type).Replace(args),
+					Policy=Type.ToString(),
 					Arguments=args,
 					TrackEntityId=TrackIdent
 				}

@@ -24,7 +24,7 @@ namespace SF.Common.TextMessages
 	/// </summary>
 	public interface ITextMessageService
 	{
-		Task<long> Send(long? targetId,string target, Message message);
+		Task<long> Send(long? targetId,Message message);
 	}
 	
 }

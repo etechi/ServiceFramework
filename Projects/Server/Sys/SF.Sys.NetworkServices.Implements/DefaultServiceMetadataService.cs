@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.IO;
 using SF.Sys.NetworkService.Metadata;
+using System;
 using System.Reflection;
 
 namespace SF.Sys.NetworkService
@@ -35,9 +36,7 @@ namespace SF.Sys.NetworkService
 		public IContent Typescript(bool all = true)
 		{
 			var tb = new TypeScriptProxyBuilder(
-				(c, a) =>
-				all ||
-				a.GrantInfo==null
+				GetFilter(all)
 				);
 			var code = tb.Build(Library);
 			return new StringContent
@@ -51,9 +50,7 @@ namespace SF.Sys.NetworkService
 			var tb = new TSDBuilder(
 				ApiName,
 				ResultFieldName,
-				(c, a) =>
-				all ||
-				a.GrantInfo == null
+				GetFilter(all)
 				);
 			var code = tb.Build(Library);
 			return new StringContent
@@ -66,9 +63,7 @@ namespace SF.Sys.NetworkService
 		{
 			var tb = new JavascriptProxyBuilder(
 				ApiName,
-				(c, a) =>
-				all ||
-				a.GrantInfo == null
+				GetFilter(all)
 				);
 			var code = tb.Build(Library);
 			return new StringContent
@@ -86,9 +81,25 @@ namespace SF.Sys.NetworkService
 			var tb = new JavaProxyBuilder(
 				CommonImports,
 				PackagePath,
-				(c, a) =>
-				all ||
-				a.GrantInfo == null
+				GetFilter(all)
+				);
+			return tb.Build(Library);
+		}
+		Func<Service, Method,bool> GetFilter(bool All)
+		{
+			return (s, m) =>
+				All ? true : !s.Name.EndsWith("Manager");
+		}
+		public IContent iOS(
+		   string CommonImports,
+		   string BaseService,
+		   bool all = true
+		   )
+		{
+			var tb = new IOSProxyBuilder(
+				CommonImports,
+				BaseService,
+				GetFilter(all)
 				);
 			return tb.Build(Library);
 		}

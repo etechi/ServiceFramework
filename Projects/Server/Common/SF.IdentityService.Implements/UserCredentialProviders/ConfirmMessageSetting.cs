@@ -30,13 +30,13 @@ namespace SF.Auth.IdentityServices.UserCredentialProviders
 		{
 			switch (Type)
 			{
-				case ConfirmMessageType.Confirm:
+				case ConfirmMessageType.验证:
 					return NormalConfirmMessageTemplate;
-				case ConfirmMessageType.PasswordRecorvery:
+				case ConfirmMessageType.找回密码:
 					return PasswordRecorveryMessageTemplate;
-				case ConfirmMessageType.Signin:
+				case ConfirmMessageType.登录:
 					return SigninMessageTemplate;
-				case ConfirmMessageType.Signup:
+				case ConfirmMessageType.注册:
 					return SignupMessageTemplate;
 				default:
 					throw new NotSupportedException();

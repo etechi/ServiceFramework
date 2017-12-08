@@ -33,7 +33,7 @@ namespace SF.Common.TextMessages.EMailProviders
 
 		/// <summary>
 		/// SMTP服务器端口
-		/// </summary
+		/// </summary>
         public int SMTPServerPort { get; set; } = 25;
     }
 }

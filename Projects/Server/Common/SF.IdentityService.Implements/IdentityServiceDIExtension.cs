@@ -26,6 +26,7 @@ using SF.Sys.Services;
 using SF.Sys.Services.Management;
 using SF.Sys.Entities;
 using SF.Sys.Linq;
+using SF.Sys.Auth;
 
 namespace SF.Sys.Services
 {
@@ -54,6 +55,7 @@ namespace SF.Sys.Services
 			sc.AddManagedScoped<IUserCredentialProvider, LocalUserCredentialProvider>();
 			sc.AddManagedScoped<IUserCredentialStorage, UserCredentialStorage>();
 			sc.AddTransient<IUserStorage>(sp => sp.Resolve<IUserManager>());
+			sc.AddTransient<IUserProfileService, UserProfileService>();
 			//sc.GenerateEntityManager("DocumentCategory");
 			//sc.GenerateEntityManager("Document");
 

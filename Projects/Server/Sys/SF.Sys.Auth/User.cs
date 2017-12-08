@@ -16,8 +16,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Sys.Annotations;
 using SF.Sys.Entities;
 using SF.Sys.Entities.Annotations;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SF.Sys.Auth
 {
@@ -48,6 +51,13 @@ namespace SF.Sys.Auth
 		/// </summary>
 		[MaxLength(100)]
 		public string Icon { get; set; }
+	}
+
+	public interface IUserProfileService
+	{
+		Task<bool> IsValid(long UserId);
+		Task<User> GetUser(long UserId);
+		Task<Claim[]> GetClaims(long UserId, string[] ClaimTypes, IEnumerable<Claim> ExtraClaims);
 	}
 }
 

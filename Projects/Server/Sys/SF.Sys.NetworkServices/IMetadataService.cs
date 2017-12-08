@@ -28,6 +28,11 @@ namespace SF.Sys.NetworkService
 			string PackagePath,
 			bool all = true
 			);
+		IContent iOS(
+			 string CommonImports,
+			 string BaseService,
+			 bool all = true
+			 );
 		IContent Html();
 		IContent Script();
 		IContent Angular();

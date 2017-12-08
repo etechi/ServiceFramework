@@ -93,10 +93,10 @@ namespace SF.Auth.IdentityServices
 			var code = Setting.VerifyCodeDisabled ? "000000" : Strings.Numbers.Random(6);
 
 			Setting.VerifyCodeCache.Value.Set(
-				$"{ConfirmMessageType.PasswordRecorvery}\n{Ident}\n{UserId}",
+				$"{ConfirmMessageType.找回密码}\n{Ident}\n{UserId}",
 				new VerifyCode
 				{
-					Type = ConfirmMessageType.PasswordRecorvery,
+					Type = ConfirmMessageType.找回密码,
 					Code = code,
 					UserId = UserId
 				},
@@ -128,7 +128,7 @@ namespace SF.Auth.IdentityServices
 
 		public async Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg)
 		{
-			var vc = CheckVerifyCode(ConfirmMessageType.PasswordRecorvery, Arg.Credential, 0, Arg.VerifyCode);
+			var vc = CheckVerifyCode(ConfirmMessageType.找回密码, Arg.Credential, 0, Arg.VerifyCode);
 
 			var stamp = Bytes.Random(16);
 			var newPasswordHash = Setting.PasswordHasher.Value.Hash(Arg.NewPassword, stamp);
@@ -153,7 +153,7 @@ namespace SF.Auth.IdentityServices
 				throw new PublicArgumentException("找不到账号");
 			 await SendVerifyCode(
 				provider,
-				ConfirmMessageType.PasswordRecorvery, 
+				ConfirmMessageType.找回密码, 
 				Arg.Credential, 
 				bind.UserId, 
 				null
@@ -289,7 +289,7 @@ namespace SF.Auth.IdentityServices
 
 			await SendVerifyCode(
 				CredentialProvider,
-				ConfirmMessageType.Signup,
+				ConfirmMessageType.注册,
 				Arg.Credetial,
 				null,
 				null
@@ -310,7 +310,7 @@ namespace SF.Auth.IdentityServices
 			var canSendMessage = CredentialProvider.IsConfirmable();
 			if (canSendMessage)
 				CheckVerifyCode(
-					ConfirmMessageType.Signup, 
+					ConfirmMessageType.注册, 
 					Arg.Credential, 
 					0, 
 					Arg.VerifyCode

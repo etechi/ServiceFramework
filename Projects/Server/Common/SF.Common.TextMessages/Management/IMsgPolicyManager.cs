@@ -28,8 +28,9 @@ namespace SF.Common.TextMessages.Management
 	[EntityManager]
 	[Authorize("admin")]
 	[NetworkService]
-	public interface IPolicyManager : 
-		IEntityManager<MsgPolicy, MsgPolicyQueryArgument>
+	public interface IMsgPolicyManager :
+		IEntitySource<ObjectKey<long>, MsgPolicy, MsgPolicyQueryArgument>,
+		IEntityManager<ObjectKey<long>, MsgPolicy>
 	{
 	}
 }
