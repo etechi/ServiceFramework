@@ -18,4 +18,16 @@
     <None Remove=".licenseheader" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Common\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Auth\SF.Sys.Auth.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Logging\SF.Sys.Logging.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.Annotations">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\system.componentmodel.annotations\4.4.0\ref\netstandard2.0\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

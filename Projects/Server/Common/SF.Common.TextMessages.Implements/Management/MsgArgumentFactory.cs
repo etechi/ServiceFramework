@@ -76,6 +76,7 @@ namespace SF.Common.TextMessages.Management
 					Title = a.Title.Replace(Message.Arguments),
 					Target = a.Target.Replace(Message.Arguments),
 					Content = a.Content.Replace(Message.Arguments),
+					Template=a.Template.Replace(Message.Arguments),
 					Arguments = a.Arguments.Select(p => (p.Key, p.Value.Replace(Message.Arguments))).ToArray(),
 					MsgProviderId = a.MsgProviderId,
 					TargetId = TargetId

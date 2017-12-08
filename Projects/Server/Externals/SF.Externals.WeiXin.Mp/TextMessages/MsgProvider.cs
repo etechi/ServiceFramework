@@ -1,15 +1,14 @@
-﻿using System;
+﻿using SF.Common.TextMessages;
+using SF.Sys;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using ServiceProtocol.TextMessages;
-using ServiceProtocol.Annotations;
-using System.Net.Http;
 
 namespace SF.Externals.WeiXin.Mp.TextMessages
 {
-    class DataItem
+	class DataItem
     {
         public string value { get; set; }
         public string color { get; set; }
@@ -27,9 +26,10 @@ namespace SF.Externals.WeiXin.Mp.TextMessages
         public string errmsg { get; set; }
         public long msgid { get; set; }
     }
-    [TypeDisplay(Name = "微信模板消息服务")]
-    [ServiceProvider(typeof(IMsgProvider), typeof(TemplateMessageSetting))]
-    public class MsgProvider : ServiceProtocol.TextMessages.IMsgProvider
+	/// <summary>
+	/// 微信公共号模板消息服务
+	/// </summary>
+    public class MsgProvider : IMsgProvider
     {
         public TemplateMessageSetting Setting { get; }
         public IWeiXinClient Client { get; }
@@ -39,33 +39,35 @@ namespace SF.Externals.WeiXin.Mp.TextMessages
             this.Setting = Setting;
             this.Client = Client;
         }
-        public async Task<string> Send(string target, Message message)
+        public async Task<string> Send(MsgSendArgument message)
         {
-            if (Setting.Disabled)
-                return "禁止发送";
+			if (Setting.Disabled)
+				return "禁止发送";
 
-            var ere = Setting.Templates.EvalTemplate(message.Body, message.Arguments);
-            if (ere == null)
-                return "找不到微信模板";
-
-            var req = new Request
-            {
-                touser = target,
-                template_id = ere.TemplateId,
-                url = ere.Arguments.Get("MobileLink"),
-                data = ere.Arguments.ToDictionary(
+			var req = new Request
+			{
+				touser = message.Target,
+				template_id = message.Template,
+				url = message.Arguments.FirstOrDefault(p => p.Key == "MobileLink").Value,
+                data = message.Arguments.ToDictionary(
                     p => p.Key, 
                     p => new DataItem { value = p.Value }
                     )
             };
-            var re = await Functional.Retry(() => Client.Json(
+            var re = await TaskUtils.Retry(() => Client.Json(
                 "message/template/send",
                 req
                 ));
-            var resp = Json.Decode<Response>(re);
+            var resp = SF.Sys.Json.Parse<Response>(re);
             if (resp.errcode != 0)
-                throw new Exception(resp.errcode + ":" + resp.errmsg);
+                throw new ExternalServiceException(resp.errcode + ":" + resp.errmsg);
             return resp.msgid.ToString();
         }
-    }
+
+		public async Task<string> TargetResolve(long TargetId)
+		{
+			var re = await UserProfileService.GetClaims(TargetId, new[] { PredefinedClaimTypes.WeiXinMPId }, null);
+			return re.FirstOrDefault()?.Value;
+		}
+	}
 }

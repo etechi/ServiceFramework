@@ -1,4 +1,5 @@
-﻿using SF.Sys.Caching;
+﻿using SF.Sys;
+using SF.Sys.Caching;
 using SF.Sys.TimeServices;
 using System;
 using System.Threading;
@@ -9,25 +10,27 @@ namespace SF.Externals.WeiXin.Mp.Core
 	public class AccessTokenManager : 
         IAccessTokenManager
     {
-        static SyncScope accessTokenSyncScope { get; } = new SyncScope();
-        static SyncScope jsApiTicketSyncScope { get; } = new SyncScope();
-        static string AccessTokenCacheKey { get; } = typeof(AccessTokenManager).FullName + "/AccessToken";
-        static string JsApiTicketCacheKey { get; } = typeof(AccessTokenManager).FullName + "/JSApiTicket";
 
-        ILocalCache Cache { get; }
-        ITimeService TimeService { get; }
+        SyncScope accessTokenSyncScope { get; } = new SyncScope();
+        SyncScope jsApiTicketSyncScope { get; } = new SyncScope();
+		string _AccessToken;
+		DateTime _AccessTokenExpire;
 
-        WeiXinSetting Setting { get; }
+		string _JsApiTicket;
+		DateTime _JsApiTicketExpire;
+
+		ITimeService TimeService { get; }
+
+		WeiXinMpSetting Setting { get; }
 
         public AccessTokenManager(
-            Caching.ICache Cache,
-            Times.ITimeService TimeService,
-            WeiXinSetting Setting
+			ILocalCache<AccessToken> Cache,
+            ITimeService TimeService,
+			WeiXinMpSetting Setting
             )
 
         {
             this.Setting = Setting;
-            this.Cache = Cache;
             this.TimeService = TimeService;
         }
         class AccessTokenResponse
@@ -40,31 +43,28 @@ namespace SF.Externals.WeiXin.Mp.Core
 
         public async Task<string> GetAccessToken()
         {
-            var token = this.Cache.Get(AccessTokenCacheKey) as string;
-            if (token != null)
-                return token;
+			var now = TimeService.Now;
+			if (_AccessToken != null && _AccessTokenExpire>now)
+				return _AccessToken;
 
             return await accessTokenSyncScope.Sync(async () =>
             {
-                token = this.Cache.Get(AccessTokenCacheKey) as string;
-                if (token != null)
-                    return token;
+				if (_AccessToken != null && _AccessTokenExpire > now)
+					return _AccessToken;
 
-                var uri = new Uri(Setting.ApiUriBase + "token").WithQueryString(
-                    Tuple.Create("grant_type", "client_credential"),
-                    Tuple.Create("appid", Setting.AppId),
-                    Tuple.Create("secret", Setting.AppSecret)
+				var uri = new Uri(Setting.ApiUriBase + "token").WithQueryString(
+                    ("grant_type", "client_credential"),
+                    ("appid", Setting.AppId),
+                    ("secret", Setting.AppSecret)
                     );
-                var re = await Functional.Retry(() => uri.GetString());
-                var resp = Json.Decode<AccessTokenResponse>(re);
+                var re = await TaskUtils.Retry(() => uri.GetString());
+                var resp = Json.Parse<AccessTokenResponse>(re);
                 if (resp.access_token == null)
-                    throw new Exception(resp.errcode + ":" + resp.errmsg);
+                    throw new ExternalServiceException("获取微信公众号访问令牌失败："+resp.errcode + ":" + resp.errmsg);
 
-                return this.Cache.AddOrGetExisting(
-                    AccessTokenCacheKey,
-                    resp.access_token,
-                    TimeService.Now.AddSeconds(resp.expires_in / 2)
-                    ) as string ?? resp.access_token;
+				_AccessToken = resp.access_token;
+				_AccessTokenExpire = TimeService.Now.AddSeconds(resp.expires_in / 2);
+				return _AccessToken;
             });
         }
 
@@ -78,31 +78,28 @@ namespace SF.Externals.WeiXin.Mp.Core
 
         public async Task<string> GetJsApiTicket()
         {
-            var ticket = this.Cache.Get(JsApiTicketCacheKey) as string;
-            if (ticket != null)
-                return ticket;
+			var now = TimeService.Now;
+			if (_JsApiTicket != null && now < _JsApiTicketExpire)
+				return _JsApiTicket;
 
             return await jsApiTicketSyncScope.Sync(async () =>
             {
-                ticket = this.Cache.Get(JsApiTicketCacheKey) as string;
-                if (ticket != null)
-                    return ticket;
+				if (_JsApiTicket != null && now < _JsApiTicketExpire)
+					return _JsApiTicket;
 
-                var access_token = await GetAccessToken();
+				var access_token = await GetAccessToken();
                 var uri = new Uri(Setting.ApiUriBase + "ticket/getticket").WithQueryString(
-                    Tuple.Create("access_token",access_token),
-                    Tuple.Create("type", "jsapi")
+                    ("access_token",access_token),
+                    ("type", "jsapi")
                     );
-                var re = await Functional.Retry(() => uri.GetString());
-                var resp = Json.Decode<JsApiTicketResponse>(re);
+                var re = await TaskUtils.Retry(() => uri.GetString());
+                var resp = Json.Parse<JsApiTicketResponse>(re);
                 if (resp.ticket == null)
-                    throw new Exception(resp.errcode + ":" + resp.errmsg);
+                    throw new ExternalServiceException("获取微信公众号JSTicket失败:"+resp.errcode + ":" + resp.errmsg);
 
-                return this.Cache.AddOrGetExisting(
-                    JsApiTicketCacheKey,
-                    resp.ticket,
-                    TimeService.Now.AddSeconds(resp.expires_in / 2)
-                    ) as string ?? resp.ticket;
+				_JsApiTicket = resp.ticket;
+				_JsApiTicketExpire = TimeService.Now.AddSeconds(resp.expires_in / 2);
+				return _JsApiTicket;
             });
         }
     }

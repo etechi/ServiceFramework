@@ -11,6 +11,7 @@ namespace SF.Common.TextMessages
 		public string Target { get; set; }
 		public string Title { get; set; }
 		public string Content { get; set; }
+		public string Template { get; set; }
 		public (string Key,string Value)[] Arguments { get; set; }
 	}
 	/// <summary>

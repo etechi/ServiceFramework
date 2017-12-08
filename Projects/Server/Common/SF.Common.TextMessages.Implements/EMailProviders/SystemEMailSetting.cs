@@ -6,10 +6,11 @@ namespace SF.Common.TextMessages.EMailProviders
 	public class SystemEMailSetting 
 	{
 
+		///<title>禁止发送</title>
 		/// <summary>
-		/// 是否禁用
+		/// 禁止发送消息。生成消息日志，但不进行实际发送，主要用于测试
 		/// </summary>
-        public bool Disabled { get; set; }
+		public bool Disabled { get; set; }
 
 		///<title>用户</title>
 		/// <summary>

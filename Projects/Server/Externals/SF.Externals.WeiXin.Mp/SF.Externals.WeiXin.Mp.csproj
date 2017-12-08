@@ -19,10 +19,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Common\SF.Common.Media\SF.Common.Media.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Common\SF.Common.TextMessages\SF.Common.TextMessages.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Caching\SF.Sys.Caching.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Settings\SF.Sys.Settings.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Threading\SF.Sys.Threading.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.TimeServices\SF.Sys.TimeServices.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.ComponentModel.Annotations">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\system.componentmodel.annotations\4.4.0\ref\netstandard2.0\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

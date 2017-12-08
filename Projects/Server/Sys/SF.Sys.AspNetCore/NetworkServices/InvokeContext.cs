@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Primitives;
 using SF.Sys.NetworkService;
+using System.Net;
 
 namespace SF.Sys.AspNetCore.NetworkServices
 {
@@ -177,6 +178,30 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			}
 		}
 
+		string IInvokeRequest.GetCookie(string key)
+		{
+			return Context.Request.Cookies.TryGetValue(key, out var re) ? re : null;
+		}
+
+		void IInvokeResponse.SetCookie(Cookie Cookie)
+		{
+			if (Cookie == null)
+				throw new ArgumentNullException();
+			var options = new CookieOptions
+			{
+				Domain = Cookie.Domain,
+				Expires = Cookie.Expires,
+				HttpOnly = Cookie.HttpOnly,
+				Path = Cookie.Path,
+				SameSite = SameSiteMode.Lax,
+				Secure = Cookie.Secure
+			};
+			if(Cookie.Value==null)
+				Context.Response.Cookies.Delete(Cookie.Name, options);
+			else
+				Context.Response.Cookies.Append(Cookie.Name, Cookie.Value, options);
+		}
+		
 	}
 
 

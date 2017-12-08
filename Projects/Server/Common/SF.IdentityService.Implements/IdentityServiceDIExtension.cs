@@ -55,7 +55,7 @@ namespace SF.Sys.Services
 			sc.AddManagedScoped<IUserCredentialProvider, LocalUserCredentialProvider>();
 			sc.AddManagedScoped<IUserCredentialStorage, UserCredentialStorage>();
 			sc.AddTransient<IUserStorage>(sp => sp.Resolve<IUserManager>());
-			sc.AddTransient<IUserProfileService, UserProfileService>();
+			sc.AddSingleton<IUserProfileService, UserProfileService>();
 			//sc.GenerateEntityManager("DocumentCategory");
 			//sc.GenerateEntityManager("Document");
 
@@ -154,16 +154,17 @@ namespace SF.Sys.Services
 			//初始化默认申明类型
 			var ClaimTypeManager = ServiceProvider.Resolve<IClaimTypeManager>();
 			var predefinedClaimTypes = new[] {
-				("acc","本地账号"),
-				("sub","本地ID"),
-				("phone","电话"),
-				("address","地址"),
-				("name","姓名"),
-				("icon","图标"),
-				("image","头像"),
-				("wx.open","微信开放平台"),
-				("wx.mp","微信公众号"),
-				("wx.uid","微信统一ID")
+				(PredefinedClaimTypes.LocalAccount,"本地账号"),
+				(PredefinedClaimTypes.Subject,"本地ID"),
+				(PredefinedClaimTypes.Phone,"电话"),
+				(PredefinedClaimTypes.Address,"地址"),
+				(PredefinedClaimTypes.EMail,"电子邮件"),
+				(PredefinedClaimTypes.Name,"姓名"),
+				(PredefinedClaimTypes.Icon,"图标"),
+				(PredefinedClaimTypes.Image,"头像"),
+				(PredefinedClaimTypes.WeiXinOpenPlatformId,"微信开放平台"),
+				(PredefinedClaimTypes.WeiXinMPId,"微信公众号"),
+				(PredefinedClaimTypes.WeiXinUnionId,"微信统一ID")
 			};
 			foreach (var ct in predefinedClaimTypes)
 			{

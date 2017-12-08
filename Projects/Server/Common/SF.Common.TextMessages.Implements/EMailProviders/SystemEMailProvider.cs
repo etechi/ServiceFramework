@@ -36,7 +36,7 @@ namespace SF.Common.TextMessages.EMailProviders
 
 		public async Task<string> TargetResolve(long TargetId)
 		{
-			var re=await UserPropertyResolver.Value.GetClaims(TargetId, new[] { "email" },null);
+			var re=await UserPropertyResolver.Value.GetClaims(TargetId, new[] { PredefinedClaimTypes.EMail },null);
 			return re.FirstOrDefault()?.Value;
 
 		}
@@ -44,7 +44,7 @@ namespace SF.Common.TextMessages.EMailProviders
 		public async Task<string> Send(MsgSendArgument Argument)
 		{
 			if (Setting.Disabled)
-				throw new ArgumentException("禁止发送");
+				return "禁止发送";
 
 			var id = Guid.NewGuid().ToString();
 			using (var cli = new System.Net.Mail.SmtpClient(Setting.SMTPServerAddress, Setting.SMTPServerPort))

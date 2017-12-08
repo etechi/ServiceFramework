@@ -1,37 +1,37 @@
-﻿using ServiceProtocol.Biz.Media;
+﻿using SF.Common.Media;
+using SF.Sys;
+using SF.Sys.Settings;
+using SF.Sys.TimeServices;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SF.Externals.WeiXin.Mp.Core
 {
 
-    public class WeiXinClient : IWeiXinClient
+	public class WeiXinClient : IWeiXinClient
     {
         IAccessTokenManager AccessTokenManager { get; }
         WeiXinMpSetting Setting { get; }
-        Lazy<Times.ITimeService> TimeService { get; }
+        Lazy<ITimeService> TimeService { get; }
         Lazy<IMediaManager> MediaManager { get; }
         public WeiXinClient(
             IAccessTokenManager AccessTokenManager, 
-            WeiXinMpSetting Setting, 
-            Lazy<Times.ITimeService> TimeService,
+            ISettingService<WeiXinMpSetting> Setting, 
+            Lazy<ITimeService> TimeService,
             Lazy<IMediaManager> MediaManager
             )
         {
             this.MediaManager = MediaManager;
             this.AccessTokenManager = AccessTokenManager;
-            this.Setting = Setting;
+            this.Setting = Setting.Value;
             this.TimeService = TimeService;
         }
         public async Task<string> RequestString(string uri, HttpContent Content)
         {
             var access_token = await AccessTokenManager.GetAccessToken();
             var u = new Uri(new Uri(Setting.ApiUriBase), uri)
-                .WithQueryString(Tuple.Create("access_token", access_token));
+                .WithQueryString(("access_token", access_token));
             if (Content == null)
                 return await u.GetString();
             else
@@ -54,13 +54,13 @@ namespace SF.Externals.WeiXin.Mp.Core
                 timestamp = timestamp
             };
         }
-        public async Task<string> GetMediaId(string serverId)
+        public async Task<string> SaveAndGetMediaId(string serverId)
         {
             var access_token = await AccessTokenManager.GetAccessToken();
             var u = new Uri(new Uri(Setting.ApiUriBase), "media/get")
                 .WithQueryString(
-                    Tuple.Create("access_token", access_token),
-                    Tuple.Create("media_id",serverId)
+                    ("access_token", access_token),
+                    ("media_id",serverId)
                 );
             var bytes = await u.GetBytes();
             var mm = new MediaMeta
@@ -69,7 +69,7 @@ namespace SF.Externals.WeiXin.Mp.Core
                 Name = "",
                 Type = "ms"
             };
-            var mc = new ByteArrayMediaContent
+            var mc = new SF.Sys.ByteArrayContent
             {
                 Data = bytes
             };

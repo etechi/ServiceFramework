@@ -24,6 +24,13 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Auth
 {
+	public enum SexType
+	{
+		Unknown,
+		Male,
+		Female
+	}
+
 	/// <summary>
 	/// 身份标识
 	/// </summary>

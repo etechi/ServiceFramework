@@ -24,10 +24,8 @@ namespace SF.Sys
 {
 	public static class UriExtension
 	{
-        public static Uri WithQueryString(this Uri uri, params Tuple<string, string>[] args) =>
-            uri.WithQueryString(args.Select(a => new KeyValuePair<string, string>(a.Item1, a.Item2)).ToArray());
-
-        public static Uri WithQueryString<T>(this Uri uri, params KeyValuePair<string,T>[] args)
+        
+        public static Uri WithQueryString<T>(this Uri uri, params (string key, T value)[] args)
 		{
 			var qs = EncodeQueryString<T>(args);
 			var b = new UriBuilder(uri);
@@ -40,10 +38,11 @@ namespace SF.Sys
 			b.Fragment = fragment;
 			return b.Uri;
 		}
-		public static IEnumerable<KeyValuePair<string,string>> ParseQuery(this Uri uri)
+		public static IEnumerable<(string key, string value)> ParseQuery(this Uri uri)
 		{
 			var q = uri.Query;
-			if (string.IsNullOrWhiteSpace(q)) return Enumerable.Empty<KeyValuePair<string, string>>();
+			if (string.IsNullOrWhiteSpace(q))
+				return Enumerable.Empty<(string key, string value)>();
 			var offset = q[0] == '?' ? 1 : 0;
 			return DecodeQueryString(q, offset);
 		}
@@ -233,7 +232,7 @@ namespace SF.Sys
             return ValidateString(urlDecoder.GetString(), false);
         }
 
-        public static IEnumerable<KeyValuePair<string, string>> DecodeQueryString(string str, int offset = 0, int size = -1,Encoding Encoding=null)
+        public static IEnumerable<(string key, string value)> DecodeQueryString(string str, int offset = 0, int size = -1,Encoding Encoding=null)
 		{
 			if (str == null)
 				yield break;
@@ -255,11 +254,11 @@ namespace SF.Sys
 				var value = vs == -1 ? null : str.Substring(vs + 1, len - (vs + 1 - i));
                 var keyDecoded = Uri.UnescapeDataString(key);
                 if (value == null)
-                    yield return new KeyValuePair<string, string>(keyDecoded, string.Empty);
+                    yield return (keyDecoded, string.Empty);
                 else if (Encoding == null || Encoding == Encoding.UTF8)
-                    yield return new KeyValuePair<string, string>(keyDecoded, Uri.UnescapeDataString(value));
+                    yield return (keyDecoded, Uri.UnescapeDataString(value));
                 else
-                    yield return new KeyValuePair<string, string>(keyDecoded, UrlDecode(value, Encoding));
+                    yield return (keyDecoded, UrlDecode(value, Encoding));
 				if (ve == -1)
 					break;
 				i = ve + 1;
@@ -370,17 +369,10 @@ namespace SF.Sys
 			//		sb.AppendFormat("%{0:x02}", c);
 			//}
 		}
-        public static string EncodeQueryString(
-            params Tuple<string,string>[] items
-            )
-        {
-            return EncodeQueryString<string>(
-                items.Select(it => new KeyValuePair<string, string>(it.Item1, it.Item2))
-                );
-        }
+        
 
         public static string EncodeQueryString<T>(
-			IEnumerable<KeyValuePair<string, T>> pairs,
+			IEnumerable<(string key, T value)> pairs,
 			Encoding encoding = null
 			)
 		{
@@ -391,11 +383,11 @@ namespace SF.Sys
 				if (first) first = false;
 				else sb.Append('&');
 
-				EscapeDataString(sb, de.Key, encoding);
+				EscapeDataString(sb, de.key, encoding);
 				sb.Append('=');
-				if (de.Value == null)
+				if (de.value==null)
 					continue;
-				var v = de.Value.ToString();
+				var v = de.value.ToString();
 				if (v.Length > 0)
 					EscapeDataString(sb, v, encoding);
 			}
@@ -448,7 +440,7 @@ namespace SF.Sys
                 }
             }
         }
-        public static Task<string> PostAndReturnString(this Uri uri,params Tuple<string,string>[] args)
+        public static Task<string> PostAndReturnString(this Uri uri,params (string key,string value)[] args)
         {
             return PostAndReturnString(uri, new StringContent(
                          UriExtension.EncodeQueryString(args),

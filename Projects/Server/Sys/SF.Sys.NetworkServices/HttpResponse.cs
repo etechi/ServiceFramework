@@ -31,6 +31,12 @@ namespace SF.Sys.NetworkService
 			new HttpResponseMessage(System.Net.HttpStatusCode.NotModified);
 		public static HttpResponseMessage NotFound=>
 			new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
+		public static HttpResponseMessage Redirect(Uri Uri)
+		{
+			var m = new HttpResponseMessage(System.Net.HttpStatusCode.Redirect);
+			m.Headers.Location = Uri;
+			return m;
+		}
 
 		public static HttpResponseMessage ByteArray(byte[] Bytes, string mediaType = "application/octet", System.Net.HttpStatusCode Status = System.Net.HttpStatusCode.OK)
 		{

@@ -21,6 +21,11 @@ using System.Threading.Tasks;
 
 namespace SF.Sys
 {
+	public class ExternalServiceException : Exception
+	{
+		public ExternalServiceException(string message) : base(message) { }
+		public ExternalServiceException(string message,Exception innerException) : base(message, innerException) { }
+	}
 	public static class ExceptionExtension
 	{
 		public static Exception GetRootException(this Exception e)

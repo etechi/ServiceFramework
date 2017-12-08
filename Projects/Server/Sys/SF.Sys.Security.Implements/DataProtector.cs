@@ -37,7 +37,9 @@ namespace SF.Sys.Security
 			if (exp < Now)
 				throw new PublicArgumentException("令牌已超时");
 			var dataDecrypted = Data.Des3Decrypt(GlobalPassword, Hash.Sha1SignedDataOffset + 4);
-			var pwd = Name.UTF8Bytes().Concat(await LoadPassword(dataDecrypted,0));
+			var pwd = Name.UTF8Bytes();
+			if(LoadPassword !=null)
+				pwd=pwd.Concat(await LoadPassword(dataDecrypted,0));
 			if (Data.Unsign(pwd,Hash.Sha1()) == null)
 				throw new PublicArgumentException("数据错误");
 			return dataDecrypted;
@@ -45,7 +47,9 @@ namespace SF.Sys.Security
 
 		public Task<byte[]> Encrypt(string Name, byte[] Data, DateTime Expires, byte[] Password)
 		{
-			var pwd = Name.UTF8Bytes().Concat(Password);
+			var pwd = Name.UTF8Bytes();
+			if (Password != null)
+				pwd = pwd.Concat(Password);
 			var exp = BitConverter.GetBytes((int)Expires.Subtract(DataOffset).TotalMinutes);
 			var buf= new[] { exp, Data.Des3Encrypt(GlobalPassword) };
 			return Task.FromResult(buf.Sign(pwd,Hash.Sha1()));

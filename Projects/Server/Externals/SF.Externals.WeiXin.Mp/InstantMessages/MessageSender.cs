@@ -1,8 +1,11 @@
 ﻿using SF.Common.TextMessages;
 using SF.Sys;
+using SF.Sys.Auth;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+
 namespace SF.Externals.WeiXin.Mp.InstantMessages
 {
 	class RequestTextContent
@@ -21,20 +24,26 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
         public string errmsg { get; set; }
         public long msgid { get; set; }
     }
-    public class MessageSender : ITextMessageService
+	/// <summary>
+	/// 微信公共号用户消息服务
+	/// </summary>
+    public class MessageSender : IMsgProvider
 	{
         public IWeiXinClient Client { get; }
+		public IUserProfileService UserProfileService { get; }
 
-        public MessageSender(IWeiXinClient Client)
+		public MessageSender(IWeiXinClient Client, IUserProfileService UserProfileService)
         {
-            this.Client = Client;
+			this.UserProfileService = UserProfileService;
+
+			this.Client = Client;
         }
         
-		public Task<long> Send(long? targetId, string target, Message message)
+		public async Task<string> Send(MsgSendArgument Arg)
 		{
 			var req = new Request
 			{
-				touser = target,
+				touser = Arg.Target,
 			};
 			//switch (message.Type)
 			//{
@@ -42,7 +51,7 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
 			req.msgtype = "text";
 			req.text = new RequestTextContent
 			{
-				content = message.Body
+				content = Arg.Content
 			};
 			//        break;
 			//    //case MessageType.Image:
@@ -50,7 +59,8 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
 			//        throw new NotSupportedException();
 
 			//}
-			var re = await TaskUtils.Retry(() => Client.Json(
+			var re = await TaskUtils.Retry(
+				() => Client.Json(
 				"message/custom/send",
 				req
 				));
@@ -58,6 +68,13 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
 			if (resp.errcode != 0)
 				throw new Exception(resp.errcode + ":" + resp.errmsg);
 			return resp.msgid.ToString();
+		}
+
+		public async Task<string> TargetResolve(long TargetId)
+		{
+			var re = await UserProfileService.GetClaims(TargetId, new[] { PredefinedClaimTypes.WeiXinMPId },null);
+			return re.FirstOrDefault()?.Value;
+
 		}
 	}
 }

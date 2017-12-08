@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System.Collections.Generic;
+using System.Net;
 
 namespace SF.Sys.NetworkService
 {
@@ -22,11 +23,13 @@ namespace SF.Sys.NetworkService
 		string Method { get; }
 		string Uri { get; }
 		IReadOnlyDictionary<string,IEnumerable<string>> Headers { get; }
+		string GetCookie(string Key);
 	}
 	public interface IInvokeResponse
 	{
 		string Status { get; set; }
 		IDictionary<string, IEnumerable<string>> Headers { get; }
+		void SetCookie(Cookie Cookie);
 	}
 	public interface IInvokeContext
 	{

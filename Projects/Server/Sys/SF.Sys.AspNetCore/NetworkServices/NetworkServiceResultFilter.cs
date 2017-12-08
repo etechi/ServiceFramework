@@ -116,7 +116,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			if(res.Content!=null)
 				context.Result=MapHttpContent(res.Content);
 		}
-		
+
 		public void OnResultExecuting(ResultExecutingContext context)
 		{
 			var or = context.Result as ObjectResult;

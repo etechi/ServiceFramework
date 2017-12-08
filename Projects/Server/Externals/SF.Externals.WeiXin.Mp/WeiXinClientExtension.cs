@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace SF.Externals.WeiXin.Mp
 {
-    public static class WeiXinClient
+    public static class WeiXinClientExtension
     {
         public static Task<string> Json<T>(this IWeiXinClient client,string uri, T data)
         {
             return client.RequestString(
                 uri, 
                 new StringContent(
-                    Json.Encode(data), 
+                    SF.Sys.Json.Stringify(data), 
                     Encoding.UTF8, 
                     "application/json"
                     )

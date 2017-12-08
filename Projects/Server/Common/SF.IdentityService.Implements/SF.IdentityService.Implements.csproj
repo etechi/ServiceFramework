@@ -35,6 +35,7 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Extensions\SF.Sys.Extensions.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.MenuServices\SF.Sys.MenuServices.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Security\SF.Sys.Security.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Settings\SF.Sys.Settings.csproj" />
     <ProjectReference Include="..\SF.Common.PhoneNumberValidator\SF.Common.PhoneNumberValidator.csproj" />
     <ProjectReference Include="..\SF.Common.TextMessages\SF.Common.TextMessages.csproj" />
     <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />

@@ -19,6 +19,6 @@ namespace SF.Externals.WeiXin.Mp
     {
         Task<string> RequestString(string uri, HttpContent Content);
         Task<JsApiSignatureResult> JsApiSignature(string uri);
-        Task<string> GetMediaId(string serverId);
+        Task<string> SaveAndGetMediaId(string serverId);
     }
 }
