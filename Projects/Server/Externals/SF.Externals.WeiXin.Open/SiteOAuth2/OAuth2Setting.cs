@@ -1,10 +1,4 @@
-﻿using ServiceProtocol.Annotations;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SF.Externals.WeiXin.Open.SiteOAuth2
 {
@@ -17,12 +11,12 @@ namespace SF.Externals.WeiXin.Open.SiteOAuth2
 		/// <summary>
 		/// 网站应用APPID
 		/// </summary>
-		public string AppId { get; set; } = "wxcec91c6d06d685aa";
+		public string AppId { get; set; }
 
 		/// <summary>
 		/// 网站应用APPSecret
 		/// </summary>
-		public string AppSecret { get; set; } = "7b5ddbffd5c73d719c0dc29d507c0667";
+		public string AppSecret { get; set; }
 
 		///<title>入口页面地址</title>
 		/// <summary>

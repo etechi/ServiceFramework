@@ -1,5 +1,6 @@
 ﻿using SF.Common.TextMessages;
 using SF.Sys;
+using SF.Sys.Auth;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,12 +34,13 @@ namespace SF.Externals.WeiXin.Mp.TextMessages
     {
         public TemplateMessageSetting Setting { get; }
         public IWeiXinClient Client { get; }
-
-        public MsgProvider(TemplateMessageSetting Setting, IWeiXinClient Client)
+		public IUserProfileService UserProfileService { get; }
+		public MsgProvider(TemplateMessageSetting Setting, IWeiXinClient Client, IUserProfileService UserProfileService)
         {
             this.Setting = Setting;
             this.Client = Client;
-        }
+			this.UserProfileService = UserProfileService;
+		}
         public async Task<string> Send(MsgSendArgument message)
         {
 			if (Setting.Disabled)

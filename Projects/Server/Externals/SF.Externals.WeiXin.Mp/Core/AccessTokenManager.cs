@@ -24,7 +24,6 @@ namespace SF.Externals.WeiXin.Mp.Core
 		WeiXinMpSetting Setting { get; }
 
         public AccessTokenManager(
-			ILocalCache<AccessToken> Cache,
             ITimeService TimeService,
 			WeiXinMpSetting Setting
             )

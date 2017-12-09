@@ -46,7 +46,7 @@ namespace SF.Auth.IdentityServices.Internals
 		/// 访问源
 		/// </summary>
 		[Required]
-		public IUserAgent AccessSource { get; set; }
+		public IUserAgent UserAgent { get; set; }
 
 		/// <summary>
 		/// 登录凭证

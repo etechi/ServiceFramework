@@ -52,6 +52,27 @@ namespace SF.Sys.Auth
 		/// 头像
 		/// </summary>
 		public const string Image = "image";
+
+		/// <summary>
+		/// 国家
+		/// </summary>
+		public const string Country = "country";
+
+		/// <summary>
+		/// 省份
+		/// </summary>
+		public const string Province = "province";
+
+		/// <summary>
+		/// 城市
+		/// </summary>
+		public const string City= "city";
+
+		/// <summary>
+		/// 性别
+		/// </summary>
+		public const string Sex = "sex";
+
 		/// <summary>
 		/// 微信开放平台ID
 		/// </summary>

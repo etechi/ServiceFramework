@@ -46,6 +46,8 @@ namespace SF.Auth.IdentityServices
 		public NamedServiceResolver<IUserCredentialProvider> CredentialProviderResolver { get; set; }
 		public string DefaultIdentityCredentialProvider { get; set; }
 		public IEnumerable<IUserCredentialProvider> IdentityCredentialProviders { get; set; }
+		public Lazy<IAccessTokenGenerator> AccessTokenGenerator { get; set; }
+
 	}
 
 }

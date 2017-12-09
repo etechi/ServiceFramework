@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Auth;
 using SF.Sys.NetworkService;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -47,6 +48,10 @@ namespace SF.Auth.IdentityServices
 		/// </summary>
 		public bool ReturnToken { get; set; }
 		
+		/// <summary>
+		/// 客户端ID
+		/// </summary>
+		public string ClientId { get; set; }
 	}
 	
 
@@ -90,6 +95,12 @@ namespace SF.Auth.IdentityServices
 		public string NewPassword { get; set; }
 
 		/// <summary>
+		/// 客户端ID
+		/// </summary>
+		public string ClientId { get; set; }
+
+		
+		/// <summary>
 		/// 是否返回身份令牌
 		/// </summary>
 		public bool ReturnToken { get; set; }
@@ -130,6 +141,10 @@ namespace SF.Auth.IdentityServices
 		/// 是否返回身份令牌
 		/// </summary>
 		public bool ReturnToken { get; set; }
+		/// <summary>
+		/// 客户端ID
+		/// </summary>
+		public string ClientId { get; set; }
 
 		/// <summary>
 		/// 过期时间
@@ -173,6 +188,10 @@ namespace SF.Auth.IdentityServices
 		/// 新密码
 		/// </summary>
 		public string NewPassword { get; set; }
+		/// <summary>
+		/// 客户端ID
+		/// </summary>
+		public string ClientId { get; set; }
 
 		/// <summary>
 		/// 是否返回身份令牌
@@ -180,7 +199,15 @@ namespace SF.Auth.IdentityServices
 		public bool ReturnToken { get; set; }
 	}
 
-
+	public interface IAuthSessionService
+	{
+		Task Signin(long UserId,string ClientId,int? Expires);
+		Task Signout();
+	}
+	public interface IAccessTokenGenerator
+	{
+		Task<string> Generate(long UserId, string ClientId, string[] Scopes,DateTime? Expires);
+	}
 	/// <summary>
 	/// 用户服务
 	/// </summary>

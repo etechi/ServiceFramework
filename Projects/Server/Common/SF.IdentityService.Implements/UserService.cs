@@ -25,12 +25,12 @@ namespace SF.Auth.IdentityServices
 {
 	public class UserService :
 		IUserService,
+		IAuthSessionService,
 		IManagedServiceWithId
 	{
 		UserServiceSetting Setting { get; }
 
 		public long? ServiceInstanceId => Setting.ServiceInstanceDescriptor.Value.InstanceId;
-
 		public UserService(UserServiceSetting Setting)
 		{
 			this.Setting = Setting;
@@ -136,7 +136,8 @@ namespace SF.Auth.IdentityServices
 			return await SetOrReturnAccessToken(
 				vc.UserId.Value,
 				null,
-				Arg.ReturnToken
+				Arg.ReturnToken,
+				Arg.ClientId
 				);
 		}
 
@@ -175,12 +176,20 @@ namespace SF.Auth.IdentityServices
 			return await SetOrReturnAccessToken(
 				uid,
 				null,
-				Arg.ReturnToken
+				Arg.ReturnToken,
+				Arg.ClientId
 				);
 		}
 		protected DateTime? GetExpires(int? Expires) =>
 			Expires.HasValue ? (DateTime?)Setting.TimeService.Value.Now.AddSeconds(Expires.Value) : null;
 
+		public async Task Signin(long UserId, string ClientId,int? Expires)
+		{
+			await Setting.ClientService.Value.SignInAsync(
+				await CreatePrincipal(UserId),
+				Expires.HasValue ? (DateTime?)Setting.TimeService.Value.Now.AddSeconds(Expires.Value) : null
+				);
+		}
 		public async Task<string> Signin(SigninArgument Arg)
 		{
 			if (string.IsNullOrWhiteSpace(Arg.Ident))
@@ -227,18 +236,16 @@ namespace SF.Auth.IdentityServices
 			//	ui.UserId,
 			//	Setting.AccessInfo.Value.Value
 			//	);
-			return await SetOrReturnAccessToken(ui.UserId, Arg.Expires, Arg.ReturnToken);
+			return await SetOrReturnAccessToken(ui.UserId, Arg.Expires, Arg.ReturnToken,Arg.ClientId);
 		}
 
-		async Task<string> SetOrReturnAccessToken(long UserId,int? Expires,bool ReturnToken)
+		async Task<string> SetOrReturnAccessToken(long UserId,int? Expires,bool ReturnToken,string ClientId)
 		{
 			var DateExpires = GetExpires(Expires);
 			if (ReturnToken)
-				return await CreateAccessToken(UserId, DateExpires);
-			await Setting.ClientService.Value.SignInAsync(
-				await CreatePrincipal(UserId),
-				Expires.HasValue?(DateTime?)Setting.TimeService.Value.Now.AddSeconds(Expires.Value):null
-				);
+				return await CreateAccessToken(UserId, ClientId, DateExpires);
+
+			await Signin(UserId,ClientId,Expires);
 			return null;
 		}
 		Task<ClaimsPrincipal> CreatePrincipal(long Id)
@@ -262,13 +269,19 @@ namespace SF.Auth.IdentityServices
 				//);
 
 		}
-		public Task<string> CreateAccessToken(long Id,DateTime? Expires)
+		public async Task<string> CreateAccessToken(long Id,string ClientId,DateTime? Expires)
 		{
-			//return Setting.AccessTokenHandler.Value.Create(
+			return await Setting.AccessTokenGenerator.Value.Generate(
+				Id,
+				ClientId,
+				null,
+				Expires
+				);
 			//	await CreatePrincipal(Id),
 			//	Expires
 			//	);
-			return Task.FromResult((string)null);
+			
+			//return Task.FromResult((string)null);
 		}
 		public Task Signout()
 		{
@@ -339,7 +352,7 @@ namespace SF.Auth.IdentityServices
 			var uid = await Setting.IdentStorage.Value.Create(
 				new UserCreateArgument
 				{
-					AccessSource = client.UserAgent,
+					UserAgent = client.UserAgent,
 					PasswordHash = passwordHash,
 					SecurityStamp = stamp,
 					CredentialValue=Arg.Credential,
@@ -352,7 +365,7 @@ namespace SF.Auth.IdentityServices
 						Name = Arg.User.Name
 					}
 				});
-			return await SetOrReturnAccessToken(uid, Arg.Expires, Arg.ReturnToken);
+			return await SetOrReturnAccessToken(uid, Arg.Expires, Arg.ReturnToken,Arg.ClientId);
 		}
 
 		public async Task Update(User Identity)
@@ -367,6 +380,7 @@ namespace SF.Auth.IdentityServices
 
 			await Setting.IdentStorage.Value.UpdateDescription(Identity);
 		}
+
 	}
 
 }

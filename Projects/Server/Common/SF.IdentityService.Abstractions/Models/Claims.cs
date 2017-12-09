@@ -37,6 +37,12 @@ namespace SF.Auth.IdentityServices.Models
 	/// </summary>
 	public class ClaimValue
 	{
+		public ClaimValue(string TypeId,string Value)
+		{
+			this.TypeId = TypeId;
+			this.Value = Value;
+		}
+		public ClaimValue() { }
 		/// <summary>
 		/// 类型ID
 		/// </summary>

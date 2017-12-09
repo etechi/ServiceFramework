@@ -50,7 +50,7 @@ namespace SF.Sys.Services
 				);
 
 			sc.AddManagedScoped<IUserService, UserService>();
-
+			sc.AddScoped(sp => (IAuthSessionService)sp.Resolve<IUserService>());
 			sc.AddManagedScoped<IUserCredentialProvider, PhoneNumberUserCredentialProvider>();
 			sc.AddManagedScoped<IUserCredentialProvider, LocalUserCredentialProvider>();
 			sc.AddManagedScoped<IUserCredentialStorage, UserCredentialStorage>();
@@ -162,6 +162,11 @@ namespace SF.Sys.Services
 				(PredefinedClaimTypes.Name,"姓名"),
 				(PredefinedClaimTypes.Icon,"图标"),
 				(PredefinedClaimTypes.Image,"头像"),
+				(PredefinedClaimTypes.Country,"国家"),
+				(PredefinedClaimTypes.Province,"省份"),
+				(PredefinedClaimTypes.City,"城市"),
+				(PredefinedClaimTypes.Sex,"性别"),
+
 				(PredefinedClaimTypes.WeiXinOpenPlatformId,"微信开放平台"),
 				(PredefinedClaimTypes.WeiXinMPId,"微信公众号"),
 				(PredefinedClaimTypes.WeiXinUnionId,"微信统一ID")

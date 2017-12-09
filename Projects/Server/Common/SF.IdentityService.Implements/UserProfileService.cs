@@ -35,7 +35,7 @@ namespace SF.Auth.IdentityServices
 		{
 			this.UserScope = UserScope;
 		}
-		public async Task<Claim[]> GetClaims(long id, string[]  ClaimTypes,IEnumerable<Claim> ExtraClaims)
+		public async Task<Claim[]> GetClaims(long id, string[] ClaimTypes,IEnumerable<Claim> ExtraClaims)
 		{
 			return await UserScope.Use(async Users =>
 			{

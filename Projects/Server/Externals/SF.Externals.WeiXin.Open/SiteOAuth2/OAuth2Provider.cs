@@ -1,8 +1,10 @@
 ﻿using SF.Auth.IdentityServices.Externals;
+using SF.Auth.IdentityServices.Models;
 using SF.Sys;
 using SF.Sys.Auth;
 using SF.Sys.Collections.Generic;
 using SF.Sys.Logging;
+using SF.Sys.NetworkService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,15 +26,18 @@ namespace SF.Externals.WeiXin.Open.SiteOAuth2
 	public class OAuth2Provider : IOAuthAuthorizationProvider
 	{
 		public OAuth2Setting Setting { get; }
-        public ILogger Logger { get; }
+		public ILogger Logger { get; }
+		public IInvokeContext InvokeContext { get; }
 
-        public OAuth2Provider(OAuth2Setting Setting, ILogger<OAuth2Provider> Logger)
-        {
+		public OAuth2Provider(OAuth2Setting Setting, ILogger<OAuth2Provider> Logger, IInvokeContext InvokeContext)
+		{
 			this.Setting = Setting;
 			this.Logger = Logger;
-        }
-		
-		public Task<HttpResponseMessage> StartAuthorization(string State,string ClientType,string Callback)
+			this.InvokeContext = InvokeContext;
+
+		}
+
+		public Task<HttpResponseMessage> StartPageAuthorization(string State, string Callback)
 		{
 			var uri = new Uri(Setting.AuthorizeUri).WithQueryString(
 				("appid", Setting.AppId),
@@ -46,27 +51,19 @@ namespace SF.Externals.WeiXin.Open.SiteOAuth2
 			return Task.FromResult(msg);
 		}
 
-		
-
-		public async Task<ProcessCallbackResult> ProcessCallback(HttpRequestMessage Request)
+		async Task<ProcessCallbackResult> GetCallResult(string code,Uri reqUri,string state)
 		{
-			var args = Request.RequestUri.ParseQuery().ToDictionary(p=>p.key,p=>p.value);
-			var code = args.Get("code");
-            if (string.IsNullOrWhiteSpace(code))
-                return null;
-
-			var state = args.Get("state");
 			var uri = new Uri(Setting.AccessTokenUri).WithQueryString(
-				("appid", Setting.AppId),
-				("secret", Setting.AppSecret),
-				("code", code),
-				("grant_type", "authorization_code")
-				);
+			("appid", Setting.AppId),
+			("secret", Setting.AppSecret),
+			("code", code),
+			("grant_type", "authorization_code")
+			);
 			var re = await uri.GetString();
 			if (string.IsNullOrWhiteSpace(re))
 				throw new ExternalServiceException(
 					$"微信授权AccessToken没有返回数据，" +
-					$"回调参数:{Request.RequestUri }，"+
+					$"回调参数:{reqUri }，" +
 					$"请求:{uri}");
 
 			AccessToken token;
@@ -78,22 +75,40 @@ namespace SF.Externals.WeiXin.Open.SiteOAuth2
 			{
 				throw new ExternalServiceException(
 					$"微信授权AccessToken返回的数据无法解析，" +
-					$"回调参数:{Request.RequestUri}，"+
+					$"回调参数:{reqUri}，" +
 					$"请求:{uri}, 应答：{re}"
 					);
 			}
-			if(string.IsNullOrEmpty(token.access_token) ||string.IsNullOrEmpty(token.openid))
+			if (string.IsNullOrEmpty(token.access_token) || string.IsNullOrEmpty(token.openid))
 				throw new ExternalServiceException(
 					$"微信授权AccessToken返回的数据中没有access_token或openid，" +
-					$"回调参数:{Request.RequestUri }，"+
+					$"回调参数:{reqUri }，" +
 					$"请求:{uri}, 应答：{re}"
 					);
 
-			return new ProcessCallbackResult {
-				ExtIdent= token.openid,
+			return new ProcessCallbackResult
+			{
+				Credentials = new[]
+				{
+					new ClaimValue(PredefinedClaimTypes.WeiXinUnionId,token.unionid),
+					new ClaimValue(PredefinedClaimTypes.WeiXinOpenPlatformId,token.openid),
+				}.Where(c => !c.Value.IsNullOrEmpty()).ToArray(),
 				Token = Json.Stringify(token),
 				State = state
 			};
+		}
+
+		public async Task<ProcessCallbackResult> ProcessPageCallback()
+		{
+			var reqUri = new Uri(InvokeContext.Request.Uri);
+			var args = reqUri.ParseQuery().ToDictionary(p => p.key, p => p.value);
+			var code = args.Get("code");
+			if (string.IsNullOrWhiteSpace(code))
+				return null;
+
+			var state = args.Get("state");
+
+			return await GetCallResult(code, reqUri, state);
 
 		}
 
@@ -167,8 +182,8 @@ namespace SF.Externals.WeiXin.Open.SiteOAuth2
 					$"令牌:{Token}，" +
 					$"请求:{uri}");
 
-            Logger.Info($"获取微信用户信息:openid:{tokens.openid} access_token:{tokens.access_token} {re}");
-            WeichatUserInfo ui;
+			Logger.Info($"获取微信用户信息:openid:{tokens.openid} access_token:{tokens.access_token} {re}");
+			WeichatUserInfo ui;
 			try
 			{
 				ui = Json.Parse<WeichatUserInfo>(re);
@@ -187,22 +202,28 @@ namespace SF.Externals.WeiXin.Open.SiteOAuth2
 					$"令牌:{Token}，" +
 					$"请求:{uri}, 应答：{re}"
 					);
-            return new UserInfo
-            {
-                Ident = ui.unionid ?? ui.openid,
-                ExtIdent = ui.openid,
-                Country = ui.country,
-                Province = ui.province,
-                City = ui.city,
-                ExtraData = null,
-                IconUrl = ui.headimgurl,
-                NickName = ui.nickname,
-                Sex = ui.sex == "1" ? SexType.Male : ui.sex == "2" ? SexType.Female : SexType.Unknown
-            };
+			return new UserInfo
+			{
+				Claims = new[]
+				{
+					new ClaimValue(PredefinedClaimTypes.WeiXinUnionId, ui.unionid),
+					new ClaimValue(PredefinedClaimTypes.WeiXinMPId, ui.openid),
+					new ClaimValue(PredefinedClaimTypes.Name,ui.nickname),
+					new ClaimValue(PredefinedClaimTypes.Country,ui.country),
+					new ClaimValue(PredefinedClaimTypes.Province,ui.province),
+					new ClaimValue(PredefinedClaimTypes.Icon,ui.headimgurl),
+					new ClaimValue(PredefinedClaimTypes.Sex,(ui.sex == "1" ? SexType.Male : ui.sex == "2" ? SexType.Female : SexType.Unknown).ToString()),
 
-        }
+				}.Where(c => !c.Value.IsNullOrEmpty()).ToArray(),
+				Credentials = new[]
+				{
+					new ClaimValue(PredefinedClaimTypes.WeiXinUnionId, ui.unionid),
+					new ClaimValue(PredefinedClaimTypes.WeiXinMPId, ui.openid),
+				}.Where(c => !c.Value.IsNullOrEmpty()).ToArray()
+			};
+		}
 
-        public class ValidateAccessTokenResult
+		public class ValidateAccessTokenResult
 		{
 			public int errcode { get; set; }
 			public string errmsg { get; set; }
@@ -237,7 +258,25 @@ namespace SF.Externals.WeiXin.Open.SiteOAuth2
 			}
 			if (result.errcode == 0)
 				return null;
-			return result.errcode + ":" + (result.errmsg??"");
+			return result.errcode + ":" + (result.errmsg ?? "");
 		}
+
+		public Task<Dictionary<string,string>> StartClientAuthorization()
+		{
+			return Task.FromResult(new Dictionary<string,string>
+			{
+				{"appid",Setting.AppId },
+				{"scope ", "snsapi_userinfo" },
+			});
+		}
+
+		public async Task<ProcessCallbackResult> ProcessClientCallback(Dictionary<string, string> Argument)
+		{
+			if (!Argument.TryGetValue("code", out var code))
+				throw new ExternalServiceException($"找不到访问令牌获取码");
+			var reqUri = new Uri(InvokeContext.Request.Uri);
+			return await GetCallResult(code, reqUri, null);
+		}
+
 	}
 }

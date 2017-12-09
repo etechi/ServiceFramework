@@ -76,9 +76,10 @@ namespace SF.Auth.IdentityServices.Managers
 				LogicState = EntityLogicState.Enabled,
 				SignupExtraArgument=Arg.ExtraArgument,
 				PasswordHash = Arg.PasswordHash,
-				SecurityStamp = Arg.SecurityStamp.Base64(),
+				SecurityStamp = Arg.SecurityStamp?.Base64(),
 
 				Roles= roles,
+				Claims=Arg.ClaimValues,
 				//OwnerId = Arg.Identity.OwnerId,
 				Credentials =new List<Models.UserCredential>
 				{
@@ -152,7 +153,7 @@ namespace SF.Auth.IdentityServices.Managers
 			if (obj.SecurityStamp.IsNullOrWhiteSpace())
 			{
 				var stamp = Bytes.Random(16);
-				obj.PasswordHash = PasswordHasher.Value.Hash(obj.PasswordHash, stamp);
+				obj.PasswordHash = obj.PasswordHash==null?null: PasswordHasher.Value.Hash(obj.PasswordHash, stamp);
 				obj.SecurityStamp = stamp.Base64();
 			}
 			PrepareCredentials(obj);

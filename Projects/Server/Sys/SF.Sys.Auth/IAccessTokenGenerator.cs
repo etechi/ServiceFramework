@@ -13,49 +13,15 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.Entities;
-using SF.Sys.Entities.Annotations;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SF.Sys.Auth
 {
-	public enum SexType
+	public interface IAccessTokenGenerator
 	{
-		Unknown,
-		Male,
-		Female
-	}
-
-	/// <summary>
-	/// 身份标识
-	/// </summary>
-	[EntityObject]
-	public class User : IEntityWithId<long>
-    {
-		/// <summary>
-		/// ID
-		/// </summary>
-		[Key]
-		[ReadOnly(true)]
-		[TableVisible]
-		public long Id { get; set; }
-
-		/// <summary>
-		/// 名称
-		/// </summary>
-		[MaxLength(100)]
-		[Required]
-		[TableVisible]
-		public string Name { get; set; }
-
-		/// <summary>
-		/// 图标
-		/// </summary>
-		[MaxLength(100)]
-		public string Icon { get; set; }
+		Task<string> Generate(long UserId);
 	}
 }
 
