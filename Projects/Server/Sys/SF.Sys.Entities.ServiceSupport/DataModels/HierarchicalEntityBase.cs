@@ -105,7 +105,7 @@ namespace SF.Sys.Entities.DataModels
 	public abstract class UIContainerEntityBase<TContainer, TContainerKey, TItem, TItemKey, TItemContainerKey> :
 		UIObjectEntityBase<TContainerKey>,
 		IContainerEntity<TContainerKey, TItem, TItemContainerKey>
-		where TItem : ItemEntityBase<TItemKey, TItemContainerKey, TContainer>
+		where TItem : UIItemEntityBase<TItemKey, TItemContainerKey, TContainer>
 		where TItemKey : IEquatable<TItemKey>
 		where TContainerKey : IEquatable<TContainerKey>
 	{
@@ -115,8 +115,8 @@ namespace SF.Sys.Entities.DataModels
 	public abstract class UIContainerEntityBase<TContainer, TItem> :
 		UIContainerEntityBase<TContainer, long, TItem, long, long?>,
 		IContainerEntity<TItem>
-		where TContainer : ContainerEntityBase<TContainer, TItem>
-		where TItem : ItemEntityBase<TContainer>
+		where TContainer : UIContainerEntityBase<TContainer, TItem>
+		where TItem : UIItemEntityBase<TContainer>
 	{ }
 
 	public abstract class TreeNodeEntityBase<TNodeEntity, TTreeNodeKey, TTreeParentKey> :

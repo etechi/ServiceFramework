@@ -56,4 +56,8 @@ namespace SF.Sys.Entities
 		public virtual EntityLogicState? LogicState { get; set; }
 
 	}
+	public class ObjectQueryArgument : ObjectQueryArgument<long>
+	{
+
+	}
 }
