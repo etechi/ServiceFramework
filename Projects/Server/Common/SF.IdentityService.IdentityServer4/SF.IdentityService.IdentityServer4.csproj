@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IdentityServer4" Version="2.0.4" />
+    <PackageReference Include="IdentityServer4" Version="2.0.5" />
     <PackageReference Include="microsoft.aspnetcore" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.1" />

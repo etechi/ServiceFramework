@@ -71,6 +71,7 @@ namespace SF.Sys.Entities.DataModels
 		[Index]
 		public virtual long OwnerId { get; set; }
 
+
 		/// <summary>
 		/// 创建时间
 		/// </summary>
