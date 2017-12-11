@@ -47,21 +47,21 @@ namespace SF.Sys.NetworkService
 		}
 		
 		HashSet<string> Imported { get; } = new HashSet<string>(); 
-		bool TryImport(StringBuilder sb, string type)
+		bool TryImport(StringBuilder sb, string type,bool import)
 		{
 			if (Imported.Add(type) && Types.TryGetValue(type, out var st))
 				BuildType(st);
 
 			if (type.EndsWith("?"))
-				return TryImport(sb, type.Substring(0, type.Length - 1));
+				return TryImport(sb, type.Substring(0, type.Length - 1), import);
 
 			var i = type.IndexOf('[');
 			if (i != -1)
-				return TryImport(sb, type.Substring(0, i));
+				return TryImport(sb, type.Substring(0, i), import);
 
 			i = type.IndexOf('{');
 			if (i != -1)
-				return TryImport(sb, type.Substring(0, i));
+				return TryImport(sb, type.Substring(0, i), import);
 
 			if (IsEnumType(type))
 				return false;
@@ -94,7 +94,10 @@ namespace SF.Sys.NetworkService
 					return false;
 
 			}
-			sb.AppendLine($"#import \"{type.Replace('.', '_').Replace('+', '_')}.h\"");
+			if(import)
+				sb.AppendLine($"#import \"{type.Replace('.', '_').Replace('+', '_')}.h\"");
+			else
+				sb.AppendLine($"@class {type.Replace('.', '_').Replace('+', '_')}");
 			return true;
 		}
 		string getPropType(string type)
@@ -157,31 +160,44 @@ namespace SF.Sys.NetworkService
 					return (arg, "%@",$"[[NSString stringWithFormat:@\"%@\",{arg}] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]");
 			}
 		}
-		string resolveResult(string type,string arg)
+		(string process,string result) resolveResult(string type,string arg)
 		{
+			if (type.EndsWith("[]"))
+			{
+				var eleType = type.Substring(0, type.Length - 2);
+				var eleCode = resolveResult(eleType, "are[i]");
+				return ($@"
+	NSArray *are = (NSArray*)re;
+    NSMutableArray<{to_ios_type(eleType, true)}> *arr = [NSMutableArray new];
+    for (int i = 0; i<are.count; i++) {{
+		{eleCode.process??""}
+		[arr addObject: {eleCode.result}];
+    }}
+", "arr");
+			}
 			switch (type)
 			{
 				case "string": 
 				case "datetime": 
-				case "timespan": return "(NSString *)"+arg;
+				case "timespan": return (null,$"(NSString *){arg}");
 				case "long":
-				case "ulong": return $"[((NSNumber*){arg}) longValue]";
+				case "ulong": return (null, $"[((NSNumber*){arg}) longValue]");
 				case "int":
 				case "short":
 				case "sbyte":
 				case "uint":
 				case "ushort":
 				case "byte":
-				case "char": return $"[((NSNumber*){arg}) intValue]";
-				case "decimal": return $"[((NSNumber*){arg}) doubleValue]";
-				case "float": return $"[((NSNumber*){arg}) floatValue]";
-				case "double": return $"[((NSNumber*){arg}) doubleValue]";
-				case "bool": return $"[((NSNumber*){arg}) intValue]!=0";
-				case "void": return "";
+				case "char": return (null, $"[((NSNumber*){arg}) intValue]");
+				case "decimal": return (null, $"[((NSNumber*){arg}) doubleValue]");
+				case "float": return (null, $"[((NSNumber*){arg}) floatValue]");
+				case "double": return (null, $"[((NSNumber*){arg}) doubleValue]");
+				case "bool": return (null, $"[((NSNumber*){arg}) intValue]!=0");
+				case "void": return (null, "");
 				case "object":
-				case "unknown": return arg;
+				case "unknown": return (null, arg);
 				default:
-					return $"[[{to_ios_type(type, false)} alloc] initWithDictionary:(NSDictionary*){arg} error:nil]";
+					return (null, $"[[{to_ios_type(type, false)} alloc] initWithDictionary:(NSDictionary*){arg} error:nil]");
 			}
 		}
 		static string EscName(string name)
@@ -305,25 +321,26 @@ namespace SF.Sys.NetworkService
 		}
 		void BuildClassType(SF.Sys.Metadata.Models.Type t)
 		{
+			var imports = new Dictionary<string, bool>();
+
+			if (t.Properties != null)
+				foreach (var p in t.Properties.Where(p => !IsOverrideProperty(p.Name, t)))
+					imports[p.Type] = false;
+
+			if (t.BaseTypes != null)
+				foreach (var bt in t.BaseTypes)
+					imports[bt] = true;
+
 			AddFile(to_ios_type(t.Name, false, false) + ".h", (sb) =>
 				{
-					var imports = new HashSet<string>();
 
-					if (t.BaseTypes != null)
-						foreach (var bt in t.BaseTypes)
-							imports.Add(bt);
-
-					if (t.Properties != null)
-						foreach (var p in t.Properties)
-							imports.Add(p.Type);
-					foreach (var import in imports)
-						TryImport(sb, import);
-
-				  /**
-				  *  请求名
-				  * @param params    实体类提交
-				  * @return          post请求json方式提交
-				  */
+					foreach (var import in imports.OrderBy(p => p.Value ? 0 : 1))
+						TryImport(sb, import.Key, import.Value);
+					/**
+					*  请求名
+					* @param params    实体类提交
+					* @return          post请求json方式提交
+					*/
 					sb.AppendLine($"/**");
 					sb.AppendLine($"* {t.Title}");
 					sb.AppendLine($"* {t.Description}");
@@ -338,11 +355,8 @@ namespace SF.Sys.NetworkService
 						sb.AppendLine($" : JSONModel");
 					}
 					if (t.Properties != null)
-						foreach (var p in t.Properties)
+						foreach (var p in t.Properties.Where(p=>!IsOverrideProperty(p.Name, t)))
 						{
-							if (IsOverrideProperty(p.Name, t))
-								continue;
-
 							sb.AppendLine($"\t/**");
 							sb.AppendLine($"\t* {p.Title} {(p.Optional ? "[可选]" : "")}");
 							sb.AppendLine($"\t* {p.Description}");
@@ -355,7 +369,9 @@ namespace SF.Sys.NetworkService
 
 			AddFile(to_ios_type(t.Name, false, false) + ".m", (sb) =>
 			{
-				TryImport(sb,t.Name);
+				imports[t.Name] = true;
+				foreach (var import in imports)
+					TryImport(sb, import.Key, true);
 				sb.AppendLine($@"
 @implementation {to_ios_type(t.Name, false, false)}
 +(BOOL)propertyIsOptional:(NSString*)propertyName
@@ -400,15 +416,17 @@ namespace SF.Sys.NetworkService
 			if ((method.Parameters?.Length??0) > 0)
 			{
 				var p = method.Parameters[0];
-				sb.Append($":({to_ios_type(p.Type,true)}) {p.Name} ");
+				sb.Append($":({to_ios_type(p.Type,true)}) {EscName(p.Name)} ");
 				for (var i = 1; i < method.Parameters.Length; i++)
 				{
 					p = method.Parameters[i];
 					sb.Append($"{EscName(p.Name)}:({to_ios_type(p.Type,true)}) {EscName(p.Name)} ");
 				}
+
+				sb.Append(" success");
 			}
 
-			sb.Append($" success: (void(^)({(method.Type=="void"?"":$"{to_ios_type(method.Type,true)} re")}))success failure:(void(^)(NSError * error))failure");
+			sb.Append($" : (void(^)({(method.Type=="void"?"":$"{to_ios_type(method.Type,true)} re")}))success failure:(void(^)(NSError * error))failure");
 		}
 
 
@@ -416,6 +434,19 @@ namespace SF.Sys.NetworkService
 		{
 			BuildMethodPrototype(sb, service, method);
 
+		}
+		void collectAllType(HashSet<string> hash,string type)
+		{
+			if (!hash.Add(type))
+				return;
+			if (!Types.TryGetValue(type, out var t))
+				return;
+			if (t.BaseTypes != null)
+				foreach (var bt in t.BaseTypes)
+					collectAllType(hash, bt);
+			if (t.Properties != null)
+				foreach (var p in t.Properties)
+					collectAllType(hash, p.Type);
 		}
 		void BuildService(Metadata.Service service)
 		{
@@ -428,13 +459,13 @@ namespace SF.Sys.NetworkService
 				var imports = new HashSet<string>();
 				foreach (var m in methods)
 				{
-					imports.Add(m.Type);
+					collectAllType(imports,m.Type);
 					if (m.Parameters != null)
 						foreach (var p in m.Parameters)
-							imports.Add(p.Type);
+							collectAllType(imports,p.Type);
 				}
 				foreach (var import in imports)
-					TryImport(sb, import);
+					TryImport(sb, import,true);
 
 				sb.AppendLine($"/**");
 				sb.AppendLine($"* {service.Title}");
@@ -454,16 +485,7 @@ namespace SF.Sys.NetworkService
 				 if (methods.Length == 0)
 					 return;
 
-				 var imports = new HashSet<string>();
-				 foreach (var m in methods)
-				 {
-					 imports.Add(m.Type);
-					 if (m.Parameters != null)
-						 foreach (var p in m.Parameters)
-							 imports.Add(p.Type);
-				 }
-				 foreach (var import in imports)
-					 TryImport(sb, import);
+				
 
 				 sb.AppendLine($"#import \"{service.Name}.h\"");
 
@@ -496,10 +518,11 @@ namespace SF.Sys.NetworkService
 					else
 						sb.AppendLine($"[self postUrlPath:url withParamers:dict success:^(NSObject *re) {{");
 
-
+					var code = resolveResult(a.Type, "re");
 					sb.AppendLine(
 					$@"
-        success({resolveResult(a.Type,"re")});
+		{code.process}
+        success({code.result});
     }} failure:^(NSError *error) {{
 		failure(error);
     }}];
