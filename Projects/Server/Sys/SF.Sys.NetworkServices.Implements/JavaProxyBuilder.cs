@@ -45,8 +45,12 @@ namespace SF.Sys.NetworkService
 				return t.IsEnumType;
 			return false;
 		}
+		HashSet<string> Imported { get; } = new HashSet<string>();
 		bool TryImport(StringBuilder sb,string type)
 		{
+			if (Imported.Add(type) && Types.TryGetValue(type, out var st))
+				BuildType(st);
+
 			if (type.EndsWith("?"))
 				return TryImport(sb,type.Substring(0, type.Length - 1));
 
@@ -326,8 +330,8 @@ namespace SF.Sys.NetworkService
 			{
 				using (Archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create))
 				{
-					foreach (var t in Library.Types)
-						BuildType(t);
+					//foreach (var t in Library.Types)
+					//	BuildType(t);
 					foreach (var c in Library.Services)
 						BuildService(c);
 

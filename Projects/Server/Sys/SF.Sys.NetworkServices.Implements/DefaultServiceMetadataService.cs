@@ -88,7 +88,13 @@ namespace SF.Sys.NetworkService
 		Func<Service, Method,bool> GetFilter(bool All)
 		{
 			return (s, m) =>
-				All ? true : !s.Name.EndsWith("Manager");
+			{
+				if (m.Type == typeof(System.Net.Http.HttpResponseMessage).FullName ||
+				m.Type == typeof(IContent).FullName
+					)
+					return false;
+				return All ? true : !s.Name.EndsWith("Manager");
+			};
 		}
 		public IContent iOS(
 		   string CommonImports,

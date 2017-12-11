@@ -45,13 +45,12 @@ namespace SF.Sys.NetworkService
 				return t.IsEnumType;
 			return false;
 		}
+		
 		HashSet<string> Imported { get; } = new HashSet<string>(); 
 		bool TryImport(StringBuilder sb, string type)
 		{
 			if (Imported.Add(type) && Types.TryGetValue(type, out var st))
 				BuildType(st);
-
-
 
 			if (type.EndsWith("?"))
 				return TryImport(sb, type.Substring(0, type.Length - 1));
@@ -98,6 +97,98 @@ namespace SF.Sys.NetworkService
 			sb.AppendLine($"#import \"{type.Replace('.', '_').Replace('+', '_')}.h\"");
 			return true;
 		}
+		string getPropType(string type)
+		{
+			switch (type)
+			{
+				case "string": 
+				case "datetime": 
+				case "timespan": return "copy";
+				case "long":
+				case "ulong":
+				case "int":
+				case "short":
+				case "sbyte":
+				case "uint":
+				case "ushort":
+				case "byte":
+				case "char":
+				case "decimal":
+				case "float":
+				case "double":
+				case "bool":
+					return "assign";
+				case "void":
+				case "object":
+				case "unknown":
+				default:
+					return "strong";
+			}
+		}
+
+		(string name,string format,string value) argFormat(string type,string arg)
+		{
+			switch (type)
+			{
+				case "string":
+				case "datetime":
+				case "timespan":
+					return (arg,"%@", $"[{arg} stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]");
+				case "long":
+				case "ulong":
+				case "int":
+				case "short":
+				case "sbyte":
+				case "uint":
+				case "ushort":
+				case "byte":
+				case "char":
+					return (arg,"%d", arg);
+				case "decimal":
+				case "float":
+				case "double":
+					return (arg, "%f", arg);
+				case "bool":
+					return (arg, "%@", $"{arg}==0?@\"true\":@\"false\"");
+				case "void":
+				case "object":
+				case "unknown":
+				default:
+					return (arg, "%@",$"[[NSString stringWithFormat:@\"%@\",{arg}] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]");
+			}
+		}
+		string resolveResult(string type,string arg)
+		{
+			switch (type)
+			{
+				case "string": 
+				case "datetime": 
+				case "timespan": return "(NSString *)"+arg;
+				case "long":
+				case "ulong": return $"[((NSNumber*){arg}) longValue]";
+				case "int":
+				case "short":
+				case "sbyte":
+				case "uint":
+				case "ushort":
+				case "byte":
+				case "char": return $"[((NSNumber*){arg}) intValue]";
+				case "decimal": return $"[((NSNumber*){arg}) doubleValue]";
+				case "float": return $"[((NSNumber*){arg}) floatValue]";
+				case "double": return $"[((NSNumber*){arg}) doubleValue]";
+				case "bool": return $"[((NSNumber*){arg}) intValue]!=0";
+				case "void": return "";
+				case "object":
+				case "unknown": return arg;
+				default:
+					return $"[[{to_ios_type(type, false)} alloc] initWithDictionary:(NSDictionary*){arg} error:nil]";
+			}
+		}
+		static string EscName(string name)
+		{
+			if (name == "id") return "_id";
+			return name;
+		}
 		string to_ios_type(string type, bool withPointer, bool EscapeEnumName = true)
 		{
 
@@ -106,11 +197,18 @@ namespace SF.Sys.NetworkService
 
 			var i = type.IndexOf('[');
 			if (i != -1)
-				return "NSArray<"+to_ios_type(type.Substring(0, i), false) + ">" + (withPointer?" *":"");
+				return "NSArray<"+to_ios_type(type.Substring(0, i), true) + ">" + (withPointer?" *":"");
 
 			i = type.IndexOf('{');
 			if (i != -1)
-				return "NSDictionary<NSString," + to_ios_type(type.Substring(0, i), false) + ">" + (withPointer ? " *" : "");
+			{
+				var et = to_ios_type(type.Substring(0, i), true);
+				if (et == "NSString *")
+					et = "NSDictionary";
+				else
+					et = "NSDictionary<NSString," + et + ">";
+				return et + (withPointer ? " *" : "");
+			}
 
 			if (EscapeEnumName && IsEnumType(type))
 				return "NSString" +(withPointer ? " *" : "");
@@ -126,7 +224,7 @@ namespace SF.Sys.NetworkService
 				case "datetime": return "NSString" + (withPointer ? " *" : "");
 				case "timespan": return "NSString" + (withPointer ? " *" : "");
 				case "long":
-				case "ulong": return "NSNumber" + (withPointer ? " *" : "");
+				case "ulong": return "long" ;
 				case "int":
 				case "short":
 				case "sbyte":
@@ -134,19 +232,20 @@ namespace SF.Sys.NetworkService
 				case "ushort":
 				case "byte":
 				case "char":
-					return "NSInteger" +  (withPointer ? " *" : "");
-				case "decimal":
+					return "int" ;
 				case "float":
+					return "float";
+				case "decimal":
 				case "double":
-					return "NSNumber" + (withPointer ? " *" : "");
+					return "double";
 				case "bool":
-					return "NSInteger" + (withPointer ? " *" : "");
+					return "BOOL" ;
 				case "void":
 				case "object":
 				case "unknown":
-					return "NSObject<Optional>";
+					return "NSObject" + (withPointer ? " *" : "");
 				default:
-					return type.Replace('.', '_').Replace('+', '_');
+					return type.Replace('.', '_').Replace('+', '_') + (withPointer ? " *" : "");
 			}
 		}
 		void AddFile(string name, Action<StringBuilder> content)
@@ -167,7 +266,8 @@ namespace SF.Sys.NetworkService
 		}
 		void BuildEnumType(SF.Sys.Metadata.Models.Type t)
 		{
-			AddFile(to_ios_type(t.Name + ".h", false, false), (sb) =>
+			var type = to_ios_type(t.Name, false, false);
+			AddFile(type + ".h", (sb) =>
 				{
 					sb.AppendLine($"/**");
 					sb.AppendLine($"* {t.Title}");
@@ -179,7 +279,7 @@ namespace SF.Sys.NetworkService
 						sb.AppendLine($"* {t.Title}");
 						sb.AppendLine($"* {t.Description}");
 						sb.AppendLine($"*/");
-						sb.AppendLine($"#define {p.Name} (\"{p.Name}\")");
+						sb.AppendLine($"#define  {type}_{p.Name} (\"{p.Name}\")");
 					}
 				});
 		}
@@ -248,7 +348,7 @@ namespace SF.Sys.NetworkService
 							sb.AppendLine($"\t* {p.Description}");
 							sb.AppendLine($"\t* 类型:{p.Type}");
 							sb.AppendLine($"\t*/");
-							sb.AppendLine($"\t@property (copy,nonatomic) {to_ios_type(p.Type, false, false)} *{p.Name};");
+							sb.AppendLine($"\t@property ({getPropType(p.Type)},nonatomic) {to_ios_type(p.Type,true)} {p.Name};");
 						}
 					sb.AppendLine("@end");
 				});
@@ -303,12 +403,12 @@ namespace SF.Sys.NetworkService
 				sb.Append($":({to_ios_type(p.Type,true)}) {p.Name} ");
 				for (var i = 1; i < method.Parameters.Length; i++)
 				{
-					p = method.Parameters[0];
-					sb.Append($"{p.Name}:({to_ios_type(p.Type,true)}) {p.Name} ");
+					p = method.Parameters[i];
+					sb.Append($"{EscName(p.Name)}:({to_ios_type(p.Type,true)}) {EscName(p.Name)} ");
 				}
 			}
 
-			sb.Append($" success: (void(^)({to_ios_type(method.Type,true)} responseObject))success failure:(void(^)(NSError * error))failure");
+			sb.Append($" success: (void(^)({(method.Type=="void"?"":$"{to_ios_type(method.Type,true)} re")}))success failure:(void(^)(NSError * error))failure");
 		}
 
 
@@ -378,18 +478,13 @@ namespace SF.Sys.NetworkService
 					 sb.AppendLine("{");
 					if ((a.Parameters?.Length ?? 0) > (a.HeavyParameter == null ? 0 : 1))
 					{
+						var pairs = a.Parameters.Where(p => p.Name != a.HeavyParameter).Select(p => argFormat(p.Type, EscName(p.Name))).ToArray();
+
 						sb.Append($"	NSString *url = [NSString stringWithFormat:@\"{service.Name}/{a.Name}?");
-						sb.Append(a.Parameters.Where(p => p.Name != a.HeavyParameter).Select(p=>$"{p.Name}=%@").Join("&"));
+						sb.Append(pairs.Select(p=>$"{p.name}={p.format}").Join("&"));
 						sb.Append("\"");
-						sb.Append(
-							a.Parameters.Where(p => p.Name != a.HeavyParameter)
-							.Select(p =>
-								p.Type=="string"? 
-								$"\n		,[{p.Name} stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]":
-								$"\n		,[[NSString stringWithFormat:@\"%@\",{p.Name}] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]")
-							.Join("")
-							);
-						sb.AppendLine("];");
+						sb.Append(pairs.Select(p => $"\n		,{p.value}").Join(""));
+						sb.AppendLine("\t];");
 					}
 					else
 						sb.AppendLine($"	NSString *url = @\"{service.Name}/{a.Name}\";");
@@ -397,13 +492,14 @@ namespace SF.Sys.NetworkService
 						sb.AppendLine($"	NSDictionary *dict = [self dictionaryWithModel: {a.HeavyParameter}];");
 
 					if (a.HeavyParameter == null)
-						sb.AppendLine($"[self getUrlPath:url success:^(NSDictionary *re) {{");
+						sb.AppendLine($"[self getUrlPath:url success:^(NSObject *re) {{");
 					else
-						sb.AppendLine($"[self postUrlPath:url withParamers:dict success:^(NSDictionary *re) {{");
+						sb.AppendLine($"[self postUrlPath:url withParamers:dict success:^(NSObject *re) {{");
+
 
 					sb.AppendLine(
 					$@"
-        success([[{to_ios_type(a.Type,true)} alloc]initWithDictionary:re error:nil]);
+        success({resolveResult(a.Type,"re")});
     }} failure:^(NSError *error) {{
 		failure(error);
     }}];

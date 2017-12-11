@@ -53,6 +53,11 @@ namespace SF.Sys.NetworkService
 			}
 		}
 
+		static Type[] SpecialResultTypes { get; } = new[]
+		{
+			typeof(IContent),
+			typeof(System.Net.Http.HttpResponseMessage)
+		};
 		public IEnumerable<MethodInfo> GetServiceMethods(System.Type type)
 		{
 			return GetServiceMethods(type, new HashSet<MethodInfo>(MethodComparer.Instance));
