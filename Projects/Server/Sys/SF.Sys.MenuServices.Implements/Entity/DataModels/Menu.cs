@@ -21,7 +21,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Sys.MenuServices.Entity.DataModels
 {
-	[Table("MgrMenu")]
+	[Table("Menu")]
 	public class Menu<TMenu,TMenuItem> : ObjectEntityBase
 		where TMenu : Menu<TMenu, TMenuItem>
 		where TMenuItem : MenuItem<TMenu, TMenuItem>

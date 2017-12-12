@@ -21,6 +21,8 @@ using System.Collections.Generic;
 using SF.Sys.Entities;
 using SF.Sys.Data;
 using SF.Sys.MenuServices.Models;
+using SF.Sys.Linq;
+using System.Collections;
 
 namespace SF.Sys.MenuServices.Entity
 {
@@ -55,6 +57,7 @@ namespace SF.Sys.MenuServices.Entity
 
 			var items = await MenuItemSet.Value.AsQueryable()
 				.Where(i => i.MenuId == menu.Id)
+				.OrderBy(i=>i.ItemOrder)
 				.SelectUIObjectEntity(i =>
 				  new MenuItem
 				  {
@@ -64,6 +67,7 @@ namespace SF.Sys.MenuServices.Entity
 					  ServiceId=i.ServiceId,
 					  ParentId=i.ParentId
 				  }).ToArrayAsync();
+
 			menu.Items = ADT.Tree.Build(
 				items,
 				i =>i.Id,
@@ -116,7 +120,7 @@ namespace SF.Sys.MenuServices.Entity
 			m.Update(e, time);
 
 			var items = await MenuItemSet.Value.LoadListAsync(i => i.MenuId == m.Id);
-			foreach (var n in ADT.Tree.AsEnumerable(e.Items, ii => ii.Children).Where(i => i.Id == 0))
+			foreach (var n in ADT.Tree.AsEnumerable(e.Items, (ii,i) => { ii.ItemOrder = i; return ii.Children; }).Where(i => i.Id == 0))
 				n.Id = await IdentGenerator.GenerateAsync<TMenuItem>();
 
 			MenuItemSet.Value.MergeTree(
@@ -137,7 +141,7 @@ namespace SF.Sys.MenuServices.Entity
 					mi.ActionArgument = ei.ActionArgument;
 					mi.MenuId = m.Id;
 					mi.ParentId = pmi?.Id;
-					
+					mi.ItemOrder = ei.ItemOrder;
 					return mi;
 				},
 				(mi, ei,np) =>
@@ -147,6 +151,7 @@ namespace SF.Sys.MenuServices.Entity
 					mi.Action = ei.Action;
 					mi.ActionArgument = ei.ActionArgument;
 					mi.ServiceId = ei.ServiceId;
+					mi.ItemOrder = ei.ItemOrder;
 				}
 				);
 
@@ -166,17 +171,19 @@ namespace SF.Sys.MenuServices.Entity
 
 			var items = await MenuItemSet.Value.AsQueryable()
 				.Where(i => i.MenuId == menuId)
+				.OrderBy(i=>i.ItemOrder)
 				.SelectUIObjectEntity(i =>
 				  new MenuItem
 				  {
 					  Id = i.Id,
 					  ParentId=i.ParentId,
 					  Action = i.Action,
+					  ItemOrder=i.ItemOrder,
 					  ServiceId=i.ServiceId,
-					  ActionArgument = i.ActionArgument
+					  ActionArgument = i.ActionArgument,
 				  }).ToArrayAsync();
 
-			return ADT.Tree.Build(
+			var re= ADT.Tree.Build(
 				items,
 				i => i.Id,
 				i => i.ParentId ?? 0,
@@ -187,6 +194,8 @@ namespace SF.Sys.MenuServices.Entity
 					((List<MenuItem>)p.Children).Add(i);
 				}
 				).ToArray();
+
+			return re;
 		}
 	}
 

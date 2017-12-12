@@ -22,7 +22,7 @@ using SF.Sys.Data;
 
 namespace SF.Sys.MenuServices.Entity.DataModels
 {
-	[Table("MgrMenuItem")]
+	[Table("MenuItem")]
 	public class MenuItem<TMenu,TMenuItem> : UIObjectEntityBase
 		where TMenu : Menu<TMenu, TMenuItem>
 		where TMenuItem : MenuItem<TMenu, TMenuItem>
@@ -51,6 +51,8 @@ namespace SF.Sys.MenuServices.Entity.DataModels
 
 		[InverseProperty(nameof(Parent))]
 		public ICollection<TMenuItem> Children { get; set; }
+
+		public int ItemOrder { get;set; }
 
 		/// <summary>
 		/// 系统服务实例ID

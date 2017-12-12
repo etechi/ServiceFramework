@@ -147,7 +147,7 @@ namespace SF.Sys.Services
 			where TMenuItem: SF.Sys.MenuServices.Entity.DataModels.MenuItem<TMenu,TMenuItem>,new()
 		{
 			sc.AddSingleton<IDefaultMenuCollection, DefaultMenuCollection>();
-			sc.AddDataModules<TMenu,TMenuItem>(TablePrefix);
+			sc.AddDataModules<TMenu,TMenuItem>(TablePrefix??"Sys");
 			sc.EntityServices(
 				"SysMenu",
 				"系统菜单",

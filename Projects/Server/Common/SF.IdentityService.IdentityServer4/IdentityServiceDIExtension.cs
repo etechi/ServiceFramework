@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using Microsoft.Extensions.DependencyInjection;
+using SF.Auth.IdentityServices;
 using SF.Auth.IdentityServices.IdentityServer4Impl;
 
 namespace SF.Sys.Services
@@ -31,6 +32,7 @@ namespace SF.Sys.Services
 				.AddClientStore<ClientStore>()
 				.AddProfileService<ProfileService>()
 				.AddResourceStore<ResourceStore>();
+			sc.AddTransient<IAccessTokenGenerator, AccessTokenGenerator>();
 			return sc;
 		}
 	}

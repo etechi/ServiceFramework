@@ -30,7 +30,7 @@ namespace SF.Common.Documents.DataModels
 	/// <typeparam name="TCategory"></typeparam>
 	/// <typeparam name="TTag"></typeparam>
 	/// <typeparam name="TTagReference"></typeparam>
-	[Table("CommonDocumentTag")]
+	[Table("DocumentTag")]
     public class DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference> :
 		ObjectEntityBase
 		where TDocument : Document<TDocument, TAuthor, TCategory, TTag, TTagReference>

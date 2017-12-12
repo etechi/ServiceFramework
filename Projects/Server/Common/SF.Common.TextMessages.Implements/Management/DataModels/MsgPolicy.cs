@@ -26,7 +26,7 @@ namespace SF.Common.TextMessages.Management.DataModels
 	/// <summary>
 	/// 文本消息发送策略
 	/// </summary>
-	[Table("CommonTextMessagePolicies")]
+	[Table("TextMessagePolicies")]
 	public class MsgPolicy : SF.Sys.Entities.DataModels.ObjectEntityBase
 	{
 		/// <summary>

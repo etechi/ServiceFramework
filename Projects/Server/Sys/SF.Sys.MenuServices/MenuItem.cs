@@ -85,5 +85,8 @@ namespace SF.Sys.MenuServices
 
 		[Ignore]
 		public long? ParentId { get; set; }
+
+		[Ignore]
+		public int ItemOrder { get; set; }
 	}
 }

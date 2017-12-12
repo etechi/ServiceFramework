@@ -20,7 +20,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Sys.CallPlans.Storage.DataModels
 {
 	///<summary>已过期实例</summary>
-	[Table("SysCallExpired")]
+	[Table("CallExpired")]
     public class CallExpired
 	{
 		/// <summary>

@@ -56,7 +56,7 @@ namespace SF.Sys.Services
 				MemberEditable,
 				MemberQueryArgument,
 				SF.Common.Members.DataModels.Member
-				>(TablePrefix);
+				>(TablePrefix ?? "Common");
 
 		public static IServiceInstanceInitializer<TService> NewMemberService<TService, TImplement, TInternal, TEditable, TQueryArgument, TMember>(
 			this IServiceInstanceManager sim

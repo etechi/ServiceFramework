@@ -97,7 +97,7 @@ namespace SF.Sys.NetworkService
 			if(import)
 				sb.AppendLine($"#import \"{type.Replace('.', '_').Replace('+', '_')}.h\"");
 			else
-				sb.AppendLine($"@class {type.Replace('.', '_').Replace('+', '_')}");
+				sb.AppendLine($"@class {type.Replace('.', '_').Replace('+', '_')};");
 			return true;
 		}
 		string getPropType(string type)

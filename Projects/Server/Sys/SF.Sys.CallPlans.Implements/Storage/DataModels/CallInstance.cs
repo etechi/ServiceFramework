@@ -23,7 +23,7 @@ namespace SF.Sys.CallPlans.Storage.DataModels
 	/// <summary>
 	/// 调用实例
 	/// </summary>
-	[Table("SysCallInstance")]
+	[Table("CallInstance")]
     public class CallInstance : ICallInstance
 	{
 		/// <summary>

@@ -22,7 +22,7 @@ using SF.Common.TextMessages.Models;
 
 namespace SF.Common.TextMessages.Management.DataModels
 {
-	[Table("CommonTextMessageActionRecords")]
+	[Table("TextMessageActionRecords")]
 	public class MsgActionRecord : EventEntityBase
 	{
 		/// <summary>

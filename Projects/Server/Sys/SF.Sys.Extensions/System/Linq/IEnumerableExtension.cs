@@ -129,14 +129,20 @@ namespace SF.Sys.Linq
 			Func<X,Y,Z> Merger
 			) where K : IEquatable<K>
 		{
-			var xdic = (xs??Enumerable.Empty<X>()).ToDictionary(XKeySelector);
-			var ydic = (ys??Enumerable.Empty<Y>()).ToDictionary(YKeySelector);
-			return ydic.Select(p =>
-				Merger(xdic.Get(p.Key), p.Value)
+			xs = xs ?? Enumerable.Empty<X>();
+			ys = ys ?? Enumerable.Empty<Y>();
+			var xdic = xs.ToDictionary(XKeySelector);
+			var ydic = ys.ToDictionary(YKeySelector);
+			return xs.Select(
+				xi =>
+					ydic.TryGetValue(XKeySelector(xi), out var yi)?
+					Merger(xi, yi):
+					Merger(xi,default(Y)
+					)
 				).Concat(
-				xdic
-				.Where(x => !ydic.ContainsKey(x.Key))
-				.Select(x => Merger(x.Value, default(Y)))
+					ys
+					.Where(yi=>!xdic.ContainsKey(YKeySelector(yi)))
+					.Select(yi=>Merger(default(X),yi))
 				);
 		}
 		public static string Join(this IEnumerable<string> Enumerable, string separator = "")

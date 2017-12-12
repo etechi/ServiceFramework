@@ -35,7 +35,7 @@ namespace SF.Sys.Services
 			where TService: class,IAdminManager<TInternal, TEditable, TQueryArgument>
 			where TImplement : AdminManager<TInternal, TEditable, TQueryArgument, TAdmin>, TService
 		{
-			sc.AddDataModules<TAdmin>(TablePrefix);
+			sc.AddDataModules<TAdmin>(TablePrefix??"Common");
 			sc.EntityServices(
 				"Admin",
 				"管理员",

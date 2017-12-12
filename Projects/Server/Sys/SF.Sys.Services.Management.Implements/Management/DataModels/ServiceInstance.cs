@@ -23,7 +23,7 @@ namespace SF.Sys.Services.Management.DataModels
 	/// <summary>
 	/// 服务实例
 	/// </summary>
-	[Table("SysServiceInstance")]
+	[Table("ServiceInstance")]
 	public class ServiceInstance : SF.Sys.Entities.DataModels.UITreeNodeEntityBase<ServiceInstance>
 	{
 		//[ForeignKey(nameof(ServiceCategoryItem))]

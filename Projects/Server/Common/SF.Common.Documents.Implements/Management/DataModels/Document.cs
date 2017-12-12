@@ -33,7 +33,7 @@ namespace SF.Common.Documents.DataModels
 	/// <typeparam name="TCategory"></typeparam>
 	/// <typeparam name="TTag"></typeparam>
 	/// <typeparam name="TTagReference"></typeparam>
-	[Table("CommonDocument")]
+	[Table("Document")]
 	public class Document<TDocument, TAuthor, TCategory, TTag, TTagReference> :
 		UIItemEntityBase<TCategory>
 		where TDocument : Document<TDocument, TAuthor, TCategory, TTag, TTagReference>

@@ -17,7 +17,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Common.Admins.DataModels
 {
-	[Table("MgrAdmin")]
+	[Table("Admin")]
 	public class Admin<TAdmin> :
 		SF.Sys.Entities.DataModels.ObjectEntityBase<long>
 		where TAdmin: Admin<TAdmin>

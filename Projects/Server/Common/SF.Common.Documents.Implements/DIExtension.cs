@@ -57,7 +57,7 @@ namespace SF.Sys.Services
 				SF.Common.Documents.DataModels.DocumentAuthor,
 				SF.Common.Documents.DataModels.DocumentTag,
 				SF.Common.Documents.DataModels.DocumentTagReference
-				>(TablePrefix);
+				>(TablePrefix ?? "Common");
 
 			//sc.AddAutoEntityTest(NewDocumentManager);
 			//sc.AddAutoEntityTest(NewDocumentCategoryManager);

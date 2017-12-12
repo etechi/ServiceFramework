@@ -24,10 +24,17 @@ namespace SF.Sys.Services
 	{
 		
 		public static IServiceCollection AddTextMessageServices(
-			this IServiceCollection sc
+			this IServiceCollection sc,
+			string TablePrefix=null
 			)
 		{
-			sc.AddDataModules<SF.Common.TextMessages.Management.DataModels.MsgActionRecord>();
+			sc.AddDataModules<
+				SF.Common.TextMessages.Management.DataModels.MsgActionRecord,
+				SF.Common.TextMessages.Management.DataModels.MsgPolicy,
+				SF.Common.TextMessages.Management.DataModels.MsgRecord
+				>(
+				TablePrefix??"Common"
+				);
 			sc.EntityServices(
 				"TextMessage",
 				"文本消息",

@@ -30,7 +30,7 @@ namespace SF.Common.Documents.DataModels
 	/// <typeparam name="TCategory"></typeparam>
 	/// <typeparam name="TTag"></typeparam>
 	/// <typeparam name="TTagReference"></typeparam>
-	[Table("CommonDocumentTagRef")]
+	[Table("DocumentTagRef")]
     public class DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TDocument : Document<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TAuthor : DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>

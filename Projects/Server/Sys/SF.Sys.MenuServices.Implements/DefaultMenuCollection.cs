@@ -57,9 +57,12 @@ namespace SF.Sys.MenuServices
 						if (y == null) return x;
 						var ycs = y.Children;
 						y.Children = null;
+						var xOrder = x.ItemOrder;
 						Poco.Update(x, y);
+						if (xOrder < x.ItemOrder)
+							x.ItemOrder = xOrder;
 						y.Children = ycs;
-						x.Children = cs.ToList();
+						x.Children = cs.ToList();//.OrderBy(m=>m.ItemOrder).ToList();
 						return x;
 					}).ToList();
 

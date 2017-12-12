@@ -35,7 +35,7 @@ namespace SF.Common.Documents.DataModels
 	/// <typeparam name="TCategory"></typeparam>
 	/// <typeparam name="TTag"></typeparam>
 	/// <typeparam name="TTagReference"></typeparam>
-	[Table("CommonDocumentAuthor")]
+	[Table("DocumentAuthor")]
 	
     public class DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference> :
 		UIObjectEntityBase

@@ -39,6 +39,8 @@ namespace SF.Sys.Services
 			if (attr.EntityType != null)
 			{
 				var meta = EntityMetadataCollection.FindByEntityType(attr.EntityType);
+				if (meta == null)
+					throw new InvalidOperationException($"实体库中找不类型为{attr.EntityType}实体");
 				//var EntityManagementType = meta.EntityManagerType;
 				//EntityManagerAttributeMetadataValuesProvider.VerifyEntityManagementType(EntityManagementType);
 				entity = meta.Ident;//ServiceDeclarationTypeResolver.GetTypeIdent(EntityManagementType);

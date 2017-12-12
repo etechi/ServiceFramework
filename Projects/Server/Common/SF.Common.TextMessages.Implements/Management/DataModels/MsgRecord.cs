@@ -27,7 +27,7 @@ namespace SF.Common.TextMessages.Management.DataModels
 	/// <summary>
 	/// 文本消息记录
 	/// </summary>
-	[Table("CommonTextMessageRecords")]
+	[Table("TextMessageRecords")]
 	public class MsgRecord : EventEntityBase
 	{ 
 		/// <summary>

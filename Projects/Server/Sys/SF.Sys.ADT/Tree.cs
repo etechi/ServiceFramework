@@ -55,21 +55,40 @@ namespace SF.Sys.ADT
 		}
 		public static IEnumerable<T> AsEnumerable<T>(
 			T Node,
-			Func<T,IEnumerable<T>> GetChildren
+			int Index,
+			Func<T, int, IEnumerable<T>> GetChildren
 			)
 		{
 			yield return Node;
-			var cs = GetChildren(Node);
+			var cs = GetChildren(Node,Index);
 			if (cs != null)
+			{
+				var idx = 0;
 				foreach (var n in cs)
-					foreach (var c in AsEnumerable(n, GetChildren))
+					foreach (var c in AsEnumerable(n, idx++, GetChildren))
 						yield return c;
+			}
 		}
+
+		public static IEnumerable<T> AsEnumerable<T>(
+			T Node,
+			Func<T,IEnumerable<T>> GetChildren
+			)
+			=> AsEnumerable(Node, 0, (n, c) => GetChildren(n));
+
 		public static IEnumerable<T> AsEnumerable<T>(
 			IEnumerable<T> Nodes,
 			Func<T, IEnumerable<T>> GetChildren
 			)
 			=> Nodes.SelectMany(n => AsEnumerable(n, GetChildren));
+
+
+		public static IEnumerable<T> AsEnumerable<T>(
+			IEnumerable<T> Nodes,
+			Func<T, int, IEnumerable<T>> GetChildren
+			)
+			=> Nodes.SelectMany((n,i) => AsEnumerable(n, i, GetChildren));
+
 		public static IEnumerable<T> AsLastEnumerable<T>(
 			T Node,
 			Func<T, IEnumerable<T>> GetChildren

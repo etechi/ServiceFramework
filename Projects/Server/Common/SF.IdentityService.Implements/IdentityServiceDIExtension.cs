@@ -32,7 +32,7 @@ namespace SF.Sys.Services
 {
 	public static class IdentityServiceDIExtension 
 	{
-		public static IServiceCollection AddIdentityService(this IServiceCollection sc)
+		public static IServiceCollection AddIdentityService(this IServiceCollection sc,string TablePrefix=null)
 		{
 			//文章
 			sc.EntityServices(
@@ -71,7 +71,7 @@ namespace SF.Sys.Services
 
 
 			sc.AddDataModules(
-				"SysAuth",
+				TablePrefix??"Auth",
 				typeof(SF.Auth.IdentityServices.DataModels.ClaimType),
 				typeof(SF.Auth.IdentityServices.DataModels.Client),
 				typeof(SF.Auth.IdentityServices.DataModels.ClientConfig),

@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Annotations;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -31,7 +32,11 @@ namespace SF.Sys.Entities
 	public class QueryArgument<TKey> :
 		IQueryArgument<TKey>
 	{
+		/// <summary>
+		/// ID
+		/// </summary>
 		public TKey Id { get; set; }
+		[Ignore]
 		public Paging Paging { get; set; }
 
 	}

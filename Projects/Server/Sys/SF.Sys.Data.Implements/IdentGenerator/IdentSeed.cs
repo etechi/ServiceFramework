@@ -18,7 +18,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Sys.Data.IdentGenerator.DataModels
 {
-	[Table("SysIdentSeed")]
+	[Table("IdentSeed")]
 	public class IdentSeed
 	{
 		/// <summary>

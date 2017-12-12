@@ -43,7 +43,7 @@ namespace SF.Sys.Services
 				SF.Common.FrontEndContents.DataModels.Content, 
 				SF.Common.FrontEndContents.DataModels.Site, 
 				SF.Common.FrontEndContents.DataModels.SiteTemplate
-				>(TablePrefix);
+				>(TablePrefix ??"Common");
 
 			if(EnvType!=EnvironmentType.Utils)
 				sc.AddTransient<IDataProvider, ServiceDataProvider>("service");
