@@ -33,13 +33,16 @@ namespace SF.Sys.MenuServices
 		{
 			var rootItems = Path
 				.Split('/')
+				.Select(p=>p.LastSplit2(':'))
+				.Select(p=>(name:p.Item2,order:int.Parse(p.Item1??"0")))
 				.Reverse()
 				.Aggregate(
 					Items.ToList(), 
 					(i, path) => new List<MenuItem>{new MenuItem
 					{
-						Name = path,
-						Title = path,
+						ItemOrder=path.order,
+						Name = path.name,
+						Title = path.name,
 						Children = i
 					} });
 
@@ -59,10 +62,10 @@ namespace SF.Sys.MenuServices
 						y.Children = null;
 						var xOrder = x.ItemOrder;
 						Poco.Update(x, y);
-						if (xOrder < x.ItemOrder)
+						if (xOrder!=0 && (x.ItemOrder==0 || xOrder < x.ItemOrder))
 							x.ItemOrder = xOrder;
 						y.Children = ycs;
-						x.Children = cs.ToList();//.OrderBy(m=>m.ItemOrder).ToList();
+						x.Children = cs.OrderBy(m=>m.ItemOrder).ToList();
 						return x;
 					}).ToList();
 
@@ -119,7 +122,7 @@ namespace SF.Sys.MenuServices
 		{
 			lock (Menus)
 				if (Menus.TryGetValue(MenuIdent, out var items))
-					return Poco.Clone(items).ToArray();
+					return Poco.Clone(items).OrderBy(i=>i.ItemOrder).ToArray();
 				else
 					return Array.Empty<MenuItem>();
 

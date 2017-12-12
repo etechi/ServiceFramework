@@ -32,9 +32,6 @@ namespace SF.Sys.Entities
 	public class QueryArgument<TKey> :
 		IQueryArgument<TKey>
 	{
-		/// <summary>
-		/// ID
-		/// </summary>
 		public TKey Id { get; set; }
 		[Ignore]
 		public Paging Paging { get; set; }
@@ -61,7 +58,7 @@ namespace SF.Sys.Entities
 		public virtual EntityLogicState? LogicState { get; set; }
 
 	}
-	public class ObjectQueryArgument : ObjectQueryArgument<long>
+	public class ObjectQueryArgument : ObjectQueryArgument<ObjectKey<long>>
 	{
 
 	}

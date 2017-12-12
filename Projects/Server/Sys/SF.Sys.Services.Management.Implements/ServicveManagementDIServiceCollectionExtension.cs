@@ -44,7 +44,7 @@ namespace SF.Sys.Services
 
 			sc.AddDefaultMenuItems(
 				"default",
-				"系统管理/系统服务",
+				"1000:系统管理/系统服务",
 				new SF.Sys.MenuServices.MenuItem {
 					Name = "系统服务定义",
 					Action = SF.Sys.MenuServices.MenuActionType.EntityManager,
