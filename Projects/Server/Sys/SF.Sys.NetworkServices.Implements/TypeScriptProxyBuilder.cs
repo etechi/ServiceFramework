@@ -205,7 +205,7 @@ export interface ICallOptions
 	serviceId?:number
 }
 export interface IApiInvoker{
-	(type: string,method: string,query: { [index: string]: any},post: { [index: string]: any}, opts?: ICallOptions) :any
+	(type: string,method: string,post:string, args : { [index: string]: any}, opts?: ICallOptions) :any
 }
 
 var _invoker:IApiInvoker=null;

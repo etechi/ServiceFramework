@@ -229,9 +229,9 @@ function getConfig(root: string) {
     };
     return cfg;
 }
-function itemNormalize(items: api.SF$Management$MenuServices$MenuItem[]): api.SF$Management$MenuServices$MenuItem[] {
-    var re: api.SF$Management$MenuServices$MenuItem[] = [];
-    var l2: api.SF$Management$MenuServices$MenuItem[] = [];
+function itemNormalize(items: api.SF$Sys$MenuServices$MenuItem[]): api.SF$Sys$MenuServices$MenuItem[] {
+    var re: api.SF$Sys$MenuServices$MenuItem[] = [];
+    var l2: api.SF$Sys$MenuServices$MenuItem[] = [];
     items.forEach(i => {
         if (i.Children[0].Children)
             re.push(i);
@@ -241,7 +241,7 @@ function itemNormalize(items: api.SF$Management$MenuServices$MenuItem[]): api.SF
     re.unshift({Id: 0, ObjectState: "Enabled", Name: "", Title: "", Children: l2, Action: "None" } as any);
     return re;
 }
-function newItem(item: api.SF$Management$MenuServices$MenuItem): ManagerBuilder.IItemConfig {
+function newItem(item: api.SF$Sys$MenuServices$MenuItem): ManagerBuilder.IItemConfig {
     switch (item.Action) {
         case "Link":
             return {
@@ -256,14 +256,14 @@ function newItem(item: api.SF$Management$MenuServices$MenuItem): ManagerBuilder.
             return null;
     }
 }
-function newModule(item: api.SF$Management$MenuServices$MenuItem): ManagerBuilder.IModuleConfig {
+function newModule(item: api.SF$Sys$MenuServices$MenuItem): ManagerBuilder.IModuleConfig {
     var items = item.Children.map(c => newItem(c));
     return {
         title: item.Title || item.Name,
         items: items
     };
 }
-function newGroup(item: api.SF$Management$MenuServices$MenuItem): ManagerBuilder.IGroupConfig {
+function newGroup(item: api.SF$Sys$MenuServices$MenuItem): ManagerBuilder.IGroupConfig {
     var modules = item.Children.map(c => newModule(c));
     return {
         title: item.Title || item.Name,
@@ -276,7 +276,7 @@ export function build(
     lib: ApiMeta.Library,
     root:string,
     permissions: ManagerBuilder.IPermission[],
-    items: api.SF$Management$MenuServices$MenuItem[],
+    items: api.SF$Sys$MenuServices$MenuItem[],
     all?: boolean
 ) {
     var cfg = getConfig(root);

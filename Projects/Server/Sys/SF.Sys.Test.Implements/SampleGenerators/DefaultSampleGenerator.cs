@@ -37,7 +37,8 @@ namespace SF.Sys.Tests.SampleGenerators
 			this.NumberValueTypeProvider = NumberValueTypeProvider;
 		}
 
-		
+
+
 		public class NumberSampleGenerator<T> : IValueSampleGenerator<T>
 		{
 			INumberValueType<T> ValueType { get; }
@@ -299,15 +300,15 @@ namespace SF.Sys.Tests.SampleGenerators
 			if (type.IsEnumType())
 				return new EnumSampleGenerator<T>(Prop);
 
+			if (type == typeof(bool))
+				return (IValueSampleGenerator<T>)new BoolSampleGenerator(Prop);
+
+
 			if (type.IsNumberLikeType())
 				return new NumberSampleGenerator<T>(NumberValueTypeProvider, Prop);
 
 			if (type == typeof(string))
 				return (IValueSampleGenerator<T>)new StringSampleGenerator(Prop);
-
-			if(type==typeof(bool))
-				return (IValueSampleGenerator<T>)new BoolSampleGenerator(Prop);
-
 			if (type == typeof(DateTime))
 				return (IValueSampleGenerator<T>)new DateTimeSampleGenerator(TimeService,Prop);
 

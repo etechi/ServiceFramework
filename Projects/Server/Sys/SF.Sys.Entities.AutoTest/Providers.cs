@@ -22,17 +22,10 @@ using System.Threading.Tasks;
 namespace SF.Sys.Entities.AutoTest
 {
 
-	public interface IEntityCreateResultValidator<TEditable>
-	{
-		TestResult ValidateCreateResult(TEditable CreateArgument, TEditable UpdateResult);
-	}
-
-	public interface IEntityCreateResultValidatorProvider
-	{
-		IEntityCreateResultValidator<TEditable> GetCreateResultValidator<TEditable>();
-	}
-
-
+	/// <summary>
+	/// 实体样本生成器
+	/// </summary>
+	/// <typeparam name="TEditable"></typeparam>
 	public interface IEntitySampleGenerator<TEditable>
 	{
 		int Priority { get; }
@@ -47,6 +40,24 @@ namespace SF.Sys.Entities.AutoTest
 	}
 
 
+	/// <summary>
+	/// 验证实体创建结果是否正确
+	/// </summary>
+	/// <typeparam name="TEditable"></typeparam>
+	public interface IEntityCreateResultValidator<TEditable>
+	{
+		TestResult ValidateCreateResult(TEditable CreateArgument, TEditable UpdateResult);
+	}
+
+	public interface IEntityCreateResultValidatorProvider
+	{
+		IEntityCreateResultValidator<TEditable> GetCreateResultValidator<TEditable>();
+	}
+
+	/// <summary>
+	/// 验证实体更新结果是否正确
+	/// </summary>
+	/// <typeparam name="TEditable"></typeparam>
 	public interface IEntityUpdateResultValidator<TEditable>
 	{
 		TestResult ValidateUpdateResult(TEditable UpdateArgument, TEditable UpdateResult);
@@ -56,7 +67,11 @@ namespace SF.Sys.Entities.AutoTest
 		IEntityUpdateResultValidator<TEditable> GetUpdateResultValidator<TEditable>();
 	}
 
-
+	/// <summary>
+	/// 验证获取详细实体对象结果是否正确
+	/// </summary>
+	/// <typeparam name="TEditable"></typeparam>
+	/// <typeparam name="TDetail"></typeparam>
 	public interface IEntityDetailValidator<TEditable, TDetail>
 	{
 		TestResult ValidateDetail(TEditable LoadEditableResult, TDetail Detail);
@@ -66,6 +81,11 @@ namespace SF.Sys.Entities.AutoTest
 		IEntityDetailValidator<TEditable, TDetail> GetDetailValidator<TEditable, TDetail>();
 	}
 
+	/// <summary>
+	/// 验证实体查询结果对象是否正确
+	/// </summary>
+	/// <typeparam name="TDetail"></typeparam>
+	/// <typeparam name="TSummary"></typeparam>
 	public interface IEntitySummaryValidator<TDetail, TSummary>
 	{
 		TestResult ValidateSummary(TDetail Detail, TSummary Summary);
@@ -75,6 +95,11 @@ namespace SF.Sys.Entities.AutoTest
 		IEntitySummaryValidator<TDetail, TSummary> GetSummaryValidator<TDetail, TSummary>();
 	}
 
+	/// <summary>
+	/// 将实体详细转换成实体摘要
+	/// </summary>
+	/// <typeparam name="TDetail"></typeparam>
+	/// <typeparam name="TSummary"></typeparam>
 	public interface IEntityDetailToSummaryConverter<TDetail, TSummary>
 	{
 		TSummary ConvertToSummary(TDetail Detail);
@@ -84,11 +109,21 @@ namespace SF.Sys.Entities.AutoTest
 		IEntityDetailToSummaryConverter<TDetail, TSummary> GetDetailToSummaryConverter<TDetail, TSummary>();
 	}
 
+	/// <summary>
+	/// 实体查询测试用例
+	/// </summary>
+	/// <typeparam name="TQueryArgument"></typeparam>
+	/// <typeparam name="TSummary"></typeparam>
 	public class QueryTestCase<TQueryArgument, TSummary>
 	{
 		public TQueryArgument QueryArgument { get; set; }
 		public IReadOnlyList<TSummary> Results { get; set; }
 	}
+	/// <summary>
+	/// 实体查询参数生成器
+	/// </summary>
+	/// <typeparam name="TSummary"></typeparam>
+	/// <typeparam name="TQueryArgument"></typeparam>
 	public interface IEntityQueryArgumentGenerator<TSummary, TQueryArgument> where TQueryArgument:IPagingArgument
 	{
 		IEnumerable<QueryTestCase<TQueryArgument, TSummary>> GenerateQueryArgument(IEnumerable<TSummary> Summaries);

@@ -24,6 +24,7 @@ using SF.Sys.Entities.Tests.EntityDetailToSummaryConverters;
 using SF.Sys.Entities.Tests.EntityTestors;
 using SF.Sys.Entities.AutoTest;
 using SF.Sys.Tests;
+using SF.Sys.Entities.Tests.AttributeTestSupports;
 
 namespace SF.Sys.Services
 {
@@ -45,6 +46,8 @@ namespace SF.Sys.Services
 
 			sc.AddTransient<ITestCaseProvider, DefaultEntityTestCaseProvider>();
 
+			sc.AddSingleton<IValueAssertProvider, CreateTimeValueAssertProvider>();
+			sc.AddSingleton<IValueAssertProvider, UpdateTimeValueAssertProvider>();
 			return sc;
 		}
 	}

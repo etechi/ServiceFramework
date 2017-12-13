@@ -71,9 +71,11 @@ namespace SF.Sys.Tests
 	public interface IValueAssert<T>
 	{
 		TestResult Assert(string Source,T ExpectValue,T TestValue);
+		bool IgnoreOtherAssert { get; }
 	}
 	public interface IValueAssertProvider
 	{
+		int Priority { get; }
 		IValueAssert<T> GetValueAssert<T>(PropertyInfo Prop);
 	}
 }

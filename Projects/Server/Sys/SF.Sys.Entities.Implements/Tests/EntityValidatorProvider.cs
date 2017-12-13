@@ -25,6 +25,54 @@ using SF.Sys.Tests;
 
 namespace SF.Sys.Entities.Tests
 {
+	//public interface IEntityPropertyValidator<TExpectEntityType, TTestEntityType>
+	//{
+
+	//}
+	//public interface IEntityPropertyValidator<TExpectEntityType, TExpectValueType,TTestEntityType,TTestValueType> : 
+	//	IEntityPropertyValidator<TExpectEntityType, TTestEntityType>
+	//{
+	//	TestResult Validate(
+	//		IValueAssert<TExpectValueType> ExpectAssert, 
+	//		IValueAssert<TTestValueType> TestAssert,
+	//		string TestIdent,
+	//		TExpectValueType ExpectValue, 
+	//		TTestValueType TestValue
+	//		);
+	//}
+	//public interface IEntityPropertyValidatorProvider
+	//{
+	//	IEntityPropertyValidator<TExpectEntityType, TTestEntityType> GetValidator<TExpectEntityType, TTestEntityType>(
+	//		PropertyInfo ExpectPropInfo, 
+	//		PropertyInfo TestPropInfo
+	//		);
+	//}
+	//public class DefaultEntityPropertyValidatorProvider : IEntityPropertyValidatorProvider
+	//{
+	//	class IEntityPropertyValidator<TExpectEntityType, TTestEntityType, TValueType> :
+	//		IEntityPropertyValidator<TExpectEntityType, TValueType, TTestEntityType, TValueType>
+	//	{
+	//		PropertyInfo ExpectPropInfo { get; }
+	//		PropertyInfo TestPropInfo { get; }
+
+	//		public TestResult Validate(
+	//			IValueAssert<TValueType> ExpectAssert,
+	//			IValueAssert<TValueType> TestAssert,
+	//			string TestIdent,
+	//			TValueType ExpectValue, 
+	//			TValueType TestValue
+	//			)
+	//		{
+	//			return TestAssert.Assert(TestIdent + ":" + TestPropInfo.Name, ExpectValue, TestValue);
+	//		}
+	//	}
+	//	public IEntityPropertyValidator<TExpectEntityType, TTestEntityType> GetValidator<TExpectEntityType, TTestEntityType>(PropertyInfo ExpectPropInfo, PropertyInfo TestPropInfo)
+	//	{
+	//		if (ExpectPropInfo.PropertyType != TestPropInfo.PropertyType)
+	//			return null;
+
+	//	}
+	//}
 	class EntityValidatorProvider
 	{
 		public class EntitytValidator<TExpect,TTest> 
@@ -77,6 +125,7 @@ namespace SF.Sys.Entities.Tests
 						typeof(string),
 						typeof(PropertyInfo)
 						).IsNotNull();
+
 		public Action<TExpect, TTest, string,List<TestResult>> GetValidator<TExpect,TTest>()
 		{
 			var key = (typeof(TExpect), typeof(TTest));
@@ -87,21 +136,26 @@ namespace SF.Sys.Entities.Tests
 			var argTest = Expression.Parameter(typeof(TTest));
 			var argIdent = Expression.Parameter(typeof(string));
 			var argResults = Expression.Parameter(typeof(List<TestResult>));
-			
+
 			var func = Expression.Block(
 						from p in typeof(TTest).AllPublicInstanceProperties()
 						where Entity<TTest>.KeyProperties.All(kp => kp.Name != p.Name) && !SkipProperty(p)
 						let vthType = typeof(IValueTestHelper<>).MakeGenericType(p.PropertyType)
 						let valueAssertType = typeof(IValueAssert<>).MakeGenericType(p.PropertyType)
 						let vth = MethodGetHelper.MakeGenericMethod(p.PropertyType).Invoke(ValueTestHelperCache, new[] { p })
-
+						let expectProp = typeof(TExpect).GetProperty(p.Name) ?? 
+							throw new InvalidOperationException($"{typeof(TExpect)}中找不到被测属性{p.Name}")
+						let expectValue = argExpect.GetMember(expectProp)
+						let convertedExpectValue= p.PropertyType==expectProp.PropertyType?
+								expectValue : 
+								throw new InvalidOperationException($"被测属性{typeof(TTest)}.{p.Name}类型为{p.PropertyType}和目标属性{typeof(TExpect)}.{p.Name}的类型{expectProp.PropertyType}不符")
 						select
 							argResults.CallMethod(
 								typeof(List<>).MakeGenericType<TestResult>().GetMethod(nameof(List<int>.Add)),
 								Expression.Call(
 									MethodValidate.MakeGenericMethod(p.PropertyType),
 									Expression.Constant(vth, valueAssertType),
-									argExpect.GetMember(p).To(p.PropertyType),
+									convertedExpectValue,
 									argTest.GetMember(p),
 									argIdent,
 									Expression.Constant(p)

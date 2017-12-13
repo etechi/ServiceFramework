@@ -71,7 +71,9 @@ namespace SF.Common.Documents.Management
 	}
 	public class DocumentEditable : DocumentBase
 	{
-		[Display(Name = "文档内容")]
+		/// <summary>
+		/// 文档内容
+		/// </summary>
 		[Html]
 		public string Content { get; set; }
 	}

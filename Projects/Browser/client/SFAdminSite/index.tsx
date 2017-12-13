@@ -19,7 +19,7 @@ var env = (window as any)["ENV"];
 
 function init(
     lib: ApiMeta.Library,
-    menuItems: api.SF$Management$MenuServices$MenuItem[],
+    menuItems: api.SF$Sys$MenuServices$MenuItem[],
     permissions: any//api.ServiceProtocol$Auth$Permission[]
 ) {
     //var modules=require("./modules").default;

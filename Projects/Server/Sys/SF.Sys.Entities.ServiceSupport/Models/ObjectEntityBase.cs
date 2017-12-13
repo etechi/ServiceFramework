@@ -59,6 +59,7 @@ namespace SF.Sys.Entities.Models
 		/// </summary>
 		[TableVisible]
 		[ReadOnly(true)]
+		[CreatedTime]
 		public virtual DateTime CreatedTime { get; set; }
 
 		/// <summary>
@@ -66,6 +67,7 @@ namespace SF.Sys.Entities.Models
 		/// </summary>
 		[TableVisible]
 		[ReadOnly(true)]
+		[UpdatedTime]
 		public virtual DateTime UpdatedTime { get; set; }
 
 

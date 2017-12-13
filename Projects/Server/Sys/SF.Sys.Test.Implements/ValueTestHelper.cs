@@ -34,6 +34,8 @@ namespace SF.Sys.Tests
 
 		public bool NextSampleSupported => NextSampleGenerators.Length > 0;
 
+		public bool IgnoreOtherAssert => false;
+
 		public ValueTestHelper(
 			IValueAssert<T>[] ValueAsserts,
 			IValueSampleGenerator<T>[] SampleGenerators,

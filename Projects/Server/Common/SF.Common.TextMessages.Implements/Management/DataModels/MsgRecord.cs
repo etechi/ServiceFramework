@@ -64,7 +64,6 @@ namespace SF.Common.TextMessages.Management.DataModels
 		[Index("status", Order = 2)]
 		[Index("user", Order = 2)]
 		[Index("service", Order = 2)]
-		[Display(Name = "")]
 		public override DateTime Time { get; set; }
 
 		/// <summary>

@@ -14,40 +14,43 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using SF.Sys.Annotations;
+using SF.Sys.Tests;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace SF.Sys.Tests.ValueAsserts
+namespace SF.Sys.Entities.Tests.AttributeTestSupports
 {
 
-	class DefaultValueAssertProvider : IValueAssertProvider
+	class UpdateTimeValueAssertProvider : IValueAssertProvider
 	{
 		ITestAssert TestAssert { get; }
 
-		public int Priority => 10000;
+		public int Priority => 0;
 
-		class DefaultValueAssert<T> : IValueAssert<T>
+		class ValueAssert<T> : IValueAssert<T>
 		{
 			ITestAssert TestAssert { get; }
 
-			public bool IgnoreOtherAssert => false;
+			public bool IgnoreOtherAssert => true;
 
-			public DefaultValueAssert(ITestAssert TestAssert)
+			public ValueAssert(ITestAssert TestAssert)
 			{
 				this.TestAssert = TestAssert;
 			}
 			public TestResult Assert(string Source,T ExpectValue, T TestValue)
 			{
-				if (Poco.DeepCompare<T>(ExpectValue,TestValue) == 0)
+				//if (Poco.DeepCompare<T>(ExpectValue,TestValue) == 0)
 					return TestResult.Success;
-				else
-					return new AssertResult<T>(Source,ExpectValue, TestValue);
-
+				//else
+				//return new AssertResult<T>(Source,ExpectValue, TestValue);
 			}
 		}
 		public IValueAssert<T> GetValueAssert<T>(PropertyInfo Prop)
 		{
-			return new DefaultValueAssert<T>(TestAssert);
+			if(Prop.IsDefined(typeof(UpdatedTimeAttribute)))
+				return new ValueAssert<T>(TestAssert);
+			return null;
 		}
 	}
 }

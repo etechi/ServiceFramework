@@ -49,9 +49,11 @@ namespace SF.Sys.Entities.Tests.EntityTestors
 			var svc = ctx.Manager;
 			var createCount = 10;
 			var Assert = ctx.Assert;
+
 			var createArguments = new TEditable[createCount];
 			for (var i = 0; i < createArguments.Length; i++)
 				createArguments[i] = await ctx.Helper.NextSample(new TEditable(), ctx.SampleSeed);
+
 			var createIdents = new TKey[createCount];
 
 			//创建对象
@@ -91,8 +93,12 @@ namespace SF.Sys.Entities.Tests.EntityTestors
 
 			//检查批量实体获取
 			var batchDetails = await svc.BatchGetAsync(createIdents);
-			Assert.Equal("批量获取的实体和单独获取的实体不符",details, batchDetails);
-
+			for (var i = 0; i < createCount; i++)
+			{
+				var key = Entity<TDetail>.GetKey<TKey>(batchDetails[i]);
+				var createResult = createResults.SingleOrDefault(r => Poco.DeepEquals(Entity<TEditable>.GetKey<TKey>(r), key));
+				 Assert.Success("批量获取的实体和单独获取的实体不符", ctx.Helper.ValidateDetail(createResult, batchDetails[i]));
+			}
 
 			var querySeedSummaries = details.Select(d => ctx.Helper.ConvertToSummary(d)).ToArray();
 			//检查查询

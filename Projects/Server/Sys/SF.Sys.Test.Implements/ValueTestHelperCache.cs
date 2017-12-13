@@ -44,8 +44,14 @@ namespace SF.Sys.Tests
 			var key = (typeof(T), Prop);
 			if (Helpers.TryGetValue(key, out var h))
 				return (IValueTestHelper<T>)h;
+			bool TakeOtherAssert = true;
 			return (IValueTestHelper<T>)Helpers.GetOrAdd(key, new ValueTestHelper<T>(
-				ValueAssertProviders.Select(p => p.GetValueAssert<T>(Prop)).Where(p => p != null).ToArray(),
+				ValueAssertProviders
+					.OrderBy(p=>p.Priority)
+					.Select(p => p.GetValueAssert<T>(Prop))
+					.Where(p => p != null)
+					.TakeWhile(p=> { var re = TakeOtherAssert; TakeOtherAssert = !p.IgnoreOtherAssert; return re; })
+					.ToArray(),
 				ValueSampleGeneratorProviders.Select(p => p.GetGenerator<T>(Prop)).Where(p => p != null).ToArray(),
 				ValueValidatorProviders.Select(p => p.GetValidator<T>(Prop)).Where(p => p != null).ToArray()
 				));

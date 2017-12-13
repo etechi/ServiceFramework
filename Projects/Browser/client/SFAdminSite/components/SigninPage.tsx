@@ -21,8 +21,8 @@ export default class SigninPage extends React.Component<SigninPageProps, state> 
         var env = (window as any)["ENV"];
         var sid=env.identityServiceId;
 
-        api.Identity.Signin({
-            Credential: this.state.account,
+        api.User.Signin({
+            Ident: this.state.account,
             Password: this.state.password,
             ReturnToken: false
         }, {
