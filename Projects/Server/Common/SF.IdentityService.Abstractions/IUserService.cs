@@ -204,9 +204,10 @@ namespace SF.Auth.IdentityServices
 		Task Signin(long UserId,string ClientId,int? Expires);
 		Task Signout();
 	}
-	public interface IAccessTokenGenerator
+	public interface IAccessTokenHandler
 	{
 		Task<string> Generate(long UserId, string ClientId, string[] Scopes,DateTime? Expires);
+		Task<long> Validate(string Token);
 	}
 	/// <summary>
 	/// 用户服务

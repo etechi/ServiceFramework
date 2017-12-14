@@ -56,9 +56,8 @@ namespace SF.Auth.IdentityServices
 		}
 		public Task<long?> GetCurUserId()
 		{
-			//var re = Setting.AccessToken.Value;
-			//return Task.FromResult(re?.User?.GetUserIdent());
-			return Task.FromResult((long?)null);
+			var re = Setting.AccessToken.Value;
+			return Task.FromResult(re?.User?.GetUserIdent());
 		}
 		public async Task<User> GetCurUser()
 		{
@@ -77,14 +76,13 @@ namespace SF.Auth.IdentityServices
 			var idata = await GetIdentityData(uid);
 			return idata.SecurityStamp;
 		}
-		public Task<long> ValidateAccessToken(string AccessToken)
+		public async Task<long> ValidateAccessToken(string AccessToken)
 		{
-			//var p = Setting.AccessTokenHandler.Value.Validate(AccessToken);
+			var uid = await Setting.AccessTokenHandler.Value.Validate(AccessToken);
 			//var id = p.GetUserIdent();
 			//if (!id.HasValue)
 			//	throw new PublicArgumentException("访问令牌问包含用户ID");
-			//return Task.FromResult(id.Value);
-			return Task.FromResult(0L);
+			return uid;
 		}
 
 
@@ -113,7 +111,7 @@ namespace SF.Auth.IdentityServices
 				BizIdent
 				);
 		}
-		VerifyCode CheckVerifyCode(ConfirmMessageType Type,string Ident,long UserId,string Code)
+		VerifyCode CheckVerifyCode(ConfirmMessageType Type,string Ident,long? UserId,string Code)
 		{
 			var verifyCode = Setting.VerifyCodeCache.Value.Get(
 				$"{Type}\n{Ident}\n{UserId}"
@@ -128,7 +126,7 @@ namespace SF.Auth.IdentityServices
 
 		public async Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg)
 		{
-			var vc = CheckVerifyCode(ConfirmMessageType.找回密码, Arg.Credential, 0, Arg.VerifyCode);
+			var vc = CheckVerifyCode(ConfirmMessageType.找回密码, Arg.Credential, null, Arg.VerifyCode);
 
 			var stamp = Bytes.Random(16);
 			var newPasswordHash = Setting.PasswordHasher.Value.Hash(Arg.NewPassword, stamp);
@@ -163,6 +161,9 @@ namespace SF.Auth.IdentityServices
 
 		public async Task<string> SetPassword(SetPasswordArgument Arg)
 		{
+
+			if (Arg.ClientId.IsNullOrEmpty())
+				throw new PublicArgumentException("缺少客户端ID");
 			var uid = await EnsureCurUserId();
 			var iddata = await GetIdentityData(uid);
 			var hash = iddata.PasswordHash;
@@ -198,6 +199,8 @@ namespace SF.Auth.IdentityServices
 			if (string.IsNullOrWhiteSpace(Arg.Password))
 				throw new PublicArgumentException("请输入密码");
 
+			if(Arg.ClientId.IsNullOrEmpty())
+				throw new PublicArgumentException("缺少客户端ID");
 
 			UserCredential ui = null;
 			IUserCredentialProvider identProvider = null;
@@ -271,7 +274,7 @@ namespace SF.Auth.IdentityServices
 		}
 		public async Task<string> CreateAccessToken(long Id,string ClientId,DateTime? Expires)
 		{
-			return await Setting.AccessTokenGenerator.Value.Generate(
+			return await Setting.AccessTokenHandler.Value.Generate(
 				Id,
 				ClientId,
 				null,
@@ -314,6 +317,9 @@ namespace SF.Auth.IdentityServices
 			if (string.IsNullOrWhiteSpace(Arg.Credential))
 				throw new PublicArgumentException("请输入用户标识");
 
+			if (Arg.ClientId.IsNullOrEmpty())
+				throw new PublicArgumentException("缺少客户端ID");
+
 			var CredentialProvider = GetCredentialProvider(Arg.CredentialProvider);
 
 			var msg = await CredentialProvider.VerifyFormat(Arg.Credential);
@@ -325,7 +331,7 @@ namespace SF.Auth.IdentityServices
 				CheckVerifyCode(
 					ConfirmMessageType.注册, 
 					Arg.Credential, 
-					0, 
+					null, 
 					Arg.VerifyCode
 					);
 

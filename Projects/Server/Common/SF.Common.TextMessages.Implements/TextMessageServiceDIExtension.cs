@@ -59,8 +59,8 @@ namespace SF.Sys.Services
 				 await sim.DefaultService<IMsgRecordManager, EntityMsgRecordManager>(null).Ensure(sp, scope);
 				 await sim.DefaultService<IMsgActionRecordManager, EntityMsgActionRecordManager>(null).Ensure(sp, scope);
 
-				 await sim.DefaultService<IMsgProvider, DebugMsgProvider>(null).WithIdent("debug").Ensure(sp, scope);
-				 await sim.DefaultService<IMsgProvider, SystemEMailProvider>(null).WithIdent("email").Ensure(sp, scope);
+				 await sim.Service<IMsgProvider, DebugMsgProvider>(null).WithIdent("debug").Ensure(sp, scope);
+				 await sim.Service<IMsgProvider, SystemEMailProvider>(null).WithIdent("email").Ensure(sp, scope);
 			 });
 			
 			return sc;

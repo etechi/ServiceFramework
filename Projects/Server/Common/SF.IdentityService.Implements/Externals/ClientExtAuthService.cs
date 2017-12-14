@@ -29,7 +29,7 @@ namespace SF.Auth.IdentityServices.Externals
 		BaseExtAuthService,
 		IClientExtAuthService
 	{
-		public Lazy<IAccessTokenGenerator> AccessTokenGenerator { get; }
+		public Lazy<IAccessTokenHandler> AccessTokenGenerator { get; }
 		public Lazy<IUserProfileService> UserProfileService { get; }
 		
 		public ClientExtAuthService(
@@ -41,7 +41,7 @@ namespace SF.Auth.IdentityServices.Externals
 			 Lazy<IMediaManager> MediaManager,
 			 ILogger<ClientExtAuthService> Logger,
 			Lazy<IUserProfileService> UserProfileService,
-			Lazy<IAccessTokenGenerator> AccessTokenGenerator
+			Lazy<IAccessTokenHandler> AccessTokenGenerator
 			) : base(
 				Resolver, 
 				UserCredentialStorage, 

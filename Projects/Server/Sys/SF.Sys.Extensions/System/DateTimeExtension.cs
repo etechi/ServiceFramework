@@ -8,7 +8,11 @@ namespace SF.Sys
 	public static class DateTimeExtension
 	{
 		public static DateTime JSDateOffset { get; } = new DateTime(1970, 1, 1).AddHours(8);
-
+		/// <summary>
+		/// 转换成JS格式时间，当前时间必须是UTC格式
+		/// </summary>
+		/// <param name="time"></param>
+		/// <returns></returns>
 		public static long ToJsTime(this DateTime time)
 		{
 			return (long)time.Subtract(JSDateOffset).TotalMilliseconds;

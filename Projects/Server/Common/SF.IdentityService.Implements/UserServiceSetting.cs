@@ -36,7 +36,7 @@ namespace SF.Auth.IdentityServices
 		public Lazy<IUserStorage> IdentStorage { get; set; }
 		public Lazy<IUserCredentialStorage> CredentialStorage { get; set; }
 		public Lazy<IClientService> ClientService { get; set; }
-		//public Lazy<IAccessToken> AccessToken{ get; set; }
+		public Lazy<IAccessToken> AccessToken{ get; set; }
 		//public Lazy<IAccessTokenHandler> AccessTokenHandler { get; set; }
 		public Lazy<IPasswordHasher> PasswordHasher { get; set; }
 		public Lazy<IServiceInstanceDescriptor> ServiceInstanceDescriptor { get; set; }
@@ -46,7 +46,7 @@ namespace SF.Auth.IdentityServices
 		public NamedServiceResolver<IUserCredentialProvider> CredentialProviderResolver { get; set; }
 		public string DefaultIdentityCredentialProvider { get; set; }
 		public IEnumerable<IUserCredentialProvider> IdentityCredentialProviders { get; set; }
-		public Lazy<IAccessTokenGenerator> AccessTokenGenerator { get; set; }
+		public Lazy<IAccessTokenHandler> AccessTokenHandler { get; set; }
 
 	}
 

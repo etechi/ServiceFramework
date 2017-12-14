@@ -250,7 +250,7 @@ namespace SF.Sys.Services
 					var rcfg = await ConfigResolve(cfg, sp, svcId, children,0);
 					var nsvcId = (await ServiceCreator(parent, rcfg, scfg)).Id;
 					if (nsvcId != svcId)
-						throw new InvalidOperationException($"服务初始化{typeof(T)}@{typeof(I)}返回ID不一致：第一次：{svcId},第二次：{nsvcId}");
+						throw new InvalidOperationException($"服务初始化{typeof(T)}@{typeof(I)}返回ID不一致：第一次：{svcId},第二次：{nsvcId} (如果服务有多个实现，请不要用DefaultService()函数来创建服务)");
 
 					await manager.SetEntityState(ObjectKey.From(svcId), EntityLogicState.Enabled);
 					return svcId;

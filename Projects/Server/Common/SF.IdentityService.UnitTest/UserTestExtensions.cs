@@ -5,6 +5,7 @@ using SF.Sys.Services;
 using SF.Sys.Auth;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SF.Sys.Data;
+using SF.Sys.Clients;
 
 namespace SF.IdentityService.UnitTest
 {
@@ -25,7 +26,8 @@ namespace SF.IdentityService.UnitTest
 			this IServiceProvider sp,
 			string account = null,
 			string password = "123456",
-			bool returnToken=true
+			bool returnToken=false,
+			string client= "app.android"
 			)
 		{
 			var svc = sp.Resolve<IUserService>();
@@ -33,7 +35,8 @@ namespace SF.IdentityService.UnitTest
 			{
 				Ident = account,
 				Password = password,
-				ReturnToken = returnToken
+				ReturnToken = returnToken,
+				ClientId = client
 			});
 			if (returnToken)
 			{
@@ -49,23 +52,20 @@ namespace SF.IdentityService.UnitTest
 
 		public static async Task<(User user, string account, string password)> UserCreate(
 			this IServiceProvider sp,
-			long id=0,
 			string account = null,
-			string name=null,
-			string entity="测试用户",
+			string name = null,
+			string entity = "测试用户",
 			string password = "123456",
-			bool ReturnToken =true
+			bool ReturnToken = false,
+			string client = "app.android"
 		)
 		{
 			var svc = sp.Resolve<IUserService>();
-			if (id == 0)
-			{
-				var ig = sp.Resolve<IIdentGenerator>();
-				id = await ig.GenerateAsync("测试");
-			}
-			account = account ?? "131" + id.ToString().PadLeft(8,'0');
-			name = name ?? "测试用户" + id;
-			var icon = "icon" + id;
+			var ig = sp.Resolve<IIdentGenerator>();
+			var postfix = await ig.GenerateAsync("测试");
+			account = account ?? "131" + postfix.ToString().PadLeft(8, '0');
+			name = name ?? "测试用户" + postfix;
+			var icon = "icon" + postfix;
 
 			await svc.SendCreateIdentityVerifyCode(new SendCreateIdentityVerifyCodeArgument
 			{
@@ -75,44 +75,49 @@ namespace SF.IdentityService.UnitTest
 			var accessToken = await svc.Signup(
 				new SignupArgument
 				{
-					VerifyCode="123456",
+					VerifyCode = "000000",
 					Credential = account,
 					Password = password,
-					User = new  User
+					User = new User
 					{
-						Id = id,
+						Id = postfix,
 						//Entity = entity,
 						Name = name,
-						Icon= icon
+						Icon = icon
 					},
-					ReturnToken = ReturnToken
+					ReturnToken = ReturnToken,
+					ClientId= client
 				}, true
 				);
 
-
-			var ii = await svc.GetUser(id);
-			Assert.AreEqual(name, ii.Name);
-			Assert.AreEqual(icon, ii.Icon);
-			//Assert.AreEqual(entity, ii.Entity);
-			Assert.AreEqual(id, ii.Id);
+			User user;
 			if (ReturnToken)
 			{
 				var uid = await svc.ValidateAccessToken(accessToken);
-				Assert.AreEqual(id, uid);
+				Assert.AreEqual(postfix, uid);
+
+				user = await svc.GetUser(uid);
+				Assert.AreEqual(name, user.Name);
+				Assert.AreEqual(icon, user.Icon);
+				//Assert.AreEqual(entity, ii.Entity);
+				//Assert.AreEqual(postfix, ii.Id);
 			}
 			else
 			{
-				var uii = await svc.GetCurUser();
-				Assert.AreEqual(id, uii.Id);
-				Assert.AreEqual(name, uii.Name);
-				Assert.AreEqual(icon, uii.Icon);
+				var at = sp.Resolve<IAccessToken>();
+				var uid=at.User.GetUserIdent();
+
+				user = await svc.GetCurUser();
+				Assert.AreEqual(uid.Value, user.Id);
+
+				Assert.AreEqual(name, user.Name);
+				Assert.AreEqual(icon, user.Icon);
 			//	Assert.AreEqual(entity, uii.);
-				Assert.AreEqual(id, uii.Id);
 			}
 
 			var uid2 = await sp.UserSignin(account, password);
-			Assert.AreEqual(id, uid2);
-			return (ii,account,password);
+			Assert.AreEqual(user.Id, uid2);
+			return (user, account,password);
 		}
 	}
 	

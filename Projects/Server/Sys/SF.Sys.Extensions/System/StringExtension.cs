@@ -62,6 +62,14 @@ namespace SF.Sys
 		{
 			return !string.IsNullOrWhiteSpace(str);
 		}
+		public static string EnsureStart(this string str,string start)
+		{
+			return str.StartsWith(start) ? str : start + str;
+		}
+		public static string EnsureEnd(this string str, string end)
+		{
+			return str.EndsWith(end) ? str : str+end;
+		}
 		public static string TrimEnd(this string str,string end)
 		{
 			if (str.EndsWith(end))

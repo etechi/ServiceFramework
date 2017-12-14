@@ -50,7 +50,7 @@ namespace SF.IdentityService.UnitTest
 				var re = await svc.UserCreate();
 				await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
 				{
-					await svc.UserCreate(0, re.account);
+					await svc.UserCreate(re.account);
 				});
 				return 0;
 			}
@@ -106,7 +106,8 @@ namespace SF.IdentityService.UnitTest
 							new SetPasswordArgument
 							{
 								NewPassword = newPassword,
-								OldPassword = re.password
+								OldPassword = re.password,
+								ClientId= "app.android"
 							});
 					await svc.Signout();
 					Assert.IsFalse((await svc.GetCurUserId()).HasValue);

@@ -32,7 +32,8 @@ namespace SF.Sys.Services
 				.AddClientStore<ClientStore>()
 				.AddProfileService<ProfileService>()
 				.AddResourceStore<ResourceStore>();
-			sc.AddTransient<IAccessTokenGenerator, AccessTokenGenerator>();
+			sc.AddTransient<ITokenService, DefaultTokenService>();
+			sc.AddTransient<IAccessTokenHandler, AccessTokenHandler>();
 			return sc;
 		}
 	}

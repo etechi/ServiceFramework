@@ -31,18 +31,23 @@ using SF.Auth.IdentityServices.Externals;
 
 namespace SF.Sys.Services
 {
-	class NotImplementedAccessTokenGenerator : IAccessTokenGenerator
+	class NotImplementedAccessTokenHandler : IAccessTokenHandler
 	{
 		public Task<string> Generate(long UserId, string ClientId, string[] Scopes, DateTime? Expires)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<long> Validate(string Token)
 		{
 			throw new NotImplementedException();
 		}
 	}
 	public static class IdentityServiceDIExtension 
 	{
-		public static IServiceCollection AddNotImplementedAccessTokenGenerator(this IServiceCollection sc)
+		public static IServiceCollection AddNotImplementedAccessTokenHandler(this IServiceCollection sc)
 		{
-			sc.AddSingleton<IAccessTokenGenerator, NotImplementedAccessTokenGenerator>();
+			sc.AddSingleton<IAccessTokenHandler, NotImplementedAccessTokenHandler>();
 			return sc;
 		}
 		public static IServiceCollection AddIdentityService(this IServiceCollection sc,string TablePrefix=null,bool VerifyCodeDisabled=false)

@@ -26,20 +26,22 @@ using IdentityServer4.Configuration;
 using IdentityServer4.Validation;
 using System;
 using System.Security.Claims;
+using SF.Sys.TimeServices;
 
 namespace SF.Auth.IdentityServices.IdentityServer4Impl
 {
-	public class AccessTokenGenerator : IAccessTokenGenerator
+	public class AccessTokenHandler : IAccessTokenHandler
 	{
 		ITokenService TokenService { get; }
 		IdentityServerOptions Options { get; }
 		IClientStore ClientStore { get; }
 		IResourceStore ResourceStore { get; }
-
-		public AccessTokenGenerator(
+		ITimeService TimeService { get; }
+		public AccessTokenHandler(
 			ITokenService TokenService, 
 			IClientStore ClientStore , 
 			IResourceStore ResourceStore ,
+			ITimeService TimeService,
 			IdentityServerOptions Options
 			)
 		{
@@ -47,6 +49,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			this.Options = Options;
 			this.ClientStore = ClientStore;
 			this.ResourceStore = ResourceStore;
+			this.TimeService = TimeService;
 
 		}
 		public async Task<string> Generate(long UserId, string ClientId, string[] Scopes,DateTime? Expires)
@@ -57,12 +60,16 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			var client = await ClientStore.FindClientByIdAsync(ClientId);
 			if (client == null)
 				throw new ArgumentException($"找不到客户端:{ClientId}");
-
+			
 
 			var Request = new TokenCreationRequest();
 			Request.Subject = new ClaimsPrincipal(
 			   new ClaimsIdentity(
-				   new[] { new Claim("sub", UserId.ToString()) },
+				   new[] {
+					   new Claim("sub", UserId.ToString()),
+						new Claim("auth_time", TimeService.Now.ToJsTime().ToString()),
+						new Claim("idp", "SFAuth")
+				   },
 				   "SFAuth"
 				   )
 			   );
@@ -71,16 +78,24 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			Request.ValidatedRequest = new ValidatedRequest
 			{
 				Subject = Request.Subject,
-				Options = Options
+				Options = Options,
 			};
-			Request.ValidatedRequest.SetClient(client);
-			
-			Request.Resources = await ResourceStore.FindEnabledResourcesByScopeAsync(Scopes);
 
+			Request.ValidatedRequest.SetClient(client);
+			if(Request.ValidatedRequest.AccessTokenLifetime ==0)
+				Request.ValidatedRequest.AccessTokenLifetime = 3600;
+
+			Request.Resources = await ResourceStore.FindEnabledResourcesByScopeAsync(Scopes ?? client.AllowedScopes);
+			
 			var Token = await TokenService.CreateAccessTokenAsync(Request);
 			Token.Issuer = Options.IssuerUri;
 			var TokenValue = await TokenService.CreateSecurityTokenAsync(Token);
 			return TokenValue;
+		}
+
+		public Task<long> Validate(string Token)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }
