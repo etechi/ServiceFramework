@@ -24,6 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
+    <ProjectReference Include="..\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
+    <ProjectReference Include="..\SF.Sys.Services.MSDI\SF.Sys.Services.MSDI.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
   </ItemGroup>
 

@@ -326,7 +326,7 @@ namespace SF.Sys.Services
 			long? ParentId=null
 			) where T : I => sc.InitDefaultService<I, T>(null, Config,ParentId);
 
-		public static async Task<T> TestService<I,T>(
+		public static async Task<T> TestManagedService<I,T>(
 			this IServiceProvider ServiceProvider,
 			Func<IServiceInstanceManager, IServiceInstanceInitializer<I>> newInitializer,
 			Func<I, Task<T>> Action,

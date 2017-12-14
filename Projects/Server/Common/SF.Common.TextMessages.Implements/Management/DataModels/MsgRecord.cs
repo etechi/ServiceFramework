@@ -44,7 +44,7 @@ namespace SF.Common.TextMessages.Management.DataModels
 		/// 策略Id
 		/// </summary>
 		[Index]
-		public long PolicyId { get; set; }
+		public long? PolicyId { get; set; }
 		
 		[ForeignKey(nameof(PolicyId))]
 		public MsgPolicy Policy { get; set; }

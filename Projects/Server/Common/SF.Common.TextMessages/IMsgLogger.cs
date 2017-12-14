@@ -18,7 +18,7 @@ namespace SF.Common.TextMessages
 		Task<long> Add(
 			long? DstUserId,
 			Message Message,
-			Func<IMsgActionLogger,Task> Action
+			Func<IMsgActionLogger,Task<long>> Action
 			);
 	}
 

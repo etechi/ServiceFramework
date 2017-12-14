@@ -195,7 +195,7 @@ namespace SF.Sys.Entities.Tests.EntityTestors
 			{
 				await ServiceProvider.WithScope(async isp =>
 				{
-					await ServiceProvider.TestService<TManager, int>(
+					await ServiceProvider.TestManagedService<TManager, int>(
 						((IAutoTestEntity<TManager>)m).ServiceConfig,
 						async svc =>
 						{

@@ -79,7 +79,7 @@ namespace SF.Common.TextMessages.Management
 				}
 			}
 		}
-		public override async Task<long> Add(long? targetUserId, Message message, Func<IMsgActionLogger, Task> Action)
+		public override async Task<long> Add(long? targetUserId, Message message, Func<IMsgActionLogger, Task<long>> Action)
 		{
 			return await ScopedDataContext.Use(async ctx => {
 				var id = await IdentGenerator.GenerateAsync<DataModels.MsgRecord>();
@@ -105,13 +105,13 @@ namespace SF.Common.TextMessages.Management
 				};
 				try
 				{
-					await base.Add(
+					rec.PolicyId=await base.Add(
 						targetUserId,
 						message,
 						async baseActionLogger =>
 						{
 							al.BaseActionLogger = baseActionLogger;
-							await Action(al);
+							return await Action(al);
 						});
 					rec.Status = SendStatus.Success;
 					rec.CompletedActionCount = al.Completed;

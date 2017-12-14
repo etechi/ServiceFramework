@@ -18,7 +18,7 @@ namespace SF.Common.TextMessages
         }
 
 
-		public virtual async Task<long> Add(long? targetUserId, Message message, Func<IMsgActionLogger, Task> Action)
+		public virtual async Task<long> Add(long? targetUserId, Message message, Func<IMsgActionLogger, Task<long>> Action)
 		{
 			var text = $"用户:{targetUserId} 消息:{message.ToString()}";
 

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Hosting.Implements\SF.Sys.Hosting.Implements.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Logging.Implements\SF.Sys.Logging.Implements.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Services.Runtime\SF.Sys.Services.Runtime.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Services\SF.Sys.Services.csproj" />
+  </ItemGroup>
+
+</Project>

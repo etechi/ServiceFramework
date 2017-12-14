@@ -27,6 +27,7 @@ using SF.Sys.Services.Management;
 using SF.Sys.Entities;
 using SF.Sys.Linq;
 using SF.Sys.Auth;
+using SF.Auth.IdentityServices.Externals;
 
 namespace SF.Sys.Services
 {
@@ -56,6 +57,10 @@ namespace SF.Sys.Services
 			sc.AddManagedScoped<IUserCredentialStorage, UserCredentialStorage>();
 			sc.AddTransient<IUserStorage>(sp => sp.Resolve<IUserManager>());
 			sc.AddSingleton<IUserProfileService, UserProfileService>();
+			sc.AddSingleton<IClientExtAuthService, ClientExtAuthService>();
+			sc.AddScoped<IClientExtAuthService, ClientExtAuthService>();
+			sc.AddScoped<IPageExtAuthService, PageExtAuthService>();
+
 			//sc.GenerateEntityManager("DocumentCategory");
 			//sc.GenerateEntityManager("Document");
 

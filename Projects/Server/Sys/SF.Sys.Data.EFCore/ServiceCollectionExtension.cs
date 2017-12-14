@@ -30,7 +30,9 @@ namespace SF.Sys.Services
 {
 	public static class EFCoreServiceCollectioExtension
 	{
-		
+		public static IServiceCollection AddEFCoreDataEntity(this IServiceCollection sc)
+			=> sc.AddEFCoreDataEntity<DbContext>();
+
 		public static IServiceCollection AddEFCoreDataEntity<TDbContext>(this IServiceCollection sc)
 			where TDbContext : Microsoft.EntityFrameworkCore.DbContext
 		{
@@ -38,6 +40,11 @@ namespace SF.Sys.Services
 				new DataContextProviderFactory<TDbContext>(
 					()=>x.GetRequiredService<TDbContext>()
 					)
+				);
+
+			sc.AsMicrosoftServiceCollection().AddEFCoreDbContext<TDbContext>(
+				(IServiceProvider isp, DbContextOptionsBuilder options) =>
+					options.UseSqlServer(isp.Resolve<DbConnection>())
 				);
 			return sc;
 		}

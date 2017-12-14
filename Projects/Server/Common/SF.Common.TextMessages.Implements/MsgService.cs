@@ -50,9 +50,10 @@ namespace SF.Common.TextMessages
 				message,
 				async (al) =>
 				{
-					var args = await ArgumentFactory.Create(targetId, message);
+					var re = await ArgumentFactory.Create(targetId, message);
+
 					List<Exception> Errors = null;
-					foreach (var a in args)
+					foreach (var a in re.Args)
 					{
 						try
 						{
@@ -66,7 +67,8 @@ namespace SF.Common.TextMessages
 								}
 								return await p.Send(a);
 							});
-						}catch(Exception ex)
+						}
+						catch (Exception ex)
 						{
 							if (Errors == null)
 								Errors = new List<Exception>();
@@ -80,6 +82,7 @@ namespace SF.Common.TextMessages
 						else
 							throw new AggregateException(Errors.ToArray());
 					}
+					return re.PolicyId;
 				}
 			);
 

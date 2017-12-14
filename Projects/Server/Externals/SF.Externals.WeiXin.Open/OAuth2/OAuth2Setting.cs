@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SF.Externals.WeiXin.Open.SiteOAuth2
+namespace SF.Externals.WeiXin.Open.OAuth2
 {
 
 	/// <summary>

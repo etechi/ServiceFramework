@@ -23,9 +23,14 @@ namespace SF.Common.TextMessages
 		Task<string> Send(MsgSendArgument Argument);
 	}
 	
+	public class MsgArgumentResult
+	{
+		public MsgSendArgument[] Args { get; set; }
+		public long PolicyId { get; set; }
+	}
 
 	public interface IMsgArgumentFactory
 	{
-		Task<MsgSendArgument[]> Create(long? TargetId, Message Message);
+		Task<MsgArgumentResult> Create(long? TargetId, Message Message);
 	}
 }

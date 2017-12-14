@@ -176,7 +176,7 @@ namespace SF.Sys.Services
 				{
 					var isr = sp.Resolver();
 					using (isr.WithScopeService(CurScopeId))
-						return await sp.Invoke(Callback);
+						return await sp.WithServices<S, Task<T>>(Callback);
 				}
 				);
 			}

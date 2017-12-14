@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Common\SF.Common.TextMessages\SF.Common.TextMessages.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Common\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Caching\SF.Sys.Caching.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Settings.Supports\SF.Sys.Settings.Supports.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Settings\SF.Sys.Settings.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Threading\SF.Sys.Threading.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.TimeServices\SF.Sys.TimeServices.csproj" />

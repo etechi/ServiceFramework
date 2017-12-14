@@ -11,7 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SF.Externals.WeiXin.Open.SiteOAuth2
+namespace SF.Externals.WeiXin.Open.OAuth2
 {
 	public class AccessToken
 	{

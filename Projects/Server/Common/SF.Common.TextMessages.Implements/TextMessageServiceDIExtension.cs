@@ -48,7 +48,14 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IMsgLogger,EntityMsgLogger>();
 
 			sc.AddManagedTransient<IMsgProvider, SystemEMailProvider>();
-			sc.AddSingleton<ITextMessageService, MsgService>();
+			sc.AddManagedScoped<ITextMessageService, MsgService>();
+
+			sc.InitServices("文本消息服务",async (sp, sim, scope) =>
+			 {
+				 await sim.DefaultService<ITextMessageService, MsgService>(new MsgServiceSetting { }).Ensure(sp, scope);
+				 await sim.DefaultService<IMsgProvider, SystemEMailProvider>(null).Ensure(sp, scope);
+			 });
+			
 			return sc;
 		}
 		//public static IServiceCollection AddSimPhoneTextMessageService(this IServiceCollection sc)

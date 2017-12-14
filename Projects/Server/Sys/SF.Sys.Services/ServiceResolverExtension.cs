@@ -72,33 +72,37 @@ namespace SF.Sys.Services
 			=> ServiceProvider.Resolver().Resolve<T>(ServiceId);
 
 
-		public static T WithScope<T>(this IServiceProvider sp, Func<IServiceProvider, T> action)
+		
+		public static async Task WithScope(this IServiceProvider sp, Func<IServiceProvider, Task> action)
 		{
 			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
-				return action(s.ServiceProvider);
+				await action(s.ServiceProvider);
 		}
 		public static async Task<T> WithScope<T>(this IServiceProvider sp, Func<IServiceProvider, Task<T>> action)
 		{
 			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
 				return await action(s.ServiceProvider);
 		}
-		public static async Task<T> WithScope<S, T>(this IServiceProvider sp, Func<S, Task<T>> action)
+		
+
+		public static T WithScope<T>(this IServiceProvider sp, Func<IServiceProvider, T> action)
 		{
 			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
-				return await s.ServiceProvider.Invoke(action);
+				return action(s.ServiceProvider);
 		}
-
-
 		public static void WithScope(this IServiceProvider sp, Action<IServiceProvider> action)
 		{
 			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
 				action(s.ServiceProvider);
 		}
-		public static async Task WithScope(this IServiceProvider sp, Func<IServiceProvider, Task> action)
+
+	
+		public static async Task<T> WithScopedServices<S, T>(this IServiceProvider sp, Func<S, Task<T>> action)
 		{
 			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
-				await action(s.ServiceProvider);
+				return await s.ServiceProvider.WithServices(action);
 		}
+
 		public static IEnumerable<T> GetServices<T>(this IServiceProvider ServiceProvider, long? ScopeServiceId = null, string Name = null)
 		{
 			return ServiceProvider.Resolver().ResolveServices(
@@ -197,7 +201,7 @@ namespace SF.Sys.Services
 		}
 		static System.Collections.Concurrent.ConcurrentDictionary<(Type,Type), Lazy<Delegate>> Invokers = 
 			new System.Collections.Concurrent.ConcurrentDictionary<(Type, Type), Lazy<Delegate>>();
-		public static R Invoke<T,R>(this IServiceProvider ServiceProvider, Func<T,R> Func,long? ScopeId=null)
+		public static R WithServices<T,R>(this IServiceProvider ServiceProvider, Func<T,R> Func,long? ScopeId=null)
 		{
 			var key = (typeof(T), typeof(R));
 			if (!Invokers.TryGetValue(key, out var l))
@@ -205,9 +209,9 @@ namespace SF.Sys.Services
 			var invoke=(Func< Func <T, R >, IServiceResolver, long ?, R>)l.Value;
 			return invoke(Func, ServiceProvider.Resolver(),ScopeId);
 		}
-		public static void Invoke<T>(this IServiceProvider ServiceProvider, Action<T> Func, long? ScopeId)
+		public static void WithServices<T>(this IServiceProvider ServiceProvider, Action<T> Func, long? ScopeId)
 		{
-			ServiceProvider.Invoke((T a) =>
+			ServiceProvider.WithServices((T a) =>
 			{
 				Func(a);
 				return 0;

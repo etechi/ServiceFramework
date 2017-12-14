@@ -30,8 +30,10 @@ namespace SF.Common.TextMessages.Management
 	{
 		System.Collections.Concurrent.ConcurrentDictionary<long, string> PolicyIdentes { get; } =
 			new System.Collections.Concurrent.ConcurrentDictionary<long, string>();
-		System.Collections.Concurrent.ConcurrentDictionary<string, MsgSendArgument[]> Policies { get; } = 
-			new System.Collections.Concurrent.ConcurrentDictionary<string, MsgSendArgument[]>();
+
+		System.Collections.Concurrent.ConcurrentDictionary<string, (long id, MsgSendArgument[] args)> Policies { get; } =
+			new System.Collections.Concurrent.ConcurrentDictionary<string, (long id,MsgSendArgument[] args)>();
+
 		IScoped<IDataSet<DataModels.MsgPolicy>> ScopedPolicies { get; }
 		public MsgArgumentFactory(
 			IScoped<IDataSet<DataModels.MsgPolicy>> ScopedPolicies, 
@@ -46,7 +48,7 @@ namespace SF.Common.TextMessages.Management
 			});
 			this.ScopedPolicies = ScopedPolicies;
 		}
-		async Task<MsgSendArgument[]> LoadPolicy(string Id)
+		async Task<(long id,MsgSendArgument[] args)> LoadPolicy(string Id)
 		{
 			if (Policies.TryGetValue(Id, out var mp))
 				return mp;
@@ -59,28 +61,32 @@ namespace SF.Common.TextMessages.Management
 						)
 					.Select(p => new { Id = p.Id, Actions = p.Actions })
 					.SingleOrDefaultAsync();
-				if (re == null) return null;
+				if (re == null)
+					throw new PublicArgumentException("找不到消息策略:" + Id);
 				var sas = Json.Parse<MsgSendArgument[]>(re.Actions);
 				PolicyIdentes.TryAdd(re.Id, Id);
-				return Policies.GetOrAdd(Id, sas);
+				return Policies.GetOrAdd(Id, (re.Id, sas));
 			});
 		}
-		public async Task<MsgSendArgument[]> Create(long? TargetId, Message Message)
+		public async Task<MsgArgumentResult> Create(long? TargetId, Message Message)
 		{
 			var sas = await LoadPolicy(Message.Policy);
-			if (sas == null)
-				return Array.Empty<MsgSendArgument>();
-			return sas.Select(a =>
-				new MsgSendArgument
-				{
-					Title = a.Title.Replace(Message.Arguments),
-					Target = a.Target.Replace(Message.Arguments),
-					Content = a.Content.Replace(Message.Arguments),
-					Template=a.Template.Replace(Message.Arguments),
-					Arguments = a.Arguments.Select(p => (p.Key, p.Value.Replace(Message.Arguments))).ToArray(),
-					MsgProviderId = a.MsgProviderId,
-					TargetId = TargetId
-				}).ToArray();
+			
+			return new MsgArgumentResult
+			{
+				PolicyId =  sas.id,
+				Args = sas.args.Select(a =>
+				 new MsgSendArgument
+				 {
+					 Title = a.Title.Replace(Message.Arguments),
+					 Target = a.Target.Replace(Message.Arguments),
+					 Content = a.Content.Replace(Message.Arguments),
+					 Template = a.Template.Replace(Message.Arguments),
+					 Arguments = a.Arguments.Select(p => (p.Key, p.Value.Replace(Message.Arguments))).ToArray(),
+					 MsgProviderId = a.MsgProviderId,
+					 TargetId = TargetId
+				 }).ToArray()
+			};
 
 		}
 	}

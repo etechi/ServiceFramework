@@ -13,29 +13,12 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Data;
-using SF.Sys.Services;
+using System.Threading.Tasks;
 using System;
 
-namespace SF.Sys.Services
+namespace SF.Externals.WeiXin.UnitTest
 {
-
-	public static class DataContextCollectionExtension
-	{
-		public static IServiceCollection AddDataContext(this IServiceCollection sc, string ConnectionString)
-			=> sc.AddDataContext(sp => new DataSourceConfig { ConnectionString = ConnectionString });
-
-		public static IServiceCollection AddDataContext(this IServiceCollection sc,Func<IServiceProvider, DataSourceConfig> Config)
-		{
-			sc.AddSingleton<IDataSource>(sp=>new DefaultDataSource(Config(sp)));
-			sc.AddScoped(sp => sp.Resolve<IDataSource>().Connect());
-
-			sc.AddScoped<SF.Sys.Data.IDataContext, SF.Sys.Data.DataContext>();
-			sc.Add(typeof(SF.Sys.Data.IDataSet<>),typeof(SF.Sys.Data.DataSet<>),ServiceImplementLifetime.Scoped);
-			sc.AddScoped<SF.Sys.Data.ITransactionScopeManager, TransactionScopeManager>();
-			return sc;
-		}
-	}
 	
+
 
 }

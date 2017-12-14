@@ -22,6 +22,7 @@
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Common\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Auth\SF.Sys.Auth.csproj" />
     <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Logging\SF.Sys.Logging.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
   </ItemGroup>
 
   <ItemGroup>
