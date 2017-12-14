@@ -93,10 +93,10 @@ namespace SF.Auth.IdentityServices
 			var code = Setting.VerifyCodeDisabled ? "000000" : Strings.Numbers.Random(6);
 
 			Setting.VerifyCodeCache.Value.Set(
-				$"{ConfirmMessageType.找回密码}\n{Ident}\n{UserId}",
+				$"{Type}\n{Ident}\n{UserId}",
 				new VerifyCode
 				{
-					Type = ConfirmMessageType.找回密码,
+					Type = Type,
 					Code = code,
 					UserId = UserId
 				},

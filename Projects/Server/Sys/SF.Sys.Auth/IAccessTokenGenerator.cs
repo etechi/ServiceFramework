@@ -19,9 +19,9 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Auth
 {
-	public interface IAccessTokenGenerator
-	{
-		Task<string> Generate(long UserId);
-	}
+	//public interface IAccessTokenGenerator
+	//{
+	//	Task<string> Generate(long UserId);
+	//}
 }
 

@@ -21,12 +21,42 @@ using SF.Sys.Services;
 using SF.Sys.NetworkService;
 using SF.Sys.Serialization;
 using SF.Sys.Reflection;
+using System.Net;
 
 namespace SF.Sys.Services
 {
 	public static class NetworkServiceDICollectionExtension
 	{
-		public static void AddNetworkService(
+		class LocalInvokeContext : IInvokeContext,IInvokeRequest,IInvokeResponse
+		{
+			public IInvokeRequest Request => this;
+
+			public IInvokeResponse Response => this;
+
+			public string Method => "Direct";
+
+			public string Uri => "local:";
+
+			public IReadOnlyDictionary<string, IEnumerable<string>> Headers { get; } = new Dictionary<string, IEnumerable<string>>();
+
+			public string Status { get; set; }
+
+			IDictionary<string, IEnumerable<string>> IInvokeResponse.Headers { get; } = new Dictionary<string, IEnumerable<string>>();
+
+			public string GetCookie(string Key) => null;
+
+			public void SetCookie(Cookie Cookie)
+			{
+				throw new NotImplementedException();
+			}
+		}
+		public static IServiceCollection AddLocalInvokeContext(this IServiceCollection sc)
+		{
+			sc.AddSingleton<IInvokeContext, LocalInvokeContext>();
+
+			return sc;
+		}
+		public static IServiceCollection AddNetworkService(
 					this IServiceCollection sc,
 					IEnumerable<Type> Services=null
 					)
@@ -53,6 +83,7 @@ namespace SF.Sys.Services
 			});
 
 			sc.AddSingleton<IServiceInvoker, ServiceInvoker>();
+			return sc;
 		}
 	}
 

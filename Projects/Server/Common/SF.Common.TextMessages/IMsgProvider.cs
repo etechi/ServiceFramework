@@ -13,6 +13,8 @@ namespace SF.Common.TextMessages
 		public string Content { get; set; }
 		public string Template { get; set; }
 		public (string Key,string Value)[] Arguments { get; set; }
+
+		public Message Message { get; set; }
 	}
 	/// <summary>
 	/// 消息服务提供者
@@ -22,7 +24,10 @@ namespace SF.Common.TextMessages
 		Task<string> TargetResolve(long TargetId);
 		Task<string> Send(MsgSendArgument Argument);
 	}
-	
+	public interface IDebugMsgProvider: IMsgProvider
+	{
+		MsgSendArgument LastArgument { get; }
+	}
 	public class MsgArgumentResult
 	{
 		public MsgSendArgument[] Args { get; set; }

@@ -31,9 +31,21 @@ using SF.Auth.IdentityServices.Externals;
 
 namespace SF.Sys.Services
 {
+	class NotImplementedAccessTokenGenerator : IAccessTokenGenerator
+	{
+		public Task<string> Generate(long UserId, string ClientId, string[] Scopes, DateTime? Expires)
+		{
+			throw new NotImplementedException();
+		}
+	}
 	public static class IdentityServiceDIExtension 
 	{
-		public static IServiceCollection AddIdentityService(this IServiceCollection sc,string TablePrefix=null)
+		public static IServiceCollection AddNotImplementedAccessTokenGenerator(this IServiceCollection sc)
+		{
+			sc.AddSingleton<IAccessTokenGenerator, NotImplementedAccessTokenGenerator>();
+			return sc;
+		}
+		public static IServiceCollection AddIdentityService(this IServiceCollection sc,string TablePrefix=null,bool VerifyCodeDisabled=false)
 		{
 			//文章
 			sc.EntityServices(
@@ -100,13 +112,13 @@ namespace SF.Sys.Services
 
 			//sc.AddAutoEntityTest(NewDocumentManager);
 			//sc.AddAutoEntityTest(NewDocumentCategoryManager);
-			sc.InitServices("初始化认证授权服务", NewSerivces,null,100000);
+			sc.InitServices("初始化认证授权服务", (sp,sim,scope)=>NewSerivces(sp,sim,scope, VerifyCodeDisabled), null,100000);
 			return sc;
 		}
 
-		static async Task NewSerivces(IServiceProvider ServiceProvider, IServiceInstanceManager sim, long? ScopeId)
+		static async Task NewSerivces(IServiceProvider ServiceProvider, IServiceInstanceManager sim, long? ScopeId,bool VerifyCodeDisabled)
 		{
-			await sim.DefaultService<IUserService, UserService>(new{Setting = new { }})
+			await sim.DefaultService<IUserService, UserService>(new{Setting = new { VerifyCodeDisabled= VerifyCodeDisabled } })
 				.WithDisplay("用户服务")
 				.Ensure(ServiceProvider, ScopeId);
 

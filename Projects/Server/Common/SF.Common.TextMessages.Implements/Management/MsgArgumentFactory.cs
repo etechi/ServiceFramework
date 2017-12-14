@@ -84,7 +84,8 @@ namespace SF.Common.TextMessages.Management
 					 Template = a.Template.Replace(Message.Arguments),
 					 Arguments = a.Arguments.Select(p => (p.Key, p.Value.Replace(Message.Arguments))).ToArray(),
 					 MsgProviderId = a.MsgProviderId,
-					 TargetId = TargetId
+					 TargetId = TargetId,
+					 Message=Message
 				 }).ToArray()
 			};
 

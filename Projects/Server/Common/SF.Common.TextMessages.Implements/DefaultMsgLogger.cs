@@ -25,14 +25,15 @@ namespace SF.Common.TextMessages
 			Logger.Info($"开始处理: {text}");
 			try
 			{
-				await Action(this);
+				var re= await Action(this);
 				Logger.Info($"处理完成: {text} ");
+				return re;
 			}
 			catch(Exception error)
 			{
 				Logger.Info(error, $"处理异常: {text} 异常:{error}");
+				throw;
 			}
-			return 0;
 		}
 
 		async Task<string> IMsgActionLogger.Add(MsgSendArgument Arg, Func<Task<string>> Action)
