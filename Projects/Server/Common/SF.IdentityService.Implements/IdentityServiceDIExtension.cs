@@ -77,6 +77,7 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IClientExtAuthService, ClientExtAuthService>();
 			sc.AddScoped<IClientExtAuthService, ClientExtAuthService>();
 			sc.AddScoped<IPageExtAuthService, PageExtAuthService>();
+			sc.AddManagedScoped<IExternalAuthorizationProvider, TestOAuth2Provider>();
 
 			//sc.GenerateEntityManager("DocumentCategory");
 			//sc.GenerateEntityManager("Document");
@@ -191,7 +192,8 @@ namespace SF.Sys.Services
 
 				(PredefinedClaimTypes.WeiXinOpenPlatformId,"微信开放平台"),
 				(PredefinedClaimTypes.WeiXinMPId,"微信公众号"),
-				(PredefinedClaimTypes.WeiXinUnionId,"微信统一ID")
+				(PredefinedClaimTypes.WeiXinUnionId,"微信统一ID"),
+				(PredefinedClaimTypes.TestId,"测试ID")
 			};
 			foreach (var ct in predefinedClaimTypes)
 			{
@@ -403,6 +405,10 @@ namespace SF.Sys.Services
 				"管理员",
 				new[] { "admin" }
 				);
+
+			await sim.Service<IExternalAuthorizationProvider, TestOAuth2Provider>(new { })
+				.WithIdent("test")
+				.Ensure(ServiceProvider, ScopeId);
 
 		}
 	}

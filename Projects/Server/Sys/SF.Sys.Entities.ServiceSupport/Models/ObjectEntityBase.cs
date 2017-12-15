@@ -74,6 +74,7 @@ namespace SF.Sys.Entities.Models
 		/// <summary>
 		/// 内部备注
 		/// </summary>
+		[Internal]
 		public virtual string InternalRemarks { get; set; }
 	}
 

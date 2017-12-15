@@ -87,6 +87,10 @@ namespace SF.Sys.Auth
 		/// </summary>
 		public const string WeiXinUnionId = "wx.uid";
 
+		/// <summary>
+		/// 测试ID
+		/// </summary>
+		public const string TestId = "test.id";
 
 		public static Dictionary<string, string> Items { get; } =
 			typeof(PredefinedClaimTypes).

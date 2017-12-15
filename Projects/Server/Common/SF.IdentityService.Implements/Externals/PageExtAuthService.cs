@@ -43,7 +43,8 @@ namespace SF.Auth.IdentityServices.Externals
 			 Lazy<IMediaManager> MediaManager,
 			 ILogger<PageExtAuthService> Logger,
 			IInvokeContext InvokeContext,
-			ISettingService<HttpSetting> HttpSetting
+			ISettingService<HttpSetting> HttpSetting,
+			Lazy<ITimeService> TimeService
 			) : base(
 				Resolver, 
 				UserCredentialStorage, 
@@ -51,6 +52,7 @@ namespace SF.Auth.IdentityServices.Externals
 				DataProtector, 
 				ClientService,
 				MediaManager,
+				TimeService,
 				Logger
 				)
 		{

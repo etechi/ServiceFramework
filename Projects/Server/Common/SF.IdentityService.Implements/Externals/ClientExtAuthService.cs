@@ -41,7 +41,8 @@ namespace SF.Auth.IdentityServices.Externals
 			 Lazy<IMediaManager> MediaManager,
 			 ILogger<ClientExtAuthService> Logger,
 			Lazy<IUserProfileService> UserProfileService,
-			Lazy<IAccessTokenHandler> AccessTokenGenerator
+			Lazy<IAccessTokenHandler> AccessTokenGenerator,
+			Lazy<ITimeService> TimeService
 			) : base(
 				Resolver, 
 				UserCredentialStorage, 
@@ -49,6 +50,7 @@ namespace SF.Auth.IdentityServices.Externals
 				DataProtector,
 				ClientService,
 				MediaManager,
+				TimeService,
 				Logger
 				)
 		{
@@ -63,7 +65,8 @@ namespace SF.Auth.IdentityServices.Externals
 		}
 		public async Task<ExtAuthArgument> GetAuthArgument(string Provider,string ClientId)
 		{
-			var provider = Resolver(Provider);
+			var provider = Resolver(Provider) ??
+							throw new ArgumentException("找不到外部认证提供者:" + Provider);
 			var encState = await Encrypt(new ClientExtAuthState
 			{
 				Provider=Provider,

@@ -42,6 +42,7 @@ namespace SF.Auth.IdentityServices.Externals
 			IDataProtector DataProtector,
 			 Lazy<IClientService> ClientService,
 			 Lazy<IMediaManager> MediaManager,
+			 Lazy<ITimeService> TimeService,
 			ILogger Logger
 			)
 		{
@@ -52,6 +53,7 @@ namespace SF.Auth.IdentityServices.Externals
 			this.ClientService = ClientService;
 			this.MediaManager = MediaManager;
 			this.Logger = Logger;
+			this.TimeService = TimeService;
 		}
 
 
@@ -95,7 +97,7 @@ namespace SF.Auth.IdentityServices.Externals
 				ClaimValues=UserInfo.Claims,
 				User=new User
 				{
-					Icon =icon.Value,
+					Icon =icon?.Value,
 					Name = name
 				}
 			});

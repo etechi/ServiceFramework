@@ -35,11 +35,11 @@ namespace SF.Auth.IdentityServices.DataModels
 		/// </summary>
 		[MaxLength(30)]
 		public virtual string PhoneNumber { get; set; }
+		///<title>密码哈希</title>
 		/// <summary>
-		/// 密码哈希
+		/// 可以为空，为空时，不能通过密码验证登录
 		/// </summary>
 		[MaxLength(100)]
-		[Required]
 		public virtual string PasswordHash { get; set; }
 
 		/// <summary>
