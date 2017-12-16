@@ -13,87 +13,119 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SF.Sys.IO
 {
-	public class CSFile : IEnumerable<string[]>
+	
+	public class CSVFile 
 	{
-		public string[] Headers { get; }
-
-		static char[] splitters = new[] { '"', ',' };
-
-		(int,int,bool) ParseLine(string content,int begin,int end,int line)
+		string Content { get;  }
+		int BodyBegin { get;  }
+		public string[] Columns { get; }
+		
+		public CSVFile(string Content,bool WithHeaders)
 		{
-			var re = new List<(int,int)>();
+			this.Content = Content;
+			if (WithHeaders)
+			{
+				var i = Content.IndexOf("\r\n", System.StringComparison.Ordinal);
+				if (i == -1)
+					throw new ArgumentException("找不到文件头部");
+				Columns = ParseLine(Content, 0, i, 1).ToArray();
+				BodyBegin = i + 2;
+			}
+		}
+		
+		public IEnumerable<IEnumerable<string>> Rows
+		{
+			get
+			{
+				var line = Columns == null ? 1 : 2;
+				var i = BodyBegin;
+				for (; ; )
+				{
+					var t = Content.IndexOf("\r\n", i, System.StringComparison.Ordinal);
+					var e = t == -1 ? Content.Length : t;
+					if (e > i)
+					{
+						yield return ParseLine(Content, i, e, line);
+					}
+					if (t == -1)
+						break;
+					line++;
+					i = t + 2;
+				}
+			}
+		}
+		static string ParseValue(string Content, int begin, int end, bool withQuotes)
+		{
+			var re = Content.Substring(begin, end - begin);
+			if (withQuotes)
+				return re.Replace("\"\"", "\"");
+			else
+				return re;
+		}
+		static IEnumerable<string> ParseLine(string content, int begin, int end, int line)
+		{
 			var i = begin;
 			for (; ; )
 			{
 				//当前值带有引号
-				if (i < end && content[0]=='"')
+				if (i == end)
 				{
-					
-				}
-				var ci = content.IndexOf(',', i, end - i);
-				var ve = ci == -1 ? end : ci;
-				re.Add((i, ve));
-				if (ci == -1)
+					yield return ParseValue(content,i, end, false);
 					break;
+				}
 
-				var c = content[ci];
-				if (c == ',')
+				if (content[0] != '"')
 				{
-					re.Add((i, ci));
+					var ci = content.IndexOf(',', i, end - i);
+					var ve = ci == -1 ? end : ci;
+					yield return ParseValue(content, i, ve, false);
+					if (ci == -1)
+						break;
 					i = ci + 1;
 					continue;
 				}
 
-				//找到最后的双引号
-				var hasInnerQuot=false;
-				ci++;
-				for(; ; )
+				i++;
+				var t = i;
+				var hasInnerQuote = false;
+				for (; ; )
 				{
-					var t = content.IndexOf('"', ci, end - ci);
-					if (t == -1)
-						throw new PublicArgumentException($"CSV格式错误,找不到单元格末尾：行:{line},字符:{ci - begin}");
-					
-					//找到单元格末尾
-					if (t==end-1 || t<end-1 && content[t+1]==',')
+					var ci = content.IndexOf('"', t, end - t);
+					if (ci == -1)
+						throw new ArgumentException($"CSV格式错误,找不到单元格末尾：行:{line},字符:{ci - begin}");
+					if (ci == end - 1)
 					{
-						re.Add((i,))
+						yield return ParseValue(content, i, ci, hasInnerQuote);
+						i = end;
+						break;
 					}
-
-
+					var c = content[ci + 1];
+					if (c == ',')
+					{
+						yield return ParseValue(content, i, ci, hasInnerQuote);
+						i = ci + 2;
+						break;
+					}
+					else if (c == '"')
+					{
+						hasInnerQuote = true;
+						t = ci + 2;
+					}
+					else
+						throw new ArgumentException($"CSV格式错误,单元格末尾发现错误的字符：行:{line},字符:{ci - begin + 1}");
 				}
-
-
-
-				var e = ci == -1 ? end : ci;
-				var qi = content.IndexOf('"',e);
-				if (qi == -1)
-					re.Add(())
-				{
-
-				}
+				if (i == end)
+					break;
 			}
 		}
 
-		public CSFile(string Content,bool WithHeaders)
-		{
-
-		}
-
-		public IEnumerator<string[]> GetEnumerator()
-		{
-		
-		}
-
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
 	}
 }
 
