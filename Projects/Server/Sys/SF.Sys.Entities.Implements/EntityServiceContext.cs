@@ -84,6 +84,7 @@ namespace SF.Sys.Entities
 		public IEntityModifierCache EntityModifierCache => Resolve(ref _EntityModifierCache);
 		public IPagingQueryBuilderCache PagingQueryBuilderCache => Resolve(ref _PagingQueryBuilderCache);
 		public IEntityMetadataCollection EntityMetadataCollection => Resolve(ref _EntityMetadataCollection);
+		public IUserAgent UserAgent => ClientService.UserAgent;
 
 		public IEntityMetadata EntityMetadata
 		{

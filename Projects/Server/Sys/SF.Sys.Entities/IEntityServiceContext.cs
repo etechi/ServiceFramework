@@ -18,6 +18,7 @@ using SF.Sys.Data;
 using SF.Sys.Services;
 using SF.Sys.Entities.AutoEntityProvider;
 using SF.Sys.Events;
+using SF.Sys.Clients;
 
 namespace SF.Sys.Entities
 {
@@ -56,7 +57,6 @@ namespace SF.Sys.Entities
 		IServiceProvider ServiceProvider { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
 		//IClientService ClientService { get; }
-		//IAccessToken AccessToken { get; }
 		IEntityMetadata EntityMetadata { get; }
 		IEntityMetadataCollection EntityMetadataCollection { get; }
 		IScoped<IDataContext> ScopedDataContext { get; }
@@ -65,6 +65,8 @@ namespace SF.Sys.Entities
 		IQueryFilterCache QueryFilterCache { get; }
 		IEntityModifierCache EntityModifierCache { get; }
 		IDataContext DataContext { get; }
+		IUserAgent UserAgent { get; }
+		IAccessToken AccessToken { get; }
 		DateTime Now { get; }
 	}
 

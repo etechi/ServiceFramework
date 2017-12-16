@@ -132,6 +132,7 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IEntityPropertyModifierProvider, AutoKeyPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, CreatedTimePropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, UpdatedTimePropertyModifierProvider>();
+			sc.AddSingleton<IEntityPropertyModifierProvider, ReadOnlyPropertyModifierProvider>();
 
 			sc.AddSingleton<IEntityPropertyModifierProvider, SkipWhenDefaultPropertyModifierProvider>();
 			sc.AddSingleton<IEntityPropertyModifierProvider, SkipWhenKeyModifyPropertyModifierProvider>();

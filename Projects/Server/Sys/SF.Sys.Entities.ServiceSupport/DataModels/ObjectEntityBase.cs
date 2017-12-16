@@ -69,7 +69,7 @@ namespace SF.Sys.Entities.DataModels
 		/// 所有人
 		/// </summary>
 		[Index]
-		public virtual long OwnerId { get; set; }
+		public virtual long? OwnerId { get; set; }
 
 
 		/// <summary>
@@ -84,7 +84,7 @@ namespace SF.Sys.Entities.DataModels
 		/// 修改人
 		/// </summary>
 		[Index]
-		public virtual long UpdatorId { get; set; }
+		public virtual long? UpdatorId { get; set; }
 
 		/// <summary>
 		/// 修改时间

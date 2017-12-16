@@ -32,6 +32,10 @@ namespace SF.Sys.Auth
 				return user.Claims.FirstOrDefault(c => c.Type == "sub")?.Value?.TryToInt64();
 			return null;
 		}
+		public static long EnsureUserIdent(this ClaimsPrincipal user)
+		{
+			return user.GetUserIdent() ?? throw new PublicDeniedException("请先登录系统");
+		}
 		public static Claim CreateGrantClaim(IEnumerable<(string res,string action)> grants)
 		{
 			var str = grants.Select(g => g.res + ":" + g.action).Join("|");

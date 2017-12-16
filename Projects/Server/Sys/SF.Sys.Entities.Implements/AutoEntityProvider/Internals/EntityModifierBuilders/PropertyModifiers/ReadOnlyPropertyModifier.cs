@@ -14,22 +14,23 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
+using System.ComponentModel;
 using System.Reflection;
 using SF.Sys.Annotations;
 
 namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 {
-	public class CreatedTimePropertyModifierProvider : IEntityPropertyModifierProvider
+	public class ReadOnlyPropertyModifierProvider : IEntityPropertyModifierProvider
 	{
 		public static int DefaultPriority { get; } = -10000;
-		class CreatedTimePropertyModifier : IEntityPropertyModifier<DateTime>
+		class ReadOnlyPropertyModifier<T> : IEntityPropertyModifier<T, T>
 		{
 			public int MergePriority => DefaultPriority;
 			public int ExecutePriority => 0;
 
-			public DateTime Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context,DateTime OrgValue)
+			public T Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context, T OrgValue, T Value)
 			{
-				return ServiceContext.Now;
+				return Value;
 			}
 
 			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier)=> this;
@@ -41,19 +42,17 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 			Type DataModelType, 
 			PropertyInfo DataModelProperty
 			)
-		{   //必须是long类型
-			if (DataModelProperty.PropertyType != typeof(DateTime))
+		{
+			var attr = DataModelProperty.GetCustomAttribute<ReadOnlyAttribute>() ??
+					EntityProperty.GetCustomAttribute<ReadOnlyAttribute>();
+			if (attr == null || !attr.IsReadOnly)
 				return null;
 
-			if (DataModelProperty.GetCustomAttribute<CreatedTimeAttribute>() == null &&
-				EntityProperty.GetCustomAttribute<CreatedTimeAttribute>() == null)
-				return null;
-
-			//自动生成主键不能修改
+			//只读属性不能修改
 			if (ActionType != DataActionType.Create)
 				return new NonePropertyModifier(DefaultPriority);
 
-			return new CreatedTimePropertyModifier();
+			return (IEntityPropertyModifier)Activator.CreateInstance(typeof(ReadOnlyPropertyModifier<>).MakeGenericType(EntityProperty.PropertyType));
 		}
 	}
 }

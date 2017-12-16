@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using SF.Sys;
 using SF.Sys.Comments;
 using SF.Sys.Entities;
 using System.Linq;

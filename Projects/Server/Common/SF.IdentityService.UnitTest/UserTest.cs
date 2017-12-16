@@ -20,6 +20,7 @@ using SF.Sys.UnitTest;
 using SF.Sys.Hosting;
 using SF.Auth.IdentityServices;
 using SF.Sys.Services;
+using SF.Sys;
 
 namespace SF.IdentityService.UnitTest
 {
