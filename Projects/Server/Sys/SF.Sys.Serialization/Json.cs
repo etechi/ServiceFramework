@@ -35,5 +35,7 @@ namespace SF.Sys
 		{
 			return (T)DefaultSerializer.Deserialize(str, typeof(T), DefaultSetting);
 		}
+
+		
 	}
 }
