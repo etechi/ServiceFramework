@@ -52,8 +52,6 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 
 			IEntityPropertyModifier[] FindPropModifiers(PropertyInfo EntityProperty, PropertyInfo DataModelProperty)
 			{
-				if (EntityProperty?.Name == "BindUserId")
-					EntityProperty = EntityProperty;
 				return PropertyModifierProviders
 					.Select(p =>
 						p.GetPropertyModifier(ActionType, typeof(TEntity), EntityProperty, typeof(TDataModel), DataModelProperty)

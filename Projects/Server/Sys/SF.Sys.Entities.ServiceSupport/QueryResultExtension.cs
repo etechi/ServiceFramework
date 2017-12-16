@@ -47,6 +47,19 @@ namespace SF.Sys.Entities
 				totalRequired
 				);
 		}
+		public static QueryResult<E> ToQueryResult<E>(
+			this IContextQueryable<E> query,
+			Paging paging,
+			bool? totalRequired = null
+			)
+			=> query.ToQueryResult(
+				q => q,
+				r => r,
+				null,
+				paging,
+				totalRequired
+				);
+
 		public static QueryResult<R> ToQueryResult<E, T, R>(
 			this IContextQueryable<E> query,
 			Func<IContextQueryable<E>, IContextQueryable<T>> mapper,
@@ -56,14 +69,15 @@ namespace SF.Sys.Entities
 			bool? totalRequired = null
 			)
 		{
-            int? total = null;
-            if (totalRequired ?? paging?.TotalRequired ?? false)
-                total = query.Count();
+			int? total = null;
+			if (totalRequired ?? paging?.TotalRequired ?? false)
+				total = query.Count();
 
-            if (paging!=null && paging.Count == 0)
-                return new QueryResult<R> { Total = total, Items = Array.Empty<R>() };
+			if (paging != null && paging.Count == 0)
+				return new QueryResult<R> { Total = total, Items = Array.Empty<R>() };
 
-            query = pagingBuilder.Build(query, paging);
+			query = query.ApplyPaging(pagingBuilder, paging);
+
 			var mappedQuery = mapper(query);
 			var result = mappedQuery.ToArray();
 			var mappedResult = result.Select(resultMapper).ToArray();
@@ -73,7 +87,30 @@ namespace SF.Sys.Entities
 				Items = mappedResult
 			};
 		}
-        public static async Task<QueryResult<T>> ToQueryResultAsync<E, T>(
+		public static Task<QueryResult<E>> ToQueryResultAsync<E>(
+			this IContextQueryable<E> query,
+			Paging paging,
+			bool? totalRequired = null
+			)
+			where E : class
+			=> query.ToQueryResultAsync<E, E>(
+				q => q,
+				null,
+				paging,
+				totalRequired
+				);
+		public static IContextQueryable<T> ApplyPaging<T>(
+			this IContextQueryable<T> query,
+			IPagingQueryBuilder<T> pagingBuilder,
+			Paging paging
+			) {
+			if (pagingBuilder != null)
+				return pagingBuilder.Build(query, paging);
+			if (paging == null)
+				paging = Paging.Default;
+			return query.Skip(paging.Offset).Take(paging.Count);
+		}
+		public static async Task<QueryResult<T>> ToQueryResultAsync<E, T>(
             this IContextQueryable<E> query,
             Func<IContextQueryable<E>, IContextQueryable<T>> mapper,
 			IPagingQueryBuilder<E> pagingBuilder,
@@ -89,7 +126,7 @@ namespace SF.Sys.Entities
             if (paging != null && paging.Count == 0)
                 return new QueryResult<T> { Total = total, Items = Array.Empty<T>() };
 
-            query = pagingBuilder.Build(query, paging);
+            query = query.ApplyPaging(pagingBuilder,paging);
             var mappedQuery = mapper(query);
             var result = await mappedQuery.ToArrayAsync();
             return new QueryResult<T>
@@ -124,7 +161,8 @@ namespace SF.Sys.Entities
             if (paging != null && paging.Count == 0)
                 return new QueryResult<R> { Total = total, Items = Array.Empty<R>() };
 
-            query = pagingBuilder.Build(query, paging);
+			query = query.ApplyPaging(pagingBuilder, paging);
+
 			var mappedQuery = mapper(query);
 			var result = await mappedQuery.ToArrayAsync();
 			var mappedResult = result.Select(resultMapper).ToArray();
@@ -173,7 +211,8 @@ namespace SF.Sys.Entities
             if (paging != null && paging.Count == 0)
                 return new QueryResult<R> { Total = total, Items = Array.Empty<R>() };
 
-			query = pagingBuilder.Build(query, paging);
+			query = query.ApplyPaging(pagingBuilder, paging);
+
 			var mappedQuery = mapper(query);
 			var result = await mappedQuery.ToArrayAsync();
 			var mappedResult = await resultMapper(result);
