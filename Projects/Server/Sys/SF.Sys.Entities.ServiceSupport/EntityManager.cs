@@ -217,9 +217,12 @@ namespace SF.Sys.Entities
 
 		#region create
 
-		protected virtual Task OnNewModel(IModifyContext ctx)
+		protected virtual async Task OnNewModel(IModifyContext ctx)
 		{
-			return Task.CompletedTask;
+			await ServiceContext
+				.EntityModifierCache
+				.GetEntityModifier<TEditable, TModel>(DataActionType.Create)
+				.Execute(ServiceContext, ctx);
 		}
 		protected IModifyContext NewModifyContext()
 			=> new ModifyContext();
@@ -258,15 +261,17 @@ namespace SF.Sys.Entities
 				Context,
 				Id,
 				OnRemoveModel,
-				OnLoadModelForUpdate,
-				true
+				OnLoadModelForUpdate
 				);
 		}
 
-		protected virtual Task OnRemoveModel(IModifyContext ctx)
+		protected virtual async Task OnRemoveModel(IModifyContext ctx)
 		{
-			ServiceContext.DataContext.Set<TModel>().Remove(ctx.Model);
-			return Task.CompletedTask;
+			await ServiceContext
+				.EntityModifierCache
+				.GetEntityModifier<TEditable, TModel>(DataActionType.Delete)
+				.Execute(ServiceContext, ctx);
+
 		}
 
 		public virtual async Task RemoveAllAsync()
@@ -280,9 +285,13 @@ namespace SF.Sys.Entities
 
 
 		#region Update
-		protected virtual Task OnUpdateModel(IModifyContext ctx)
+		protected virtual async Task OnUpdateModel(IModifyContext ctx)
 		{
-			return Task.CompletedTask;
+			await ServiceContext
+				.EntityModifierCache
+				.GetEntityModifier<TEditable, TModel>(DataActionType.Update)
+				.Execute(ServiceContext, ctx);
+
 		}
 
 		public virtual async Task UpdateAsync(TEditable obj)
@@ -298,8 +307,7 @@ namespace SF.Sys.Entities
 				Context,
 				obj,
 				OnUpdateModel,
-				OnLoadModelForUpdate,
-				true
+				OnLoadModelForUpdate
 				);
 		}
 

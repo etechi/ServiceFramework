@@ -34,7 +34,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 		public class EntityModifierCreator<TDataModel, TEntity>
 			where TDataModel:class
 		{
-			IEnumerable<IEntityPropertyModifierProvider> PropertyModifierProviders { get; }
+			IEntityPropertyModifierProvider[] PropertyModifierProviders { get; }
 			DataActionType ActionType { get; }
 			List<(PropertyInfo prop, PropertyInfo srcProp, IEntityPropertyModifier conv)> Converters { get; } =
 				new List<(PropertyInfo prop, PropertyInfo srcProp, IEntityPropertyModifier conv)>();
@@ -47,11 +47,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 				)
 			{
 				this.ActionType = ActionType;
-				this.PropertyModifierProviders = PropertyModifierProviders;
+				this.PropertyModifierProviders = PropertyModifierProviders.ToArray();
 			}
 
 			IEntityPropertyModifier[] FindPropModifiers(PropertyInfo EntityProperty, PropertyInfo DataModelProperty)
 			{
+				if (EntityProperty?.Name == "BindUserId")
+					EntityProperty = EntityProperty;
 				return PropertyModifierProviders
 					.Select(p =>
 						p.GetPropertyModifier(ActionType, typeof(TEntity), EntityProperty, typeof(TDataModel), DataModelProperty)

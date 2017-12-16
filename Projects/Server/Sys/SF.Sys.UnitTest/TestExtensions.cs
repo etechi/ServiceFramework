@@ -1,3 +1,4 @@
+using SF.Sys.Data;
 using SF.Sys.Hosting;
 using SF.Sys.Services;
 using System;
@@ -22,6 +23,12 @@ namespace SF.Sys.UnitTest
 		public static async Task<T> Scope<T>(this IAppInstanceBuilder AppInstanceBuilder, Func<IServiceProvider, Task<T>> Callback)
 		{
 			return await AppInstanceBuilder.AppInstance(ins => ins.Scope(Callback));
+		}
+
+		public static async Task<long> GetIdent(this IServiceProvider sp)
+		{
+			var ig = sp.Resolve<IIdentGenerator>();
+			return await ig.GenerateAsync("≤‚ ‘–Ú∫≈");
 		}
 	}
 	

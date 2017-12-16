@@ -115,8 +115,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 			await ServiceContext.RemoveAsync<TKey, TEntityEditable, TDataModel>(
 				Key,
 				null,
-				null,
-				true
+				null
 				);
 		}
 
@@ -125,8 +124,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 			await ServiceContext.UpdateAsync<TKey,TEntityEditable, TDataModel>(
 				Entity,
 				null,
-				null,
-				true
+				null
 				);
 		}
 

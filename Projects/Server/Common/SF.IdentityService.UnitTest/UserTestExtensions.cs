@@ -119,6 +119,12 @@ namespace SF.IdentityService.UnitTest
 			Assert.AreEqual(user.Id, uid2);
 			return (user, account,password);
 		}
+
+		public static async Task<T> WithCurUser<T>(this IServiceProvider sp,Func<User,Task<T>> Callback)
+		{
+			var user=await sp.UserCreate();
+			return await Callback(user.user);
+		}
 	}
 	
 

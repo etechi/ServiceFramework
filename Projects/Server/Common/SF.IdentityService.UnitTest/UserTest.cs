@@ -30,6 +30,7 @@ namespace SF.IdentityService.UnitTest
 		public UserTest(IAppInstanceBuilder builder) : base(builder) { }
 	
 		[TestMethod]
+		[Ignore]
 		public async Task 创建_成功_令牌()
 		{
 			await Scope(async (IServiceProvider svc) =>
@@ -58,6 +59,7 @@ namespace SF.IdentityService.UnitTest
 			);
 		}
 		[TestMethod]
+		[Ignore]
 		public async Task 登录_成功_令牌()
 		{
 			await Scope(async (IServiceProvider svc) =>

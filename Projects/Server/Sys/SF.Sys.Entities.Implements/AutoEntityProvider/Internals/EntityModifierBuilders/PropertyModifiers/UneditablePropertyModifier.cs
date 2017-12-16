@@ -20,10 +20,21 @@ using SF.Sys.Annotations;
 
 namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 {
-	public class ReadOnlyPropertyModifierProvider : IEntityPropertyModifierProvider
+	public class UneditablePropertyModifierProvider : IEntityPropertyModifierProvider
 	{
 		public static int DefaultPriority { get; } = -10000;
+		class UneditablePropertyModifier<T> : IEntityPropertyModifier<T, T>
+		{
+			public int MergePriority => DefaultPriority;
+			public int ExecutePriority => 0;
 
+			public T Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context, T OrgValue, T Value)
+			{
+				return Value;
+			}
+
+			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier)=> this;
+		}
 		public IEntityPropertyModifier GetPropertyModifier(
 			DataActionType ActionType, 
 			Type EntityType, 
@@ -32,13 +43,16 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 			PropertyInfo DataModelProperty
 			)
 		{
-			var attr = DataModelProperty?.GetCustomAttribute<ReadOnlyAttribute>() ??
-					EntityProperty?.GetCustomAttribute<ReadOnlyAttribute>();
-			if (attr == null || !attr.IsReadOnly)
+			var attr = DataModelProperty?.GetCustomAttribute<UneditableAttribute>() ??
+					EntityProperty?.GetCustomAttribute<UneditableAttribute>();
+			if (attr == null)
 				return null;
 
-			//只读属性不能修改
-			return new NonePropertyModifier(DefaultPriority);
+			//不可编辑属性只在创建时设置
+			if (ActionType != DataActionType.Create)
+				return new NonePropertyModifier(DefaultPriority);
+
+			return (IEntityPropertyModifier)Activator.CreateInstance(typeof(UneditablePropertyModifier<>).MakeGenericType(EntityProperty.PropertyType));
 		}
 	}
 }

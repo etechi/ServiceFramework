@@ -64,7 +64,7 @@ namespace SF.Sys.Entities
 			return EqualityComparer<T>.Default.Equals(Id, default(T)) ? null : Id.ToString();
 		}
 
-		//public static implicit  operator ObjectKey<long>(long id)=>new ObjectKey<long> { Id=id};
+		
 	}
 	public static class ObjectKey
 	{

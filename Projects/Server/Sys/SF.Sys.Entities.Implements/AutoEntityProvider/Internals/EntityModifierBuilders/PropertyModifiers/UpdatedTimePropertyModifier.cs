@@ -43,7 +43,8 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 		{   //必须是long类型
 			if (DataModelProperty.PropertyType != typeof(DateTime))
 				return null;
-			if (DataModelProperty.GetCustomAttribute<UpdatedTimeAttribute>() == null)
+			if (DataModelProperty.GetCustomAttribute<UpdatedTimeAttribute>() == null &&
+				EntityProperty?.GetCustomAttribute<UpdatedTimeAttribute>() == null)
 				return null;
 			//自动生成主键不能修改
 			if (ActionType != DataActionType.Create && ActionType!=DataActionType.Update)

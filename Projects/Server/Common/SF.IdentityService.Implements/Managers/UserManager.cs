@@ -196,7 +196,7 @@ namespace SF.Auth.IdentityServices.Managers
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
-			return Task.CompletedTask;
+			return base.OnUpdateModel(ctx);
 			//if (e.Credentials != null)
 			//{
 			//	var ics = DataSet.Context.Set<TUserCredential>();

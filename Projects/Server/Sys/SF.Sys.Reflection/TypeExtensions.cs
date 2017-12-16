@@ -318,6 +318,8 @@ namespace SF.Sys.Reflection
 			GetTypedGenericArgument(type, typeof(Task<>));
 		public static Type GetGenericArgumentTypeAsLazy(this Type type) =>
 			GetTypedGenericArgument(type, typeof(Lazy<>));
+		public static Type GetGenericArgumentTypeAsNullable(this Type type) =>
+			GetTypedGenericArgument(type, typeof(Nullable<>));
 		public static Type GetGenericArgumentTypeAsFunc(this Type type) =>
 			GetTypedGenericArgument(type, typeof(Func<>));
 		//public static Type GetGenericArgumentTypeAsOption(this Type type) =>

@@ -1,4 +1,4 @@
-#region Apache License Version 2.0
+ï»¿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -14,31 +14,13 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.ComponentModel;
-using System.Reflection;
-using SF.Sys.Annotations;
+using System.Collections.Generic;
+using System.Text;
 
-namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
+namespace SF.Sys.Annotations
 {
-	public class ReadOnlyPropertyModifierProvider : IEntityPropertyModifierProvider
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
+	public class UneditableAttribute : Attribute
 	{
-		public static int DefaultPriority { get; } = -10000;
-
-		public IEntityPropertyModifier GetPropertyModifier(
-			DataActionType ActionType, 
-			Type EntityType, 
-			PropertyInfo EntityProperty, 
-			Type DataModelType, 
-			PropertyInfo DataModelProperty
-			)
-		{
-			var attr = DataModelProperty?.GetCustomAttribute<ReadOnlyAttribute>() ??
-					EntityProperty?.GetCustomAttribute<ReadOnlyAttribute>();
-			if (attr == null || !attr.IsReadOnly)
-				return null;
-
-			//Ö»¶ÁÊôÐÔ²»ÄÜÐÞ¸Ä
-			return new NonePropertyModifier(DefaultPriority);
-		}
 	}
 }

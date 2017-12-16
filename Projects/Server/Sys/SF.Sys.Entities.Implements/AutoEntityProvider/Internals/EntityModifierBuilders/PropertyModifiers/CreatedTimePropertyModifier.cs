@@ -46,7 +46,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 				return null;
 
 			if (DataModelProperty.GetCustomAttribute<CreatedTimeAttribute>() == null &&
-				EntityProperty.GetCustomAttribute<CreatedTimeAttribute>() == null)
+				EntityProperty?.GetCustomAttribute<CreatedTimeAttribute>() == null)
 				return null;
 
 			//自动生成主键不能修改

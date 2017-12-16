@@ -49,5 +49,4 @@ namespace SF.Sys.Entities.AutoTest
 		IEntityTestHelper<TDetail, TSummary, TEditable, TQueryArgument> GetTestHelper<TDetail, TSummary, TEditable, TQueryArgument>() where TQueryArgument : IPagingArgument;
 	}
 
-
 }

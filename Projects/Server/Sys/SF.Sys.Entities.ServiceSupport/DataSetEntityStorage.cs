@@ -595,15 +595,8 @@ namespace SF.Sys.Entities
 				{
 					Context.InitCreate<TModel,TEditable>(Entity, ExtraArgument);
 
-
-					if (EnableAutoModifier)
-						await Storage.EntityModifierCache.GetEntityModifier<TEditable, TModel>(DataActionType.Create).Execute(Storage, Context);
-
 					if(InitModel!=null)
 						await InitModel(Context);
-
-					if (EnableAutoModifier)
-						await Storage.EntityModifierCache.GetEntityModifier<TEditable, TModel>(DataActionType.Update).Execute(Storage, Context);
 
 					if(UpdateModel!=null)
 						await UpdateModel(Context);
@@ -644,8 +637,7 @@ namespace SF.Sys.Entities
 			TModifyContext Context,
 			TEditable Entity,
 			Func<TModifyContext, Task> UpdateModel,
-			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null,
-			bool EnableAutoModifier = false
+			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
 			)
 			where TModel : class
 			where TModifyContext:IEntityModifyContext<TEditable, TModel>
@@ -665,13 +657,12 @@ namespace SF.Sys.Entities
 						await LoadModelForEdit(Entity<TEditable>.GetKey<TKey>(Entity),q);
 					if (model == null)
 						return false;
-					InitUpdate(Context, model, Entity, null);
 
-					if (EnableAutoModifier)
-						await Storage.EntityModifierCache.GetEntityModifier<TEditable, TModel>(DataActionType.Update).Execute(Storage, Context);
+					InitUpdate(Context, model, Entity, null);
 
 					if(UpdateModel != null)
 						await UpdateModel(Context);
+
 					Storage.DataContext.Set<TModel>().Update(Context.Model);
 
 					Storage.PostChangedEvents<TEditable>(Context.Editable, DataActionType.Update);
@@ -685,13 +676,12 @@ namespace SF.Sys.Entities
 			this IEntityServiceContext Storage,
 			TEditable Entity,
 			Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel=null,
-			Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null,
-			bool EnableAutoModifier = false
+			Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
 			)
 			where TModel : class
 		{
 			var ctx = new EntityModifyContext<TEditable, TModel>();
-			return await InternalUpdateAsync(Storage, ctx, Entity, UpdateModel, LoadModelForEdit,EnableAutoModifier);
+			return await InternalUpdateAsync(Storage, ctx, Entity, UpdateModel, LoadModelForEdit);
 		}
 		
 		#endregion
@@ -701,8 +691,7 @@ namespace SF.Sys.Entities
 			TModifyContext Context,
 			TKey Id,
 			Func<TModifyContext, Task> RemoveModel = null,
-			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null,
-			bool EnableAutoModifier=false
+			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
 			)
 			where TModel : class
 			where TModifyContext: IEntityModifyContext<TEditable,TModel>
@@ -722,9 +711,6 @@ namespace SF.Sys.Entities
 					var editable = Entity<TKey>.GetKey<TEditable>(Id);
 					InitRemove(Context, model, editable, null);
 
-					if (EnableAutoModifier)
-						await Storage.EntityModifierCache.GetEntityModifier<TEditable, TModel>(DataActionType.Delete).Execute(Storage, Context);
-
 					if (RemoveModel != null)
 						await RemoveModel(Context);
 					Storage.DataContext.Set<TModel>().Remove(Context.Model);
@@ -739,8 +725,7 @@ namespace SF.Sys.Entities
 			this IEntityServiceContext Storage,
 			TKey Id,
 			Func<IEntityModifyContext<TEditable, TModel>, Task> RemoveModel=null,
-			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null,
-			bool EnableAutoModifier = false
+			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
 			)
 			where TModel : class
 		{
@@ -750,8 +735,7 @@ namespace SF.Sys.Entities
 				ctx, 
 				Id, 
 				RemoveModel, 
-				LoadModelForEdit,
-				EnableAutoModifier
+				LoadModelForEdit
 				);
 		}
 		public static async Task RemoveAllAsync<TKey,TEditable,TModel>(

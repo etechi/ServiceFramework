@@ -47,11 +47,15 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 				return null;
 			if(EntityProperty==null)
 				return null;
-			if (EntityProperty.PropertyType != DataModelProperty.PropertyType )
+			var propType = EntityProperty.PropertyType;
+			if (propType != DataModelProperty.PropertyType )
 				return null;
-			if (!EntityProperty.PropertyType.IsConstType())
-				return null;
-			return (IEntityPropertyModifier)Activator.CreateInstance(typeof(EntityPropertyModifier<>).MakeGenericType(EntityProperty.PropertyType));
+			if (!propType.IsConstType())
+			{
+				if(!(propType.GetGenericArgumentTypeAsNullable()?.IsConstType() ?? false))
+					return null;
+			}
+			return (IEntityPropertyModifier)Activator.CreateInstance(typeof(EntityPropertyModifier<>).MakeGenericType(propType));
 		}
 	}
 
