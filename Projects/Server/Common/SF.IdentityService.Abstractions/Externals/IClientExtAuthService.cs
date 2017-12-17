@@ -21,12 +21,11 @@ namespace SF.Auth.IdentityServices.Externals
 		public string AccessToken { get; set; }
 		public User User { get; set; }
 	}
+	[NetworkService]
 	public interface IClientExtAuthService
 	{
-		[HeavyMethod]
 		Task<ExtAuthArgument> GetAuthArgument(string Provider,string ClientId);
 
-		[HeavyMethod]
 		Task<AuthCallbackResult> AuthCallback(AuthCallbackArgument Arg);
 	}
 
