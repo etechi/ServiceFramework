@@ -12,7 +12,7 @@ import ApiFormManager = require("SF/components/webapi/ApiFormManager");
 import ApiTableManager = require("SF/components/webapi/ApiTableManager");
 import { setup as setupEntityLinkBuilder } from "SF/utils/EntityLinkBuilder";
 import apicall = require("SF/utils/apicall");
-api.setApiInvoker(apicall.call);
+api.setApiInvoker(apicall.apicall);
 
 declare var require: any;
 var env = (window as any)["ENV"];

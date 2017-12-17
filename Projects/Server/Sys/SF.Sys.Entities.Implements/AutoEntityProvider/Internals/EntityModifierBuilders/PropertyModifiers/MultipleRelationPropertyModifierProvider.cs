@@ -93,7 +93,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					)
 					).ToArrayAsync();
 
-				var newItems = Value.Select((v, i) => (v, i)).ToArray();
+				var newItems = Value?.Select((v, i) => (v, i))?.ToArray() ?? Array.Empty<(TChildEntity v,int i)>();
 				var childMeta = Manager.EntityMetadataCollection.FindByEntityType(typeof(TChildEntity));
 
 				await set.MergeAsync(
