@@ -13,22 +13,25 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Sys.CallPlans
+namespace SF.Sys.Plans.Manager
 {
 	public interface ICallInstance
 	{
-		string Callable { get; }
-		string CallArgument { get; }
-		string CallError { get; }
+		string Type { get; }
+		string Ident { get; }
+		string Argument { get; }
+		string Error { get; }
 		DateTime Expire { get; }
 		DateTime CallTime { get; }
 		int DelaySecondsOnError { get; }
+		long? ServiceScopeId { get; }
 	}
 	
 	public interface ICallPlanStorageAction
@@ -37,38 +40,42 @@ namespace SF.Sys.CallPlans
 	}
 	public interface ICallPlanStorage
 	{
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="Callable"></param>
-        /// <param name="CallArgument"></param>
-        /// <param name="Error"></param>
-        /// <param name="Title"></param>
-        /// <param name="Now"></param>
-        /// <param name="CallTime"></param>
-        /// <param name="ExpireTime"></param>
-        /// <param name="DelaySecondsOnError"></param>
-        /// <returns>调用已存在时返回false,否则为true</returns>
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="Type"></param>
+		/// <param name="Ident"></param>
+		/// <param name="Argument"></param>
+		/// <param name="Error"></param>
+		/// <param name="Title"></param>
+		/// <param name="Now"></param>
+		/// <param name="CallTime"></param>
+		/// <param name="ExpireTime"></param>
+		/// <param name="DelaySecondsOnError"></param>
+		/// <param name="ServiceScopeId"></param>
+		/// <returns>调用已存在时返回false,否则为true</returns>
 		Task<bool> Create(
-			string Callable,
-			string CallArgument,
+			string Type,
+			string Ident,
+			string Argument,
 			string Error,
 			string Title,
 			DateTime Now,
 			DateTime CallTime,
 			DateTime ExpireTime,
-			int DelaySecondsOnError
+			int DelaySecondsOnError,
+			long? ServiceScopeId
 			);
-        Task Remove(string Callable);
+        Task Remove(string Type,string Ident);
 
-        Task<string[]> GetOnTimeInstances(
+        Task<(string Type,string Ident)[]> GetOnTimeInstances(
 			int Count,
 			DateTime now, 
 			DateTime ExecutingStartTime, 
 			DateTime InitTime
 			);
 
-		Task<ICallInstance> GetInstance(string Id);
+		Task<ICallInstance> GetInstance(string Type,string Ident);
 		Task<ICallInstance[]> GetInstancesForCleanup(DateTime ExecutingStartTime);
 		ICallPlanStorageAction CreateExpiredAction(
 			ICallInstance Instance,

@@ -14,65 +14,59 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SF.Sys.Data;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SF.Sys.CallPlans.Storage.DataModels
+namespace SF.Sys.Plans.Manager.Models
 {
-	/// <summary>
-	/// 调用实例
-	/// </summary>
-	[Table("CallInstance")]
-    public class CallInstance : ICallInstance
+	public class CallInstance 
 	{
 		/// <summary>
-		/// 调用过程名
+		/// 调用类型
 		/// </summary>
 		[Key]
 		[MaxLength(200)]
 		[Required]
-		[Column(Order =1)]
-		public string Callable { get; set; }
+		[Column(Order=1)]
+		public string Type { get; set; }
+		/// <summary>
+		/// 调用标识
+		/// </summary>
+		[Key]
+		[MaxLength(200)]
+		[Required]
+		[Column(Order = 2)]
+		public string Ident { get; set; }
 
 		/// <summary>
 		/// 调用时间
 		/// </summary>
-		[Index]
-        public DateTime CallTime { get; set; }
+		public DateTime CallTime { get; set; }
+
 		/// <summary>
-		/// 过期时间
+		/// 名称
 		/// </summary>
-		public DateTime Expire { get; set; }
+		[MaxLength(100)]
+		[Required]
+		public string Name { get; set; }
+
 		/// <summary>
 		/// 创建时间
 		/// </summary>
 		public DateTime CreateTime { get; set; }
-
 		/// <summary>
-		/// 标题
+		/// 过期时间
 		/// </summary>
-		[MaxLength(100)]
-		[Required]
-        public string Title { get; set; }
+		public DateTime Expire { get; set; }
 
 		/// <summary>
 		/// 错误延时
 		/// </summary>
 		public int DelaySecondsOnError { get; set; }
-
-		/// <summary>
-		/// 调用参数
-		/// </summary>
-		[MaxLength(200)]
-        public string CallArgument { get; set; }
-
-		/// <summary>
-		/// 错误信息
-		/// </summary>
-		[MaxLength(200)]
-       
-        public string CallError { get; set; }
 
 		/// <summary>
 		/// 最后执行时间
@@ -83,17 +77,10 @@ namespace SF.Sys.CallPlans.Storage.DataModels
 		/// </summary>
 		public int ErrorCount { get; set; }
 
-		/// <summary>
-		/// 执行异常信息
-		/// </summary>
-		[MaxLength(200)]
-        public string ExecError { get; set; }
+	}
+	
+	public class CallInstanceEditable : CallInstance
+	{
 
-		/// <summary>
-		/// 乐观锁时间戳
-		/// </summary>
-		[ConcurrencyCheck]
-		[Timestamp]
-        public byte[] TimeStamp { get; set; }
 	}
 }

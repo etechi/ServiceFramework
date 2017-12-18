@@ -13,22 +13,30 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Collections.Generic;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
-namespace SF.Sys.Entities
+namespace SF.Sys.Plans.Runtime
 {
-	public class OptionItem<K> : IEntityWithId<K>
-		where K:IEquatable<K>
+	public class CallableFactory
 	{
-		/// <summary>
-		/// ID
-		/// </summary>
-		public K Id { get; set; }
-		/// <summary>
-		/// 名称
-		/// </summary>
-		public string Name { get; set; }
+		Dictionary<string, Func<IServiceProvider, long?, ICallable>> Creators { get; }
+		public CallableFactory(IEnumerable<ICallableDefination> callables)
+		{
+			Creators = callables.ToDictionary(c => c.Type, c => c.CallableCreator);
+		}
+		public bool Exists(string Name)
+		{
+			return Creators.ContainsKey(Name);
+		}
+		public ICallable Create(IServiceProvider ServiceProvider, string Name,long? Id)
+		{
+			var f = Creators.Get(Name);
+			if (f == null)
+				throw new ArgumentException("找不到调用接口:" + Name);
+			return f(ServiceProvider, Id);
+		}
 	}
 }

@@ -13,45 +13,35 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.CallPlans;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-namespace SF.Sys.Services
+using SF.Sys.Plans.Manager.Models;
+using SF.Sys.Entities;
+namespace SF.Sys.Plans.Manager
 {
-	
-	public static class CallPlansDIServiceCollectionExtension
+
+	public class CallInstanceManager :
+		ModidifiableEntityManager<ObjectKey<string, string>, CallInstance, CallInstanceQueryArgument, CallInstanceEditable, DataModels.CallInstance>,
+		IEntitySource<ObjectKey<string, string>, CallInstance, CallInstanceQueryArgument>,
+		IEntityManager<ObjectKey<string, string>, CallInstanceEditable>
 	{
-		class CallableDefination : ICallableDefination
+		public CallInstanceManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
-			public Func<IServiceProvider,long?, ICallable> CallableCreator{get;set;}
-			public string Type { get; set; }
 		}
 
-		public static void AddCallable<T>(this IServiceCollection sc)
-			where T: class,ICallable
+		protected override PagingQueryBuilder<DataModels.CallInstance> PagingQueryBuilder => throw new NotImplementedException();
+
+		protected override IContextQueryable<DataModels.CallInstance> OnBuildQuery(IContextQueryable<DataModels.CallInstance> Query, CallInstanceQueryArgument Arg)
 		{
-			sc.AddScoped<T, T>();
-			sc.AddSingleton<ICallableDefination>(sp => new CallableDefination
-			{
-				Type = typeof(T).FullName,
-				CallableCreator = (isp,id) => (ICallable)isp.Resolve<T>()
-			});
+			throw new NotImplementedException();
 		}
-		public static void AddServiceCallable<I>(this IServiceCollection sc)
-			where I : class
+
+		protected override Task OnUpdateModel(IModifyContext ctx)
 		{
-			sc.AddSingleton<ICallableDefination>(sp => {
-				var svcResolver = sp.Resolve<IServiceDeclarationTypeResolver>();
-				return new CallableDefination
-				{
-					Type = svcResolver.GetTypeIdent(typeof(I)),
-					CallableCreator = (isp, id) =>
-						(ICallable)isp.Resolve<I>(id.Value)
-				};
-			});
+			throw new NotImplementedException();
 		}
 	}
 }

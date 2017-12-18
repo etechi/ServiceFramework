@@ -19,7 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Sys.CallPlans
+namespace SF.Sys.Plans
 {
 	/// <summary>
 	/// 执行时抛出此异常将引发重复调用，可用于实现重复定时器
@@ -36,8 +36,10 @@ namespace SF.Sys.CallPlans
     }
 	public interface ICallContext
 	{
+		long? ServiceScopeId { get;  }
+		string Type { get; }
+		string Ident { get; }
 		string Argument { get; }
-		string Context { get; }
 		Exception Exception { get; }
 		object CallData { get; }
 	}
@@ -57,9 +59,9 @@ namespace SF.Sys.CallPlans
 		/// 创建一个调用计划
 		/// </summary>
 		/// <remarks>CallableName+CallContext必须全局唯一</remarks>
-		/// <param name="CallableName">被调过程名称</param>
-		/// <param name="CallContext">调用上下文</param>
-		/// <param name="CallArgument">调用参数</param>
+		/// <param name="Type">被调过程类型</param>
+		/// <param name="Ident">调用标识</param>
+		/// <param name="Argument">调用参数</param>
 		/// <param name="Exception">调用时异常</param>
 		/// <param name="Title">调用标题</param>
 		/// <param name="CallTime">调用时间，如果为DateTime.Min时，立即调用</param>
@@ -67,40 +69,42 @@ namespace SF.Sys.CallPlans
 		/// <param name="DelaySecondsOnError">出错时延时时间，单位：秒</param>
 		/// <param name="SkipExecute"></param>
 		/// <param name="CallData"></param>
+		/// <param name="ServiceScopeId"></param>
 		/// <returns></returns>
 		Task<bool> Schedule(
-			string CallableName,
-			string CallContext,
-			string CallArgument,
+			string Type,
+			string Ident,
+			string Argument,
 			Exception Exception,
 			string Title,
 			DateTime CallTime,
 			int ExpireSeconds,
 			int DelaySecondsOnError,
             bool SkipExecute = false,
-			object CallData=null
+			object CallData=null,
+			long? ServiceScopeId=null
             );
-        /// <summary>
-        /// 取消调用
-        /// </summary>
-        /// <remarks>CallableName+CallContext必须全局唯一</remarks>
-        /// <param name="CallableName">被调过程名称</param>
-        /// <param name="CallContext">调用上下文</param>
-        Task Cancel(
-            string CallableName,
-            string CallContext
+		/// <summary>
+		/// 取消调用
+		/// </summary>
+		/// <remarks>CallableName+CallContext必须全局唯一</remarks>
+		/// <param name="Type">被调过程类型</param>
+		/// <param name="Ident">调用标识</param>
+		Task Cancel(
+            string Type,
+            string Ident
             );
 
 		/// <summary>
 		/// 立即执行
 		/// </summary>
 		/// <remarks>CallableName+CallContext必须全局唯一</remarks>
-		/// <param name="CallableName">被调过程名称</param>
-		/// <param name="CallContext">调用上下文</param>
+		/// <param name="Type">被调过程类型</param>
+		/// <param name="Ident">调用标识</param>
 		/// <param name="CallData"></param>
 		Task Execute(
-            string CallableName,
-            string CallContext,
+            string Type,
+            string Ident,
 			object CallData
             );
     }
@@ -108,6 +112,6 @@ namespace SF.Sys.CallPlans
 	{
 		Task<int> SystemStartupCleanup();
 		Task<Task[]> Execute(int count);
-		Task Execute(string ident,object ExecData);
+		Task Execute(string Type,string Ident,object ExecData);
 	}
 }

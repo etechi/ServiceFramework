@@ -13,30 +13,19 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Collections.Generic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SF.Sys.CallPlans.Runtime
+namespace SF.Sys.Plans.Runtime
 {
-	public class CallableFactory
+	public static class ConstantTimes
 	{
-		Dictionary<string, Func<IServiceProvider, long?, ICallable>> Creators { get; }
-		public CallableFactory(IEnumerable<ICallableDefination> callables)
-		{
-			Creators = callables.ToDictionary(c => c.Type, c => c.CallableCreator);
-		}
-		public bool Exists(string Name)
-		{
-			return Creators.ContainsKey(Name);
-		}
-		public ICallable Create(IServiceProvider ServiceProvider, string Name,long? Id)
-		{
-			var f = Creators.Get(Name);
-			if (f == null)
-				throw new ArgumentException("找不到调用接口:" + Name);
-			return f(ServiceProvider, Id);
-		}
+		public static readonly DateTime NeverExpire = new DateTime(2200, 1, 1);
+		public static readonly DateTime ExecutingStartTime = new DateTime(2100, 1, 1);
+		public static readonly DateTime InitTime = new DateTime(2010, 1, 1);
+
 	}
 }

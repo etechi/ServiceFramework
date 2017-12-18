@@ -5,12 +5,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.CallPlans.Implements.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Plans.Implements.xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
 	</PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.CallPlans.Implements.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.Plans.Implements.xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
 	</PropertyGroup>
 
@@ -23,9 +23,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SF.Sys.CallPlans\SF.Sys.CallPlans.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Comments\SF.Sys.Comments.csproj" />
+    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Linq.Expressions\SF.Sys.Linq.Expressions.csproj" />
     <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
+    <ProjectReference Include="..\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
     <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />
+    <ProjectReference Include="..\SF.Sys.Plans\SF.Sys.Plans.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
     <ProjectReference Include="..\SF.Sys.TaskServices\SF.Sys.TaskServices.csproj" />
     <ProjectReference Include="..\SF.Sys.Threading\SF.Sys.Threading.csproj" />

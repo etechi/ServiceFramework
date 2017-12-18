@@ -13,13 +13,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Plans.Manager;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Sys.CallPlans.Runtime
+namespace SF.Sys.Plans.Runtime
 {
 	public class CallPlanProvider :
 		ICallPlanProvider
@@ -42,20 +43,21 @@ namespace SF.Sys.CallPlans.Runtime
 		}
 
         public async Task<bool> Schedule(
-            string CallableName,
-            string CallContext,
-            string CallArgument,
+            string Type,
+            string Ident,
+            string Argument,
             Exception CallError,
             string Title,
             DateTime CallTime,
             int ExpireSeconds,
             int DelaySecondsOnError,
             bool SkipExecute = false,
-			object CallData=null
+			object CallData=null,
+			long? ScopeId=null
 			)
 		{
-			if (!CallableFactory.Exists(CallableName))
-				throw new ArgumentException("找不到调用:" + CallableName);
+			if (!CallableFactory.Exists(Type))
+				throw new ArgumentException("找不到调用:" + Type);
 
 			DelaySecondsOnError = Math.Max(DelaySecondsOnError, 5 * 60);
 
@@ -66,9 +68,8 @@ namespace SF.Sys.CallPlans.Runtime
 				ExceptionFactory.VerifyErrorType(error_type);
 				error = error_type.FullName + ":" + CallError.Message;
 			}
-            if (CallableName.Contains(':'))
+            if (Type.Contains(':'))
                 throw new ArgumentException("调用名中不允许包含':'");
-			var id = CallableName + ":" + CallContext;
 			var now = TimeService.Now;
 			if (CallTime == DateTime.MinValue)
 				CallTime = now;
@@ -80,41 +81,41 @@ namespace SF.Sys.CallPlans.Runtime
 				CallTime = CallTime.AddSeconds(DelaySecondsOnError);
 			}
 			var re=await this.Storage.Create(
-				id,
-				CallArgument,
+				Type,
+				Ident,
+				Argument,
 				error,
 				Title,
 				now,
 				CallTime,
 				ExpireSeconds > 0 ? CallTime.AddSeconds(ExpireSeconds) : ConstantTimes.NeverExpire,
-				DelaySecondsOnError
+				DelaySecondsOnError,
+				ScopeId
 			);
             if(re && immediately && !SkipExecute)
-				await Execute(CallableName,CallContext,CallData);
+				await Execute(Type,Ident,CallData);
             return true;
 		}
         public async Task Cancel(
-            string CallableName,
-            string CallContext
+            string Type,
+            string Ident
             )
         {
-            var id = CallableName + ":" + CallContext;
-            await this.Storage.Remove(id);
+            await this.Storage.Remove(Type,Ident);
         }
         public async Task Execute(
-           string CallableName,
-           string CallContext,
+           string Type,
+           string Ident,
 		   object CallData
            )
         {
-            var id = CallableName + ":" + CallContext;
-            await ExecuteDelayed(id,CallData);
+            await ExecuteDelayed(Type, Ident, CallData);
         }
-        async Task ExecuteDelayed(string id,object CallData)
+        async Task ExecuteDelayed(string Type,string Ident,object CallData)
         {
             try
             {
-                await CallScheduler.Value.Execute(id,CallData);
+                await CallScheduler.Value.Execute(Type, Ident, CallData);
             }
             catch { }
         }

@@ -19,13 +19,56 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Sys.CallPlans.Runtime
+namespace SF.Sys.Plans
 {
-	public static class ConstantTimes
-	{
-		public static readonly DateTime NeverExpire = new DateTime(2200, 1, 1);
-		public static readonly DateTime ExecutingStartTime = new DateTime(2100, 1, 1);
-		public static readonly DateTime InitTime = new DateTime(2010, 1, 1);
 
+	public static class ICallPlanProviderExtension
+	{
+		public static Task DelayCall(
+			this ICallPlanProvider Provider,
+			string Type,
+			string Ident,
+			string Argument,
+			Exception Exception,
+			string Title,
+			DateTime CallTime,
+			int ExpireSeconds=365*86400,
+			int DelaySecondsOnError=5*60
+			)
+		{
+			return Provider.Schedule(
+				Type,
+				Ident,
+				Argument,
+				Exception,
+				Title,
+				CallTime,
+				ExpireSeconds,
+				DelaySecondsOnError
+				);
+		}
+
+		public static Task Call(
+			this ICallPlanProvider Provider,
+			string Type,
+			string Ident,
+			string Argument,
+			Exception Exception,
+			string Title,
+			int ExpireSeconds,
+			int DelaySecondsOnError
+			)
+		{
+			return Provider.Schedule(
+				Type,
+				Ident,
+				Argument,
+				Exception,
+				Title,
+				DateTime.MinValue,
+				ExpireSeconds,
+				DelaySecondsOnError
+				);
+		}
 	}
 }

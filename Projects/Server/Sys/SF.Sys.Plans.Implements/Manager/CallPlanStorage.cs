@@ -20,7 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SF.Sys.Data;
 
-namespace SF.Sys.CallPlans.Storage
+namespace SF.Sys.Plans.Manager
 {
 	public class CallPlanStorage :
 		ICallPlanStorage
@@ -37,24 +37,28 @@ namespace SF.Sys.CallPlans.Storage
 			this.CallExpireds = CallExpireds;
 		}
 		public async Task<bool> Create(
-			string Callable,
+			string Type,
+			string Ident,
 			string Argument,
 			string Error,
 			string Title, 
 			DateTime Now, 
 			DateTime CallTime, 
 			DateTime ExpireTime, 
-			int DelaySecondsOnError
+			int DelaySecondsOnError,
+			long? ServiceScopeId
 			)
 		{
             try
             {
                 this.CallInstances.Add(new DataModels.CallInstance
                 {
-                    Callable = Callable,
-                    CallArgument = Argument,
-                    CallError = Error.Limit(200),
-                    Title = Title,
+                    Type = Type,
+					Ident=Ident,
+					ServiceScopeId=ServiceScopeId,
+                    Argument = Argument,
+                    Error = Error.Limit(200),
+                    Name = Title,
                     CreateTime = Now,
                     Expire = ExpireTime,
                     DelaySecondsOnError = DelaySecondsOnError,
@@ -69,9 +73,9 @@ namespace SF.Sys.CallPlans.Storage
                 return false;
             }
 		}
-        public async Task Remove(string Callable)
+        public async Task Remove(string Type,string Ident)
         {
-            var c = await CallInstances.FindAsync(Callable);
+            var c = await CallInstances.FindAsync(Type,Ident);
             if (c == null) return;
 			CallInstances.Remove(c);
             await CallInstances.Context.SaveChangesAsync();
@@ -97,15 +101,16 @@ namespace SF.Sys.CallPlans.Storage
 				CallInstances.Remove(Instance);
 				CallExpireds.Value.Add(new DataModels.CallExpired
 				{
-					Callable = Instance.Callable,
+					Type = Instance.Type,
+					Ident=Instance.Type,
 					ExecError = ExecError?.Limit(200)??Instance.ExecError,
 					ExecCount = ExecError==null?Instance.ErrorCount: Instance.ErrorCount + 1,
 					Expired = Now,
-					Title = Instance.Title,
+					Title = Instance.Name,
 					LastExecTime = Instance.LastExecTime,
 					CreateTime = Instance.CreateTime,
-					CallError=Instance.CallError,
-					CallArgument=Instance.CallArgument
+					CallError=Instance.Error,
+					CallArgument=Instance.Argument
 				});
 			}
 		}
@@ -127,7 +132,7 @@ namespace SF.Sys.CallPlans.Storage
 				}
 				Instance.CallTime = NewTarget;
 				if (NewArgument != null)
-					Instance.CallArgument = NewArgument;
+					Instance.Argument = NewArgument;
 				CallInstances.Update(Instance);
 			}
 		}
@@ -180,9 +185,9 @@ namespace SF.Sys.CallPlans.Storage
 					);
 			await CallInstances.Context.SaveChangesAsync();
 		}
-		public async Task<ICallInstance> GetInstance(string Id)
+		public async Task<ICallInstance> GetInstance(string Type,string Ident)
 		{
-			return await CallInstances.FindAsync(Id);
+			return await CallInstances.FindAsync(Type,Ident);
 		}
 		public async Task<ICallInstance[]> GetInstancesForCleanup(DateTime ExecutingStartTime)
 		{
@@ -190,7 +195,7 @@ namespace SF.Sys.CallPlans.Storage
 			return timers;
 		}
 
-		public async Task<string[]> GetOnTimeInstances(int Count,DateTime Now, DateTime ExecutingStartTime, DateTime InitTime)
+		public async Task<(string Type,string Ident)[]> GetOnTimeInstances(int Count,DateTime Now, DateTime ExecutingStartTime, DateTime InitTime)
 		{
 			var q = from t in CallInstances.AsQueryable(false)
 					where t.CallTime <= Now
@@ -206,7 +211,7 @@ namespace SF.Sys.CallPlans.Storage
 				CallInstances.Update(t);
 			}
 			await CallInstances.Context.SaveChangesAsync();
-			return instances.Select(t=>t.Callable).ToArray();
+			return instances.Select(t=>(t.Type,t.Ident)).ToArray();
 		}
 	}
 }

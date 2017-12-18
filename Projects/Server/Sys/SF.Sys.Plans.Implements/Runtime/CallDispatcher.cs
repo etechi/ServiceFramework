@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Plans.Manager;
 using SF.Sys.Logging;
 using SF.Sys.Services;
 using SF.Sys.TimeServices;
@@ -22,7 +23,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SF.Sys.CallPlans.Runtime
+namespace SF.Sys.Plans.Runtime
 {
 	public class TimeoutException : PublicException
 	{
@@ -62,7 +63,7 @@ namespace SF.Sys.CallPlans.Runtime
 		public async Task<Task[]> Execute(int count)
 		{
 			var now = TimeService.Now;
-			string[] ids;
+			(string Type,string Ident)[] ids;
 			using (var scope = ScopeFactory.CreateServiceScope())
 			{
 				var storage = scope.ServiceProvider.Resolve<ICallPlanStorage>();
@@ -75,7 +76,7 @@ namespace SF.Sys.CallPlans.Runtime
 			}
 
 			return ids.Select(id =>
-					Task.Run(() => ExecuteInstance(id,null))
+					Task.Run(() => ExecuteInstance(id.Type,id.Ident,null))
 					).ToArray();
 		}
 
@@ -84,50 +85,41 @@ namespace SF.Sys.CallPlans.Runtime
 			this.Logger.Write(
 				Level,
 				error,
-				"{0} {1} {2} {3}", 
+				"{0} {1} {2} {3} {4}", 
 				message, 
-				instance.Callable, 
-				instance.CallArgument, 
-				instance.CallError
+				instance.Type,
+				instance.Ident,
+				instance.Argument, 
+				instance.Error
 				);
 		}
-		public async Task Execute(string id,object CallData)
+		public async Task Execute(string Type,string Ident,object CallData)
 		{
-            await ExecuteInstance(id,CallData);
+            await ExecuteInstance(Type,Ident,CallData);
 		}
 
 
-        static ObjectSyncQueue<string> ExecQueue { get; } = new ObjectSyncQueue<string>();
+        static ObjectSyncQueue<(string,string)> ExecQueue { get; } = new ObjectSyncQueue<(string,string)>();
 		class CallContext : ICallContext
 		{
 			public string Argument { get; set; }
-
-			public string Context { get; set; }
-
+			public string Type { get; set; }
+			public string Ident { get; set; }
+			public long? ServiceScopeId { get; set; }
 			public Exception Exception { get; set; }
 
 			public object CallData { get; set; }
 		}
-		Task ExecuteInstance(string id,object CallData)
+		Task ExecuteInstance(string type, string ident,object CallData)
 		{
              //同一个调用不能进入多次
-             return ExecQueue.Queue(id, async () =>
+             return ExecQueue.Queue((type,ident), async () =>
              {
                  using (var scope = ScopeFactory.CreateServiceScope())
                  {
 					 var sp = scope.ServiceProvider;
 					 var storage = sp.Resolve<ICallPlanStorage>();
-                     var instance = await storage.GetInstance(id);
-                     var i = id.IndexOf(':');
-                     if (i == -1)
-                     {
-                         Logger.Error("发现无效主键！ " + id);
-                         return;
-                     }
-					 var si = id.IndexOf('-', 0, i);
-                     var CallableName = si==-1?id.Substring(0, i):id.Substring(0,si);
-					 var CallableIdent = si == -1 ? null : (long?)long.Parse(id.Substring(si + 1, i - si - 1));
-                     var CallContext = id.Substring(i + 1);
+                     var instance = await storage.GetInstance(type,ident);
 
                      try
                      {
@@ -138,12 +130,14 @@ namespace SF.Sys.CallPlans.Runtime
                          {
                              try
                              {
-                                 var cb = sp.Resolve<CallableFactory>().Create(sp, CallableName,CallableIdent);
+                                 var cb = sp.Resolve<CallableFactory>().Create(sp, type, instance.ServiceScopeId);
                                  await cb.Execute(
 									 new CallContext {
-										 Argument=instance.CallArgument,
-										 Context=CallContext,
-										 Exception=ExceptionFactory.CreateFromError(instance.CallError),
+										 Argument=instance.Argument,
+										 Ident=ident,
+										 Type=type,
+										 ServiceScopeId=instance.ServiceScopeId,
+										 Exception=ExceptionFactory.CreateFromError(instance.Error),
 										 CallData=CallData
 									 }
 									 );

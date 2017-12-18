@@ -15,20 +15,20 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-
-namespace SF.Sys.Entities
+using SF.Sys.Entities;
+namespace SF.Sys.Plans.Manager
 {
-	public class OptionItem<K> : IEntityWithId<K>
-		where K:IEquatable<K>
+	public class CallInstanceQueryArgument : QueryArgument<ObjectKey<string, string>>
 	{
-		/// <summary>
-		/// ID
-		/// </summary>
-		public K Id { get; set; }
-		/// <summary>
-		/// 名称
-		/// </summary>
-		public string Name { get; set; }
+
+	}
+	public interface ICallInstanceManager :
+		IEntitySource<ObjectKey<string, string>, Models.CallInstance,CallInstanceQueryArgument>,
+		IEntityManager<ObjectKey<string, string>,Models.CallInstanceEditable>
+	{
+		
 	}
 }

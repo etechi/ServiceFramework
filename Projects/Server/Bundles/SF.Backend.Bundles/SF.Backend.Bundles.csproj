@@ -27,7 +27,7 @@
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.TextMessages.Implements\SF.Common.TextMessages.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Caching.Implements\SF.Sys.Caching.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.CallPlans.Implements\SF.Sys.CallPlans.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Plans.Implements\SF.Sys.Plans.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Client.Implements\SF.Sys.Client.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Data.EFCore\SF.Sys.Data.EFCore.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Data.Implements\SF.Sys.Data.Implements.csproj" />

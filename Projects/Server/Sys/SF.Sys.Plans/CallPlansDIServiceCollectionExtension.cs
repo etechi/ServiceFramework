@@ -13,62 +13,45 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Plans;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-namespace SF.Sys.CallPlans
+namespace SF.Sys.Services
 {
-
-	public static class ICallPlanProviderExtension
+	
+	public static class CallPlansDIServiceCollectionExtension
 	{
-		public static Task DelayCall(
-			this ICallPlanProvider Provider,
-			string CallableName,
-			string CallContext,
-			string CallArgument,
-			Exception Exception,
-			string Title,
-			DateTime CallTime,
-			int ExpireSeconds=365*86400,
-			int DelaySecondsOnError=5*60
-			)
+		class CallableDefination : ICallableDefination
 		{
-			return Provider.Schedule(
-				CallableName,
-				CallContext,
-				CallArgument,
-				Exception,
-				Title,
-				CallTime,
-				ExpireSeconds,
-				DelaySecondsOnError
-				);
+			public Func<IServiceProvider,long?, ICallable> CallableCreator{get;set;}
+			public string Type { get; set; }
 		}
 
-		public static Task Call(
-			this ICallPlanProvider Provider,
-			string CallableName,
-			string CallContext,
-			string Argument,
-			Exception Exception,
-			string Title,
-			int ExpireSeconds,
-			int DelaySecondsOnError
-			)
+		public static void AddCallable<T>(this IServiceCollection sc)
+			where T: class,ICallable
 		{
-			return Provider.Schedule(
-				CallableName,
-				CallContext,
-				Argument,
-				Exception,
-				Title,
-				DateTime.MinValue,
-				ExpireSeconds,
-				DelaySecondsOnError
-				);
+			sc.AddScoped<T, T>();
+			sc.AddSingleton<ICallableDefination>(sp => new CallableDefination
+			{
+				Type = typeof(T).FullName,
+				CallableCreator = (isp,id) => (ICallable)isp.Resolve<T>()
+			});
+		}
+		public static void AddServiceCallable<I>(this IServiceCollection sc)
+			where I : class
+		{
+			sc.AddSingleton<ICallableDefination>(sp => {
+				var svcResolver = sp.Resolve<IServiceDeclarationTypeResolver>();
+				return new CallableDefination
+				{
+					Type = svcResolver.GetTypeIdent(typeof(I)),
+					CallableCreator = (isp, id) =>
+						(ICallable)isp.Resolve<I>(id.Value)
+				};
+			});
 		}
 	}
 }

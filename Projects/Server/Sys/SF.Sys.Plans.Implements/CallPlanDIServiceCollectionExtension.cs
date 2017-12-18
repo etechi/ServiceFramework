@@ -13,9 +13,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.CallPlans;
-using SF.Sys.CallPlans.Runtime;
-using SF.Sys.CallPlans.Storage;
+using SF.Sys.Plans;
+using SF.Sys.Plans.Manager;
+using SF.Sys.Plans.Runtime;
 using System.Collections.Generic;
 
 namespace SF.Sys.Services
@@ -48,8 +48,8 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddDefaultCallPlanStorage(this IServiceCollection sc,string TablePrefix=null)
 		{
 			sc.AddDataModules<
-				SF.Sys.CallPlans.Storage.DataModels.CallExpired, 
-				SF.Sys.CallPlans.Storage.DataModels.CallInstance
+				SF.Sys.Plans.Manager.DataModels.CallExpired, 
+				SF.Sys.Plans.Manager.DataModels.CallInstance
 				>(TablePrefix ?? "Sys");
 			sc.AddScoped<ICallPlanStorage, CallPlanStorage>();
 			return sc;
