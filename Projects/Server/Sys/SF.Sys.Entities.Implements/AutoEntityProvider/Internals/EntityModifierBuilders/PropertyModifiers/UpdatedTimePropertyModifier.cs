@@ -21,7 +21,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 {
 	public class UpdatedTimePropertyModifierProvider : IEntityPropertyModifierProvider
 	{
-		public static int DefaultPriority { get; } = -10000;
+		public static int DefaultPriority { get; } = -20000;
 		class UpdatedTimePropertyModifier : IEntityPropertyModifier<DateTime>
 		{
 			public int MergePriority => DefaultPriority;

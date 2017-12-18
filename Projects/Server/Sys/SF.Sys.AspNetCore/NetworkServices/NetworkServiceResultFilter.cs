@@ -119,6 +119,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 
 		public void OnResultExecuting(ResultExecutingContext context)
 		{
+			
 			var or = context.Result as ObjectResult;
 			if (or != null)
 			{

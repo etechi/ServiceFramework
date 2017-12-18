@@ -25,13 +25,15 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 {
 	public class AutoKeyPropertyModifierProvider : IEntityPropertyModifierProvider
 	{
-		public static int DefaultMergePriority { get; } = -10000;
-		public static int DefaultExecutePriority { get; } = -10000;
+		public static int DefaultMergePriority { get; } = -1000000;
+		public static int DefaultExecutePriority { get; } = -1000000;
 
 		class AutoKeyPropertyModifier : IAsyncEntityPropertyModifier<long>
 		{
-			public int MergePriority => DefaultMergePriority;
-			public int ExecutePriority => DefaultExecutePriority;
+			public int MergePriority => 
+				DefaultMergePriority;
+			public int ExecutePriority => 
+				DefaultExecutePriority;
 			public Type DataModelType { get; }
 			public AutoKeyPropertyModifier(Type DataModelType)
 			{

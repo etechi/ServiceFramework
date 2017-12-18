@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using SF.Sys.Annotations;
 
@@ -32,10 +33,20 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 			PropertyInfo DataModelProperty
 			)
 		{
+
 			var attr = DataModelProperty?.GetCustomAttribute<ReadOnlyAttribute>() ??
 					EntityProperty?.GetCustomAttribute<ReadOnlyAttribute>();
 			if (attr == null || !attr.IsReadOnly)
 				return null;
+
+			//主键字段创建时允许修改
+			if((DataModelProperty?.IsDefined(typeof(KeyAttribute))??false) || 
+					(EntityProperty?.IsDefined(typeof(KeyAttribute))??false) &&
+					ActionType==DataActionType.Create
+					)
+				return null;
+					
+
 
 			//只读属性不能修改
 			return new NonePropertyModifier(DefaultPriority);

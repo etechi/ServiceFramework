@@ -32,8 +32,14 @@ namespace SF.Sys.AspNetCore
 		{
 			Context = HttpContextAccessor.HttpContext;
 		}
-		public ClaimsPrincipal User => Context.User;
-
+		public ClaimsPrincipal User
+			{
+				get
+				{
+					//Context.ChallengeAsync("Bearer").Wait();
+					return Context.User;
+				}
+			}
 		Stack<ClaimsPrincipal> _Operators;
 
 		public ClaimsPrincipal Operator =>

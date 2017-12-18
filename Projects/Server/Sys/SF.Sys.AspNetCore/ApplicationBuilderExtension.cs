@@ -52,6 +52,29 @@ namespace SF.Sys.AspNetCore
 			app.UseAuthentication();
 			//app.UseCookiePolicy(cookiePolicyOptions);
 
+			app.Use(async (context, next) =>
+			{
+				try
+				{
+					await next();
+				}catch(PublicException err)
+				{
+					context.Response.StatusCode = 500;
+					context.Response.ContentType = "text/json; charset=utf8";
+#if DEBUG
+					var buf = Json.Stringify(err).UTF8Bytes();
+#else
+					var buf = Json.Stringify(new {
+						Message=err.Message,
+						ClassName=err.GetType().FullName
+					}).UTF8Bytes();
+
+#endif
+					context.Response.ContentLength = buf.Length;
+					await context.Response.Body.WriteAsync(buf, 0, buf.Length);
+				}
+			});
+
 			var mvc = app.UseMvc(routes =>
 			{
 

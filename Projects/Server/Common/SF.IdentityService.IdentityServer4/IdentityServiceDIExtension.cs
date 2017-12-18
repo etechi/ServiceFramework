@@ -16,15 +16,15 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using Microsoft.Extensions.DependencyInjection;
 using SF.Auth.IdentityServices;
 using SF.Auth.IdentityServices.IdentityServer4Impl;
-
+using Microsoft.AspNetCore.Builder;
 namespace SF.Sys.Services
 {
 	public static class IdentityServiceDIExtension 
 	{
 		public static IServiceCollection AddIdentityServer4Support(this IServiceCollection sc)
 		{
-			sc.AsMicrosoftServiceCollection()
-				.AddIdentityServer(o =>
+			var msc = sc.AsMicrosoftServiceCollection();
+			msc.AddIdentityServer(o =>
 				{
 					o.UserInteraction.LoginUrl = "/user/signin";
 
@@ -32,6 +32,15 @@ namespace SF.Sys.Services
 				.AddClientStore<ClientStore>()
 				.AddProfileService<ProfileService>()
 				.AddResourceStore<ResourceStore>();
+			//msc.AddAuthentication("Bearer")
+			//   .AddIdentityServerAuthentication(options =>
+			//   {
+			//	   options.Authority = "http://localhost:5000";
+			//	   options.RequireHttpsMetadata = false;
+
+			//	   options.ApiName = "Document";
+				   
+			//   });
 			sc.AddTransient<ITokenService, DefaultTokenService>();
 			sc.AddTransient<IAccessTokenHandler, AccessTokenHandler>();
 			return sc;

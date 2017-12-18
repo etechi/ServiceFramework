@@ -22,33 +22,33 @@ namespace SF.Sys.AspNetCore.Auth
 	{
 		public static IServiceCollection AddAspNetCoreCommonAuthorization(this IServiceCollection services)
 		{
-			services.AddAuthentication(
-				CookieAuthenticationDefaults.AuthenticationScheme
-				)
-				//.AddOpenIdConnect("oidc", "OpenID Connect", options =>
-				//{
-				//	options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-				//	options.SignOutScheme = IdentityServerConstants.SignoutScheme;
-				//	options.RequireHttpsMetadata = false;
-				//	options.Authority = "http://localhost:52706";
-				//	options.ClientId = "local.internal";
+			//services.AddAuthentication(
+			//	CookieAuthenticationDefaults.AuthenticationScheme
+			//	)
+			//	//.AddOpenIdConnect("oidc", "OpenID Connect", options =>
+			//	//{
+			//	//	options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+			//	//	options.SignOutScheme = IdentityServerConstants.SignoutScheme;
+			//	//	options.RequireHttpsMetadata = false;
+			//	//	options.Authority = "http://localhost:52706";
+			//	//	options.ClientId = "local.internal";
 
-				//	options.TokenValidationParameters = new TokenValidationParameters
-				//	{
-				//		NameClaimType = "name",
-				//		RoleClaimType = "role"
-				//	};
-				//})
-				.AddCookie(opt =>
-				{
-					opt.Cookie.HttpOnly = true;
-					opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-					opt.Cookie.Path = "/";
-					opt.Cookie.Name = "sf-sess";
-					opt.LoginPath = "/user/signin";
-					//opt.TicketDataFormat
-				})
-				;
+			//	//	options.TokenValidationParameters = new TokenValidationParameters
+			//	//	{
+			//	//		NameClaimType = "name",
+			//	//		RoleClaimType = "role"
+			//	//	};
+			//	//})
+			//	.AddCookie(opt =>
+			//	{
+			//		opt.Cookie.HttpOnly = true;
+			//		opt.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+			//		opt.Cookie.Path = "/";
+			//		opt.Cookie.Name = "sf-sess";
+			//		opt.LoginPath = "/user/signin";
+			//		//opt.TicketDataFormat
+			//	})
+			//	;
 			//services.AddAuthentication(
 			//	"admin"
 			//	)

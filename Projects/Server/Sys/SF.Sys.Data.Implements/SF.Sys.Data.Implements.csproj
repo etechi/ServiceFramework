@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="system.data.sqlclient" Version="4.4.0" />
+    <PackageReference Include="system.data.sqlclient" Version="4.4.2" />
   </ItemGroup>
 
   <ItemGroup>
