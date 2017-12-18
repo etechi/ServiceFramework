@@ -19,13 +19,12 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Entities
 {
-	public class OptionItem<K> : IEntityWithId<K>
-		where K:IEquatable<K>
+	public class OptionItem<K> 
 	{
 		/// <summary>
 		/// ID
 		/// </summary>
-		public K Id { get; set; }
+		public K Value { get; set; }
 		/// <summary>
 		/// 名称
 		/// </summary>
