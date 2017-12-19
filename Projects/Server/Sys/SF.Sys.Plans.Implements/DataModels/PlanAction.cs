@@ -18,14 +18,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Sys.Data;
 using SF.Sys.Entities.DataModels;
-namespace SF.Sys.Plans.Manager.DataModels
+namespace SF.Sys.Plans.DataModels
 {
 	/// <summary>
 	/// 调用实例
 	/// </summary>
-	[Table("PlanAction")]
-    public class PlanAction : ItemEntityBase<ActionPlan>
+	[Table("ActionPlanAction")]
+    public class ActionPlanAction : ItemEntityBase<ActionPlan>
 	{
+		[Index]
+		public long PlanId { get; set; }
+
+		[ForeignKey(nameof(PlanId))]
+		public ActionPlan Plan { get; set; }
+		
 		/// <summary>
 		/// 动作服务类型
 		/// </summary>
@@ -35,7 +41,7 @@ namespace SF.Sys.Plans.Manager.DataModels
 		/// <summary>
 		/// 动作设置
 		/// </summary>
-		public string Options { get; set; }
+		public string ActionProviderOptions { get; set; }
 
 		/// <summary>
 		/// 超时(s)

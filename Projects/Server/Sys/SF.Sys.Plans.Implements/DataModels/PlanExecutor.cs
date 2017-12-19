@@ -17,80 +17,42 @@ using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Sys.Data;
+using SF.Sys.Entities.DataModels;
 
-namespace SF.Sys.Plans.Manager.DataModels
+namespace SF.Sys.Plans.DataModels
 {
 	/// <summary>
-	/// 调用实例
+	/// 计划执行器
 	/// </summary>
-	[Table("CallInstance")]
-    public class CallInstance : ICallInstance
+	[Table("ActionPlanExecutor")]
+    public class ActionPlanExecutor : ObjectEntityBase<string>
 	{
-		/// <summary>
-		/// 调用类型
-		/// </summary>
-		[Key]
-		[MaxLength(200)]
-		[Required]
-		[Column(Order =1)]
-		public string Type { get; set; }
-
-		/// <summary>
-		/// 调用标识
-		/// </summary>
-		[Key]
-		[MaxLength(200)]
-		[Required]
-		[Column(Order = 2)]
-		public string Ident { get; set; }
-
-		/// <summary>
-		/// 服务范围ID
-		/// </summary>
-		public long? ServiceScopeId { get; set; }
-
-		/// <summary>
-		/// 调用时间
-		/// </summary>
 		[Index]
-        public DateTime CallTime { get; set; }
-		/// <summary>
-		/// 过期时间
-		/// </summary>
-		public DateTime Expire { get; set; }
-		/// <summary>
-		/// 创建时间
-		/// </summary>
-		public DateTime CreateTime { get; set; }
+		public long PlanId { get; set; }
 
+		[ForeignKey(nameof(PlanId))]
+		public ActionPlan Plan { get; set; }
 		/// <summary>
-		/// 名称
+		/// 上次执行时间
 		/// </summary>
-		[MaxLength(100)]
-		[Required]
-        public string Name { get; set; }
-
+		public DateTime LastActiveTime { get; set; }
+		
 		/// <summary>
-		/// 错误延时
+		/// 执行堆栈
 		/// </summary>
-		public int DelaySecondsOnError { get; set; }
-
-		/// <summary>
-		/// 调用参数
-		/// </summary>
-		[MaxLength(200)]
-        public string Argument { get; set; }
-
+		public string Stack { get; set; }
+		
 		/// <summary>
 		/// 错误信息
 		/// </summary>
 		[MaxLength(200)]
-        public string Error { get; set; }
+		public string Error { get; set; }
 
 		/// <summary>
 		/// 最后执行时间
 		/// </summary>
 		public DateTime? LastExecTime { get; set; }
+		
 		/// <summary>
 		/// 错误次数
 		/// </summary>
@@ -100,13 +62,7 @@ namespace SF.Sys.Plans.Manager.DataModels
 		/// 执行异常信息
 		/// </summary>
 		[MaxLength(200)]
-        public string ExecError { get; set; }
+		public string ExecError { get; set; }
 
-		/// <summary>
-		/// 乐观锁时间戳
-		/// </summary>
-		[ConcurrencyCheck]
-		[Timestamp]
-        public byte[] TimeStamp { get; set; }
 	}
 }

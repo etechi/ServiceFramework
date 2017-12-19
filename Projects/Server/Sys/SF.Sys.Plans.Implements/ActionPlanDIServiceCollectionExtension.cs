@@ -21,7 +21,7 @@ using SF.Sys.Data;
 using System.Linq;
 using SF.Sys.Events;
 using SF.Sys.Entities;
-using SF.Sys.Plans.Manager.DataModels;
+using SF.Sys.Plans.DataModels;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Services
@@ -33,11 +33,7 @@ namespace SF.Sys.Services
 			sc.AddEntityLocalCache(
 				async (IDataSet<ActionPlan> set, long Id) =>
 				{
-					var re = await set
-						.AsQueryable()
-						.Where(p => p.Id == Id && p.LogicState == Entities.EntityLogicState.Enabled)
-						.Include(p => p.Items).SingleOrDefaultAsync();
-					re.Items = re.Items.OrderBy(i => i.ItemOrder).ToArray();
+					var re=await SF.Sys.Plans.ActionPlanRuntime.RuntimePlan.Load(set, Id);
 					return re;
 				},
 				(IEventSubscriber<EntityChanged<ActionPlan>> OnPlanModified, IEntityCacheRemover<long> remover) =>

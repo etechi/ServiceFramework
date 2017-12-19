@@ -13,17 +13,19 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.Entities.DataModels;
 using System.Collections.Generic;
-
-namespace SF.Sys.Plans.Manager.Models
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SF.Sys.Entities;
+namespace SF.Sys.Plans.ActionPlanRuntime
 {
-	[EntityObject]
-	public class ActionPlan : ObjectEntityBase
-	{	
-		
-		[TreeNodes]
-		public IEnumerable<PlanAction> Actions { get; set; }
+	public interface IActionProvider
+	{
+		Task<IActionResult> Execute(IActionExecContext Context);
+	}
+	public interface IPlanExecActionProvider : IActionProvider
+	{
+		long? ResolvePlanId(string Options);
 	}
 }

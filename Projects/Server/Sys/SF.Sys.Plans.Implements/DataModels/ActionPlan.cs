@@ -13,17 +13,22 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using SF.Sys.Data;
 using SF.Sys.Entities.DataModels;
 using System.Collections.Generic;
 
-namespace SF.Sys.Plans.Manager.Models
+namespace SF.Sys.Plans.DataModels
 {
-	[EntityObject]
-	public class ActionPlan : ObjectEntityBase
-	{	
-		
-		[TreeNodes]
-		public IEnumerable<PlanAction> Actions { get; set; }
+	/// <summary>
+	/// 动作计划
+	/// </summary>
+	[Table("ActionPlan")]
+    public class ActionPlan : ObjectEntityBase
+	{
+		[InverseProperty(nameof(ActionPlanAction.Plan))]
+		public ICollection<ActionPlanAction> Actions { get; set; }
 	}
 }

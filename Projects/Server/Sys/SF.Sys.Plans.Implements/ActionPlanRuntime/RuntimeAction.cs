@@ -14,21 +14,25 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using SF.Sys.Data;
-using SF.Sys.Entities.DataModels;
-namespace SF.Sys.Plans.Manager.DataModels
+using System.Collections.Generic;
+
+namespace SF.Sys.Plans.ActionPlanRuntime
 {
-	/// <summary>
-	/// 动作计划
-	/// </summary>
-	[Table("ActionPlan")]
-    public class ActionPlan : ContainerEntityBase<ActionPlan,PlanAction>
+	class RuntimeAction : IRuntimeAction
 	{
-		/// <summary>
-		/// 执行次数
-		/// </summary>
-		public int ExecCount { get; set; }
+		public long Id { get; set; }
+		public string Name { get; set; }
+		public long ActionProviderId { get; set; }
+		public string ActionProviderOptions { get; set; }
+
+		public IRuntimeAction FirstChildAction { get; set; }
+
+		public IRuntimeAction NextAction { get; set; }
+		public RuntimeAction LastChildAction { get; set; }
+
+		public IRuntimePlan Plan { get; set; }
+
+		public long? ParentId { get; set; }
+
 	}
 }

@@ -13,17 +13,38 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.Entities.DataModels;
-using System.Collections.Generic;
-
-namespace SF.Sys.Plans.Manager.Models
+namespace SF.Sys.Plans.ActionPlanRuntime
 {
-	[EntityObject]
-	public class ActionPlan : ObjectEntityBase
-	{	
-		
-		[TreeNodes]
-		public IEnumerable<PlanAction> Actions { get; set; }
+	public enum ValidatedFailedReason
+	{
+		/// <summary>
+		/// 执行中的计划调用动作的指定计划发送变动
+		/// </summary>
+		ExecPlanChanged,
+
+		/// <summary>
+		/// 找不到执行中计划调用动作的计划
+		/// </summary>
+		ExecPlanMissing,
+
+		/// <summary>
+		/// 在计划中找不到执行中的动作
+		/// </summary>
+		ActionMissing,
+
+		/// <summary>
+		/// 执行中动作的动作提供者发生变动
+		/// </summary>
+		ActionProviderChanged,
+
+		/// <summary>
+		/// 计划调用动作未指定计划ID
+		/// </summary>
+		NoExecPlanId,
+
+		/// <summary>
+		/// 计划已取消
+		/// </summary>
+		PlanCancelled
 	}
 }

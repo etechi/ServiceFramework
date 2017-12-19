@@ -14,55 +14,75 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using SF.Sys.Data;
-using SF.Sys.Entities.DataModels;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Sys.Plans.Manager.DataModels
+namespace SF.Sys.Plans.DataModels
 {
-	/// <summary>
-	/// 计划执行器
-	/// </summary>
-	[Table("PlanExecutor")]
-    public class PlanExecutor : ObjectEntityBase<string>
+	///<summary>已过期实例</summary>
+	[Table("CallExpired")]
+    public class CallExpired
 	{
-		[Index]
-		public long PlanId { get; set; }
-
-		[ForeignKey(nameof(PlanId))]
-		public ActionPlan Plan { get; set; }
-		/// <summary>
-		/// 上次执行时间
-		/// </summary>
-		public DateTime LastActiveTime { get; set; }
 		
 		/// <summary>
-		/// 执行堆栈
-		/// </summary>
-		public string Stack { get; set; }
-		
-		/// <summary>
-		/// 错误信息
+		/// 调用类型
 		/// </summary>
 		[MaxLength(200)]
-		public string Error { get; set; }
+		[Required]
+		[Key]
+		[Column(Order =1)]
+		public string Type { get; set; }
+
+		/// <summary>
+		/// 调用标识
+		/// </summary>
+		[MaxLength(200)]
+		[Required]
+		[Key]
+		[Column(Order = 2)]
+		public string Ident { get; set; }
+
+		/// <summary>
+		/// 过期时间
+		/// </summary>
+		public DateTime Expired { get; set; }
+
+		/// <summary>
+		/// 创建时间
+		/// </summary>
+		public DateTime CreateTime { get; set; }
+
+		/// <summary>
+		/// 标题
+		/// </summary>
+		[MaxLength(100)]
+        public string Title { get; set; }
+
+		/// <summary>
+		/// 调用参数
+		/// </summary>
+		[MaxLength(200)]
+        public string CallArgument { get; set; }
+
+		/// <summary>
+		/// 调用异常
+		/// </summary>
+		[MaxLength(200)]
+        public string CallError { get; set; }
 
 		/// <summary>
 		/// 最后执行时间
 		/// </summary>
 		public DateTime? LastExecTime { get; set; }
-		
+
 		/// <summary>
 		/// 错误次数
 		/// </summary>
-		public int ErrorCount { get; set; }
-
+		public int ExecCount { get; set; }
 		/// <summary>
 		/// 执行异常信息
 		/// </summary>
 		[MaxLength(200)]
 		public string ExecError { get; set; }
-
 	}
 }

@@ -48,9 +48,14 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddDefaultCallPlanStorage(this IServiceCollection sc,string TablePrefix=null)
 		{
 			sc.AddDataModules<
-				SF.Sys.Plans.Manager.DataModels.CallExpired, 
-				SF.Sys.Plans.Manager.DataModels.CallInstance
-				>(TablePrefix ?? "Sys");
+				SF.Sys.Plans.DataModels.CallExpired, 
+				SF.Sys.Plans.DataModels.CallInstance,
+				SF.Sys.Plans.DataModels.ActionPlan,
+				SF.Sys.Plans.DataModels.ActionPlanAction,
+				SF.Sys.Plans.DataModels.ActionPlanExecutor
+				>(
+				TablePrefix ?? "Sys"
+				);
 			sc.AddScoped<ICallPlanStorage, CallPlanStorage>();
 			return sc;
 		}

@@ -19,16 +19,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Sys.Entities;
-namespace SF.Sys.Plans.Manager
+namespace SF.Sys.Plans.ActionPlanRuntime
 {
 	public enum ActionResultType
 	{
 		None,
 		Return,
-		ExecPlan,
+		NewStackFrame,
 		DelayTo,
 		WaitEvent,
-		WaitUserInput
+		WaitUserInput,
+		Error
 	}
 	public interface IActionResult
 	{
@@ -45,36 +46,33 @@ namespace SF.Sys.Plans.Manager
 	}
 	public class ExecPlanResult : IActionResult
 	{
-		public ActionResultType Type => ActionResultType.ExecPlan;
-		public long PlanId { get; set; }
+		public ActionResultType Type => ActionResultType.NewStackFrame;
+		public IRuntimeAction Action { get; set; }
+		public string Context { get; set; }
 	}
 	public class DelayToResult : IActionResult
 	{
 		public ActionResultType Type => ActionResultType.DelayTo;
 		public DateTime Target { get; set; }
+		public string Context { get; set; }
 	}
-	public class WaitEventResult : ActionResult
+	public class WaitEventResult : IActionResult
 	{
-		public override ActionResultType Type => ActionResultType.WaitEvent;
+		public ActionResultType Type => ActionResultType.WaitEvent;
 		public Type EventType { get; set; }
 		public DateTime Expires { get; set; }
+		public string Context { get; set; }
 	}
-	public class WaitUserInputResult : ActionResult
+	public class WaitUserInputResult : IActionResult
 	{
-		public override ActionResultType Type => ActionResultType.WaitUserInput;
+		public ActionResultType Type => ActionResultType.WaitUserInput;
 		public Type UserInputType { get; set; }
 		public DateTime Expires { get; set; }
+		public string Context { get; set; }
 	}
-	public interface IActionExecContext
+	public class ErrorResult : IActionResult
 	{
-		bool IsCallback { get; set; }
-		string CallbackContext { get; set; }
-		string Options { get; }
-		string Argument { get; }
-		object Data { get; }
-	}
-	public interface IActionProvider
-	{
-		Task<IActionResult> Execute(IActionExecContext Context);
+		public ActionResultType Type => ActionResultType.Error;
+		public Exception Error { get; set; }
 	}
 }

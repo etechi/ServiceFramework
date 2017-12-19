@@ -24,24 +24,13 @@ namespace SF.Sys.Plans.Manager
 {
 
 	public class ActionPlanManager :
-		AutoModifiableEntityManager<ObjectKey<long>,ActionPlan,ActionPlan,ActionPlanQueryArgument,ActionPlanEditable,DataModels.ActionPlan>
-		IEntitySource<ObjectKey<string, string>, CallInstance, CallInstanceQueryArgument>,
-		IEntityManager<ObjectKey<string, string>, CallInstanceEditable>
+		AutoModifiableEntityManager<ObjectKey<long>,ActionPlan,ActionPlan,ActionPlanQueryArgument,ActionPlan,DataModels.ActionPlan>,
+		IEntitySource<ObjectKey<long>, ActionPlan, ActionPlanQueryArgument>,
+		IEntityManager<ObjectKey<long>, ActionPlan>
 	{
-		public CallInstanceManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		public ActionPlanManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 
-		protected override PagingQueryBuilder<DataModels.CallInstance> PagingQueryBuilder => throw new NotImplementedException();
-
-		protected override IContextQueryable<DataModels.CallInstance> OnBuildQuery(IContextQueryable<DataModels.CallInstance> Query, CallInstanceQueryArgument Arg)
-		{
-			throw new NotImplementedException();
-		}
-
-		protected override Task OnUpdateModel(IModifyContext ctx)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

@@ -28,8 +28,13 @@ namespace SF.Sys.Plans.Manager.Models
 
 
 	[EntityObject]
-	public class PlanAction  :ItemEntityBase<ActionPlan>
+	public class PlanAction : TreeNodeEntityBase<PlanAction>
 	{
+		[EntityIdent(typeof(ActionPlan),nameof(PlanName))]
+		public long PlanId{get;set;}
+
+		public string PlanName { get; set; }
+
 		/// <summary>
 		/// 动作类型
 		/// </summary>
