@@ -15,11 +15,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Hosting.Implements\SF.Sys.Hosting.Implements.csproj" />
-    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
-    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Logging.Implements\SF.Sys.Logging.Implements.csproj" />
-    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Services.Runtime\SF.Sys.Services.Runtime.csproj" />
-    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Services\SF.Sys.Services.csproj" />
+    <ProjectReference Include="..\SF.Sys.Auth\SF.Sys.Auth.csproj" />
+    <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />
+    <ProjectReference Include="..\SF.Sys.Hosting.Implements\SF.Sys.Hosting.Implements.csproj" />
+    <ProjectReference Include="..\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
+    <ProjectReference Include="..\SF.Sys.Logging.Implements\SF.Sys.Logging.Implements.csproj" />
+    <ProjectReference Include="..\SF.Sys.Services.Runtime\SF.Sys.Services.Runtime.csproj" />
+    <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
   </ItemGroup>
 
 </Project>

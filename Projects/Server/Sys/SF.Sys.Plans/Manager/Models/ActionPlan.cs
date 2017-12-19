@@ -13,19 +13,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SF.Sys.Annotations;
+using SF.Sys.Entities.DataModels;
 
-namespace SF.Sys.Plans.Runtime
+namespace SF.Sys.Plans.Manager.Models
 {
-	public static class ConstantTimes
-	{
-		public static readonly DateTime NeverExpire = new DateTime(2200, 1, 1);
-		public static readonly DateTime ExecutingStartTime = new DateTime(2100, 1, 1);
-		public static readonly DateTime InitTime = new DateTime(2010, 1, 1);
-
+	[EntityObject]
+	public class ActionPlan : ContainerEntityBase<ActionPlan,PlanAction>
+	{	
+		/// <summary>
+		/// 执行次数
+		/// </summary>
+		public int ExecCount { get; set; }
 	}
 }

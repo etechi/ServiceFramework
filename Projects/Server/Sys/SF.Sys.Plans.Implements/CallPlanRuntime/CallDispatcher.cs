@@ -23,7 +23,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SF.Sys.Plans.Runtime
+namespace SF.Sys.Plans.CallPlanRuntime
 {
 	public class TimeoutException : PublicException
 	{
@@ -54,7 +54,7 @@ namespace SF.Sys.Plans.Runtime
 				var actions = new List<ICallPlanStorageAction>();
 				foreach (var timer in timers)
 				{
-					actions.Add(CreateStorageAction(storage,timer, error_unexcepted, now, null));
+					actions.Add(CreateStorageAction(storage,timer, error_unexcepted, now, null,null));
 				}
 				await storage.ExecuteActions(actions);
 				return timers.Length;
@@ -126,12 +126,13 @@ namespace SF.Sys.Plans.Runtime
                          Exception error = null;
                          var now = TimeService.Now;
                          int? repeatDelay = null;
+						 string nextCallArgument = null;
                          if (instance.Expire > now)
                          {
                              try
                              {
                                  var cb = sp.Resolve<CallableFactory>().Create(sp, type, instance.ServiceScopeId);
-                                 await cb.Execute(
+                                 var re=await cb.Execute(
 									 new CallContext {
 										 Argument=instance.Argument,
 										 Ident=ident,
@@ -141,12 +142,16 @@ namespace SF.Sys.Plans.Runtime
 										 CallData=CallData
 									 }
 									 );
-                                 Log(LogLevel.Trace, "执行完成", instance);
-                             }
-                             catch (RepeatCallException rce)
-                             {
-                                 repeatDelay = (int)rce.Target.Subtract(now).TotalSeconds;
-                             }
+								 if (re == null)
+									 Log(LogLevel.Trace, "执行完成", instance);
+								 else if (re is RepeatCallResult rcr)
+								 {
+									 repeatDelay = (int)rcr.NextCallTime.Subtract(now).TotalSeconds;
+									 nextCallArgument = rcr.NextCallArgument;
+								 }
+								 else
+									 throw new NotSupportedException("调用过程返回无法识别的结果:" + re.GetType());
+							 }
                              catch (Exception e)
                              {
                                  Log(LogLevel.Error, "执行异常", instance, e);
@@ -157,7 +162,7 @@ namespace SF.Sys.Plans.Runtime
                          if (instance.Expire <= now)
                              Log(LogLevel.Error, "定时器过期", instance);
 
-                         await Save(storage, instance, error, now, repeatDelay);
+                         await Save(storage, instance, error, now, repeatDelay,nextCallArgument);
                      }
                      catch (Exception e)
                      {
@@ -171,7 +176,8 @@ namespace SF.Sys.Plans.Runtime
             ICallInstance timer, 
             Exception error, 
             DateTime now,
-            int? repeatDelay
+            int? RepeatDelay,
+			string NextCallArgument
             )
 		{
 			//定时器已超时
@@ -185,25 +191,35 @@ namespace SF.Sys.Plans.Runtime
 					);
 			}
 			//成功结束
-			if (error == null && repeatDelay==null)
-				return storage.CreateSuccessAction(timer);
-			else
-			{
+			if (error != null)
 				//发生异常，但未超时
 				return storage.CreateRetryAction(
-						timer,
-						ConstantTimes.InitTime
-							.Add(timer.CallTime.Subtract(ConstantTimes.ExecutingStartTime))
-							.AddSeconds(repeatDelay??timer.DelaySecondsOnError),
-						false,
-						error?.ToString(),
-						error is RepeatCallException repeat? repeat.NewCallArgument:null
-						);
-			}
+					timer,
+					ConstantTimes.InitTime
+						.Add(timer.CallTime.Subtract(ConstantTimes.ExecutingStartTime))
+						.AddSeconds(timer.DelaySecondsOnError),
+					false,
+					error.ToString(),
+					NextCallArgument
+					);
+			else if (RepeatDelay.HasValue)
+				//延时调用
+				return storage.CreateRetryAction(
+					timer,
+					ConstantTimes.InitTime
+						.Add(timer.CallTime.Subtract(ConstantTimes.ExecutingStartTime))
+						.AddSeconds(RepeatDelay.Value),
+					false,
+					null,
+					NextCallArgument
+					);
+			else
+				//成功结束
+				return storage.CreateSuccessAction(timer);
 		}
-		async Task Save(ICallPlanStorage storage, ICallInstance timer, Exception error, DateTime now,int? repeatDelay)
+		async Task Save(ICallPlanStorage storage, ICallInstance timer, Exception error, DateTime now,int? repeatDelay,string nextCallArgument)
 		{
-			var action = CreateStorageAction(storage,timer, error, now, repeatDelay);
+			var action = CreateStorageAction(storage,timer, error, now, repeatDelay,nextCallArgument);
 			await storage.ExecuteActions(new[] { action });
 		}
 		

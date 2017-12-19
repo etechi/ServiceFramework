@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Sys.Plans.Runtime
+namespace SF.Sys.Plans.CallPlanRuntime
 {
 	public class CallPlanProvider :
 		ICallPlanProvider

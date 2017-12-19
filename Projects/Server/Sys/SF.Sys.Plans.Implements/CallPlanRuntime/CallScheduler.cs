@@ -22,7 +22,7 @@ using System.Threading;
 using SF.Sys.Logging;
 using SF.Sys.Services;
 
-namespace SF.Sys.Plans.Runtime
+namespace SF.Sys.Plans.CallPlanRuntime
 {
 	public static class CallScheduler
 	{

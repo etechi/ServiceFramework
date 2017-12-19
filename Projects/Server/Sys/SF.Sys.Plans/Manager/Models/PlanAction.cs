@@ -13,8 +13,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Annotations;
 using SF.Sys.Entities.DataModels;
-using System;
+using SF.Sys.Services.Management.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,66 +25,35 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Plans.Manager.Models
 {
-	public enum ActionType
-	{
-		Call,
-		ExecutePlan,
-		Delay,
-		DelayTo
-	}
-	
-	public class Action 
-	{
-		public string Name;
 
-	}
-	public class CallAction : Action
-	{
-		public string Type { get; set; }
-		public string Argument { get; set; }
-		public int ExpireSeconds { get; set; }
-		public int DelaySecondsOnError { get; set; }
-	}
-	public class ExecutePlanAction : Action
-	{
-		public long PlanId { get; set; }
-		public string Argument { get; set; }
-	}
-	public class DelayToAction: Action
-	{
-		public DateTime Time { get; set; }
-	}
-	public class DelayAction : Action
-	{
-		public TimeSpan Time { get; set; }
-	}
 
-	public class ActionPlan : ObjectEntityBase
+	[EntityObject]
+	public class PlanAction  :ItemEntityBase<ActionPlan>
 	{
+		/// <summary>
+		/// 动作类型
+		/// </summary>
+		[EntityIdent(typeof(ServiceInstance),nameof(ActionProviderName))]
+		public long ActionProviderId { get; set; }
+
+		/// <summary>
+		/// 动作名称
+		/// </summary>
+		public string ActionProviderName { get; set; }
 		
-		public bool Repeatable { get; set; }
-		public Action[] Actions { get; set; }
-	}
+		/// <summary>
+		/// 动作设置
+		/// </summary>
+		public string Options { get; set; }
 
-	public class ActionPlanExecutor
-	{
-		[Key]
-		[Required]
-		[MaxLength(100)]
-		[Column(Order = 1)]
-		public string Type { get; set; }
+		/// <summary>
+		/// 超时(s)
+		/// </summary>
+		public int ExpireSeconds { get; set; }
 
-		[Key]
-		[Required]
-		[MaxLength(100)]
-		[Column(Order = 1)]
-		public string Ident { get; set; }
-
-		[Required]
-		[MaxLength(100)]
-		public string Name { get; set; }
-
-
-		public long PlanId { get; set; }
+		/// <summary>
+		/// 错误延时
+		/// </summary>
+		public int DelaySecondsOnError { get; set; }
 	}
 }

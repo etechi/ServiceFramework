@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SF.Sys.Plans.Runtime
+namespace SF.Sys.Plans.CallPlanRuntime
 {
 	public class CallableFactory
 	{

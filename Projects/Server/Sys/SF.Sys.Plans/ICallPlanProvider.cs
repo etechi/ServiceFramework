@@ -21,19 +21,6 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Plans
 {
-	/// <summary>
-	/// 执行时抛出此异常将引发重复调用，可用于实现重复定时器
-	/// </summary>
-	public class RepeatCallException : Exception
-    {
-        public DateTime Target { get; }
-		public string NewCallArgument { get; set; }
-
-		public RepeatCallException(DateTime Target)
-        {
-            this.Target = Target;
-        }
-    }
 	public interface ICallContext
 	{
 		long? ServiceScopeId { get;  }
@@ -43,10 +30,19 @@ namespace SF.Sys.Plans
 		Exception Exception { get; }
 		object CallData { get; }
 	}
-
+	
+	public interface ICallResult
+	{
+	}
+	
+	public class RepeatCallResult : ICallResult
+	{
+		public DateTime NextCallTime { get; set; }
+		public string NextCallArgument { get; set; }
+	}
     public interface ICallable
 	{
-		Task Execute(ICallContext CallContext);
+		Task<ICallResult> Execute(ICallContext CallContext);
 	}
 	public interface ICallableDefination
 	{

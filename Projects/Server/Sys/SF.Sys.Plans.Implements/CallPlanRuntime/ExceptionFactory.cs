@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace SF.Sys.Plans.Runtime
+namespace SF.Sys.Plans.CallPlanRuntime
 {
 	static class ExceptionFactory
 	{

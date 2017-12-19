@@ -17,41 +17,38 @@ using SF.Sys.Plans;
 using SF.Sys.Plans.Manager;
 using SF.Sys.Plans.CallPlanRuntime;
 using System.Collections.Generic;
+using SF.Sys.Data;
+using System.Linq;
+using SF.Sys.Events;
+using SF.Sys.Entities;
+using SF.Sys.Plans.Manager.DataModels;
+using System.Threading.Tasks;
 
 namespace SF.Sys.Services
 {
-	public static class CallPlanDIServiceCollectionExtension
+	public static class ActionPlanDIServiceCollectionExtension
 	{
-
-		public static IServiceCollection AddCallPlans(this IServiceCollection sc,int Interval=5*1000,int ExecCountPerInterval=100)
+		public static IServiceCollection AddActionPlans(this IServiceCollection sc)
 		{
-			sc.AddSingleton(sp =>
-				new CallableFactory(sp.Resolve<IEnumerable<ICallableDefination>>())
-				);
-			sc.AddScoped<ICallDispatcher, CallDispatcher>();
-			sc.AddScoped<ICallPlanProvider, CallPlanProvider>();
-
-			sc.AddTimerService(
-				"调用计划",
-				Interval,
-				async sp =>
+			sc.AddEntityLocalCache(
+				async (IDataSet<ActionPlan> set, long Id) =>
 				{
-					await CallScheduler.Execute(sp, ExecCountPerInterval);
-					return Interval;
+					var re = await set
+						.AsQueryable()
+						.Where(p => p.Id == Id && p.LogicState == Entities.EntityLogicState.Enabled)
+						.Include(p => p.Items).SingleOrDefaultAsync();
+					re.Items = re.Items.OrderBy(i => i.ItemOrder).ToArray();
+					return re;
 				},
-				async sp =>
-					await CallScheduler.Startup(sp)
-				);
-			return sc;
-		}
-
-		public static IServiceCollection AddDefaultCallPlanStorage(this IServiceCollection sc,string TablePrefix=null)
-		{
-			sc.AddDataModules<
-				SF.Sys.Plans.Manager.DataModels.CallExpired, 
-				SF.Sys.Plans.Manager.DataModels.CallInstance
-				>(TablePrefix ?? "Sys");
-			sc.AddScoped<ICallPlanStorage, CallPlanStorage>();
+				(IEventSubscriber<EntityChanged<ActionPlan>> OnPlanModified, IEntityCacheRemover<long> remover) =>
+				{
+					OnPlanModified.Wait(e =>
+					{
+						remover.Remove(e.Id);
+						return Task.CompletedTask;
+					});
+				}
+			);
 			return sc;
 		}
 	}
