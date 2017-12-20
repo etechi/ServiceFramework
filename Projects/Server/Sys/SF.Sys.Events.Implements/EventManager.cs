@@ -122,8 +122,8 @@ namespace SF.Sys.Events
 			{
 				Task.Run(async () =>
 				{
-					var Event = EventInstance.Event;
-					foreach (var o in EventManager.GetEventObservers<TEvent>(Event.Source, Event.Type, false))
+					var e = EventInstance.Event;
+					foreach (var o in EventManager.GetEventObservers<TEvent>(e.Source, e.Type, false))
 					{
 						var ctx =await o.Prepare(EventInstance);
 						await o.Commit(EventInstance, ctx);

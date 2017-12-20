@@ -48,9 +48,6 @@ namespace SF.Sys.NetworkService
 		HashSet<string> Imported { get; } = new HashSet<string>();
 		bool TryImport(StringBuilder sb,string type)
 		{
-			if (Imported.Add(type) && Types.TryGetValue(type, out var st))
-				BuildType(st);
-
 			if (type.EndsWith("?"))
 				return TryImport(sb,type.Substring(0, type.Length - 1));
 
@@ -61,6 +58,9 @@ namespace SF.Sys.NetworkService
 			i = type.IndexOf('{');
 			if (i != -1)
 				return TryImport(sb,type.Substring(0, i));
+
+			if (Imported.Add(type) && Types.TryGetValue(type, out var st))
+				BuildType(st);
 
 			if (IsEnumType(type))
 				return false;
@@ -148,15 +148,20 @@ namespace SF.Sys.NetworkService
 		}
 		void AddFile(string name,Action<StringBuilder> content)
 		{
-			using (var s = Archive.CreateEntry(name + ".java").Open())
+			var sb = new StringBuilder();
+			sb.AppendLine($"package {PackagePath};");
+			sb.AppendLine(CommonImports);
+			var l = sb.Length;
+			content(sb);
+			if (l == sb.Length)
+				return;
+			var buf = Encoding.UTF8.GetBytes(sb.ToString());
+
+			using (var s = Archive.CreateEntry(name+".java").Open())
 			{
-				var sb = new StringBuilder();
-				sb.AppendLine($"package {PackagePath};");
-				sb.AppendLine(CommonImports);
-				content(sb);
-				var buf = Encoding.UTF8.GetBytes(sb.ToString());
 				s.Write(buf, 0, buf.Length);
 			}
+
 		}
 		void BuildEnumType(SF.Sys.Metadata.Models.Type t)
 		{

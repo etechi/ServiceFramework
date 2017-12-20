@@ -27,6 +27,7 @@ namespace SF.Sys.Events
 		string Source { get; }
 		string Type { get; }
 		string TraceIdent { get; }
+		string Target { get; }
 	}
 
 	public class CommonEvent : IEvent
@@ -38,6 +39,7 @@ namespace SF.Sys.Events
 			Type = t.Name;
 		}
 		public DateTime Time { get; set; }
+		public string Target { get; set; }
 		public string Source { get; set; }
 		public string Type { get; set; }
 		public string TraceIdent { get; set; }
@@ -66,29 +68,6 @@ namespace SF.Sys.Events
 	public interface IEventSubscriber<TEvent> where TEvent:IEvent
 	{
 		void Wait(Func<IEventInstance<TEvent>,Task> Callback);
-	}
-	public enum EventDeliveryPolicy
-	{
-		/// <summary>
-		/// 无保证
-		/// </summary>
-		NoGuarantee,
-		/// <summary>
-		/// 尽力保证
-		/// </summary>
-		TryBest,
-		/// <summary>
-		/// 最多一次
-		/// </summary>
-		AtMostOnce,
-		/// <summary>
-		/// 最少一次
-		/// </summary>
-		AtLeastOnce,
-		/// <summary>
-		/// 刚好一次
-		/// </summary>
-		JustOnce
 	}
 	public interface IEventObserver<TEvent> where TEvent:IEvent
 	{

@@ -28,7 +28,7 @@ namespace SF.Sys.Entities
 			var i = e.GetCachedEntity();
 			if (i != null)
 				return (E)i;
-			var key = Json.Parse<K>(e.Ident);
+			var key = Json.Parse<K>(e.Target);
 			var r =await Loader(key);
 			if (r.IsDefault()) return default(E);
 			e.SetCachedEntity(r);

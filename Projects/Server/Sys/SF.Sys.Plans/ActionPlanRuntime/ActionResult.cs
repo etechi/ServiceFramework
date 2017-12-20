@@ -44,7 +44,7 @@ namespace SF.Sys.Plans.ActionPlanRuntime
 		public ActionResultType Type => ActionResultType.Return;
 		public object Result { get; set; }
 	}
-	public class ExecPlanResult : IActionResult
+	public class ExecActionResult : IActionResult
 	{
 		public ActionResultType Type => ActionResultType.NewStackFrame;
 		public IRuntimeAction Action { get; set; }

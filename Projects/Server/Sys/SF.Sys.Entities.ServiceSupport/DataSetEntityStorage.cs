@@ -478,7 +478,7 @@ namespace SF.Sys.Entities
 								{
 									ServiceId = Manager.ServiceInstanceDescroptor?.InstanceId,
 									//Source=meta.Ident,
-									Ident= Entity<TEntity>.GetStrIdent(meta.Ident, Entity),
+									Target= Entity<TEntity>.GetStrIdent(meta.Ident, Entity),
 									Time=Manager.Now,
 									Exception = e,
 									Action= DataActionType

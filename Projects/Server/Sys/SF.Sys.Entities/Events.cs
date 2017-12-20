@@ -21,7 +21,7 @@ namespace SF.Sys.Entities
 	public class EntityChanged<TEntity> : IEvent
 	{
 		public Type EventType => typeof(TEntity);
-		public string Ident { get; set; }
+		public string Target { get; set; }
 		public Exception Exception { get; set; }
 		public long? ServiceId { get; set; }
 

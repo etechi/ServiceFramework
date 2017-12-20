@@ -13,23 +13,31 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SF.Sys.Plans.Manager.Models;
-using SF.Sys.Entities;
-namespace SF.Sys.Plans.Manager
+
+namespace SF.Sys.Events
 {
-
-	public class ActionPlanManager :
-		AutoModifiableEntityManager<ObjectKey<long>,ActionPlan,ActionPlan,ActionPlanQueryArgument,ActionPlan,DataModels.ActionPlan>,
-		IActionPlanManager
+	public enum EventDeliveryPolicy
 	{
-		public ActionPlanManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
-		{
-		}
-
+		/// <summary>
+		/// 无保证, 性能最好
+		/// </summary>
+		NoGuarantee,
+		/// <summary>
+		/// 尽力保证，尝试尽力投递事件，但不保证成功
+		/// </summary>
+		TryBest,
+		/// <summary>
+		/// 最多一次，通过记录事件ID，确保相同事件最多只会投递一次
+		/// </summary>
+		AtMostOnce,
+		/// <summary>
+		/// 最少一次，先存储事件，当错误发生时，会重新投递事件
+		/// </summary>
+		AtLeastOnce,
+		/// <summary>
+		/// 刚好一次，组合最多一次和最少一次
+		/// </summary>
+		JustOnce
 	}
+   
 }

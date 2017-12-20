@@ -23,7 +23,7 @@ namespace SF.Sys.Services
 	public static class CallPlanDIServiceCollectionExtension
 	{
 
-		public static IServiceCollection AddCallPlans(this IServiceCollection sc,int Interval=5*1000,int ExecCountPerInterval=100)
+		public static IServiceCollection AddCallPlans(this IServiceCollection sc,int Interval=1000,int ExecCountPerInterval=100)
 		{
 			sc.AddSingleton(sp =>
 				new CallableFactory(sp.Resolve<IEnumerable<ICallableDefination>>())

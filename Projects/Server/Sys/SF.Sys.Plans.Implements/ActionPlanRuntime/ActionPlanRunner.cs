@@ -244,7 +244,7 @@ namespace SF.Sys.Plans.ActionPlanRuntime
 					frame.Context = dtr.Context;
 					return dtr.Target;
 				case ActionResultType.NewStackFrame:
-					var ep = (ExecPlanResult)result;
+					var ep = (ExecActionResult)result;
 					frame.Context = ep.Context;
 					frames.Add(new StackFrame { Action = ep.Action, Context = ep.Context });
 					return null;

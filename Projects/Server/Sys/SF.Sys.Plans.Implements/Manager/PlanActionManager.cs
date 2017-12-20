@@ -23,24 +23,13 @@ using SF.Sys.Entities;
 namespace SF.Sys.Plans.Manager
 {
 
-	public class CallInstanceManager :
-		ModidifiableEntityManager<ObjectKey<string, string>, CallInstance, CallInstanceQueryArgument, CallInstanceEditable, DataModels.CallInstance>,
-		ICallInstanceManager
+	public class PlanActionManager :
+		AutoQuerableEntitySource<ObjectKey<long>,PlanAction,PlanAction,PlanActionQueryArgument,DataModels.ActionPlanAction>,
+		IPlanActionManager
 	{
-		public CallInstanceManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		public PlanActionManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
-
-		protected override PagingQueryBuilder<DataModels.CallInstance> PagingQueryBuilder => throw new NotImplementedException();
-
-		protected override IContextQueryable<DataModels.CallInstance> OnBuildQuery(IContextQueryable<DataModels.CallInstance> Query, CallInstanceQueryArgument Arg)
-		{
-			throw new NotImplementedException();
-		}
-
-		protected override Task OnUpdateModel(IModifyContext ctx)
-		{
-			throw new NotImplementedException();
-		}
+		
 	}
 }

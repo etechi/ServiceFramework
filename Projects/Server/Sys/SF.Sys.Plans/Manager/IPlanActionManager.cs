@@ -18,29 +18,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SF.Sys.Plans.Manager.Models;
 using SF.Sys.Entities;
 namespace SF.Sys.Plans.Manager
 {
-
-	public class CallInstanceManager :
-		ModidifiableEntityManager<ObjectKey<string, string>, CallInstance, CallInstanceQueryArgument, CallInstanceEditable, DataModels.CallInstance>,
-		ICallInstanceManager
+	public class PlanActionQueryArgument : QueryArgument
 	{
-		public CallInstanceManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
-		{
-		}
 
-		protected override PagingQueryBuilder<DataModels.CallInstance> PagingQueryBuilder => throw new NotImplementedException();
-
-		protected override IContextQueryable<DataModels.CallInstance> OnBuildQuery(IContextQueryable<DataModels.CallInstance> Query, CallInstanceQueryArgument Arg)
-		{
-			throw new NotImplementedException();
-		}
-
-		protected override Task OnUpdateModel(IModifyContext ctx)
-		{
-			throw new NotImplementedException();
-		}
+	}
+	public interface IPlanActionManager :
+		IEntitySource<ObjectKey<long>, Models.PlanAction, PlanActionQueryArgument>
+	{
+		
 	}
 }

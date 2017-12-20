@@ -21,13 +21,13 @@ using System.Threading.Tasks;
 using SF.Sys.Entities;
 namespace SF.Sys.Plans.Manager
 {
-	public class ActionPlanQueryArgument : QueryArgument<ObjectKey<string>>
+	public class ActionPlanQueryArgument : ObjectQueryArgument
 	{
 
 	}
 	public interface IActionPlanManager :
-		IEntitySource<ObjectKey<string>, Models.ActionPlan, ActionPlanQueryArgument>,
-		IEntityManager<ObjectKey<string>,Models.ActionPlan>
+		IEntitySource<ObjectKey<long>, Models.ActionPlan, ActionPlanQueryArgument>,
+		IEntityManager<ObjectKey<long>,Models.ActionPlan>
 	{
 		
 	}
