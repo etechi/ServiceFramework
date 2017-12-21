@@ -22,8 +22,6 @@ namespace SF.Sys.Services
 {
 	public static class TaskTimerService
 	{
-	
-
 		public static IServiceCollection AddTimerService(
 			this IServiceCollection sc,
 			string Name,

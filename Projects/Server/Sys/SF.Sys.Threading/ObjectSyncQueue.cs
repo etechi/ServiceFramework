@@ -47,8 +47,7 @@ namespace System.Threading
                         item.WaitCount++;
                     else
                     {
-						lock(ItemCache)
-							item = ItemCache.Count > 0 ? ItemCache.Pop() : new Item();
+						item = ItemCache.Count > 0 ? ItemCache.Pop() : new Item();
 
                         item.WaitCount = 1;
                         Dicts.Add(key, item);
@@ -73,8 +72,7 @@ namespace System.Threading
 						item.WaitCount--;
 						if (item.WaitCount == 0)
 						{
-							lock(ItemCache)
-								ItemCache.Push(item);
+							ItemCache.Push(item);
 							Dicts.Remove(key);
 						}
 					}
