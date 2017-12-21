@@ -36,7 +36,7 @@ namespace SF.Sys.Plans.ActionPlanRuntime.ActionProviders
 		{
 			this.TimeService = TimeService;
 		}
-		async Task<IActionResult> OnError(DelayOptions options, Exception error)
+		IActionResult OnError(DelayOptions options, Exception error)
 		{
 			var errorAction = ActionOnError.Retry;
 			if (error is ActionCallValidateException acve)
@@ -74,19 +74,21 @@ namespace SF.Sys.Plans.ActionPlanRuntime.ActionProviders
 			}
 		}
 		
-		public async Task<IActionResult> Execute(IActionExecContext Context)
+		public Task<IActionResult> Execute(IActionExecContext Context)
 		{
+			IActionResult result;
 			var options = Json.Parse<DelayOptions>(Context.Action.ActionProviderOptions);
 
 			if (Context.Error != null)
-				return await OnError(options, Context.Error);
-
-			if (Context.IsCallback)
-				return new NoneResult();
-			return new DelayToResult
-			{
-				Target = TimeService.Value.Now.Add(options.Time)
-			};
+				result = OnError(options, Context.Error);
+			else if (Context.IsCallback)
+				result = new NoneResult();
+			else
+				result = new DelayToResult
+				{
+					Target = TimeService.Value.Now.Add(options.Time)
+				};
+			return Task.FromResult(result);
 		}
 	}
 }

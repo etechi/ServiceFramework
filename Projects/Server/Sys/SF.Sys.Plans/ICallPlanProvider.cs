@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,5 +110,32 @@ namespace SF.Sys.Plans
 		Task<int> SystemStartupCleanup();
 		Task<Task[]> Execute(int count);
 		Task Execute(string Type,string Ident,object ExecData);
+	}
+
+	public interface IProcess:IEntityWithId<long>
+	{
+		DateTime CallTime { get; }
+		
+	}
+	public class ProcessResult
+	{
+		public DateTime? NextCallTime { get; set; }
+		public string Error { get; set; }
+	}
+	
+	public interface IProcessStorage<TProcessInstance>
+	{
+
+	}
+	public interface IProcessGuarantee
+	{
+		IDisposable Create<TKey, TProcess>(
+			Func<Task> Clieanup,
+			Func<int, DateTime, Task<TKey[]>> LoadIdents,
+			Func<TKey, Task<TProcess>> LoadProcess,
+			Func<TKey, ProcessResult, Task> SaveProcess,
+			Func<TProcess,Task<ProcessResult>> Process
+			)
+			where TProcess : class, IProcess;
 	}
 }
