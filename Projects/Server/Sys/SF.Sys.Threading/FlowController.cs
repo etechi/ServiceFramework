@@ -14,15 +14,20 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System.Collections.Generic;
-namespace System.Threading.Tasks
+using System.Threading.Tasks;
+
+namespace SF.Sys.Threading
 {
 	public class FlowController
 	{
-		public int ThreadCount { get; }
 		int _CurrentThreadCount;
+
+		public int ThreadCount { get; }
 		public int CurrentThreadCount => _CurrentThreadCount;
 		public int WaitingCount => WaitQueue.Count;
+
 		Queue<TaskCompletionSource<int>> WaitQueue { get; } = new Queue<TaskCompletionSource<int>>();
+
 		public FlowController(int ThreadCount)
 		{
 			this.ThreadCount = ThreadCount;

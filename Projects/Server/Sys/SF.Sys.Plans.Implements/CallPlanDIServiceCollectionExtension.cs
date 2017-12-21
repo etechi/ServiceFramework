@@ -17,9 +17,54 @@ using SF.Sys.Plans;
 using SF.Sys.Plans.Manager;
 using SF.Sys.Plans.CallPlanRuntime;
 using System.Collections.Generic;
+using System;
+using System.Threading.Tasks;
+using SF.Sys.TimeServices;
+using System.Linq;
 
 namespace SF.Sys.Services
 {
+	public static class EnsuerExtension
+	{
+		public static IServiceCollection CreateEnsurerService<TKey>(
+			this IServiceCollection sc,
+			string Name,
+			int Interval,
+			int BatchCount,
+			Func<IServiceProvider, Task> StartupCleanup,
+			Func<IServiceProvider, DateTime, int, Task<TKey[]>> GetIdents,
+			Func<IServiceProvider, TKey, Task> Process
+			)
+		{
+			sc.AddTimerService(
+				Name,
+				Interval,
+				async sp =>
+				{
+					var TimeService = sp.Resolve<ITimeService>();
+					var now = TimeService.Now;
+					var ids = await sp.WithScope(isp => 
+							GetIdents(isp, now, BatchCount)
+							);
+
+					var tasks=ids.Select(id =>
+							Task.Run(() => 
+								sp.WithScope(isp=>
+									Process(isp,id)
+									)
+								)
+							).ToArray();
+					await Task.WhenAll(tasks);
+					return Interval;
+				},
+				async sp =>
+					await sp.WithScope(isp=>
+						StartupCleanup(isp)
+					)
+				);
+			return sc;
+		}
+	}
 	public static class CallPlanDIServiceCollectionExtension
 	{
 
@@ -44,6 +89,8 @@ namespace SF.Sys.Services
 				);
 			return sc;
 		}
+
+
 
 		public static IServiceCollection AddDefaultCallPlanStorage(this IServiceCollection sc,string TablePrefix=null)
 		{

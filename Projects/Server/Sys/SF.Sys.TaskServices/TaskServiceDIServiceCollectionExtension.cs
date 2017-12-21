@@ -71,40 +71,6 @@ namespace SF.Sys.Services
 			return sc;
 		}
 
-		public static IServiceCollection AddTimerService(
-			this IServiceCollection sc,
-			string Name,
-			int Period,
-			Func<IServiceProvider, Task<int>> TimerCallback,
-			Func<IServiceProvider, Task> StartupCallback = null,
-			Func<IServiceProvider, Task> CleanupCallback = null,
-			bool AutoStartup=true
-			)
-		{
-			return sc.AddTaskService(
-				Name,
-				 (sp,ss,ct) =>
-					TaskServices.Timer.StartTaskTimer(
-						Period,
-						async () =>
-						{
-							return await TimerCallback(sp);
-						},
-						async () =>
-						{
-							if (StartupCallback != null)
-								await StartupCallback(sp);
-						},
-						async () =>
-						{
-							if (CleanupCallback != null)
-								await CleanupCallback(sp);
-						},
-						ct
-						),
-				 AutoStartup
-				);
-		}
 	}
 }
 
