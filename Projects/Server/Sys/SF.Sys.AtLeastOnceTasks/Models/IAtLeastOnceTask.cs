@@ -36,7 +36,7 @@ namespace SF.Sys.AtLeastOnceTasks.Models
 		/// <summary>
 		/// 任务开始时间
 		/// </summary>
-		DateTime? TaskStartTime { get; set; }
+		DateTime? TaskStartTime { get; }
 		/// <summary>
 		/// 任务最后执行时间
 		/// </summary>

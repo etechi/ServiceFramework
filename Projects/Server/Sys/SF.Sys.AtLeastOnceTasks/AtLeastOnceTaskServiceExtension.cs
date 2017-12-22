@@ -89,9 +89,6 @@ namespace SF.Sys.Services
 							if (task == null)
 								return;
 
-							if (!task.TaskStartTime.HasValue)
-								task.TaskStartTime = now;
-
 							task.TaskLastRunTime = now;
 							task.TaskRunCount++;
 
