@@ -41,6 +41,19 @@ namespace SF.Sys.Data
 				}
 			},Timeout,Retry);
 		}
+		public static T Update<T>(this IDataContext Context, T Entity) where T : class
+			=> Context.Set<T>().Update(Entity);
+
+		public static T Add<T>(this IDataContext Context, T Entity) where T : class
+			=> Context.Set<T>().Add(Entity);
+
+		public static void AddRange<T>(this IDataContext Context, IEnumerable<T> Entities) where T : class
+		{
+			var set = Context.Set<T>();
+			foreach (var e in Entities)
+				set.Add(e);
+		}
+
 		public static void Remove<T>(this IDataContext Context, T Entity) where T:class
 			=> Context.Set<T>().Remove(Entity);
 		public static void RemoveRange<T>(this IDataContext Context, IEnumerable<T> Entity) where T : class
