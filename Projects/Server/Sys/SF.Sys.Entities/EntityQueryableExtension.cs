@@ -74,12 +74,13 @@ namespace SF.Sys.Entities
 		}
 		public static async Task EnsureIdentAsync<TEntity, TQueryArgument,TKey>(
 			this IEntityIdentQueryable<TEntity, TQueryArgument> Queryable,
-			TKey Key
+			TKey Key,
+			string title=null
 			)
 			where TQueryArgument : QueryArgument<ObjectKey<TKey>>, new()
 			where TKey:IEquatable<TKey>
 		{
-			var title = typeof(TEntity).Comment().Title;
+			title = title ?? typeof(TEntity).Comment().Title;
 
 			if (Key.IsDefault())
 				throw new PublicArgumentException($"未指定{title}");
