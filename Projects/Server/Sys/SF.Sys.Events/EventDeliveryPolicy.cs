@@ -27,6 +27,10 @@ namespace SF.Sys.Events
 		/// </summary>
 		TryBest,
 		/// <summary>
+		/// 在相同事务中，如果事件发生异常，则导致引发事件的过程异常
+		/// </summary>
+		SameTranscation,
+		/// <summary>
 		/// 最多一次，通过记录事件ID，确保相同事件最多只会投递一次
 		/// </summary>
 		AtMostOnce,

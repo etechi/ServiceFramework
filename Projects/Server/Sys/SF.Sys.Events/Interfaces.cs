@@ -67,7 +67,13 @@ namespace SF.Sys.Events
 
 	public interface IEventSubscriber<TEvent> where TEvent:IEvent
 	{
-		void Wait(Func<IEventInstance<TEvent>,Task> Callback);
+		void Wait(
+			Func<IEventInstance<TEvent>,Task> Callback,
+			EventDeliveryPolicy Policy = EventDeliveryPolicy.NoGuarantee,
+			string EventSource = null,
+			string EventType = null,
+			string SubscriberIdent = null
+			);
 	}
 	public interface IEventObserver<TEvent> where TEvent:IEvent
 	{

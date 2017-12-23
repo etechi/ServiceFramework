@@ -24,40 +24,13 @@ namespace SF.Sys.Events
 	public class EventSubscriber<TEvent> : IEventSubscriber<TEvent>,IDisposable where TEvent:class,IEvent
 	{
 		IDisposable _Disposable;
+		IEventSubscribeService SubscribeService { get; }
 		object EventHandler;
-		public EventSubscriber(IEventSubscribeService SubscribeService,
-			string EventSource,
-			string EventType, 
-			string SubscriberIdent=null,
-			EventDeliveryPolicy Policy=EventDeliveryPolicy.NoGuarantee
+		public EventSubscriber(
+			IEventSubscribeService SubscribeService
 			)
 		{
-			if(EventSource==null && EventType==null)
-			{
-				var et = typeof(TEvent);
-				EventSource = et.Namespace;
-				EventType = et.Name;
-			}
-			var observer = SubscribeService.GetObservable(EventSource,EventType);
-
-			_Disposable = observer.Subscribe(
-				SubscriberIdent,
-				Policy,
-				new DelegateEventObserver<TEvent>(
-				 async o =>
-				 {
-					  var eh = EventHandler;
-					  if (eh == null)
-						  return;
-					  var ol = EventHandler as List<Func<IEventInstance<TEvent>, Task>>;
-					  if (ol == null)
-						  await ((Func<IEventInstance<TEvent>, Task>)EventHandler)(o);
-					  else
-						  foreach (var h in ol)
-							  await h(o);
-
-				 })
-				 );
+			this.SubscribeService = SubscribeService;
 		}
 
 		public void Dispose()
@@ -65,18 +38,32 @@ namespace SF.Sys.Events
 			Disposable.Release(ref _Disposable);
 		}
 
-		public void Wait(Func<IEventInstance<TEvent>, Task> Callback)
+		public void Wait(
+			Func<IEventInstance<TEvent>, Task> Callback,
+			EventDeliveryPolicy Policy=EventDeliveryPolicy.NoGuarantee,
+			string EventSource=null,
+			string EventType=null,
+			string SubscriberIdent = null
+			)
 		{
-			if (EventHandler == null)
-				EventHandler = Callback;
-			else
+			if (_Disposable != null)
+				throw new InvalidOperationException();
+
+			if (EventSource == null && EventType == null)
 			{
-				var ol = EventHandler as List<Func<IEventInstance<TEvent>, Task>>;
-				if (ol == null)
-					EventHandler = new List<Func<IEventInstance<TEvent>, Task>> { (Func<IEventInstance<TEvent>, Task>)EventHandler, Callback };
-				else
-					ol.Add(Callback);
+				var et = typeof(TEvent);
+				EventSource = et.Namespace;
+				EventType = et.Name;
 			}
+			var observer = SubscribeService.GetObservable(EventSource, EventType);
+
+			_Disposable = observer.Subscribe(
+				SubscriberIdent,
+				Policy,
+				new DelegateEventObserver<TEvent>(
+				 Callback
+				 )
+				);
 		}
 	}
 

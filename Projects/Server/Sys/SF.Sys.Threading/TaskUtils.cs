@@ -16,9 +16,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-namespace System.Threading
+namespace SF.Sys.Threading
 {
+	
 	public static class TaskUtils
 	{
 		public static async Task<T> Retry<T>(this Func<Task<T>> Action, int Timeout = 60000, int Retry = 5)

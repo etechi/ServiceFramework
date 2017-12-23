@@ -20,7 +20,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace System.Threading
+namespace SF.Sys.Threading
 {
 	public class SyncScope : IDisposable
 	{
