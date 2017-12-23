@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Comments;
 using SF.Sys.Services;
 using System;
 using System.Collections.Generic;
@@ -71,6 +72,25 @@ namespace SF.Sys.Entities
 			var re = await Queryable.QueryAsync(Arg);
 			return re.Items.FirstOrDefault();
 		}
+		public static async Task EnsureIdentAsync<TEntity, TQueryArgument,TKey>(
+			this IEntityIdentQueryable<TEntity, TQueryArgument> Queryable,
+			TKey Key
+			)
+			where TQueryArgument : QueryArgument<ObjectKey<TKey>>, new()
+			where TKey:IEquatable<TKey>
+		{
+			var title = typeof(TEntity).Comment().Title;
 
+			if (Key.IsDefault())
+				throw new PublicArgumentException($"未指定{title}");
+
+			var re = await Queryable.QueryIdentsAsync(new TQueryArgument
+			{
+				Id=ObjectKey.From(Key)
+			});
+			if (re.Items.Any())
+				return;
+			throw new PublicArgumentException($"找不到指定的{title}或{title}暂时不能使用({Key})");
+		}
 	}
 }
