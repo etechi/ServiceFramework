@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Hosting;
+using SF.Sys.Threading;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;

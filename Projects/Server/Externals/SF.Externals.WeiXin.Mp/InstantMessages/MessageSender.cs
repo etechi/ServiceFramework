@@ -5,6 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using SF.Sys.Threading;
 
 namespace SF.Externals.WeiXin.Mp.InstantMessages
 {

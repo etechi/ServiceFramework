@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
 using SF.Sys.Services;
+using SF.Sys.Threading;
 
 namespace SF.Sys.Data.IdentGenerator
 {
@@ -66,12 +67,12 @@ namespace SF.Sys.Data.IdentGenerator
 				var re = await dataSet.RetryForConcurrencyExceptionAsync(() =>
 					  dataSet.AddOrUpdateAsync(
 						  e => e.Type == type,
-						  () => new DataModels.IdentSeed
+						  () => Task.FromResult(new DataModels.IdentSeed
 						  {
 							  NextValue = 1 + CountPerBatch,
 							  Section = Section,
 							  Type = type
-						  },
+						  }),
 						  s =>
 						  {
 							  if (s.Section == Section)
@@ -83,6 +84,7 @@ namespace SF.Sys.Data.IdentGenerator
 								  s.NextValue = 1 + CountPerBatch;
 								  s.Section = Section;
 							  }
+							  return Task.CompletedTask;
 						  })
 					);
 				return re.NextValue - CountPerBatch;

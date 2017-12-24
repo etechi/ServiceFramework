@@ -155,7 +155,7 @@ namespace SF.Sys.Entities
 				Id,
 				(TEditable e) => e.ContainerId=ParentId
 				);
-
+		
 		public static async Task<TEditable> Ensure<TManager, TKey, TEditable>(
 			this TManager Manager,
 			TKey Id,

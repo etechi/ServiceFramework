@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Annotations;
 using SF.Sys.Entities.Models;
 using System;
 
@@ -25,15 +26,9 @@ namespace SF.Sys.AtLeastOnceTasks.Models
 		/// <summary>
 		/// 任务状态
 		/// </summary>
+		[TableVisible]
 		public AtLeastOnceTaskState TaskState { get; set; }
-		/// <summary>
-		/// 任务执行次数
-		/// </summary>
-		public int TaskRunCount { get; set; }
-		/// <summary>
-		/// 最后执行错误
-		/// </summary>
-		public string TaskLastRunError { get; set; }
+		
 		/// <summary>
 		/// 任务开始时间
 		/// </summary>
@@ -41,10 +36,25 @@ namespace SF.Sys.AtLeastOnceTasks.Models
 		/// <summary>
 		/// 最后执行时间
 		/// </summary>
+		[TableVisible]
 		public DateTime? TaskLastRunTime { get; set; }
 		/// <summary>
 		/// 下次执行时间
 		/// </summary>
+		[TableVisible]
 		public DateTime? TaskNextRunTime { get; set; }
+
+		/// <summary>
+		/// 任务执行次数
+		/// </summary>
+		[TableVisible]
+		public int TaskRunCount { get; set; }
+
+		/// <summary>
+		/// 最后执行错误
+		/// </summary>
+		[TableVisible]
+		public string TaskLastRunError { get; set; }
+		
 	}
 }

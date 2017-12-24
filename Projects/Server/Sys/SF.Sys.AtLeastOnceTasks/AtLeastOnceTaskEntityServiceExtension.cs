@@ -56,14 +56,22 @@ namespace SF.Sys.Services
 					Interval = Setting.Interval,
 					ErrorDelayUnit = Setting.ErrorDelayUnit,
 					ExecTimeoutSeconds = Setting.ExecTimeoutSeconds,
-					GetIdents = async (isp, count, time) =>
+					GetIdentsToRunning = async (isp, count, time) =>
 					  {
 						  var set = isp.Resolve<IDataSet<TEntity>>();
-						  var re = await set.AsQueryable()
+						  var tasks = await set.AsQueryable()
 							  .Where(e => e.TaskState == AtLeastOnceTaskState.Waiting && e.TaskNextRunTime <= time)
-							  .Select(e => e.Id)
+							  .OrderBy(e=>e.TaskNextRunTime)
+							  .Take(count)
 							  .ToArrayAsync();
-						  return re;
+						  foreach (var t in tasks)
+						  {
+							  t.TaskState = AtLeastOnceTaskState.Running;
+							  set.Update(t);
+						  }
+						  await set.Context.SaveChangesAsync();
+						  var ids = tasks.Select(t => t.Id).ToArray();
+						  return ids;
 					  },
 					LoadRunningTasks = async (isp) =>
 					  {

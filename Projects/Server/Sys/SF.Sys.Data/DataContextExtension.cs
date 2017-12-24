@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Threading;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -28,6 +29,10 @@ namespace SF.Sys.Data
 		
 		public static Task<T> Retry<T>(this IDataContext Context,Func<System.Threading.CancellationToken, Task<T>> Action,int Timeout=6000000,int Retry=5)
 		{
+			//如果当前上下文有显示事务，无法进行通过重置上下文进行并发重试
+			if (Context.Provider.Transaction != null)
+				return Action(CancellationToken.None);
+
 			return TaskUtils.Retry(async ct =>
 			{
 				try
@@ -59,6 +64,18 @@ namespace SF.Sys.Data
 		public static void RemoveRange<T>(this IDataContext Context, IEnumerable<T> Entity) where T : class
 			=> Context.Set<T>().RemoveRange(Entity);
 
+		public static Task<T> EnsureAsync<T>(
+			this IDataContext Context,
+			System.Linq.Expressions.Expression<Func<T, bool>> filter,
+			Func<Task<T>> creator
+			) where T : class
+		{
+			return Context.Retry(async (ct) =>
+			{
+				var set = Context.Set<T>();
+				return await set.AddOrUpdateAsync(filter, creator, null);
+			});
+		}
 		public static Task<T> UseTransaction< T>(
 			this IDataContext Context,
 			string TransMessage,

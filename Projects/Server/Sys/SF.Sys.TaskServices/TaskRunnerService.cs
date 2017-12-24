@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Services;
+using SF.Sys.Threading;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,12 +24,14 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Services
 {
-	public class TaskRunnerSetting<TKey>
+	public class TaskRunnerSetting<TKey,TTask>
 	{
 		public string Name { get; set; }
 		public Func<IServiceProvider, Task> Init { get; set; }
-		public Func<IServiceProvider, int, Task<TKey[]>> GetIdents { get; set; }
-		public Func<IServiceProvider, TKey, Task> RunTask { get; set; }
+		public Func<IServiceProvider, int, Task<TTask[]>> GetTasks { get; set; }
+		public Func<IServiceProvider, TTask, Task> RunTask { get; set; }
+		public Func<TTask,TKey> GetTaskKey { get; set; }
+
 		public int BatchCount { get; set; } = 100;
 		public int ThreadCount { get; set; } = 1000;
 		public int Interval { get; set; } = 1000;
@@ -36,13 +39,13 @@ namespace SF.Sys.Services
 	}
 	public static class TaskRunnerExtension
 	{
-		class Context<TKey>
+		class Context<TKey,TTask>
 		{
 			int _RunningTaskCount;
-			public TaskRunnerSetting<TKey> Setting { get; }
+			public TaskRunnerSetting<TKey,TTask> Setting { get; }
 			public ObjectSyncQueue<TKey> ExecQueue { get; } = new ObjectSyncQueue<TKey>();
 
-			public Context (TaskRunnerSetting<TKey> Setting)
+			public Context (TaskRunnerSetting<TKey,TTask> Setting)
 			{
 				this.Setting = Setting;
 			}
@@ -60,7 +63,7 @@ namespace SF.Sys.Services
 					if (count >Setting.BatchCount)
 						count = Setting.BatchCount;
 
-					var ids = await Setting.GetIdents(ServiceProvider, Setting.BatchCount);
+					var ids = await Setting.GetTasks(ServiceProvider, Setting.BatchCount);
 					if (ids.Length == 0)
 						break;
 
@@ -81,16 +84,21 @@ namespace SF.Sys.Services
 
 			void RunTask(
 				IServiceProvider ServiceProvider,
-				TKey id
+				TTask task
 				)
 			{
 				Task.Run(async () =>
 				{
 					try
 					{
-						await ExecQueue.Queue(id, () =>
-							Setting.RunTask(ServiceProvider, id)
-						);
+						if(Setting.SyncSampleIdentTask)
+							await ExecQueue.Queue(Setting.GetTaskKey(task), () =>
+								Setting.RunTask(ServiceProvider, task)
+							);
+						else
+						{
+							await Setting.RunTask(ServiceProvider, task);
+						}
 					}
 					catch
 					{
@@ -102,12 +110,12 @@ namespace SF.Sys.Services
 
 		
 
-		public static IServiceCollection AddTaskRunnerService<TKey>(
+		public static IServiceCollection AddTaskRunnerService<TKey,TTask>(
 			this IServiceCollection sc,
-			TaskRunnerSetting<TKey> Setting
+			TaskRunnerSetting<TKey, TTask> Setting
 			)
 		{
-			var ctx = new Context<TKey>(Setting);
+			var ctx = new Context<TKey, TTask>(Setting);
 			sc.AddTimerService(
 				Setting.Name,
 				Setting.Interval,

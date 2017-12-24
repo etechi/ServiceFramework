@@ -12,7 +12,6 @@ and limitations under the License.
 Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
-using SF.Sys;
 using SF.Sys.Linq;
 using System;
 using System.Collections.Generic;
@@ -20,7 +19,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-namespace SF
+namespace SF.Sys
 {
 	public static class Hash
 	{

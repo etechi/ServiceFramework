@@ -276,7 +276,7 @@ namespace SF.Sys.Data
 		public static Task<T> EnsureAsync<T>(
 			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter,
-			Func<T> creator
+			Func<Task<T>> creator
 			) where T : class
 		{
 			return set.AddOrUpdateAsync(filter, creator, null);
@@ -285,18 +285,18 @@ namespace SF.Sys.Data
         public static async Task<T> AddOrUpdateAsync<T>(
 			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter,
-			Func<T> creator,
-			Action<T> updater
+			Func<Task<T>> creator,
+			Func<T,Task> updater
 			) where T : class
 		{
 			var e = await set.AsQueryable(false).Where(filter).SingleOrDefaultAsync();
 			if (e == null)
-				e=set.Add(creator());
+				e=set.Add(await creator());
 			else if (updater == null)
 				return e;
 			else
 			{
-				updater(e);
+				await updater(e);
 				set.Update(e);
 			}
 			await set.Context.SaveChangesAsync();

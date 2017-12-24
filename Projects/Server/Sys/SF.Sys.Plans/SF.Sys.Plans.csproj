@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SF.Sys.AtLeastOnceTasks\SF.Sys.AtLeastOnceTasks.csproj" />
     <ProjectReference Include="..\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
     <ProjectReference Include="..\SF.Sys.Entities\SF.Sys.Entities.csproj" />
     <ProjectReference Include="..\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />

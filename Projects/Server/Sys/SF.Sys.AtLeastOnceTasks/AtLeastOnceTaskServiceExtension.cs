@@ -34,86 +34,76 @@ namespace SF.Sys.Services
 		public int Interval { get; set; } = 5000;
 		public int ErrorDelayUnit { get; set; } = 10;
 		public int ExecTimeoutSeconds { get; set; } = 0;
-
-		public Func<IServiceProvider, int, DateTime, Task<TKey[]>> GetIdents { get; set; }
+		public Func<IServiceProvider, int, DateTime, Task<TKey[]>> GetIdentsToRunning { get; set; }
 		public Func<IServiceProvider, Task<TTask[]>> LoadRunningTasks { get; set; }
-		public Func<IServiceProvider,TKey,Task<TTask>> LoadTask { get; set; }
 		public Func<IServiceProvider,TTask,Task> SaveTask { get; set; }
 		public Func<IServiceProvider,TTask,Task<DateTime?>> RunTask { get; set; }
+		public Func<IServiceProvider, TKey, Task<TTask>> LoadTask { get; set; }
 		public Func<IServiceProvider,Func<Task>,Task> UseDataScope { get; set; }
 	}
 	public static class AtLeastOnceTaskService
 	{
-		public static IServiceCollection AddAtLeastOnceTaskService<TKey, TEntity>(
+		public static IServiceCollection AddAtLeastOnceTaskService<TKey, TTask>(
 			this IServiceCollection sc,
-			AtLeastOnceActionServiceSetting<TKey, TEntity> Setting
+			AtLeastOnceActionServiceSetting<TKey, TTask> Setting
 			)
 			where TKey : IEquatable<TKey>
-			where TEntity : class, IAtLeastOnceTask<TKey>
+			where TTask : class, IAtLeastOnceTask<TKey>
 		{
-			sc.AddTaskRunnerService<TKey>(new TaskRunnerSetting<TKey>
+			ITimeService timeService = null;
+			sc.AddTaskRunnerService(new TaskRunnerSetting<TKey, TKey>
 			{
+				GetTaskKey=id=>id,
 				Name = Setting.Name,
 				ThreadCount = Setting.ThreadCount,
 				BatchCount = Setting.BatchCount,
 				Interval = Setting.Interval,
 				SyncSampleIdentTask = true,
-				GetIdents = (sp, count) =>
-					  Setting.GetIdents(
+				Init = sp =>
+				{
+					timeService = sp.Resolve<ITimeService>();
+					return sp.WithScope(isp =>
+					   Setting.UseDataScope(isp, async () =>
+					   {
+						   var tasks = await Setting.LoadRunningTasks(isp);
+						   var now = timeService.Now;
+						   foreach (var t in tasks)
+						   {
+							   t.TaskState = AtLeastOnceTaskState.Waiting;
+							   t.TaskNextRunTime = now.AddSeconds(Setting.ErrorDelayUnit * (1 << t.TaskRunCount));
+							   t.TaskLastRunError = "异常终止";
+							   await Setting.SaveTask(isp, t);
+						   }
+					   })
+					);
+				},
+				GetTasks = (sp, count) =>
+					  Setting.GetIdentsToRunning(
 						  sp,
 						  count,
-						  sp.Resolve<ITimeService>().Now
+						  timeService.Now
 					  ),
-				Init = sp =>
-					sp.WithScope( isp =>
-						Setting.UseDataScope(isp, async () =>
-						{
-							var tasks = await Setting.LoadRunningTasks(isp);
-							var now = isp.Resolve<ITimeService>().Now;
-							foreach (var t in tasks)
-							{
-								t.TaskState = AtLeastOnceTaskState.Waiting;
-								t.TaskNextRunTime = now.AddSeconds(Setting.ErrorDelayUnit * (1 << t.TaskRunCount));
-								t.TaskLastRunError = "异常终止";
-								await Setting.SaveTask(isp, t);
-							}
-						})
-					),
 				RunTask = (sp, id) =>
-					sp.WithScope(isp =>
-						Setting.UseDataScope(isp, async () =>
+					sp.WithScope(async isp =>
+					{
+						await Setting.UseDataScope(isp, async () =>
 						{
-							var timeService = isp.Resolve<ITimeService>();
+							var task = await Setting.LoadTask(isp,id);
+							DateTime? delayed = null;
+							Exception error = null;
 							var now = timeService.Now;
-							var task = await Setting.LoadTask(isp, id);
-							if (task == null)
-								return;
-
-							task.TaskLastRunTime = now;
-							task.TaskRunCount++;
-
-							string err = null;
 							try
 							{
-								var delayed = await Setting.RunTask(isp, task);
-								if (delayed == null)
-								{
-									task.TaskState = AtLeastOnceTaskState.Completed;
-									task.TaskLastRunError = null;
-								}
-								else
-								{
-									task.TaskState = AtLeastOnceTaskState.Waiting;
-									task.TaskNextRunTime = delayed.Value;
-									task.TaskLastRunError = null;
-								}
+								delayed = await Setting.RunTask(isp, task);
 							}
 							catch (Exception ex)
 							{
-								err = ex.Message;
-
+								error = ex;
+							}
+							if (error!=null)
+							{
 								if (
-									Setting.ExecTimeoutSeconds > 0 && 
+									Setting.ExecTimeoutSeconds > 0 &&
 									now.Subtract(task.TaskStartTime.Value).TotalSeconds > Setting.ExecTimeoutSeconds
 									)
 									task.TaskState = AtLeastOnceTaskState.Failed;
@@ -124,10 +114,26 @@ namespace SF.Sys.Services
 										Setting.ErrorDelayUnit * (1 << (task.TaskRunCount - 1))
 										);
 								}
-								task.TaskLastRunError = ex.Message;
+								task.TaskLastRunError = error.Message;
 							}
+							else if (delayed == null)
+							{
+								task.TaskState = AtLeastOnceTaskState.Completed;
+								task.TaskLastRunError = null;
+							}
+							else
+							{
+								task.TaskState = AtLeastOnceTaskState.Waiting;
+								task.TaskNextRunTime = delayed.Value;
+								task.TaskLastRunError = null;
+							}
+
+							task.TaskLastRunTime = now;
+							task.TaskRunCount++;
+
 							await Setting.SaveTask(isp, task);
-						})
+						});
+					}
 					)
 				}
 			);
