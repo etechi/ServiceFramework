@@ -34,6 +34,15 @@ namespace SF.Sys.Reminders
 		Task<RemindActionInfo> GetInfo();
 		Task Execute(long RecordId,bool RetryMode);
 	}
+	public class DelegateRemindAction : IRemindAction
+	{
+		public DateTime Time { get; set; }
+		public string BizIdent { get; set; }
+		public Func<Task<RemindActionInfo>> InfoGetter { get; set; }
+		public Func<long, bool, Task> Executor { get; set; }
+		public Task<RemindActionInfo> GetInfo() => InfoGetter();
+		public Task Execute(long RecordId, bool RetryMode) => Executor(RecordId, RetryMode);
+	}
 	public interface IReminderActionSource
 	{
 		string Name { get; }
