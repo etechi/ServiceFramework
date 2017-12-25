@@ -52,6 +52,7 @@ namespace SF.Sys.Serialization.Newtonsoft
 			JsonSerializerSettings.TypeNameHandling = Setting?.WithType ?? false ? TypeNameHandling.Objects : TypeNameHandling.None;
 			JsonSerializerSettings.Converters = new[] {
 				(JsonConverter) new global::Newtonsoft.Json.Converters.StringEnumConverter(),
+				//(JsonConverter) new TimeSpanConverter(),
 				(JsonConverter)new ExpandoObjectConverter(),
 				new OptionConverter()
 			};
