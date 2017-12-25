@@ -103,6 +103,7 @@ namespace SF.Sys.Serialization.Newtonsoft
 				var result = reader.TokenType == JsonToken.String ? TimeSpan.Parse(reader.Value.ToString()) :
 					reader.TokenType == JsonToken.Float ||
 					reader.TokenType == JsonToken.Integer ? TimeSpan.FromDays(Convert.ToDouble(reader.Value)):
+					throw new NotSupportedException();
 				if (objectType == typeof(TimeSpan?))
 					return (TimeSpan?)result;
 				else
