@@ -27,7 +27,7 @@ namespace SF.Sys.Services
 	public class TaskRunnerSetting<TKey,TTask>
 	{
 		public string Name { get; set; }
-		public Func<IServiceProvider, Task> Init { get; set; }
+		public Func<IServiceProvider, ISyncQueue<TKey>, Task> Init { get; set; }
 		public Func<IServiceProvider, int, Task<TTask[]>> GetTasks { get; set; }
 		public Func<IServiceProvider, TTask, Task> RunTask { get; set; }
 		public Func<TTask,TKey> GetTaskKey { get; set; }
@@ -43,15 +43,19 @@ namespace SF.Sys.Services
 		{
 			int _RunningTaskCount;
 			public TaskRunnerSetting<TKey,TTask> Setting { get; }
-			public ObjectSyncQueue<TKey> ExecQueue { get; } = new ObjectSyncQueue<TKey>();
+			public ISyncQueue<TKey> ExecQueue { get; } 
 
 			public Context (TaskRunnerSetting<TKey,TTask> Setting)
 			{
 				this.Setting = Setting;
+				ExecQueue = Setting.SyncSampleIdentTask ?
+					(ISyncQueue<TKey>) new ObjectSyncQueue<TKey>() :
+					NoneSyncQueue<TKey>.Instance
+					;
 			}
 			public async Task Init(IServiceProvider ServiceProvider)
 			{
-				await Setting.Init(ServiceProvider);
+				await Setting.Init(ServiceProvider, ExecQueue);
 			}
 			public async Task StartTasks(IServiceProvider ServiceProvider)
 			{
@@ -91,14 +95,11 @@ namespace SF.Sys.Services
 				{
 					try
 					{
-						if(Setting.SyncSampleIdentTask)
-							await ExecQueue.Queue(Setting.GetTaskKey(task), () =>
+						await ExecQueue.Queue(
+							Setting.GetTaskKey(task), 
+							() =>
 								Setting.RunTask(ServiceProvider, task)
-							);
-						else
-						{
-							await Setting.RunTask(ServiceProvider, task);
-						}
+						);
 					}
 					catch
 					{

@@ -21,6 +21,7 @@ using SF.Sys.Entities.DataModels;
 using SF.Sys.Services;
 using SF.Sys.Services.Management;
 using SF.Sys.Services.Management.Models;
+using SF.Sys.Threading;
 using SF.Sys.TimeServices;
 using System;
 using System.Linq;
@@ -35,6 +36,7 @@ namespace SF.Sys.Services
 		public int Interval { get; set; } = 5000;
 		public int ErrorDelayUnit { get; set; } = 10;
 		public int ExecTimeoutSeconds { get; set; } = 0;
+		public Func<IServiceProvider, ISyncQueue<TKey>, Task> Init { get; set; }
 		public Func<IServiceProvider,TEntity,Task<DateTime?> > RunTask { get; set; }
 	}
 
@@ -56,6 +58,7 @@ namespace SF.Sys.Services
 					Interval = Setting.Interval,
 					ErrorDelayUnit = Setting.ErrorDelayUnit,
 					ExecTimeoutSeconds = Setting.ExecTimeoutSeconds,
+					Init=Setting.Init,
 					GetIdentsToRunning = async (isp, count, time) =>
 					  {
 						  var set = isp.Resolve<IDataSet<TEntity>>();

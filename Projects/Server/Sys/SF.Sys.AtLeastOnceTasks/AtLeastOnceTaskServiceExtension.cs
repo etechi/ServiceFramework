@@ -19,6 +19,7 @@ using SF.Sys.Entities;
 using SF.Sys.Services;
 using SF.Sys.Services.Management;
 using SF.Sys.Services.Management.Models;
+using SF.Sys.Threading;
 using SF.Sys.TimeServices;
 using System;
 using System.Threading.Tasks;
@@ -34,6 +35,7 @@ namespace SF.Sys.Services
 		public int Interval { get; set; } = 5000;
 		public int ErrorDelayUnit { get; set; } = 10;
 		public int ExecTimeoutSeconds { get; set; } = 0;
+		public Func<IServiceProvider, ISyncQueue<TKey> ,Task> Init { get; set; }
 		public Func<IServiceProvider, int, DateTime, Task<TKey[]>> GetIdentsToRunning { get; set; }
 		public Func<IServiceProvider, Task<TTask[]>> LoadRunningTasks { get; set; }
 		public Func<IServiceProvider,TTask,Task> SaveTask { get; set; }
@@ -59,23 +61,27 @@ namespace SF.Sys.Services
 				BatchCount = Setting.BatchCount,
 				Interval = Setting.Interval,
 				SyncSampleIdentTask = true,
-				Init = sp =>
+				Init = (sp,sq) =>
 				{
 					timeService = sp.Resolve<ITimeService>();
-					return sp.WithScope(isp =>
-					   Setting.UseDataScope(isp, async () =>
-					   {
-						   var tasks = await Setting.LoadRunningTasks(isp);
-						   var now = timeService.Now;
-						   foreach (var t in tasks)
-						   {
-							   t.TaskState = AtLeastOnceTaskState.Waiting;
-							   t.TaskNextRunTime = now.AddSeconds(Setting.ErrorDelayUnit * (1 << t.TaskRunCount));
-							   t.TaskLastRunError = "异常终止";
-							   await Setting.SaveTask(isp, t);
-						   }
-					   })
-					);
+					return sp.WithScope(async isp =>
+					{
+						 if (Setting.Init != null)
+							 await Setting.Init(sp, sq);
+
+						 await Setting.UseDataScope(isp, async () =>
+						 {
+							 var tasks = await Setting.LoadRunningTasks(isp);
+							 var now = timeService.Now;
+							 foreach (var t in tasks)
+							 {
+								 t.TaskState = AtLeastOnceTaskState.Waiting;
+								 t.TaskNextRunTime = now.AddSeconds(Setting.ErrorDelayUnit * (1 << t.TaskRunCount));
+								 t.TaskLastRunError = "异常终止";
+								 await Setting.SaveTask(isp, t);
+							 }
+						 });
+					});
 				},
 				GetTasks = (sp, count) =>
 					  Setting.GetIdentsToRunning(

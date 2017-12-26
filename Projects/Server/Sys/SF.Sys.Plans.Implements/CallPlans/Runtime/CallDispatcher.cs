@@ -168,6 +168,7 @@ namespace SF.Sys.CallPlans.Runtime
                          Log(LogLevel.Error, "发生未捕获异常", instance, e);
                      }
                  }
+				 return 0;
              });
 		}
 		ICallPlanStorageAction CreateStorageAction(

@@ -28,6 +28,6 @@ namespace SF.Sys.Reminders
 	public interface IReminderManager :
 		IEntitySource<ObjectKey<long>, Models.Reminder, ReminderQueryArgument>
 	{
-		Task<bool> Refresh(long Id);
+		Task RefreshAt(long Id,DateTime Time);
 	}
 }

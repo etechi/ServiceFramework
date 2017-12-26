@@ -6,9 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SF.Sys.Data;
+using SF.Sys.Services;
 namespace SF.Sys.Reminders
 {
-	public class ReminderManager :
+	class ReminderManager :
 		AutoModifiableEntityManager<
 			ObjectKey<long>,
 			Reminder,
@@ -20,12 +21,15 @@ namespace SF.Sys.Reminders
 		IReminderManager
 	{
 		IEnumerable<IReminderActionSource> ActionSources { get; }
+		Lazy<RemindSyncQueue> RemindSyncQueue { get; }
 		public ReminderManager(
 			IEntityServiceContext ServiceContext,
-			IEnumerable<IReminderActionSource> ActionSources
+			IEnumerable<IReminderActionSource> ActionSources,
+			Lazy<RemindSyncQueue> RemindSyncQueue
 			) : base(ServiceContext)
 		{
 			this.ActionSources = ActionSources;
+			this.RemindSyncQueue = RemindSyncQueue;
 		}
 
 		async Task<IRemindAction[]> GetNextActions(long Id,DateTime Time)
@@ -44,25 +48,11 @@ namespace SF.Sys.Reminders
 			return actions;
 		}
 
-		public async Task<bool> Refresh(long Id)
+		public async Task RefreshAt(long Id,DateTime Time)
 		{
-			var reminder = await DataSet.FindAsync(Id);
-			var time = reminder?.PlanTime ?? Now;
-			var actions = await GetNextActions(Id, time);
-			if (actions.Length == 0)
+			await RemindSyncQueue.Value.Queue.Queue(Id, async () =>
 			{
-				if (reminder == null)
-					return false;
-				else
-				{
-					reminder.TaskState = AtLeastOnceTasks.Models.AtLeastOnceTaskState.Completed;
-					reminder.PlanTime = time;
-					reminder.Name = "没有动作";
-					DataSet.Update(reminder);
-				}
-			}
-			else
-			{
+				var reminder = await DataSet.FindAsync(Id);
 				if (reminder == null)
 					reminder = DataSet.Add(new DataModels.Reminder
 					{
@@ -71,92 +61,100 @@ namespace SF.Sys.Reminders
 					});
 				else
 					DataSet.Update(reminder);
-				var firstAction = actions[0];
 
-				var info = await firstAction.GetInfo();
-				reminder.Name = (info.Name + (actions.Length > 1 ? "等" + actions.Length + "项" : "")).Limit(100);
+				reminder.PlanTime = Now;
+				reminder.TaskNextRunTime = Time;
 				reminder.TaskState = SF.Sys.AtLeastOnceTasks.Models.AtLeastOnceTaskState.Waiting;
-				reminder.PlanTime = time;
-				reminder.UpdatedTime = time;
-				reminder.TaskNextRunTime = actions[0].Time;
-			}
-			await DataSet.Context.SaveChangesAsync();
-			return true;
+				await DataSet.Context.SaveChangesAsync();
+				return 0;
+			});
 		}
 
-		public async Task<DateTime?> RunTask(DataModels.Reminder Model)
+		async Task ExecTasks(DataModels.Reminder Model,IRemindAction[] actions)
 		{
-			var actions = await GetNextActions(Model.Id, Model.PlanTime);
-			if (actions.Length > 0)
+			var recSet = DataContext.Set<DataModels.RemindRecord>();
+			var recs = await recSet
+				.AsQueryable()
+				.Where(r => r.ReminderId == Model.Id && r.Time == Now)
+				.ToDictionaryAsync(r => r.BizIdent);
+
+			Exception error = null;
+			foreach (var action in actions)
 			{
-				var firstAction = actions[0];
-				var time = firstAction.Time;
-				var recSet = DataContext.Set<DataModels.RemindRecord>();
-				var recs = await recSet
-					.AsQueryable()
-					.Where(r => r.ReminderId == Model.Id && r.Time == time)
-					.ToDictionaryAsync(r=>r.BizIdent);
-
-				Exception error = null;
-				foreach (var action in actions)
+				var retry = false;
+				if (recs.TryGetValue(action.BizIdent, out var rec))
 				{
-					var retry = false;
-					if (recs.TryGetValue(action.BizIdent, out var rec))
-					{
-						recSet.Update(rec);
-						retry = true;
-					}
-					else
-						rec = recSet.Add(new DataModels.RemindRecord
-						{
-							Id = await IdentGenerator.GenerateAsync<DataModels.RemindRecord>(),
-
-							ReminderId = Model.Id,
-
-						});
-
-					var info = await action.GetInfo();
-
-					rec.Action = info.Action.Limit(100);
-					rec.BizIdent = action.BizIdent;
-					rec.Description = info.Description.Limit(200);
-					rec.Name = info.Name.Limit(100);
-					rec.ActionTime = action.Time;
-					rec.Time = Now;
-					
-					try
-					{
-						await action.Execute(rec.Id,retry);
-						rec.Error = null;
-					}
-					catch (Exception e)
-					{
-						rec.Error = e.Message.Limit(200);
-						if (error == null)
-							error = e;
-					}
+					recSet.Update(rec);
+					retry = true;
 				}
-				if (error != null)
-					throw error;
+				else
+					rec = recSet.Add(new DataModels.RemindRecord
+					{
+						Id = await IdentGenerator.GenerateAsync<DataModels.RemindRecord>(),
+
+						ReminderId = Model.Id,
+
+					});
+
+				var info = await action.GetInfo();
+
+				rec.Action = info.Action.Limit(100);
+				rec.BizIdent = action.BizIdent;
+				rec.Description = info.Description.Limit(200);
+				rec.Name = info.Name.Limit(100);
+				rec.ActionTime = action.Time;
+				rec.Time = Now;
+
+				try
+				{
+					await action.Execute(rec.Id, retry);
+					rec.Error = null;
+				}
+				catch (Exception e)
+				{
+					rec.Error = e.Message.Limit(200);
+					if (error == null)
+						error = e;
+				}
 			}
+			if (error != null)
+				throw error;
+		}
 
-			Model.PlanTime = Now;
-			actions = await GetNextActions(Model.Id, Model.PlanTime);
-
+		public async Task<DateTime?> RunTasks(DataModels.Reminder Model)
+		{
+			//使用计划时间，载入动作
+			var actions = await GetNextActions(Model.Id, Model.PlanTime);
+			//找不到动作
 			if (actions.Length == 0)
 			{
 				Model.Name = "没有动作";
 				return null;
 			}
-			else
-			{
-				var firstAction = actions[0];
-				var info = await firstAction.GetInfo();
-				Model.Name = (info.Name + (actions.Length > 1 ? "等" + actions.Length + "项" : "")).Limit(100);
-				return firstAction.Time;
-			}
-		}
-		
-	}
 
+			//假如动作时间已经到达
+			if (actions[0].Time < Now)
+			{
+				//如果有动作存在，则执行动作
+				if (actions.Length>0)
+					await ExecTasks(Model, actions);
+			
+				//正常执行完成，尝试查找下一批动作
+				Model.PlanTime = Now;
+				actions = await GetNextActions(Model.Id, Model.PlanTime);
+				//找不到动作
+				if (actions.Length == 0)
+				{
+					Model.Name = "没有动作";
+					return null;
+				}
+			}
+			
+
+			var firstAction = actions[0];
+			var info2= await firstAction.GetInfo();
+			Model.Name = (info2.Name + (actions.Length > 1 ? "等" + actions.Length + "项" : "")).Limit(100);
+			return firstAction.Time;
+		}
+	}
 }

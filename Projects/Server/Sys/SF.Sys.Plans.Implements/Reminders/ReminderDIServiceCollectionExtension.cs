@@ -22,13 +22,17 @@ using SF.Sys.CallPlans.Runtime;
 using SF.Sys.CallPlans;
 using SF.Sys.Reminders.Models;
 using SF.Sys.Reminders;
+using SF.Sys.Threading;
 
 namespace SF.Sys.Services
 {
-	
+	class RemindSyncQueue
+	{
+		public ISyncQueue<long> Queue { get; set; }
+	}
 	public static class ReminderDIServiceCollectionExtension
 	{
-
+		
 		public static IServiceCollection AddReminderServices(this IServiceCollection sc,string TablePrefix=null)
 		{
 			sc.AddDataModules<
@@ -45,6 +49,8 @@ namespace SF.Sys.Services
 					.Add<IReminderManager, ReminderManager>("Reminder", "提醒计划", typeof(Reminder))
 					.Add<IRemindRecordManager, RemindRecordManager>("RemindRecord", "提醒记录", typeof(RemindRecord))
 				);
+
+
 			sc.InitServices("提醒管理", async (sp, sim, scope) =>
 			{
 				var MenuPath = "系统管理/提醒管理";
@@ -57,10 +63,18 @@ namespace SF.Sys.Services
 					.Ensure(sp, scope);
 			});
 
+
+			var syncQueue = new RemindSyncQueue();
+			sc.AddSingleton(sp => syncQueue);
 			sc.AddAtLeastOnceEntityTaskService(
 				new AtLeastOnceActionEntityServiceSetting<long, SF.Sys.Reminders.DataModels.Reminder>
 				{
-					RunTask = (sp, entity) => ((ReminderManager)sp.Resolve<IReminderManager>()).RunTask(entity)
+					Init = (sp, sq) =>
+					{
+						syncQueue.Queue = sq;
+						return Task.CompletedTask;
+					},
+					RunTask = (sp, entity) => ((ReminderManager)sp.Resolve<IReminderManager>()).RunTasks(entity)
 				});
 
 			return sc;

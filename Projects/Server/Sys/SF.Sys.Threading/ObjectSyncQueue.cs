@@ -22,7 +22,30 @@ using System.Threading;
 
 namespace SF.Sys.Threading
 {
-	public class ObjectSyncQueue<K> : IDisposable
+	public interface ISyncQueue<K> {
+		Task<T> Queue<T>(K key, Func<Task<T>> callback);
+	}
+	public static class SyncQueueExtension
+	{
+		public static Task Queue<K>(this ISyncQueue<K> Queue, K key, Func<Task> callback)
+		{
+			return Queue.Queue(key,
+				async () => {
+					await callback();
+					return true;
+				}
+			);
+		}
+	}
+	public class NoneSyncQueue<K> : ISyncQueue<K>
+	{
+		public static ISyncQueue<K> Instance { get; } = new NoneSyncQueue<K>();
+		public Task<T> Queue<T>(K key, Func<Task<T>> callback)
+		{
+			return callback();
+		}
+	}
+	public class ObjectSyncQueue<K> : ISyncQueue<K>,IDisposable
 	{
 		class Item : SemaphoreSlim
 		{
@@ -31,11 +54,8 @@ namespace SF.Sys.Threading
 		}
         static Stack<Item> ItemCache { get; } = new Stack<Item>();
 		Dictionary<K, Item> Dicts { get; } = new Dictionary<K, Item>();
-
-		public Task Queue(K key, Func<Task> callback)
-		{
-			return Queue<bool>(key, async () => { await callback(); return true; });
-		}
+		bool _Disposed;
+		
 		public async Task<T> Queue<T>(K key, Func<Task<T>> callback)
 		{
 			Item item = null;
@@ -43,13 +63,22 @@ namespace SF.Sys.Threading
 			{
 				lock (Dicts)
 				{
+					if (_Disposed)
+						throw new ObjectDisposedException("同步操作队列");
+
                     if (Dicts.TryGetValue(key, out item))
                         item.WaitCount++;
                     else
                     {
-						item = ItemCache.Count > 0 ? ItemCache.Pop() : new Item();
+						lock (ItemCache)
+						{
+							if(ItemCache.Count > 0)
+								item = ItemCache.Pop();
+						}
+						if (item == null)
+							item = new Item();
 
-                        item.WaitCount = 1;
+						item.WaitCount = 1;
                         Dicts.Add(key, item);
                     }
 
@@ -71,21 +100,33 @@ namespace SF.Sys.Threading
 					{
 						item.WaitCount--;
 						if (item.WaitCount == 0)
-						{
-							ItemCache.Push(item);
 							Dicts.Remove(key);
-						}
+						else
+							item = null;
 					}
+				if(item!=null)
+					lock (ItemCache)
+						ItemCache.Push(item);
+
 			}
 		}
 
 		public void Dispose()
 		{
-			var items = Dicts.Values;
-			Dicts.Clear();
-			foreach (var it in items)
-				it.Dispose();
-           
+			lock (Dicts)
+				_Disposed = true;
+			Task.Run(async () =>
+			{
+				for (; ; )
+				{
+					lock (Dicts)
+					{
+						if (Dicts.Count == 0)
+							break;
+					}
+					await Task.Delay(10);
+				}
+			}).Wait();
 		}
 	}
 }
