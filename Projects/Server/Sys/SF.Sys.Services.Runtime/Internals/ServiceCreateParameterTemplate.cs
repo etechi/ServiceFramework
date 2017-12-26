@@ -39,7 +39,7 @@ namespace SF.Sys.Services.Internals
 		class ServiceConverter : JsonConverter
 		{
 			public IServiceDetector ServiceDetector { get; set; }
-			public Dictionary<string, (Type,long)> ServiceIdents { get; } = new Dictionary<string, (Type,long)>();
+			public Dictionary<string, (Type,long?)> ServiceIdents { get; } = new Dictionary<string, (Type,long?)>();
 			public override bool CanConvert(Type objectType)
 			{
 				
@@ -50,7 +50,12 @@ namespace SF.Sys.Services.Internals
 
 			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 			{
-				ServiceIdents.Add(reader.Path,(objectType, Convert.ToInt64(reader.Value)));
+				ServiceIdents.Add(
+					reader.Path,
+					(
+						objectType.GetGenericArgumentTypeAsFunc() ?? objectType.GetGenericArgumentTypeAsLazy() ?? objectType, 
+						reader.Value==null?null:(long?)Convert.ToInt64(reader.Value)
+					));
 				return null;
 			}
 
@@ -117,7 +122,7 @@ namespace SF.Sys.Services.Internals
 				return DictDeserializers.GetOrAdd(type, DictDeserializerCreatorFunc);
 			}
 			public Dictionary<string, IServiceInstanceSetting> ReplacePath(
-				Dictionary<string, (Type,long)> dict
+				Dictionary<string, (Type,long?)> dict
 				)
 			{
 				// a.b[1].c.d[3].e

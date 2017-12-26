@@ -41,7 +41,7 @@ namespace SF.Sys.Settings
 		public static IServiceCollection AddSetting<T>(
 			   this IServiceCollection sc,
 			   T DefaultSetting = null
-			   ) where T : class
+			   ) where T : class,new()
 		{
 			sc.AddManaged(
 				typeof(ISettingService<T>),
@@ -54,7 +54,9 @@ namespace SF.Sys.Settings
 					ParentId,
 					typeof(ISettingService<T>),
 					typeof(SettingService<T>),
-					(object)DefaultSetting ?? new { }
+					new {
+						Value=DefaultSetting ?? new T()
+					}
 					);
 			});
 			return sc;

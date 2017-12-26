@@ -36,7 +36,19 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 				return ContextQueryableFilters.GetFilterExpression(value, prop);
 			}
 		}
+		class NullableFilter<T> : PropQueryFilter<T?> where T : struct
+		{
+			public override int Priority => 10;
 
+			public NullableFilter(PropertyInfo Property) : base(Property)
+			{
+			}
+
+			public override Expression OnGetFilterExpression(Expression prop, T? value)
+			{
+				return ContextQueryableFilters.GetNullableFilterExpression(value, prop);
+			}
+		}
 		public override int Priority => 1000;
 
 
@@ -46,17 +58,25 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 				return false;
 			if (!DataValueType.IsValueType)
 				return false;
-			if (DataValueType != PropValueType.GenericTypeArguments[0])
+			var valueType = PropValueType.GenericTypeArguments[0];
+			if (DataValueType != valueType &&
+				DataValueType.GetGenericArgumentTypeAsNullable()!= valueType)
 				return false;
 			return true;
 		}
 
 		protected override IPropertyQueryFilter CreateFilter(PropertyInfo dataProp, PropertyInfo queryProp)
 		{
-			return (IPropertyQueryFilter )Activator.CreateInstance(
-				typeof(Filter<>).MakeGenericType(dataProp.PropertyType), 
-				dataProp
-				);
+			if(dataProp.PropertyType.IsGeneric() && dataProp.PropertyType.GetGenericTypeDefinition()==typeof(Nullable<>))
+				return (IPropertyQueryFilter)Activator.CreateInstance(
+					typeof(NullableFilter<>).MakeGenericType(dataProp.PropertyType.GenericTypeArguments[0]),
+					dataProp
+					);
+			else
+				return (IPropertyQueryFilter )Activator.CreateInstance(
+					typeof(Filter<>).MakeGenericType(dataProp.PropertyType), 
+					dataProp
+					);
 		}
 	}
 }
