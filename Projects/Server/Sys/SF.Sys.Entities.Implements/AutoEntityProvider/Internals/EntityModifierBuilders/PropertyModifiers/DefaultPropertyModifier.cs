@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Reflection;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
 namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
@@ -43,7 +44,12 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			PropertyInfo DataModelProperty
 			)
 		{
-			if (ActionType != DataActionType.Update && ActionType != DataActionType.Create)
+			var isKey = (EntityProperty?.IsDefined(typeof(KeyAttribute)) ??false) ||
+						(DataModelProperty?.IsDefined(typeof(KeyAttribute)) ?? false);
+
+			if (ActionType != DataActionType.Update && !isKey ||
+				ActionType != DataActionType.Create && isKey
+				)
 				return null;
 			if(EntityProperty==null)
 				return null;

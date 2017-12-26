@@ -105,6 +105,8 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
 						ctx.InitCreate(e.v,null);
 						await create.Execute(Manager, ctx);
+						await update.Execute(Manager, ctx);
+
 						FuncSetParentKey(ctx.Model, parentKey);
 						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
 

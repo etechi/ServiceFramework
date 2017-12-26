@@ -48,7 +48,7 @@ namespace SF.Sys.Reminders
 			return actions;
 		}
 
-		public async Task RefreshAt(long Id,DateTime Time)
+		public async Task RefreshAt(long Id,DateTime Time,string DefaultName)
 		{
 			if (RemindSyncQueue.Value.Queue == null)
 				throw new InvalidOperationException("提醒同步队列尚未赋值，请检查定时任务服务是否已启动");
@@ -58,8 +58,10 @@ namespace SF.Sys.Reminders
 				if (reminder == null)
 					reminder = DataSet.Add(new DataModels.Reminder
 					{
+						Id=Id,
 						CreatedTime = Now,
 						LogicState = EntityLogicState.Enabled,
+						Name= DefaultName
 					});
 				else
 					DataSet.Update(reminder);
@@ -128,7 +130,7 @@ namespace SF.Sys.Reminders
 			//使用计划时间，载入动作
 			var actions = await GetNextActions(Model.Id, Model.PlanTime);
 			//找不到动作
-			if (actions.Length == 0)
+			if ((actions?.Length ??0) == 0)
 			{
 				Model.Name = "没有动作";
 				return null;

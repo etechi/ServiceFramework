@@ -27,7 +27,8 @@ namespace SF.Sys.Services
 			sc.AddSingleton<ITaskServiceManager, TaskServiceManager>();
 			sc.AddBootstrap(async sp =>
 			{
-				foreach (var tss in sp.Resolve<ITaskServiceManager>().Services)
+				var svcs = sp.Resolve<ITaskServiceManager>().Services;
+				foreach (var tss in svcs)
 					if (tss.Defination.AutoStartup)
 						await tss.Start();
 				return Disposable.FromAction(() =>

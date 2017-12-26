@@ -94,15 +94,33 @@ namespace SF.Sys.Data
 						return await Action(tran);
 
 					provider.Transaction = tran;
+					T re;
 					try
 					{
-						return await Action(tran);
+						re=await Action(tran);
 					}
-					finally
+					catch
 					{
 						provider.Transaction = orgTran;
+						throw;
 					}
 
+					//不能在此时将事务修改回来，否者在CommitTracker中访问DataContext时，会发生Command没有事务的异常
+					try
+					{
+						tm.AddCommitTracker(
+							TransactionCommitNotifyType.BeforeCommit | TransactionCommitNotifyType.Rollback,
+							(t, e) =>
+							{
+								provider.Transaction = orgTran;
+							});
+						return re;
+					}
+					catch
+					{
+						provider.Transaction = orgTran;
+						throw;
+					}
 				}
 			);
 		}

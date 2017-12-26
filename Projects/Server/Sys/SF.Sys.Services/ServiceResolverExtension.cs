@@ -73,30 +73,49 @@ namespace SF.Sys.Services
 
 
 		
-		public static async Task WithScope(this IServiceProvider sp, Func<IServiceProvider, Task> action)
+		public static Task WithScope(this IServiceProvider sp, Func<IServiceProvider, Task> action)
 		{
-			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
-				await action(s.ServiceProvider);
+			return sp.Resolve<IServiceScopeFactory>().WithScope(action);
 		}
-		public static async Task<T> WithScope<T>(this IServiceProvider sp, Func<IServiceProvider, Task<T>> action)
+		public static Task<T> WithScope<T>(this IServiceProvider sp, Func<IServiceProvider, Task<T>> action)
 		{
-			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
-				return await action(s.ServiceProvider);
+			return sp.Resolve<IServiceScopeFactory>().WithScope(action);
 		}
 		
 
 		public static T WithScope<T>(this IServiceProvider sp, Func<IServiceProvider, T> action)
 		{
-			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
-				return action(s.ServiceProvider);
+			return sp.Resolve<IServiceScopeFactory>().WithScope(action);
 		}
 		public static void WithScope(this IServiceProvider sp, Action<IServiceProvider> action)
 		{
-			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())
+			sp.Resolve<IServiceScopeFactory>().WithScope(action);
+		}
+
+		public static async Task WithScope(this IServiceScopeFactory ScopeFactory, Func<IServiceProvider, Task> action)
+		{
+			using (var s = ScopeFactory.CreateServiceScope())
+				await action(s.ServiceProvider);
+		}
+		public static async Task<T> WithScope<T>(this IServiceScopeFactory ScopeFactory, Func<IServiceProvider, Task<T>> action)
+		{
+			using (var s = ScopeFactory.CreateServiceScope())
+				return await action(s.ServiceProvider);
+		}
+
+
+		public static T WithScope<T>(this IServiceScopeFactory ScopeFactory, Func<IServiceProvider, T> action)
+		{
+			using (var s = ScopeFactory.CreateServiceScope())
+				return action(s.ServiceProvider);
+		}
+		public static void WithScope(this IServiceScopeFactory ScopeFactory, Action<IServiceProvider> action)
+		{
+			using (var s = ScopeFactory.CreateServiceScope())
 				action(s.ServiceProvider);
 		}
 
-	
+
 		public static async Task<T> WithScopedServices<S, T>(this IServiceProvider sp, Func<S, Task<T>> action)
 		{
 			using (var s = sp.Resolve<IServiceScopeFactory>().CreateServiceScope())

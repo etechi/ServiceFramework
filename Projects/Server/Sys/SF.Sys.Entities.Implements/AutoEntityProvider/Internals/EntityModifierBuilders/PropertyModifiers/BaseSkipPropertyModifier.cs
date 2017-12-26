@@ -29,7 +29,8 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 			public Task<E> Execute(IEntityServiceContext ServiceContext, IEntityModifyContext Context, E OrgValue, T Value)
 			{
 				if (GetValue == null)
-					throw new Exception("未找到实际的属性修改器");
+					return Task.FromResult(OrgValue);
+					//throw new Exception("未找到实际的属性修改器");
 				if (ShouldSkipNextModifier(Value))
 					return Task.FromResult(OrgValue);
 				return GetValue(ServiceContext, Context, OrgValue, Value);

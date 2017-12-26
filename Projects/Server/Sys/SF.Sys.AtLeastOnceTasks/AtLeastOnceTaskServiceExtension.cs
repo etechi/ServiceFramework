@@ -53,6 +53,7 @@ namespace SF.Sys.Services
 			where TTask : class, IAtLeastOnceTask<TKey>
 		{
 			ITimeService timeService = null;
+			IServiceScopeFactory ScopeFactory = null;
 			sc.AddTaskRunnerService(new TaskRunnerSetting<TKey, TKey>
 			{
 				GetTaskKey=id=>id,
@@ -64,7 +65,8 @@ namespace SF.Sys.Services
 				Init = (sp,sq) =>
 				{
 					timeService = sp.Resolve<ITimeService>();
-					return sp.WithScope(async isp =>
+					ScopeFactory=sp.Resolve<IServiceScopeFactory>();
+					return ScopeFactory.WithScope(async isp =>
 					{
 						 if (Setting.Init != null)
 							 await Setting.Init(isp, sq);
@@ -84,13 +86,15 @@ namespace SF.Sys.Services
 					});
 				},
 				GetTasks = (sp, count) =>
-					  Setting.GetIdentsToRunning(
-						  sp,
+					  ScopeFactory.WithScope(isp =>
+						  Setting.GetIdentsToRunning(
+						  isp,
 						  count,
 						  timeService.Now
-					  ),
+					  )
+					 ),
 				RunTask = (sp, id) =>
-					sp.WithScope(async isp =>
+					ScopeFactory.WithScope(async isp =>
 					{
 						await Setting.UseDataScope(isp, async () =>
 						{
