@@ -50,6 +50,8 @@ namespace SF.Sys.Reminders
 
 		public async Task RefreshAt(long Id,DateTime Time)
 		{
+			if (RemindSyncQueue.Value.Queue == null)
+				throw new InvalidOperationException("提醒同步队列尚未赋值，请检查定时任务服务是否已启动");
 			await RemindSyncQueue.Value.Queue.Queue(Id, async () =>
 			{
 				var reminder = await DataSet.FindAsync(Id);

@@ -69,12 +69,17 @@ namespace SF.Sys.Services
 			sc.AddAtLeastOnceEntityTaskService(
 				new AtLeastOnceActionEntityServiceSetting<long, SF.Sys.Reminders.DataModels.Reminder>
 				{
+					Name="用户提醒服务",
 					Init = (sp, sq) =>
 					{
 						syncQueue.Queue = sq;
 						return Task.CompletedTask;
 					},
-					RunTask = (sp, entity) => ((ReminderManager)sp.Resolve<IReminderManager>()).RunTasks(entity)
+					RunTask = async (sp, entity) =>
+					{
+						var re=	await ((ReminderManager)sp.Resolve<IReminderManager>()).RunTasks(entity);
+						return re;
+					}
 				});
 
 			return sc;

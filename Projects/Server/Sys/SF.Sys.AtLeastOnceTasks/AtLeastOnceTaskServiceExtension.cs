@@ -67,7 +67,7 @@ namespace SF.Sys.Services
 					return sp.WithScope(async isp =>
 					{
 						 if (Setting.Init != null)
-							 await Setting.Init(sp, sq);
+							 await Setting.Init(isp, sq);
 
 						 await Setting.UseDataScope(isp, async () =>
 						 {

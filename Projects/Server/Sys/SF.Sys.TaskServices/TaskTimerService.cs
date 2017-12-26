@@ -27,6 +27,7 @@ namespace SF.Sys.Services
 			string Name,
 			int Period,
 			Func<IServiceProvider, Task<int>> TimerCallback,
+			Func<IServiceProvider, Task> InitCallback=null,
 			Func<IServiceProvider, Task> StartupCallback = null,
 			Func<IServiceProvider, Task> CleanupCallback = null,
 			bool AutoStartup=true
@@ -34,7 +35,8 @@ namespace SF.Sys.Services
 		{
 			return sc.AddTaskService(
 				Name,
-				 (sp,ss,ct) =>
+				InitCallback,
+				(sp,ss,ct) =>
 					TaskServices.Timer.StartTaskTimer(
 						Period,
 						async () =>

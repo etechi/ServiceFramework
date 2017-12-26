@@ -25,20 +25,25 @@ namespace SF.Sys.Services
 		class TaskServiceDefination : ITaskServiceDefination
 		{
 			public Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Entry { get; set; }
+			public Func<IServiceProvider, Task> Init { get; set; }
 			public string Name { get; set; }
 			public bool AutoStartup { get; set; }
 		}
 		public static IServiceCollection AddTaskService(
 			this IServiceCollection sc,
 			string Name,
+			Func<IServiceProvider, Task> Init,
 			Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Entry,
 			bool AutoStartup = true
 			)
 		{
+			if (Name.IsNullOrEmpty())
+				throw new ArgumentException("必须提供服务名称");
 			sc.AddSingleton<ITaskServiceDefination>(new TaskServiceDefination
 			{
 				Name = Name,
 				Entry = Entry,
+				Init=Init,
 				AutoStartup=AutoStartup
 			});
 			return sc;

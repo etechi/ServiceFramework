@@ -27,11 +27,15 @@ namespace SF.Sys.TaskServices
 	public class TaskServiceManager : ITaskServiceManager
 	{
 		Dictionary<string,TaskService> ServiceDict { get; }
-		public TaskServiceManager(IEnumerable<ITaskServiceDefination> Services,IServiceProvider ServiceProvider)
+		public TaskServiceManager(
+			IEnumerable<ITaskServiceDefination> Services,
+			IServiceProvider ServiceProvider
+			)
 		{
-			this.ServiceDict = Services.ToDictionary(
+			var svcs = Services.ToArray();
+			this.ServiceDict = svcs.ToDictionary(
 				s => s.Name, 
-				s =>new TaskService(s, ServiceProvider, s.Entry));
+				s =>new TaskService(s, ServiceProvider, s.Init, s.Entry));
 		}
 		public IEnumerable<ITaskService> Services
 		{

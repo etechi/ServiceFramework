@@ -101,11 +101,13 @@ namespace SF.Sys.Services
 					},
 					UseDataScope = async (isp, action) =>
 					 {
-						 var tsm = isp.Resolve<ITransactionScopeManager>();
-						 await tsm.UseTransaction(
+						 var ctx = isp.Resolve<IDataContext>();
+						 await ctx.UseTransaction(
 							 Setting.Name,
-							 ts => action(),
-							 TransactionScopeMode.RequireTransaction
+							 async ts => {
+								 await action();
+								 return 0;
+							 }
 							 );
 					 }
 				}

@@ -30,17 +30,24 @@ namespace SF.Sys.TaskServices
 		public TaskServiceState State { get; private set; } = TaskServiceState.Stopped;
 		SyncScope SyncScope { get; } = new SyncScope();
 		IServiceProvider ServiceProvider { get; }
+		Func<IServiceProvider,Task> Init { get; }
 		Func<IServiceProvider,ITaskServiceState,CancellationToken,Task> Entry { get; }
 
 		CancellationTokenSource _LongTaskCancellationSource;
 		TaskCompletionSource<int> _StopTaskCompletionSource;
 		public Exception Exception { get; private set; }
 
-		public TaskService(ITaskServiceDefination Defination,IServiceProvider ServiceProvider, Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Entry)
+		public TaskService(
+			ITaskServiceDefination Defination,
+			IServiceProvider ServiceProvider, 
+			Func<IServiceProvider,Task> Init,
+			Func<IServiceProvider, ITaskServiceState, CancellationToken, Task> Entry
+			)
 		{
 			this.Defination= Defination;
 			this.ServiceProvider = ServiceProvider;
 			this.Entry = Entry;
+			this.Init = Init;
 		}
 		public async Task Start(CancellationToken cancellationToken)
 		{
@@ -54,6 +61,8 @@ namespace SF.Sys.TaskServices
 				State = TaskServiceState.Starting;
 				try
 				{
+					if(Init!=null)
+						await Init(ServiceProvider);
 					StartTaskProcess();
 				}
 				catch(Exception e)

@@ -45,6 +45,7 @@ namespace SF.Sys.TaskServices
 	public interface ITaskServiceDefination
 	{
 		string Name { get; }
+		Func<IServiceProvider,Task> Init { get; }
 		Func<IServiceProvider,ITaskServiceState,CancellationToken,Task> Entry { get; }
 		bool AutoStartup { get; }
 	}
