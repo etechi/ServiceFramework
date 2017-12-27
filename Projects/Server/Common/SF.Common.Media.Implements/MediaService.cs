@@ -190,6 +190,7 @@ namespace SF.Common.Media
 				if (returnJson)
 					return HttpResponse.Json(new
 					{
+						id=re,
 						url = "/r/" + re,
 						error = 0
 					});

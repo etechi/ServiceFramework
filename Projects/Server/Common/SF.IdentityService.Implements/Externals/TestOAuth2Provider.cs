@@ -83,7 +83,7 @@ namespace SF.Auth.IdentityServices.Externals
 			return Task.FromResult(new Dictionary<string,string>
 			{
 				{"appid","test" },
-				{"scope ", "snsapi_userinfo" },
+				{"scope", "snsapi_userinfo" },
 			});
 		}
 

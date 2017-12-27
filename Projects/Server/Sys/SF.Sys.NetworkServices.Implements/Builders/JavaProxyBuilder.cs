@@ -99,7 +99,7 @@ namespace SF.Sys.NetworkService
 		string to_java_type(string type,bool ObjectMode=false,bool EscapeEnumName=true)
 		{
 			if (type.EndsWith("?"))
-				return to_java_type(type.Substring(0, type.Length - 1), ObjectMode);
+				return to_java_type(type.Substring(0, type.Length - 1), true);
 
 			var i = type.IndexOf('[');
 			if (i != -1)
@@ -138,7 +138,7 @@ namespace SF.Sys.NetworkService
 				case "double":
 					return ObjectMode ? "Double" : "double";
 				case "bool":
-					return ObjectMode ? "Boolean" : "double";
+					return ObjectMode ? "Boolean" : "boolean";
 				case "void":
 				case "unknown":
 					return "Object";
@@ -245,7 +245,7 @@ namespace SF.Sys.NetworkService
 						sb.AppendLine($"\t* {p.Description}");
 						sb.AppendLine($"\t* 类型:{p.Type}");
 						sb.AppendLine($"\t*/");
-						sb.AppendLine($"\tpublic {to_java_type(p.Type)} {p.Name};");
+						sb.AppendLine($"\tpublic {to_java_type(p.Type, p.Optional)} {p.Name};");
 					}
 				sb.AppendLine("}");
 			});
@@ -289,7 +289,7 @@ namespace SF.Sys.NetworkService
 			{
 				sb.AppendLine(
 					method.Parameters.Select(p =>
-					$"\t@{(method.HeavyParameter==p.Name ?"Body":$"Query(\"{p.Name}\")")} {to_java_type(p.Type)} {p.Name}"
+					$"\t@{(method.HeavyParameter==p.Name ?"Body":$"Query(\"{p.Name}\")")} {to_java_type(p.Type,p.Optional)} {p.Name}"
 					).Join(",\n")
 				);
 			}
