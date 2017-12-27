@@ -16,6 +16,8 @@ namespace SF.Sys.UnitTest
 						return await app.ServiceProvider.WithScopedServices(Callback);
 					}
 				);
+		public ITestScope<IServiceProvider> TestScope() => AppInstanceBuilder.TestScope();
+
 
 		public Task<T> Scope<T>(Func<IServiceProvider, Task<T>> Callback)
 			=> AppInstanceBuilder.Scope(async sp=>

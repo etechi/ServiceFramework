@@ -28,4 +28,10 @@ namespace SF.Sys.TimeServices
 		DateTime UtcNow { get; }
 		DateTime Now { get; }
 	}
+
+	public static class TimeServiceExtension
+	{
+		public static void AdjustTime(this ITimeService ts, TimeSpan TimeAdjust)
+			=> ts.SetTime(ts.UtcNow.Add(TimeAdjust));
+	}
 }

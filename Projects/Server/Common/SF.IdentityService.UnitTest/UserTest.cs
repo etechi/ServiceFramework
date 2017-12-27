@@ -97,35 +97,38 @@ namespace SF.IdentityService.UnitTest
 		[TestMethod]
 		public async Task 修改密码()
 		{
-			await Scope(async (IServiceProvider osp) =>
+			await TestScope().Run(async (osp) =>
 			{
-				var acc = await osp.WithScope(async (IServiceProvider sp) =>
-
-				{
-					var re = await sp.UserCreate(ReturnToken: false);
-					var newPassword = re.password + "123";
-					var svc = sp.Resolve<IUserService>();
-					await svc.SetPassword(
-							new SetPasswordArgument
-							{
-								NewPassword = newPassword,
-								OldPassword = re.password,
-								ClientId= "app.android"
-							});
-					await svc.Signout();
-					Assert.IsFalse((await svc.GetCurUserId()).HasValue);
-					return (user:re.user, account: re.account, password: re.password, newPassword: newPassword);
-				});
-				await osp.WithScope(async (IServiceProvider sp) =>
-				{
-					await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
+				var acc = await osp
+					.ServiceTestScope()
+					.Run(async (sp) =>
 					{
-						await sp.UserSignin(acc.account, acc.password);
+						var re = await sp.UserCreate(ReturnToken: false);
+						var newPassword = re.password + "123";
+						var svc = sp.Resolve<IUserService>();
+						await svc.SetPassword(
+								new SetPasswordArgument
+								{
+									NewPassword = newPassword,
+									OldPassword = re.password,
+									ClientId= "app.android"
+								});
+						await svc.Signout();
+						Assert.IsFalse((await svc.GetCurUserId()).HasValue);
+						return (user:re.user, account: re.account, password: re.password, newPassword: newPassword);
 					});
-					var re = await sp.UserSignin(acc.account, acc.newPassword);
-					Assert.AreEqual(acc.user.Id, re);
-					return 0;
-				});
+				await osp
+					.ServiceTestScope()
+					.Run(async ( sp) =>
+					{
+						await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
+						{
+							await sp.UserSignin(acc.account, acc.password);
+						});
+						var re = await sp.UserSignin(acc.account, acc.newPassword);
+						Assert.AreEqual(acc.user.Id, re);
+						return 0;
+					});
 				return 0;
 			});
 		}

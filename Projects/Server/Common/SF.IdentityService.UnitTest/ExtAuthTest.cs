@@ -33,7 +33,9 @@ namespace SF.IdentityService.UnitTest
 		[TestMethod]
 		public async Task 外部认证_注册()
 		{
-			await Scope(async (IServiceProvider sp) =>
+			await TestScope()
+				.ServiceScope()
+				.Run(async sp =>
 			{
 				var cei = sp.Resolve<IClientExtAuthService>();
 				var re=await cei.GetAuthArgument("test", "app.ios");
@@ -51,8 +53,6 @@ namespace SF.IdentityService.UnitTest
 				Assert.IsNotNull(are.AccessToken);
 				Assert.AreEqual("用户"+code,are.User.Name);
 
-
-
 				var re1 = await cei.GetAuthArgument("test", "app.ios");
 				var are1 = await cei.AuthCallback(new AuthCallbackArgument
 				{
@@ -67,7 +67,6 @@ namespace SF.IdentityService.UnitTest
 				Assert.AreNotEqual(are.AccessToken, are1.AccessToken);
 				Assert.AreEqual(are.User.Id, are1.User.Id);
 				Assert.AreEqual(are.User.Name, are1.User.Name);
-				return 0;
 			}
 			);
 		}
