@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 
 using SF.Sys.TaskServices;
+using System.Threading.Tasks;
 
 namespace SF.Sys.Services
 {
@@ -33,7 +34,9 @@ namespace SF.Sys.Services
 						await tss.Start();
 				return Disposable.FromAction(() =>
 				{
-					sp.Resolve<ITaskServiceManager>().StopAll().Wait();
+					Task.Run(() =>
+						 sp.Resolve<ITaskServiceManager>().StopAll()
+						).Wait();
 				});
 			});
 			return sc;

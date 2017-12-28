@@ -97,10 +97,10 @@ namespace SF.IdentityService.UnitTest
 		[TestMethod]
 		public async Task 修改密码()
 		{
-			await TestScope().Run(async (osp) =>
+			await TestContext().Run(async (osp) =>
 			{
 				var acc = await osp
-					.ServiceTestScope()
+					.ScopedTestContext()
 					.Run(async (sp) =>
 					{
 						var re = await sp.UserCreate(ReturnToken: false);
@@ -118,7 +118,7 @@ namespace SF.IdentityService.UnitTest
 						return (user:re.user, account: re.account, password: re.password, newPassword: newPassword);
 					});
 				await osp
-					.ServiceTestScope()
+					.ScopedTestContext()
 					.Run(async ( sp) =>
 					{
 						await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>

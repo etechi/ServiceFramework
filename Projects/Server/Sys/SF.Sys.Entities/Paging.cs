@@ -74,7 +74,7 @@ namespace SF.Sys.Entities
 		/// </summary>
 		public bool SummaryRequired { get; set; }
 
-		public static Paging Single => new Paging
+		public static Paging One => new Paging
 		{
 			Count = 1
 		};

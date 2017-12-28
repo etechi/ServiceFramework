@@ -68,7 +68,7 @@ namespace SF.Sys.Entities
 			where TQueryArgument : IPagingArgument,new()
 		{
 			if (Arg.Paging == null)
-				Arg.Paging = Paging.Single;
+				Arg.Paging = Paging.One;
 			var re = await Queryable.QueryAsync(Arg);
 			return re.Items.FirstOrDefault();
 		}

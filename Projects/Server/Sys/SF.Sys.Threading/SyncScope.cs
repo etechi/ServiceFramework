@@ -22,66 +22,79 @@ using System.Threading;
 
 namespace SF.Sys.Threading
 {
-	public class SyncScope : IDisposable
+	public interface ISyncScope
+	{
+		Task ExecuteAsync(Func<Task> callback, CancellationToken cancellationToken);
+		void Execute(Action callback, CancellationToken cancellationToken);
+	}
+	public static class SyncScopeExtension
+	{
+		public static Task SyncAsync(this ISyncScope Scope,Func<Task> callback, CancellationToken cancellationToken)
+			=>Scope.ExecuteAsync(callback, cancellationToken);
+
+		public static void Sync(this ISyncScope Scope,Action callback, CancellationToken cancellationToken)
+			=>Scope.Execute(callback, cancellationToken);
+
+		public static Task SyncAsync(this ISyncScope Scope, Func<Task> callback)
+			=> Scope.ExecuteAsync(callback, CancellationToken.None);
+		public static void Sync(this ISyncScope Scope, Action callback)
+			=> Scope.Execute(callback, CancellationToken.None);
+
+		public static async Task<T> SyncAsync<T>(this ISyncScope Scope, Func<Task<T>> callback, CancellationToken cancellationToken)
+		{
+			T re = default;
+			await Scope.ExecuteAsync(async () =>
+			{ 
+				re = await callback();
+			},
+			cancellationToken
+			);
+			return re;
+		}
+		public static T Sync<T>(this ISyncScope Scope, Func<T> callback, CancellationToken cancellationToken)
+		{
+			T re = default;
+			Scope.Execute(() =>
+			{
+				re = callback();
+			},
+			cancellationToken
+			);
+			return re;
+		}
+		public static Task<T> SyncAsync<T>(this ISyncScope Scope, Func<Task<T>> callback)
+			=> Scope.SyncAsync<T>(callback, CancellationToken.None);
+		public static T Sync<T>(this ISyncScope Scope, Func<T> callback)
+			=> Scope.Sync(callback, CancellationToken.None);
+
+	}
+	public class SyncScope : ISyncScope, IDisposable
 	{
 		SemaphoreSlim _semaphore = new SemaphoreSlim(1);
-		public Task<Releaser> EnterAsync()
+		
+		public async Task ExecuteAsync(Func<Task> callback,CancellationToken cancellationToken)
 		{
-			return EnterAsync(CancellationToken.None);
-		}
-		public async Task<Releaser> EnterAsync(CancellationToken cancellationToken)
-		{
-			if (_semaphore == null)
-				throw new InvalidOperationException();
 			await _semaphore.WaitAsync(cancellationToken);
-			return new Releaser(_semaphore);
-		}
-		public Releaser Enter()
-		{
-			if (_semaphore == null)
-				throw new InvalidOperationException();
-			_semaphore.Wait();
-			return new Releaser(_semaphore);
-		}
-		public Task Sync(Func<Task> callback)
-		{
-			return Sync(callback, CancellationToken.None);
-		}
-		public async Task Sync(Func<Task> callback,CancellationToken cancellationToken)
-		{
-			using (await EnterAsync())
-			{
+			try { 
 				await callback();
 			}
-		}
-		public Task<T> Sync<T>(Func<Task<T>> callback)
-		{
-			return Sync(callback, CancellationToken.None);
-		}
-		public async Task<T> Sync<T>(Func<Task<T>> callback, CancellationToken cancellationToken)
-		{
-			using (await EnterAsync())
+			finally
 			{
-				return await callback();
-			}
-		}
-		public struct Releaser : IDisposable
-		{
-			SemaphoreSlim _semaphore;
-			internal Releaser(SemaphoreSlim semaphore)
-			{
-				_semaphore = semaphore;
-			}
-
-			public void Dispose()
-			{
-				if (_semaphore == null)
-					throw new InvalidOperationException();
 				_semaphore.Release();
-				_semaphore = null;
 			}
 		}
-
+		public void Execute(Action callback, CancellationToken cancellationToken)
+		{
+			_semaphore.Wait(cancellationToken);
+			try
+			{
+				callback();
+			}
+			finally
+			{
+				_semaphore.Release();
+			}
+		}
 
 		public void Dispose()
 		{

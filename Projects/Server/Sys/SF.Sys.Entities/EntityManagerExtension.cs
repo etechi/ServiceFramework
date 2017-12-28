@@ -38,7 +38,7 @@ namespace SF.Sys.Entities
 				var id = default(TKey);
 				if (qa != null)
 				{
-					qa.Paging = Paging.Single;
+					qa.Paging = Paging.One;
 					var re = await EntityQueryable.QueryIdentsAsync(qa);
 					id = re.Items.FirstOrDefault();
 					if (!EqualityComparer<TKey>.Default.Equals(id, default(TKey)))

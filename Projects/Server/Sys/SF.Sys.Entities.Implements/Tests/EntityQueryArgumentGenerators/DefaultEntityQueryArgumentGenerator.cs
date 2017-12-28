@@ -79,7 +79,7 @@ namespace SF.Sys.Entities.Tests.EntityQueryArgumentGenerators
 					new QueryTestCase<TQueryArgument, TSummary>
 					{
 						Results = new[] { s },
-						QueryArgument = ArgCreator(s).WithPaging(Paging.Single)
+						QueryArgument = ArgCreator(s).WithPaging(Paging.One)
 					});
 			}
 		}

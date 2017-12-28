@@ -64,6 +64,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		public bool IsChanged { get; private set; }
 		internal void SetChanged()
 		{
+			
 			IsChanged = true;
 		}
 		public EntityDbContextProvider(DbContext DbContext, IDataContext DataContext)

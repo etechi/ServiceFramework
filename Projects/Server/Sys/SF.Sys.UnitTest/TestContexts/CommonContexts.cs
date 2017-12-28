@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.UnitTest
 {
-	public static class CommonTestScopeExtension
+	public static class CommonTestContextExtension
 	{
 		
-		public static ITestScope<V> SetTime<V>(this ITestScope<V> s,DateTime Time)
+		public static ITestContext<V> SetTime<V>(this ITestContext<V> s,DateTime Time)
 		{
-			return s.CreateNewScope<V,V>(
+			return s.NewContext<V,V>(
 				async (sp, v, cb) =>
 				{
 					var ts = sp.Resolve<ITimeService>();
@@ -24,9 +24,9 @@ namespace SF.Sys.UnitTest
 				});
 		}
 
-		public static ITestScope<V> ServiceScope<V>(this ITestScope<V> s)
+		public static ITestContext<V> NewScope<V>(this ITestContext<V> s)
 		{
-			return s.CreateNewScope<V, V>(
+			return s.NewContext<V, V>(
 				async (sp, v, cb) =>
 					await sp.WithScope( 
 						async isp =>
@@ -34,8 +34,8 @@ namespace SF.Sys.UnitTest
 						)
 				);
 		}
-		public static ITestScope<IServiceProvider> ServiceTestScope(this IServiceProvider sp)
-			=> sp.TestScope().ServiceScope();
+		public static ITestContext<IServiceProvider> ScopedTestContext(this IServiceProvider sp)
+			=> sp.TestContext().NewScope();
 
 
 

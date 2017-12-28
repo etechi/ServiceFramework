@@ -59,7 +59,8 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 			Type DataModelType, 
 			PropertyInfo DataModelProperty
 			)
-		{   //必须是long类型
+		{
+			//必须是long类型
 			if (DataModelProperty.PropertyType != typeof(long))
 				return null;
 

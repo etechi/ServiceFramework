@@ -163,16 +163,16 @@ namespace SF.Sys.Services
 
 		class Scoped<S> : IScoped<S> where S : class
 		{
-			IServiceProvider ServiceProvider { get; }
+			IServiceScopeFactory ScopeFactory { get; }
 			long? CurScopeId { get; }
 			public Scoped(IServiceProvider ServiceProvider)
 			{
-				this.ServiceProvider = ServiceProvider;
+				ScopeFactory = ServiceProvider.Resolve<IServiceScopeFactory>();
 				CurScopeId = ServiceProvider.Resolver().CurrentServiceId;
 			}
 			public Task<T> Use<T>(Func<S, Task<T>> Callback)
 			{
-				return ServiceProvider.WithScope(async sp =>
+				return ScopeFactory.WithScope(async sp =>
 				{
 					var isr = sp.Resolver();
 					using (isr.WithScopeService(CurScopeId))

@@ -39,13 +39,13 @@ namespace SF.Sys.Entities.Models
 		/// 时间
 		/// </summary>
 		[TableVisible]
-		[ReadOnly(true)]
+		[Uneditable]
 		public virtual DateTime Time{ get; set; }
 
 		/// <summary>
 		/// 用户
 		/// </summary>
-		[ReadOnly(true)]
+		[Uneditable]
 		[EntityIdent(typeof(User),  nameof(UserName))]
 		public virtual long? UserId { get; set; }
 
@@ -53,7 +53,6 @@ namespace SF.Sys.Entities.Models
 		/// 用户
 		/// </summary>
 		[TableVisible]
-		[ReadOnly(true)]
 		[Ignore]
 		public virtual string UserName { get; set; }
 	}
