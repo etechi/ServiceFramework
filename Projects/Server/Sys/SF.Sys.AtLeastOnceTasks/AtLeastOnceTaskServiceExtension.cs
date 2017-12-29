@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Services
 {
-	public class AtLeastOnceActionServiceSetting<TKey,TTask>
+	public class AtLeastOnceActionServiceSetting<TKey,TSyncKey,TTask>
 		where TTask : class
 	{
 		public string Name { get; set; }
@@ -35,7 +35,8 @@ namespace SF.Sys.Services
 		public int Interval { get; set; } = 5000;
 		public int ErrorDelayUnit { get; set; } = 10;
 		public int ExecTimeoutSeconds { get; set; } = 0;
-		public Func<IServiceProvider, ISyncQueue<TKey> ,Task> Init { get; set; }
+		public Func<TKey, TSyncKey> GetSyncKey { get; set; }
+		public Func<IServiceProvider, ISyncQueue<TSyncKey> ,Task> Init { get; set; }
 		public Func<IServiceProvider, int, DateTime, Task<TKey[]>> GetIdentsToRunning { get; set; }
 		public Func<IServiceProvider, Task<TTask[]>> LoadRunningTasks { get; set; }
 		public Func<IServiceProvider,TTask,Task> SaveTask { get; set; }
@@ -45,23 +46,23 @@ namespace SF.Sys.Services
 	}
 	public static class AtLeastOnceTaskService
 	{
-		public static IServiceCollection AddAtLeastOnceTaskService<TKey, TTask>(
+		public static IServiceCollection AddAtLeastOnceTaskService<TKey,TSyncKey, TTask>(
 			this IServiceCollection sc,
-			AtLeastOnceActionServiceSetting<TKey, TTask> Setting
+			AtLeastOnceActionServiceSetting<TKey, TSyncKey, TTask> Setting
 			)
 			where TKey : IEquatable<TKey>
-			where TTask : class, IAtLeastOnceTask<TKey>
+			where TSyncKey : IEquatable<TSyncKey>
+			where TTask : class, IAtLeastOnceTask
 		{
 			ITimeService timeService = null;
 			IServiceScopeFactory ScopeFactory = null;
-			sc.AddTaskRunnerService(new TaskRunnerSetting<TKey, TKey>
+			sc.AddTaskRunnerService(new TaskRunnerSetting<TKey, TSyncKey>
 			{
-				GetTaskKey=id=>id,
+				GetSyncKey=Setting.GetSyncKey,
 				Name = Setting.Name,
 				ThreadCount = Setting.ThreadCount,
 				BatchCount = Setting.BatchCount,
 				Interval = Setting.Interval,
-				SyncSampleIdentTask = true,
 				Init = (sp,sq) =>
 				{
 					timeService = sp.Resolve<ITimeService>();

@@ -13,39 +13,36 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Annotations;
+using SF.Sys.Entities;
 using SF.Sys.Entities.DataModels;
 using System;
-using SF.Sys.AtLeastOnceTasks.Models;
-namespace SF.Sys.AtLeastOnceTasks.DataModels
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace SF.Sys.AtLeastOnceActions.Models
 {
-	public class AtLeastOnceTaskEntityBase<TKey> : 
-		ObjectEntityBase<TKey>, 
-		IAtLeastOnceTask
-		where TKey:IEquatable<TKey>
-	{
+
+	[EntityObject]
+	public class AtLeastOnceAction : SF.Sys.AtLeastOnceTasks.Models.AtLeastOnceTaskEntityBase<long>
+	{	
 		/// <summary>
-		/// 任务状态
+		/// 类型
 		/// </summary>
-		public AtLeastOnceTaskState TaskState { get; set; }
+		[Required]
+		[Uneditable]
+		[MaxLength(100)]
+		[TableVisible]
+		public string Type { get; set; }
+		
 		/// <summary>
-		/// 任务执行次数
+		/// 标识
 		/// </summary>
-		public int TaskRunCount { get; set; }
-		/// <summary>
-		/// 最后执行错误
-		/// </summary>
-		public string TaskLastRunError { get; set; }
-		/// <summary>
-		/// 任务开始时间
-		/// </summary>
-		public DateTime? TaskStartTime { get; set; }
-		/// <summary>
-		/// 任务最后执行时间
-		/// </summary>
-		public DateTime? TaskLastRunTime { get; set; }
-		/// <summary>
-		/// 任务下次执行时间
-		/// </summary>
-		public DateTime? TaskNextRunTime { get; set; }
+		[Required]
+		[Uneditable]
+		[MaxLength(100)]
+		[TableVisible]
+		public string Ident { get; set; }
 	}
 }

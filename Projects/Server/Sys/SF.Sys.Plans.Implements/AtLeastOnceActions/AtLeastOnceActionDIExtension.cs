@@ -20,59 +20,57 @@ using SF.Sys.TimeServices;
 using System.Linq;
 using SF.Sys.CallPlans.Runtime;
 using SF.Sys.CallPlans;
-using SF.Sys.Reminders.Models;
-using SF.Sys.Reminders;
+using SF.Sys.AtLeastOnceActions.Models;
+using SF.Sys.AtLeastOnceActions;
 using SF.Sys.Threading;
 
 namespace SF.Sys.Services
 {
-	class RemindSyncQueue
+	class AtLeastOnceActionSyncQueue
 	{
-		public ISyncQueue<long> Queue { get; set; }
+		public ISyncQueue<(string,string)> Queue { get; set; }
 	}
-	public static class ReminderDIServiceCollectionExtension
+	public static class AtLeastOnceActionDIExtension
 	{
 		
-		public static IServiceCollection AddReminderServices(this IServiceCollection sc,string TablePrefix=null)
+		public static IServiceCollection AddAtLeastOnceActionservices(this IServiceCollection sc,string TablePrefix=null)
 		{
 			sc.AddDataModules<
-				   SF.Sys.Reminders.DataModels.Reminder,
-				   SF.Sys.Reminders.DataModels.RemindRecord
+				   SF.Sys.AtLeastOnceActions.DataModels.AtLeastOnceAction
 				   >(
 				   TablePrefix ?? "Sys"
 				   );
 
 			sc.EntityServices(
-				"Reminders",
-				"提醒管理",
+				"AtLeastOnceActions",
+				"至少一次调用管理",
 				d => d
-					.Add<IReminderManager, ReminderManager>("Reminder", "提醒计划", typeof(Reminder))
-					.Add<IRemindRecordManager, RemindRecordManager>("RemindRecord", "提醒记录", typeof(RemindRecord))
+					.Add<IAtLeastOnceActionManager, AtLeastOnceActionManager>("AtLeastOnceAction", "至少一次调用", typeof(AtLeastOnceAction))
 				);
 
 
-			sc.InitServices("提醒管理", async (sp, sim, scope) =>
+			sc.InitServices("至少一次调用管理", async (sp, sim, scope) =>
 			{
-				var MenuPath = "系统管理/提醒管理";
-				await sim.Service<IReminderManager, ReminderManager>(null)
+				var MenuPath = "系统管理/至少一次调用";
+				await sim.Service<IAtLeastOnceActionManager, AtLeastOnceActionManager>(null)
 					.WithMenuItems(MenuPath)
 					.Ensure(sp, scope);
 
-				await sim.Service<IRemindRecordManager, RemindRecordManager>(null)
-					.WithMenuItems(MenuPath)
-					.Ensure(sp, scope);
 			});
 
 
-			var syncQueue = new RemindSyncQueue();
+			var syncQueue = new AtLeastOnceActionSyncQueue();
 			sc.AddSingleton(sp => syncQueue);
 			sc.AddAtLeastOnceEntityTaskService(
-				new AtLeastOnceActionEntityServiceSetting<long, long, SF.Sys.Reminders.DataModels.Reminder>
+				new AtLeastOnceActionEntityServiceSetting<
+					(long Id, string Type, string Ident),
+					(string Type, string Ident),
+					SF.Sys.AtLeastOnceActions.DataModels.AtLeastOnceAction
+					>
 				{
-					Name="用户提醒服务",
-					GetKey=e=>e.Id,
-					KeyEqual=id=>e=>e.Id==id,
-					GetSyncKey=id=>id,
+					Name = "至少一次调用服务",
+					GetKey = t => (t.Id, t.Type, t.Ident),
+					KeyEqual = t => e => e.Id.Equals(t.Id),
 					Init = (sp, sq) =>
 					{
 						syncQueue.Queue = sq;
@@ -80,7 +78,7 @@ namespace SF.Sys.Services
 					},
 					RunTask = async (sp, entity) =>
 					{
-						var re=	await ((ReminderManager)sp.Resolve<IReminderManager>()).RunTasks(entity);
+						var re=	await ((AtLeastOnceActionProvider)sp.Resolve<IAtLeastOnceActionProvider>()).ActiveByTimer(entity);
 						return re;
 					}
 				});

@@ -25,34 +25,40 @@ using SF.Sys.Threading;
 using SF.Sys.TimeServices;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Services
 {
-	public class AtLeastOnceActionEntityServiceSetting<TKey, TEntity> {
+	public class AtLeastOnceActionEntityServiceSetting<TKey, TSyncKey, TEntity> {
 		public string Name { get; set; }
 		public int BatchCount { get; set; } = 100;
 		public int ThreadCount { get; set; } = 100;
 		public int Interval { get; set; } = 5000;
 		public int ErrorDelayUnit { get; set; } = 10;
 		public int ExecTimeoutSeconds { get; set; } = 0;
-		public Func<IServiceProvider, ISyncQueue<TKey>, Task> Init { get; set; }
+		public Func<TEntity,TKey> GetKey { get; set; }
+		public Func<TKey,Expression<Func<TEntity,bool>>> KeyEqual { get; set; }
+		public Func<TKey,TSyncKey> GetSyncKey { get; set; }
+		public Func<IServiceProvider, ISyncQueue<TSyncKey>, Task> Init { get; set; }
 		public Func<IServiceProvider,TEntity,Task<DateTime?> > RunTask { get; set; }
 	}
 
 	public static class AtLeastOnceTaskEntityService
 	{
-		public static IServiceCollection AddAtLeastOnceEntityTaskService<TKey, TEntity>(
+		public static IServiceCollection AddAtLeastOnceEntityTaskService<TKey, TSyncKey, TEntity>(
 			this IServiceCollection sc,
-			AtLeastOnceActionEntityServiceSetting<TKey, TEntity> Setting
+			AtLeastOnceActionEntityServiceSetting<TKey, TSyncKey, TEntity> Setting
 			)
 			where TKey : IEquatable<TKey>
-			where TEntity : class, IAtLeastOnceTask<TKey>
+			where TSyncKey: IEquatable<TSyncKey>
+			where TEntity : class, IAtLeastOnceTask
 		{
 			sc.AddAtLeastOnceTaskService(
-				new AtLeastOnceActionServiceSetting<TKey, TEntity>
+				new AtLeastOnceActionServiceSetting<TKey, TSyncKey, TEntity>
 				{
 					Name = Setting.Name,
+					GetSyncKey=Setting.GetSyncKey,
 					BatchCount = Setting.BatchCount,
 					ThreadCount = Setting.ThreadCount,
 					Interval = Setting.Interval,
@@ -73,7 +79,7 @@ namespace SF.Sys.Services
 							  set.Update(t);
 						  }
 						  await set.Context.SaveChangesAsync();
-						  var ids = tasks.Select(t => t.Id).ToArray();
+						  var ids = tasks.Select(Setting.GetKey).ToArray();
 						  return ids;
 					  },
 					LoadRunningTasks = async (isp) =>
@@ -88,7 +94,8 @@ namespace SF.Sys.Services
 					{
 						var set = isp.Resolve<IDataSet<TEntity>>();
 						var re = await set.AsQueryable()
-							.Where(e => e.TaskState == AtLeastOnceTaskState.Running && e.Id.Equals(id))
+							.Where(e => e.TaskState == AtLeastOnceTaskState.Running)
+							.Where(Setting.KeyEqual(id))
 							.SingleOrDefaultAsync();
 						return re;
 					},

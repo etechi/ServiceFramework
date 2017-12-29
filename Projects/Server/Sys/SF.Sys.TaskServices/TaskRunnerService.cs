@@ -24,33 +24,31 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Services
 {
-	public class TaskRunnerSetting<TKey,TTask>
+	public class TaskRunnerSetting<TTask,TSyncKey>
 	{
 		public string Name { get; set; }
-		public Func<IServiceProvider, ISyncQueue<TKey>, Task> Init { get; set; }
+		public Func<IServiceProvider, ISyncQueue<TSyncKey>, Task> Init { get; set; }
 		public Func<IServiceProvider, int, Task<TTask[]>> GetTasks { get; set; }
 		public Func<IServiceProvider, TTask, Task> RunTask { get; set; }
-		public Func<TTask,TKey> GetTaskKey { get; set; }
-
+		public Func<TTask, TSyncKey> GetSyncKey { get; set; }
 		public int BatchCount { get; set; } = 100;
 		public int ThreadCount { get; set; } = 1000;
 		public int Interval { get; set; } = 1000;
-		public bool SyncSampleIdentTask { get; set; } = true;
 	}
 	public static class TaskRunnerExtension
 	{
-		class Context<TKey,TTask>
+		class Context<TTask, TSyncKey>
 		{
 			int _RunningTaskCount;
-			public TaskRunnerSetting<TKey,TTask> Setting { get; }
-			public ISyncQueue<TKey> ExecQueue { get; } 
+			public TaskRunnerSetting<TTask, TSyncKey> Setting { get; }
+			public ISyncQueue<TSyncKey> ExecQueue { get; } 
 
-			public Context (TaskRunnerSetting<TKey,TTask> Setting)
+			public Context (TaskRunnerSetting<TTask, TSyncKey> Setting)
 			{
 				this.Setting = Setting;
-				ExecQueue = Setting.SyncSampleIdentTask ?
-					(ISyncQueue<TKey>) new ObjectSyncQueue<TKey>() :
-					NoneSyncQueue<TKey>.Instance
+				ExecQueue = Setting.GetSyncKey==null ?
+					NoneSyncQueue<TSyncKey>.Instance:
+					new ObjectSyncQueue<TSyncKey>() 
 					;
 			}
 			public async Task Init(IServiceProvider ServiceProvider)
@@ -95,11 +93,14 @@ namespace SF.Sys.Services
 				{
 					try
 					{
-						await ExecQueue.Queue(
-							Setting.GetTaskKey(task), 
-							() =>
-								Setting.RunTask(ServiceProvider, task)
-						);
+						if (Setting.GetSyncKey == null)
+							await Setting.RunTask(ServiceProvider, task);
+						else
+							await ExecQueue.Queue(
+								Setting.GetSyncKey(task),
+								() =>
+									Setting.RunTask(ServiceProvider, task)
+							);
 					}
 					catch
 					{
@@ -108,8 +109,6 @@ namespace SF.Sys.Services
 				});
 			}
 		}
-
-		
 
 		public static IServiceCollection AddTaskRunnerService<TKey,TTask>(
 			this IServiceCollection sc,

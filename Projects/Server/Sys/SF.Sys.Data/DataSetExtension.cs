@@ -276,17 +276,19 @@ namespace SF.Sys.Data
 		public static Task<T> EnsureAsync<T>(
 			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter,
-			Func<Task<T>> creator
+			Func<Task<T>> creator,
+			bool AutoSave = true
 			) where T : class
 		{
-			return set.AddOrUpdateAsync(filter, creator, null);
+			return set.AddOrUpdateAsync(filter, creator, null, AutoSave);
 		}
 
         public static async Task<T> AddOrUpdateAsync<T>(
 			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter,
 			Func<Task<T>> creator,
-			Func<T,Task> updater
+			Func<T,Task> updater,
+			bool AutoSave=true
 			) where T : class
 		{
 			var e = await set.AsQueryable(false).Where(filter).SingleOrDefaultAsync();
@@ -299,7 +301,8 @@ namespace SF.Sys.Data
 				await updater(e);
 				set.Update(e);
 			}
-			await set.Context.SaveChangesAsync();
+			if(AutoSave)
+				await set.Context.SaveChangesAsync();
 			return e;
 		}
 

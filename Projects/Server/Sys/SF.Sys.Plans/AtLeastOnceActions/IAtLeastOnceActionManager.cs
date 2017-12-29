@@ -13,36 +13,20 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Entities;
 using System;
-
-namespace SF.Sys.AtLeastOnceTasks.Models
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SF.Sys.Entities;
+namespace SF.Sys.AtLeastOnceActions
 {
-	public interface IAtLeastOnceTask
+	public class AtLeastOnceActionQueryArgument : QueryArgument
 	{
-		/// <summary>
-		/// 任务状态
-		/// </summary>
-		AtLeastOnceTaskState TaskState { get; set; }
-		/// <summary>
-		/// 任务执行次数
-		/// </summary>
-		int TaskRunCount { get; set; }
-		/// <summary>
-		/// 最后执行错误
-		/// </summary>
-		string TaskLastRunError { get; set; }
-		/// <summary>
-		/// 任务开始时间
-		/// </summary>
-		DateTime? TaskStartTime { get; }
-		/// <summary>
-		/// 任务最后执行时间
-		/// </summary>
-		DateTime? TaskLastRunTime { get; set; }
-		/// <summary>
-		/// 任务下次执行时间
-		/// </summary>
-		DateTime? TaskNextRunTime { get; set; }
+		
+	}
+	public interface IAtLeastOnceActionManager :
+		IEntitySource<ObjectKey<long>, Models.AtLeastOnceAction, AtLeastOnceActionQueryArgument>
+	{
 	}
 }
