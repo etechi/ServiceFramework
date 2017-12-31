@@ -18,37 +18,19 @@ using SF.Sys.Entities.Models;
 using SF.Sys.Annotations;
 using System.Collections.Generic;
 
-namespace SF.Common.Documents
+namespace SF.Common.Comments
 {
 	/// <summary>
 	/// 文档实体
 	/// </summary>
 	[EntityObject]
-	public class Document : UIItemEntityBase<Category>
+	public class Comment : UIItemEntityBase<Category>
 	{
 		/// <summary>
 		/// 文档内容,Html格式
 		/// </summary>
 		[Html]
 		public string Content { get; set; }
-
-		
 	}
-
-	/// <summary>
-	/// 文档目录实体
-	/// </summary>
-	[EntityObject]
-	public class Category : UITreeContainerEntityBase<Category,Document>
-	{
-		/// <summary>
-		/// 子目录
-		/// </summary>
-		public override IEnumerable<Category> Children { get; set; }
-
-		/// <summary>
-		/// 目录中的文档
-		/// </summary>
-		public override IEnumerable<Document> Items { get; set; }
-	}
+	
 }

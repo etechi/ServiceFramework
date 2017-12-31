@@ -20,61 +20,23 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Documents.Management
 {
+	
 	[EntityObject]
-	public class CategoryInternal : UITreeContainerEntityBase<CategoryInternal,DocumentInternal>
-	{
-		/// <summary>
-		/// 父分类
-		/// </summary>
-		[EntityIdent(typeof(Category), nameof(ContainerName), IsTreeParentId = true)]
-		[Layout(1, 2)]
-		public override long? ContainerId { get; set; }
-
-		/// <summary>
-		/// 父分类
-		/// </summary>
-		public override string ContainerName { get; set; }
-	}
-
-	[EntityObject]
-	public class DocumentBase : UIItemEntityBase<CategoryInternal>
-	{
-		/// <summary>
-		/// 文档分类
-		/// </summary>
-		[EntityIdent(typeof(Category), nameof(ContainerName))]
-		[Layout(1, 2)]
-		public override long? ContainerId { get; set; }
-
-		/// <summary>
-		/// 访问标示
-		/// </summary>
-		[TableVisible]
-		[StringLength(100)]
-		public string Ident { get; set; }
-
-		/// <summary>
-		/// 发布时间
-		/// </summary>
-		[TableVisible]
-		public DateTime? PublishDate { get; set; }
-
-		/// <summary>
-		/// 分类名称
-		/// </summary>
-		[TableVisible]
-		public override string ContainerName { get; set; }
-
-	}
-	public class DocumentInternal : DocumentBase
+	public class Comment : TreeNodeEntityBase<Comment>
 	{
 	}
-	public class DocumentEditable : DocumentBase
+	public class CommentEditable : Comment
 	{
 		/// <summary>
-		/// 文档内容
+		/// 评论内容
+		/// </summary>
+		[MultipleLines]
+		public string Content { get; set; }
+
+		/// <summary>
+		/// HTML内容
 		/// </summary>
 		[Html]
-		public string Content { get; set; }
+		public string HtmlContent { get; set; }
 	}
 }

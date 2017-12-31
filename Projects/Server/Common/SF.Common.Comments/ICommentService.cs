@@ -17,23 +17,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 
-namespace SF.Common.Documents
+namespace SF.Common.Comments
 {
 	/// <summary>
-	/// 文档服务
+	/// 评论服务
 	/// </summary>
-	/// <typeparam name="TDocument"></typeparam>
-	/// <typeparam name="TCategory"></typeparam>
+	/// <typeparam name="TComment">评论类型</typeparam>
 	[NetworkService]
-	public interface IDocumentService<TDocument, TCategory>:
-		IEntityLoadable<ObjectKey<long>,TDocument>,
-		IEntityLoadableByKey<TDocument>,
-		IContainerLoadable<long,TCategory>,
-		IEntitySearchable<TDocument>,
-		IContainerItemsListable<long?,TDocument>,
-		ITreeContainerListable<long?,TCategory>
-		where TDocument : Document
-		where TCategory : Category
+	public interface ICommentService<TComment>:
+		IEntityLoadable<ObjectKey<long>,TComment>,
+		ITreeContainerListable<long?, TComment>
+		where TComment : Comment
 	{
 	}
 

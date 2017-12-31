@@ -18,16 +18,11 @@ using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.ComponentModel.DataAnnotations;
 
-namespace SF.Common.Documents.Management
+namespace SF.Common.Comments.Management
 {
-	public class DocumentQueryArguments : QueryArgument
+	public class CommentQueryArguments : QueryArgument
 	{
-		/// <summary>
-		/// 文档分类
-		/// </summary>
-		[EntityIdent(typeof(Category))]
-		public int? CategoryId { get; set; }
-
+	
 		/// <summary>
 		/// 标题
 		/// </summary>
@@ -35,27 +30,25 @@ namespace SF.Common.Documents.Management
 		public string Name { get; set; }
 
 		/// <summary>
-		/// 发布日期
+		/// 创建日期
 		/// </summary>
-		public NullableDateQueryRange PublishDate { get; set; }
+		public DateQueryRange CreateDate { get; set; }
 	}
 
 	/// <summary>
-	/// 文档管理
+	/// 评论管理
 	/// </summary>
-	/// <typeparam name="TInternal"></typeparam>
-	/// <typeparam name="TEditable"></typeparam>
 	[NetworkService]
 	[EntityManager]
-	public interface IDocumentManager<TInternal, TEditable> :
-		IEntitySource<ObjectKey<long>, TInternal, DocumentQueryArguments>,
-		IEntityManager<ObjectKey<long>, TEditable>
-		where TInternal : DocumentInternal
-		where TEditable : DocumentEditable
+	public interface ICommentManager<TComment>:
+		IEntitySource<ObjectKey<long>, TComment, CommentQueryArguments>,
+		IEntityManager<ObjectKey<long>, TComment>
+		where TComment:Comment
 	{
+
 	}
-	public interface IDocumentManager:
-		IDocumentManager<DocumentInternal,DocumentEditable>
+	public interface ICommentManager :
+		ICommentManager<Comment>
 	{
 
 	}
