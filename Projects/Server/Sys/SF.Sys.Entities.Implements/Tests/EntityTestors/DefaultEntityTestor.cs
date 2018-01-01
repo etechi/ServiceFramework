@@ -92,7 +92,7 @@ namespace SF.Sys.Entities.Tests.EntityTestors
 			}
 
 			//检查批量实体获取
-			var batchDetails = await svc.BatchGetAsync(createIdents);
+			var batchDetails = await svc.BatchGetAsync(createIdents,null);
 			for (var i = 0; i < createCount; i++)
 			{
 				var key = Entity<TDetail>.GetKey<TKey>(batchDetails[i]);

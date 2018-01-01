@@ -74,9 +74,9 @@ namespace SF.Sys.Entities.AutoEntityProvider
 			return AutoEntityProvider.GetAsync(Id);
 		}
 
-		public Task<TDetail[]> BatchGetAsync(TKey[] Ids)
+		public Task<TDetail[]> BatchGetAsync(TKey[] Ids,string[] Properties)
 		{
-			return AutoEntityProvider.GetAsync(Ids);
+			return AutoEntityProvider.GetAsync(Ids,Properties);
 		}
 
 		public Task<TEditable> LoadForEdit(TKey Id)

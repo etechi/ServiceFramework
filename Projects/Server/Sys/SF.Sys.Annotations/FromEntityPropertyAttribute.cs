@@ -13,29 +13,22 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-using SF.Sys.Entities;
-
-namespace SF.Common.Documents.Management
+namespace SF.Sys.Annotations
 {
-	public class DocumentManager :
-		DocumentManager<DocumentInternal, DocumentEditable>,
-		IDocumentManager
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
+	public class FromEntityPropertyAttribute : Attribute
 	{
-		public DocumentManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		public string IdentField { get; set; }
+		public string Property { get; set; }
+		public FromEntityPropertyAttribute(string IdentField,string Property)
 		{
-		}
-	}
-	public class DocumentManager<TDocumentInternal, TDocumentEditable> :
-		AutoModifiableEntityManager<ObjectKey<long>, TDocumentInternal, TDocumentInternal, DocumentQueryArguments, TDocumentEditable, DataModels.Document>,
-		IDocumentManager<TDocumentInternal, TDocumentEditable>
-		where TDocumentInternal : DocumentInternal
-		where TDocumentEditable : DocumentEditable
-	{
-		public DocumentManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
-		{
+			this.IdentField = IdentField;
+			this.Property = Property;
 		}
 
 	}
-
 }

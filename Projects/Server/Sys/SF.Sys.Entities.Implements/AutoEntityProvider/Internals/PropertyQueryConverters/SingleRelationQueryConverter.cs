@@ -38,17 +38,17 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			{
 				QueryResultBuildHelper = (IQueryResultBuildHelper < E, T, R > )QueryResultBuildHelper;
 			}
-			public Expression SourceToDestOrTemp(Expression src,int Level, PropertyInfo srcProp,PropertyInfo dstProp)
+			public Expression SourceToDestOrTemp(Expression src,int Level, IPropertySelector PropertySelector,PropertyInfo srcProp,PropertyInfo dstProp)
 			{
 				if (Level == 3)
 					return null;
-				return QueryResultBuildHelper.BuildEntityMapper(src.GetMember(srcProp),Level+1);
+				return QueryResultBuildHelper.BuildEntityMapper(src.GetMember(srcProp),Level+1, PropertySelector);
 			}
 
-			public async Task<R> TempToDest(object src, T value)
+			public async Task<R> TempToDest(object src, T value, IPropertySelector PropertySelector)
 			{
 				if (value == null) return null;
-				var re= await QueryResultBuildHelper.ResultMapper(new[] { value });
+				var re= await QueryResultBuildHelper.GetResultMapper(PropertySelector)(new[] { value });
 				return re[0];
 			}
 		}

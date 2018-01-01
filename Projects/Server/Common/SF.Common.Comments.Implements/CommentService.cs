@@ -14,17 +14,45 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SF.Common.Comments.DataModels;
+using SF.Sys.Data;
+using SF.Sys.Services;
 using SF.Sys.Entities;
-using SF.Sys.Collections.Generic;
 
-namespace SF.Common.Cpmments
+namespace SF.Common.Comments
 {
-	public static class CommentsSetupExtension
+	public class CommentService : 
+		CommentService<Comment, DataModels.Comment>,
+		ICommentService
 	{
+		public CommentService(Lazy<IDataSet<DataModels.Comment>> Comments) : 
+			base(Comments)
+		{
+		}
 	}
 
-}
+	public class CommentService<TCommentPublic, TComment> :
+		ICommentService<TCommentPublic>
+		where TCommentPublic : Comment, new()
+		where TComment : DataModels.Comment<TComment>, new()
 
+	{
+		public Lazy<IDataSet<TComment>> Comments { get; }
+		public CommentService(Lazy<IDataSet<TComment>> Comments)
+		{
+			this.Comments = Comments;
+		}
+
+		public Task<TCommentPublic> GetAsync(ObjectKey<long> Id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<QueryResult<TCommentPublic>> ListChildContainersAsync(ListItemsArgument<long?> Arg)
+		{
+			throw new NotImplementedException();
+		}
+	}
+}

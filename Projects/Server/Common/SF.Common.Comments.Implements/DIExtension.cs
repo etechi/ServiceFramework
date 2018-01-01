@@ -13,92 +13,75 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Common.Documents.Management;
-using SF.Common.Documents;
+using SF.Common.Comments.Management;
+using SF.Common.Comments;
 using SF.Sys.Services.Management;
 using SF.Sys.Entities.AutoTest;
 using SF.Sys.Entities.AutoEntityProvider;
 
 namespace SF.Sys.Services
 {
-	public static class DocumentDIExtension
+	public static class CommentDIExtension
 		
 	{
-		public static IServiceCollection AddDocumentServices(this IServiceCollection sc,string TablePrefix=null)
+		public static IServiceCollection AddCommentServices(this IServiceCollection sc,string TablePrefix=null)
 		{
 			//文章
 			sc.EntityServices(
-				"Document",
+				"Comment",
 				"文档管理",
-				d => d.Add<IDocumentCategoryManager, DocumentCategoryManager>("DocumentCategory","文档分类",typeof(Category))
-					.Add<IDocumentManager, DocumentManager>("Document", "文档", typeof(Document))
-					//.Add<IDocumentService, DocumentService>()
+				d => d.Add<ICommentManager, CommentManager>("Comment", "文档", typeof(Comment))
+					//.Add<ICommentService, CommentService>()
 				);
 
-			sc.AddManagedScoped<IDocumentService, DocumentService>(IsDataScope: true);
-
-			sc.GenerateEntityManager("DocumentCategory");
-			sc.GenerateEntityManager("Document");
+			sc.AddManagedScoped<ICommentService, CommentService>(IsDataScope: true);
+			sc.GenerateEntityManager("Comment");
 
 			//sc.AddAutoEntityType(
 			//	(TablePrefix ?? "") + "Doc",
 			//	false,
-			//	typeof(Document),
-			//	typeof(DocumentInternal),
-			//	typeof(DocumentEditable),
+			//	typeof(Comment),
+			//	typeof(CommentInternal),
+			//	typeof(CommentEditable),
 			//	typeof(Category),
 			//	typeof(CategoryInternal)
 			//	);
 
 
 			sc.AddDataModules<
-				SF.Common.Documents.DataModels.Document,
-				SF.Common.Documents.DataModels.DocumentCategory,
-				SF.Common.Documents.DataModels.DocumentAuthor,
-				SF.Common.Documents.DataModels.DocumentTag,
-				SF.Common.Documents.DataModels.DocumentTagReference
+				SF.Common.Comments.DataModels.Comment
 				>(TablePrefix ?? "Common");
 
-			//sc.AddAutoEntityTest(NewDocumentManager);
-			//sc.AddAutoEntityTest(NewDocumentCategoryManager);
+			//sc.AddAutoEntityTest(NewCommentManager);
+			//sc.AddAutoEntityTest(NewCommentCategoryManager);
 			return sc;
 		}
 
-		public static IServiceInstanceInitializer<IDocumentManager> NewDocumentManager(
+		public static IServiceInstanceInitializer<ICommentManager> NewCommentManager(
 			this IServiceInstanceManager manager
 			)
 		{
-			return manager.Service<IDocumentManager, DocumentManager>(null);
+			return manager.Service<ICommentManager, CommentManager>(null);
 		}
-		public static IServiceInstanceInitializer<IDocumentCategoryManager> NewDocumentCategoryManager(
-		   this IServiceInstanceManager manager
-		   )
-		{
-			return manager.Service<IDocumentCategoryManager, DocumentCategoryManager>(null);
-		}
-		public static IServiceInstanceInitializer NewDocumentService(
+		public static IServiceInstanceInitializer NewCommentService(
 			this IServiceInstanceManager manager,
 			string ServiceTitle,
 			string ServiceIdent=null,
-			IServiceInstanceInitializer<IDocumentManager> docManager = null,
-			IServiceInstanceInitializer<IDocumentCategoryManager> catManager = null
+			IServiceInstanceInitializer<ICommentManager> docManager = null
 			)
 		{
 			if (docManager == null)
-				docManager = manager.NewDocumentManager();
-			if (catManager == null)
-				catManager = manager.NewDocumentCategoryManager();
-
-			var svc = manager.DefaultServiceWithIdent<IDocumentService, DocumentService>(
+				docManager = manager.NewCommentManager();
+			var svc = manager.DefaultServiceWithIdent<ICommentService, CommentService>(
 				ServiceIdent,
 				null,
-				docManager,
-				catManager
+				docManager
 				)
 				.WithDisplay(ServiceTitle)
-				.WithMenuItems(
-					"内容管理/"+ServiceTitle
-				);
+				//.WithMenuItems(
+				//	"内容管理/"+ServiceTitle
+				//)
+				;
 			return svc;
 		}
 	}

@@ -62,7 +62,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 				this.ArgModel = Expression.Parameter(KeyProperty.ReflectedType);
 			}
 
-			public Expression SourceToDestOrTemp(Expression src,int Level, PropertyInfo srcProp,PropertyInfo dstProp)
+			public Expression SourceToDestOrTemp(Expression src,int Level, IPropertySelector PropertySelector, PropertyInfo srcProp,PropertyInfo dstProp)
 			{
 				if (Level == 3)
 					return null;

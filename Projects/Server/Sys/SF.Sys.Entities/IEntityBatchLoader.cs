@@ -19,6 +19,6 @@ namespace SF.Sys.Entities
 {
 	public interface IEntityBatchLoadable<TKey, TEntity>
 	{
-		Task<TEntity[]> BatchGetAsync(TKey[] Ids);
+		Task<TEntity[]> BatchGetAsync(TKey[] Ids,string[] Props);
 	}
 }

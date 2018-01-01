@@ -24,6 +24,7 @@ using SF.Sys.Auth.Permissions;
 using SF.Sys.Linq;
 using SF.Sys.Events;
 
+
 namespace SF.Sys.Entities
 {
 	public class EntityModifyContext< TModel> : IEntityModifyContext<TModel>
@@ -179,7 +180,8 @@ namespace SF.Sys.Entities
 		public static async Task<TReadOnlyEntity[]> AutoBatchGetAsync<TKey, TReadOnlyEntity, TModel>
 		(
 			this IEntityServiceContext Storage,
-			TKey[] Ids
+			TKey[] Ids,
+			string[] Properties
 		)
 			where TModel : class
 		{
@@ -189,7 +191,7 @@ namespace SF.Sys.Entities
 					return (await Storage.QueryResultBuildHelperCache.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Detail).Query(
 						q,
 						Storage.PagingQueryBuilderCache.GetBuilder<TModel>(),
-						Paging.All
+						Paging.All.WithProperties(Properties)
 						)).Items.ToArray();
 				});
 		}

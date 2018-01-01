@@ -30,7 +30,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		Task<TKey> CreateAsync(IEntityServiceContext ServiceContext, TEntityEditable Entity);
 		Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id);
 
-		Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids);
+		Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids,string[] Properties);
 
 		Task<TEntityEditable> LoadForEdit(IEntityServiceContext ServiceContext, TKey Id);
 
@@ -81,9 +81,9 @@ namespace SF.Sys.Entities.AutoEntityProvider
 			return ServiceContext.AutoGetAsync<TKey,TEntityDetail,TDataModel>(Id);
 		}
 
-		public Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids)
+		public Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids,string[] Properties)
 		{
-			return ServiceContext.AutoBatchGetAsync<TKey,TEntityDetail,TDataModel>(Ids);
+			return ServiceContext.AutoBatchGetAsync<TKey,TEntityDetail,TDataModel>(Ids,Properties);
 		}
 
 		public Task<TEntityEditable> LoadForEdit(IEntityServiceContext ServiceContext, TKey Id)

@@ -26,7 +26,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 		public static NoneQueryConverter Instance { get; } = new NoneQueryConverter();
 		public Type TempFieldType => null;
 
-		public Expression SourceToDestOrTemp(Expression src, int level, PropertyInfo srcProp, PropertyInfo dstProp)
+		public Expression SourceToDestOrTemp(Expression src, int level, IPropertySelector IPropertySelector,PropertyInfo srcProp, PropertyInfo dstProp)
 		{
 			return null;
 		}

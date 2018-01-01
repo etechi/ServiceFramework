@@ -13,26 +13,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-using SF.Sys.Entities;
-using SF.Sys.NetworkService;
-
-namespace SF.Common.Comments
+namespace SF.Sys.Entities
 {
-	/// <summary>
-	/// 评论服务
-	/// </summary>
-	/// <typeparam name="TComment">评论类型</typeparam>
-	[NetworkService]
-	public interface ICommentService<TComment>:
-		IEntityLoadable<ObjectKey<long>,TComment>,
-		ITreeContainerListable<long?, TComment>
-		where TComment : Comment
+	public interface IEntityPropertyFiller
 	{
-	}
-
-	public interface ICommentService : ICommentService<Comment>
-	{
-
+		Task Fill<T>(T[] Items);
 	}
 }

@@ -86,16 +86,31 @@ namespace SF.Sys.Entities
 	{
 		IPagingQueryBuilder<T> GetBuilder<T>();
 	}
+	public interface IPropertySelector
+	{
+		string Key { get; }
+		IPropertySelector GetChildSelector(string Name);
+	}
+	public class AllPropertySelector : IPropertySelector
+	{
+		public static IPropertySelector Instance { get; } = new AllPropertySelector();
+		public string Key => "*";
+
+		public IPropertySelector GetChildSelector(string Name)
+		{
+			return this;
+		}
+	}
 	public interface IQueryResultBuildHelper<E, R>
 	{
 		Task<QueryResult<R>> Query(IContextQueryable<E> queryable, IPagingQueryBuilder<E> PagingQueryBuilder,Paging Paging);
 		Task<R> QuerySingleOrDefault(IContextQueryable<E> queryable);
-		Expression BuildEntityMapper(Expression src,int Level);
+		Expression BuildEntityMapper(Expression src,int Level, IPropertySelector PropSelector);
 	}
 	public interface IQueryResultBuildHelper<E, T, R> : IQueryResultBuildHelper<E, R>
 	{
-		Expression<Func<E, T>> EntityMapper { get; }
-		Func<T[],Task<R[]>> ResultMapper { get; }
+		Expression<Func<E, T>> GetEntityMapper(IPropertySelector PropSelector);
+		Func<T[], Task<R[]>> GetResultMapper(IPropertySelector PropSelector);
 	}
 	public enum QueryMode
 	{

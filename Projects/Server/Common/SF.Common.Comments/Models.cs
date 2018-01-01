@@ -17,6 +17,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Sys.Entities.Models;
 using SF.Sys.Annotations;
 using System.Collections.Generic;
+using SF.Sys.Entities;
+using System.ComponentModel.DataAnnotations;
+using SF.Sys.Auth;
 
 namespace SF.Common.Comments
 {
@@ -24,13 +27,41 @@ namespace SF.Common.Comments
 	/// 文档实体
 	/// </summary>
 	[EntityObject]
-	public class Comment : UIItemEntityBase<Category>
+	public class Comment : IEntityWithId<long>
 	{
+		[Key]
+		public long Id { get; }
+
+		[EntityIdent(typeof(User),nameof(UserName))]
+		public long UserId { get; set; }
+
+		public string UserName { get; set; }
+
+		[FromEntityProperty(nameof(UserId),nameof(User.Icon))]
+		public string UserIcon { get; set; }
+
+		public string CreatedTime { get; set; }
+
+		public string UpdatedTime { get; set; }
+
+		public string Title { get; set; }
+
+		public Comment Refer{ get; set; }
+
+		public string[] ImageList { get; set; }
+		/// <summary>
+		/// 文档内容
+		/// </summary>
+		[MultipleLines]
+		public string Content { get; set; }
+
 		/// <summary>
 		/// 文档内容,Html格式
 		/// </summary>
 		[Html]
-		public string Content { get; set; }
+		public string HtmlContent { get; set; }
+
+
 	}
 	
 }

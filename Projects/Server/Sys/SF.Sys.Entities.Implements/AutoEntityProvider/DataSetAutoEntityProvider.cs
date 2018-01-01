@@ -46,9 +46,9 @@ namespace SF.Sys.Entities.AutoEntityProvider
 			return Setting.GetAsync(ServiceContext, Id);
 		}
 
-		public Task<TEntityDetail[]> GetAsync(TKey[] Ids)
+		public Task<TEntityDetail[]> GetAsync(TKey[] Ids,string[] Properties)
 		{
-			return Setting.GetAsync(ServiceContext, Ids);
+			return Setting.GetAsync(ServiceContext, Ids, Properties);
 		}
 
 		public Task<TEntityEditable> LoadForEdit(TKey Id)

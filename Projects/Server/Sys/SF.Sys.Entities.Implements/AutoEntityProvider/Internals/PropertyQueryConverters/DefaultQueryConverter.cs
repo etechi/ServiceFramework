@@ -32,7 +32,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			public static DefaultConverter Instance { get; } = new DefaultConverter();
 			public Type TempFieldType => null;
 
-			public Expression SourceToDestOrTemp(Expression src, int Level, PropertyInfo srcProp,PropertyInfo dstProp)
+			public Expression SourceToDestOrTemp(Expression src, int Level, IPropertySelector PropertySelector, PropertyInfo srcProp,PropertyInfo dstProp)
 			{
 				var exp=src.GetMember(srcProp);
 				return exp.Type == dstProp.PropertyType ? exp : exp.To(dstProp.PropertyType);

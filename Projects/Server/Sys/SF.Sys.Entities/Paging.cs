@@ -74,6 +74,11 @@ namespace SF.Sys.Entities
 		/// </summary>
 		public bool SummaryRequired { get; set; }
 
+		/// <summary>
+		/// 返回属性选择
+		/// </summary>
+		public string[] Properties { get; set; }
+
 		public static Paging One => new Paging
 		{
 			Count = 1
@@ -86,6 +91,7 @@ namespace SF.Sys.Entities
 		{
 			Count = 10000
 		};
+		
 		public static Paging Create(
 			IEnumerable<KeyValuePair<string, string>> attrs,
 			int defaultLimit,
@@ -137,6 +143,23 @@ namespace SF.Sys.Entities
 					sortOrder == "asc" ? SortOrder.Asc :
 					sortOrder == "rand" ? SortOrder.Random :
 					defaultOrder
+			};
+		}
+	}
+	public static class PagingExtension {
+		public static Paging WithProperties(this Paging paging, string[] Properties)
+		{
+			if ((Properties?.Length ?? 0) == 0 && ((paging?.Properties?.Length ?? 0) == 0))
+				return paging;
+			return new Paging
+			{
+				Count = paging.Count,
+				Offset = paging.Offset,
+				Properties = Properties,
+				SortMethod = paging.SortMethod,
+				SortOrder = paging.SortOrder,
+				SummaryRequired = paging.SummaryRequired,
+				TotalRequired = paging.TotalRequired
 			};
 		}
 	}

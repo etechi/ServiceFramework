@@ -92,7 +92,7 @@ namespace SF.Sys.Entities
 		}
 		protected abstract Task<TDetail[]> OnPrepareDetails(TDetailTemp[] Internals);
 
-		public Task<TDetail[]> BatchGetAsync(TKey[] Ids)
+		public Task<TDetail[]> BatchGetAsync(TKey[] Ids,string[] Properties)
 		{
 			return ServiceContext.BatchGetAsync<TKey, TDetailTemp,TDetail,TModel>(Ids, OnMapModelToDetail,OnPrepareDetails);
 		}
@@ -111,9 +111,9 @@ namespace SF.Sys.Entities
 		public AutoEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
-		public virtual Task<TDetail[]> BatchGetAsync(TKey[] Ids)
+		public virtual Task<TDetail[]> BatchGetAsync(TKey[] Ids,string[] Properties)
 		{
-			return ServiceContext.AutoBatchGetAsync<TKey, TDetail, TModel>(Ids);
+			return ServiceContext.AutoBatchGetAsync<TKey, TDetail, TModel>(Ids,Properties);
 		}
 
 		public virtual Task<TDetail> GetAsync(TKey Id)
@@ -180,7 +180,7 @@ namespace SF.Sys.Entities
 				return default(TEntityDetail);
 		}
 
-		public async Task<TEntityDetail[]> BatchGetAsync(TKey[] Ids)
+		public async Task<TEntityDetail[]> BatchGetAsync(TKey[] Ids,string[] Properties)
 		{
 			var re = await OnPrepareInternals(
 				OnMapModelToInternal(

@@ -41,7 +41,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 				this.SingleRelationProp = SingleRelationProp;
 				this.NameProp = NameProp;
 			}
-			public Expression SourceToDestOrTemp(Expression src, int level, PropertyInfo srcProp, PropertyInfo dstProp)
+			public Expression SourceToDestOrTemp(Expression src, int level, IPropertySelector PropertySelector, PropertyInfo srcProp, PropertyInfo dstProp)
 			{
 				return src.GetMember(SingleRelationProp).GetMember(NameProp);
 			}

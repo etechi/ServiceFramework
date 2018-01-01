@@ -41,12 +41,12 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			}
 			public Type TempFieldType => typeof(string);
 
-			public Expression SourceToDestOrTemp(Expression src,int Level, PropertyInfo srcProp,PropertyInfo dstProp)
+			public Expression SourceToDestOrTemp(Expression src,int Level, IPropertySelector PropertySelector, PropertyInfo srcProp,PropertyInfo dstProp)
 			{
 				return src.GetMember(srcProp);
 			}
 
-			public T TempToDest(object src, string value)
+			public T TempToDest(object src, string value, IPropertySelector PropertySelector)
 			{
 				return value.IsNullOrEmpty() ? default(T) : JsonSerializer.Deserialize<T>(value);
 			}

@@ -16,24 +16,25 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Entities;
 
-namespace SF.Common.Documents.Management
+namespace SF.Common.Comments.Management
 {
-	public class DocumentCategoryManager :
-		DocumentCategoryManager<CategoryInternal>,
-		IDocumentCategoryManager
+	public class CommentManager :
+		CommentManager<Comment>,
+		ICommentManager
 	{
-		public DocumentCategoryManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		public CommentManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 	}
-	public class DocumentCategoryManager<TCategoryInternal> :
-		AutoModifiableEntityManager<ObjectKey<long>, TCategoryInternal, TCategoryInternal, DocumentCategoryQueryArgument, TCategoryInternal, DataModels.DocumentCategory>,
-		IDocumentCategoryManager<TCategoryInternal>
-		where TCategoryInternal : CategoryInternal
+	public class CommentManager<TComment> :
+		AutoModifiableEntityManager<ObjectKey<long>, TComment, TComment, CommentQueryArguments, TComment, DataModels.Comment>,
+		ICommentManager<TComment>
+		where TComment : Comment
 	{
-		public DocumentCategoryManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		public CommentManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
+
 	}
 
 }

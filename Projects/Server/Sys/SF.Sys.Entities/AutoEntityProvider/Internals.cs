@@ -21,18 +21,20 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Entities.AutoEntityProvider
 {
+	
+
 	public interface IEntityPropertyQueryConverter
 	{
 		Type TempFieldType { get; }
-		Expression SourceToDestOrTemp(Expression src, int level, PropertyInfo srcProp,PropertyInfo dstProp);
+		Expression SourceToDestOrTemp(Expression src, int level, IPropertySelector propSelector,PropertyInfo srcProp,PropertyInfo dstProp);
 	}
 	public interface IEntityPropertyQueryConverterAsync<TTempType, TEntityPropType> : IEntityPropertyQueryConverter
 	{
-		Task<TEntityPropType> TempToDest(object src, TTempType value);
+		Task<TEntityPropType> TempToDest(object src, TTempType value, IPropertySelector PropertySelector);
 	}
 	public interface IEntityPropertyQueryConverter<TTempType, TEntityPropType> : IEntityPropertyQueryConverter
 	{
-		TEntityPropType TempToDest(object src, TTempType value);
+		TEntityPropType TempToDest(object src, TTempType value, IPropertySelector PropertySelector);
 	}
 	public interface IEntityPropertyQueryConverterProvider
 	{
@@ -133,7 +135,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		EntityManagerCapability Capabilities { get; }
 		IEntityServiceContext ServiceContext { get; }
 		Task<TDetail> GetAsync(TKey Id);
-		Task<TDetail[]> GetAsync(TKey[] Ids);
+		Task<TDetail[]> GetAsync(TKey[] Ids,string[] Properties);
 		Task<TKey> CreateAsync(TEditable Entity);
 		Task<TEditable> LoadForEdit(TKey Id);
 		Task<QueryResult<TSummary>> QueryAsync(TQueryArgument Arg);

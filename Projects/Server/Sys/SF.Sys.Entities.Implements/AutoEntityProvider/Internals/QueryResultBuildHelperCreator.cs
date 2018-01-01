@@ -40,42 +40,109 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 		where TResult:class
 		where TTemp:class
 	{
-		Func<Expression, int,Expression> FuncBuildEntityMapper { get; }
+		Func<Expression, int, IPropertySelector, Expression> FuncBuildEntityMapper { get; }
+		Func<IPropertySelector, Func<TTemp[], Task<TResult[]>>> FuncBuildResultMapper { get; }
 		public QueryResultBuildHelper(
-			Func<Expression,int,Expression> FuncBuildEntityMapper,
-			Lazy<Func<TTemp[], Task<TResult[]>>> ResultMapper
+			Func<Expression,int, IPropertySelector, Expression> FuncBuildEntityMapper,
+			Func<IPropertySelector,Func<TTemp[], Task<TResult[]>>> FuncBuildResultMapper
 			)
 		{
 			this.FuncBuildEntityMapper = FuncBuildEntityMapper;
-			this.EntityMapper = new Lazy<Expression<Func<TDataModel, TTemp>>>(()=>
-			{
-				var p = Expression.Parameter(typeof(TDataModel));
-				return Expression.Lambda< Func < TDataModel, TTemp >>(FuncBuildEntityMapper(p,0),p);
-			});
-			this.ResultMapper = ResultMapper;
+			this.FuncBuildResultMapper = FuncBuildResultMapper;
+			
 		}
 
 		public override Type TempType => typeof(TTemp);
 
 		public override Type DateModelType => typeof(TDataModel);
 
-		public Lazy<Expression<Func<TDataModel, TTemp>>> EntityMapper { get; }
-		public Lazy<Func<TTemp[], Task<TResult[]>>> ResultMapper { get; }
-		public Expression BuildEntityMapper(Expression src,int Level)
+		class Mapper
 		{
-			return FuncBuildEntityMapper(src, Level);
+			public Expression<Func<TDataModel, TTemp>> EntityMapper { get; set; }
+			public Func<TTemp[], Task<TResult[]>> ResultMapper { get; set; }
 		}
 
-		Expression<Func<TDataModel, TTemp>> IQueryResultBuildHelper<TDataModel, TTemp, TResult>.EntityMapper => EntityMapper.Value;
+		System.Collections.Concurrent.ConcurrentDictionary<string, Mapper> Mappers { get; } = 
+			new System.Collections.Concurrent.ConcurrentDictionary<string, Mapper>();
+		Mapper GetMapper(IPropertySelector PropSelector)
+		{
+			var key = PropSelector.Key;
+			if (Mappers.TryGetValue(key, out var m))
+				return m;
+			var p = Expression.Parameter(typeof(TDataModel));
+			m = new Mapper
+			{
+				ResultMapper = FuncBuildResultMapper(PropSelector),
+				EntityMapper = Expression.Lambda<Func<TDataModel, TTemp>>(FuncBuildEntityMapper(p, 0, PropSelector), p)
+			};
+			return Mappers.GetOrAdd(key, m);
+		}
+		public Expression BuildEntityMapper(Expression src,int Level, IPropertySelector PropertySelector)
+		{
+			return FuncBuildEntityMapper(src, Level, PropertySelector);
+		}
 
-		Func<TTemp[], Task<TResult[]>> IQueryResultBuildHelper<TDataModel, TTemp, TResult>.ResultMapper => ResultMapper.Value;
+		public Expression<Func<TDataModel, TTemp>> GetEntityMapper(IPropertySelector PropertySelector)
+		{
+			var m = GetMapper(PropertySelector);
+			return m.EntityMapper;
+		}
 
+		public Func<TTemp[], Task<TResult[]>> GetResultMapper(IPropertySelector PropertySelector)
+		{
+			var m = GetMapper(PropertySelector);
+			return m.ResultMapper;
+		}
 
+		class PropSelector : Dictionary<string, IPropertySelector>, IPropertySelector
+		{
+			public string Key { get; set; }
+
+			public IPropertySelector GetChildSelector(string Name)
+			{
+				return this.TryGetValue(Name, out var c) ? c : null;
+			}
+		}
+
+		IPropertySelector GetSelector(string[] props)
+		{
+			var key = props
+				.Select(p => p.Trim())
+				.Where(p => !p.IsNullOrEmpty())
+				.OrderBy(p => p)
+				.Join("\n")
+				.UTF8Bytes()
+				.MD5()
+				.Base64();
+
+			var re = new PropSelector();
+			foreach(var p in props)
+			{	
+				var ps = re;
+				var keys = p.Split('.');
+				for (var i=0;i<keys.Length-1;i++)
+				{
+					var k = keys[i];
+					if (!ps.TryGetValue(k, out var ops) || ops==AllPropertySelector.Instance)
+					{ 
+						var nps = new PropSelector();
+						ps[k] = nps;
+						ps = nps;
+					}
+				}
+				ps[keys[keys.Length - 1]] = AllPropertySelector.Instance;
+			}
+			re.Key = key;
+			return re;
+		}
 		public Task<QueryResult<TResult>> Query(IContextQueryable<TDataModel> queryable,IPagingQueryBuilder<TDataModel> PagingQueryBuilder, Paging paging)
 		{
+			var props = paging.Properties;
+			var selector = props?.Length == 0 ? AllPropertySelector.Instance : GetSelector(props);
+			var m = GetMapper(selector);
 			return queryable.ToQueryResultAsync(
-				q=>q.Select(EntityMapper.Value),
-				ResultMapper.Value,
+				q=>q.Select(m.EntityMapper),
+				m.ResultMapper,
 				PagingQueryBuilder,
 				paging,
 				null
@@ -84,10 +151,11 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 
 		public async Task<TResult> QuerySingleOrDefault(IContextQueryable<TDataModel> queryable)
 		{
-			var re = await queryable.Select(EntityMapper.Value).SingleOrDefaultAsync();
+			var m = GetMapper(AllPropertySelector.Instance);
+			var re = await queryable.Select(m.EntityMapper).SingleOrDefaultAsync();
 			if (re == null)
 				return default(TResult);
-			var rre = await ResultMapper.Value(new[] { re });
+			var rre = await m.ResultMapper(new[] { re });
 			return rre[0];
 		}
 	}
@@ -127,15 +195,15 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 				typeof(Expression<>).MakeGenericType<Func<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>>()
 				).IsNotNull();
 			MethodCreateQueryResultBuildHelper3 = typeof(QueryResultBuildHelperCreator).GetMethodExt(
-				 "CreateQueryResultBuildHelper3",
+				 nameof(CreateQueryResultBuildHelper3),
 				 BindingFlags.Static | BindingFlags.NonPublic,
-				 typeof(Func<Expression,int,Expression>),
+				 typeof(Func<Expression,int, IPropertySelector, Expression>),
 				 typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>>)
 				 ).IsNotNull();
 			MethodCreateQueryResultBuildHelper2= typeof(QueryResultBuildHelperCreator).GetMethodExt(
-				"CreateQueryResultBuildHelper2",
+				nameof(CreateQueryResultBuildHelper2),
 				BindingFlags.Static | BindingFlags.NonPublic,
-				typeof(Func<Expression, int, Expression>),
+				typeof(Func<Expression, int, IPropertySelector, Expression>),
 				typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>>)
 				).IsNotNull();
 
@@ -390,16 +458,16 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 	
 
 		static QueryResultBuildHelper CreateQueryResultBuildHelper3<TDataModel, TTemp, TResult>(
-			Func<Expression,int,Expression> EntityMapper,
-			Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>> prepares
+			Func<Expression,int, IPropertySelector, Expression> EntityMapper,
+			Func<IPropertySelector, IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>> prepares
 			) where TTemp : class,ITempModel<TResult>
 			where TDataModel:class
 			where TResult:class
 		{
 			return new QueryResultBuildHelper<TDataModel, TTemp, TResult>(
 				EntityMapper,
-				new Lazy<Func<TTemp[], Task<TResult[]>>>(() => {
-					var fs =  Preparer<TTemp, TResult>.BuildPrepare(prepares());
+				(ps) => {
+					var fs =  Preparer<TTemp, TResult>.BuildPrepare(prepares(ps));
 					return async (tmps) =>
 					{
 						foreach (var t in tmps)
@@ -407,12 +475,11 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 						return tmps.Select(t => t.__Result).ToArray();
 					};
 				}
-				)
 				);
 		}
 
 		static QueryResultBuildHelper CreateQueryResultBuildHelper2<TDataModel, TResult>(
-			Func<Expression,int,Expression> EntityMapper,
+			Func<Expression,int, IPropertySelector, Expression> EntityMapper,
 			Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>> prepares
 			)
 			where TDataModel:class
@@ -420,7 +487,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 		{
 			return new QueryResultBuildHelper<TDataModel, TResult, TResult>(
 					EntityMapper,
-					new Lazy<Func<TResult[], Task<TResult[]>>>(() => {
+					(ps) => {
 						//var fs = Preparer<TResult, TResult>.BuildPrepare(prepares());
 						return (tmps) =>
 						{
@@ -428,10 +495,10 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 								//await Preparer<TResult, TResult>.RunTasks(t, t, fs);
 							return Task.FromResult(tmps);
 						};
-					})
+					}
 				);
 		}
-		
+	
 		public QueryResultBuildHelper Build()
 		{
 			foreach(var prop in DstType.AllPublicInstanceProperties())
@@ -445,11 +512,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 					.MakeGenericMethod(SrcType, TempType, DstType).Invoke(
 					null,
 					new object[] {
-						new Func<Expression,int,Expression>((arg,level)=>
+						new Func<Expression,int,IPropertySelector, Expression>((arg,level,propSelector)=>
 							Expression.MemberInit(
 								Expression.New(TempType),
 								(from b in TempBindings
-								let e=b.Converter.SourceToDestOrTemp(arg,level,b.srcProp,b.dstProp)
+								 let cps=propSelector.GetChildSelector(b.dstProp.Name)
+								 where cps!=null
+								let e=b.Converter.SourceToDestOrTemp(arg,level,cps,b.srcProp,b.dstProp)
 								where e!=null
 								select Expression.Bind(TempType.GetProperty(b.dstProp.Name), e)
 								)
@@ -459,15 +528,24 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 										Expression.MemberInit(
 											Expression.New(DstType),
 											from b in DstBindings
-											let e=b.Converter.SourceToDestOrTemp(arg,level,b.srcProp,b.dstProp)
+											let cps=propSelector.GetChildSelector(b.dstProp.Name)
+											where cps!=null
+											let e=b.Converter.SourceToDestOrTemp(arg,level,cps,b.srcProp,b.dstProp)
 											where e!=null
 											select Expression.Bind(b.dstProp,e)
 										)
 									)
 								)
 						)),
-						new Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>>(
-							()=>TempBindings.Select(p => (prop:p.dstProp,propTemp: TempType.GetProperty(p.dstProp.Name), conv:p.Converter))
+						new Func<IPropertySelector,IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>>(
+							(ps)=>TempBindings
+								.Where(b=>ps.GetChildSelector(b.dstProp.Name)!=null)
+								.Select(p => (
+									prop:p.dstProp,
+									propTemp: TempType.GetProperty(p.dstProp.Name), 
+									conv:p.Converter
+									)
+								)
 						)
 					}
 					);
@@ -478,11 +556,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 					.MakeGenericMethod(SrcType,  DstType).Invoke(
 					null,
 					new object[] {
-						new Func<Expression,int,Expression>((arg,level)=>
+						new Func<Expression,int,IPropertySelector,Expression>((arg,level,propSelector)=>
 							Expression.MemberInit(
 								Expression.New(DstType),
 								from b in DstBindings
-									let e=b.Converter.SourceToDestOrTemp(arg,level,b.srcProp,b.dstProp)
+								let cps=propSelector.GetChildSelector(b.dstProp.Name)
+								where cps!=null
+									let e=b.Converter.SourceToDestOrTemp(arg,level,cps,b.srcProp,b.dstProp)
 									where e!=null
 									select Expression.Bind(b.dstProp,e)
 							)
