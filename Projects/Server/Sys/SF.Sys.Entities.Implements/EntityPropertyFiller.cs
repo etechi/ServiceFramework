@@ -29,66 +29,85 @@ namespace SF.Sys.Entities
 {
 	public class EntityPropertyFiller : IEntityPropertyFiller
 	{
-		IServiceProvider ServiceProvider { get; }
-		public EntityPropertyFiller(
-			IServiceProvider ServiceProvider
-			)
+		abstract class EntityFiller<TItem>
 		{
-			this.ServiceProvider = ServiceProvider;
+			public abstract Task Fill(IServiceProvider sp, long? ScopeId, TItem[] Items);
 		}
-
-		interface IFiller<TItem>
+		class EntityFiller<TKey,TEntity, TManager, TItem> :
+			EntityFiller<TItem>
+			where TManager : class, IEntityLoadable<ObjectKey<TKey>, TEntity>
+			where TKey : IEquatable<TKey>
+			where TEntity:class,IEntityWithId<TKey>
 		{
-			Task Fill(
-				IServiceProvider ServiceProvider,
-				TItem[] Items
-				);
-		}
-		class Filler<TKey, TEntity, TItem> :
-			IFiller<TItem>
-			where TEntity:IEntityWithId<TKey>
-			where TKey:IEquatable<TKey>
-		{
-			Action<TItem, TEntity>[] FillFields { get; }
 			Action<TItem, List<TKey>> CollectIdents { get; }
-			string[] Properties { get; }
+			Action<TItem, TEntity>[] FillFields { get; }
 			bool FillRequired { get; }
-
-			public Filler((PropertyInfo IdProp,Type EntityType,(PropertyInfo dstProp,string srcProp)[] ValueProps)[] settings)
+			string[] Properties { get;  }
+			public EntityFiller(
+				(PropertyInfo IdProp, Type EntityType,Type ManagerType, (PropertyInfo dstProp, PropertyInfo srcProp)[] ValueProps)[] settings,
+				bool NullableKeyField
+				)
 			{
 				var varName = Expression.Variable(typeof(string));
 				var ArgItem = Expression.Parameter(typeof(TItem));
 				var ArgNames = Expression.Parameter(typeof(IReadOnlyList<string>));
 
-				
+
 				FillRequired = settings.Length > 0;
 				if (!FillRequired)
 					return;
 
 				Properties = settings
 					.SelectMany(p => p.ValueProps)
-					.Select(p => p.srcProp)
+					.Select(p => p.srcProp.Name)
 					.Distinct()
 					.ToArray();
 
 				var argItem = Expression.Parameter(typeof(TItem));
 				var argList = Expression.Parameter(typeof(List<TKey>));
 
-				CollectIdents = Expression.Lambda<Action<TItem, List<TKey>>>(
-					Expression.Block(
-						settings.Select(s =>
-							argList.CallMethod(
-								"Add",
-								Expression.Property(
-									argItem,
-									s.IdProp
-									)
+				if (NullableKeyField)
+				{
+					var varKey = Expression.Variable(settings[0].IdProp.PropertyType);
+					var list = new List<Expression>();
+					foreach (var s in settings)
+					{
+						list.Add(varKey.Assign(argItem.GetMember(s.IdProp)));
+						list.Add(
+							Expression.IfThen(
+								varKey.GetMember("HasValue"),
+								argList.CallMethod(
+									"Add",
+									varKey.GetMember("Value")
 								)
 							)
-						),
-						argItem,
-						argList
-					).Compile();
+						);
+					}
+					CollectIdents = Expression.Lambda<Action<TItem, List<TKey>>>(
+						Expression.Block(
+							new[] { varKey },
+							list
+							),
+							argItem,
+							argList
+						).Compile();
+				}
+				else
+					CollectIdents = Expression.Lambda<Action<TItem, List<TKey>>>(
+						Expression.Block(
+							settings.Select(s =>
+								argList.CallMethod(
+									"Add",
+									Expression.Property(
+										argItem,
+										s.IdProp
+										)
+									)
+								)
+							),
+							argItem,
+							argList
+						).Compile();
 
 				var argEntity = Expression.Parameter(typeof(TEntity));
 				FillFields = (from setting in settings
@@ -97,7 +116,6 @@ namespace SF.Sys.Entities
 										  argItem.SetProperty(
 											  ep.dstProp,
 											  argEntity.GetMember(
-
 												  ep.srcProp
 											  )
 										  )
@@ -107,33 +125,46 @@ namespace SF.Sys.Entities
 								  argEntity
 								  )
 							).ToArray();
-
 			}
-			
-
-			public async Task Fill(
-				IServiceProvider ServiceProvider,
-				TItem[] Items
-				)
+			public override async Task Fill(IServiceProvider sp, long? ScopeId, TItem[] Items)
 			{
+				if (Items.Length == 0)
+					return;
 				var keys = new List<TKey>();
 				foreach (var item in Items)
 					CollectIdents(item, keys);
+				if (keys.Count== 0)
+					return;
 
-				var entities = (await ServiceProvider.Resolve<IEntityBatchLoadable<TKey, TEntity>>()
-					.BatchGetAsync(
-					keys.Where(k => !k.IsDefault()).Distinct().ToArray(),
-					Properties
-					)).ToDictionary(e => e.Id);
+				var manager = sp.Resolve<TManager>();
+				if (manager == null)
+					return;
 
+				Dictionary<TKey,TEntity> entities;
+				var mel = manager as IEntityBatchLoadable<ObjectKey<TKey>, TEntity>;
+				if (mel != null)
+					entities = (await mel.BatchGetAsync(
+						keys.Select(id => new ObjectKey<TKey> { Id = id }).ToArray(),
+						Properties
+						)).ToDictionary(e => e.Id);
+				else
+				{
+					entities = new Dictionary<TKey, TEntity>();
+					foreach (var id in keys)
+					{
+						var ins = await manager.GetAsync(new ObjectKey<TKey> { Id = id });
+						if (ins != null)
+							entities[id] = ins;
+					}
+				}
 				var ffl = FillFields.Length;
 				var il = Items.Length;
-				for(var i = 0; i < il; i++)
+				for (var i = 0; i < il; i++)
 				{
 					var item = Items[i];
-					for(var j = 0; j < il; j++)
+					for (var j = 0; j < ffl; j++)
 					{
-						var k = keys[i * il + j];
+						var k = keys[i * ffl + j];
 						if (k.IsDefault())
 							continue;
 						if (!entities.TryGetValue(k, out var e))
@@ -144,56 +175,82 @@ namespace SF.Sys.Entities
 				}
 			}
 		}
+		class Filler { }
 
-		static class Filler<TItem>
+		class Filler<TItem> : Filler
 		{
-			public static IFiller<TItem>[] EntityFillers { get; }
-			static Filler()
+			EntityFiller<TItem>[] EntityFillers { get; }
+			public Filler(IEntityMetadataCollection MetadataCollection)
 			{
 				var AllProps = typeof(TItem).AllPublicInstanceProperties();
 
 				var settings = (from prop in AllProps
-					let ei = prop.GetCustomAttribute<EntityIdentAttribute>()
-					where ei != null 
-					let nameProp = ei.NameField == null ?
-									null :
-									AllProps.FirstOrDefault(p => p.Name == ei.NameField)
-									.IsNotNull(() => $"实体{typeof(TItem)}中找不到名字属性{ei.NameField}")
-									.Assert(p => p.PropertyType == typeof(string), p => $"实体{typeof(TItem)}的名称字段{ei.NameField}不是字符串类型")
-					let eprops = (from p in AllProps
-									let pa = p.GetCustomAttribute<FromEntityPropertyAttribute>()
-									where pa != null && pa.IdentField == prop.Name
-									select (dstProp: p, srcProp: pa.Property)
-								).WithFirst((dstProp: nameProp, srcProp: "Name"))
-								.Where(p => p.dstProp != null).ToArray()
-					where eprops.Length > 0
-					
-					group(IdProp: prop, EntityType: ei.EntityType, ValueProps: eprops) by ei.EntityType
-					into g 
-					select g
+								let ei = prop.GetCustomAttribute<EntityIdentAttribute>()
+								where ei != null
+								let meta = MetadataCollection.FindByEntityType(ei.EntityType) ?? 
+											throw new NotSupportedException($"未找到类型{ei.EntityType}对于的实体管理器")
+								let eprops = (from p in AllProps
+											  let pa = p.GetCustomAttribute<FromEntityPropertyAttribute>() ??
+														(ei.NameField==p.Name?new FromEntityPropertyAttribute(prop.Name,"Name"):null)
+											  where pa != null && pa.IdentField == prop.Name
+											 let srcProp=meta.EntityDetailType.GetProperty(pa.Property)?? 
+															throw new NotSupportedException($"实体类型{meta.EntityDetailType}中找不到属性{pa.Property}")
+											  select (dstProp: p, srcProp: srcProp)
+											).ToArray()
+								where eprops.Length > 0
+								group (IdProp: prop, EntityType: meta.EntityDetailType, ManagerType:meta.EntityManagerType, ValueProps: eprops) by meta.EntityDetailType
+								into g
+								select g
 					).ToArray();
 
 				EntityFillers = settings.Select(
-					g => (IFiller<TItem>)Activator.CreateInstance(
-						typeof(Filler<,,>).MakeGenericType(
-							g.First().IdProp.PropertyType,
-							g.Key,
-							typeof(TItem)
-							),
-						g.ToArray()
-						)
+					g =>
+					{
+						var idType = g.First().IdProp.PropertyType;
+						var realIdType = idType.GetGenericArgumentTypeAsNullable() ?? idType;
+
+						return (EntityFiller<TItem>)Activator.CreateInstance(
+							typeof(EntityFiller<,,,>).MakeGenericType(
+								realIdType,
+								g.Key,
+								g.First().ManagerType,
+								typeof(TItem)
+								),
+							g.ToArray(),
+							realIdType != idType
+							);
+					}
 					).ToArray();
 			}
 
-			public static async Task Fill(IServiceProvider sp,TItem[] Items)
+			public async Task Fill(IServiceProvider sp, long? ServiceScopeId, TItem[] Items)
 			{
 				foreach (var f in EntityFillers)
-					await f.Fill(sp, Items);
+					await f.Fill(sp, ServiceScopeId, Items);
 			}
 		}
-		public async Task Fill<TItem>( TItem[] Items)
+
+		IServiceProvider ServiceProvider { get; }
+		IEntityMetadataCollection MetadataCollection { get; }
+		static System.Collections.Concurrent.ConcurrentDictionary<Type, Filler> Fillers { get; } = 
+			new System.Collections.Concurrent.ConcurrentDictionary<Type, Filler>();
+
+
+		public EntityPropertyFiller(
+			IServiceProvider ServiceProvider, 
+			IEntityMetadataCollection MetadataCollection
+			)
 		{
-			await Filler<TItem>.Fill(ServiceProvider, Items);
+			this.ServiceProvider = ServiceProvider;
+			this.MetadataCollection = MetadataCollection;
+		}
+		
+		public async Task Fill<TItem>(long? ServiceScopeId,params TItem[] Items)
+		{
+			var key = typeof(TItem);
+			if(!Fillers.TryGetValue(key, out var fs))
+				fs = Fillers.GetOrAdd(key, new Filler<TItem>(MetadataCollection));
+			await ((Filler<TItem>)fs).Fill(ServiceProvider,ServiceScopeId, Items);
 		}
 	}
 }

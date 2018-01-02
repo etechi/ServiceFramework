@@ -1,4 +1,4 @@
-﻿using SF.Common.TextMessages;
+﻿using SF.Common.Notifications;
 using SF.Sys;
 using SF.Sys.Auth;
 using SF.Sys.Threading;
@@ -42,7 +42,7 @@ namespace SF.Externals.WeiXin.Mp.TextMessages
             this.Client = Client;
 			this.UserProfileService = UserProfileService;
 		}
-        public async Task<string> Send(MsgSendArgument message)
+        public async Task<string> Send(NotificationSendArgument message)
         {
 			if (Setting.Disabled)
 				return "禁止发送";

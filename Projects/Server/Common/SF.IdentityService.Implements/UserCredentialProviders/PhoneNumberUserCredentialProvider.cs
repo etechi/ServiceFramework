@@ -15,25 +15,27 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Auth.IdentityServices.Internals;
 using SF.Common.PhoneNumberValidators;
-using SF.Common.TextMessages;
+using SF.Common.Notifications;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SF.Sys;
+using SF.Common.Notifications.Management;
+
 namespace SF.Auth.IdentityServices.UserCredentialProviders
 {
 	public class PhoneNumberUserCredentialProvider :
 		IUserCredentialProvider
 	{
 		public Lazy<IPhoneNumberValidator> PhoneNumberValidator { get; }
-		public Lazy<ITextMessageService> TextMessageService { get; }
+		public Lazy<INotificationManager> NotificationManager { get; }
 		public PhoneNumberUserCredentialProvider(
 			Lazy<IPhoneNumberValidator> PhoneNumberValidator,
-			Lazy<ITextMessageService> TextMessageService
+			Lazy<INotificationManager> TextMessageService
 			)
 		{
 			this.PhoneNumberValidator = PhoneNumberValidator;
-			this.TextMessageService = TextMessageService;
+			this.NotificationManager = TextMessageService;
 		}
 		public long ClaimTypeId => 0;
 
@@ -61,13 +63,13 @@ namespace SF.Auth.IdentityServices.UserCredentialProviders
 				{"验证码", Code },
 				{"业务流水",TrackIdent }
 			};
-			var re= await TextMessageService.Value.Send(
+			var re= await NotificationManager.Value.Send(
 				IdentityId,
 				new Message
 				{
 					Policy=Type.ToString(),
 					Arguments=args,
-					TrackEntityId=TrackIdent
+					BizTraceId=TrackIdent
 				}
 				);
 			return re;

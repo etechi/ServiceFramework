@@ -17,10 +17,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
-    <Compile Remove="TextMessages\IMsgLogger.cs" />
-    <Compile Remove="TextMessages\IMsgRecordManager.cs" />
-    <Compile Remove="TextMessages\IMsgServiceBackup.cs" />
-    <Compile Remove="TextMessages\ITextMessageSender.cs" />
+    <Compile Remove="Notifications\IMsgLogger.cs" />
+    <Compile Remove="Notifications\IMsgRecordManager.cs" />
+    <Compile Remove="Notifications\IMsgServiceBackup.cs" />
+    <Compile Remove="Notifications\INotificationsender.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -32,23 +32,49 @@ namespace SF.Common.Comments
 		[Key]
 		public long Id { get; }
 
+		/// <summary>
+		/// 评论人
+		/// </summary>
 		[EntityIdent(typeof(User),nameof(UserName))]
 		public long UserId { get; set; }
 
+		/// <summary>
+		/// 评论人昵称
+		/// </summary>
 		public string UserName { get; set; }
 
+
+		/// <summary>
+		/// 评论人图片
+		/// </summary>
 		[FromEntityProperty(nameof(UserId),nameof(User.Icon))]
 		public string UserIcon { get; set; }
 
+		/// <summary>
+		/// 创建时间
+		/// </summary>
 		public string CreatedTime { get; set; }
 
+		/// <summary>
+		/// 更新时间
+		/// </summary>
 		public string UpdatedTime { get; set; }
 
-		public string Title { get; set; }
+		/// <summary>
+		/// 标题
+		/// </summary>
+		public string Name { get; set; }
 
+		/// <summary>
+		/// 引用
+		/// </summary>
 		public Comment Refer{ get; set; }
 
+		/// <summary>
+		/// 图片列表
+		/// </summary>
 		public string[] ImageList { get; set; }
+
 		/// <summary>
 		/// 文档内容
 		/// </summary>

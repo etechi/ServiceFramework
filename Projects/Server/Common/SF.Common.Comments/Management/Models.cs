@@ -38,5 +38,9 @@ namespace SF.Common.Documents.Management
 		/// </summary>
 		[Html]
 		public string HtmlContent { get; set; }
+
+		[JsonData]
+		[Image]
+		public string[] Images { get; set; }
 	}
 }

@@ -54,10 +54,10 @@
     <Compile Include="Auth\Identities\VerifyCode.cs" />
     <Compile Include="Auth\Identities\IdentityServiceSetting.cs" />
     <Compile Include="Auth\Identities\IdentityService.cs" />
-    <Compile Include="Common\TextMessages\Management\DataModels\TextMessageRecord.cs" />
-    <Compile Include="Common\TextMessages\Management\MsgRecordManager.cs" />
-    <Compile Include="Common\TextMessages\TextMessageServiceDIExtension.cs" />
-    <Compile Include="Common\TextMessages\SimPhoneTextMessageService.cs" />
+    <Compile Include="Common\Notifications\Management\DataModels\TextMessageRecord.cs" />
+    <Compile Include="Common\Notifications\Management\MsgRecordManager.cs" />
+    <Compile Include="Common\Notifications\NotificationserviceDIExtension.cs" />
+    <Compile Include="Common\Notifications\SimPhoneNotificationservice.cs" />
     <Compile Include="Management\MenuServices\Entity\DataModels\MenuItem.cs" />
     <Compile Include="Management\MenuServices\Entity\DataModels\Menu.cs" />
     <Compile Include="Management\MenuServices\Entity\EntityMenuService.cs" />

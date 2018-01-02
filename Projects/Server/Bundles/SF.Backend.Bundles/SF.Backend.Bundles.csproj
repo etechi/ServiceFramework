@@ -24,7 +24,7 @@
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Media.Implements\SF.Common.Media.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Members.Implements\SF.Common.Members.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.PhoneNumberValidator.Implements\SF.Common.PhoneNumberValidator.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.Common.TextMessages.Implements\SF.Common.TextMessages.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Notifications.Implements\SF.Common.Notifications.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Caching.Implements\SF.Sys.Caching.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Plans.Implements\SF.Sys.Plans.Implements.csproj" />

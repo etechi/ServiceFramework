@@ -5,19 +5,19 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard2.0\SF.Common.Documents.Implements.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.0\SF.Common.Notifications.Implements.xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netstandard2.0\SF.Common.Documents.Implements.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard2.0\SF.Common.Notifications.Implements.xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Management\Backup\**" />
-    <EmbeddedResource Remove="Management\Backup\**" />
-    <None Remove="Management\Backup\**" />
+    <Compile Remove="DefaultMsgLogger.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,11 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Sys\SF.Sys.Entities.AutoTest\SF.Sys.Entities.AutoTest.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Data\SF.Sys.Data.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
-    <ProjectReference Include="..\..\Sys\SF.Sys.MenuServices\SF.Sys.MenuServices.csproj" />
-    <ProjectReference Include="..\..\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
-    <ProjectReference Include="..\..\Sys\SF.Sys.Services\SF.Sys.Services.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Plans\SF.Sys.Plans.csproj" />
     <ProjectReference Include="..\SF.Common.Notifications\SF.Common.Notifications.csproj" />
   </ItemGroup>
 

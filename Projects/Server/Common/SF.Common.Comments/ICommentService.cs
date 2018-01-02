@@ -16,19 +16,89 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace SF.Common.Comments
 {
+	public abstract class CommentArgumentBase
+	{
+		/// <summary>
+		/// 标题
+		/// </summary>
+		[MaxLength(100)]
+		public string Title { get; set; }
+
+		/// <summary>
+		/// 内容
+		/// </summary>
+		[MaxLength(1024)]
+		public string Content { get; set; }
+		
+		/// <summary>
+		/// Html内容
+		/// </summary>
+		[MaxLength(1024)]
+		public string HtmlContent { get; set; }
+
+		/// <summary>
+		/// 图片列表
+		/// </summary>
+		public string[] Images { get; set; }
+	}
+	public class CommentCreateArgument : CommentArgumentBase
+	{
+		/// <summary>
+		/// 评论对象类型
+		/// </summary>
+		[MaxLength(100)]
+		[Required]
+		public string TargetType { get; set; }
+
+		/// <summary>
+		/// 评论对象ID
+		/// </summary>
+		[MaxLength(100)]
+		[Required]
+		public string TargetId { get; set; }
+
+	
+	}
+	public class CommentUpdateArgument : CommentArgumentBase
+	{
+		/// <summary>
+		/// 评论ID，修改时使用
+		/// </summary>
+		public long? Id { get; set; }
+	}
+	public class CommentQueryArgument: QueryArgument
+	{
+		/// <summary>
+		/// 评论类型
+		/// </summary>
+		[MaxLength(100)]
+		[Required]
+		public string TargetType { get; set; }
+
+		/// <summary>
+		/// 评论对象
+		/// </summary>
+		[MaxLength(100)]
+		[Required]
+		public string TargetId { get; set; }
+	}
 	/// <summary>
 	/// 评论服务
 	/// </summary>
 	/// <typeparam name="TComment">评论类型</typeparam>
 	[NetworkService]
-	public interface ICommentService<TComment>:
-		IEntityLoadable<ObjectKey<long>,TComment>,
-		ITreeContainerListable<long?, TComment>
+	public interface ICommentService<TComment>
 		where TComment : Comment
 	{
+		Task<ObjectKey<long>> Create(CommentCreateArgument Arg);
+		Task Update(CommentUpdateArgument Arg);
+		Task Remove(long Id);
+		Task<QueryResult<TComment>> Query(CommentQueryArgument Arg);
 	}
 
 	public interface ICommentService : ICommentService<Comment>

@@ -38,7 +38,7 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Settings\SF.Sys.Settings.csproj" />
     <ProjectReference Include="..\SF.Common.Media\SF.Common.Media.csproj" />
     <ProjectReference Include="..\SF.Common.PhoneNumberValidator\SF.Common.PhoneNumberValidator.csproj" />
-    <ProjectReference Include="..\SF.Common.TextMessages\SF.Common.TextMessages.csproj" />
+    <ProjectReference Include="..\SF.Common.Notifications\SF.Common.Notifications.csproj" />
     <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
   </ItemGroup>
 

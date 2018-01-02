@@ -64,16 +64,16 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 
 		System.Collections.Concurrent.ConcurrentDictionary<string, Mapper> Mappers { get; } = 
 			new System.Collections.Concurrent.ConcurrentDictionary<string, Mapper>();
-		Mapper GetMapper(IPropertySelector PropSelector)
+		Mapper GetMapper(IPropertySelector Selector)
 		{
-			var key = PropSelector.Key;
+			var key = Selector.Key;
 			if (Mappers.TryGetValue(key, out var m))
 				return m;
 			var p = Expression.Parameter(typeof(TDataModel));
 			m = new Mapper
 			{
-				ResultMapper = FuncBuildResultMapper(PropSelector),
-				EntityMapper = Expression.Lambda<Func<TDataModel, TTemp>>(FuncBuildEntityMapper(p, 0, PropSelector), p)
+				ResultMapper = FuncBuildResultMapper(Selector),
+				EntityMapper = Expression.Lambda<Func<TDataModel, TTemp>>(FuncBuildEntityMapper(p, 0, Selector), p)
 			};
 			return Mappers.GetOrAdd(key, m);
 		}
@@ -94,51 +94,10 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 			return m.ResultMapper;
 		}
 
-		class PropSelector : Dictionary<string, IPropertySelector>, IPropertySelector
-		{
-			public string Key { get; set; }
-
-			public IPropertySelector GetChildSelector(string Name)
-			{
-				return this.TryGetValue(Name, out var c) ? c : null;
-			}
-		}
-
-		IPropertySelector GetSelector(string[] props)
-		{
-			var key = props
-				.Select(p => p.Trim())
-				.Where(p => !p.IsNullOrEmpty())
-				.OrderBy(p => p)
-				.Join("\n")
-				.UTF8Bytes()
-				.MD5()
-				.Base64();
-
-			var re = new PropSelector();
-			foreach(var p in props)
-			{	
-				var ps = re;
-				var keys = p.Split('.');
-				for (var i=0;i<keys.Length-1;i++)
-				{
-					var k = keys[i];
-					if (!ps.TryGetValue(k, out var ops) || ops==AllPropertySelector.Instance)
-					{ 
-						var nps = new PropSelector();
-						ps[k] = nps;
-						ps = nps;
-					}
-				}
-				ps[keys[keys.Length - 1]] = AllPropertySelector.Instance;
-			}
-			re.Key = key;
-			return re;
-		}
 		public Task<QueryResult<TResult>> Query(IContextQueryable<TDataModel> queryable,IPagingQueryBuilder<TDataModel> PagingQueryBuilder, Paging paging)
 		{
-			var props = paging.Properties;
-			var selector = props?.Length == 0 ? AllPropertySelector.Instance : GetSelector(props);
+			var props = paging?.Properties;
+			var selector =PropertySelector.Get( props);
 			var m = GetMapper(selector);
 			return queryable.ToQueryResultAsync(
 				q=>q.Select(m.EntityMapper),
@@ -151,7 +110,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 
 		public async Task<TResult> QuerySingleOrDefault(IContextQueryable<TDataModel> queryable)
 		{
-			var m = GetMapper(AllPropertySelector.Instance);
+			var m = GetMapper(PropertySelector.All);
 			var re = await queryable.Select(m.EntityMapper).SingleOrDefaultAsync();
 			if (re == null)
 				return default(TResult);
@@ -198,13 +157,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 				 nameof(CreateQueryResultBuildHelper3),
 				 BindingFlags.Static | BindingFlags.NonPublic,
 				 typeof(Func<Expression,int, IPropertySelector, Expression>),
-				 typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>>)
+				 typeof(Func<IPropertySelector,IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>>)
 				 ).IsNotNull();
 			MethodCreateQueryResultBuildHelper2= typeof(QueryResultBuildHelperCreator).GetMethodExt(
 				nameof(CreateQueryResultBuildHelper2),
 				BindingFlags.Static | BindingFlags.NonPublic,
 				typeof(Func<Expression, int, IPropertySelector, Expression>),
-				typeof(Func<IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>>)
+				typeof(Func<IPropertySelector,IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)>>)
 				).IsNotNull();
 
 		}
@@ -314,12 +273,12 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 
 		class Preparer<TTemp, TResult>
 		{
-			public static async Task RunTasks(TTemp temp, TResult result, Func<TTemp, TResult, Task, Task>[] funcs)
+			public static async Task RunTasks(TTemp temp, TResult result, IPropertySelector propSelector, Func<TTemp, TResult, IPropertySelector ,Task, Task>[] funcs)
 			{
 				Task lastTask = null;
 				foreach (var f in funcs)
 				{
-					var t = f(temp, result, lastTask);
+					var t = f(temp, result, propSelector, lastTask);
 					if (t == null)
 						break;
 					await t;
@@ -328,14 +287,15 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 			}
 			static MethodInfo MethodRunTasks { get; } = typeof(Preparer<TTemp, TResult>).GetMethod("RunTasks", BindingFlags.Static | BindingFlags.Public);
 
-			public static Func<TTemp, TResult, Task, Task>[] BuildPrepare(
+			public static Func<TTemp, TResult, IPropertySelector, Task, Task>[] BuildPrepare(
 				IEnumerable<(PropertyInfo prop, PropertyInfo propTemp, IEntityPropertyQueryConverter conv)> prepares
 				)
 			{
+				var argSelector = Expression.Parameter(typeof(IPropertySelector));
 				var argTemp = Expression.Parameter(typeof(TTemp));
 				var argResult = Expression.Parameter(typeof(TResult));
 				var argTask = Expression.Parameter(typeof(Task));
-				var funcs = new List<Func<TTemp, TResult, Task, Task>>();
+				var funcs = new List<Func<TTemp, TResult, IPropertySelector, Task, Task>>();
 				var exprs = new List<Expression>();
 				foreach (var p in prepares)
 				{
@@ -358,7 +318,8 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 						   p.propTemp.PropertyType.GetDefaultValue(),
 						   p.propTemp.PropertyType
 						   ) :
-					   (Expression)Expression.Property(argTemp, p.propTemp)
+					   (Expression)Expression.Property(argTemp, p.propTemp),
+					   argSelector
 					   );
 					if (!expr.Type.IsGenericTypeOf(typeof(Task<>)))
 					{
@@ -368,9 +329,10 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 					else
 						exprs.Add(expr);
 					funcs.Add(
-						Expression.Block(exprs).Compile<Func<TTemp, TResult, Task, Task>>(
+						Expression.Block(exprs).Compile<Func<TTemp, TResult, IPropertySelector, Task, Task>>(
 							argTemp,
 							argResult,
+							argSelector,
 							argTask
 							)
 						);
@@ -383,9 +345,10 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 				}
 				exprs.Add(Expression.Constant(null, typeof(Task)));
 				funcs.Add(
-					Expression.Block(exprs).Compile<Func<TTemp, TResult, Task, Task>>(
+					Expression.Block(exprs).Compile<Func<TTemp, TResult, IPropertySelector, Task, Task>>(
 						argTemp,
 						argResult,
+						argSelector,
 						argTask
 						)
 					);
@@ -471,7 +434,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 					return async (tmps) =>
 					{
 						foreach (var t in tmps)
-							await Preparer<TTemp, TResult>.RunTasks(t, t.__Result, fs);
+							await Preparer<TTemp, TResult>.RunTasks(t, t.__Result, ps, fs);
 						return tmps.Select(t => t.__Result).ToArray();
 					};
 				}
@@ -480,7 +443,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 
 		static QueryResultBuildHelper CreateQueryResultBuildHelper2<TDataModel, TResult>(
 			Func<Expression,int, IPropertySelector, Expression> EntityMapper,
-			Func<IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>> prepares
+			Func<IPropertySelector,IEnumerable<(PropertyInfo prop, PropertyInfo tempProp, IEntityPropertyQueryConverter conv)>> prepares
 			)
 			where TDataModel:class
 			where TResult:class

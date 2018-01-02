@@ -91,14 +91,68 @@ namespace SF.Sys.Entities
 		string Key { get; }
 		IPropertySelector GetChildSelector(string Name);
 	}
-	public class AllPropertySelector : IPropertySelector
+	public static class PropertySelector 
 	{
-		public static IPropertySelector Instance { get; } = new AllPropertySelector();
-		public string Key => "*";
-
-		public IPropertySelector GetChildSelector(string Name)
+		public class AllSelector : IPropertySelector
 		{
-			return this;
+			public string Key => "*";
+
+			public IPropertySelector GetChildSelector(string Name)
+			{
+				return this;
+			}
+		}
+		public static IPropertySelector All { get; } = new AllSelector();
+		static System.Collections.Concurrent.ConcurrentDictionary<string, IPropertySelector> Cache { get; } = new System.Collections.Concurrent.ConcurrentDictionary<string, IPropertySelector>();
+
+		class PropSelector : Dictionary<string, IPropertySelector>, IPropertySelector
+		{
+			public string Key { get; set; }
+
+			public IPropertySelector GetChildSelector(string Name)
+			{
+				return this.TryGetValue(Name, out var c) ? c : null;
+			}
+		}
+
+		public static IPropertySelector Get(string[] Properties)
+		{
+			if (Properties == null || Properties.Length == 0)
+				return All;
+
+			var key =string.Join(
+				"\n", 
+				Properties
+				.Select(p => p.Trim())
+				.Where(p => !p.IsNullOrEmpty())
+				.OrderBy(p => p)
+				)
+				.UTF8Bytes()
+				.MD5()
+				.Base64();
+			if (Cache.TryGetValue(key, out var selector))
+				return selector;
+
+			var re = new PropSelector();
+			foreach (var p in Properties)
+			{
+				var ps = re;
+				var keys = p.Split('.');
+				for (var i = 0; i < keys.Length - 1; i++)
+				{
+					var k = keys[i];
+					if (!ps.TryGetValue(k, out var ops) || ops == All)
+					{
+						var nps = new PropSelector();
+						ps[k] = nps;
+						ps = nps;
+					}
+				}
+				ps[keys[keys.Length - 1]] = All;
+			}
+			re.Key = key;
+
+			return Cache.GetOrAdd(key,re);
 		}
 	}
 	public interface IQueryResultBuildHelper<E, R>

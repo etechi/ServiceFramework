@@ -101,7 +101,7 @@ namespace SF
 			if (value == null)
 			{
 				if(Message==null)
-					throw new InvalidOperationException("监测到异常的空对象");
+					throw new InvalidOperationException($"监测到异常的空对象:{typeof(T)}");
 				else
 					throw new InvalidOperationException(Message());
 			}

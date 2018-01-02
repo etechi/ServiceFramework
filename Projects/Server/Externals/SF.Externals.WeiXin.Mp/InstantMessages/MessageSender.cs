@@ -1,4 +1,4 @@
-﻿using SF.Common.TextMessages;
+﻿using SF.Common.Notifications;
 using SF.Sys;
 using SF.Sys.Auth;
 using System;
@@ -40,7 +40,7 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
 			this.Client = Client;
         }
         
-		public async Task<string> Send(MsgSendArgument Arg)
+		public async Task<string> Send(NotificationSendArgument Arg)
 		{
 			var req = new Request
 			{

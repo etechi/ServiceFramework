@@ -115,7 +115,7 @@ namespace SF.Sys.Entities
 		}
 		protected override async Task<TPublic[]> OnPrepareDetails(TPublic[] Internals)
 		{
-			await ServiceContext.DataEntityResolver.Fill(ServiceInstanceDescriptor.InstanceId, Internals);
+			await ServiceContext.EntityPropertyFiller.Fill(ServiceInstanceDescriptor.InstanceId, Internals);
 			return Internals;
 		}
 	}

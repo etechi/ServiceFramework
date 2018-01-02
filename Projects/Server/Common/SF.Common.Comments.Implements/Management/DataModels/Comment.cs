@@ -35,12 +35,35 @@ namespace SF.Common.Comments.DataModels
 		where TComment : Comment<TComment>
 	{
 		/// <summary>
-		/// 标识
+		/// 评论类型
 		/// </summary>
 		[Index]
-		[MaxLength(50)]
-        public string Ident { get; set; }
-
+		public string TargetType { get; set; }
 		
+		/// <summary>
+		/// 对象
+		/// </summary>
+		[Index]
+		[MaxLength(100)]
+        public string TargetId { get; set; }
+
+		/// <summary>
+		/// 评论内容
+		/// </summary>
+		[MaxLength(1000)]
+		public string Content { get; set; }
+
+		/// <summary>
+		/// HTML内容
+		/// </summary>
+		[MaxLength(1000)]
+		public string HtmlContent { get; set; }
+
+		/// <summary>
+		/// 图片列表
+		/// </summary>
+		[MaxLength(1000)]
+		public string Images { get; set; }
+
 	}
 }

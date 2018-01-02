@@ -155,6 +155,7 @@ namespace SF.Sys.Services
 			});
 
 			sc.AddScoped<IEntityReferenceResolver, EntityReferenceResolver>();
+			sc.AddScoped<IEntityPropertyFiller, EntityPropertyFiller>();
 
 			sc.AddTransient<IEntityServiceContext, EntityServiceContext>();
 			

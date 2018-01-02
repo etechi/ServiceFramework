@@ -54,5 +54,25 @@ namespace SF.Common.Comments
 		{
 			throw new NotImplementedException();
 		}
+
+		public Task<ObjectKey<long>> Create(CommentCreateArgument Arg)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task Update(CommentUpdateArgument Arg)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task Remove(long Id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<QueryResult<TCommentPublic>> Query(CommentQueryArgument Arg)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

@@ -21,6 +21,6 @@ namespace SF.Sys.Entities
 {
 	public interface IEntityPropertyFiller
 	{
-		Task Fill<T>(T[] Items);
+		Task Fill<T>(long? ServiceScopeId,params T[] Items);
 	}
 }

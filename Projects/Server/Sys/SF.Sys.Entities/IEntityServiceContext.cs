@@ -50,9 +50,10 @@ namespace SF.Sys.Entities
 	public interface IEntityServiceContext
 	{
 		IIdentGenerator IdentGenerator { get; }
-		IEntityReferenceResolver DataEntityResolver { get; }
+		//IEntityReferenceResolver DataEntityResolver { get; }
 		//ITimeService TimeService { get; }
 		//ILogger GetLogger(Type Type);
+		IEntityPropertyFiller EntityPropertyFiller { get; }
 		IEventEmitService EventEmitService { get; }
 		IServiceProvider ServiceProvider { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
