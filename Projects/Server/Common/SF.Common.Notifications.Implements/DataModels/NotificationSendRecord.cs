@@ -22,6 +22,7 @@ using SF.Common.Notifications.Models;
 using SF.Common.Notifications.Senders;
 using System.Collections.Generic;
 using SF.Sys;
+using System.Linq;
 
 namespace SF.Common.Notifications.DataModels
 {
@@ -76,9 +77,14 @@ namespace SF.Common.Notifications.DataModels
 		public int RetryInterval { get; set; }
 
 		/// <summary>
-		/// 发送重试次数
+		/// 最大重试次数
 		/// </summary>
-		public int RetryCount { get; set; }
+		public int RetryLimit { get; set; }
+
+		/// <summary>
+		/// 发送次数
+		/// </summary>
+		public int SendCount { get; set; }
 
 		/// <summary>
 		/// 发送超时时间
@@ -121,6 +127,14 @@ namespace SF.Common.Notifications.DataModels
 
 		[ForeignKey(nameof(NotificationId))]
 		public Notification Notification { get; set; }
+
+		IEnumerable<long> ISendArgument.TargetIds => TargetId.HasValue? (IEnumerable<long>)new[] { TargetId.Value }: Enumerable.Empty<long>();
+
+		IEnumerable<string> ISendArgument.Targets => Target==null?(IEnumerable<string>)new[] { Target} : Enumerable.Empty<string>();
+
+		IEnumerable<long> ISendArgument.GroupIds => Enumerable.Empty<long>();
+
+		IEnumerable<string> ISendArgument.Groups => Enumerable.Empty<string>();
 
 		public IReadOnlyDictionary<string,string> GetArguments()
 		{

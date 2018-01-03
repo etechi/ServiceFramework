@@ -19,10 +19,14 @@ using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SF.Common.Notifications.Management
 {
+	
 	/// <summary>
 	/// 通知管理
 	/// </summary>
@@ -34,5 +38,111 @@ namespace SF.Common.Notifications.Management
 		IEntityManager<ObjectKey<long>,NotificationEditable>
 	{
 		Task<long> FindPolicy(string Ident);
+	}
+
+	public static class NotificationManagerExtension
+	{
+		public static Task<long> CreateBroadcastNotification(
+			   this INotificationManager Manager,
+			   string Policy,
+			   Dictionary<string, object> Args,
+			   DateTime Time,
+			   DateTime Expires = default,
+			   string BizIdent = null,
+			   string Image = null,
+			   string Link = null
+			   )
+		{
+			return Manager.CreateNotification(
+				NotificationMode.Normal,
+				null,
+				Policy,
+				Args,
+				Time,
+				Expires == default ? Time.AddYears(1) : Expires,
+				BizIdent,
+				Image,
+				Link
+				);
+		}
+		public static Task<long> CreateNormalNotification(
+			this INotificationManager Manager,
+			long? Target,
+			string Policy,
+			Dictionary<string, object> Args,
+			DateTime Time=default,
+			DateTime Expires = default,
+			string BizIdent = null,
+			string Image = null,
+			string Link = null
+			)
+		{
+			return Manager.CreateNotification(
+				NotificationMode.Normal,
+				Target.HasValue?new[] { Target.Value }:null,
+				Policy,
+				Args,
+				Time,
+				Expires,
+				BizIdent,
+				Image,
+				Link
+				);
+
+		}
+		public static  Task<long> CreateNormalNotification(
+			this INotificationManager Manager,
+			IEnumerable<long> Targets,
+			string Policy,
+			Dictionary<string, object> Args,
+			DateTime Time=default,
+			DateTime Expires=default,
+			string BizIdent = null,
+			string Image=null,
+			string Link=null
+			)
+		{
+			return Manager.CreateNotification(
+				NotificationMode.Normal,
+				Targets,
+				Policy,
+				Args,
+				Time,
+				Expires,
+				BizIdent,
+				Image,
+				Link
+				);
+
+		}
+		public static async Task<long> CreateNotification(
+			this INotificationManager Manager,
+			NotificationMode Mode,
+			IEnumerable<long> Targets,
+			string Policy,
+			Dictionary<string, object> Args,
+			DateTime Time=default,
+			DateTime Expires=default,
+			string BizIdent = null,
+			string Image=null,
+			string Link=null
+			)
+		{
+			var policyId = Policy == null ? (long?)null : await Manager.FindPolicy(Policy);
+			var re = await Manager.CreateAsync(new NotificationEditable
+			{
+				Args = Args,
+				BizIdent = BizIdent,
+				Time = Time,
+				Expires = Expires,
+				Image = Image,
+				Link = Link,
+				Mode = Mode,
+				PolicyId = policyId,
+				Targets = Targets,
+				TargetId = Targets == null ? (long?)null : Targets.FirstOrDefault()
+			});
+			return re.Id;
+		}
 	}
 }

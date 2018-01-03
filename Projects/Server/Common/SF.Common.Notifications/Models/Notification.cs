@@ -41,6 +41,7 @@ namespace SF.Common.Notifications.Models
 		/// <summary>
 		/// 通知模式
 		/// </summary>
+		[Uneditable]
 		public NotificationMode Mode { get; set; }
 
 		///<title>通知时间</title>
@@ -48,13 +49,9 @@ namespace SF.Common.Notifications.Models
 		/// 只有当前时间到达开始时间时，用户才能看到通知,默认为当前时间
 		/// </summary>
 		[TableVisible]
+		[Uneditable]
 		public DateTime Time { get; set; }
 
-		/// <summary>
-		/// 通知状态
-		/// </summary>
-		[TableVisible]
-		public NotificationState State { get; set; }
 
 		/// <summary>
 		/// 通知发送策略
@@ -74,6 +71,7 @@ namespace SF.Common.Notifications.Models
 		/// 通知过期时间，超过该时间后，不会再在用户的通知列表中出现。
 		/// </summary>
 		[TableVisible]
+		[Uneditable]
 		public DateTime Expires { get; set; }
 
 		///<title>主要通知对象</title>
@@ -81,6 +79,7 @@ namespace SF.Common.Notifications.Models
 		/// 一般通知有效
 		/// </summary>
 		[EntityIdent(typeof(User), nameof(TargetName))]
+		[Uneditable]
 		public long? TargetId { get; set; }
 
 		/// <summary>
@@ -125,7 +124,7 @@ namespace SF.Common.Notifications.Models
 		[Html]
 		[MaxLength(2000)]
 		[Layout(60)]
-		public string Body { get; set; }
+		public string Content { get; set; }
 
 		///<title>发布人</title>
 		/// <summary>
@@ -133,6 +132,7 @@ namespace SF.Common.Notifications.Models
 		/// </summary>
 		[EntityIdent(typeof(User), nameof(SenderName))]
 		[Layout(70)]
+		[Uneditable]
 		public int? SenderId { get; set; }
 
 		/// <summary>
@@ -148,16 +148,19 @@ namespace SF.Common.Notifications.Models
 		[EntityIdent]
 		[ReadOnly(true)]
 		[Layout(80)]
+		[Uneditable]
 		public string BizIdent { get; set; }
 
 		/// <summary>
 		/// 投递次数
 		/// </summary>
+		[ReadOnly(true)]
 		public int SendCount { get; set; }
 
 		/// <summary>
 		/// 投递完成次数
 		/// </summary>
+		[ReadOnly(true)]
 		public int CompletedSendCount { get; set; }
 
 
@@ -173,6 +176,7 @@ namespace SF.Common.Notifications.Models
 		[Layout(26)]
 		[Required]
 		[Range(1, 100)]
+		[Uneditable]
 		public IEnumerable<long> Targets { get; set; }
 
 		/// <summary>
@@ -186,6 +190,7 @@ namespace SF.Common.Notifications.Models
 		/// 消息参数
 		/// </summary>
 		[JsonData]
+		[Uneditable]
 		public Dictionary<string, object> Args { get; set; }
 
 	}

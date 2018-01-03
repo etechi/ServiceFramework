@@ -393,60 +393,60 @@ namespace SF.Sys
 			}
 			return sb.ToString();
 		}
-        public static async Task<byte[]> GetBytes(this Uri uri)
-        {
-            using (var cli = new HttpClient())
-            {
-                return await cli.GetByteArrayAsync(uri);
-            }
-        }
-		static UriExtension()
-		{
-			//Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-			GBK = Encoding.GetEncoding("GBK");
-		}
-		public static Encoding GBK { get; }
-        public static async Task<string> GetString(this Uri uri,Encoding Encoding=null, int Retry=5,int Timeout = 20)
-        {
-			for (var i=0;i<Retry;i++)
-			{
-				try
-				{
-					using (var cli = new HttpClient())
-					{
-						cli.Timeout = TimeSpan.FromSeconds(Timeout);
-						return Encoding == null ?
-							await cli.GetStringAsync(uri) :
-							Encoding.GetString(await cli.GetByteArrayAsync(uri))
-							;
-					}
-				}
-				catch
-				{
-					if (i == Retry - 1)
-						throw;
-				}
-			}
-			throw new NotSupportedException();
-        }
-        public static async Task<string> PostAndReturnString(this Uri uri, HttpContent content)
-        {
-            using (var cli = new HttpClient())
-            {
-                cli.Timeout = TimeSpan.FromSeconds(10);
-                using (var re = await cli.PostAsync(uri, content))
-                {
-                    return await re.Content.ReadAsStringAsync();
-                }
-            }
-        }
-        public static Task<string> PostAndReturnString(this Uri uri,params (string key,string value)[] args)
-        {
-            return PostAndReturnString(uri, new StringContent(
-                         UriExtension.EncodeQueryString(args),
-                         Encoding.UTF8,
-                         "application/x-www-form-urlencoded"
-                         ));
-        }
+  //      public static async Task<byte[]> GetBytes(this Uri uri)
+  //      {
+  //          using (var cli = new HttpClient())
+  //          {
+  //              return await cli.GetByteArrayAsync(uri);
+  //          }
+  //      }
+		//static UriExtension()
+		//{
+		//	//Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+		//	//GBK = Encoding.GetEncoding("GBK");
+		//}
+		//public static Encoding GBK { get; }
+  //      public static async Task<string> GetString(this Uri uri,Encoding Encoding=null, int Retry=5,int Timeout = 20)
+  //      {
+		//	for (var i=0;i<Retry;i++)
+		//	{
+		//		try
+		//		{
+		//			using (var cli = new HttpClient())
+		//			{
+		//				cli.Timeout = TimeSpan.FromSeconds(Timeout);
+		//				return Encoding == null ?
+		//					await cli.GetStringAsync(uri) :
+		//					Encoding.GetString(await cli.GetByteArrayAsync(uri))
+		//					;
+		//			}
+		//		}
+		//		catch
+		//		{
+		//			if (i == Retry - 1)
+		//				throw;
+		//		}
+		//	}
+		//	throw new NotSupportedException();
+  //      }
+  //      public static async Task<string> PostAndReturnString(this Uri uri, HttpContent content)
+  //      {
+  //          using (var cli = new HttpClient())
+  //          {
+  //              cli.Timeout = TimeSpan.FromSeconds(10);
+  //              using (var re = await cli.PostAsync(uri, content))
+  //              {
+  //                  return await re.Content.ReadAsStringAsync();
+  //              }
+  //          }
+  //      }
+  //      public static Task<string> PostAndReturnString(this Uri uri,params (string key,string value)[] args)
+  //      {
+  //          return PostAndReturnString(uri, new StringContent(
+  //                       UriExtension.EncodeQueryString(args),
+  //                       Encoding.UTF8,
+  //                       "application/x-www-form-urlencoded"
+  //                       ));
+  //      }
     }
 }

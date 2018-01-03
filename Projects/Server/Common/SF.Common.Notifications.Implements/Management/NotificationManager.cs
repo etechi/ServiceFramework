@@ -41,11 +41,11 @@ namespace SF.Common.Notifications.Management
 	{
 		Lazy<IReminderManager> ReminderManager { get; }
 
-		Lazy<IEntityCache<long, MessageSendAction[]>> Cache { get; }
+		Lazy<IEntityCache<long, NotificationSendPolicy>> Cache { get; }
 		TypedInstanceResolver<INotificationSendProvider> NotificationSendProviderResolver { get; }
 		public NotificationManager(
 			IEntityServiceContext ServiceContext,
-			Lazy<IEntityCache<long, MessageSendAction[]>> Cache,
+			Lazy<IEntityCache<long, NotificationSendPolicy>> Cache,
 			Lazy<IReminderManager> ReminderManager,
 			TypedInstanceResolver<INotificationSendProvider> NotificationSendProviderResolver
 			) : base(ServiceContext)
@@ -99,78 +99,99 @@ namespace SF.Common.Notifications.Management
 
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
-			await base.OnNewModel(ctx);
-
 			var model = ctx.Model;
 			var editable = ctx.Editable;
-			if (!editable.PolicyId.HasValue)
-				return;
+			if (editable.Time == default)
+				editable.Time = Now;
+			if (editable.Expires < editable.Time)
+				editable.Expires = editable.Time;
 
-			var targets = editable.Targets ?? Enumerable.Empty<long>();
-			if (editable.TargetId.HasValue)
-				targets = targets.WithFirst(editable.TargetId.Value);
-			var arrTargets = targets.Distinct().ToArray();
-			if (arrTargets.Length > 0)
+			var sas = editable.PolicyId.HasValue?
+					await Cache.Value.Find(editable.PolicyId.Value):
+					null;
+			if (sas != null)
 			{
-				var sas = await Cache.Value.Find(editable.PolicyId.Value);
-				if (sas == null || sas.Length == 0)
-					return;
+				if (editable.Name.IsNullOrEmpty() && sas.NameTemplate.HasContent())
+					editable.Name = sas.NameTemplate.Replace(editable.Args);
 
-				foreach (var target in arrTargets)
-					foreach (var sa in sas)
-					{
-						var Args = editable.Args;
-						var sendRecord = new DataModels.NotificationSendRecord
-						{
-							BizIdent = editable.BizIdent,
-							Expires=editable.Expires,
-							RetryCount=0,
-							TargetId=target,
-							SendTime=editable.Time,
-							RetryInterval=sa.RetryInterval,
-							Template=sa.ExtTemplateId,
-							Content = sa.ContentTemplate.Replace(Args),
-							Args = Json.Stringify(Args),
-							Id = await IdentGenerator.GenerateAsync<DataModels.NotificationSendRecord>(),
-							NotificationId = model.Id,
-							ProviderId = sa.ProviderId,
-							Time = Now,
-							Status = SendStatus.Sending,
-							Target = sa.TargetTemplate.Replace(Args),
-							Title = sa.TitleTemplate.Replace(Args),
-							UserId = target
-						};
-						if (sendRecord.Target.IsNullOrEmpty())
-						{
-							var p = NotificationSendProviderResolver(sa.ProviderId);
-							sendRecord.Target = await p.TargetResolve(target);
-							if (sendRecord.Target.IsNullOrEmpty())
-							{
-								sendRecord.Error = $"无法获取通知发送目标：发送服务:{sa.ProviderId} {editable.Name}";
-								sendRecord.Status = SendStatus.Failed;
-							}
-						}
-						DataContext.Add(sendRecord);
-					}
-
-				//更新提醒
-				DataContext.TransactionScopeManager.AddCommitTracker(
-					TransactionCommitNotifyType.AfterCommit |
-					TransactionCommitNotifyType.BeforeCommit
-					,
-					async (t, e) =>
-					{
-						foreach(var target in arrTargets)
-							await ReminderManager.Value.RefreshAt(
-								target,
-								Now.AddMinutes(t == TransactionCommitNotifyType.BeforeCommit ? 1 : 0),
-								$"用户{target}通知发送"
-								);
-					});
+				if (editable.Content.IsNullOrEmpty() && sas.ContentTemplate.HasContent())
+					editable.Content = sas.ContentTemplate.Replace(editable.Args);
 			}
 
+			await base.OnNewModel(ctx);
+
+
+			if ((sas?.Actions?.Length??0) == 0)
+				return;
+
+			if (editable.Targets == null)
+				await AddSendRecord(model.Id, sas, editable, null);
+			else
+				foreach (var target in editable.Targets)
+					await AddSendRecord(model.Id, sas, editable, target);
+
+			//更新提醒
+			DataContext.TransactionScopeManager.AddCommitTracker(
+				TransactionCommitNotifyType.AfterCommit |
+				TransactionCommitNotifyType.BeforeCommit
+				,
+				async (t, e) =>
+				{
+					foreach(var target in editable.Targets)
+						await ReminderManager.Value.RefreshAt(
+							target,
+							Now.AddMinutes(t == TransactionCommitNotifyType.BeforeCommit ? 1 : 0),
+							$"用户{target}通知发送"
+							);
+				});
 		}
 
+		async Task AddSendRecord(
+			long NotificationId,
+			NotificationSendPolicy nsp,
+			NotificationEditable editable,
+			long? target
+			)
+		{
+			foreach (var sa in nsp.Actions)
+			{
+				var sendRecord = new DataModels.NotificationSendRecord
+					{
+						BizIdent = editable.BizIdent,
+						Expires = editable.Expires,
+						RetryLimit = sa.RetryLimit,
+						TargetId = target,
+						SendTime = editable.Time,
+						RetryInterval = sa.RetryInterval,
+						Template = sa.ExtTemplateId,
+						Content = sa.ContentTemplate.Replace(editable.Args),
+						Args = Json.Stringify(editable.Args),
+						Id = await IdentGenerator.GenerateAsync<DataModels.NotificationSendRecord>(),
+						NotificationId = NotificationId,
+						ProviderId = sa.ProviderId,
+						Time = Now,
+						Status = SendStatus.Sending,
+						Target = sa.TargetTemplate.Replace(editable.Args),
+						Title = sa.TitleTemplate.Replace(editable.Args),
+						UserId = target
+					};
+					if (sendRecord.Target.IsNullOrEmpty())
+					{
+						if (target.HasValue)
+						{
+							var p = NotificationSendProviderResolver(sa.ProviderId);
+							var re= await p.TargetResolve(new[] { target.Value });
+							sendRecord.Target = re.SingleOrDefault();
+						}
+						if (sendRecord.Target.IsNullOrEmpty())
+						{
+							sendRecord.Error = $"无法获取通知发送目标：发送服务:{sa.ProviderId} {editable.Name}";
+							sendRecord.Status = SendStatus.Failed;
+						}
+					}
+					DataContext.Add(sendRecord);
+				}
+		}
 	}
 
 }

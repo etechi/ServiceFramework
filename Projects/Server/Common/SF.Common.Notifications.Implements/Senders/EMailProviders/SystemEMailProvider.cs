@@ -1,6 +1,8 @@
 ﻿using SF.Sys.Auth;
+using SF.Sys.Linq;
 using SF.Sys.TimeServices;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,13 +36,7 @@ namespace SF.Common.Notifications.Senders.EMail
 
 		}
 
-		public async Task<string> TargetResolve(long TargetId)
-		{
-			var re=await UserPropertyResolver.Value.GetClaims(TargetId, new[] { PredefinedClaimTypes.EMail },null);
-			return re.FirstOrDefault()?.Value;
-
-		}
-
+	
 		public async Task<string> Send(ISendArgument Argument)
 		{
 			if (Setting.Disabled)
@@ -56,7 +52,7 @@ namespace SF.Common.Notifications.Senders.EMail
 					Setting.Password
 					);
 
-				var msg = new System.Net.Mail.MailMessage(Setting.User, Argument.Target)
+				var msg = new System.Net.Mail.MailMessage(Setting.User, Argument.Targets.Single())
 				{
 					Subject = Argument.Title,
 					Body = Argument.Content,
@@ -65,6 +61,18 @@ namespace SF.Common.Notifications.Senders.EMail
 				await cli.SendMailAsync(msg);
 			}
 			return id;
+		}
+
+		public async Task<IEnumerable<string>> TargetResolve(IEnumerable<long> TargetIds)
+		{
+			var re = await UserPropertyResolver.Value.GetClaims(TargetIds.First(), new[] { PredefinedClaimTypes.EMail }, null);
+			var id = re.FirstOrDefault();
+			return id == null ? Enumerable.Empty<string>() : EnumerableEx.From(id.Value);
+		}
+
+		public Task<IEnumerable<string>> GroupResolve(IEnumerable<long> GroupIds)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

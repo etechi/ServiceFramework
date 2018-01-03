@@ -94,7 +94,7 @@ namespace SF.Sys.Services
 			IEntityCache<TKey, TItem>,
 			IEntityCacheRemover<TKey>
 			where TItem : class
-			where TKey:IEqualityComparer<TKey>
+			where TKey:IEquatable<TKey>
 		{
 			ConcurrentDictionary<TKey, TItem> Cache { get; } = new ConcurrentDictionary<TKey, TItem>();
 			Func<LoadServices, TKey, Task<TItem>> Loader { get; }
@@ -130,7 +130,7 @@ namespace SF.Sys.Services
 			Func<TLoadServices, TKey, Task<TItem>> Loader,
 			Action<TInitRemoveServices, IEntityCacheRemover<TKey>> InitRemover
 			) where TItem : class
-			where TKey:IEqualityComparer<TKey>
+			where TKey:IEquatable<TKey>
 		{
 			sc.AddSingleton<IEntityCache<TKey, TItem>>(sp =>
 			{

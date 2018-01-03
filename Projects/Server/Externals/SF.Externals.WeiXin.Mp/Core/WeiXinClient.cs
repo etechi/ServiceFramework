@@ -1,5 +1,6 @@
 ﻿using SF.Common.Media;
 using SF.Sys;
+using SF.Sys.HttpClients;
 using SF.Sys.Settings;
 using SF.Sys.TimeServices;
 using System;
@@ -15,27 +16,31 @@ namespace SF.Externals.WeiXin.Mp.Core
         WeiXinMpSetting Setting { get; }
         Lazy<ITimeService> TimeService { get; }
         Lazy<IMediaManager> MediaManager { get; }
+		IHttpClient HttpClient { get; }
         public WeiXinClient(
             IAccessTokenManager AccessTokenManager, 
             ISettingService<WeiXinMpSetting> Setting, 
             Lazy<ITimeService> TimeService,
-            Lazy<IMediaManager> MediaManager
-            )
+            Lazy<IMediaManager> MediaManager,
+			IHttpClient HttpClient
+			)
         {
             this.MediaManager = MediaManager;
             this.AccessTokenManager = AccessTokenManager;
             this.Setting = Setting.Value;
             this.TimeService = TimeService;
-        }
+			this.HttpClient = HttpClient;
+
+		}
         public async Task<string> RequestString(string uri, HttpContent Content)
         {
             var access_token = await AccessTokenManager.GetAccessToken();
             var u = new Uri(new Uri(Setting.ApiUriBase), uri)
                 .WithQueryString(("access_token", access_token));
             if (Content == null)
-                return await u.GetString();
+                return await HttpClient.From(u).GetString();
             else
-                return await u.PostAndReturnString(Content);
+                return await HttpClient.From(u).WithContent(Content).GetString();
         }
 
         public async Task<JsApiSignatureResult> JsApiSignature(string uri)
@@ -62,7 +67,7 @@ namespace SF.Externals.WeiXin.Mp.Core
                     ("access_token", access_token),
                     ("media_id",serverId)
                 );
-            var bytes = await u.GetBytes();
+            var bytes = await HttpClient.From(u).GetBytes();
             var mm = new MediaMeta
             {
                 Mime = "image/jpeg",

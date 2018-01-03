@@ -56,6 +56,12 @@ namespace SF.Common.Notifications.Models
 		/// </summary>
 		public int RetryInterval { get; set; }
 
+		///<title>最大重试次数</title>
+		/// <summary>
+		/// 0表示不限制
+		/// </summary>
+		public int RetryLimit { get; set; }
+
 		/// <summary>
 		/// 消息发送服务
 		/// </summary>
@@ -102,6 +108,19 @@ namespace SF.Common.Notifications.Models
 		[Required]
 		[MaxLength(100)]
 		public string Ident { get; set; }
+
+		/// <summary>
+		/// 通知标题模板
+		/// </summary>
+		[MaxLength(100)]
+		public string NameTemplate { get; set; }
+
+		/// <summary>
+		/// 通知内容模板
+		/// </summary>
+		[MaxLength(1000)]
+		[MultipleLines]
+		public string ContentTemplate { get; set; }
 
 		/// <summary>
 		/// 发送动作

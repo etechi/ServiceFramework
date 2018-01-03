@@ -3,6 +3,7 @@ using SF.Auth.IdentityServices.Models;
 using SF.Sys;
 using SF.Sys.Auth;
 using SF.Sys.Collections.Generic;
+using SF.Sys.HttpClients;
 using SF.Sys.Logging;
 using SF.Sys.NetworkService;
 using SF.Sys.Settings;
@@ -32,12 +33,14 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
         public ILogger<OAuth2Provider> Logger { get; }
 		public WeiXinMpSetting MPSetting { get; }
 		public Lazy<IInvokeContext> InvokeContext { get; }
-		public OAuth2Provider(ISettingService<WeiXinMpSetting> MpSetting,OAuth2Setting OAuthSetting, ILogService LogService, Lazy<IInvokeContext> InvokeContext)
+		public IHttpClient HttpClient { get; }
+		public OAuth2Provider(ISettingService<WeiXinMpSetting> MpSetting,OAuth2Setting OAuthSetting, ILogService LogService, Lazy<IInvokeContext> InvokeContext, IHttpClient HttpClient)
         {
 			this.OAuthSetting = OAuthSetting;
 			this.MPSetting = MpSetting.Value;
 			this.Logger = Logger;
 			this.InvokeContext = InvokeContext;
+			this.HttpClient = HttpClient;
 		}
 		
 		public Task<HttpResponseMessage> StartPageAuthorization(string State,string Callback)
@@ -68,7 +71,7 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 				("code", code),
 				("grant_type", "authorization_code")
 				);
-			var re = await uri.GetString();
+			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
 				throw new ExternalServiceException(
 					$"微信授权AccessToken没有返回数据，" +
@@ -119,7 +122,7 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 				("refresh_token", tokens.refresh_token)
 				);
 
-			var re = await uri.GetString();
+			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
 				throw new ArgumentException(
 					$"微信授权RefreshToken没有返回数据，" +
@@ -170,7 +173,7 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 				("lang", "zh_CN")
 				);
 
-			var re = await uri.GetString();
+			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
 				throw new ExternalServiceException(
 					$"微信授权UserInfo没有返回数据，" +
@@ -232,7 +235,7 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 				("openid", tokens.openid)
 				);
 
-			var re = await uri.GetString();
+			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
 				throw new ExternalServiceException(
 					$"微信授权码验证没有返回数据，" +

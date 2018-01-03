@@ -29,12 +29,15 @@ namespace SF.Sys.NetworkService
 		System.IO.Compression.ZipArchive Archive;
 		public string PackagePath{ get; set; }
 		public string CommonImports { get; set; }
+		public bool MergeBaseType { get; set; }
         public JavaProxyBuilder(
 			string CommonImports,
 			string PackagePath,
+			 bool MergeBaseType,
 			Func<Metadata.Service, Metadata.Method, bool> ActionFilter
 			)
         {
+			this. MergeBaseType = MergeBaseType;
 			this.CommonImports = CommonImports;
 			this.PackagePath = PackagePath;
 			this.ActionFilter = ActionFilter;
@@ -209,13 +212,29 @@ namespace SF.Sys.NetworkService
 			{
 				var imports = new HashSet<string>();
 
-				if (t.BaseTypes!=null)
+				if (t.BaseTypes!= null && !MergeBaseType)
 					foreach (var bt in t.BaseTypes)
 						imports.Add(bt);
 
-				if (t.Properties!=null)
-					foreach (var p in t.Properties)
-						imports.Add(p.Type);
+
+				IEnumerable<(Sys.Metadata.Models.Type type, Sys.Metadata.Models.Property prop)> props;
+				if (MergeBaseType)
+				{
+					props = ADT.Tree.AsEnumerable(
+						t,
+						ti => ti.BaseTypes?.Select(bt => Types[bt])
+						).Reverse()
+						.Where(ti => ti.Properties != null)
+						.SelectMany(ti => ti.Properties.Select(p => (type: ti, prop: p)));
+				}
+				else
+					props = t.Properties.Select(p => (type: t, prop: p))
+						?? Enumerable.Empty<(Sys.Metadata.Models.Type type, Sys.Metadata.Models.Property prop)>();
+
+
+				foreach (var p in props)
+					imports.Add(p.prop.Type);
+
 				foreach (var import in imports)
 					TryImport(sb, import);
 
@@ -229,24 +248,23 @@ namespace SF.Sys.NetworkService
 				sb.AppendLine($"* {t.Description}");
 				sb.AppendLine($"*/");
 				sb.Append($"public class {to_java_type(t.Name)}");
-				if (t.BaseTypes != null)
+				if (t.BaseTypes != null && !MergeBaseType)
 				{
 					sb.Append($" extends {string.Join(",", t.BaseTypes.Select(bt => to_java_type(bt)))}");
 				}
 				sb.AppendLine(" {");
-				if (t.Properties != null)
-					foreach (var p in t.Properties)
-					{
-						if (IsOverrideProperty(p.Name, t))
-							continue;
+				foreach (var p in props)
+				{
+					if (IsOverrideProperty(p.prop.Name,p.type))
+						continue;
 
-						sb.AppendLine($"\t/**");
-						sb.AppendLine($"\t* {p.Title} {(p.Optional?"[可选]":"")}");
-						sb.AppendLine($"\t* {p.Description}");
-						sb.AppendLine($"\t* 类型:{p.Type}");
-						sb.AppendLine($"\t*/");
-						sb.AppendLine($"\tpublic {to_java_type(p.Type, p.Optional)} {p.Name};");
-					}
+					sb.AppendLine($"\t/**");
+					sb.AppendLine($"\t* {p.prop.Title} {(p.prop.Optional?"[可选]":"")}");
+					sb.AppendLine($"\t* {p.prop.Description}");
+					sb.AppendLine($"\t* 类型:{p.prop.Type}");
+					sb.AppendLine($"\t*/");
+					sb.AppendLine($"\tpublic {to_java_type(p.prop.Type, p.prop.Optional)} {p.prop.Name};");
+				}
 				sb.AppendLine("}");
 			});
 		}

@@ -10,8 +10,10 @@ namespace SF.Common.Notifications.Senders
 		long Id { get; }
 		long NotificationId { get;  }
 		long ProviderId { get; }
-		long? TargetId { get; }
-		string Target { get; }
+		IEnumerable<long> TargetIds { get; }
+		IEnumerable<string> Targets { get; }
+		IEnumerable<long> GroupIds { get; }
+		IEnumerable<string> Groups { get; }
 		string Title { get; }
 		string Content { get; }
 		string Template { get; }
@@ -22,7 +24,8 @@ namespace SF.Common.Notifications.Senders
 	/// </summary>
 	public interface INotificationSendProvider
 	{
-		Task<string> TargetResolve(long TargetId);
+		Task<IEnumerable<string>> TargetResolve(IEnumerable<long> TargetIds);
+		Task<IEnumerable<string>> GroupResolve(IEnumerable<long> GroupIds);
 		Task<string> Send(ISendArgument Argument);
 	}
 	public interface IDebugNotificationSendProvider : INotificationSendProvider

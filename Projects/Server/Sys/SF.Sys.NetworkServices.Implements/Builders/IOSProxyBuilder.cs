@@ -29,12 +29,15 @@ namespace SF.Sys.NetworkService
 		System.IO.Compression.ZipArchive Archive;
 		public string BaseService { get; set; }
 		public string CommonImports { get; set; }
+		public bool MergeBaseType { get; set; }
 		public IOSProxyBuilder(
 			string CommonImports,
 			string BaseService,
+			bool MergeBaseType,
 			Func<Metadata.Service, Metadata.Method, bool> ActionFilter
 			)
 		{
+			this.MergeBaseType = MergeBaseType;
 			this.CommonImports = CommonImports;
 			this.BaseService = BaseService;
 			this.ActionFilter = ActionFilter;
@@ -205,7 +208,7 @@ namespace SF.Sys.NetworkService
 			if (name == "id") return "_id";
 			return name;
 		}
-		string to_ios_type(string type, bool withPointer, bool EscapeEnumName = true)
+		string to_ios_type(string type, bool withPointer, bool EscapeEnumName = true, bool objectMode = false)
 		{
 
 			if (type.EndsWith("?"))
@@ -213,7 +216,7 @@ namespace SF.Sys.NetworkService
 
 			var i = type.IndexOf('[');
 			if (i != -1)
-				return "NSArray<"+to_ios_type(type.Substring(0, i), true) + ">" + (withPointer?" *":"");
+				return "NSArray<"+to_ios_type(type.Substring(0, i), true,true,true) + ">" + (withPointer?" *":"");
 
 			i = type.IndexOf('{');
 			if (i != -1)
@@ -240,7 +243,7 @@ namespace SF.Sys.NetworkService
 				case "datetime": return "NSString" + (withPointer ? " *" : "");
 				case "timespan": return "NSString" + (withPointer ? " *" : "");
 				case "long":
-				case "ulong": return "long" ;
+				case "ulong": return objectMode?"NSNumber"+ (withPointer ? " *" : ""): "long" ;
 				case "int":
 				case "short":
 				case "sbyte":
@@ -248,14 +251,14 @@ namespace SF.Sys.NetworkService
 				case "ushort":
 				case "byte":
 				case "char":
-					return "int" ;
+					return objectMode ? "NSNumber" + (withPointer ? " *" : "") : "int" ;
 				case "float":
-					return "float";
+					return objectMode ? "NSNumber" + (withPointer ? " *" : "") : "float";
 				case "decimal":
 				case "double":
-					return "double";
+					return objectMode ? "NSNumber" + (withPointer ? " *" : "") : "double";
 				case "bool":
-					return "BOOL" ;
+					return objectMode ? "NSNumber" + (withPointer ? " *" : "") : "BOOL" ;
 				case "void":
 				case "object":
 				case "unknown":
@@ -323,11 +326,27 @@ namespace SF.Sys.NetworkService
 		{
 			var imports = new Dictionary<string, bool>();
 
-			if (t.Properties != null)
-				foreach (var p in t.Properties.Where(p => !IsOverrideProperty(p.Name, t)))
-					imports[p.Type] = false;
+			IEnumerable<(Sys.Metadata.Models.Type type, Sys.Metadata.Models.Property prop)> props;
+			if (MergeBaseType)
+			{
+				props = ADT.Tree.AsEnumerable(
+					t,
+					ti => ti.BaseTypes?.Select(bt => Types[bt])
+					).Reverse()
+					.Where(ti => ti.Properties != null)
+					.SelectMany(ti => ti.Properties.Select(p => (type: ti, prop: p)));
+			}
+			else
+				props = t.Properties.Select(p => (type: t, prop: p))
+					?? Enumerable.Empty<(Sys.Metadata.Models.Type type, Sys.Metadata.Models.Property prop)>();
 
-			if (t.BaseTypes != null)
+			props = props.Where(p => !IsOverrideProperty(p.prop.Name, p.type));
+
+			foreach (var p in props)
+				imports[p.prop.Type] = false;
+
+
+			if (t.BaseTypes != null && !MergeBaseType)
 				foreach (var bt in t.BaseTypes)
 					imports[bt] = true;
 
@@ -336,6 +355,8 @@ namespace SF.Sys.NetworkService
 
 					foreach (var import in imports.OrderBy(p => p.Value ? 0 : 1))
 						TryImport(sb, import.Key, import.Value);
+
+
 					/**
 					*  请求名
 					* @param params    实体类提交
@@ -346,7 +367,7 @@ namespace SF.Sys.NetworkService
 					sb.AppendLine($"* {t.Description}");
 					sb.AppendLine($"*/");
 					sb.Append($"@interface {to_ios_type(t.Name, false, false)}");
-					if (t.BaseTypes != null)
+					if (t.BaseTypes != null && !MergeBaseType)
 					{
 						sb.AppendLine($" : {string.Join(",", t.BaseTypes.Select(bt => to_ios_type(bt, false, false)))}");
 					}
@@ -354,16 +375,18 @@ namespace SF.Sys.NetworkService
 					{
 						sb.AppendLine($" : JSONModel");
 					}
-					if (t.Properties != null)
-						foreach (var p in t.Properties.Where(p=>!IsOverrideProperty(p.Name, t)))
-						{
-							sb.AppendLine($"\t/**");
-							sb.AppendLine($"\t* {p.Title} {(p.Optional ? "[可选]" : "")}");
-							sb.AppendLine($"\t* {p.Description}");
-							sb.AppendLine($"\t* 类型:{p.Type}");
-							sb.AppendLine($"\t*/");
-							sb.AppendLine($"\t@property ({getPropType(p.Type)},nonatomic) {to_ios_type(p.Type,true)} {p.Name};");
-						}
+
+				
+
+					foreach (var p in props)
+					{
+						sb.AppendLine($"\t/**");
+						sb.AppendLine($"\t* {p.prop.Title} {(p.prop.Optional ? "[可选]" : "")}");
+						sb.AppendLine($"\t* {p.prop.Description}");
+						sb.AppendLine($"\t* 类型:{p.prop.Type}");
+						sb.AppendLine($"\t*/");
+						sb.AppendLine($"\t@property ({getPropType(p.prop.Type)},nonatomic) {to_ios_type(p.prop.Type,true)} {p.prop.Name};");
+					}
 					sb.AppendLine("@end");
 				});
 
@@ -441,7 +464,7 @@ namespace SF.Sys.NetworkService
 				return;
 			if (!Types.TryGetValue(type, out var t))
 				return;
-			if (t.BaseTypes != null)
+			if (t.BaseTypes != null && !MergeBaseType)
 				foreach (var bt in t.BaseTypes)
 					collectAllType(hash, bt);
 			if (t.Properties != null)

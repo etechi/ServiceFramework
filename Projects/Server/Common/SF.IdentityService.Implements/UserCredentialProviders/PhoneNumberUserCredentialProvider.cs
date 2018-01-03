@@ -63,14 +63,11 @@ namespace SF.Auth.IdentityServices.UserCredentialProviders
 				{"验证码", Code },
 				{"业务流水",TrackIdent }
 			};
-			var re= await NotificationManager.Value.Send(
+			var re= await NotificationManager.Value.CreateNormalNotification(
 				IdentityId,
-				new Message
-				{
-					Policy=Type.ToString(),
-					Arguments=args,
-					BizTraceId=TrackIdent
-				}
+				Type.ToString(),
+				args,
+				BizIdent:TrackIdent
 				);
 			return re;
 		}

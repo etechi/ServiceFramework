@@ -75,12 +75,14 @@ namespace SF.Sys.NetworkService
 		public IContent Java(
 			string CommonImports,
 			string PackagePath, 
-			bool all = true
+			bool all = true,
+			bool MergeBaseType=true
 			)
 		{
 			var tb = new JavaProxyBuilder(
 				CommonImports,
 				PackagePath,
+				MergeBaseType,
 				GetFilter(all)
 				);
 			return tb.Build(Library);
@@ -99,12 +101,14 @@ namespace SF.Sys.NetworkService
 		public IContent iOS(
 		   string CommonImports,
 		   string BaseService,
-		   bool all = true
+		   bool all = true,
+		   bool MergeBaseType=true
 		   )
 		{
 			var tb = new IOSProxyBuilder(
 				CommonImports,
 				BaseService,
+				MergeBaseType,
 				GetFilter(all)
 				);
 			return tb.Build(Library);

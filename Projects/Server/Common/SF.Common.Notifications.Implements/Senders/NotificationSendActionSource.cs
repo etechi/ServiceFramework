@@ -47,6 +47,7 @@ namespace SF.Common.Notifications.Senders
 				try
 				{
 					var provider = NotificationSendProviderResolver(SendRecord.ProviderId);
+					SendRecord.SendCount++;
 					var result = await provider.Send(SendRecord);
 					SendRecord.Result=result.Limit(1000);
 					SendRecord.Status = Models.SendStatus.Success;
@@ -58,7 +59,7 @@ namespace SF.Common.Notifications.Senders
 				{
 					SendRecord.Error = ex.Message.Limit(1000);
 					var nextTime = Now.AddSeconds(SendRecord.RetryInterval);
-					if(nextTime<SendRecord.Expires)
+					if(nextTime<SendRecord.Expires && (SendRecord.RetryLimit==0 || SendRecord.SendCount<SendRecord.RetryLimit))
 						SendRecord.SendTime = nextTime;
 					else
 						SendRecord.Status = Models.SendStatus.Failed;
@@ -91,7 +92,7 @@ namespace SF.Common.Notifications.Senders
 				return Enumerable.Empty<IRemindAction>();
 
 			var hasExpired = false;
-			foreach (var r in re.Where(r=>r.Expires<=now))
+			foreach (var r in re.Where(r=>r.Expires<=now || r.RetryLimit>0 && r.SendCount>=r.RetryLimit))
 			{
 				r.Status = Models.SendStatus.Failed;
 				DataContext.Update(r);

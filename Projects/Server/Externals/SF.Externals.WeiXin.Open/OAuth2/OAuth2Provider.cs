@@ -3,6 +3,7 @@ using SF.Auth.IdentityServices.Models;
 using SF.Sys;
 using SF.Sys.Auth;
 using SF.Sys.Collections.Generic;
+using SF.Sys.HttpClients;
 using SF.Sys.Logging;
 using SF.Sys.NetworkService;
 using System;
@@ -28,13 +29,13 @@ namespace SF.Externals.WeiXin.Open.OAuth2
 		public OAuth2Setting Setting { get; }
 		public ILogger Logger { get; }
 		public IInvokeContext InvokeContext { get; }
-
-		public OAuth2Provider(OAuth2Setting Setting, ILogger<OAuth2Provider> Logger, IInvokeContext InvokeContext)
+		public IHttpClient HttpClient { get; }
+		public OAuth2Provider(OAuth2Setting Setting, ILogger<OAuth2Provider> Logger, IInvokeContext InvokeContext, IHttpClient HttpClient)
 		{
 			this.Setting = Setting;
 			this.Logger = Logger;
 			this.InvokeContext = InvokeContext;
-
+			this.HttpClient = HttpClient;
 		}
 
 		public Task<HttpResponseMessage> StartPageAuthorization(string State, string Callback)
@@ -59,7 +60,7 @@ namespace SF.Externals.WeiXin.Open.OAuth2
 			("code", code),
 			("grant_type", "authorization_code")
 			);
-			var re = await uri.GetString();
+			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
 				throw new ExternalServiceException(
 					$"微信授权AccessToken没有返回数据，" +
@@ -124,7 +125,7 @@ namespace SF.Externals.WeiXin.Open.OAuth2
 				("refresh_token", tokens.refresh_token)
 				);
 
-			var re = await uri.GetString();
+			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
 				throw new ExternalServiceException(
 					$"微信授权RefreshToken没有返回数据，" +
@@ -175,7 +176,7 @@ namespace SF.Externals.WeiXin.Open.OAuth2
 				("lang", "zh_CN")
 				);
 
-			var re = await uri.GetString();
+			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
 				throw new ExternalServiceException(
 					$"微信授权UserInfo没有返回数据，" +
@@ -236,7 +237,7 @@ namespace SF.Externals.WeiXin.Open.OAuth2
 				("openid", tokens.openid)
 				);
 
-			var re = await uri.GetString();
+			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
 				throw new ExternalServiceException(
 					$"微信授权码验证没有返回数据，" +

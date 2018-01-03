@@ -6,6 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using SF.Sys.Threading;
+using SF.Common.Notifications.Senders;
+using System.Collections.Generic;
+using SF.Sys.Linq;
 
 namespace SF.Externals.WeiXin.Mp.InstantMessages
 {
@@ -28,7 +31,7 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
 	/// <summary>
 	/// 微信公共号用户消息服务
 	/// </summary>
-    public class MessageSender : IMsgProvider
+    public class MessageSender : INotificationSendProvider
 	{
         public IWeiXinClient Client { get; }
 		public IUserProfileService UserProfileService { get; }
@@ -40,11 +43,11 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
 			this.Client = Client;
         }
         
-		public async Task<string> Send(NotificationSendArgument Arg)
+		public async Task<string> Send(ISendArgument Arg)
 		{
 			var req = new Request
 			{
-				touser = Arg.Target,
+				touser = Arg.Targets.Single(),
 			};
 			//switch (message.Type)
 			//{
@@ -71,11 +74,15 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
 			return resp.msgid.ToString();
 		}
 
-		public async Task<string> TargetResolve(long TargetId)
+		public async Task<IEnumerable<string>> TargetResolve(IEnumerable<long> TargetIds)
 		{
-			var re = await UserProfileService.GetClaims(TargetId, new[] { PredefinedClaimTypes.WeiXinMPId },null);
-			return re.FirstOrDefault()?.Value;
-
+			var re = await UserProfileService.GetClaims(TargetIds.First(), new[] { PredefinedClaimTypes.WeiXinMPId },null);
+			var id = re.FirstOrDefault();
+			return id == null ? Enumerable.Empty<string>() : EnumerableEx.From(id.Value);
+		}
+		public  Task<IEnumerable<string>> GroupResolve(IEnumerable<long> TargetId)
+		{
+			throw new NotSupportedException();
 		}
 	}
 }

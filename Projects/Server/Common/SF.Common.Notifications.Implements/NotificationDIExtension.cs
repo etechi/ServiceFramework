@@ -19,12 +19,15 @@ using SF.Common.Notifications.Senders.EMail;
 using SF.Common.Notifications.Management;
 using SF.Common.Notifications.Senders;
 using SF.Common.Notifications.Front;
+using SF.Sys.Entities;
+using SF.Sys.Events;
+using System.Threading.Tasks;
 
 namespace SF.Sys.Services
 {
 	public static class NotificationServicesDIExtension
 	{
-		public static IServiceCollection AddTextMessageServices(
+		public static IServiceCollection AddNotificationServices(
 			this IServiceCollection sc,
 			string TablePrefix=null
 			)
@@ -53,6 +56,21 @@ namespace SF.Sys.Services
 			sc.AddManagedScoped<INotificationService, NotificationService>();
 			sc.AddTransient(sp => (IDebugNotificationSendProvider)sp.Resolve<INotificationSendProvider>("debug"));
 
+			sc.AddEntityGlobalCache(
+				async (INotificationSendPolicyManager nspm, long Id) =>
+				{
+					var re = await nspm.GetAsync(ObjectKey.From(Id));
+					return re;
+				},
+				(IEventSubscriber<EntityChanged<SF.Common.Notifications.DataModels.NotificationSendPolicy>> OnPolicyModified, IEntityCacheRemover<long> remover) =>
+				{
+					OnPolicyModified.Wait(e =>
+					{
+						remover.Remove(e.Id);
+						return Task.CompletedTask;
+					});
+				}
+			);
 			sc.InitServices("通知服务",async (sp, sim, scope) =>
 			 {
 				 await sim.DefaultService<INotificationService, NotificationService>(

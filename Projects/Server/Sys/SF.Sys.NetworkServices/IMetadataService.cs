@@ -26,12 +26,14 @@ namespace SF.Sys.NetworkService
 		IContent Java(
 			string CommonImports,
 			string PackagePath,
-			bool all = true
+			bool all = true,
+			bool MergeBaseType = true
 			);
 		IContent iOS(
 			 string CommonImports,
 			 string BaseService,
-			 bool all = true
+			 bool all = true,
+			 bool mergeBaseType=true
 			 );
 		IContent Html();
 		IContent Script();

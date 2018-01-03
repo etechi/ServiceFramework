@@ -1,5 +1,6 @@
 ﻿using SF.Sys;
 using SF.Sys.Caching;
+using SF.Sys.HttpClients;
 using SF.Sys.Threading;
 using SF.Sys.TimeServices;
 using System;
@@ -23,13 +24,15 @@ namespace SF.Externals.WeiXin.Mp.Core
 		ITimeService TimeService { get; }
 
 		WeiXinMpSetting Setting { get; }
-
+		IHttpClient HttpClient { get; set; }
         public AccessTokenManager(
             ITimeService TimeService,
+			IHttpClient HttpClient,
 			WeiXinMpSetting Setting
             )
 
         {
+			this.HttpClient = HttpClient;
             this.Setting = Setting;
             this.TimeService = TimeService;
         }
@@ -57,7 +60,7 @@ namespace SF.Externals.WeiXin.Mp.Core
                     ("appid", Setting.AppId),
                     ("secret", Setting.AppSecret)
                     );
-                var re = await TaskUtils.Retry(() => uri.GetString());
+                var re = await TaskUtils.Retry(() => HttpClient.From(uri).GetString());
                 var resp = Json.Parse<AccessTokenResponse>(re);
                 if (resp.access_token == null)
                     throw new ExternalServiceException("获取微信公众号访问令牌失败："+resp.errcode + ":" + resp.errmsg);
@@ -92,7 +95,7 @@ namespace SF.Externals.WeiXin.Mp.Core
                     ("access_token",access_token),
                     ("type", "jsapi")
                     );
-                var re = await TaskUtils.Retry(() => uri.GetString());
+                var re = await TaskUtils.Retry(() => HttpClient.From(uri).GetString());
                 var resp = Json.Parse<JsApiTicketResponse>(re);
                 if (resp.ticket == null)
                     throw new ExternalServiceException("获取微信公众号JSTicket失败:"+resp.errcode + ":" + resp.errmsg);

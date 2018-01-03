@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Compile Remove="DefaultMsgLogger.cs" />
+    <Compile Remove="Management\EntityMsgLogger.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -97,7 +97,7 @@ namespace SF.Common.Notifications.Models
 		/// <summary>
 		/// 通知对象
 		/// </summary>
-		[EntityIdent(typeof(MsgRecord),nameof(NotificationName))]
+		[EntityIdent(typeof(Notification),nameof(NotificationName))]
 		public long NotificationId { get; set; }
 
 		/// <summary>
