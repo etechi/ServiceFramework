@@ -14,56 +14,69 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
-namespace SF.Sys.Settings
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace SF.Sys.NetworkService
 {
-	/// <summary>
-	/// HTTP设置
-	/// </summary>
-	public class HttpSetting
+	public class ClientSetting
 	{
-
-		///<title>主域名</title>
 		/// <summary>
-		/// 主域名，格式如： www.abc.com
+		/// 当前系统时间
 		/// </summary>
-		public string Domain { get; set; }
-
-		///<title>启用HTTPS模式</title>
+		public DateTime Time { get; set; }
 		/// <summary>
-		/// 启用后，访问普通页面的用户将引导至通过HTTPS协议访问
+		/// 应用名称
 		/// </summary>
-		public bool HttpsMode { get; set; }
+		public string SystemName { get; set; }
 
-		///<title>HTTP基础路径</title>
 		/// <summary>
-		/// 使用方式: <img src="@Html.ResBase()path1/path2/image.gif"/>
+		/// 服务端版本
 		/// </summary>
-		public string HttpRoot { get; set; }
-
-		///<title>Api基础路径</title>
+		public string Version { get; set; }
+		
 		/// <summary>
-		/// 默认为HTTP基础路径
+		/// 主域名
+		/// </summary>
+		public string MainDomain { get; set; }
+
+		/// <summary>
+		/// API基地址
 		/// </summary>
 		public string ApiBase { get; set; }
 
-		///<title>H5App基础路径</title>
 		/// <summary>
-		/// 默认为HTTP基础路径
-		/// </summary>
-		public string H5AppBase { get; set; }
-
-
-		///<title>资源文件基础路径</title>
-		/// <summary>
-		/// 默认为HTTP基础路径
+		/// 资源文件基地址
 		/// </summary>
 		public string ResBase { get; set; }
 
-		///<title>图片资源文件基础路径</title>
 		/// <summary>
-		/// 默认为资源文件基础路径
+		/// 图片基地址
 		/// </summary>
-		public string ImageResBase { get; set; }
+		public string ImageBase { get; set; }
 
+		/// <summary>
+		/// 其他应用设置
+		/// </summary>
+		public Dictionary<string, object> Options { get; set; }
+	}
+
+	public interface IClientSettingProvider
+	{
+		string Name { get; }
+		Task<object> GetOption(string ClientId);
+	}
+	/// <summary>
+	/// 客户端设置服务
+	/// </summary>
+	[NetworkService]
+	public interface IClientSettingService
+	{
+		/// <summary>
+		/// 获取
+		/// </summary>
+		/// <returns></returns>
+		Task<ClientSetting> GetSettings(string ClientId);
 	}
 }

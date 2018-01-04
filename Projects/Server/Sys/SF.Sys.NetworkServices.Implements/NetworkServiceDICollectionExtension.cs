@@ -56,11 +56,13 @@ namespace SF.Sys.Services
 
 			return sc;
 		}
+
 		public static IServiceCollection AddNetworkService(
 					this IServiceCollection sc,
 					IEnumerable<Type> Services=null
 					)
 		{
+			sc.AddScoped<IClientSettingService, ClientSettingService>();
 			sc.AddSingleton<IServiceBuildRuleProvider, DefaultServiceBuildRuleProvider>();
 			sc.AddSingleton(sp => {
 				var builder = new ServiceMetadataBuilder(

@@ -214,6 +214,13 @@ namespace SF.Sys.Entities
 		public virtual EntityManagerCapability Capabilities => EntityManagerCapability.All;
 		public bool AutoSaveChanges { get; set; } = true;
 
+		IEntityModifySyncQueue<TEditable> _SyncQueue;
+
+		protected void SetSyncQueue<TSyncKey>(
+			SF.Sys.Threading.ISyncQueue<TSyncKey> Queue,
+			Func<TEditable, TSyncKey> GetSyncKey
+			)
+			=> _SyncQueue = new EntityModifySyncQueue<TEditable, TSyncKey>(Queue, GetSyncKey);
 
 		#region create
 
@@ -226,13 +233,17 @@ namespace SF.Sys.Entities
 		}
 		protected IModifyContext NewModifyContext()
 			=> new ModifyContext();
+		
 		public virtual async Task<TKey> CreateAsync(TEditable obj)
 		{
 			var ctx = NewModifyContext();
-			await InternalCreateAsync(ctx, obj, null);
+			if (_SyncQueue == null)
+				await InternalCreateAsync(ctx, obj, null);
+			else
+				await _SyncQueue.Queue(obj, () => InternalCreateAsync(ctx, obj, null));
 			return Entity<TModel>.GetKey<TKey>(ctx.Model);
 		}
-		protected virtual Task InternalCreateAsync(IModifyContext Context, TEditable obj, object ExtraArgument)
+		protected virtual Task<TKey> InternalCreateAsync(IModifyContext Context, TEditable obj, object ExtraArgument)
 		{
 			return ServiceContext.InternalCreateAsync<TKey, TEditable, TModel, IModifyContext>(
 				Context,
@@ -251,7 +262,12 @@ namespace SF.Sys.Entities
 		public virtual async Task RemoveAsync(TKey Id)
 		{
 			var ctx = NewModifyContext();
-			var re = await InternalRemoveAsync(ctx, Id);
+			var re = _SyncQueue == null ?
+				await InternalRemoveAsync(ctx, Id) :
+				await _SyncQueue.Queue(
+					await LoadForEdit(Id), 
+					() => InternalRemoveAsync(ctx, Id)
+					);
 			if (!re)
 				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Id}");
 		}
@@ -297,7 +313,11 @@ namespace SF.Sys.Entities
 		public virtual async Task UpdateAsync(TEditable obj)
 		{
 			var ctx = NewModifyContext();
-			var re = await InternalUpdateAsync(ctx, obj);
+			var re = _SyncQueue == null ?
+					await InternalUpdateAsync(ctx, obj) :
+					await _SyncQueue.Queue(obj, () => 
+						InternalUpdateAsync(ctx, obj)
+						);
 			if (!re)
 				throw new ArgumentException($"找不到对象:{GetType().Comment()}:{Entity<TEditable>.GetIdentValues(obj)}");
 		}

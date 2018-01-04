@@ -142,6 +142,7 @@ namespace SF.Sys.NetworkService
 					return (arg,"%@", $"[{arg} stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]");
 				case "long":
 				case "ulong":
+					return (arg, "%ld", arg);
 				case "int":
 				case "short":
 				case "sbyte":

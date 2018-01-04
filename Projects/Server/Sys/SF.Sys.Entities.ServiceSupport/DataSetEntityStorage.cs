@@ -46,6 +46,31 @@ namespace SF.Sys.Entities
 
 		public TEditable Editable { get; set; }
 	}
+
+	public interface IEntityModifySyncQueue<TEditable>
+	{
+		Task<T> Queue<T>(TEditable Editable, Func<Task<T>> Callback);
+	}
+
+	public class EntityModifySyncQueue<TEditable,TSyncKey> :
+		 IEntityModifySyncQueue<TEditable>
+	{
+		public SF.Sys.Threading.ISyncQueue<TSyncKey> SyncQueue { get; }
+		public Func<TEditable, TSyncKey> GetSyncKey { get; }
+		public EntityModifySyncQueue(
+			SF.Sys.Threading.ISyncQueue<TSyncKey> SyncQueue,
+			Func<TEditable, TSyncKey> GetSyncKey
+			)
+		{
+			this.SyncQueue = SyncQueue;
+			this.GetSyncKey = GetSyncKey;
+		}
+
+		public Task<T> Queue<T>(TEditable Editable, Func<Task<T>> Callback)
+		{
+			return SyncQueue.Queue(GetSyncKey(Editable), Callback);
+		}
+	}
 	public static class DataSetEntityStorage
 	{
 		public static Task<T> UseTransaction<T>(
@@ -488,10 +513,12 @@ namespace SF.Sys.Entities
 								});
 							break;
 						case TransactionCommitNotifyType.AfterCommit:
-							await ee?.Commit();
+							if(ee!=null)
+								await ee.Commit();
 							break;
 						case TransactionCommitNotifyType.Rollback:
-							await ee?.Cancel(e);
+							if(ee!=null)
+								await ee.Cancel(e);
 							break;
 						default:
 							throw new NotSupportedException();
@@ -600,10 +627,11 @@ namespace SF.Sys.Entities
 					if(InitModel!=null)
 						await InitModel(Context);
 
-					if(UpdateModel!=null)
+					Storage.DataContext.Set<TModel>().Add(Context.Model);
+
+					if (UpdateModel!=null)
 						await UpdateModel(Context);
 
-					Storage.DataContext.Set<TModel>().Add(Context.Model);
 					Storage.PostChangedEvents<TEditable>(Context.Editable,DataActionType.Create);
 					await Storage.DataContext.SaveChangesAsync();
 					return Entity<TModel>.GetKey<TKey>(Context.Model);
@@ -781,7 +809,12 @@ namespace SF.Sys.Entities
 			int BatchCount = 100
 			)
 			where TModel : class, IEntityWithScope
-			=> Storage.RemoveAllAsync<TKey,TEditable,TModel>(Remove, m => m.ServiceDataScopeId == ScopeId, BatchCount);
+			=> Storage.RemoveAllAsync<TKey,TEditable,TModel>(
+				Remove, 
+				m =>
+					m.ServiceDataScopeId == ScopeId, 
+				BatchCount
+				);
  
 	}
 	public interface IReadOnlyEntityHelper<TKey,TReadOnlyTemp, TReadOnly, TQueryArgument, TModel>

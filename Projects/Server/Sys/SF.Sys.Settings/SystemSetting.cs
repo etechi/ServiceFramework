@@ -26,5 +26,10 @@ namespace SF.Sys.Settings
 		/// 系统名称
 		/// </summary>
 		public string SystemName { get; set; } = System.IO.Path.GetDirectoryName( AppDomain.CurrentDomain.BaseDirectory);
+
+		/// <summary>
+		/// 系统版本
+		/// </summary>
+		public string Version { get; set; } = "1.0.0";
 	}
 }

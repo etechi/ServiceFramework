@@ -21,7 +21,7 @@ namespace SF.Sys.Services
 
 	public static class SettingDIServiceCollectionExtension
 	{
-		
+
 		public static IServiceCollection AddSystemSettings(
 			this IServiceCollection sc
 			)
@@ -33,5 +33,6 @@ namespace SF.Sys.Services
 			sc.AddSetting<SystemSetting>();
 			return sc;
 		}
+
 	}
 }

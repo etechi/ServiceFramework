@@ -96,7 +96,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 				var newItems = Value?.Select((v, i) => (v, i))?.ToArray() ?? Array.Empty<(TChildEntity v,int i)>();
 				var childMeta = Manager.EntityMetadataCollection.FindByEntityType(typeof(TChildEntity));
 
-				await set.MergeAsync(
+				OrgValue=await set.MergeAsync(
 					orgItems,
 					newItems,
 					(d,e)=>FuncChildEqual(d,e.v),
