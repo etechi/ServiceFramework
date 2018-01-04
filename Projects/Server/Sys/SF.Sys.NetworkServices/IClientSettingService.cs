@@ -47,9 +47,19 @@ namespace SF.Sys.NetworkService
 		public string ApiBase { get; set; }
 
 		/// <summary>
+		/// H5App基地址
+		/// </summary>
+		public string H5AppBase { get; set; }
+		
+		/// <summary>
 		/// 资源文件基地址
 		/// </summary>
 		public string ResBase { get; set; }
+
+		/// <summary>
+		/// 是否是HTTPS模式
+		/// </summary>
+		public bool HttpsMode { get; set; }
 
 		/// <summary>
 		/// 图片基地址

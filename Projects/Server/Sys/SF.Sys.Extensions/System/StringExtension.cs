@@ -261,13 +261,13 @@ namespace SF.Sys
 				
 				if (args.TryGetValue(key, out object re) && re != null)
 				{
-					var format = gc > 2 ? grps[2].Value.Substring(1) : null;
+					var format = gc > 2 && grps[2].Value.HasContent() ? grps[2].Value.Substring(1) : null;
 					if (format != null && re is IFormattable f)
 						return f.ToString(format, null);
 					else
 						return re.ToString();
 				}
-				return gc > 3 ? grps[3].Value.Substring(1) : string.Empty;
+				return gc > 3 && grps[3].Value.HasContent() ? grps[3].Value.Substring(1) : string.Empty;
 			});
 		}
 	}

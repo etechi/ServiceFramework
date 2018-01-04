@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Logging;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SF.Sys.ServiceFeatures
@@ -23,17 +24,22 @@ namespace SF.Sys.ServiceFeatures
 	{
 		IServiceProvider ServiceProvider { get; }
 		ILogger Logger { get; }
+		SF.Sys.NetworkService.IInvokeContext InvokeContext { get; }
 		public ServiceFeatureControlService(
 			IServiceProvider ServiceProvider,
-			ILogger<ServiceFeatureControlService> Logger
+			ILogger<ServiceFeatureControlService> Logger,
+			SF.Sys.NetworkService.IInvokeContext InvokeContext
 			)
 		{
+			this.InvokeContext = InvokeContext;
 			this.Logger = Logger;
 			this.ServiceProvider = ServiceProvider;
 		}
 		public async Task<string> Init(string Id=null)
 		{
-			await ServiceProvider.InitServices(Id);
+			var u = new Uri(InvokeContext.Request.Uri);
+			var args = u.ParseQuery().ToDictionary(p => p.key, p => p.value);
+			await ServiceProvider.InitServices(Id,args);
 			return "OK";
 		}
 	}

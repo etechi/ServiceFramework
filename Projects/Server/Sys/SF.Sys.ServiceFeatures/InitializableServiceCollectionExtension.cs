@@ -25,20 +25,33 @@ namespace SF.Sys.Services
 	{
 		class InitHelper : IServiceInitializable
 		{
-			public Func<IServiceProvider,Task> Callback { get; set; }
+			public Func<IServiceProvider, IReadOnlyDictionary<string, string>,Task> Callback { get; set; }
 			public string Group { get; set; }
 			public string Title { get; set; }
 			public int Priority { get; set; }
-			public Task Init(IServiceProvider ServiceProvider)
+			public Task Init(IServiceProvider ServiceProvider,IReadOnlyDictionary<string,string> Args)
 			{
-				return Callback(ServiceProvider);
+				return Callback(ServiceProvider, Args);
 			}
 		}
+		public static IServiceCollection AddInitializer(
+			this IServiceCollection sc,
+			string Group,
+			string Title,
+			Func<IServiceProvider, Task> Callback,
+			int Priority = 0
+			)
+			=> sc.AddInitializer(
+				Group,
+				Title,
+				(sp, arg) => Callback(sp),
+				Priority
+				);
 		public static IServiceCollection AddInitializer(
 			this IServiceCollection sc, 
 			string Group,
 			string Title,
-			Func<IServiceProvider,Task> Callback,
+			Func<IServiceProvider, IReadOnlyDictionary<string, string>, Task> Callback,
 			int Priority=0
 			)
 			{
@@ -47,7 +60,7 @@ namespace SF.Sys.Services
 					{
 						Group=Group,
 						Title=Title,
-						Callback = isp => Callback(isp),
+						Callback = Callback,
 						Priority=Priority
 					});
 				return sc;
@@ -57,21 +70,27 @@ namespace SF.Sys.Services
 			this IServiceCollection sc,
 			string Group,
 			string Title,
-			Action<IServiceProvider> Callback,
+			Action<IServiceProvider,IReadOnlyDictionary<string,string>> Callback,
 			int Priority = 0)
 		{
 			sc.AddInitializer(
 				Group,
 				Title,
-				sp =>
+				(sp,args) =>
 				{
-					Callback(sp);
+					Callback(sp,args);
 					return Task.CompletedTask;
 				},
 				Priority
 				);
 			return sc;
 		}
-		
+		public static IServiceCollection AddInitializer(
+			this IServiceCollection sc,
+			string Group,
+			string Title,
+			Action<IServiceProvider> Callback,
+			int Priority = 0)
+			=> sc.AddInitializer(Group, Title, (sp, args) => Callback(sp), Priority);
 	}
 }

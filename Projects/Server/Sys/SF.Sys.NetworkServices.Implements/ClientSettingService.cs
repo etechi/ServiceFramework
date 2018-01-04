@@ -49,12 +49,13 @@ namespace SF.Sys.NetworkService
 			var setting = new ClientSetting
 			{
 				Time= TimeService.Now,
-				ApiBase = HttpSetting.ApiBase,
+				ApiBase = HttpSetting.GetApiUrlBase(),
 				MainDomain = HttpSetting.Domain,
 				SystemName = SystemSetting.SystemName,
 				Version = SystemSetting.Version,
-				ImageBase = HttpSetting.ImageResBase,
-				ResBase = HttpSetting.ResBase,
+				ImageBase = HttpSetting.GetImageUrlBase(),
+				ResBase = HttpSetting.GetResUrlBase(),
+				HttpsMode = HttpSetting.HttpsMode,
 				Options = options
 			};
 			return setting;

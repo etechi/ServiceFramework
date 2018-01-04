@@ -24,7 +24,7 @@ namespace SF.Sys.ServiceFeatures
 	{
 		string Title { get; }
 		string Group { get; }
-		Task Init(IServiceProvider ServiceProvider);
+		Task Init(IServiceProvider ServiceProvider,IReadOnlyDictionary<string,string> Args);
 		int Priority { get; }
 	}
 }

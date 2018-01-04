@@ -63,7 +63,26 @@ namespace SF.Sys.Settings
 		/// <summary>
 		/// 默认为资源文件基础路径
 		/// </summary>
-		public string ImageResBase { get; set; }
+		public string ImageBase { get; set; }
+	}
+
+	public static class HttpSettingExtension
+	{
+		public static string GetUrlBase(this HttpSetting setting)
+			=> setting.HttpRoot ?? $"{(setting.HttpsMode ? "https" : "http")}://{setting.Domain}";
+
+		public static string GetH5AppUrlBase(this HttpSetting setting)
+			=> setting.H5AppBase ?? setting.GetUrlBase() + "/h5";
+
+		public static string GetResUrlBase(this HttpSetting setting)
+			=> setting.ResBase ?? setting.GetUrlBase() + "/r";
+
+		public static string GetImageUrlBase(this HttpSetting setting)
+			=> setting.ImageBase ?? setting.GetUrlBase() + "/r";
+
+		public static string GetApiUrlBase(this HttpSetting setting)
+			=> setting.ApiBase ?? setting.GetUrlBase() + "/api";
 
 	}
+
 }

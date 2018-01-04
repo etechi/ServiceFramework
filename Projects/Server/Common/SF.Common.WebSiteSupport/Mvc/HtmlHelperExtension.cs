@@ -50,7 +50,7 @@ namespace SF.Sys.AspNetCore.Mvc
 		public static string ResBase(this IHtmlHelper htmlHelper,bool Image=true)
 		{
 			var httpSetting = htmlHelper.Setting<HttpSetting>();
-			return (Image?httpSetting.ImageResBase:null)?? httpSetting.ResBase ?? httpSetting.HttpRoot ?? "/";
+			return (Image?httpSetting.ImageBase:null)?? httpSetting.ResBase ?? httpSetting.HttpRoot ?? "/";
 		}
 
 		
@@ -61,7 +61,7 @@ namespace SF.Sys.AspNetCore.Mvc
 				url = url.Substring(2);
 			else if (url[0] == '/')
 				url = url.Substring(1);
-			return ((Image ? ss.ImageResBase ?? ss.ResBase : ss.ResBase) ?? ss.HttpRoot ?? "/") + url;
+			return ((Image ? ss.ImageBase ?? ss.ResBase : ss.ResBase) ?? ss.HttpRoot ?? "/") + url;
 		}
 		public static string Media(this IHtmlHelper htmlHelper, string id, string format = null)
 		{
