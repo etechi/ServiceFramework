@@ -19,6 +19,7 @@ using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
+using System.Threading.Tasks;
 
 namespace SF.Common.Notifications.Management
 {
@@ -32,5 +33,29 @@ namespace SF.Common.Notifications.Management
 		IEntitySource<ObjectKey<long>, NotificationSendPolicy, NotificationSendPolicyQueryArgument>,
 		IEntityManager<ObjectKey<long>, NotificationSendPolicy>
 	{
+	}
+
+	public static class NotificationSendPolicyManagerExtension
+	{
+		public static async Task EnsurePolicy(
+			this INotificationSendPolicyManager Manager,
+			string Ident,
+			string Name,
+			string NameTemplate,
+			string ContentTemplate,
+			params MessageSendAction[] Actions)
+		{
+			await Manager.EnsureEntity(
+				await Manager.QuerySingleEntityIdent(new NotificationSendPolicyQueryArgument { Ident = Ident }),
+				p =>
+				{
+					p.NameTemplate = NameTemplate;
+					p.ContentTemplate = ContentTemplate;
+					p.Ident = Ident;
+					p.Name = Name;
+					p.Actions = Actions;
+				}
+			);
+		}
 	}
 }

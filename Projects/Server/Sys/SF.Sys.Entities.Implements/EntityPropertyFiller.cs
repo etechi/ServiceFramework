@@ -20,6 +20,7 @@ using SF.Sys.Reflection;
 using SF.Sys.Services;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -60,6 +61,12 @@ namespace SF.Sys.Entities
 				Properties = settings
 					.SelectMany(p => p.ValueProps)
 					.Select(p => p.srcProp.Name)
+					.Union(
+						settings[0].EntityType
+						.AllPublicInstanceProperties()
+						.Where(p=>p.GetCustomAttribute<KeyAttribute>()!=null)
+						.Select(p=>p.Name)
+					)
 					.Distinct()
 					.ToArray();
 
@@ -245,7 +252,7 @@ namespace SF.Sys.Entities
 			this.MetadataCollection = MetadataCollection;
 		}
 		
-		public async Task Fill<TItem>(long? ServiceScopeId,params TItem[] Items)
+		public async Task Fill<TItem>(long? ServiceScopeId, TItem[] Items)
 		{
 			var key = typeof(TItem);
 			if(!Fillers.TryGetValue(key, out var fs))

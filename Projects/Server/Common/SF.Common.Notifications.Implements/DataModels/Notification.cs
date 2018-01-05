@@ -101,9 +101,6 @@ namespace SF.Common.Notifications.DataModels
 		[InverseProperty(nameof(NotificationTarget.Notification))]
 		public ICollection<NotificationTarget> Targets { get; set; }
 
-		[MaxLength(100)]
-		[Required]
-		public string PolicyIdent { get; set; }
 		
 		/// <summary>
 		/// 策略Id

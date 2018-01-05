@@ -74,7 +74,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 				return null;
 
 			//使用数据库生成
-			if (EntityProperty.GetCustomAttribute<DatabaseGeneratedAttribute>() != null)
+			if (EntityProperty?.GetCustomAttribute<DatabaseGeneratedAttribute>() != null)
 				return null;
 
 			//有多个主键字段

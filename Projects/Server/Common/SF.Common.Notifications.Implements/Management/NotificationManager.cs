@@ -111,8 +111,11 @@ namespace SF.Common.Notifications.Management
 					null;
 			if (sas != null)
 			{
-				if (editable.Name.IsNullOrEmpty() && sas.NameTemplate.HasContent())
-					editable.Name = sas.NameTemplate.Replace(editable.Args);
+				if (editable.Name.IsNullOrEmpty())
+					editable.Name = 
+						sas.NameTemplate.HasContent()?
+						sas.NameTemplate.Replace(editable.Args):
+						sas.Name;
 
 				if (editable.Content.IsNullOrEmpty() && sas.ContentTemplate.HasContent())
 					editable.Content = sas.ContentTemplate.Replace(editable.Args);
