@@ -18,13 +18,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SF.Sys.Annotations;
 using SF.Sys.Entities;
+using SF.Sys.NetworkService;
+
 namespace SF.Sys.Reminders
 {
 	public class RemindRecordQueryArgument : QueryArgument
 	{
 
 	}
+	[NetworkService]
+	[EntityManager]
 	public interface IRemindRecordManager :
 		IEntitySource<ObjectKey<long>, Models.RemindRecord, RemindRecordQueryArgument>
 	{
