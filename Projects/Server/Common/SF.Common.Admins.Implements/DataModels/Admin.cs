@@ -19,7 +19,7 @@ namespace SF.Common.Admins.DataModels
 {
 	[Table("Admin")]
 	public class Admin<TAdmin> :
-		SF.Sys.Entities.DataModels.ObjectEntityBase<long>
+		SF.Sys.Entities.DataModels.DataObjectEntityBase<long>
 		where TAdmin: Admin<TAdmin>
 	{
 

@@ -23,7 +23,7 @@ namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(User))]
 	public class User<TUser,TUserCredential, TClaimValue, TUserRole> :
-		SF.Sys.Entities.DataModels.ObjectEntityBase
+		SF.Sys.Entities.DataModels.DataObjectEntityBase
 		where TUser: User<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TUserCredential : UserCredential<TUser, TUserCredential, TClaimValue, TUserRole>
 		where TClaimValue : UserClaimValue<TUser, TUserCredential, TClaimValue, TUserRole>
@@ -99,7 +99,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		public string SignupClientId { get; set; }
 
 		[ForeignKey(nameof(SignupClientId))]
-		public Client SignupClient { get; set; }
+		public DataClient  SignupClient { get; set; }
 
 	}
 	public class User : User<User, UserCredential, UserClaimValue, UserRole>

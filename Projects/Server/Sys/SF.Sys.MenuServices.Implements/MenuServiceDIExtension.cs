@@ -100,7 +100,7 @@ namespace SF.Sys.Services
 		}
 		public static IServiceInstanceInitializer<IMenuService> NewMenuService(this IServiceInstanceManager manager)
 			=>manager.Service<IMenuService, 
-				EntityMenuService<SF.Sys.MenuServices.Entity.DataModels.Menu, SF.Sys.MenuServices.Entity.DataModels.MenuItem>
+				EntityMenuService<SF.Sys.MenuServices.Entity.DataModels.DataMenu, SF.Sys.MenuServices.Entity.DataModels.MenuItem>
 				>(null)
 			.WithMenuItems(
 				"系统管理/菜单管理"
@@ -143,8 +143,8 @@ namespace SF.Sys.Services
 			//Func<MenuItem[]> DefaultMenu=null,
 			string TablePrefix = null
 			)
-			where TMenu : SF.Sys.MenuServices.Entity.DataModels.Menu<TMenu, TMenuItem>,new()
-			where TMenuItem: SF.Sys.MenuServices.Entity.DataModels.MenuItem<TMenu,TMenuItem>,new()
+			where TMenu : SF.Sys.MenuServices.Entity.DataModels.DataMenu<TMenu, TMenuItem>,new()
+			where TMenuItem: SF.Sys.MenuServices.Entity.DataModels.DataMenuItem<TMenu,TMenuItem>,new()
 		{
 			sc.AddSingleton<IDefaultMenuCollection, DefaultMenuCollection>();
 			sc.AddDataModules<TMenu,TMenuItem>(TablePrefix??"Sys");
@@ -183,7 +183,7 @@ namespace SF.Sys.Services
 			string TablePrefix = null
 			)
 			=> AddMenuServices<
-				SF.Sys.MenuServices.Entity.DataModels.Menu, 
+				SF.Sys.MenuServices.Entity.DataModels.DataMenu, 
 				SF.Sys.MenuServices.Entity.DataModels.MenuItem
 				>(sc, /*DefaultMenu,*/TablePrefix);
 

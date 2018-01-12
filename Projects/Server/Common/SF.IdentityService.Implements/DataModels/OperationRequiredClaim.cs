@@ -30,7 +30,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		public string OperationId { get; set; }
 
 		[ForeignKey(nameof(OperationId))]
-		public Resource Resource { get; set; }
+		public DataResource Resource { get; set; }
 
 		/// <summary>
 		/// 申明类型Id

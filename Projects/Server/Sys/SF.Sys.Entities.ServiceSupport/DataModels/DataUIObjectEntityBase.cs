@@ -13,10 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.Data;
 using SF.Sys.Entities;
-using SF.Sys.Entities.Annotations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -26,88 +23,65 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace SF.Sys.Entities.DataModels
 {
 
-    public abstract class ObjectEntityBase<K> : 
-		IEntityWithId<K>, 
-		IObjectEntity, 
-		IEntityWithScope, 
-		IEntityWithLogicState
+    public abstract class DataUIObjectEntityBase<K> : DataObjectEntityBase<K>,IUIObjectEntity
 		where K:IEquatable<K>
 	{
-
+		///<title>标题</title>
 		/// <summary>
-		/// Id
-		/// </summary>
-		[Key]
-		[DatabaseGenerated(DatabaseGeneratedOption.None)]
-		public virtual K Id { get; set; }
-
-		/// <summary>
-		/// 名称
+		/// 用于UI显示
 		/// </summary>
 		[MaxLength(100)]
-		[Index]
 		[Required]
-		public virtual string Name { get; set; }
+		public virtual string Title { get; set; }
 
+		///<title>副标题</title>
 		/// <summary>
-		/// 区域
+		/// 用于UI显示
 		/// </summary>
-		[Index]
-		[ServiceScopeId]
-		public virtual long? ServiceDataScopeId { get; set; }
+		[MaxLength(100)]
+		public virtual string SubTitle { get; set; }
 
+		///<title>提示</title>
 		/// <summary>
-		/// 对象状态
+		/// 用于UI显示
 		/// </summary>
-		public virtual EntityLogicState LogicState { get; set; }
+		[MaxLength(100)]
+		public virtual string Remarks { get; set; }
 
+		///<title>说明</title>
 		/// <summary>
-		/// 所有人
+		/// 用于UI显示
 		/// </summary>
-		[Index]
-		public virtual long? OwnerId { get; set; }
+		[MaxLength(200)]
+		public virtual string Description { get; set; }
 
-
+		///<title>备注</title>
 		/// <summary>
-		/// 创建时间
+		/// 内部使用，不用于UI显示
 		/// </summary>
-		[Index]
-		[CreatedTime]
-		public virtual DateTime CreatedTime { get; set; }
+		[MaxLength(200)]
+		public virtual string Memo { get; set; }
 
-
+		///<title>图片</title>
 		/// <summary>
-		/// 修改人
+		/// 用于UI显示
 		/// </summary>
-		[Index]
-		public virtual long? UpdatorId { get; set; }
+		[MaxLength(100)]
+		public virtual string Image { get; set; }
 
+		///<title>图标</title>
 		/// <summary>
-		/// 修改时间
+		/// 用于UI显示
 		/// </summary>
-		[UpdatedTime]
-		public virtual DateTime UpdatedTime { get; set; }
-
-		/// <summary>
-		/// 内部备注
-		/// </summary>
-		public virtual string InternalRemarks { get; set; }
-
-		/// <summary>
-		/// 乐观锁时间戳
-		/// </summary>
-		[ConcurrencyCheck]
-		[Timestamp]
-		
-		public virtual byte[] TimeStamp { get; set; }
+		[MaxLength(100)]
+		public virtual string Icon { get; set; }
 
 	}
 
-	public class ObjectEntityBase : ObjectEntityBase<long>
+	public class DataUIObjectEntityBase : DataUIObjectEntityBase<long>
 	{
 
 	}

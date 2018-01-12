@@ -145,8 +145,8 @@ namespace SF.Common.Notifications.DataModels
 		public string Error { get; set; }
 
 
-		[InverseProperty(nameof(NotificationSendRecord.Notification))]
-		public ICollection<NotificationSendRecord> SendRecords { get; set; }
+		[InverseProperty(nameof(DataNotificationSendRecord.Notification))]
+		public ICollection<DataNotificationSendRecord> SendRecords { get; set; }
 	}
 
 }

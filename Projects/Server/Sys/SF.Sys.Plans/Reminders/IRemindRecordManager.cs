@@ -28,6 +28,9 @@ namespace SF.Sys.Reminders
 	{
 
 	}
+	/// <summary>
+	/// 提醒记录管理
+	/// </summary>
 	[NetworkService]
 	[EntityManager]
 	public interface IRemindRecordManager :

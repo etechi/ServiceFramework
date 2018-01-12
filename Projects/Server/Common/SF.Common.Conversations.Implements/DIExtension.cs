@@ -52,9 +52,9 @@ namespace SF.Sys.Services
 
 
 			sc.AddDataModules<
-				SF.Common.Documents.DataModels.Document,
-				SF.Common.Documents.DataModels.DocumentCategory,
-				SF.Common.Documents.DataModels.DocumentAuthor,
+				SF.Common.Documents.DataModels.DataDocument,
+				SF.Common.Documents.DataModels.DataDocumentCategory,
+				SF.Common.Documents.DataModels.DataDocumentAuthor,
 				SF.Common.Documents.DataModels.DocumentTag,
 				SF.Common.Documents.DataModels.DocumentTagReference
 				>(TablePrefix ?? "Common");

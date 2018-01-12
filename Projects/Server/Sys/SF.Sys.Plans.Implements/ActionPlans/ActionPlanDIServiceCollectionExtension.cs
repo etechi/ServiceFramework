@@ -28,7 +28,7 @@ namespace SF.Sys.Services
 		{
 			sc.AddDataModules<
 				   SF.Sys.ActionPlans.DataModels.ActionPlan,
-				   SF.Sys.ActionPlans.DataModels.ActionPlanAction,
+				   SF.Sys.ActionPlans.DataModels.DataActionPlanAction,
 				   SF.Sys.ActionPlans.DataModels.ActionPlanExecutor
 				   >(
 				   TablePrefix ?? "Sys"

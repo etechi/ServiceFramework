@@ -37,7 +37,7 @@ namespace SF.Sys.Services
 		{
 			sc.AddDataModules<
 				   SF.Sys.Reminders.DataModels.Reminder,
-				   SF.Sys.Reminders.DataModels.RemindRecord
+				   SF.Sys.Reminders.DataModels.DataRemindRecord
 				   >(
 				   TablePrefix ?? "Sys"
 				   );

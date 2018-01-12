@@ -31,7 +31,7 @@ namespace SF.Common.Comments.DataModels
 	/// <typeparam name="TComment"></typeparam>
 	[Table("Comment")]
 	public class Comment<TComment> :
-		ObjectEntityBase
+		DataObjectEntityBase
 		where TComment : Comment<TComment>
 	{
 		/// <summary>

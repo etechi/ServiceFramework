@@ -42,6 +42,9 @@ namespace SF.Sys.Reminders.Models
 		[ReadOnly(true)]
 		public string Description { get; set; }
 	}
+	/// <summary>
+	/// 提醒
+	/// </summary>
 	[EntityObject]
 	public class Reminder : SF.Sys.AtLeastOnceTasks.Models.AtLeastOnceTaskEntityBase<long>
 	{	

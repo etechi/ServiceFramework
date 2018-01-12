@@ -23,7 +23,7 @@ namespace SF.Common.Members.DataModels
 
 	}
 	[Table("Member")]
-	public class Member<TMember> : ObjectEntityBase<long>
+	public class Member<TMember> : DataObjectEntityBase<long>
 		where TMember: Member<TMember>
 	{
 

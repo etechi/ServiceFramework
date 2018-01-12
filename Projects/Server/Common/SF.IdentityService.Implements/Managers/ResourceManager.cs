@@ -24,7 +24,7 @@ namespace SF.Auth.IdentityServices.Managers
 			Models.ResourceInternal,
 			ResourceQueryArgument,
 			Models.ResourceEditable,
-			DataModels.Resource
+			DataModels.DataResource
 			>,
 		IResourceManager
 	{

@@ -27,7 +27,7 @@ namespace SF.Common.Notifications.DataModels
 	/// 通知发送策略
 	/// </summary>
 	[Table("NotificationSendPolicy")]
-	public class NotificationSendPolicy : SF.Sys.Entities.DataModels.ObjectEntityBase
+	public class NotificationSendPolicy : SF.Sys.Entities.DataModels.DataObjectEntityBase
 	{
 		/// <summary>
 		/// 策略标识

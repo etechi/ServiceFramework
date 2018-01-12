@@ -21,7 +21,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Sys.Entities.DataModels
 {
 
-	public abstract class EventEntityBase<K> : IEntityWithId<K>, IEventEntity
+	public abstract class DataEventEntityBase<K> : IEntityWithId<K>, IEventEntity
 		where K:IEquatable<K>
 	{
 		/// <summary>
@@ -51,7 +51,7 @@ namespace SF.Sys.Entities.DataModels
 
 	}
 
-	public class EventEntityBase : EventEntityBase<long>
+	public class DataEventEntityBase : DataEventEntityBase<long>
 	{
 
 	}

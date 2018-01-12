@@ -27,7 +27,7 @@ namespace SF.Common.Documents.Management
 		}
 	}
 	public class DocumentCategoryManager<TCategoryInternal> :
-		AutoModifiableEntityManager<ObjectKey<long>, TCategoryInternal, TCategoryInternal, DocumentCategoryQueryArgument, TCategoryInternal, DataModels.DocumentCategory>,
+		AutoModifiableEntityManager<ObjectKey<long>, TCategoryInternal, TCategoryInternal, DocumentCategoryQueryArgument, TCategoryInternal, DataModels.DataDocumentCategory>,
 		IDocumentCategoryManager<TCategoryInternal>
 		where TCategoryInternal : CategoryInternal
 	{

@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(ClaimType))]
-	public class ClaimType : ObjectEntityBase<string>
+	public class ClaimType : DataObjectEntityBase<string>
 	{
 		[MaxLength(100)]
 		[Required]

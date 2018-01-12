@@ -21,7 +21,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(Scope))]
-	public class Scope : ObjectEntityBase<string>
+	public class Scope : DataObjectEntityBase<string>
 	{
 		[Required]
 		[MaxLength(100)]

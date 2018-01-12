@@ -26,9 +26,9 @@ namespace SF.Sys.ActionPlans.DataModels
 	/// 动作计划
 	/// </summary>
 	[Table("ActionPlan")]
-    public class ActionPlan : ObjectEntityBase
+    public class ActionPlan : DataObjectEntityBase
 	{
-		[InverseProperty(nameof(ActionPlanAction.Plan))]
-		public ICollection<ActionPlanAction> Actions { get; set; }
+		[InverseProperty(nameof(DataActionPlanAction.Plan))]
+		public ICollection<DataActionPlanAction> Actions { get; set; }
 	}
 }

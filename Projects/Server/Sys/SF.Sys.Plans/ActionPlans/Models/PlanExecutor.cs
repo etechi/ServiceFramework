@@ -20,7 +20,7 @@ using System;
 namespace SF.Sys.ActionPlans.Models
 {
 	[EntityObject]
-	public class PlanExecutor : ObjectEntityBase<string>
+	public class PlanExecutor : DataObjectEntityBase<string>
 	{
 		/// <summary>
 		/// 执行状态

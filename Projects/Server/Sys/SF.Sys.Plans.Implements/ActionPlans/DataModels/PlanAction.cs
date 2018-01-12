@@ -24,7 +24,7 @@ namespace SF.Sys.ActionPlans.DataModels
 	/// 调用实例
 	/// </summary>
 	[Table("ActionPlanAction")]
-    public class ActionPlanAction : ItemEntityBase<ActionPlan>
+    public class DataActionPlanAction : DataItemEntityBase<ActionPlan>
 	{
 		[Index]
 		public long PlanId { get; set; }

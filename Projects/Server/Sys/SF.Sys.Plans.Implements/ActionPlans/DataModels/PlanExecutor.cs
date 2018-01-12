@@ -25,7 +25,7 @@ namespace SF.Sys.ActionPlans.DataModels
 	/// 计划执行器
 	/// </summary>
 	[Table("ActionPlanExecutor")]
-    public class ActionPlanExecutor : ObjectEntityBase<string>
+    public class ActionPlanExecutor : DataObjectEntityBase<string>
 	{
 		[Index]
 		public long PlanId { get; set; }

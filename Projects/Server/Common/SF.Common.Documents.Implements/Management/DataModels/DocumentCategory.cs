@@ -18,7 +18,7 @@ using SF.Sys.Entities.DataModels;
 
 namespace SF.Common.Documents.DataModels
 {
-	public class DocumentCategory : DocumentCategory<Document, DocumentAuthor, DocumentCategory, DocumentTag, DocumentTagReference>
+	public class DataDocumentCategory : DataDocumentCategory<DataDocument, DataDocumentAuthor, DataDocumentCategory, DocumentTag, DocumentTagReference>
 	{ }
 
 	/// <summary>
@@ -30,11 +30,11 @@ namespace SF.Common.Documents.DataModels
 	/// <typeparam name="TTag"></typeparam>
 	/// <typeparam name="TTagReference"></typeparam>
 	[Table("DocumentCategory")]
-    public class DocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference> :
-		UITreeContainerEntityBase<TCategory,TDocument>
-		where TDocument : Document<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TAuthor : DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TCategory : DocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
+    public class DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference> :
+		DataUITreeContainerEntityBase<TCategory,TDocument>
+		where TDocument : DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TAuthor : DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TCategory : DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTag : DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTagReference : DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{

@@ -29,7 +29,7 @@ namespace SF.Sys.Services
 		}
 		public static void AddManagedServiceAdminServices(this IServiceCollection sc, string TablePrefix = null)
 		{
-			sc.AddDataModules<Management.DataModels.ServiceInstance>(TablePrefix ?? "Sys");
+			sc.AddDataModules<Management.DataModels.DataServiceInstance>(TablePrefix ?? "Sys");
 
 			sc.EntityServices(
 				"SysService",

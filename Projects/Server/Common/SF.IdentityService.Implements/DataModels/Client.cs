@@ -21,8 +21,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(Client))]
-	public class Client: UIObjectEntityBase<string>
+	[Table("Client")]
+	public class DataClient : DataUIObjectEntityBase<string>
 	{
 		[MaxLength(100)]
 		[Required]

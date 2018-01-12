@@ -76,7 +76,7 @@ namespace SF.Sys.Reminders
 
 		async Task ExecTasks(DataModels.Reminder Model,IRemindAction[] actions)
 		{
-			var recSet = DataContext.Set<DataModels.RemindRecord>();
+			var recSet = DataContext.Set<DataModels.DataRemindRecord>();
 			var recs = await recSet
 				.AsQueryable()
 				.Where(r => r.ReminderId == Model.Id && r.Time == Now)
@@ -92,9 +92,9 @@ namespace SF.Sys.Reminders
 					retry = true;
 				}
 				else
-					rec = recSet.Add(new DataModels.RemindRecord
+					rec = recSet.Add(new DataModels.DataRemindRecord
 					{
-						Id = await IdentGenerator.GenerateAsync<DataModels.RemindRecord>(),
+						Id = await IdentGenerator.GenerateAsync<DataModels.DataRemindRecord>(),
 
 						ReminderId = Model.Id,
 

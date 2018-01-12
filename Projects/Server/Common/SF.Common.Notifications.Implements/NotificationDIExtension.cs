@@ -33,7 +33,7 @@ namespace SF.Sys.Services
 			)
 		{
 			sc.AddDataModules<
-				SF.Common.Notifications.DataModels.NotificationSendRecord,
+				SF.Common.Notifications.DataModels.DataNotificationSendRecord,
 				SF.Common.Notifications.DataModels.NotificationSendPolicy,
 				SF.Common.Notifications.DataModels.Notification,
 				SF.Common.Notifications.DataModels.NotificationTarget,

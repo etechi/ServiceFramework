@@ -44,7 +44,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		public string ResourceId { get; set; }
 
 		[ForeignKey(nameof(ResourceId))]
-		public Resource Resource { get; set; }
+		public DataResource Resource { get; set; }
 
 
 	}

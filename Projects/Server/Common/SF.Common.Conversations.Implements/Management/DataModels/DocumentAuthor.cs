@@ -24,7 +24,7 @@ using SF.Sys.Entities.DataModels;
 
 namespace SF.Common.Documents.DataModels
 {
-	public class DocumentAuthor : DocumentAuthor<Document, DocumentAuthor, DocumentCategory, DocumentTag, DocumentTagReference>
+	public class DataDocumentAuthor : DataDocumentAuthor<DataDocument, DataDocumentAuthor, DataDocumentCategory, DocumentTag, DocumentTagReference>
 	{ }
 
 	/// <summary>
@@ -37,16 +37,16 @@ namespace SF.Common.Documents.DataModels
 	/// <typeparam name="TTagReference"></typeparam>
 	[Table("DocumentAuthor")]
 	
-    public class DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference> :
-		UIObjectEntityBase
-		where TDocument : Document<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TAuthor : DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TCategory : DocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
+    public class DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference> :
+		DataUIObjectEntityBase
+		where TDocument : DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TAuthor : DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TCategory : DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTag : DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTagReference : DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{
 
-		[InverseProperty(nameof(Document<TDocument, TAuthor, TCategory, TTag, TTagReference>.Author))]
+		[InverseProperty(nameof(DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>.Author))]
 		public ICollection<TDocument> Documents { get; set; }
 
 	}

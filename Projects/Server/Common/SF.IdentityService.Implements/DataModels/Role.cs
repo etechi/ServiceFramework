@@ -21,7 +21,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(Role))]
-	public class Role : SF.Sys.Entities.DataModels.ObjectEntityBase<string>
+	public class Role : SF.Sys.Entities.DataModels.DataObjectEntityBase<string>
 	{
 		[MaxLength(100)]
 		[Required]

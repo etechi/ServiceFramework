@@ -23,9 +23,9 @@ using SF.Sys.Data;
 namespace SF.Sys.MenuServices.Entity.DataModels
 {
 	[Table("MenuItem")]
-	public class MenuItem<TMenu,TMenuItem> : UIObjectEntityBase
-		where TMenu : Menu<TMenu, TMenuItem>
-		where TMenuItem : MenuItem<TMenu, TMenuItem>
+	public class DataMenuItem<TMenu,TMenuItem> : DataUIObjectEntityBase
+		where TMenu : DataMenu<TMenu, TMenuItem>
+		where TMenuItem : DataMenuItem<TMenu, TMenuItem>
 
 	{
 
@@ -61,7 +61,7 @@ namespace SF.Sys.MenuServices.Entity.DataModels
 
 	}
 
-	public class MenuItem : MenuItem<Menu, MenuItem>
+	public class MenuItem : DataMenuItem<DataMenu, MenuItem>
 	{ }
 }
 

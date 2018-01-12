@@ -22,9 +22,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Sys.MenuServices.Entity.DataModels
 {
 	[Table("Menu")]
-	public class Menu<TMenu,TMenuItem> : ObjectEntityBase
-		where TMenu : Menu<TMenu, TMenuItem>
-		where TMenuItem : MenuItem<TMenu, TMenuItem>
+	public class DataMenu<TMenu,TMenuItem> : DataObjectEntityBase
+		where TMenu : DataMenu<TMenu, TMenuItem>
+		where TMenuItem : DataMenuItem<TMenu, TMenuItem>
 	{
 		[Index("ident",Order =1)]
 		public override long? ServiceDataScopeId { get; set; }
@@ -35,11 +35,11 @@ namespace SF.Sys.MenuServices.Entity.DataModels
 		public string Ident { get; set; }
 
 
-		[InverseProperty(nameof(MenuItem<TMenu, TMenuItem>.Menu))]
+		[InverseProperty(nameof(DataMenuItem<TMenu, TMenuItem>.Menu))]
 		public ICollection<TMenuItem> Items { get; set; }
 	}
 
-	public class Menu : Menu<Menu, MenuItem>
+	public class DataMenu : DataMenu<DataMenu, MenuItem>
 	{ }
 }
 

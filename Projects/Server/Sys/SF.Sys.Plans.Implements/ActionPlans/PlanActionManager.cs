@@ -24,7 +24,7 @@ namespace SF.Sys.ActionPlans
 {
 
 	public class PlanActionManager :
-		AutoQuerableEntitySource<ObjectKey<long>,PlanAction,PlanAction,PlanActionQueryArgument,DataModels.ActionPlanAction>,
+		AutoQuerableEntitySource<ObjectKey<long>,PlanAction,PlanAction,PlanActionQueryArgument,DataModels.DataActionPlanAction>,
 		IPlanActionManager
 	{
 		public PlanActionManager(IEntityServiceContext ServiceContext) : base(ServiceContext)

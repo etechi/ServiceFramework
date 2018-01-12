@@ -19,7 +19,7 @@ using SF.Sys.AtLeastOnceTasks.Models;
 namespace SF.Sys.AtLeastOnceTasks.DataModels
 {
 	public class AtLeastOnceTaskEntityBase<TKey> : 
-		ObjectEntityBase<TKey>, 
+		DataObjectEntityBase<TKey>, 
 		IAtLeastOnceTask
 		where TKey:IEquatable<TKey>
 	{

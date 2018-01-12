@@ -36,7 +36,7 @@ namespace SF.Common.Notifications.Senders
 		class SendAction : IRemindAction
 		{
 			public TypedInstanceResolver<INotificationSendProvider> NotificationSendProviderResolver { get; set; }
-			public DataModels.NotificationSendRecord SendRecord { get; set; }
+			public DataModels.DataNotificationSendRecord SendRecord { get; set; }
 			public IDataContext DataContext { get; set; }
 			public DateTime Time => SendRecord.SendTime;
 			public DateTime Now { get; set; }
@@ -81,7 +81,7 @@ namespace SF.Common.Notifications.Senders
 		public async Task<IEnumerable<IRemindAction>> GetActions(long UserId, DateTime Time)
 		{
 			var now = TimeService.Now;
-			var q = from r in DataContext.Set<DataModels.NotificationSendRecord>().AsQueryable()
+			var q = from r in DataContext.Set<DataModels.DataNotificationSendRecord>().AsQueryable()
 					where r.UserId == UserId &&
 							r.Status == Models.SendStatus.Sending &&
 							r.SendTime <= now

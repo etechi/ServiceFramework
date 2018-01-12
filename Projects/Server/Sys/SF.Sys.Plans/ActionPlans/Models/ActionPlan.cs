@@ -20,7 +20,7 @@ using System.Collections.Generic;
 namespace SF.Sys.ActionPlans.Models
 {
 	[EntityObject]
-	public class ActionPlan : ObjectEntityBase
+	public class ActionPlan : DataObjectEntityBase
 	{	
 		
 		[TreeNodes]

@@ -24,7 +24,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Sys.Reminders.DataModels
 {
 	[Table("RemindRecord")]
-	public class RemindRecord : EventEntityBase
+	public class DataRemindRecord : DataEventEntityBase
 	{
 		
 		[Index("action", IsUnique = true, Order = 1)]

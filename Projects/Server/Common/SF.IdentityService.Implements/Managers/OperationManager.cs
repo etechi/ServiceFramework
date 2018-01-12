@@ -24,7 +24,7 @@ namespace SF.Auth.IdentityServices.Managers
 			Models.OperationInternal,
 			OperationQueryArgument,
 			Models.OperationInternal,
-			DataModels.Operation
+			DataModels.DataOperation
 			>,
 		IOperationManager
 	{

@@ -24,7 +24,7 @@ namespace SF.Sys.Services.Management.DataModels
 	/// 服务实例
 	/// </summary>
 	[Table("ServiceInstance")]
-	public class ServiceInstance : SF.Sys.Entities.DataModels.UITreeNodeEntityBase<ServiceInstance>
+	public class DataServiceInstance : SF.Sys.Entities.DataModels.DataUITreeNodeEntityBase<DataServiceInstance>
 	{
 		//[ForeignKey(nameof(ServiceCategoryItem))]
 		//public override long Id { get => base.Id; set => base.Id = value; }
@@ -35,10 +35,10 @@ namespace SF.Sys.Services.Management.DataModels
 		public override long? ContainerId { get; set; }
 
 		[ForeignKey(nameof(ContainerId))]
-		public override ServiceInstance Container { get; set; }
+		public override DataServiceInstance Container { get; set; }
 
 		[InverseProperty(nameof(Container))]
-		public override IEnumerable<ServiceInstance> Children { get; set; }
+		public override IEnumerable<DataServiceInstance> Children { get; set; }
 
 		/// <summary>
 		/// 服务定义ID

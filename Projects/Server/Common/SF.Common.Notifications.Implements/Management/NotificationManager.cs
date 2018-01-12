@@ -158,7 +158,7 @@ namespace SF.Common.Notifications.Management
 		{
 			foreach (var sa in nsp.Actions)
 			{
-				var sendRecord = new DataModels.NotificationSendRecord
+				var sendRecord = new DataModels.DataNotificationSendRecord
 					{
 						BizIdent = editable.BizIdent,
 						Expires = editable.Expires,
@@ -169,7 +169,7 @@ namespace SF.Common.Notifications.Management
 						Template = sa.ExtTemplateId,
 						Content = sa.ContentTemplate.Replace(editable.Args),
 						Args = Json.Stringify(editable.Args),
-						Id = await IdentGenerator.GenerateAsync<DataModels.NotificationSendRecord>(),
+						Id = await IdentGenerator.GenerateAsync<DataModels.DataNotificationSendRecord>(),
 						NotificationId = NotificationId,
 						ProviderId = sa.ProviderId,
 						Time = Now,

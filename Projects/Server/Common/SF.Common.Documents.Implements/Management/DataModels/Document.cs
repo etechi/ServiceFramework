@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Documents.DataModels
 {
-	public class Document : Document<Document, DocumentAuthor, DocumentCategory, DocumentTag, DocumentTagReference>
+	public class DataDocument : DataDocument<DataDocument, DataDocumentAuthor, DataDocumentCategory, DocumentTag, DocumentTagReference>
 	{ }
 
 	/// <summary>
@@ -34,11 +34,11 @@ namespace SF.Common.Documents.DataModels
 	/// <typeparam name="TTag"></typeparam>
 	/// <typeparam name="TTagReference"></typeparam>
 	[Table("Document")]
-	public class Document<TDocument, TAuthor, TCategory, TTag, TTagReference> :
-		UIItemEntityBase<TCategory>
-		where TDocument : Document<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TAuthor : DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TCategory : DocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
+	public class DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference> :
+		DataUIItemEntityBase<TCategory>
+		where TDocument : DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TAuthor : DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TCategory : DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTag : DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTagReference : DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{

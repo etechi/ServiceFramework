@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Annotations;
 using SF.Sys.Entities.DataModels;
+using SF.Sys.Entities.Models;
 using SF.Sys.Services.Management.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

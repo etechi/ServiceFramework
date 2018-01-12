@@ -15,7 +15,7 @@ namespace SF.Sys.Reminders
 			RemindRecord,
 			RemindRecordQueryArgument,
 			RemindRecord,
-			DataModels.RemindRecord
+			DataModels.DataRemindRecord
 			>,
 		IRemindRecordManager
 	{

@@ -19,8 +19,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(Resource))]
-	public class Resource : SF.Sys.Entities.DataModels.UIObjectEntityBase<string>
+	[Table("Resource")]
+	public class DataResource : SF.Sys.Entities.DataModels.DataUIObjectEntityBase<string>
 	{
 		[MaxLength(100)]
 		[Required]

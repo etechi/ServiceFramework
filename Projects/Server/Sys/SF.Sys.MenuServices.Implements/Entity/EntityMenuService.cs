@@ -29,8 +29,8 @@ namespace SF.Sys.MenuServices.Entity
 	public class EntityMenuService<TMenu,TMenuItem> :
 		ModidifiableEntityManager<ObjectKey<long>, Models.Menu,  MenuQueryArgument, Models.MenuEditable, TMenu>,
 		IMenuService
-		where TMenu: DataModels.Menu<TMenu,TMenuItem>,new()
-		where TMenuItem : DataModels.MenuItem<TMenu, TMenuItem>, new()
+		where TMenu: DataModels.DataMenu<TMenu,TMenuItem>,new()
+		where TMenuItem : DataModels.DataMenuItem<TMenu, TMenuItem>, new()
 	{
 		public Lazy<IDataSet<TMenuItem>> MenuItemSet { get; }
 		

@@ -41,7 +41,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		public string ResourceId { get; set; }
 
 		[ForeignKey(nameof(ResourceId))]
-		public Resource Resource { get; set; }
+		public DataResource Resource { get; set; }
 
 		/// <summary>
 		/// 操作区域ID
@@ -53,7 +53,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		public string OperationId { get; set; }
 
 		[ForeignKey(nameof(OperationId))]
-		public Operation Operation { get; set; }
+		public DataOperation Operation { get; set; }
 
 	}
 }

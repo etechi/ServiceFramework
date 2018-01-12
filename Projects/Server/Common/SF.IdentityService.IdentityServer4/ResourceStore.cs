@@ -36,7 +36,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 		public async Task<ApiResource> FindApiResourceAsync(string name)
 		{
 			var re = await (
-				from r in DataContext.Set<DataModels.Resource>().AsQueryable()
+				from r in DataContext.Set<DataModels.DataResource>().AsQueryable()
 				where r.Id == name && !r.IsIdentityResource
 				where r.LogicState == EntityLogicState.Enabled
 				select new
@@ -114,7 +114,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 		public async Task<Resources> GetAllResourcesAsync()
 		{
 			var ress = await (
-				from r in DataContext.Set<DataModels.Resource>().AsQueryable()
+				from r in DataContext.Set<DataModels.DataResource>().AsQueryable()
 				where r.LogicState == EntityLogicState.Enabled
 				select new
 				{

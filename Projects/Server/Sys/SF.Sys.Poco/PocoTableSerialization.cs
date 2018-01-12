@@ -71,8 +71,6 @@ namespace SF.Sys
 				})
 				);
 
-			public static Func<T, string[]> FuncSerialize;
-			static Func<string[], T> FuncDeserialize;
 			public static Func<T,string>[] GetGetters(string[] Props)
 			{
 				return Props.Select(p => Getters[p]).Select(g=>g.Value).ToArray();

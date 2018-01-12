@@ -27,7 +27,7 @@ namespace SF.Common.Documents.Management
 		}
 	}
 	public class DocumentManager<TDocumentInternal, TDocumentEditable> :
-		AutoModifiableEntityManager<ObjectKey<long>, TDocumentInternal, TDocumentInternal, DocumentQueryArguments, TDocumentEditable, DataModels.Document>,
+		AutoModifiableEntityManager<ObjectKey<long>, TDocumentInternal, TDocumentInternal, DocumentQueryArguments, TDocumentEditable, DataModels.DataDocument>,
 		IDocumentManager<TDocumentInternal, TDocumentEditable>
 		where TDocumentInternal : DocumentInternal
 		where TDocumentEditable : DocumentEditable

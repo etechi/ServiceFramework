@@ -25,9 +25,9 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 {
 	public class ClientStore : IClientStore
 	{
-		IDataSet<DataModels.Client> Clients { get; }
+		IDataSet<DataModels.DataClient > Clients { get; }
 		
-		public ClientStore(IDataSet<DataModels.Client> Clients)
+		public ClientStore(IDataSet<DataModels.DataClient > Clients)
 		{
 			this.Clients = Clients;
 		}

@@ -32,7 +32,7 @@ namespace SF.Sys.Services.Management
 	/// 默认服务实例管理
 	/// </summary>
 	public class ServiceInstanceManager :
-		ModidifiableEntityManager<ObjectKey<long>,ServiceInstanceInternal, ServiceInstanceQueryArgument, ServiceInstanceEditable, DataModels.ServiceInstance>,
+		ModidifiableEntityManager<ObjectKey<long>,ServiceInstanceInternal, ServiceInstanceQueryArgument, ServiceInstanceEditable, DataModels.DataServiceInstance>,
 		IServiceInstanceManager
 	// IServiceConfigLoader,
 	//IServiceInstanceLister
@@ -50,13 +50,13 @@ namespace SF.Sys.Services.Management
 			this.Metadata = Metadata;
 		}
 
-		protected override PagingQueryBuilder<DataModels.ServiceInstance> PagingQueryBuilder =>
-			new PagingQueryBuilder<DataModels.ServiceInstance>(
+		protected override PagingQueryBuilder<DataModels.DataServiceInstance> PagingQueryBuilder =>
+			new PagingQueryBuilder<DataModels.DataServiceInstance>(
 				"name",
 				b => b.Add("name", i => i.Name));
 
 
-		protected override async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IContextQueryable<DataModels.ServiceInstance> Query)
+		protected override async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IContextQueryable<DataModels.DataServiceInstance> Query)
 		{
 			var re= await Query.SelectUIObjectEntity(i => new Models.ServiceInstanceEditable
 			{
@@ -94,7 +94,7 @@ namespace SF.Sys.Services.Management
 			return re;
 		}
 
-		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToDetail(IContextQueryable<DataModels.ServiceInstance> Query)
+		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToDetail(IContextQueryable<DataModels.DataServiceInstance> Query)
 		{
 			return Query.SelectUIObjectEntity(i => new Models.ServiceInstanceInternal
 			{
@@ -113,7 +113,7 @@ namespace SF.Sys.Services.Management
 			});
 		}
 
-		protected override IContextQueryable<DataModels.ServiceInstance> OnBuildQuery(IContextQueryable<DataModels.ServiceInstance> Query, ServiceInstanceQueryArgument Arg)
+		protected override IContextQueryable<DataModels.DataServiceInstance> OnBuildQuery(IContextQueryable<DataModels.DataServiceInstance> Query, ServiceInstanceQueryArgument Arg)
 		{
 			if (Arg.Id != null)
 				return Query.Filter(Arg.Id, i => i.Id);
@@ -293,7 +293,7 @@ namespace SF.Sys.Services.Management
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			//UIEnsure.NotNull(ctx.Model.Id, "未设置服务实例ID");
-			ctx.Model.Id = await IdentGenerator.GenerateAsync<DataModels.ServiceInstance>();
+			ctx.Model.Id = await IdentGenerator.GenerateAsync<DataModels.DataServiceInstance>();
 			ctx.Model.Create(Now);
 		}
 
@@ -320,7 +320,7 @@ namespace SF.Sys.Services.Management
 			//if (ctx.Model.IsDefaultService)
 			//throw new PublicInvalidOperationException("不能删除默认服务");
 
-			await ServiceContext.RemoveAllAsync<ObjectKey<long>,ServiceInstanceEditable, DataModels.ServiceInstance>(
+			await ServiceContext.RemoveAllAsync<ObjectKey<long>,ServiceInstanceEditable, DataModels.DataServiceInstance>(
 				RemoveAsync,
 				q => q.ContainerId == ctx.Model.Id
 				);

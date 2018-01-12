@@ -14,38 +14,66 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
-using SF.Sys.Entities.DataModels;
+using SF.Sys.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SF.Sys.Reminders.Models
 {
+	/// <summary>
+	/// 提醒记录
+	/// </summary>
 	[EntityObject]
 	public class RemindRecord : EventEntityBase
 	{
+		/// <summary>
+		/// 名称
+		/// </summary>
 		[MaxLength(100)]
 		[Required]
+		[TableVisible]
 		public string Name { get; set; }
 
+		/// <summary>
+		/// 动作
+		/// </summary>
 		[MaxLength(100)]
 		[Required]
+		[TableVisible]
 		public string Action { get; set; }
 
+		/// <summary>
+		/// 描述
+		/// </summary>
 		[MaxLength(200)]
 		public string Description { get; set; }
 
+		/// <summary>
+		/// 错误
+		/// </summary>
 		[MaxLength(200)]
 		public string Error { get; set; }
 
+		/// <summary>
+		/// 提醒
+		/// </summary>
 		[EntityIdent(typeof(Reminder),nameof(ReminderName))]
 		public long ReminderId { get; set; }
 
-
+		/// <summary>
+		/// 提醒名称
+		/// </summary>
+		[TableVisible]
+		[Ignore]
 		public string ReminderName { get; set; }
 
+		/// <summary>
+		/// 业务跟踪
+		/// </summary>
 		[MaxLength(100)]
 		[Required]
+		[TableVisible]
 		public string BizIdent { get; set; }
 	}
 }

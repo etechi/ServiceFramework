@@ -27,7 +27,7 @@ using System.Linq;
 namespace SF.Common.Notifications.DataModels
 {
 	[Table("NotificationSendRecord")]
-	public class NotificationSendRecord : EventEntityBase,ISendArgument
+	public class DataNotificationSendRecord : DataEventEntityBase, ISendArgument
 	{
 		/// <summary>
 		/// 状态

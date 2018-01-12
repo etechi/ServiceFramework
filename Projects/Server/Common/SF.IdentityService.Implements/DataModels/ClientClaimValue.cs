@@ -32,7 +32,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		public string ClientId { get; set; }
 
 		[ForeignKey(nameof(ClientId))]
-		public Client Client { get; set; }
+		public DataClient  Client { get; set; }
 
 	}
 }

@@ -19,7 +19,7 @@ using SF.Sys.Data;
 
 namespace SF.Common.Documents.DataModels
 {
-	public class DocumentTag : DocumentTag<Document, DocumentAuthor, DocumentCategory, DocumentTag, DocumentTagReference>
+	public class DocumentTag : DocumentTag<DataDocument, DataDocumentAuthor, DataDocumentCategory, DocumentTag, DocumentTagReference>
 	{ }
 
 	/// <summary>
@@ -32,10 +32,10 @@ namespace SF.Common.Documents.DataModels
 	/// <typeparam name="TTagReference"></typeparam>
 	[Table("DocumentTag")]
     public class DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference> :
-		ObjectEntityBase
-		where TDocument : Document<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TAuthor : DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TCategory : DocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		DataObjectEntityBase
+		where TDocument : DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TAuthor : DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TCategory : DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTag : DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTagReference : DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{

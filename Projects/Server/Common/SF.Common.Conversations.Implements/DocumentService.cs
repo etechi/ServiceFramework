@@ -24,10 +24,10 @@ using SF.Sys.Entities;
 namespace SF.Common.Documents
 {
 	public class DocumentService : 
-		DocumentService<Document, Category, DataModels.Document, DataModels.DocumentAuthor, DataModels.DocumentCategory, DataModels.DocumentTag, DataModels.DocumentTagReference>,
+		DocumentService<Document, Category, DataModels.DataDocument, DataModels.DataDocumentAuthor, DataModels.DataDocumentCategory, DataModels.DocumentTag, DataModels.DocumentTagReference>,
 		IDocumentService
 	{
-		public DocumentService(Lazy<IDataSet<DataModels.Document>> Documents, Lazy<IDataSet<DocumentCategory>> Categories, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(Documents, Categories, ServiceInstanceDescriptor)
+		public DocumentService(Lazy<IDataSet<DataModels.DataDocument>> Documents, Lazy<IDataSet<DataDocumentCategory>> Categories, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(Documents, Categories, ServiceInstanceDescriptor)
 		{
 		}
 	}
@@ -36,9 +36,9 @@ namespace SF.Common.Documents
 		IDocumentService<TDocumentPublic, TCategoryPublic>
 		where TDocumentPublic : Document, new()
 		where TCategoryPublic : Category, new()
-		where TDocument : DataModels.Document<TDocument, TAuthor, TCategory, TTag, TTagReference>, new()
-		where TAuthor : DataModels.DocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TCategory : DataModels.DocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TDocument : DataModels.DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>, new()
+		where TAuthor : DataModels.DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TCategory : DataModels.DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTag : DataModels.DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
 		where TTagReference : DataModels.DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 

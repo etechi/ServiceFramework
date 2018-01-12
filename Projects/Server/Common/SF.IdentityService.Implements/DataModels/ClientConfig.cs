@@ -21,7 +21,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 	[Table(nameof(ClientConfig))]
-	public class ClientConfig:SF.Sys.Entities.DataModels.ObjectEntityBase<long>
+	public class ClientConfig:SF.Sys.Entities.DataModels.DataObjectEntityBase<long>
 	{
 		///<title>发送用户声明</title>
 		/// <summary>

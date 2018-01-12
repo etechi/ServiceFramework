@@ -20,8 +20,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 
-	[Table(nameof(Operation))]
-	public class Operation : SF.Sys.Entities.DataModels.UIObjectEntityBase<string>
+	[Table("Operation")]
+	public class DataOperation : SF.Sys.Entities.DataModels.DataUIObjectEntityBase<string>
 	{
 		[MaxLength(100)]
 		[Required]
