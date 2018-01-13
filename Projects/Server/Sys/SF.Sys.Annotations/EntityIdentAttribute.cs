@@ -17,16 +17,60 @@ using System;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 用于标注当前字段为实体类型名称
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
+	public class EntityTypeAttribute : Attribute
+	{
+
+	}
+
+	/// <summary>
+	/// 用于标注当前字段为实体标识
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = true)]
 	public class EntityIdentAttribute : Attribute
 	{
+		/// <summary>
+		/// 实体类型,若指定，则当前字段为次实体类型的实体标识
+		/// </summary>
 		public Type EntityType { get; }
+
+		/// <summary>
+		/// 名称字段，实体名称字段
+		/// </summary>
 		public string NameField { get; }
+
+		/// <summary>
+		/// 列索引
+		/// </summary>
 		public int Column { get; }
+
+		/// <summary>
+		/// 筛选范围字段，若指定，则在此字段范围中选择实体
+		/// </summary>
 		public string ScopeField { get; set; }
+
+		/// <summary>
+		/// 筛选范围值，若制定，则在值范围中选择实体
+		/// </summary>
 		public object ScopeValue { get; set; }
+
+		/// <summary>
+		/// 是否为树结构父节点
+		/// </summary>
 		public bool IsTreeParentId { get; set; }
+
+		/// <summary>
+		/// 多主键字段
+		/// </summary>
 		public string MultipleKeyField { get; set; }
+
+		/// <summary>
+		/// 实体类型字段，若制定，则为此字段指定实体的实体标识
+		/// </summary>
+		public string EntityTypeField { get; set; }
 
 		public EntityIdentAttribute(Type EntityType = null, string NameField = null, int Column = 0, string MultipleKeyField = null)
 		{
