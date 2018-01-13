@@ -224,7 +224,7 @@ namespace SF.Auth.IdentityServices.Models
 		/// 客户端密钥
 		/// </summary>
 		[MaxLength(100)]
-		public string Secret { get; set; }
+		public string ClientSecrets { get; set; }
 
 	}
 

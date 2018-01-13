@@ -58,29 +58,30 @@ namespace SF.Auth.IdentityServices
 
 				var grantResources = new HashSet<string>();
 				var types = new HashSet<string>();
-				foreach (var r in ClaimTypes)
-				{
-					var p = r.Split2(':');
-					if (p.Item2 == null)
+				if(ClaimTypes!=null)
+					foreach (var r in ClaimTypes)
 					{
-						string value;
-						switch (p.Item1)
+						var p = r.Split2(':');
+						if (p.Item2 == null)
 						{
-							case PredefinedClaimTypes.Name: value = desc.name; break;
-							case PredefinedClaimTypes.Icon: value = desc.icon; break;
-							case PredefinedClaimTypes.Image: value = desc.image; break;
-							case PredefinedClaimTypes.Phone: value = desc.phone; break;
-							case PredefinedClaimTypes.Subject: value = id.ToString(); break;
-							default: types.Add(p.Item1); value = null; break;
+							string value;
+							switch (p.Item1)
+							{
+								case PredefinedClaimTypes.Name: value = desc.name; break;
+								case PredefinedClaimTypes.Icon: value = desc.icon; break;
+								case PredefinedClaimTypes.Image: value = desc.image; break;
+								case PredefinedClaimTypes.Phone: value = desc.phone; break;
+								case PredefinedClaimTypes.Subject: value = id.ToString(); break;
+								default: types.Add(p.Item1); value = null; break;
+							}
+							if (value != null)
+								claims.Add(new Claim(p.Item1, value));
 						}
-						if (value != null)
-							claims.Add(new Claim(p.Item1, value));
+						else if (p.Item1 == "g")
+						{
+							grantResources.Add(p.Item2);
+						}
 					}
-					else if (p.Item1 == "g")
-					{
-						grantResources.Add(p.Item2);
-					}
-				}
 				if (ExtraClaims != null)
 					foreach (var cc in ExtraClaims)
 						if (types.Contains(cc.Type))

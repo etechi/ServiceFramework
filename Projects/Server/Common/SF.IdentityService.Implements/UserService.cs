@@ -239,7 +239,15 @@ namespace SF.Auth.IdentityServices
 			//	ui.UserId,
 			//	Setting.AccessInfo.Value.Value
 			//	);
-			return await SetOrReturnAccessToken(ui.UserId, Arg.Expires, Arg.ReturnToken,Arg.ClientId);
+			if (Arg.Mode == SigninMode.Validate)
+				return idData.Id.ToString();
+
+			return await SetOrReturnAccessToken(
+				ui.UserId, 
+				Arg.Expires, 
+				Arg.Mode == SigninMode.AccessToken,
+				Arg.ClientId
+				);
 		}
 
 		async Task<string> SetOrReturnAccessToken(long UserId,int? Expires,bool ReturnToken,string ClientId)
