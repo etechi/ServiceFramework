@@ -31,7 +31,9 @@ namespace SF.Sys.Services
 				})
 				.AddClientStore<ClientStore>()
 				.AddProfileService<ProfileService>()
-				.AddResourceStore<ResourceStore>();
+				.AddResourceStore<ResourceStore>()
+				.AddResourceOwnerValidator<UserResourceOwnerPasswordValidator>();
+
 			//msc.AddAuthentication("Bearer")
 			//   .AddIdentityServerAuthentication(options =>
 			//   {

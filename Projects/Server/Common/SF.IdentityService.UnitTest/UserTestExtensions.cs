@@ -36,7 +36,7 @@ namespace SF.IdentityService.UnitTest
 			{
 				Ident = account,
 				Password = password,
-				ReturnToken = returnToken,
+				Mode = returnToken?SigninMode.AccessToken: SigninMode.Cookie,
 				ClientId = client
 			});
 			if (returnToken)

@@ -21,6 +21,21 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.IdentityServices
 {
+	public enum SigninMode
+	{
+		/// <summary>
+		/// 仅验证
+		/// </summary>
+		Validate,
+		/// <summary>
+		/// Cookie登录
+		/// </summary>
+		Cookie,
+		/// <summary>
+		/// 返回AccessToken
+		/// </summary>
+		AccessToken
+	}
 	public class SigninArgument
 	{
 		/// <summary>
@@ -44,9 +59,9 @@ namespace SF.Auth.IdentityServices
 		public string CaptchaCode { get; set; }
 
 		/// <summary>
-		/// 是否返回身份令牌
+		/// 验证方式
 		/// </summary>
-		public bool ReturnToken { get; set; }
+		public SigninMode Mode { get; set; }
 		
 		/// <summary>
 		/// 客户端ID

@@ -63,15 +63,16 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 		{
 			var re = await (
 				from s in DataContext.Set<DataModels.Scope>().AsQueryable()
-				where scopeNames.Contains(s.Id) && s.LogicState==EntityLogicState.Enabled
+				where scopeNames.Contains(s.Id) && s.LogicState == EntityLogicState.Enabled
 				from sr in s.Resources
-				let r=sr.Resource
+				let r = sr.Resource
 				where r.IsIdentityResource == false && r.LogicState == EntityLogicState.Enabled
 				select new
 				{
 					id = r.Id,
-					title = r.Title ,
-					desceiption = r.Description ,
+					title = r.Title,
+					desceiption = r.Description,
+					scope=s.Id,
 					resClaims = r.RequiredClaims.Select(c => c.ClaimTypeId)
 				}
 				).ToArrayAsync();
@@ -79,9 +80,14 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			if (re.Length == 0)
 				return Enumerable.Empty<ApiResource>();
 
-			return re.Select(r=>new ApiResource(r.id, r.title,r.resClaims.WithFirst("g:"+r.id))
+			//return scopeNames.Select(n => new ApiResource(n + "1", n + "1 name") {
+			//	Scopes = new[] { new Scope(n) }
+			//});
+
+			return re.Select(r => new ApiResource(r.id, r.title, r.resClaims.WithFirst("g:" + r.id))
 			{
-				Description=r.desceiption
+				Description = r.desceiption,
+				Scopes=new[] {new Scope(r.scope)}
 			}).ToArray();
 		}
 

@@ -49,6 +49,17 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			if (re == null) return null;
 			var cfg = re.cfg;
 			var cli = re.cli;
+			//var re1= new Client
+			//{
+			//	ClientId = cli.Id,
+			//	AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+
+			//	ClientSecrets =
+			//		{
+			//			new Secret((cli.ClientSecrets ??"").Sha256())
+			//		},
+			//	AllowedScopes = { "all" }
+			//};
 			return new Client
 			{
 				BackChannelLogoutSessionRequired = cfg.BackChannelLogoutSessionRequired,
@@ -71,14 +82,14 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 				ClientClaimsPrefix = cfg.ClientClaimsPrefix,
 				//PairWiseSubjectSalt = re.PairWiseSubjectSalt,
 				AllowedScopes = re.scopes.ToArray(),
-				AllowOfflineAccess = cfg.AllowOfflineAccess,
+				AllowOfflineAccess = true,//cfg.AllowOfflineAccess,
 				//Properties = re.Properties,
 				//BackChannelLogoutUri = re.BackChannelLogoutUri,
 				Enabled = cli.LogicState == EntityLogicState.Enabled,
 				ClientId = cli.Id.ToString(),
 				//ProtocolType = re.ProtocolType,
-				ClientSecrets = new[] { new Secret(cli.ClientSecrets) },
-				RequireClientSecret = cfg.RequireClientSecret,
+				ClientSecrets = new[] { new Secret(cli.ClientSecrets.Sha256()) },
+				RequireClientSecret = true,// cfg.RequireClientSecret,
 				ClientName = cli.Name,
 				ClientUri = cli.ClientUri,
 				LogoUri = cli.Icon,

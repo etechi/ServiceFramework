@@ -302,20 +302,26 @@ namespace SF.Sys.Services
 				() => new ClientConfigEditable{},
 				e =>
 				{
-					e.Name = "所有";
+					e.Name = "所有资源";
 					e.Scopes = new[]
 					{
 						new ClientScope{ScopeId=allResourceScope.Id}
 					};
 					e.AllowedGrantTypes = new[]
 					{
-						"ClientCredentials",
-						"authorization_code",
-						"AuthorizationCode",
-						"Implicit",
-						"Hybrid",
-						"ResourceOwner"
+						"password",
+						"code"
 					};
+					e.RequireClientSecret = true;
+					e.RequireConsent = true;
+					e.AllowRememberConsent = true;
+					e.FrontChannelLogoutSessionRequired = true;
+					e.BackChannelLogoutSessionRequired = true;
+					e.IdentityTokenLifetime = 300;
+					e.AccessTokenLifetime = 86400;
+					e.AuthorizationCodeLifetime = 300;
+					e.AbsoluteRefreshTokenLifetime = 2592000;
+					e.SlidingRefreshTokenLifetime = 1296000;
 				}
 				);
 			var customerConfig = await ClientConfigManager.EnsureEntity(
@@ -330,25 +336,30 @@ namespace SF.Sys.Services
 					};
 					e.AllowedGrantTypes = new[]
 					{
-						"ClientCredentials",
-						"authorization_code",
-						"AuthorizationCode",
-						"Implicit",
-						"Hybrid",
-						"ResourceOwner"
+						"code"
 					};
+					e.RequireClientSecret = true;
+					e.RequireConsent = true;
+					e.AllowRememberConsent = true;
+					e.FrontChannelLogoutSessionRequired = true;
+					e.BackChannelLogoutSessionRequired = true;
+					e.IdentityTokenLifetime = 300;
+					e.AccessTokenLifetime = 86400;
+					e.AuthorizationCodeLifetime = 300;
+					e.AbsoluteRefreshTokenLifetime = 2592000;
+					e.SlidingRefreshTokenLifetime = 1296000;
 				}
 				);
 			var ClientManager = ServiceProvider.Resolve<IClientManager>();
-			await ClientManager.ClientEnsure("local.internal", "内部系统", allResConfig.Id, "system");
-			await ClientManager.ClientEnsure("admin.console", "管理控制台", allResConfig.Id, "system");
+			await ClientManager.ClientEnsure("local.internal", "内部系统", allResConfig.Id, "pass");
+			await ClientManager.ClientEnsure("admin.console", "管理控制台", allResConfig.Id, "pass");
 
-			await ClientManager.ClientEnsure("browser.pc", "PC浏览器", customerConfig.Id, "system");
-			await ClientManager.ClientEnsure("browser.wx", "微信浏览器", customerConfig.Id, "system");
-			await ClientManager.ClientEnsure("browser.wap", "移动端浏览器", customerConfig.Id, "system");
-			await ClientManager.ClientEnsure("app.android", "安卓", customerConfig.Id, "system");
-			await ClientManager.ClientEnsure("app.ios", "IOS", customerConfig.Id, "system");
-			await ClientManager.ClientEnsure("app.other", "其他浏览器", customerConfig.Id, "system");
+			await ClientManager.ClientEnsure("browser.pc", "PC浏览器", customerConfig.Id, "pass");
+			await ClientManager.ClientEnsure("browser.wx", "微信浏览器", customerConfig.Id, "pass");
+			await ClientManager.ClientEnsure("browser.wap", "移动端浏览器", customerConfig.Id, "pass");
+			await ClientManager.ClientEnsure("app.android", "安卓", customerConfig.Id, "pass");
+			await ClientManager.ClientEnsure("app.ios", "IOS", customerConfig.Id, "pass");
+			await ClientManager.ClientEnsure("app.other", "其他浏览器", customerConfig.Id, "pass");
 
 
 			var allGrants = (from r in resPermissions
