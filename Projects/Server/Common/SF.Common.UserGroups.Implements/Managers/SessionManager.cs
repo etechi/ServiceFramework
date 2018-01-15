@@ -84,15 +84,10 @@ namespace SF.Common.Conversations.Managers
 		{
 			await base.OnUpdateModel(ctx);
 
-			if (ctx.Editable.Members != null)
-			{
-				foreach (var m in ctx.Model.Members)
-					m.JoinState = SessionMemberManager.DetectJoinState(m.SessionAccepted, m.MemberAccepted);
+			if(ctx.Editable.Members!=null)
 				ctx.Model.MemberCount =
-					ctx.Model.Members
-						.Count(m => m.LogicState == EntityLogicState.Enabled && m.JoinState==SessionJoinState.Joined );
-			}
-
+					ctx.Editable.Members
+						.Count(m => m.LogicState == EntityLogicState.Enabled);
 			if (ctx.Action == ModifyAction.Create)
 			{
 				foreach (var m in ctx.Model.Members)
@@ -105,9 +100,7 @@ namespace SF.Common.Conversations.Managers
 				DataContext.Update(ctx.Model);
 
 				ctx.Model.OwnerMemberId = ctx.Model.Members.First().Id;
-
 			}
-			
 		}
 		
 

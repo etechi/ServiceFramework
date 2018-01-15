@@ -35,7 +35,7 @@ namespace SF.Common.Conversations.Managers
 		/// 业务实体对象
 		/// </summary>
 		[EntityIdent(EntityTypeField =nameof(BizIdentType))]
-		public long? BizIdent { get; set; }
+		public long BizIdent { get; set; }
 
 		/// <summary>
 		/// 业务分组
@@ -82,8 +82,6 @@ namespace SF.Common.Conversations.Managers
 				OwnerId = Argument.OwnerId,
 				BizIdentType = Argument.SessionBizIdentType,
 				BizIdent = Argument.SessionBizIdent,
-				Name=Argument.SessionName,
-				Icon=Argument.SessionIcon,
 				Members = new[]
 				{
 					new SessionMember
@@ -91,9 +89,7 @@ namespace SF.Common.Conversations.Managers
 						BizIdent=Argument.OwnerMemberBizIdent,
 						BizIdentType=Argument.OwnerMemberBizIdentType,
 						BizType=Argument.OwnerMemberBizType,
-						OwnerId=Argument.OwnerId,
-						SessionAccepted=true,
-						MemberAccepted=true,
+						OwnerId=Argument.OwnerId
 					}
 				}
 			};

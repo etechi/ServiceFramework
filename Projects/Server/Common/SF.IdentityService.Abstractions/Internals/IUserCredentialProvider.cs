@@ -22,7 +22,8 @@ namespace SF.Auth.IdentityServices.Internals
 		登录,
 		注册,
 		找回密码,
-		验证
+		验证,
+		绑定凭证
 	}
     public interface IUserCredentialProvider
     {

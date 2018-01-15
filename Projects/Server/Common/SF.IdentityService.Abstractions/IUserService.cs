@@ -173,8 +173,31 @@ namespace SF.Auth.IdentityServices
 		/// </summary>
 		public Dictionary<string,string> ExtraArgument{get;set;}
 	}
+	public class BindCredentialArgument
+	{
+		/// <summary>
+		/// 身份验证服务ID
+		/// </summary>
+		public string CredentialProvider { get; set; }
 
-	public class SendCreateIdentityVerifyCodeArgument
+		/// <summary>
+		/// 用户
+		/// </summary>
+		public string Credential { get; set; }
+
+		/// <summary>
+		/// 人工操作验证码
+		/// </summary>
+		public string CaptchaCode { get; set; }
+
+		/// <summary>
+		/// 验证码
+		/// </summary>
+		public string VerifyCode { get; set; }
+
+	}
+
+	public class SendBindCredentialVerifyCodeArgument
 	{
 		/// <summary>
 		/// 身份验证服务
@@ -182,7 +205,7 @@ namespace SF.Auth.IdentityServices
 		public string CredentialProvider { get; set; }
 
 		/// <summary>
-		/// 人工操作验证码
+		/// 登录凭证
 		/// </summary>
 		public string Credetial { get; set; }
 
@@ -190,6 +213,10 @@ namespace SF.Auth.IdentityServices
 		/// 人工操作验证码
 		/// </summary>
 		public string CaptchaCode { get; set; }
+	}
+	public class SendCreateIdentityVerifyCodeArgument: SendBindCredentialVerifyCodeArgument
+	{
+		
 	}
 
 	public class SetPasswordArgument
@@ -223,6 +250,22 @@ namespace SF.Auth.IdentityServices
 	{
 		Task<string> Generate(long UserId, string ClientId, string[] Scopes,DateTime? Expires);
 		Task<long> Validate(string Token);
+	}
+
+	public class UserCredentialValue
+	{
+		/// <summary>
+		/// 凭证提供者
+		/// </summary>
+		public string Provider { get; set; }
+		/// <summary>
+		/// 凭证值
+		/// </summary>
+		public string Value { get; set; }
+		/// <summary>
+		/// 是否已验证
+		/// </summary>
+		public bool Verified { get; set; }
 	}
 	/// <summary>
 	/// 用户服务
@@ -313,6 +356,27 @@ namespace SF.Auth.IdentityServices
 		/// <param name="Id">用户ID</param>
 		/// <returns>用户实体</returns>
 		Task<User> GetUser(long Id);
+
+		/// <summary>
+		/// 获取用户登录凭证
+		/// </summary>
+		/// <returns>登录凭证数组</returns>
+		Task<UserCredentialValue> GetUserCredential(string Provider);
+
+		/// <summary>
+		/// 发送凭证验证信息
+		/// </summary>
+		/// <param name="Argument">参数</param>
+		/// <returns></returns>
+		Task SendBindCredentialVerifyCode(SendBindCredentialVerifyCodeArgument Argument);
+
+		/// <summary>
+		/// 绑定新凭证
+		/// </summary>
+		/// <param name="Argument">绑定参数</param>
+		/// <returns></returns>
+		Task BindCredential(BindCredentialArgument Argument);
+
 	}
 
 }

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using SF.Common.Conversations.Models;
 using SF.Services.Security;
 using SF.Sys;
-using SF.Sys.Auth;
 using SF.Sys.Data;
 using SF.Sys.Entities;
 using SF.Sys.TimeServices;
@@ -25,19 +24,16 @@ namespace SF.Common.Conversations.Managers
 	{
 		Lazy<IDataProtector> DataProtector { get; }
 		Lazy<ITimeService> TimeService { get; }
-		Lazy<IUserProfileService> UserProfileService { get; }
 
 		public SessionMemberManager(
 			IEntityServiceContext ServiceContext,
 			SessionSyncScope SessionSyncScope,
 			Lazy<IDataProtector> DataProtector,
-			Lazy<ITimeService> TimeService,
-			Lazy<IUserProfileService> UserProfileService
+			Lazy<ITimeService> TimeService
 			) : base(ServiceContext)
 		{
 			this.DataProtector = DataProtector;
 			this.TimeService = TimeService;
-			this.UserProfileService = UserProfileService;
 			SetSyncQueue(SessionSyncScope, e => e.SessionId);
 		}
 		async Task UpdateMemberCount(long SessionId,int Diff)
@@ -46,40 +42,48 @@ namespace SF.Common.Conversations.Managers
 			Session.MemberCount += Diff;
 			DataContext.Update(Session);
 		}
-		internal static SessionJoinState DetectJoinState(bool? SessionAccepted,bool? MemberAccepted)
-		{
-			return MemberAccepted.HasValue ? (
-					SessionAccepted.HasValue ?
-					(
-						MemberAccepted.Value ?
-							(SessionAccepted.Value ?
-								SessionJoinState.Joined :
-								SessionJoinState.ApplyRejected
-								) :
-							(SessionAccepted.Value ?
-								SessionJoinState.InviteRejected :
-								SessionJoinState.ApplyRejected
-							)
-					) : (
-						MemberAccepted.Value ?
-							SessionJoinState.Applying :
-							SessionJoinState.None
-					)
-				) : SessionAccepted.HasValue ?
-					SessionJoinState.Inviting :
-					SessionJoinState.None;
-
-		}
 		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			var editable = ctx.Editable;
 			var model = ctx.Model;
-			var orgExists = model.LogicState == EntityLogicState.Enabled && model.JoinState == SessionJoinState.Joined ? 1 : 0;
-			var newJoinState = DetectJoinState(editable.SessionAccepted, editable.MemberAccepted);
-			var newExists = editable.LogicState == EntityLogicState.Enabled && newJoinState == SessionJoinState.Joined ? 1 : 0;
-			var memberCountDiff = newExists - orgExists;
-			model.JoinState = newJoinState;
 
+			model.JoinState = 
+				editable.MemberAccepted.HasValue ? (
+					editable.SessionAccepted.HasValue ?
+					(
+						editable.MemberAccepted.Value ?
+							(editable.SessionAccepted.Value ?
+								SessionJoinState.Joined :
+								SessionJoinState.ApplyRejected
+								) :
+							(editable.SessionAccepted.Value ?
+								SessionJoinState.InviteRejected :
+								SessionJoinState.ApplyRejected
+							)
+					) : (
+						editable.MemberAccepted.Value ?
+							SessionJoinState.Applying :
+							SessionJoinState.None
+					)
+				) : editable.SessionAccepted.HasValue ?
+					SessionJoinState.Inviting :
+					SessionJoinState.None;
+
+
+
+			var memberCountDiff = 0;
+			if(ctx.Action==ModifyAction.Create && editable.LogicState==EntityLogicState.Enabled ||
+				ctx.Action==ModifyAction.Update && model.LogicState!=EntityLogicState.Enabled && editable.LogicState==EntityLogicState.Enabled)
+			{
+				memberCountDiff = 1;
+			}
+			else if(ctx.Action==ModifyAction.Update && 
+				model.LogicState==EntityLogicState.Enabled && 
+				editable.LogicState!=EntityLogicState.Enabled
+				)
+			{
+				memberCountDiff = -1;
+			}
 			if (memberCountDiff != 0)
 				await UpdateMemberCount(editable.SessionId, memberCountDiff);
 			await base.OnUpdateModel(ctx);
@@ -87,30 +91,16 @@ namespace SF.Common.Conversations.Managers
 		protected override async Task OnRemoveModel(IModifyContext ctx)
 		{
 			var model = ctx.Model;
-			if (model.LogicState == EntityLogicState.Enabled && model.JoinState==SessionJoinState.Joined)
+			if (model.LogicState == EntityLogicState.Enabled)
 				await UpdateMemberCount(model.SessionId, -1);
 			
 			await base.OnRemoveModel(ctx);
 		}
-		protected override async Task OnNewModel(IModifyContext ctx)
+		protected override Task OnNewModel(IModifyContext ctx)
 		{
 			var model = ctx.Model;
 			model.LastActiveTime = Now;
-
-			var editable = ctx.Editable;
-			if (!editable.OwnerId.HasValue)
-				throw new ArgumentNullException("未指定成员用户");
-
-			var user= await UserProfileService.Value.GetUser(editable.OwnerId.Value);
-			if(user==null)
-				throw new ArgumentException("找不到指定的用户");
-
-			if (editable.Name.IsNullOrEmpty())
-				editable.Name = user.Name;
-			if (editable.Icon.IsNullOrEmpty())
-				editable.Icon = user.Icon;
-
-			await base.OnNewModel(ctx);
+			return base.OnNewModel(ctx);
 		}
 
 		public async Task<long> MemberEnsure(

@@ -35,7 +35,6 @@ namespace SF.Common.Conversations.Models
 		/// 用户
 		/// </summary>
 		[EntityIdent(typeof(User), nameof(OwnerName))]
-		[Uneditable]
 		public long? OwnerId { get; set; }
 
 		/// <summary>
@@ -44,17 +43,6 @@ namespace SF.Common.Conversations.Models
 		[TableVisible]
 		[Ignore]
 		public string OwnerName { get; set; }
-		/// <summary>
-		/// 替代会话图片
-		/// </summary>
-		[StringLength(100)]
-		public string ReplaceSessionIcon { get; set; }
-
-		/// <summary>
-		/// 替代会话名称
-		/// </summary>
-		[StringLength(100)]
-		public string ReplaceSessionName { get; set; }
 
 		/// <summary>
 		/// 成员业务类型

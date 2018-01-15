@@ -57,7 +57,6 @@ namespace SF.Common.Conversations.Front
 				.Where(m => 
 					m.SessionId == SessionId && 
 					m.OwnerId == UserId &&
-					m.LogicState==EntityLogicState.Enabled &&
 					m.JoinState==SessionJoinState.Joined
 					)
 				.SingleOrDefaultAsync();
@@ -151,7 +150,7 @@ namespace SF.Common.Conversations.Front
 					BizType=m.BizType,
 					BizIdent=m.BizIdent,
 					JoinState=m.JoinState,
-					LastMessage=m.LastMessageId.HasValue && m.JoinState == SessionJoinState.Joined?new SessionMessage
+					LastMessage=lm==null && m.JoinState == SessionJoinState.Joined?null:new SessionMessage
 					{
 						Argument=lm.Argument,
 						SessionId=lm.SessionId,
@@ -159,7 +158,7 @@ namespace SF.Common.Conversations.Front
 						Id=lm.Id,
 						Time=lm.Time,
 						Type=lm.Type
-					}:null
+					}
 				};
 			var re = await rq.ToQueryResultAsync(Arg.Paging);
 			return re;
@@ -199,8 +198,8 @@ namespace SF.Common.Conversations.Front
 					 select new Session
 					 {
 						 Id = s.Id,
-						 Name = sm.ReplaceSessionName==null? s.Name:sm.ReplaceSessionName,
-						 Icon =sm.ReplaceSessionIcon==null? s.Icon:sm.ReplaceSessionIcon,
+						 Name = s.Name,
+						 Icon = s.Icon,
 						 Flags=s.Flags,
 						 SessionBizIdent=s.BizIdent,
 						 SessionBizIdentType=s.BizIdentType,
@@ -286,28 +285,26 @@ namespace SF.Common.Conversations.Front
 		{
 			var user = EnsureUserIdent();
 
-			var member = await DataContext.Set<DataModels.DataSessionMember>()
+			var memberId = await DataContext.Set<DataModels.DataSessionMember>()
 				.AsQueryable()
 				.Where(m =>
 					m.OwnerId == user &&
 					m.SessionId == Arg.SessionId &&
 					m.LogicState == EntityLogicState.Enabled
 					)
-				.Select(m => new { m.Id, m.JoinState })
+				.Select(m => m.Id)
 				.SingleOrDefaultAsync();
-			if(member==null)
-				throw new PublicDeniedException($"您已离开");
-			if(member.JoinState!=SessionJoinState.Joined)
-				throw new PublicDeniedException($"您还未加入")
-					;
-			var id =await SessionMessageManager.Value.CreateAsync(
+			if(memberId==0)
+				throw new PublicDeniedException($"您已离开此会话");
+
+			var id=await SessionMessageManager.Value.CreateAsync(
 				new Models.SessionMessage
 				{
 					Argument = Arg.Argument,
 					SessionId = Arg.SessionId,
 					Text = Arg.Text,
 					UserId=user,
-					PosterId = member.Id,
+					PosterId = memberId,
 					Type = Arg.Type,
 				});
 			return id;

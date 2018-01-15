@@ -29,7 +29,7 @@ namespace SF.Sys.Services
 				SF.Common.Conversations.DataModels.DataSession,
 				SF.Common.Conversations.DataModels.DataSessionMember,
 				SF.Common.Conversations.DataModels.DataSessionMessage
-				>(TablePrefix ?? "Conversation");
+				>(TablePrefix);
 
 
 			sc.InitServices("交谈", async (sp, sim, scope) =>

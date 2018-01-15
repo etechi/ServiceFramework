@@ -19,6 +19,7 @@ using SF.Sys;
 using SF.Sys.Auth;
 using SF.Sys.Services;
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 namespace SF.Auth.IdentityServices
@@ -384,17 +385,75 @@ namespace SF.Auth.IdentityServices
 
 		public async Task Update(User Identity)
 		{
-			var cid = await GetCurUserId();
-			if (!cid.HasValue)
-				throw new PublicDeniedException("用户未登录");
+			var cid = await EnsureCurUserId();
 			if (Identity.Id == 0)
-				Identity.Id = cid.Value;
-			else if (Identity.Id != cid.Value)
+				Identity.Id = cid;
+			else if (Identity.Id != cid)
 				throw new PublicDeniedException("禁止访问");
 
 			await Setting.IdentStorage.Value.UpdateDescription(Identity);
 		}
 
+		public async Task<UserCredentialValue> GetUserCredential(string Provider)
+		{
+			var cid = await EnsureCurUserId();
+
+			var ids = await Setting.CredentialStorage.Value.GetIdents(Provider, cid);
+			var s = ids.FirstOrDefault();
+			if (s == null)
+				return null;
+			return new UserCredentialValue
+			{
+				Provider = s.ClaimTypeId,
+				Value = s.Credential,
+				Verified = s.ConfirmedTime.HasValue
+			};
+		}
+
+		public async Task SendBindCredentialVerifyCode(SendBindCredentialVerifyCodeArgument Argument)
+		{
+			var uid=await EnsureCurUserId();
+			var CredentialProvider = GetCredentialProvider(Argument.CredentialProvider);
+			if (CredentialProvider == null)
+				throw new PublicArgumentException("无效的身份识别类型:"+ Argument.CredentialProvider);
+
+			var re=await Setting.CredentialStorage.Value.Find(
+				Argument.CredentialProvider, 
+				Argument.Credetial
+				);
+			if (re != null)
+			{
+				if (re.UserId == uid)
+					throw new PublicInvalidOperationException("您已绑定" + Argument.Credetial);
+				else
+					throw new PublicInvalidOperationException(Argument.Credetial + "已被其他用户使用");
+			}
+
+			await SendVerifyCode(
+				CredentialProvider,
+				ConfirmMessageType.绑定凭证,
+				Argument.Credetial,
+				uid,
+				null
+				);
+		}
+
+		public async Task BindCredential(BindCredentialArgument Argument)
+		{
+			var uid = await EnsureCurUserId();
+			CheckVerifyCode(
+				ConfirmMessageType.绑定凭证,
+				Argument.Credential,
+				uid,
+				Argument.VerifyCode
+				);
+			await Setting.CredentialStorage.Value.Bind(
+				Argument.CredentialProvider, 
+				Argument.Credential, 
+				true, 
+				uid
+				);
+		}
 	}
 
 }

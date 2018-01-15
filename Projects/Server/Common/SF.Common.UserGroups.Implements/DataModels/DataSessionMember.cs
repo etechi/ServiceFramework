@@ -32,18 +32,6 @@ namespace SF.Common.Conversations.DataModels
 		public override long? OwnerId { get; set; }
 		
 		/// <summary>
-		/// 替代会话图片
-		/// </summary>
-		[StringLength(100)]
-		public string ReplaceSessionIcon { get; set; }
-
-		/// <summary>
-		/// 替代会话名称
-		/// </summary>
-		[StringLength(100)]
-		public string ReplaceSessionName { get; set; }
-
-		/// <summary>
 		/// 成员业务类型
 		/// </summary>
 		public int BizType { get; set; }
