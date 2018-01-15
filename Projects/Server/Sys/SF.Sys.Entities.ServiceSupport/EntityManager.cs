@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using SF.Sys.Comments;
 
@@ -329,6 +330,91 @@ namespace SF.Sys.Entities
 				OnUpdateModel,
 				OnLoadModelForUpdate
 				);
+		}
+
+		#endregion
+
+		#region CreateOrUpdate
+		public virtual Task<(TKey Id, bool CreateNewObject)> CreateOrUpdateAsync(
+			TEditable Editable,
+			Expression<Func<TModel, bool>> Selector,
+			Action<IModifyContext> Updator,
+			Func<IModifyContext, Task> Initializer = null,
+			object ExtraArgument = null
+			)
+			=> CreateOrUpdateAsync<int>(
+			Editable,
+			Selector,
+			m =>
+			{
+				Updator(m);
+				return Task.FromResult(0);
+			},
+			Initializer,
+			ExtraArgument
+			).ContinueWith(r=>(r.Result.Id,r.Result.CreateNewObject));
+
+		public virtual Task<(T Result, TKey Id, bool CreateNewObject)> CreateOrUpdateAsync<T>(
+			TEditable Editable,
+			Expression<Func<TModel, bool>> Selector,
+			Func<IModifyContext, T> Updator,
+			Func<IModifyContext, Task> Initializer = null,
+			object ExtraArgument = null
+			)
+			=> CreateOrUpdateAsync<T>(
+			Editable,
+			Selector,
+			m => Task.FromResult(Updator(m)),
+			Initializer,
+			ExtraArgument
+			);
+		public virtual async Task<(T Result,TKey Id,bool CreateNewObject)> CreateOrUpdateAsync<T>(
+			TEditable Editable,
+			Expression<Func<TModel,bool>> Selector, 
+			Func<IModifyContext, Task<T>> Updator, 
+			Func<IModifyContext, Task> Initializer=null,
+			object ExtraArgument=null
+			)
+		{
+			var ctx = NewModifyContext();
+			var re = _SyncQueue == null ?
+					await InternalCreateOrUpdateAsync(ctx, Editable, Selector,Updator) :
+					await _SyncQueue.Queue(Editable, () =>
+						InternalCreateOrUpdateAsync(ctx, Editable, Selector, Updator, Initializer)
+						);
+			return re;
+		}
+		protected virtual async Task<(T Result, TKey Id, bool NewObjectCreated)> InternalCreateOrUpdateAsync<T>(
+			IModifyContext Context, 
+			TEditable Editable, 
+			Expression<Func<TModel, bool>> Selector, 
+			Func<IModifyContext,Task<T>> Updator, 
+			Func<IModifyContext, Task> Initializer = null, 
+			object ExtraArgument = null
+			)
+		{
+			T result=default;
+			var NewObjectCreated = false;
+			var re=await ServiceContext.InternalCreateOrUpdateAsync<TKey, TEditable, TModel, IModifyContext>(
+				Context,
+				Editable,
+				Selector,
+				async ctx=>
+				{
+					result = await Updator(ctx);
+					await OnUpdateModel(ctx);
+				},
+				async ctx=>
+				{
+					NewObjectCreated = true;
+					if (Initializer != null)
+						await Initializer(ctx);
+					await OnNewModel(ctx);
+				},
+				ExtraArgument,
+				true
+				);
+			return (result, re, NewObjectCreated);
 		}
 
 		#endregion

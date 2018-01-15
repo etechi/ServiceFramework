@@ -45,17 +45,11 @@ namespace SF.Common.Conversations.Managers
 
 	public class SessionCreateArgument
 	{
-		public string SessionBizIdentType { get; set; }
-		public long SessionBizIdent { get; set; }
+		public string BizIdentType { get; set; }
+		public long BizIdent { get; set; }
 
-		public string SessionName { get; set; }
-		public string SessionIcon { get; set; }
-
+		public string Name { get; set; }
 		public long OwnerId { get; set; }
-		public int OwnerMemberBizType { get; set; }
-		public string OwnerMemberBizIdentType { get; set; }
-		public long? OwnerMemberBizIdent { get; set; }
-		
 	}
 
 
@@ -68,38 +62,13 @@ namespace SF.Common.Conversations.Managers
 		IEntitySource<ObjectKey<long>, Session, SessionQueryArgument>,
 		IEntityManager<ObjectKey<long>, SessionEditable>
 	{
-
+		
 		
 	}
 
 	public static class SessionManagerExtension
 	{
-		public static async Task<long> CreateSession(this ISessionManager SessionManager,SessionCreateArgument Argument)
-		{
-			var editable = new Models.SessionEditable
-			{
-				LogicState = EntityLogicState.Enabled,
-				OwnerId = Argument.OwnerId,
-				BizIdentType = Argument.SessionBizIdentType,
-				BizIdent = Argument.SessionBizIdent,
-				Name=Argument.SessionName,
-				Icon=Argument.SessionIcon,
-				Members = new[]
-				{
-					new SessionMember
-					{
-						BizIdent=Argument.OwnerMemberBizIdent,
-						BizIdentType=Argument.OwnerMemberBizIdentType,
-						BizType=Argument.OwnerMemberBizType,
-						OwnerId=Argument.OwnerId,
-						SessionAccepted=true,
-						MemberAccepted=true,
-					}
-				}
-			};
-			var re = await SessionManager.CreateAsync(editable);
-			return re.Id;
-		}
+		
 
 		public static Task<long> GetOrCreateSession(
 			this IScoped<ISessionManager> SessionManagerScope,
@@ -118,9 +87,18 @@ namespace SF.Common.Conversations.Managers
 					});
 					var sid = re.Items.SingleOrDefault();
 					if (sid != null) return sid.Id;
-					return await sm.CreateSession(
-						await GetSessionEnsureArgument()
+
+					var arg = await GetSessionEnsureArgument();
+					var sess= await sm.CreateAsync(
+						new SessionEditable
+						{
+							BizIdent=arg.BizIdent,
+							BizIdentType=arg.BizIdentType,
+							Name=arg.Name,
+							OwnerId=arg.OwnerId
+						}
 						);
+					return sess.Id;
 				}));
 		}
 	}

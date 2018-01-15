@@ -23,7 +23,7 @@ using SF.Sys.Comments;
 using SF.Sys.Auth.Permissions;
 using SF.Sys.Linq;
 using SF.Sys.Events;
-
+using System.Reflection;
 
 namespace SF.Sys.Entities
 {
@@ -661,6 +661,106 @@ namespace SF.Sys.Entities
 
 		#endregion
 
+		#region CreateOrUpdate
+
+		class CreateOrUpdateResult<TEditable,TModel>
+		{
+			public TEditable Editable { get; set; }
+			public TModel Model { get; set; }
+
+			public static PropertyInfo PropEditable { get; } = typeof(CreateOrUpdateResult<TEditable, TModel>).GetProperty(nameof(Editable));
+			public static PropertyInfo PropModel { get; } = typeof(CreateOrUpdateResult<TEditable, TModel>).GetProperty(nameof(Model));
+
+			public static ParameterExpression Argument { get; } = Expression.Parameter(typeof(TModel), "m");
+		}
+		
+
+		
+		public static async Task<TKey> InternalCreateOrUpdateAsync<TKey, TEditable, TModel, TModifyContext>(
+			this IEntityServiceContext Storage,
+			TModifyContext Context,
+			
+			TEditable Entity,
+			Expression<Func<TModel,bool>> Selector,
+			Func<TModifyContext, Task> UpdateModel,
+			Func<TModifyContext, Task> InitModel,
+			object ExtraArgument = null,
+			bool EnableAutoModifier = false
+			)
+			where TModel : class, new()
+			where TModifyContext : IEntityModifyContext<TEditable, TModel>
+		{
+			Storage.PermissionValidate(Operations.Create);
+
+
+			return await Storage.UseTransaction(
+				$"创建或修改实体{typeof(TModel).Comment().Title}",
+				async (trans) =>
+				{
+					var q = Storage.DataContext.Set<TModel>().AsQueryable().Where(Selector);
+					var helper = Storage.QueryResultBuildHelperCache.GetHelper<TModel, TEditable>(QueryMode.Edit);
+
+					var expr = (LambdaExpression)helper.BuildEntityMapper(CreateOrUpdateResult<TEditable, TModel>.Argument, 1, PropertySelector.All);
+					var existQuery=q.Select(
+						Expression.Lambda<Func<TModel, CreateOrUpdateResult<TEditable, TModel>>>(
+							Expression.MemberInit(
+								Expression.New(typeof(Func<TModel, CreateOrUpdateResult<TEditable, TModel>>)),
+								Expression.Bind(CreateOrUpdateResult<TEditable, TModel>.PropEditable, expr.Body),
+								Expression.Bind(CreateOrUpdateResult<TEditable, TModel>.PropModel, CreateOrUpdateResult<TEditable, TModel>.Argument)
+							),
+							CreateOrUpdateResult<TEditable, TModel>.Argument
+							)
+						);
+
+					var exist = await existQuery.SingleOrDefaultAsync();
+					if (exist == null)
+					{
+						if (Entity.IsDefault())
+							throw new ArgumentNullException("需要提供实体");
+						if (InitModel != null)
+							await InitModel(Context);
+						Context.InitCreate<TModel, TEditable>(Entity, ExtraArgument);
+						Storage.DataContext.Set<TModel>().Add(Context.Model);
+					}
+					else
+					{
+						Context.InitUpdate<TModel, TEditable>(exist.Model, exist.Editable, ExtraArgument);
+						Storage.DataContext.Update(exist.Model);
+					}
+
+					if (UpdateModel != null)
+						await UpdateModel(Context);
+
+					Storage.PostChangedEvents<TEditable>(Context.Editable, DataActionType.Create);
+					await Storage.DataContext.SaveChangesAsync();
+					return Entity<TModel>.GetKey<TKey>(Context.Model);
+				});
+		}
+		public static async Task<TKey> CreateOrUpdateAsync<TKey, TEditable, TModel>(
+			this IEntityServiceContext Storage,
+			TEditable Entity,
+			Expression<Func<TModel, bool>> Selector,
+			Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel,
+			Func<IEntityModifyContext<TEditable, TModel>, Task> InitModel,
+			object ExtraArgument = null,
+			bool EnableAutoModifier = false
+			)
+			where TModel : class, new()
+		{
+			var ctx = new EntityModifyContext<TEditable, TModel>();
+			return await InternalCreateOrUpdateAsync<TKey, TEditable, TModel, IEntityModifyContext<TEditable, TModel>>(
+				Storage,
+				ctx,
+				Entity,
+				Selector,
+				UpdateModel,
+				InitModel,
+				ExtraArgument,
+				EnableAutoModifier
+				);
+		}
+
+		#endregion
 		#region Update
 		public static async Task<bool> InternalUpdateAsync<TKey, TEditable, TModel, TModifyContext>(
 			this IEntityServiceContext Storage,
@@ -713,9 +813,10 @@ namespace SF.Sys.Entities
 			var ctx = new EntityModifyContext<TEditable, TModel>();
 			return await InternalUpdateAsync(Storage, ctx, Entity, UpdateModel, LoadModelForEdit);
 		}
-		
+
 		#endregion
 
+		#region remove
 		public static async Task<bool> InternalRemoveAsync<TKey,TEditable, TModel,TModifyContext>(
 			this IEntityServiceContext Storage,
 			TModifyContext Context,
@@ -815,7 +916,8 @@ namespace SF.Sys.Entities
 					m.ServiceDataScopeId == ScopeId, 
 				BatchCount
 				);
- 
+		#endregion
+
 	}
 	public interface IReadOnlyEntityHelper<TKey,TReadOnlyTemp, TReadOnly, TQueryArgument, TModel>
 		where TModel : class

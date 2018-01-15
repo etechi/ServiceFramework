@@ -3,18 +3,18 @@ using System.Threading.Tasks;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using SF.Sys.Annotations;
-using SF.Common.Conversations.Models;
+using SF.Common.UserGroups.Models;
 using SF.Sys.Auth;
 
-namespace SF.Common.Conversations.Managers
+namespace SF.Common.UserGroups.Managers
 {
-	public class SessionMemberQueryArgument : ObjectQueryArgument
+	public class GroupMemberQueryArgument : ObjectQueryArgument
 	{
 		/// <summary>
-		/// 会话
+		/// 用户组
 		/// </summary>
-		[EntityIdent(typeof(Session))]
-		public long? SessionId { get; set; }
+		//[EntityIdent(typeof(Group))]
+		public virtual long? GroupId { get; set; }
 
 		/// <summary>
 		/// 用户
@@ -24,22 +24,26 @@ namespace SF.Common.Conversations.Managers
 	}
 
 	/// <summary>
-	/// 会话成员管理
+	/// 用户组成员管理
 	/// </summary>
 	[NetworkService]
 	[EntityManager]
-	public interface ISessionMemberManager :
-		IEntitySource<ObjectKey<long>, SessionMember, SessionMemberQueryArgument>,
-		IEntityManager<ObjectKey<long>, SessionMember>
+	public interface IGroupMemberManager<TGroup,TMember,TMemberEditable,TQueryArgument> :
+		IEntitySource<ObjectKey<long>, TMember, TQueryArgument>,
+		IEntityManager<ObjectKey<long>, TMemberEditable>
+		where TGroup : Group<TGroup, TMember> 
+		where TMember : GroupMember<TGroup,TMember>
+		where TMemberEditable:GroupMember<TGroup, TMember>
+		where TQueryArgument:GroupMemberQueryArgument
 	{
 
 		/// <summary>
 		/// 创建成员
 		/// </summary>
-		/// <param name="SessionId">目标会话</param>
+		/// <param name="SessionId">目标用户组</param>
 		/// <param name="TargetUserId">目标用户ID</param>
 		/// <param name="MemberAccepted">成员是否同意加入</param>
-		/// <param name="SessionAccepted">会话是否同意加入</param>
+		/// <param name="SessionAccepted">用户组是否同意加入</param>
 		/// <param name="BizType">业务类型</param>
 		/// <param name="BizIdentType">业务标识类型</param>
 		/// <param name="BizIdent">业务标识</param>
@@ -58,10 +62,10 @@ namespace SF.Common.Conversations.Managers
 		/// 创建一个成员加入动作令牌
 		/// </summary>
 		/// <param name="ActionName">动作名称</param>
-		/// <param name="SessionId">会话ID</param>
+		/// <param name="SessionId">用户组ID</param>
 		/// <param name="TargetUserId">目标用户ID</param>
 		/// <param name="MemberAccepted">成员是否同意加入</param>
-		/// <param name="SessionAccepted">会话是否同意加入</param>
+		/// <param name="SessionAccepted">用户组是否同意加入</param>
 		/// <param name="BizType">业务类型</param>
 		/// <param name="BizIdentType">业务标识类型</param>
 		/// <param name="BizIdent">业务标识</param>

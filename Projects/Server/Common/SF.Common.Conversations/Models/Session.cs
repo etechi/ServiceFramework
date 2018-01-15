@@ -14,30 +14,13 @@ namespace SF.Common.Conversations.Models
 	/// </summary>
 	public class Session: ObjectEntityBase
 	{
-		/// <summary>
-		/// 图标
-		/// </summary>
-		public string Icon { get; set; }
-		
-		/// <summary>
-		/// 成员数量
-		/// </summary>
-		[ReadOnly(true)]
-		[TableVisible]
-		public int MemberCount { get; set; }
 		
 		/// <summary>
 		/// 消息数
 		/// </summary>
+		[ReadOnly(true)]
 		public int MessageCount { get; set; }
 		
-		/// <summary>
-		/// 最后活跃时间
-		/// </summary>
-		[ReadOnly(true)]
-		[TableVisible]
-		public DateTime LastActiveTime { get; set; }
-
 		/// <summary>
 		/// 所有人
 		/// </summary>
@@ -56,19 +39,7 @@ namespace SF.Common.Conversations.Models
 		/// 会话标志
 		/// </summary>
 		public SessionFlag Flags { get; set; }
-		/// <summary>
-		/// 所有人成员
-		/// </summary>
-		[EntityIdent(typeof(SessionMember),nameof(OwnerMemberName))]
-		[ReadOnly(true)]
-		public long? OwnerMemberId { get; set; }
 
-		/// <summary>
-		/// 所有人成员
-		/// </summary>
-		[TableVisible]
-		[Ignore]
-		public string OwnerMemberName { get; set; }
 
 
 		/// <summary>
@@ -103,16 +74,17 @@ namespace SF.Common.Conversations.Models
 		[TableVisible]
 		[Ignore]
 		public string LastMessageName { get; set; }
-		
-		
+
+		/// <summary>
+		/// 最后消息时间
+		/// </summary>
+		[ReadOnly(true)]
+		[TableVisible]
+		public DateTime LastMessageTime { get; set; }
+
 	}
 
 	public class SessionEditable : Session
 	{
-		/// <summary>
-		/// 成员
-		/// </summary>
-		[Ignore]
-		public IEnumerable<SessionMember> Members { get; set; }
 	}
 }

@@ -1,12 +1,12 @@
 ﻿using SF.Sys.Entities;
 using System;
 
-namespace SF.Common.Conversations.Front
+namespace SF.Common.UserGroups.Front
 {
 	/// <summary>
-	/// 会话成员
+	/// 组成员
 	/// </summary>
-	public class SessionMember : IEntityWithId<long>
+	public class GroupMember : IEntityWithId<long>
 	{
 		/// <summary>
 		/// 成员ID
@@ -24,9 +24,9 @@ namespace SF.Common.Conversations.Front
 		public string Icon { get; set; }
 
 		/// <summary>
-		/// 会话ID
+		/// 组ID
 		/// </summary>
-		public long SessionId { get; set; }
+		public long GroupId { get; set; }
 
 		/// <summary>
 		/// 成员业务类型
@@ -42,29 +42,15 @@ namespace SF.Common.Conversations.Front
 		/// </summary>
 		public long? BizIdent { get; set; }
 
-		/// <summary>
-		/// 消息数
-		/// </summary>
-		public int MessageCount { get; set; }
+		
 		/// <summary>
 		/// 最后活动时间
 		/// </summary>
 		public DateTime LastActiveTime { get; set; }
 
 		/// <summary>
-		/// 最后消息
-		/// </summary>
-		public SessionMessage LastMessage { get; set; }
-
-		/// <summary>
-		/// 成员通知
-		/// </summary>
-		public string Notification { get; set; }
-
-
-		/// <summary>
 		/// 成员加入状态
 		/// </summary>
-		public SessionJoinState JoinState { get; set; }
+		public GroupJoinState JoinState { get; set; }
 	}
 }

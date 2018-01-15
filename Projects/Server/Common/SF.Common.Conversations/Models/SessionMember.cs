@@ -13,15 +13,12 @@ namespace SF.Common.Conversations.Models
 	/// </summary>
 	public class SessionMember : ObjectEntityBase
 	{
-		/// <summary>
-		/// 成员图标
-		/// </summary>
-		public string Icon { get; set; }
 
 		/// <summary>
 		/// 会话
 		/// </summary>
 		[EntityIdent(typeof(Session), nameof(SessionName))]
+		[Uneditable]
 		public long SessionId { get; set; }
 
 		/// <summary>
@@ -44,68 +41,32 @@ namespace SF.Common.Conversations.Models
 		[TableVisible]
 		[Ignore]
 		public string OwnerName { get; set; }
-		/// <summary>
-		/// 替代会话图片
-		/// </summary>
-		[StringLength(100)]
-		public string ReplaceSessionIcon { get; set; }
 
 		/// <summary>
-		/// 替代会话名称
-		/// </summary>
-		[StringLength(100)]
-		public string ReplaceSessionName { get; set; }
-
-		/// <summary>
-		/// 成员业务类型
-		/// </summary>
-		public int BizType { get; set; }
-
-
-		/// <summary>
-		/// 业务标识类型
-		/// </summary>
-		[MaxLength(100)]
-		public string BizIdentType { get; set; }
-
-		/// <summary>
-		/// 业务标识
-		/// </summary>
-		public long? BizIdent { get; set; }
-
-		/// <summary>
-		/// 是否接收成员
-		/// </summary>
-		public bool? SessionAccepted { get; set; }
-
-		/// <summary>
-		/// 是否同意加入
-		/// </summary>
-		public bool? MemberAccepted { get; set; }
-
-		/// <summary>
-		/// 加入状态
+		/// 发送消息
 		/// </summary>
 		[ReadOnly(true)]
-		[TableVisible]
-		public SessionJoinState JoinState { get; set; }
+		public int MessageCount { get; set; }
 
+		/// <summary>
+		/// 已读消息
+		/// </summary>
+		[ReadOnly(true)]
+		public int MessageReaded { get; set; }
+
+		/// <summary>
+		/// 最后阅读时间
+		/// </summary>
+		public DateTime? LastReadTime { get; set; }
 
 		/// <summary>
 		/// 最后活跃时间
 		/// </summary>
 		[ReadOnly(true)]
 		[TableVisible]
-		public DateTime LastActiveTime{get;set;}
-		/// <summary>
-		/// 最后访问时间
-		/// </summary>
-		[TableVisible]
-		public DateTime? LastReadTime { get; set; }
-		/// <summary>
-		/// 消息数
-		/// </summary>
-		public int MessageCount { get; set; }
+		public DateTime LastMessageTime{get;set;}
+
+
 		/// <summary>
 		/// 最后消息
 		/// </summary>

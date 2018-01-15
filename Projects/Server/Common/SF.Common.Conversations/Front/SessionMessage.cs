@@ -40,21 +40,23 @@ namespace SF.Common.Conversations.Front
 		public string Argument { get; set; }
 
 		/// <summary>
+		/// 发信用户ID,系统消息没有发信人
+		/// </summary>
+		public long? UserId { get; set; }
+
+		/// <summary>
 		/// 发信成员ID,系统消息没有发信人
 		/// </summary>
-		[EntityIdent(typeof(SessionMember))]
 		public long? PosterId { get; set; }
 
 		/// <summary>
 		/// 发信人昵称
 		/// </summary>
-		[FromEntityProperty(nameof(PosterId), nameof(SessionMember.Name))]
 		public string PosterName { get; set; }
 
 		/// <summary>
 		/// 发信人图标
 		/// </summary>
-		[FromEntityProperty(nameof(PosterId), nameof(SessionMember.Icon))]
 		public string PosterIcon { get; set; }
 	}
 }

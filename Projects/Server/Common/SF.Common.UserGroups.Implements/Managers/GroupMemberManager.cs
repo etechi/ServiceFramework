@@ -2,109 +2,133 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Common.Conversations.Models;
+using SF.Common.UserGroups.Models;
 using SF.Services.Security;
 using SF.Sys;
+using SF.Sys.Auth;
 using SF.Sys.Data;
 using SF.Sys.Entities;
 using SF.Sys.TimeServices;
 
-namespace SF.Common.Conversations.Managers
+namespace SF.Common.UserGroups.Managers
 {
-	public class SessionMemberManager :
+	static class JoinStateDetector
+	{
+		public static GroupJoinState Detect(bool? SessionAccepted, bool? MemberAccepted)
+		{
+			return MemberAccepted.HasValue ? (
+				   SessionAccepted.HasValue ?
+					(
+						MemberAccepted.Value ?
+							(SessionAccepted.Value ?
+								GroupJoinState.Joined :
+								GroupJoinState.ApplyRejected
+								) :
+							(SessionAccepted.Value ?
+								GroupJoinState.InviteRejected :
+								GroupJoinState.ApplyRejected
+							)
+					) : (
+						MemberAccepted.Value ?
+							GroupJoinState.Applying :
+							GroupJoinState.None
+					)
+				) : SessionAccepted.HasValue ?
+					GroupJoinState.Inviting :
+					GroupJoinState.None;
+		}
+		
+	}
+	public class GroupMemberManager<TGroup,TMember, TMemberEditable,TQueryArument, TDataGroup,TDataMember> :
 		AutoModifiableEntityManager<
 			ObjectKey<long>,
-			SessionMember,
-			SessionMember,
-			SessionMemberQueryArgument,
-			SessionMember,
-			DataModels.DataSessionMember
+			TMember,
+			TMember,
+			TQueryArument,
+			TMemberEditable,
+			TDataMember
 			>,
-		ISessionMemberManager
+		IGroupMemberManager<TGroup,TMember,TMemberEditable,TQueryArument>
+		where TGroup:Group<TGroup,TMember>
+		where TMember:GroupMember<TGroup,TMember>,new()
+		where TMemberEditable:GroupMember<TGroup,TMember>,new()
+		where TQueryArument:GroupMemberQueryArgument,new()
+		where TDataGroup:DataModels.DataGroup<TDataGroup, TDataMember>
+		where TDataMember : DataModels.DataGroupMember<TDataGroup,TDataMember>,new()
 	{
 		Lazy<IDataProtector> DataProtector { get; }
 		Lazy<ITimeService> TimeService { get; }
+		Lazy<IUserProfileService> UserProfileService { get; }
 
-		public SessionMemberManager(
+		public GroupMemberManager(
 			IEntityServiceContext ServiceContext,
-			SessionSyncScope SessionSyncScope,
+			GroupSyncScope SessionSyncScope,
 			Lazy<IDataProtector> DataProtector,
-			Lazy<ITimeService> TimeService
+			Lazy<ITimeService> TimeService,
+			Lazy<IUserProfileService> UserProfileService
 			) : base(ServiceContext)
 		{
 			this.DataProtector = DataProtector;
 			this.TimeService = TimeService;
-			SetSyncQueue(SessionSyncScope, e => e.SessionId);
+			this.UserProfileService = UserProfileService;
+			SetSyncQueue(SessionSyncScope, e => e.GroupId);
 		}
 		async Task UpdateMemberCount(long SessionId,int Diff)
 		{
-			var Session = await DataContext.Set<DataModels.DataSession>().FindAsync(SessionId);
+			var Session = await DataContext.Set<TDataGroup>().FindAsync(SessionId);
 			Session.MemberCount += Diff;
 			DataContext.Update(Session);
+		}
+		internal static GroupJoinState DetectJoinState(bool? SessionAccepted,bool? MemberAccepted)
+		{
+			return JoinStateDetector.Detect(SessionAccepted, MemberAccepted);
+
 		}
 		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			var editable = ctx.Editable;
 			var model = ctx.Model;
+			var orgExists = model.LogicState == EntityLogicState.Enabled && model.JoinState == GroupJoinState.Joined ? 1 : 0;
+			var newJoinState = DetectJoinState(editable.SessionAccepted, editable.MemberAccepted);
+			var newExists = editable.LogicState == EntityLogicState.Enabled && newJoinState == GroupJoinState.Joined ? 1 : 0;
+			var memberCountDiff = newExists - orgExists;
+			model.JoinState = newJoinState;
 
-			model.JoinState = 
-				editable.MemberAccepted.HasValue ? (
-					editable.SessionAccepted.HasValue ?
-					(
-						editable.MemberAccepted.Value ?
-							(editable.SessionAccepted.Value ?
-								SessionJoinState.Joined :
-								SessionJoinState.ApplyRejected
-								) :
-							(editable.SessionAccepted.Value ?
-								SessionJoinState.InviteRejected :
-								SessionJoinState.ApplyRejected
-							)
-					) : (
-						editable.MemberAccepted.Value ?
-							SessionJoinState.Applying :
-							SessionJoinState.None
-					)
-				) : editable.SessionAccepted.HasValue ?
-					SessionJoinState.Inviting :
-					SessionJoinState.None;
-
-
-
-			var memberCountDiff = 0;
-			if(ctx.Action==ModifyAction.Create && editable.LogicState==EntityLogicState.Enabled ||
-				ctx.Action==ModifyAction.Update && model.LogicState!=EntityLogicState.Enabled && editable.LogicState==EntityLogicState.Enabled)
-			{
-				memberCountDiff = 1;
-			}
-			else if(ctx.Action==ModifyAction.Update && 
-				model.LogicState==EntityLogicState.Enabled && 
-				editable.LogicState!=EntityLogicState.Enabled
-				)
-			{
-				memberCountDiff = -1;
-			}
 			if (memberCountDiff != 0)
-				await UpdateMemberCount(editable.SessionId, memberCountDiff);
+				await UpdateMemberCount(editable.GroupId, memberCountDiff);
 			await base.OnUpdateModel(ctx);
 		}
 		protected override async Task OnRemoveModel(IModifyContext ctx)
 		{
 			var model = ctx.Model;
-			if (model.LogicState == EntityLogicState.Enabled)
-				await UpdateMemberCount(model.SessionId, -1);
+			if (model.LogicState == EntityLogicState.Enabled && model.JoinState==GroupJoinState.Joined)
+				await UpdateMemberCount(model.GroupId, -1);
 			
 			await base.OnRemoveModel(ctx);
 		}
-		protected override Task OnNewModel(IModifyContext ctx)
+		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var model = ctx.Model;
 			model.LastActiveTime = Now;
-			return base.OnNewModel(ctx);
+
+			var editable = ctx.Editable;
+			if (!editable.OwnerId.HasValue)
+				throw new ArgumentNullException("未指定成员用户");
+
+			var user= await UserProfileService.Value.GetUser(editable.OwnerId.Value);
+			if(user==null)
+				throw new ArgumentException("找不到指定的用户");
+
+			if (editable.Name.IsNullOrEmpty())
+				editable.Name = user.Name;
+			if (editable.Icon.IsNullOrEmpty())
+				editable.Icon = user.Icon;
+
+			await base.OnNewModel(ctx);
 		}
 
 		public async Task<long> MemberEnsure(
-			long SessionId,
+			long GroupId,
 			long TargetUserId,
 			bool SessionAccepted,
 			bool MemberAccepted,
@@ -113,8 +137,8 @@ namespace SF.Common.Conversations.Managers
 			long? BizIdent			
 			)
 		{
-			var sq = from s in DataContext.Set<DataModels.DataSession>().AsQueryable()
-					 where s.Id == SessionId && s.LogicState == EntityLogicState.Enabled
+			var sq = from s in DataContext.Set<TDataGroup>().AsQueryable()
+					 where s.Id == GroupId && s.LogicState == EntityLogicState.Enabled
 					 let m = (from m in s.Members
 							 where m.OwnerId == TargetUserId
 							 select new
@@ -131,18 +155,15 @@ namespace SF.Common.Conversations.Managers
 					 };
 			var data = await sq.SingleOrDefaultAsync();
 			if (data == null)
-				throw new PublicArgumentException("指定的会话已被删除");
+				throw new PublicArgumentException("指定的用户组已被删除");
 			if (data.Flags.HasFlag(SessionFlag.Public))
 				SessionAccepted = true;
 			if (data.Member == null)
 			{
-				var m = await CreateAsync(new SessionMember
+				var m = await CreateAsync(new TMemberEditable
 				{
-					SessionId = SessionId,
+					GroupId = GroupId,
 					OwnerId = TargetUserId,
-					BizIdent = BizIdent,
-					BizIdentType = BizIdentType,
-					BizType = BizType,
 					MemberAccepted = MemberAccepted ? (bool?)true : null,
 					SessionAccepted = SessionAccepted ? (bool?)true : null
 				});
@@ -190,7 +211,7 @@ namespace SF.Common.Conversations.Managers
 			)
 		{
 			var token = (await DataProtector.Value.Encrypt(
-				"交谈会话成员动作:" + ActionName,
+				"交谈用户组成员动作:" + ActionName,
 				Json.Stringify(new ActionArgument
 				{
 					sid = SessionId,
@@ -215,7 +236,7 @@ namespace SF.Common.Conversations.Managers
 			)
 		{
 			var data = await DataProtector.Value.Decrypt(
-				"交谈会话成员动作:" + ActionName,
+				"交谈用户组成员动作:" + ActionName,
 				Token.Base64(),
 				TimeService.Value.Now,
 				(d, l) => Task.FromResult(InvitationTokenSecKey)

@@ -7,12 +7,14 @@ using System.ComponentModel;
 using SF.Sys.Auth;
 using System.ComponentModel.DataAnnotations;
 
-namespace SF.Common.Conversations.Models
+namespace SF.Common.UserGroups.Models
 {
 	/// <summary>
-	/// 交谈会话
+	/// 交谈用户组
 	/// </summary>
-	public class Session: ObjectEntityBase
+	public class Group<TGroup, TMember> : ObjectEntityBase
+		where TGroup:Group<TGroup,TMember>
+		where TMember:GroupMember<TGroup,TMember>
 	{
 		/// <summary>
 		/// 图标
@@ -25,11 +27,6 @@ namespace SF.Common.Conversations.Models
 		[ReadOnly(true)]
 		[TableVisible]
 		public int MemberCount { get; set; }
-		
-		/// <summary>
-		/// 消息数
-		/// </summary>
-		public int MessageCount { get; set; }
 		
 		/// <summary>
 		/// 最后活跃时间
@@ -53,15 +50,14 @@ namespace SF.Common.Conversations.Models
 		public string OwnerName { get; set; }
 
 		/// <summary>
-		/// 会话标志
+		/// 用户组标志
 		/// </summary>
 		public SessionFlag Flags { get; set; }
 		/// <summary>
 		/// 所有人成员
 		/// </summary>
-		[EntityIdent(typeof(SessionMember),nameof(OwnerMemberName))]
 		[ReadOnly(true)]
-		public long? OwnerMemberId { get; set; }
+		public virtual long? OwnerMemberId { get; set; }
 
 		/// <summary>
 		/// 所有人成员
@@ -70,49 +66,17 @@ namespace SF.Common.Conversations.Models
 		[Ignore]
 		public string OwnerMemberName { get; set; }
 
-
-		/// <summary>
-		/// 业务标识类型
-		/// </summary>
-		[EntityType]
-		public string BizIdentType { get; set; }
-
-		/// <summary>
-		/// 业务标识
-		/// </summary>
-		[EntityIdent(null,nameof(BizIdentName),EntityTypeField =nameof(BizIdentType))]
-		public long BizIdent { get; set; }
-
-		/// <summary>
-		/// 业务标识
-		/// </summary>
-		[Ignore]
-		[TableVisible]
-		public string BizIdentName { get; set; }
-
-		/// <summary>
-		/// 最后消息
-		/// </summary>
-		[ReadOnly(true)]
-		[EntityIdent(typeof(SessionMessage),nameof(LastMessageName))]
-		public long? LastMessageId { get; set; }
-
-		/// <summary>
-		/// 最后消息
-		/// </summary>
-		[TableVisible]
-		[Ignore]
-		public string LastMessageName { get; set; }
-		
 		
 	}
 
-	public class SessionEditable : Session
+	public class GroupEditable<TGroup,TMember> : Group<TGroup,TMember>
+		where TMember:GroupMember<TGroup,TMember>
+		where TGroup : Group<TGroup, TMember>
 	{
 		/// <summary>
 		/// 成员
 		/// </summary>
 		[Ignore]
-		public IEnumerable<SessionMember> Members { get; set; }
+		public IEnumerable<TMember> Members { get; set; }
 	}
 }

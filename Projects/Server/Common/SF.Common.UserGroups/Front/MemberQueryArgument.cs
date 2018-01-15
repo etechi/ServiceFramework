@@ -1,16 +1,16 @@
 ﻿using SF.Sys.Entities;
 
-namespace SF.Common.Conversations.Front
+namespace SF.Common.UserGroups.Front
 {
 	/// <summary>
-	/// 会话成员查询参数
+	/// 成员查询参数
 	/// </summary>
 	public class MemberQueryArgument : QueryArgument
 	{
 		/// <summary>
-		/// 会话ID
+		/// 组ID
 		/// </summary>
-		public long? SessionId { get; set; }
+		public long? GroupId { get; set; }
 
 		/// <summary>
 		/// 用户ID

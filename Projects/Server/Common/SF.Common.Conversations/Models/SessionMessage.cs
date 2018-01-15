@@ -3,6 +3,7 @@ using SF.Sys.Entities;
 using SF.Sys.Annotations;
 using SF.Sys.Entities.Models;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace SF.Common.Conversations.Models
 {
@@ -50,7 +51,7 @@ namespace SF.Common.Conversations.Models
 		/// 发信成员ID
 		/// </summary>
 		[EntityIdent(typeof(SessionMember),nameof(PosterName))]
-		[Uneditable]
+		[ReadOnly(true)]
 		public long? PosterId { get; set; }
 
 		/// <summary>

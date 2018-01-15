@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Threading.Tasks;
+using SF.Common.Conversations.DataModels;
 using SF.Common.Conversations.Models;
 using SF.Sys;
 using SF.Sys.Data;
@@ -19,13 +20,30 @@ namespace SF.Common.Conversations.Managers
 			>,
 		ISessionMessageManager
 	{
+		Lazy<ISessionMemberManager> SessionMemberManager { get; }
 		public SessionMessageManager(
 			IEntityServiceContext ServiceContext, 
-			SessionSyncScope SessionSyncScope
+			SessionSyncScope SessionSyncScope,
+			Lazy<ISessionMemberManager> SessionMemberManager
 			) : base(ServiceContext)
 		{
 			SetSyncQueue(SessionSyncScope, e => e.SessionId);
+			this.SessionMemberManager = SessionMemberManager;
 
+		}
+		protected override async Task OnUpdateModel(IModifyContext ctx)
+		{
+			//需要在此设置发信成员，以及设置发信成员的最后消息
+			if(ctx.Action==ModifyAction.Create && ctx.Editable.UserId.HasValue)
+			{
+				var mid = await ((SessionMemberManager)SessionMemberManager.Value).InternalSetLastMessage(
+					ctx.Editable.SessionId,
+					ctx.Editable.UserId.Value,
+					ctx.Model.Id
+					);
+				ctx.Model.PosterId = mid;
+			}
+			await base.OnUpdateModel(ctx);
 		}
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
@@ -43,22 +61,6 @@ namespace SF.Common.Conversations.Managers
 
 			await UpdateSessionStatus(editable, model);
 
-			if (editable.PosterId.HasValue)
-			{
-				await UpdateMemberStatus(editable, model);
-			}
-		}
-
-		private async Task UpdateMemberStatus(SessionMessage editable, DataModels.DataSessionMessage model)
-		{
-			var member = await DataContext.Set<DataModels.DataSessionMember>().FindAsync(editable.PosterId.Value);
-			if (member == null)
-				throw new ArgumentException("找不到成员:" + editable.PosterId.Value);
-
-			member.LastMessageId = model.Id;
-			member.LastActiveTime = Now;
-			member.MessageCount++;
-			DataContext.Update(member);
 		}
 
 		private async Task UpdateSessionStatus(SessionMessage editable, DataModels.DataSessionMessage model)
@@ -68,7 +70,7 @@ namespace SF.Common.Conversations.Managers
 				throw new ArgumentException("找不到会话:" + editable.SessionId);
 
 			Session.LastMessageId = model.Id;
-			Session.LastActiveTime = Now;
+			Session.LastMessageTime = Now;
 			Session.MessageCount++;
 			DataContext.Update(Session);
 		}

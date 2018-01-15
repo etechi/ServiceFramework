@@ -18,8 +18,8 @@ namespace SF.Sys.Services
 				"Conversation",
 				"交谈",
 				d => d
-					.Add<ISessionManager, SessionManager>("Session", "会话", typeof(Session),typeof(SF.Common.Conversations.Front.Session))
-					.Add<ISessionMemberManager, SessionMemberManager>("SessionMember", "会话成员", typeof(SessionMember), typeof(SF.Common.Conversations.Front.SessionMember))
+					.Add<ISessionManager, SessionManager>("Session", "会话", typeof(Session))
+					.Add<ISessionMemberManager, SessionMemberManager>("SessionMember", "会话成员", typeof(SessionMember))
 					.Add<ISessionMessageManager, SessionMessageManager>("SessionMessage", "会话消息", typeof(SessionMessage), typeof(SF.Common.Conversations.Front.SessionMessage))
 				);
 

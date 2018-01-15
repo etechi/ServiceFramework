@@ -2,7 +2,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SF.Common.Conversations.Models;
+using SF.Common.UserGroups.Models;
 using SF.Services.Security;
 using SF.Sys;
 using SF.Sys.Auth;
@@ -11,25 +11,31 @@ using SF.Sys.Entities;
 using SF.Sys.Settings;
 using SF.Sys.TimeServices;
 
-namespace SF.Common.Conversations.Managers
+namespace SF.Common.UserGroups.Managers
 {
-	public class SessionManager :
+	public class GroupManager<TGroup, TMember,TGroupEditable,TQueryArgument,TDataGroup,TDataMember> :
 		AutoModifiableEntityManager<
 			ObjectKey<long>,
-			Session,
-			Session,
-			SessionQueryArgument,
-			SessionEditable,
-			DataModels.DataSession
+			TGroup,
+			TGroup,
+			TQueryArgument,
+			TGroupEditable,
+			TDataGroup
 			>,
-		ISessionManager
+		IGroupManager<TGroup, TMember, TGroupEditable,TQueryArgument>
+		where TGroup:Group<TGroup,TMember>,new()
+		where TMember : GroupMember<TGroup, TMember>
+		where TGroupEditable:GroupEditable<TGroup, TMember>,TGroup
+		where TQueryArgument:GroupQueryArgument,new()
+		where TDataGroup:DataModels.DataGroup<TDataGroup,TDataMember>,new()
+		where TDataMember : DataModels.DataGroupMember<TDataGroup, TDataMember>
 	{
 		Lazy<IUserProfileService > UserProfileService { get; }
 
-		public SessionManager(
+		public GroupManager(
 			IEntityServiceContext ServiceContext,
 			Lazy<IUserProfileService> UserProfileService,
-			SessionSyncScope SessionSyncScope
+			GroupSyncScope SessionSyncScope
 			) : base(ServiceContext)
 		{
 			this.UserProfileService = UserProfileService;
@@ -40,14 +46,14 @@ namespace SF.Common.Conversations.Managers
 			var editable = ctx.Editable;
 			var model = ctx.Model;
 			if (!editable.OwnerId.HasValue)
-				throw new ArgumentException("必须指定会话所有人");
+				throw new ArgumentException("必须指定用户组所有人");
 
 			var user = await UserProfileService.Value.GetUser(editable.OwnerId.Value);
 			if (user == null)
 				throw new ArgumentException("找不到用户:" + editable.OwnerMemberId);
 
 			if (editable.Name == null)
-				editable.Name = user.Name + "的会话";
+				editable.Name = user.Name + "的用户组";
 			else
 				editable.Name = string.Format(editable.Name, user.Name);
 
@@ -58,22 +64,16 @@ namespace SF.Common.Conversations.Managers
 			await base.OnNewModel(ctx);
 
 			if (editable.Members == null)
-				editable.Members = new[]
-				{
-					new SessionMember
-					{
-						OwnerId=user.Id
-					}
-				};
+				
 
 			foreach (var m in editable.Members)
-				m.SessionId = model.Id;
+				m.GroupId = model.Id;
 			var om = editable
 				.Members
 				.Where(mi=>mi.OwnerId==editable.OwnerId)
 				.SingleOrDefault();
 			if (om == null)
-				throw new PublicArgumentException("缺少会话所有人");
+				throw new PublicArgumentException("缺少用户组所有人");
 
 			if (om.Name.IsNullOrEmpty())
 				om.Name = user.Name;
@@ -84,10 +84,15 @@ namespace SF.Common.Conversations.Managers
 		{
 			await base.OnUpdateModel(ctx);
 
-			if(ctx.Editable.Members!=null)
+			if (ctx.Editable.Members != null)
+			{
+				foreach (var m in ctx.Model.Members)
+					m.JoinState = JoinStateDetector.Detect(m.SessionAccepted, m.MemberAccepted);
 				ctx.Model.MemberCount =
-					ctx.Editable.Members
-						.Count(m => m.LogicState == EntityLogicState.Enabled);
+					ctx.Model.Members
+						.Count(m => m.LogicState == EntityLogicState.Enabled && m.JoinState==GroupJoinState.Joined );
+			}
+
 			if (ctx.Action == ModifyAction.Create)
 			{
 				foreach (var m in ctx.Model.Members)
@@ -100,7 +105,9 @@ namespace SF.Common.Conversations.Managers
 				DataContext.Update(ctx.Model);
 
 				ctx.Model.OwnerMemberId = ctx.Model.Members.First().Id;
+
 			}
+			
 		}
 		
 

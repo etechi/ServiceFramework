@@ -1,9 +1,9 @@
-﻿namespace SF.Common.Conversations
+﻿namespace SF.Common.UserGroups
 {
 	/// <summary>
-	/// 会话成员加入状态
+	/// 用户组成员加入状态
 	/// </summary>
-	public enum SessionJoinState
+	public enum GroupJoinState
 	{
 		/// <summary>
 		/// 未知状态

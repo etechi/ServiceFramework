@@ -159,7 +159,8 @@ namespace SF.Sys.Entities
 		public static async Task<TEditable> Ensure<TManager, TKey, TEditable>(
 			this TManager Manager,
 			TKey Id,
-			Action<TEditable> Updater
+			Action<TEditable> Updater,
+			bool ReturnEntity = true
 			) where TKey:IEquatable<TKey>
 			where TEditable : class,new()
 			where TManager : IEntityEditableLoader<ObjectKey<TKey>, TEditable>,
@@ -169,7 +170,8 @@ namespace SF.Sys.Entities
 			return await Manager.EnsureEntity(
 				ObjectKey.From(Id),
 				() =>Entity<ObjectKey<TKey>>.GetKey<TEditable>(ObjectKey.From(Id)),
-				Updater
+				Updater,
+				ReturnEntity
 				);
 
 		}
@@ -177,7 +179,8 @@ namespace SF.Sys.Entities
 			this TManager Manager,
 			TKey Id,
 			Func<TEditable> Creator,
-			Action<TEditable> Updater=null
+			Action<TEditable> Updater=null,
+			bool ReturnEntity=true
 			)
 			where TEditable:class
 			where TManager: IEntityEditableLoader<TKey, TEditable>,
@@ -200,7 +203,7 @@ namespace SF.Sys.Entities
 				await Manager.UpdateAsync(ins);
 			else
 				Id=await Manager.CreateAsync(ins);
-			return await Manager.LoadForEdit(Id);
+			return ReturnEntity?await Manager.LoadForEdit(Id):null;
 		}
 		public static Task<TEditable> EnsureEntity<TKey, TEditable>(
 			this IEntityManager<TKey,TEditable> Manager,
