@@ -77,7 +77,7 @@ namespace SF.Sys.Entities
 			TKey Key,
 			string title=null
 			)
-			where TQueryArgument : QueryArgument<ObjectKey<TKey>>, new()
+			where TQueryArgument : QueryArgument<TKey>, new()
 			where TKey:IEquatable<TKey>
 		{
 			title = title ?? typeof(TEntity).Comment().Title;
@@ -87,7 +87,7 @@ namespace SF.Sys.Entities
 
 			var re = await Queryable.QueryIdentsAsync(new TQueryArgument
 			{
-				Id=ObjectKey.From(Key)
+				Id=Key
 			});
 			if (re.Items.Any())
 				return;

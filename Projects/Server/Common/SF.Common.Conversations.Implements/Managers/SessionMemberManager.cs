@@ -98,7 +98,7 @@ namespace SF.Common.Conversations.Managers
 					return Task.FromResult(m.Id);
 				}
 				);
-			return re.Id;
+			return re.Id.Id;
 		}
 		public Task SetReadTime(long SessionId, long UserId)
 		{
