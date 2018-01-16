@@ -25,7 +25,7 @@ namespace SF.Common.UserGroups.Managers
 		IGroupManager<TGroup, TMember, TGroupEditable,TQueryArgument>
 		where TGroup:Group<TGroup,TMember>,new()
 		where TMember : GroupMember<TGroup, TMember>
-		where TGroupEditable:GroupEditable<TGroup, TMember>,TGroup
+		where TGroupEditable:Group<TGroup, TMember>,TGroup
 		where TQueryArgument:GroupQueryArgument,new()
 		where TDataGroup:DataModels.DataGroup<TDataGroup,TDataMember>,new()
 		where TDataMember : DataModels.DataGroupMember<TDataGroup, TDataMember>

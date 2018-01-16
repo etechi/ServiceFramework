@@ -12,6 +12,26 @@ using System.Collections.Generic;
 
 namespace SF.Common.UserGroups.Front
 {
+	public class UserGroupServiceSetting<TGroup,
+		TGroupEditable,
+		TGroupQueryArgument,
+		TMember,
+		TMemberEditable,
+		TMemberQueryArgument>
+		where TGroup : Models.Group<TGroup, TMember>
+		where TGroupEditable : Models.Group<TGroup, TMember>, TGroup
+		where TGroupQueryArgument : Managers.GroupQueryArgument
+		where TMember : Models.GroupMember<TGroup, TMember>
+		where TMemberEditable : Models.GroupMember<TGroup, TMember>
+		where TMemberQueryArgument : Managers.GroupMemberQueryArgument
+	{
+		public IDataContext DataContext { get; set; }
+		public IAccessToken AccessToken { get; set; }
+		public Lazy<Managers.IGroupManager<TGroup, TMember, TGroupEditable, TGroupQueryArgument>> GroupManager { get; set; }
+		public Lazy<Managers.IGroupMemberManager<TGroup, TMember, TMemberEditable, TMemberQueryArgument>> GroupMemberManager { get; set; }
+		public Lazy<ITimeService> TimeService { get; set; }
+		public Lazy<IUserProfileService> UserProfileService { get; set; }
+	}
 	/// <summary>
 	/// 用户组服务
 	/// </summary>
@@ -31,7 +51,7 @@ namespace SF.Common.UserGroups.Front
 		where TFrontGroup:Group,new()
 		where TFrontMember:GroupMember,new()
 		where TGroup:Models.Group<TGroup,TMember>
-		where TGroupEditable : Models.GroupEditable<TGroup, TMember>, TGroup
+		where TGroupEditable : Models.Group<TGroup, TMember>, TGroup
 		where TGroupQueryArgument:Managers.GroupQueryArgument
 		where TMember : Models.GroupMember<TGroup, TMember>
 		where TMemberEditable: Models.GroupMember<TGroup,TMember>
@@ -40,36 +60,21 @@ namespace SF.Common.UserGroups.Front
 		where TDataMember : DataModels.DataGroupMember<TDataGroup, TDataMember>
 		
 	{
-		IDataContext DataContext { get; }
-		IAccessToken AccessToken { get; }
-		Lazy<Managers.IGroupManager<TGroup,TMember,TGroupEditable,TGroupQueryArgument>> GroupManager { get; }
-		Lazy<Managers.IGroupMemberManager<TGroup,TMember,TMemberEditable,TMemberQueryArgument>> GroupMemberManager { get; }
-		Lazy<ITimeService> TimeService { get; }
-		Lazy<IUserProfileService> UserProfileService { get; }
+		protected UserGroupServiceSetting<TGroup,TGroupEditable,TGroupQueryArgument,TMember,TMemberEditable,TMemberQueryArgument> Setting { get; }
 		public long EnsureUserIdent() =>
-			AccessToken.User.EnsureUserIdent();
+			Setting.AccessToken.User.EnsureUserIdent();
 
 
 		public UserGroupService(
-			IDataContext DataContext, 
-			IAccessToken AccessToken,
-			Lazy<Managers.IGroupManager<TGroup, TMember, TGroupEditable, TGroupQueryArgument>> GroupManager,
-			Lazy<Managers.IGroupMemberManager<TGroup, TMember, TMemberEditable, TMemberQueryArgument>> GroupMemberManager,
-			Lazy<ITimeService> TimeService,
-			Lazy<IUserProfileService> UserProfileService
+			UserGroupServiceSetting<TGroup, TGroupEditable, TGroupQueryArgument, TMember, TMemberEditable, TMemberQueryArgument> Setting
 			)
 		{
-			this.AccessToken = AccessToken;
-			this.DataContext = DataContext;
-			this.GroupManager= GroupManager;
-			this.GroupMemberManager = GroupMemberManager;
-			this.TimeService = TimeService;
-			this.UserProfileService = UserProfileService;
+			this.Setting = Setting;
 		}
 		
 		async Task<TDataMember> EnsureGroupMember(long SessionId,long UserId)
 		{
-			var member = await DataContext
+			var member = await Setting.DataContext
 				.Set<TDataMember>()
 				.AsQueryable()
 				.Where(m => 
@@ -93,7 +98,7 @@ namespace SF.Common.UserGroups.Front
 		{
 			var user = EnsureUserIdent();
 
-			var q = DataContext.Set<TDataMember>().AsQueryable();
+			var q = Setting.DataContext.Set<TDataMember>().AsQueryable();
 			if (Arg.Id != null)
 			{
 				var id = Arg.Id.Id;
@@ -143,7 +148,7 @@ namespace SF.Common.UserGroups.Front
 			var user = EnsureUserIdent();
 			var q = Arg.Id != null ?
 				//查询指定用户组，必须是用户组成员
-				from s in DataContext.Set<TDataGroup>().AsQueryable()
+				from s in Setting.DataContext.Set<TDataGroup>().AsQueryable()
 				where s.Id == Arg.Id.Id &&
 						s.LogicState == EntityLogicState.Enabled
 				let sm = s.Members.FirstOrDefault(m => m.OwnerId.Value == user)
@@ -151,7 +156,7 @@ namespace SF.Common.UserGroups.Front
 				select new { s, sm}
 			:
 				//查询所有自己参加的用户组
-				from sm in DataContext.Set<TDataMember>().AsQueryable()
+				from sm in Setting.DataContext.Set<TDataMember>().AsQueryable()
 					where sm.OwnerId == user && 
 							sm.LogicState == EntityLogicState.Enabled
 				let s=sm.Group
@@ -183,7 +188,7 @@ namespace SF.Common.UserGroups.Front
 
 		async Task RemoveMember(TDataMember member)
 		{
-			await GroupMemberManager.Value.RemoveAsync(ObjectKey.From(member.Id));
+			await Setting.GroupMemberManager.Value.RemoveAsync(ObjectKey.From(member.Id));
 		}
 		/// <summary>
 		/// 将某人从自己的用户组中移除
@@ -194,7 +199,7 @@ namespace SF.Common.UserGroups.Front
 		{
 			var user = EnsureUserIdent();
 			var member = await (
-				from m in DataContext.Set<TDataMember>().AsQueryable()
+				from m in Setting.DataContext.Set<TDataMember>().AsQueryable()
 				where m.Id == MemberId && m.Group.OwnerId == user && m.LogicState==EntityLogicState.Enabled
 				select m
 				).SingleOrDefaultAsync();
@@ -219,14 +224,14 @@ namespace SF.Common.UserGroups.Front
 		public async Task UpdateMember(TFrontMember Member)
 		{
 			var user = EnsureUserIdent();
-			var editable = await GroupMemberManager.Value.LoadForEdit(ObjectKey.From(Member.Id));
+			var editable = await Setting.GroupMemberManager.Value.LoadForEdit(ObjectKey.From(Member.Id));
 			if (editable == null)
 				throw new PublicArgumentException("找不到指定的成员");
 
 			//只有用户组成员用户或用户组所有人能修改成员信息
 			if (editable.OwnerId != user)
 			{
-				if (!await DataContext
+				if (!await Setting.DataContext
 					.Set<TDataGroup>()
 					.AsQueryable()
 					.AnyAsync(c => c.Id == editable.GroupId && c.OwnerId.Value == user))
@@ -235,21 +240,21 @@ namespace SF.Common.UserGroups.Front
 
 			editable.Name = Member.Name;
 			editable.Icon = Member.Icon;
-			await GroupMemberManager.Value.UpdateAsync(editable);
+			await Setting.GroupMemberManager.Value.UpdateAsync(editable);
 		}
 
 
 		public async Task UpdateGroup(TFrontGroup Session)
 		{
 			var user = EnsureUserIdent();
-			var c = await GroupManager.Value.LoadForEdit(ObjectKey.From(Session.Id));
+			var c = await Setting.GroupManager.Value.LoadForEdit(ObjectKey.From(Session.Id));
 			if (c == null)
 				throw new PublicArgumentException("找不到用户组:"+Session.Id);
 			if (c.OwnerId.Value != user)
 				throw new PublicDeniedException("只能修改自己的用户组信息");
 			c.Name = Session.Name;
 			c.Icon = Session.Icon;
-			await GroupManager.Value.UpdateAsync(c);
+			await Setting.GroupManager.Value.UpdateAsync(c);
 		}
 
 		
@@ -257,19 +262,19 @@ namespace SF.Common.UserGroups.Front
 		public async Task SetAcceptType(long MemberId, bool AcceptType)
 		{
 			var uid = EnsureUserIdent();
-			var m = await GroupMemberManager.Value.LoadForEdit(ObjectKey.From(MemberId));
+			var m = await Setting.GroupMemberManager.Value.LoadForEdit(ObjectKey.From(MemberId));
 			if (uid == m.OwnerId)
 			{
 				m.MemberAccepted = AcceptType;
-				await GroupMemberManager.Value.UpdateAsync(m);
+				await Setting.GroupMemberManager.Value.UpdateAsync(m);
 			}
 			else
 			{
-				var soid = await DataContext.Set<TDataGroup>().AsQueryable().Where(s => s.Id == m.GroupId).Select(s => s.OwnerId).SingleOrDefaultAsync();
+				var soid = await Setting.DataContext.Set<TDataGroup>().AsQueryable().Where(s => s.Id == m.GroupId).Select(s => s.OwnerId).SingleOrDefaultAsync();
 				if (uid != soid)
 					throw new PublicDeniedException("当前用户必须是用户组所有者或成员所有者");
 				m.SessionAccepted = AcceptType;
-				await GroupMemberManager.Value.UpdateAsync(m);
+				await Setting.GroupMemberManager.Value.UpdateAsync(m);
 
 			}
 		}

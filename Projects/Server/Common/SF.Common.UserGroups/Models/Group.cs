@@ -66,17 +66,11 @@ namespace SF.Common.UserGroups.Models
 		[Ignore]
 		public string OwnerMemberName { get; set; }
 
-		
-	}
-
-	public class GroupEditable<TGroup,TMember> : Group<TGroup,TMember>
-		where TMember:GroupMember<TGroup,TMember>
-		where TGroup : Group<TGroup, TMember>
-	{
 		/// <summary>
 		/// 成员
 		/// </summary>
 		[Ignore]
 		public IEnumerable<TMember> Members { get; set; }
 	}
+
 }

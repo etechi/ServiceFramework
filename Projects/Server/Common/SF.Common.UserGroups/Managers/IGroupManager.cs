@@ -52,7 +52,7 @@ namespace SF.Common.UserGroups.Managers
 		IEntitySource<ObjectKey<long>, TGroup, TQueryArgument>,
 		IEntityManager<ObjectKey<long>, TGroupEditable>
 		where TGroup:Group<TGroup, TMember>
-		where TGroupEditable:GroupEditable<TGroup, TMember>
+		where TGroupEditable:Group<TGroup, TMember>
 		where TMember:GroupMember<TGroup,TMember>
 		where TQueryArgument:GroupQueryArgument
 	{
