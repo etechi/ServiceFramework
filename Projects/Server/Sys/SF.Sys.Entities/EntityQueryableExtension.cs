@@ -72,6 +72,24 @@ namespace SF.Sys.Entities
 			var re = await Queryable.QueryAsync(Arg);
 			return re.Items.FirstOrDefault();
 		}
+		public static Task<bool> AnyAsync<TEntity, TQueryArgument>(
+			this IEntityIdentQueryable<TEntity, TQueryArgument> Queryable,
+			TQueryArgument Arg
+			)
+			where TQueryArgument : IPagingArgument, new()
+			=> Queryable.ExistsAsync(Arg);
+
+		public static async Task<bool> ExistsAsync<TEntity, TQueryArgument>(
+			this IEntityIdentQueryable<TEntity, TQueryArgument> Queryable,
+			TQueryArgument Arg
+			)
+			where TQueryArgument : IPagingArgument, new()
+		{
+			if (Arg.Paging == null)
+				Arg.Paging = Paging.One;
+			var re = await Queryable.QueryIdentsAsync(Arg);
+			return re.Items.Any();
+		}
 		public static async Task EnsureIdentAsync<TEntity, TQueryArgument,TKey>(
 			this IEntityIdentQueryable<TEntity, TQueryArgument> Queryable,
 			TKey Key,

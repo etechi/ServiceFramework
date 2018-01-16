@@ -23,7 +23,7 @@ namespace SF.Common.Conversations.DataModels
 		public long SessionId { get; set; }
 
 		[ForeignKey(nameof(SessionId))]
-		public DataSession Session { get; set; } 
+		public DataSessionStatus Session { get; set; } 
 
 		/// <summary>
 		/// 消息类型
@@ -49,7 +49,7 @@ namespace SF.Common.Conversations.DataModels
 		public long? PosterId { get; set; }
 
 		[ForeignKey(nameof(PosterId))]
-		public DataSessionMember Poster { get; set; }
+		public DataSessionMemberStatus Poster { get; set; }
 
 	}
 }

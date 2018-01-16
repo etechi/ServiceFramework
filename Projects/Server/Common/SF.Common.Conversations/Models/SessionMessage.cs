@@ -16,7 +16,7 @@ namespace SF.Common.Conversations.Models
 		/// <summary>
 		/// 会话
 		/// </summary>
-		[EntityIdent(typeof(Session),nameof(SessionName))]
+		[EntityIdent(typeof(SessionStatus),nameof(SessionName))]
 		[Uneditable]
 		public long SessionId { get; set; }
 
@@ -37,7 +37,7 @@ namespace SF.Common.Conversations.Models
 		/// <summary>
 		/// 消息内容
 		/// </summary>
-		[MaxLength(100)]
+		[MaxLength(1000)]
 		[EntityTitle]
 		public string Text { get; set; }
 
@@ -50,7 +50,7 @@ namespace SF.Common.Conversations.Models
 		/// <summary>
 		/// 发信成员ID
 		/// </summary>
-		[EntityIdent(typeof(SessionMember),nameof(PosterName))]
+		[EntityIdent(typeof(SessionMemberStatus),nameof(PosterName))]
 		[ReadOnly(true)]
 		public long? PosterId { get; set; }
 

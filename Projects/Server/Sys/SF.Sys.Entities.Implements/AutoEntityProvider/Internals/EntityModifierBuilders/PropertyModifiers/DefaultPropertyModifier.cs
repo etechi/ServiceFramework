@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Annotations;
 using SF.Sys.Reflection;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -45,7 +46,10 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			)
 		{
 			var isKey = (EntityProperty?.IsDefined(typeof(KeyAttribute)) ??false) ||
-						(DataModelProperty?.IsDefined(typeof(KeyAttribute)) ?? false);
+						(DataModelProperty?.IsDefined(typeof(KeyAttribute)) ?? false) ||
+						(EntityProperty?.IsDefined(typeof(UneditableAttribute)) ?? false) ||
+						(DataModelProperty?.IsDefined(typeof(UneditableAttribute)) ?? false) 
+						;
 
 			if (ActionType != DataActionType.Update && !isKey ||
 				ActionType != DataActionType.Create && isKey

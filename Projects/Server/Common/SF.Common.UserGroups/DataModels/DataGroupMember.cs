@@ -48,7 +48,7 @@ namespace SF.Common.UserGroups.DataModels
 		/// <summary>
 		/// 用户组所有者是否同意加入
 		/// </summary>
-		public bool? SessionAccepted { get; set; }
+		public bool? GroupAccepted { get; set; }
 
 		/// <summary>
 		/// 用户是否同意加入

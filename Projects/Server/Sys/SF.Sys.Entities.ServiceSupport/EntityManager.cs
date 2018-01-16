@@ -221,7 +221,12 @@ namespace SF.Sys.Entities
 			SF.Sys.Threading.ISyncQueue<TSyncKey> Queue,
 			Func<TEditable, TSyncKey> GetSyncKey
 			)
-			=> _SyncQueue = new EntityModifySyncQueue<TEditable, TSyncKey>(Queue, GetSyncKey);
+
+		{
+			if (Queue == null)
+				throw new ArgumentNullException(nameof(Queue));
+			_SyncQueue = new EntityModifySyncQueue<TEditable, TSyncKey>(Queue, GetSyncKey);
+		}
 
 		#region create
 
@@ -412,7 +417,8 @@ namespace SF.Sys.Entities
 					await OnNewModel(ctx);
 				},
 				ExtraArgument,
-				true
+				true,
+				AutoSaveChanges
 				);
 			return (result, re, NewObjectCreated);
 		}

@@ -18,11 +18,25 @@ namespace SF.Common.Conversations.Front
 	public interface IConversationService
 	{
 		/// <summary>
+		/// 查询会话成员
+		/// </summary>
+		/// <param name="Arg"></param>
+		/// <returns></returns>
+		Task<QueryResult<SessionMember>> QueryMembers(MemberQueryArgument Arg);
+
+		/// <summary>
+		/// 查询当前用户会话
+		/// </summary>
+		/// <param name="Arg">查询参数</param>
+		/// <returns></returns>
+		Task<QueryResult<SessionGroup>> QuerySessions(SessionQueryArgument Arg);
+
+		/// <summary>
 		/// 查询会话消息
 		/// </summary>
 		/// <param name="Arg">查询参数</param>
 		/// <returns></returns>
-		Task<QueryResult<SessionMessage>> QueryMessage(MessageQueryArgument Arg);
+		Task<QueryResult<SessionMessage>> QueryMessages(MessageQueryArgument Arg);
 
 
 		/// <summary>
@@ -36,9 +50,9 @@ namespace SF.Common.Conversations.Front
 		/// <summary>
 		/// 设置最后访问时间,清除未读标记
 		/// </summary>
-		/// <param name="SessionId">会话</param>
+		/// <param name="Arg">会话</param>
 		/// <returns></returns>
-		Task SetReadTime(long SessionId);
+		Task SetReadTime(SetReadTimeArgument Arg);
 
 
 	}

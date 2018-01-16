@@ -11,13 +11,13 @@ namespace SF.Common.Conversations.Models
 	/// <summary>
 	/// 会话成员
 	/// </summary>
-	public class SessionMember : ObjectEntityBase
+	public class SessionMemberStatus : ObjectEntityBase
 	{
 
 		/// <summary>
 		/// 会话
 		/// </summary>
-		[EntityIdent(typeof(Session), nameof(SessionName))]
+		[EntityIdent(typeof(SessionStatus), nameof(SessionName))]
 		[Uneditable]
 		public long SessionId { get; set; }
 

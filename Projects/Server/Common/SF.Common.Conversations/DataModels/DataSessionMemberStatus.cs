@@ -11,8 +11,8 @@ namespace SF.Common.Conversations.DataModels
 	/// <summary>
 	/// 会话成员
 	/// </summary>
-	[Table("SessionMember")]
-	public class DataSessionMember : DataObjectEntityBase
+	[Table("SessionMemberStatus")]
+	public class DataSessionMemberStatus : DataObjectEntityBase
 	{
 		/// <summary>
 		/// 会话状态
@@ -22,7 +22,7 @@ namespace SF.Common.Conversations.DataModels
 		public long SessionId { get; set; }
 
 		[ForeignKey(nameof(SessionId))]
-		public DataSession Session { get; set; }
+		public DataSessionStatus Session { get; set; }
 
 		/// <summary>
 		/// 用户
@@ -43,8 +43,8 @@ namespace SF.Common.Conversations.DataModels
 		[Index]
 		public long? LastMessageId { get; set; }
 
-		[ForeignKey(nameof(LastMessageId))]
-		public DataSessionMessage LastMessage { get; set; }
+		//[ForeignKey(nameof(LastMessageId))]
+		//public DataSessionMessage LastMessage { get; set; }
 
 		/// <summary>
 		/// 发送消息

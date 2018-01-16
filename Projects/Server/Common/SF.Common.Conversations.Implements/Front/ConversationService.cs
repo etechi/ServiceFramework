@@ -20,12 +20,13 @@ namespace SF.Common.Conversations.Front
 	{
 		IDataContext DataContext { get; }
 		IAccessToken AccessToken { get; }
-		Lazy<Managers.ISessionManager> SessionManager { get; }
-		Lazy<Managers.ISessionMemberManager> SessionMemberManager { get; }
+		Lazy<Managers.ISessionStatusManager> SessionStatusManager { get; }
+		Lazy<Managers.ISessionMemberStatusManager> SessionMemberStatusManager { get; }
 		Lazy<Managers.ISessionMessageManager> SessionMessageManager { get; }
 		Lazy<ITimeService> TimeService { get; }
 		Lazy<IUserProfileService> UserProfileService { get; }
-		Lazy<IEnumerable<Providers.ISessionProvider>> SessionProviders { get; }
+		IEnumerable<Providers.ISessionProvider> SessionProviders { get; }
+		SF.Sys.Services.NamedServiceResolver<Providers.ISessionProvider> SessionProviderResolver { get; }
 
 		public long EnsureUserIdent() =>
 			AccessToken.User.EnsureUserIdent();
@@ -34,48 +35,46 @@ namespace SF.Common.Conversations.Front
 		public ConversationService(
 			IDataContext DataContext, 
 			IAccessToken AccessToken,
-			Lazy<Managers.ISessionManager> SessionManager,
+			
+			Lazy<Managers.ISessionStatusManager> SessionStatusManager,
 			Lazy<Managers.ISessionMessageManager> SessionMessageManager,
-			Lazy<Managers.ISessionMemberManager> SessionMemberManager,
+			Lazy<Managers.ISessionMemberStatusManager> SessionMemberStatusManager,
+
 			Lazy<ITimeService> TimeService,
 			Lazy<IUserProfileService> UserProfileService, 
-			Lazy<IEnumerable<Providers.ISessionProvider>> SessionProviders
+			IEnumerable<Providers.ISessionProvider> SessionProviders,
+			SF.Sys.Services.NamedServiceResolver<Providers.ISessionProvider> SessionProviderResolver
 			)
 		{
 			this.AccessToken = AccessToken;
 			this.DataContext = DataContext;
-			this.SessionManager= SessionManager;
-			this.SessionMemberManager = SessionMemberManager;
+			this.SessionStatusManager= SessionStatusManager;
+			this.SessionMemberStatusManager = SessionMemberStatusManager;
 			this.SessionMessageManager = SessionMessageManager;
 			this.TimeService = TimeService;
 			this.UserProfileService = UserProfileService;
 			this.SessionProviders = SessionProviders;
+			this.SessionProviderResolver = SessionProviderResolver;
 		}
 
 		
-		async Task<(long BizIdent,Providers.ISessionProvider Provider,long UserId)> EnsureSessionMember(
-			long SessionId
+		async Task<(Providers.ISessionProvider Provider,long UserId)> EnsureSessionMember(
+			string BizIdentType,
+			long BizIdent
 			)
 		{
+			if (BizIdentType.IsNullOrEmpty())
+				throw new PublicArgumentException("必须指定业务标识类型");
+			if (BizIdent == 0)
+				throw new PublicArgumentException("必须指定业务标识");
+
+
 			var user = EnsureUserIdent();
-
-			var sess = await DataContext
-				.Set<DataModels.DataSession>()
-				.AsQueryable()
-				.Where(s =>
-					s.Id == SessionId &&
-					s.LogicState == EntityLogicState.Enabled
-					)
-				.Select(s=>new { s.BizIdentType,s.BizIdent})
-				.SingleOrDefaultAsync();
-			if (sess == null)
-				throw new PublicArgumentException("找不到会话");
-
-			var provider = SessionProviders.Value.Single(p => p.IdentType == sess.BizIdentType);
+			var provider = SessionProviderResolver(BizIdentType);
 			if(provider==null)
-				throw new PublicDeniedException("找不到会话类型："+sess.BizIdentType);
-			await provider.MemberRelationValidate(sess.BizIdent, user);
-			return (sess.BizIdent,provider, user);
+				throw new PublicDeniedException("找不到会话类型："+BizIdentType);
+			await provider.MemberRelationValidate(BizIdent, user);
+			return (provider, user);
 		}
 
 		/// <summary>
@@ -83,19 +82,20 @@ namespace SF.Common.Conversations.Front
 		/// </summary>
 		/// <param name="Arg">查询参数</param>
 		/// <returns></returns>
-		public async Task<QueryResult<SessionMessage>> QueryMessage(MessageQueryArgument Arg)
+		public async Task<QueryResult<SessionMessage>> QueryMessages(MessageQueryArgument Arg)
 		{
-			if (Arg.SessionId == 0)
-				throw new PublicArgumentException("必须指定会话");
+			var ctx =await EnsureSessionMember(Arg.BizIdentType,Arg.BizIdent);
 
-			var ctx=await EnsureSessionMember(Arg.SessionId);
-
-			var q = from m in DataContext.Set<DataModels.DataSessionMessage>().AsQueryable()
-					where m.SessionId == Arg.SessionId 
+			var q = from s in DataContext.Set<DataModels.DataSessionStatus>().AsQueryable()
+					where	s.BizIdentType==Arg.BizIdentType && 
+							s.BizIdent==Arg.BizIdent && 
+							s.LogicState==EntityLogicState.Enabled
+					from m in s.Messages
 					select m;
 			if (Arg.StartId.HasValue)
 				q = q.Where(m => m.Id > Arg.StartId.Value);
 
+			var user = ctx.UserId;
 			var rq = from m in q
 					orderby m.Id ascending
 					select new SessionMessage
@@ -107,17 +107,22 @@ namespace SF.Common.Conversations.Front
 						Time = m.Time,
 						Type = m.Type,
 						UserId=m.UserId,
-						PosterId = m.PosterId,
+						Self= m.UserId.HasValue && m.UserId.Value== user
 					};
+
 			var re = await rq.ToQueryResultAsync(Arg.Paging);
+
+
 			var uids = re.Items.Select(i => i.UserId).Where(i => i.HasValue).Select(i=>i.Value).ToArray();
-			var users = await ctx.Provider.GetMemberDesc(ctx.BizIdent, uids);
+			var users = await ctx.Provider.GetMemberDesc(Arg.BizIdent, uids);
 
 			foreach(var i in re.Items)
 				if (i.UserId.HasValue && users.TryGetValue(i.UserId.Value, out var u))
 				{
 					i.PosterName = u.Name;
 					i.PosterIcon = u.Icon;
+					i.MemberBizIdent = u.BizIdent;
+					i.MemberBizIdentType = u.BizIdentType;
 				}
 			return re;
 		}
@@ -130,13 +135,14 @@ namespace SF.Common.Conversations.Front
 		/// <returns>消息ID</returns>
 		public async Task<ObjectKey<long>> SendMessage(MessageSendArgument Arg)
 		{
-			var ctx=await EnsureSessionMember(Arg.SessionId);
+			var ctx = await EnsureSessionMember(Arg.BizIdentType, Arg.BizIdent);
+			var sid = await SessionStatusManager.Value.GetOrCreateSession(Arg.BizIdentType, Arg.BizIdent);
 
 			var id =await SessionMessageManager.Value.CreateAsync(
 				new Models.SessionMessage
 				{
+					SessionId= sid,
 					Argument = Arg.Argument,
-					SessionId = Arg.SessionId,
 					Text = Arg.Text,
 					UserId=ctx.UserId,
 					Type = Arg.Type,
@@ -144,11 +150,93 @@ namespace SF.Common.Conversations.Front
 			return id;
 		}
 
-		public async Task SetReadTime(long SessionId)
+		public async Task SetReadTime(SetReadTimeArgument Arg)
 		{
-			var ctx = await EnsureSessionMember(SessionId);
-			await SessionMemberManager.Value.SetReadTime(SessionId, ctx.UserId);
+			var ctx=await EnsureSessionMember(Arg.BizIdentType, Arg.BizIdent);
+			var sid = await SessionStatusManager.Value.GetOrCreateSession(Arg.BizIdentType, Arg.BizIdent);
+
+			await SessionMemberStatusManager.Value.SetReadTime(
+				sid,
+				ctx.UserId
+				);
 		}
 
+		public async Task<QueryResult<SessionGroup>> QuerySessions(SessionQueryArgument Arg)
+		{
+			var user = EnsureUserIdent();
+			var grps = new List<SessionGroup>();
+			foreach (var sp in SessionProviders)
+			{
+				grps.AddRange(await sp.QuerySessions(user));
+			}
+
+			var ssQuery = DataContext.Set<DataModels.DataSessionStatus>().AsQueryable();
+
+			//填充会话状态
+			foreach(var g in from grp in grps 
+							from s in grp.Sessions
+							group s by s.BizIdentType into g
+							select (
+								BizIdentType:g.Key,
+								BizIdents:g.Select(gi=>gi.BizIdent).Distinct().ToArray(),
+								Sessions:g.ToArray()
+								)
+							)
+			{
+				var dics =await (
+					from s in ssQuery
+					where s.BizIdentType == g.BizIdentType && g.BizIdents.Contains(s.BizIdent)
+					let m= s.Members.Where(m => m.OwnerId.Value == user).SingleOrDefault()
+					let readed= m==null?0:m.MessageReaded
+					select new
+					{
+						s.BizIdent,
+						s.BizIdentType,
+						s.LogicState,
+						Unread=s.MessageCount - readed,
+						s.UpdatedTime,
+						s.LastMessageText
+					}).ToDictionaryAsync(s => (s.BizIdentType, s.BizIdent));
+
+				foreach (var s in g.Sessions)
+					if (dics.TryGetValue((s.BizIdentType, s.BizIdent), out var ss))
+					{
+						s.Unread = ss.Unread;
+						s.Text = s.Text ?? ss.LastMessageText;
+						s.Time = s.Time ?? ss.UpdatedTime;
+					}
+			}
+
+
+			var q = from g in grps
+					from s in g.Sessions
+					group (g, s) by g.Name into gi
+					let fg = gi.First().g
+					orderby fg.Order
+					select new SessionGroup
+					{
+						Name = fg.Name,
+						Text = fg.Text,
+						Sessions = gi.Select(p => p.s)
+								  .OrderByDescending(s => s.Time)
+								  .ToArray()
+					};
+			var items = q.ToArray();
+			return new QueryResult<SessionGroup>
+			{
+				Items = items
+			};
+		}
+		public async Task<QueryResult<SessionMember>> QueryMembers(MemberQueryArgument Arg)
+		{
+			var ctx = await EnsureSessionMember(Arg.BizIdentType, Arg.BizIdent);
+			var items = await ctx.Provider.QueryMembers(Arg.BizIdent);
+
+			return new QueryResult<SessionMember>
+			{
+				Items = items
+			};
+
+		}
 	}
 }

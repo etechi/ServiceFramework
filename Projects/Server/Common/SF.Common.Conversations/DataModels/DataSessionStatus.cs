@@ -12,14 +12,15 @@ namespace SF.Common.Conversations.DataModels
 	/// <summary>
 	/// 会话状态
 	/// </summary>
-	[Table("Session")]
-	public class DataSession: DataObjectEntityBase
+	[Table("SessionStatus")]
+	public class DataSessionStatus: DataObjectEntityBase
 	{
 		/// <summary>
 		/// 所有人ID
 		/// </summary>
 		[Index]
 		public override long? OwnerId { get; set; }
+
 		/// <summary>
 		/// 会话标志
 		/// </summary>
@@ -39,9 +40,16 @@ namespace SF.Common.Conversations.DataModels
 		[Index("biz", IsUnique = true, Order = 2)]
 		public long BizIdent { get; set; }
 
+		/// <summary>
+		/// 最后消息文本
+		/// </summary>
+		public string LastMessageText { get; set; }
 
+		/// <summary>
+		/// 最后消息类型
+		/// </summary>
+		public MessageType LastMessageType { get; set; }
 
-		public DateTime LastMessageTime { get; set; }
 		
 		/// <summary>
 		/// 最后消息
@@ -60,8 +68,8 @@ namespace SF.Common.Conversations.DataModels
 		/// <summary>
 		/// 会话成员状态
 		/// </summary>
-		[InverseProperty(nameof(DataSessionMember.Session))]
-		public ICollection<DataSessionMember> Members { get; set; }
+		[InverseProperty(nameof(DataSessionMemberStatus.Session))]
+		public ICollection<DataSessionMemberStatus> Members { get; set; }
 
 		/// <summary>
 		/// 会话消息

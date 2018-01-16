@@ -18,16 +18,16 @@ namespace SF.Sys.Services
 				"Conversation",
 				"交谈",
 				d => d
-					.Add<ISessionManager, SessionManager>("Session", "会话", typeof(Session))
-					.Add<ISessionMemberManager, SessionMemberManager>("SessionMember", "会话成员", typeof(SessionMember))
+					.Add<ISessionStatusManager, SessionStatusManager>("Session", "会话", typeof(SessionStatus))
+					.Add<ISessionMemberStatusManager, SessionMemberStatusManager>("SessionMember", "会话成员", typeof(SessionMemberStatus))
 					.Add<ISessionMessageManager, SessionMessageManager>("SessionMessage", "会话消息", typeof(SessionMessage), typeof(SF.Common.Conversations.Front.SessionMessage))
 				);
 
 			sc.AddManagedScoped<SF.Common.Conversations.Front.IConversationService, SF.Common.Conversations.Front.ConversationService>();
 			
 			sc.AddDataModules<
-				SF.Common.Conversations.DataModels.DataSession,
-				SF.Common.Conversations.DataModels.DataSessionMember,
+				SF.Common.Conversations.DataModels.DataSessionStatus,
+				SF.Common.Conversations.DataModels.DataSessionMemberStatus,
 				SF.Common.Conversations.DataModels.DataSessionMessage
 				>(TablePrefix ?? "Conversation");
 
@@ -35,11 +35,11 @@ namespace SF.Sys.Services
 			sc.InitServices("交谈", async (sp, sim, scope) =>
 			{
 				var MenuPath = "系统/交谈服务";
-				await sim.Service<ISessionManager, SessionManager>(null)
+				await sim.Service<ISessionStatusManager, SessionStatusManager>(null)
 					.WithMenuItems(MenuPath)
 					.Ensure(sp, scope);
 
-				await sim.Service<ISessionMemberManager, SessionMemberManager>(null)
+				await sim.Service<ISessionMemberStatusManager, SessionMemberStatusManager>(null)
 					.WithMenuItems(MenuPath)
 					.Ensure(sp, scope);
 

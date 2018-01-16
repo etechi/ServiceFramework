@@ -10,9 +10,9 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Common.Conversations.Models
 {
 	/// <summary>
-	/// 交谈会话
+	/// 会话状态
 	/// </summary>
-	public class Session: ObjectEntityBase
+	public class SessionStatus: ObjectEntityBase
 	{
 		
 		/// <summary>
@@ -75,16 +75,11 @@ namespace SF.Common.Conversations.Models
 		[Ignore]
 		public string LastMessageName { get; set; }
 
-		/// <summary>
-		/// 最后消息时间
-		/// </summary>
-		[ReadOnly(true)]
-		[TableVisible]
-		public DateTime LastMessageTime { get; set; }
+	
 
 	}
 
-	public class SessionEditable : Session
+	public class SessionEditable : SessionStatus
 	{
 	}
 }

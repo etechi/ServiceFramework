@@ -24,22 +24,22 @@ namespace SF.Common.UserGroups.Managers
 			>,
 		IGroupManager<TGroup, TMember, TGroupEditable,TQueryArgument>
 		where TGroup:Group<TGroup,TMember>,new()
-		where TMember : GroupMember<TGroup, TMember>
+		where TMember : GroupMember<TGroup, TMember>, new()
 		where TGroupEditable:Group<TGroup, TMember>,TGroup
 		where TQueryArgument:GroupQueryArgument,new()
 		where TDataGroup:DataModels.DataGroup<TDataGroup,TDataMember>,new()
 		where TDataMember : DataModels.DataGroupMember<TDataGroup, TDataMember>
 	{
-		Lazy<IUserProfileService > UserProfileService { get; }
+		public Lazy<IUserProfileService > UserProfileService { get; }
 
 		public GroupManager(
 			IEntityServiceContext ServiceContext,
 			Lazy<IUserProfileService> UserProfileService,
-			GroupSyncScope SessionSyncScope
+			GroupSyncScope GroupSyncScope
 			) : base(ServiceContext)
 		{
 			this.UserProfileService = UserProfileService;
-			this.SetSyncQueue(SessionSyncScope, e => e.Id);
+			this.SetSyncQueue(GroupSyncScope, e => e.Id);
 		}
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
@@ -59,15 +59,23 @@ namespace SF.Common.UserGroups.Managers
 
 			if (editable.Icon == null)
 				editable.Icon = user.Icon;
-			
+			model.Id = await IdentGenerator.GenerateAsync<TDataGroup>();
 			model.LastActiveTime = Now;
 			await base.OnNewModel(ctx);
 
 			if (editable.Members == null)
-				
+				editable.Members = new[]{
+					new TMember
+					{
+						GroupId=model.Id,
+						OwnerId=user.Id,
+						MemberAccepted=true,
+						GroupAccepted=true,
+						JoinState=GroupJoinState.Joined,
+						LastActiveTime=Now
+					}
+				};
 
-			foreach (var m in editable.Members)
-				m.GroupId = model.Id;
 			var om = editable
 				.Members
 				.Where(mi=>mi.OwnerId==editable.OwnerId)
@@ -87,7 +95,7 @@ namespace SF.Common.UserGroups.Managers
 			if (ctx.Editable.Members != null)
 			{
 				foreach (var m in ctx.Model.Members)
-					m.JoinState = JoinStateDetector.Detect(m.SessionAccepted, m.MemberAccepted);
+					m.JoinState = JoinStateDetector.Detect(m.GroupAccepted, m.MemberAccepted);
 				ctx.Model.MemberCount =
 					ctx.Model.Members
 						.Count(m => m.LogicState == EntityLogicState.Enabled && m.JoinState==GroupJoinState.Joined );
@@ -103,6 +111,7 @@ namespace SF.Common.UserGroups.Managers
 				await DataContext.SaveChangesAsync();
 
 				DataContext.Update(ctx.Model);
+
 
 				ctx.Model.OwnerMemberId = ctx.Model.Members.First().Id;
 

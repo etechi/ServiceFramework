@@ -58,48 +58,11 @@ namespace SF.Common.Conversations.Managers
 	/// </summary>
 	[NetworkService]
 	[EntityManager]
-	public interface ISessionManager :
-		IEntitySource<ObjectKey<long>, Session, SessionQueryArgument>,
+	public interface ISessionStatusManager :
+		IEntitySource<ObjectKey<long>, SessionStatus, SessionQueryArgument>,
 		IEntityManager<ObjectKey<long>, SessionEditable>
 	{
-		
-		
+		Task<long> GetOrCreateSession(string BizIdentType, long BizIdent);
 	}
 
-	public static class SessionManagerExtension
-	{
-		
-
-		public static Task<long> GetOrCreateSession(
-			this IScoped<ISessionManager> SessionManagerScope,
-			string SessionBizIdentType,
-			long SessionBizIdent,
-			Func<Task<SessionCreateArgument>> GetSessionEnsureArgument
-			)
-		{
-			return SF.Sys.Threading.TaskUtils.Retry(() =>
-				SessionManagerScope.Use(async (sm) =>
-				{
-					var re = await sm.QueryIdentsAsync(new SessionQueryArgument
-					{
-						BizIdentType = SessionBizIdentType,
-						BizIdent = SessionBizIdent
-					});
-					var sid = re.Items.SingleOrDefault();
-					if (sid != null) return sid.Id;
-
-					var arg = await GetSessionEnsureArgument();
-					var sess= await sm.CreateAsync(
-						new SessionEditable
-						{
-							BizIdent=arg.BizIdent,
-							BizIdentType=arg.BizIdentType,
-							Name=arg.Name,
-							OwnerId=arg.OwnerId
-						}
-						);
-					return sess.Id;
-				}));
-		}
-	}
 }

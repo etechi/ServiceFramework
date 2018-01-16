@@ -45,9 +45,13 @@ namespace SF.Common.Conversations.Front
 		public long? UserId { get; set; }
 
 		/// <summary>
-		/// 发信成员ID,系统消息没有发信人
+		/// 发信成员业务标识,系统消息没有发信人
 		/// </summary>
-		public long? PosterId { get; set; }
+		public long? MemberBizIdent{ get; set; }
+		/// <summary>
+		/// 发信成员业务标识类型
+		/// </summary>
+		public string MemberBizIdentType { get; set; }
 
 		/// <summary>
 		/// 发信人昵称
@@ -58,5 +62,10 @@ namespace SF.Common.Conversations.Front
 		/// 发信人图标
 		/// </summary>
 		public string PosterIcon { get; set; }
+
+		/// <summary>
+		/// 是否为当前用户消息
+		/// </summary>
+		public bool Self { get; set; }
 	}
 }

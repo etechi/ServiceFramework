@@ -26,6 +26,7 @@ using System.ComponentModel.DataAnnotations;
 using SF.Sys.Reflection;
 using SF.Sys.Data.EntityFrameworkCore;
 using SF.Sys.Data;
+using System.Diagnostics;
 
 namespace SF.Sys.Data.EntityFrameworkCore
 {
@@ -112,6 +113,9 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		}
 		public void Init(ModelBuilder modelBuilder)
 		{
+			//Debugger.Launch();
+			//throw new Exception(string.Join("\n",EntityItems.Select(i => i.Type.FullName)));
+
 			foreach (var item in EntityItems)
 			{
 				var builder = modelBuilder.Entity(item.Type);

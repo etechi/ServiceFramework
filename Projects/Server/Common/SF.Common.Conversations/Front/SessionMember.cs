@@ -1,9 +1,9 @@
 ﻿namespace SF.Common.Conversations.Front
 {
 	/// <summary>
-	/// 会话消息发送参数
+	/// 会话成员
 	/// </summary>
-	public class MessageSendArgument
+	public class SessionMember
 	{
 		/// <summary>
 		/// 业务标识类型
@@ -11,23 +11,28 @@
 		public string BizIdentType { get; set; }
 
 		/// <summary>
-		/// 会话业务标识
+		/// 业务标识
 		/// </summary>
 		public long BizIdent { get; set; }
 
 		/// <summary>
-		/// 消息类型
+		/// 用户ID
 		/// </summary>
-		public MessageType Type { get; set; }
+		public long UserId { get; set; }
+		/// <summary>
+		/// 名称
+		/// </summary>
+		public string Name { get; set; }
+		
+		/// <summary>
+		/// 图标
+		/// </summary>
+		public string Icon { get; set; }
 
 		/// <summary>
-		/// 消息内容
+		/// 排序
 		/// </summary>
-		public string Text { get; set; }
+		public int Order { get; set; }
 
-		/// <summary>
-		/// 消息参数
-		/// </summary>
-		public string Argument { get; set; }
 	}
 }

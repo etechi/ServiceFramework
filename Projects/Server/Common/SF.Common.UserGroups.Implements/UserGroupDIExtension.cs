@@ -8,9 +8,8 @@ using SF.Sys.Settings;
 namespace SF.Sys.Services
 {
 	public static class UserGroupDIExtension
-
 	{
-		public static IServiceCollection AddUserGroupservices(this IServiceCollection sc)
+		public static IServiceCollection AddUserGroupSyncScope(this IServiceCollection sc)
 		{
 			sc.AddSingleton<GroupSyncScope>();
 

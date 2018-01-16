@@ -45,16 +45,18 @@ namespace SF.Auth.IdentityServices.Models
 		[MaxLength(100)]
 		[Ignore]
 		public string MainClaimTypeName { get; set; }
-	}
 
-	public class UserEditable : UserInternal
-	{
 		/// <summary>
 		/// 图标
 		/// </summary>
 		[MaxLength(100)]
 		[Image]
 		public string Icon { get; set; }
+	}
+
+	public class UserEditable : UserInternal
+	{
+		
 
 		/// <summary>
 		/// 头像

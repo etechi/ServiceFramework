@@ -50,7 +50,7 @@ namespace SF.Common.UserGroups.Models
 		/// <summary>
 		/// 是否接收成员
 		/// </summary>
-		public bool? SessionAccepted { get; set; }
+		public bool? GroupAccepted { get; set; }
 
 		/// <summary>
 		/// 是否同意加入

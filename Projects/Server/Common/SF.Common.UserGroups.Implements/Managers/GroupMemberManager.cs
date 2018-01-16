@@ -89,7 +89,7 @@ namespace SF.Common.UserGroups.Managers
 			var editable = ctx.Editable;
 			var model = ctx.Model;
 			var orgExists = model.LogicState == EntityLogicState.Enabled && model.JoinState == GroupJoinState.Joined ? 1 : 0;
-			var newJoinState = DetectJoinState(editable.SessionAccepted, editable.MemberAccepted);
+			var newJoinState = DetectJoinState(editable.GroupAccepted, editable.MemberAccepted);
 			var newExists = editable.LogicState == EntityLogicState.Enabled && newJoinState == GroupJoinState.Joined ? 1 : 0;
 			var memberCountDiff = newExists - orgExists;
 			model.JoinState = newJoinState;
@@ -130,7 +130,7 @@ namespace SF.Common.UserGroups.Managers
 		public async Task<long> MemberEnsure(
 			long GroupId,
 			long TargetUserId,
-			bool SessionAccepted,
+			bool GroupAccepted,
 			bool MemberAccepted,
 			int BizType,
 			string BizIdentType,
@@ -146,7 +146,7 @@ namespace SF.Common.UserGroups.Managers
 								 m.Id,
 								 m.LogicState,
 								 m.MemberAccepted,
-								 m.SessionAccepted
+								 m.GroupAccepted
 							 }).SingleOrDefault()
 					 select new
 					 {
@@ -157,7 +157,7 @@ namespace SF.Common.UserGroups.Managers
 			if (data == null)
 				throw new PublicArgumentException("指定的用户组已被删除");
 			if (data.Flags.HasFlag(SessionFlag.Public))
-				SessionAccepted = true;
+				GroupAccepted = true;
 			if (data.Member == null)
 			{
 				var m = await CreateAsync(new TMemberEditable
@@ -165,19 +165,19 @@ namespace SF.Common.UserGroups.Managers
 					GroupId = GroupId,
 					OwnerId = TargetUserId,
 					MemberAccepted = MemberAccepted ? (bool?)true : null,
-					SessionAccepted = SessionAccepted ? (bool?)true : null
+					GroupAccepted = GroupAccepted ? (bool?)true : null
 				});
 				return m.Id;
 			}
 			else if (data.Member.LogicState != EntityLogicState.Enabled)
 				throw new PublicDeniedException("成员已被禁止加入");
 			else if (
-				(data.Member.SessionAccepted ?? false) != SessionAccepted ||
+				(data.Member.GroupAccepted ?? false) != GroupAccepted ||
 				(data.Member.MemberAccepted ?? false) != MemberAccepted)
 			{
 				var m = await LoadForEdit(ObjectKey.From(data.Member.Id));
-				if (SessionAccepted)
-					m.SessionAccepted = SessionAccepted;
+				if (GroupAccepted)
+					m.GroupAccepted = GroupAccepted;
 				if (MemberAccepted)
 					m.MemberAccepted = MemberAccepted;
 				await UpdateAsync(m);

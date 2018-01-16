@@ -627,9 +627,10 @@ namespace SF.Sys.Entities
 					if(InitModel!=null)
 						await InitModel(Context);
 
-					Storage.DataContext.Set<TModel>().Add(Context.Model);
+					var set = Storage.DataContext.Set<TModel>();
+					set.Add(Context.Model);
 
-					if (UpdateModel!=null)
+					if (UpdateModel != null)
 						await UpdateModel(Context);
 
 					Storage.PostChangedEvents<TEditable>(Context.Editable,DataActionType.Create);
@@ -663,8 +664,12 @@ namespace SF.Sys.Entities
 
 		#region CreateOrUpdate
 
-		class CreateOrUpdateResult<TEditable,TModel>
+		public class CreateOrUpdateResult<TEditable,TModel>
 		{
+			public CreateOrUpdateResult()
+			{
+
+			}
 			public TEditable Editable { get; set; }
 			public TModel Model { get; set; }
 
@@ -685,7 +690,8 @@ namespace SF.Sys.Entities
 			Func<TModifyContext, Task> UpdateModel,
 			Func<TModifyContext, Task> InitModel,
 			object ExtraArgument = null,
-			bool EnableAutoModifier = false
+			bool EnableAutoModifier = false,
+			bool AutoSaveChange=true
 			)
 			where TModel : class, new()
 			where TModifyContext : IEntityModifyContext<TEditable, TModel>
@@ -700,12 +706,12 @@ namespace SF.Sys.Entities
 					var q = Storage.DataContext.Set<TModel>().AsQueryable().Where(Selector);
 					var helper = Storage.QueryResultBuildHelperCache.GetHelper<TModel, TEditable>(QueryMode.Edit);
 
-					var expr = (LambdaExpression)helper.BuildEntityMapper(CreateOrUpdateResult<TEditable, TModel>.Argument, 1, PropertySelector.All);
+					var expr = helper.BuildEntityMapper(CreateOrUpdateResult<TEditable, TModel>.Argument, 1, PropertySelector.All);
 					var existQuery=q.Select(
 						Expression.Lambda<Func<TModel, CreateOrUpdateResult<TEditable, TModel>>>(
 							Expression.MemberInit(
-								Expression.New(typeof(Func<TModel, CreateOrUpdateResult<TEditable, TModel>>)),
-								Expression.Bind(CreateOrUpdateResult<TEditable, TModel>.PropEditable, expr.Body),
+								Expression.New(typeof(CreateOrUpdateResult<TEditable, TModel>)),
+								Expression.Bind(CreateOrUpdateResult<TEditable, TModel>.PropEditable, expr),
 								Expression.Bind(CreateOrUpdateResult<TEditable, TModel>.PropModel, CreateOrUpdateResult<TEditable, TModel>.Argument)
 							),
 							CreateOrUpdateResult<TEditable, TModel>.Argument
@@ -717,9 +723,9 @@ namespace SF.Sys.Entities
 					{
 						if (Entity.IsDefault())
 							throw new ArgumentNullException("需要提供实体");
+						Context.InitCreate<TModel, TEditable>(Entity, ExtraArgument);
 						if (InitModel != null)
 							await InitModel(Context);
-						Context.InitCreate<TModel, TEditable>(Entity, ExtraArgument);
 						Storage.DataContext.Set<TModel>().Add(Context.Model);
 					}
 					else
@@ -732,7 +738,8 @@ namespace SF.Sys.Entities
 						await UpdateModel(Context);
 
 					Storage.PostChangedEvents<TEditable>(Context.Editable, DataActionType.Create);
-					await Storage.DataContext.SaveChangesAsync();
+					if(AutoSaveChange)
+						await Storage.DataContext.SaveChangesAsync();
 					return Entity<TModel>.GetKey<TKey>(Context.Model);
 				});
 		}

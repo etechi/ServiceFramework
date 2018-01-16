@@ -13,7 +13,7 @@ namespace SF.Common.Conversations.Managers
 		/// <summary>
 		/// 会话
 		/// </summary>
-		[EntityIdent(typeof(Session))]
+		[EntityIdent(typeof(SessionStatus))]
 		public long? SessionId { get; set; }
 
 		/// <summary>
@@ -23,14 +23,15 @@ namespace SF.Common.Conversations.Managers
 		public long? OwnerId { get; set; }
 	}
 
+	
 	/// <summary>
 	/// 会话成员管理
 	/// </summary>
 	[NetworkService]
 	[EntityManager]
-	public interface ISessionMemberManager :
-		IEntitySource<ObjectKey<long>, SessionMember, SessionMemberQueryArgument>,
-		IEntityManager<ObjectKey<long>, SessionMember>
+	public interface ISessionMemberStatusManager :
+		IEntitySource<ObjectKey<long>, SessionMemberStatus, SessionMemberQueryArgument>,
+		IEntityManager<ObjectKey<long>, SessionMemberStatus>
 	{
 		Task SetReadTime(long SessionId,long UserId);
 	}

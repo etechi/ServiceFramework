@@ -12,20 +12,20 @@ using SF.Sys.TimeServices;
 
 namespace SF.Common.Conversations.Managers
 {
-	public class SessionMemberManager :
+	public class SessionMemberStatusManager :
 		AutoModifiableEntityManager<
 			ObjectKey<long>,
-			SessionMember,
-			SessionMember,
+			SessionMemberStatus,
+			SessionMemberStatus,
 			SessionMemberQueryArgument,
-			SessionMember,
-			DataModels.DataSessionMember
+			SessionMemberStatus,
+			DataModels.DataSessionMemberStatus
 			>,
-		ISessionMemberManager
+		ISessionMemberStatusManager
 	{
 		Lazy<IUserProfileService> UserProfileService { get; }
 		SessionSyncScope SessionSyncScope { get; }
-		public SessionMemberManager(
+		public SessionMemberStatusManager(
 			IEntityServiceContext ServiceContext,
 			SessionSyncScope SessionSyncScope,
 			Lazy<IDataProtector> DataProtector,
@@ -46,7 +46,7 @@ namespace SF.Common.Conversations.Managers
 			if (editable.LastReadTime != model.LastReadTime)
 			{
 				var messageCount = await DataContext
-					.Set<DataModels.DataSession>()
+					.Set<DataModels.DataSessionStatus>()
 					.AsQueryable()
 					.Where(s => s.Id == editable.SessionId)
 					.Select(s => s.MessageCount)
@@ -81,9 +81,10 @@ namespace SF.Common.Conversations.Managers
 		}
 		internal async Task<long> InternalSetLastMessage(long SessionId,long UserId,long MessageId)
 		{
+			AutoSaveChanges = false;
 			var re=await base.InternalCreateOrUpdateAsync(
 				NewModifyContext(),
-				new SessionMember
+				new SessionMemberStatus
 				{
 					SessionId = SessionId,
 					OwnerId = UserId
@@ -105,7 +106,7 @@ namespace SF.Common.Conversations.Managers
 			return SessionSyncScope.Queue(SessionId, async () =>
 			{
 				await base.CreateOrUpdateAsync(
-					new SessionMember
+					new SessionMemberStatus
 					{
 						SessionId = SessionId,
 						OwnerId = UserId

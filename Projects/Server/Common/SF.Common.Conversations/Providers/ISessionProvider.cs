@@ -12,17 +12,13 @@ using System.Collections.Generic;
 
 namespace SF.Common.Conversations.Providers
 {
-	public interface ISessionMemberDesc
-	{
-		string Name { get; }
-		string Icon { get; }
-	}
-
+	
 	public interface ISessionProvider 
 	{
-		string IdentType { get; }
 		Task MemberRelationValidate(long BizIdent, long UserId);
-		Task<Dictionary<long, ISessionMemberDesc>> GetMemberDesc(long BizIdent, long[] Users);
+		Task<Dictionary<long, Front.SessionMember>> GetMemberDesc(long BizIdent, long[] Users);
+		Task<Front.SessionMember[]> QueryMembers(long BizIdent);
+		Task<Front.SessionGroup[]> QuerySessions(long UserId);
 		
 	}
 }

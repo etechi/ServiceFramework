@@ -12,23 +12,29 @@ using System.Collections.Generic;
 
 namespace SF.Common.UserGroups.Front
 {
-	public class UserGroupServiceSetting<TGroup,
+	public class UserGroupServiceSetting<
+		TGroup,
 		TGroupEditable,
 		TGroupQueryArgument,
+		TGroupManager,
 		TMember,
 		TMemberEditable,
-		TMemberQueryArgument>
+		TMemberQueryArgument,
+		TGroupMemberManager
+		>
 		where TGroup : Models.Group<TGroup, TMember>
 		where TGroupEditable : Models.Group<TGroup, TMember>, TGroup
 		where TGroupQueryArgument : Managers.GroupQueryArgument
 		where TMember : Models.GroupMember<TGroup, TMember>
 		where TMemberEditable : Models.GroupMember<TGroup, TMember>
 		where TMemberQueryArgument : Managers.GroupMemberQueryArgument
+		where TGroupManager: Managers.IGroupManager<TGroup, TMember, TGroupEditable, TGroupQueryArgument>
+		where TGroupMemberManager : Managers.IGroupMemberManager<TGroup, TMember, TMemberEditable, TMemberQueryArgument>
 	{
 		public IDataContext DataContext { get; set; }
 		public IAccessToken AccessToken { get; set; }
-		public Lazy<Managers.IGroupManager<TGroup, TMember, TGroupEditable, TGroupQueryArgument>> GroupManager { get; set; }
-		public Lazy<Managers.IGroupMemberManager<TGroup, TMember, TMemberEditable, TMemberQueryArgument>> GroupMemberManager { get; set; }
+		public Lazy<TGroupManager> GroupManager { get; set; }
+		public Lazy<TGroupMemberManager> GroupMemberManager { get; set; }
 		public Lazy<ITimeService> TimeService { get; set; }
 		public Lazy<IUserProfileService> UserProfileService { get; set; }
 	}
@@ -41,9 +47,11 @@ namespace SF.Common.UserGroups.Front
 		TGroup,
 		TGroupEditable, 
 		TGroupQueryArgument,
+		TGroupManager,
 		TMember,
 		TMemberEditable,
 		TMemberQueryArgument,
+		TGroupMemberManager,
 		TDataGroup,
 		TDataMember
 		> : 
@@ -58,15 +66,16 @@ namespace SF.Common.UserGroups.Front
 		where TMemberQueryArgument:Managers.GroupMemberQueryArgument
 		where TDataGroup : DataModels.DataGroup<TDataGroup, TDataMember>
 		where TDataMember : DataModels.DataGroupMember<TDataGroup, TDataMember>
-		
+		where TGroupManager : Managers.IGroupManager<TGroup, TMember, TGroupEditable, TGroupQueryArgument>
+		where TGroupMemberManager : Managers.IGroupMemberManager<TGroup, TMember, TMemberEditable, TMemberQueryArgument>
 	{
-		protected UserGroupServiceSetting<TGroup,TGroupEditable,TGroupQueryArgument,TMember,TMemberEditable,TMemberQueryArgument> Setting { get; }
+		protected UserGroupServiceSetting<TGroup,TGroupEditable,TGroupQueryArgument,TGroupManager,TMember,TMemberEditable,TMemberQueryArgument, TGroupMemberManager> Setting { get; }
 		public long EnsureUserIdent() =>
 			Setting.AccessToken.User.EnsureUserIdent();
 
 
 		public UserGroupService(
-			UserGroupServiceSetting<TGroup, TGroupEditable, TGroupQueryArgument, TMember, TMemberEditable, TMemberQueryArgument> Setting
+			UserGroupServiceSetting<TGroup, TGroupEditable, TGroupQueryArgument, TGroupManager, TMember, TMemberEditable, TMemberQueryArgument, TGroupMemberManager> Setting
 			)
 		{
 			this.Setting = Setting;
@@ -273,7 +282,7 @@ namespace SF.Common.UserGroups.Front
 				var soid = await Setting.DataContext.Set<TDataGroup>().AsQueryable().Where(s => s.Id == m.GroupId).Select(s => s.OwnerId).SingleOrDefaultAsync();
 				if (uid != soid)
 					throw new PublicDeniedException("当前用户必须是用户组所有者或成员所有者");
-				m.SessionAccepted = AcceptType;
+				m.GroupAccepted = AcceptType;
 				await Setting.GroupMemberManager.Value.UpdateAsync(m);
 
 			}
