@@ -65,7 +65,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			static ParameterExpression ArgItem { get; } = Expression.Parameter(typeof(E));
 			public Expression SourceToDestOrTemp(Expression src,int Level, IPropertySelector PropertySelector,PropertyInfo srcProp,PropertyInfo dstProp)
 			{
-				if (Level == 3)
+				if (Level <= 0)
 					return null;
 				var exp = src.GetMember(srcProp);
 				if (SrcOrderItemProperty != null)
@@ -83,7 +83,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 					MethodSelectSpec,
 					exp,
 					Expression.Lambda<Func<E, T>>(
-						QueryResultBuildHelper.BuildEntityMapper(ArgItem, Level + 1, PropertySelector),
+						QueryResultBuildHelper.BuildEntityMapper(ArgItem, Level - 1, PropertySelector),
 						ArgItem
 					)
 				);
@@ -92,10 +92,10 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 
 			}
 
-			public async Task<IEnumerable<R>> TempToDest(object src, IEnumerable<T> value, IPropertySelector PropertySelector)
+			public async Task<IEnumerable<R>> TempToDest(object src, IEnumerable<T> value, IPropertySelector PropertySelector,int Level)
 			{
 				if (value == null) return Enumerable.Empty<R>();
-				return await QueryResultBuildHelper.GetResultMapper(PropertySelector)(value.ToArray());
+				return await QueryResultBuildHelper.GetResultMapper(PropertySelector,Level)(value.ToArray());
 			}
 		}
 		static IEntityPropertyQueryConverter CreateConverter<E,R>(

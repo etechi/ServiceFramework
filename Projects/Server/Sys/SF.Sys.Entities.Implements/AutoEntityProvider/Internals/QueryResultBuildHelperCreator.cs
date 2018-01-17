@@ -64,7 +64,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 
 		System.Collections.Concurrent.ConcurrentDictionary<string, Mapper> Mappers { get; } = 
 			new System.Collections.Concurrent.ConcurrentDictionary<string, Mapper>();
-		Mapper GetMapper(IPropertySelector Selector)
+		Mapper GetMapper(IPropertySelector Selector,int Level)
 		{
 			var key = Selector.Key;
 			if (Mappers.TryGetValue(key, out var m))
@@ -73,7 +73,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 			m = new Mapper
 			{
 				ResultMapper = FuncBuildResultMapper(Selector),
-				EntityMapper = Expression.Lambda<Func<TDataModel, TTemp>>(FuncBuildEntityMapper(p, 0, Selector), p)
+				EntityMapper = Expression.Lambda<Func<TDataModel, TTemp>>(FuncBuildEntityMapper(p, Level, Selector), p)
 			};
 			return Mappers.GetOrAdd(key, m);
 		}
@@ -82,15 +82,15 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 			return FuncBuildEntityMapper(src, Level, PropertySelector);
 		}
 
-		public Expression<Func<TDataModel, TTemp>> GetEntityMapper(IPropertySelector PropertySelector)
+		public Expression<Func<TDataModel, TTemp>> GetEntityMapper(IPropertySelector PropertySelector,int Level)
 		{
-			var m = GetMapper(PropertySelector);
+			var m = GetMapper(PropertySelector, Level);
 			return m.EntityMapper;
 		}
 
-		public Func<TTemp[], Task<TResult[]>> GetResultMapper(IPropertySelector PropertySelector)
+		public Func<TTemp[], Task<TResult[]>> GetResultMapper(IPropertySelector PropertySelector,int Level)
 		{
-			var m = GetMapper(PropertySelector);
+			var m = GetMapper(PropertySelector,Level);
 			return m.ResultMapper;
 		}
 
@@ -98,7 +98,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 		{
 			var props = paging?.Properties;
 			var selector =PropertySelector.Get( props);
-			var m = GetMapper(selector);
+			var m = GetMapper(selector,paging?.ResultDeep ?? 0);
 			return queryable.ToQueryResultAsync(
 				q=>q.Select(m.EntityMapper),
 				m.ResultMapper,
@@ -108,9 +108,9 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 				);
 		}
 
-		public async Task<TResult> QuerySingleOrDefault(IContextQueryable<TDataModel> queryable)
+		public async Task<TResult> QuerySingleOrDefault(IContextQueryable<TDataModel> queryable,int Level)
 		{
-			var m = GetMapper(PropertySelector.All);
+			var m = GetMapper(PropertySelector.All,Level);
 			var re = await queryable.Select(m.EntityMapper).SingleOrDefaultAsync();
 			if (re == null)
 				return default(TResult);

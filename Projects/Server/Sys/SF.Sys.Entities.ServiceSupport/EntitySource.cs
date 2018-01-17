@@ -111,14 +111,14 @@ namespace SF.Sys.Entities
 		public AutoEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
+		protected virtual int DetailDeep => 2;
 		public virtual Task<TDetail[]> BatchGetAsync(TKey[] Ids,string[] Properties)
 		{
-			return ServiceContext.AutoBatchGetAsync<TKey, TDetail, TModel>(Ids,Properties);
+			return ServiceContext.AutoBatchGetAsync<TKey, TDetail, TModel>(Ids,Properties,DetailDeep);
 		}
-
 		public virtual Task<TDetail> GetAsync(TKey Id)
 		{
-			return ServiceContext.AutoGetAsync<TKey, TDetail, TModel>(Id);
+			return ServiceContext.AutoGetAsync<TKey, TDetail, TModel>(Id,DetailDeep);
 		}
 	}
 	public abstract class ConstantEntitySource<TKey, TEntityDetail> :

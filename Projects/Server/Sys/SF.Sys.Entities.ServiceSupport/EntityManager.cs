@@ -434,10 +434,11 @@ namespace SF.Sys.Entities
 			return OnLoadChildObjectsForUpdate(Id, ctx).SingleOrDefaultAsync();
 		}
 
+		protected virtual int EditableDeep => 2;
 		
 		public virtual Task<TEditable> LoadForEdit(TKey Key)
 		{
-			return ServiceContext.AutoLoadForEdit<TKey,TEditable,TModel>(Key);
+			return ServiceContext.AutoLoadForEdit<TKey,TEditable,TModel>(Key, EditableDeep);
 		}
 	}
 

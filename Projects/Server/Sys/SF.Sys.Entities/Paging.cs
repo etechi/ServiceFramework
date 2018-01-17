@@ -79,6 +79,10 @@ namespace SF.Sys.Entities
 		/// </summary>
 		public string[] Properties { get; set; }
 
+		/// <summary>
+		/// 结果集深度
+		/// </summary>
+		public int ResultDeep { get; set; }
 		public static Paging One => new Paging
 		{
 			Count = 1

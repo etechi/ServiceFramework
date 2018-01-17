@@ -46,7 +46,6 @@ namespace SF.Auth.IdentityServices
 					{
 						name = u.Name,
 						icon = u.Icon,
-						phone = u.PhoneNumber,
 						image = u.Image
 					})
 					.SingleOrDefaultAsync();
@@ -70,7 +69,6 @@ namespace SF.Auth.IdentityServices
 								case PredefinedClaimTypes.Name: value = desc.name; break;
 								case PredefinedClaimTypes.Icon: value = desc.icon; break;
 								case PredefinedClaimTypes.Image: value = desc.image; break;
-								case PredefinedClaimTypes.Phone: value = desc.phone; break;
 								case PredefinedClaimTypes.Subject: value = id.ToString(); break;
 								default: types.Add(p.Item1); value = null; break;
 							}
@@ -94,6 +92,9 @@ namespace SF.Auth.IdentityServices
 						where u.Id == id
 						select new
 						{
+							userCredentials = from uc in u.Credentials
+										 where types.Contains(uc.ClaimTypeId)
+										 select new { type = uc.ClaimTypeId, value = uc.Credential },
 							userClaims = from uc in u.ClaimValues
 										 where types.Contains(uc.TypeId)
 										 select new { type = uc.TypeId, value = uc.Value },
@@ -112,6 +113,8 @@ namespace SF.Auth.IdentityServices
 						).SingleOrDefaultAsync();
 					if (re != null)
 					{
+						foreach (var c in re.userCredentials)
+							claims.Add(new Claim(c.type, c.value));
 						foreach (var c in re.userClaims)
 							claims.Add(new Claim(c.type, c.value));
 						foreach (var c in re.roleClaims)

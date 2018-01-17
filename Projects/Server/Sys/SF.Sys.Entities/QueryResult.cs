@@ -158,13 +158,13 @@ namespace SF.Sys.Entities
 	public interface IQueryResultBuildHelper<E, R>
 	{
 		Task<QueryResult<R>> Query(IContextQueryable<E> queryable, IPagingQueryBuilder<E> PagingQueryBuilder,Paging Paging);
-		Task<R> QuerySingleOrDefault(IContextQueryable<E> queryable);
+		Task<R> QuerySingleOrDefault(IContextQueryable<E> queryable,int Level);
 		Expression BuildEntityMapper(Expression src,int Level, IPropertySelector PropSelector);
 	}
 	public interface IQueryResultBuildHelper<E, T, R> : IQueryResultBuildHelper<E, R>
 	{
-		Expression<Func<E, T>> GetEntityMapper(IPropertySelector PropSelector);
-		Func<T[], Task<R[]>> GetResultMapper(IPropertySelector PropSelector);
+		Expression<Func<E, T>> GetEntityMapper(IPropertySelector PropSelector,int Level);
+		Func<T[], Task<R[]>> GetResultMapper(IPropertySelector PropSelector,int Level);
 	}
 	public enum QueryMode
 	{

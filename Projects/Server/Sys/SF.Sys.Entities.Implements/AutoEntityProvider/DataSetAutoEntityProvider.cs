@@ -40,20 +40,21 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		{
 			return Setting.CreateAsync(ServiceContext, Entity);
 		}
-
+		protected int DetailModelDeep => 2;
+		protected int EditableModelDepp => 2;
 		public Task<TEntityDetail> GetAsync(TKey Id)
 		{
-			return Setting.GetAsync(ServiceContext, Id);
+			return Setting.GetAsync(ServiceContext, Id,DetailModelDeep);
 		}
 
 		public Task<TEntityDetail[]> GetAsync(TKey[] Ids,string[] Properties)
 		{
-			return Setting.GetAsync(ServiceContext, Ids, Properties);
+			return Setting.GetAsync(ServiceContext, Ids, Properties, DetailModelDeep);
 		}
 
 		public Task<TEntityEditable> LoadForEdit(TKey Id)
 		{
-			return Setting.LoadForEdit(ServiceContext, Id);
+			return Setting.LoadForEdit(ServiceContext, Id,EditableModelDepp);
 		}
 
 		public Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg)

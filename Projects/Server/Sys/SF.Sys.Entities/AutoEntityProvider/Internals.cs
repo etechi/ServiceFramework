@@ -30,11 +30,11 @@ namespace SF.Sys.Entities.AutoEntityProvider
 	}
 	public interface IEntityPropertyQueryConverterAsync<TTempType, TEntityPropType> : IEntityPropertyQueryConverter
 	{
-		Task<TEntityPropType> TempToDest(object src, TTempType value, IPropertySelector PropertySelector);
+		Task<TEntityPropType> TempToDest(object src, TTempType value, IPropertySelector PropertySelector, int Level);
 	}
 	public interface IEntityPropertyQueryConverter<TTempType, TEntityPropType> : IEntityPropertyQueryConverter
 	{
-		TEntityPropType TempToDest(object src, TTempType value, IPropertySelector PropertySelector);
+		TEntityPropType TempToDest(object src, TTempType value, IPropertySelector PropertySelector, int Level);
 	}
 	public interface IEntityPropertyQueryConverterProvider
 	{

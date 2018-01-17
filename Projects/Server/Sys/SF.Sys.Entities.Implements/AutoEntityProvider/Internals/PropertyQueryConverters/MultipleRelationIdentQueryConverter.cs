@@ -64,7 +64,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 
 			public Expression SourceToDestOrTemp(Expression src,int Level, IPropertySelector PropertySelector, PropertyInfo srcProp,PropertyInfo dstProp)
 			{
-				if (Level == 3)
+				if (Level <= 0)
 					return null;
 				var exp = src.GetMember(srcProp);
 				if (SrcOrderItemProperty != null)

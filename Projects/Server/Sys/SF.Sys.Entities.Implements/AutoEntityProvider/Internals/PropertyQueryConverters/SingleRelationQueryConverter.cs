@@ -21,6 +21,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using SF.Sys.Linq.Expressions;
 using SF.Sys.Reflection;
+using System.ComponentModel.DataAnnotations;
 
 namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 {
@@ -34,21 +35,54 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 		{
 			public Type TempFieldType => typeof(T);
 			IQueryResultBuildHelper<E, T, R> QueryResultBuildHelper { get; }
-			public SingleRelationConverter(IQueryResultBuildHelper<E, R> QueryResultBuildHelper)
+
+			static Expression NullTempValue { get; } = Expression.Constant(null, typeof(T));
+			public PropertyInfo ForeignKeyProp { get; }
+			public PropertyInfo NullableHasValue { get; }
+			public Expression NullForeignKeyValue { get; }
+			public bool CanBeNull { get; }
+
+			public SingleRelationConverter(IQueryResultBuildHelper<E, R> QueryResultBuildHelper, PropertyInfo ForeignKeyProp, bool CanBeNull)
 			{
 				QueryResultBuildHelper = (IQueryResultBuildHelper < E, T, R > )QueryResultBuildHelper;
+
+				this.CanBeNull = CanBeNull;
+				this.ForeignKeyProp = ForeignKeyProp;
+				if (CanBeNull)
+				{
+					if (ForeignKeyProp.PropertyType.IsClass)
+						NullForeignKeyValue = Expression.Constant(null, ForeignKeyProp.PropertyType);
+					else
+						NullableHasValue = ForeignKeyProp.PropertyType.GetProperty(nameof(Nullable<int>.HasValue));
+				}
+
 			}
 			public Expression SourceToDestOrTemp(Expression src,int Level, IPropertySelector PropertySelector,PropertyInfo srcProp,PropertyInfo dstProp)
 			{
-				if (Level == 3)
+				if (Level <= 0)
 					return null;
-				return QueryResultBuildHelper.BuildEntityMapper(src.GetMember(srcProp),Level+1, PropertySelector);
+				if (!CanBeNull)
+					return QueryResultBuildHelper.BuildEntityMapper(src.GetMember(srcProp), Level - 1, PropertySelector);
+				else if (NullForeignKeyValue == null)
+					return Expression.Condition(
+						src.GetMember(ForeignKeyProp).GetMember(NullableHasValue),
+						NullTempValue,
+						QueryResultBuildHelper.BuildEntityMapper(src.GetMember(srcProp), Level - 1, PropertySelector)
+						);
+				else
+					return Expression.Condition(
+						src.GetMember(ForeignKeyProp).Equal(NullForeignKeyValue),
+						QueryResultBuildHelper.BuildEntityMapper(src.GetMember(srcProp), Level - 1, PropertySelector),
+						NullTempValue
+						);
+
+
 			}
 
-			public async Task<R> TempToDest(object src, T value, IPropertySelector PropertySelector)
+			public async Task<R> TempToDest(object src, T value, IPropertySelector PropertySelector,int Level)
 			{
 				if (value == null) return null;
-				var re= await QueryResultBuildHelper.GetResultMapper(PropertySelector)(new[] { value });
+				var re= await QueryResultBuildHelper.GetResultMapper(PropertySelector, Level)(new[] { value });
 				return re[0];
 			}
 		}
@@ -95,10 +129,23 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			var foreignKeyAttr = DataModelProperty.GetCustomAttribute<ForeignKeyAttribute>();
 			if (foreignKeyAttr == null)
 				return null;
-			
-			return (IEntityPropertyQueryConverter)MethodCreateConverter.MakeGenericMethod(DataModelProperty.PropertyType, EntityProperty.PropertyType).Invoke(
+
+			var modelFkField = DataModelType.GetProperty(foreignKeyAttr.Name);
+			if (modelFkField == null)
+				return null;
+
+			//是否有可能为空
+			var canBeNull =
+				modelFkField.PropertyType.IsClass && !modelFkField.IsDefined(typeof(RequiredAttribute)) ||
+				modelFkField.PropertyType.IsGeneric() && modelFkField.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>);
+
+
+			return (IEntityPropertyQueryConverter)MethodCreateConverter.MakeGenericMethod(
+				DataModelProperty.PropertyType, 
+				EntityProperty.PropertyType
+				).Invoke(
 				null,
-				new object[] { QueryResultBuildHelperCache, QueryMode }
+				new object[] { QueryResultBuildHelperCache, QueryMode, modelFkField, canBeNull }
 				);
 
 			/*

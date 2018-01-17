@@ -28,11 +28,11 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		where TQueryArgument:IPagingArgument
 	{
 		Task<TKey> CreateAsync(IEntityServiceContext ServiceContext, TEntityEditable Entity);
-		Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id);
+		Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id,int DetailModelDeep);
 
-		Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids,string[] Properties);
+		Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids,string[] Properties, int DetailModelDeep);
 
-		Task<TEntityEditable> LoadForEdit(IEntityServiceContext ServiceContext, TKey Id);
+		Task<TEntityEditable> LoadForEdit(IEntityServiceContext ServiceContext, TKey Id, int EditableModelDeep);
 
 		Task<QueryResult<TEntitySummary>> QueryAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg);
 
@@ -76,19 +76,19 @@ namespace SF.Sys.Entities.AutoEntityProvider
 				);
 		}
 
-		public Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id)
+		public Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id,int DetailModelDeep)
 		{
-			return ServiceContext.AutoGetAsync<TKey,TEntityDetail,TDataModel>(Id);
+			return ServiceContext.AutoGetAsync<TKey,TEntityDetail,TDataModel>(Id,DetailModelDeep);
 		}
 
-		public Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids,string[] Properties)
+		public Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids,string[] Properties,int DetailModelDeep)
 		{
-			return ServiceContext.AutoBatchGetAsync<TKey,TEntityDetail,TDataModel>(Ids,Properties);
+			return ServiceContext.AutoBatchGetAsync<TKey,TEntityDetail,TDataModel>(Ids,Properties, DetailModelDeep);
 		}
 
-		public Task<TEntityEditable> LoadForEdit(IEntityServiceContext ServiceContext, TKey Id)
+		public Task<TEntityEditable> LoadForEdit(IEntityServiceContext ServiceContext, TKey Id,int EditableModelDeep)
 		{
-			return ServiceContext.AutoLoadForEdit<TKey, TEntityEditable, TDataModel>(Id);
+			return ServiceContext.AutoLoadForEdit<TKey, TEntityEditable, TDataModel>(Id,EditableModelDeep);
 		}
 
 		public Task<QueryResult<TEntitySummary>> QueryAsync(IEntityServiceContext ServiceContext, TQueryArgument Arg)

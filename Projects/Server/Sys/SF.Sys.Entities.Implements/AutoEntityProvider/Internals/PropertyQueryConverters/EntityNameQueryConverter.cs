@@ -34,16 +34,54 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 		class MultipleRelationConverter : IEntityPropertyQueryConverter
 		{
 			public Type TempFieldType => null;
+
+			static Expression NullString { get; } = Expression.Constant(null, typeof(string));
+			public PropertyInfo ForeignKeyProp { get; }
+			public PropertyInfo NullableHasValue { get; }
+			public Expression NullForeignKeyValue { get; }
+
 			public PropertyInfo SingleRelationProp { get; }
 			public PropertyInfo NameProp { get; }
-			public MultipleRelationConverter(PropertyInfo SingleRelationProp,PropertyInfo NameProp)
+
+			public bool CanBeNull { get; }
+			public MultipleRelationConverter(PropertyInfo ForeignKeyProp ,PropertyInfo SingleRelationProp,PropertyInfo NameProp,bool CanBeNull)
 			{
 				this.SingleRelationProp = SingleRelationProp;
 				this.NameProp = NameProp;
+
+				this.ForeignKeyProp = ForeignKeyProp;
+				if (this.CanBeNull = CanBeNull)
+				{
+					if (ForeignKeyProp.PropertyType.IsClass)
+						NullForeignKeyValue = Expression.Constant(null, ForeignKeyProp.PropertyType);
+					else
+						NullableHasValue = ForeignKeyProp.PropertyType.GetProperty(nameof(Nullable<int>.HasValue));
+				}
 			}
-			public Expression SourceToDestOrTemp(Expression src, int level, IPropertySelector PropertySelector, PropertyInfo srcProp, PropertyInfo dstProp)
+
+
+			public Expression SourceToDestOrTemp(
+				Expression src, 
+				int level, 
+				IPropertySelector PropertySelector, 
+				PropertyInfo srcProp, 
+				PropertyInfo dstProp
+				)
 			{
-				return src.GetMember(SingleRelationProp).GetMember(NameProp);
+				if (!CanBeNull)
+					return src.GetMember(SingleRelationProp).GetMember(NameProp);
+				else if (ForeignKeyProp.PropertyType.IsClass)
+					return Expression.Condition(
+						src.GetMember(ForeignKeyProp).Equal(NullForeignKeyValue),
+						NullString,
+						src.GetMember(SingleRelationProp).GetMember(NameProp)
+						);
+				else
+					return Expression.Condition(
+						src.GetMember(ForeignKeyProp).GetMember(NullableHasValue),
+						src.GetMember(SingleRelationProp).GetMember(NameProp),
+						NullString
+						);
 			}
 		}
 		
@@ -56,6 +94,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			if (EntityProperty.PropertyType != typeof(string))
 				return null;
 
+			//确认当前字段是否是实体名称
 			var fkField=EntityProperty.ReflectedType.AllPublicInstanceProperties().FirstOrDefault(p =>
 			{
 				var a = p.GetCustomAttribute<EntityIdentAttribute>();
@@ -64,16 +103,17 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			if (fkField == null)
 				return null;
 
+			//查找外键
 			var modelFkField = DataModelType.GetProperty(fkField.Name);
 			if (modelFkField == null)
 				return null;
 
+			//查找关系
 			var modelSingleRelationProp = DataModelType.AllPublicInstanceProperties().FirstOrDefault(p =>
 			  {
 				  var fk=p.GetCustomAttribute<ForeignKeyAttribute>();
 				  return fk != null && fk.Name == fkField.Name;
 			  });
-
 			if (modelSingleRelationProp == null)
 				return null;
 
@@ -81,7 +121,16 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			if (nameProp == null)
 				return null;
 
-			return new MultipleRelationConverter(modelSingleRelationProp, nameProp);
+			//是否有可能为空
+			var canBeNull =
+				modelFkField.PropertyType.IsClass && !modelFkField.IsDefined(typeof(RequiredAttribute)) ||
+				modelFkField.PropertyType.IsGeneric() && modelFkField.PropertyType.GetGenericTypeDefinition()==typeof(Nullable<>);
+			return new MultipleRelationConverter(
+				modelFkField,
+				modelSingleRelationProp, 
+				nameProp,
+				canBeNull				
+				);
 		}
 	}
 

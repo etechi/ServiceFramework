@@ -86,6 +86,7 @@ namespace SF.Auth.IdentityServices.Managers
 		{
 			DataSet.Add(new TUserCredential
 			{
+				ClaimTypeId=ClaimTypeId,
 				Credential = Credential,
 				UserId = UserId,
 				CreatedTime = TimeService.Now,

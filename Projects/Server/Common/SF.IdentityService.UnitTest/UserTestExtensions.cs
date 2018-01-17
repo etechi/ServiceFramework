@@ -51,27 +51,65 @@ namespace SF.IdentityService.UnitTest
 			}
 		}
 
+		public static async Task<string> UserBindCredical(
+			this IServiceProvider sp,
+			string Credical="phone",
+			string Value=null
+			)
+		{
+			var us = sp.Resolve<IUserService>();
+			var cr = await us.GetUserCredential(Credical);
+			Assert.IsTrue(string.IsNullOrEmpty(cr.Value));
+
+			var ig = sp.Resolve<IIdentGenerator>();
+			if (Value==null)
+				Value = "133" + (await ig.GenerateAsync("外部测试用户ID")).ToString().PadLeft(8, '0');
+
+			await us.SendBindCredentialVerifyCode(
+				new SendBindCredentialVerifyCodeArgument
+				{
+					CredentialProvider = Credical,
+					Credetial = Value
+				});
+			await us.BindCredential(new BindCredentialArgument
+			{
+				VerifyCode = "000000",
+				Credential = Value,
+				CredentialProvider = Credical
+			});
+			var ncr = await us.GetUserCredential(Credical);
+			Assert.AreEqual(Value,ncr.Value);
+
+			return Value;
+		}
+
 		public static async Task<(User user, string account, string password)> UserCreate(
 			this IServiceProvider sp,
+			string prefix=null,
 			string account = null,
 			string name = null,
 			string entity = "测试用户",
 			string password = "123456",
 			bool ReturnToken = false,
-			string client = "app.android"
+			string client = "app.android",
+			bool sendVerifyCode=false
 		)
 		{
+
+			if (prefix == null) prefix = "";
+
 			var svc = sp.Resolve<IUserService>();
 			var ig = sp.Resolve<IIdentGenerator>();
 			var postfix = await ig.GenerateAsync("测试");
-			account = account ?? "131" + postfix.ToString().PadLeft(8, '0');
-			name = name ?? "测试用户" + postfix;
-			var icon = "icon" + postfix;
+			account = prefix +(account ?? "131" + postfix.ToString().PadLeft(8, '0'));
+			name = prefix + (name ?? "测试用户" + postfix);
+			var icon = prefix + "icon" + postfix;
 
-			await svc.SendCreateIdentityVerifyCode(new SendCreateIdentityVerifyCodeArgument
-			{
-				Credetial = account
-			});
+			if (sendVerifyCode)
+				await svc.SendCreateIdentityVerifyCode(new SendCreateIdentityVerifyCodeArgument
+				{
+					Credetial = account
+				});
 
 			var accessToken = await svc.Signup(
 				new SignupArgument
@@ -121,17 +159,17 @@ namespace SF.IdentityService.UnitTest
 			return (user, account,password);
 		}
 
-		public static async Task<T> WithCurUser<T>(this IServiceProvider sp,Func<User,Task<T>> Callback)
+		public static async Task<T> WithNewUser<T>(this IServiceProvider sp,Func<User,Task<T>> Callback)
 		{
 			var user=await sp.UserCreate();
 			return await Callback(user.user);
 		}
-		public static ITestContext<(OV,User User,string Account,string Password)> WithSignedUser<OV>(this ITestContext<OV> scope)
+		public static ITestContext<(OV,User User,string Account,string Password)> WithNewSigninedUser<OV>(this ITestContext<OV> scope,string prefix=null)
 		{
 			return scope.NewContext<OV, (OV Prev, User User, string Account, string Password)>(
 				async (sp, ov, cb) =>
 				 {
-					 var re = await UserCreate(sp);
+					 var re = await UserCreate(sp,prefix);
 					 await cb(sp, (Prev:ov, re.user, re.account, re.password));
 				 });
 		}

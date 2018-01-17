@@ -114,7 +114,8 @@ namespace SF.Sys.Entities
 		public static async Task<TReadOnlyEntity> AutoGetAsync<TKey, TReadOnlyEntity, TModel>
 		(
 			this IEntityServiceContext Storage,
-			TKey Id
+			TKey Id,
+			int QueryDeep
 		)
 			where TModel : class
 		{
@@ -124,7 +125,7 @@ namespace SF.Sys.Entities
 				{
 					return await Storage.QueryResultBuildHelperCache
 						.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Detail)
-						.QuerySingleOrDefault(q);
+						.QuerySingleOrDefault(q,QueryDeep);
 				}
 				);
 		}
@@ -206,7 +207,8 @@ namespace SF.Sys.Entities
 		(
 			this IEntityServiceContext Storage,
 			TKey[] Ids,
-			string[] Properties
+			string[] Properties,
+			int DetailModelDeep
 		)
 			where TModel : class
 		{
@@ -216,7 +218,12 @@ namespace SF.Sys.Entities
 					return (await Storage.QueryResultBuildHelperCache.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Detail).Query(
 						q,
 						Storage.PagingQueryBuilderCache.GetBuilder<TModel>(),
-						Paging.All.WithProperties(Properties)
+						new Paging
+						{
+							Count = Paging.All.Count,
+							Properties = Properties,
+							ResultDeep = DetailModelDeep
+						}
 						)).Items.ToArray();
 				});
 		}
@@ -454,7 +461,8 @@ namespace SF.Sys.Entities
 		}
 		public static async Task<TEditable> AutoLoadForEdit<TKey, TEditable, TModel>(
 			this IEntityServiceContext Storage,
-			TKey Key
+			TKey Key,
+			int QueryDeep
 			)
 			where TModel : class
 		{
@@ -466,7 +474,8 @@ namespace SF.Sys.Entities
 				async (trans) =>
 				{
 					return await Storage.QueryResultBuildHelperCache.GetHelper<TModel,TEditable>(QueryMode.Edit).QuerySingleOrDefault(
-						Storage.DataContext.Set<TModel>().AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Key))
+						Storage.DataContext.Set<TModel>().AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Key)),
+						QueryDeep
 						);
 				});
 		}

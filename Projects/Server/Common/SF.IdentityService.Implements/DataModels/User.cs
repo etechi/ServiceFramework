@@ -30,11 +30,6 @@ namespace SF.Auth.IdentityServices.DataModels
 		where TUserRole : UserRole<TUser, TUserCredential, TClaimValue, TUserRole>
 	{
 
-		/// <summary>
-		/// 电话
-		/// </summary>
-		[MaxLength(30)]
-		public virtual string PhoneNumber { get; set; }
 		///<title>密码哈希</title>
 		/// <summary>
 		/// 可以为空，为空时，不能通过密码验证登录

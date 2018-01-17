@@ -1,4 +1,6 @@
-﻿namespace SF.Common.Conversations.Front
+﻿using System.Collections.Generic;
+
+namespace SF.Common.Conversations.Front
 {
 	/// <summary>
 	/// 会话分组
@@ -17,7 +19,7 @@
 		/// <summary>
 		/// 会话
 		/// </summary>
-		public Session[] Sessions { get; set; }
+		public IEnumerable<Session> Sessions { get; set; }
 		
 		/// <summary>
 		/// 排序
