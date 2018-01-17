@@ -50,7 +50,12 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IAccessTokenHandler, NotImplementedAccessTokenHandler>();
 			return sc;
 		}
-		public static IServiceCollection AddIdentityService(this IServiceCollection sc,string TablePrefix=null,bool VerifyCodeDisabled=false)
+		public static IServiceCollection AddIdentityService(
+			this IServiceCollection sc,
+			string TablePrefix=null,
+			bool VerifyCodeDisabled=false,
+			string DefaultCredentialProvider=null
+			)
 		{
 			//文章
 			sc.EntityServices(
@@ -118,13 +123,37 @@ namespace SF.Sys.Services
 
 			//sc.AddAutoEntityTest(NewDocumentManager);
 			//sc.AddAutoEntityTest(NewDocumentCategoryManager);
-			sc.InitServices("初始化认证授权服务", (sp,sim,scope)=>NewSerivces(sp,sim,scope, VerifyCodeDisabled), null,100000);
+			sc.InitServices(
+				"初始化认证授权服务", 
+				(sp,sim,scope)=>NewSerivces(
+					sp,
+					sim,
+					scope, 
+					VerifyCodeDisabled,
+					DefaultCredentialProvider
+					), 
+				null,
+				100000
+				);
 			return sc;
 		}
 
-		static async Task NewSerivces(IServiceProvider ServiceProvider, IServiceInstanceManager sim, long? ScopeId,bool VerifyCodeDisabled)
+		static async Task NewSerivces(
+			IServiceProvider ServiceProvider, 
+			IServiceInstanceManager sim, 
+			long? ScopeId,
+			bool VerifyCodeDisabled,
+			string DefaultCredentialProvider
+			)
 		{
-			await sim.DefaultService<IUserService, UserService>(new{Setting = new { VerifyCodeDisabled= VerifyCodeDisabled } })
+			await sim.DefaultService<IUserService, UserService>(
+				new{
+					Setting = new UserServiceSetting {
+						VerifyCodeDisabled = VerifyCodeDisabled,
+						DefaultIdentityCredentialProvider= DefaultCredentialProvider
+					}
+				}
+				)
 				.WithDisplay("用户服务")
 				.Ensure(ServiceProvider, ScopeId);
 

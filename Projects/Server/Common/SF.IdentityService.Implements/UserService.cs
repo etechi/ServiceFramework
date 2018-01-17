@@ -400,13 +400,11 @@ namespace SF.Auth.IdentityServices
 
 			var ids = await Setting.CredentialStorage.Value.GetIdents(Provider, cid);
 			var s = ids.FirstOrDefault();
-			if (s == null)
-				return null;
 			return new UserCredentialValue
 			{
-				Provider = s.ClaimTypeId,
-				Value = s.Credential,
-				Verified = s.ConfirmedTime.HasValue
+				Provider=Provider,
+				Value=s?.Credential,
+				Verified=s?.ConfirmedTime.HasValue ?? false
 			};
 		}
 
