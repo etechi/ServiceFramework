@@ -79,10 +79,10 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 
 			}
 
-			public async Task<R> TempToDest(object src, T value, IPropertySelector PropertySelector,int Level)
+			public async Task<R> TempToDest(object src, T value, IPropertySelector PropertySelector)
 			{
 				if (value == null) return null;
-				var re= await QueryResultBuildHelper.GetResultMapper(PropertySelector, Level)(new[] { value });
+				var re= await QueryResultBuildHelper.GetResultMapper(PropertySelector, 100)(new[] { value });
 				return re[0];
 			}
 		}
@@ -139,6 +139,9 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 				modelFkField.PropertyType.IsClass && !modelFkField.IsDefined(typeof(RequiredAttribute)) ||
 				modelFkField.PropertyType.IsGeneric() && modelFkField.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>);
 
+			//可空对象EF不支持载入关联对象
+			if (canBeNull)
+				return null;
 
 			return (IEntityPropertyQueryConverter)MethodCreateConverter.MakeGenericMethod(
 				DataModelProperty.PropertyType, 

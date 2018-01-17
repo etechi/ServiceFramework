@@ -125,6 +125,10 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			var canBeNull =
 				modelFkField.PropertyType.IsClass && !modelFkField.IsDefined(typeof(RequiredAttribute)) ||
 				modelFkField.PropertyType.IsGeneric() && modelFkField.PropertyType.GetGenericTypeDefinition()==typeof(Nullable<>);
+
+			//可空对象EF不支持载入关联对象
+			if (canBeNull)
+				return null;
 			return new MultipleRelationConverter(
 				modelFkField,
 				modelSingleRelationProp, 

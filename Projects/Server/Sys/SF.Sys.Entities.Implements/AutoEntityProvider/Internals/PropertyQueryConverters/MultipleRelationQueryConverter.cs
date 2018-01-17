@@ -92,10 +92,10 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 
 			}
 
-			public async Task<IEnumerable<R>> TempToDest(object src, IEnumerable<T> value, IPropertySelector PropertySelector,int Level)
+			public async Task<IEnumerable<R>> TempToDest(object src, IEnumerable<T> value, IPropertySelector PropertySelector)
 			{
 				if (value == null) return Enumerable.Empty<R>();
-				return await QueryResultBuildHelper.GetResultMapper(PropertySelector,Level)(value.ToArray());
+				return await QueryResultBuildHelper.GetResultMapper(PropertySelector,100)(value.ToArray());
 			}
 		}
 		static IEntityPropertyQueryConverter CreateConverter<E,R>(

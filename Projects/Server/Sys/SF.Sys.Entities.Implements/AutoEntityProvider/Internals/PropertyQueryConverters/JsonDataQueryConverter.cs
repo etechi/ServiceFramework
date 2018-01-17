@@ -46,7 +46,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 				return src.GetMember(srcProp);
 			}
 
-			public T TempToDest(object src, string value, IPropertySelector PropertySelector, int Level)
+			public T TempToDest(object src, string value, IPropertySelector PropertySelector)
 			{
 				return value.IsNullOrEmpty() ? default(T) : JsonSerializer.Deserialize<T>(value);
 			}

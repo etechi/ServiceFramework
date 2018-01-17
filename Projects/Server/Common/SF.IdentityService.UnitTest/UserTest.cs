@@ -52,7 +52,7 @@ namespace SF.IdentityService.UnitTest
 				var re = await svc.UserCreate();
 				await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
 				{
-					await svc.UserCreate(re.account);
+					await svc.UserCreate(null,re.account);
 				});
 				return 0;
 			}
