@@ -35,15 +35,35 @@ namespace SF.Common.Conversations.Managers
 			this.SessionStatusManager = SessionStatusManager;
 
 		}
+		private async Task<int> UpdateSessionStatus(SessionMessage editable, DataModels.DataSessionMessage model)
+		{
+			var Session = await DataContext.Set<DataModels.DataSessionStatus>().FindAsync(editable.SessionId);
+			if (Session == null)
+				throw new ArgumentException("找不到会话:" + editable.SessionId);
+
+			Session.LastMessageId = model.Id;
+			Session.UpdatedTime = Now;
+			Session.LastMessageText = editable.Text;
+			Session.LastMessageType = editable.Type;
+			Session.MessageCount++;
+			DataContext.Update(Session);
+			return Session.MessageCount;
+		}
 		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			//需要在此设置发信成员，以及设置发信成员的最后消息
 			if(ctx.Action==ModifyAction.Create && ctx.Editable.UserId.HasValue)
 			{
+				var editable = ctx.Editable;
+				var model = ctx.Model;
+
+				var msgCount=await UpdateSessionStatus(editable, model);
 				var mid = await ((SessionMemberStatusManager)SessionMemberStatusManager.Value).InternalSetLastMessage(
-					ctx.Editable.SessionId,
-					ctx.Editable.UserId.Value,
-					ctx.Model.Id
+					editable.SessionId,
+					editable.UserId.Value,
+					ctx.Model.Id,
+					editable.Time,
+					msgCount
 					);
 				ctx.Model.PosterId = mid;
 			}
@@ -63,23 +83,8 @@ namespace SF.Common.Conversations.Managers
 			var model = ctx.Model;
 			await base.OnNewModel(ctx);
 
-			await UpdateSessionStatus(editable, model);
-
 		}
 
-		private async Task UpdateSessionStatus(SessionMessage editable, DataModels.DataSessionMessage model)
-		{
-			var Session = await DataContext.Set<DataModels.DataSessionStatus>().FindAsync(editable.SessionId);
-			if (Session == null)
-				throw new ArgumentException("找不到会话:" + editable.SessionId);
-
-			Session.LastMessageId = model.Id;
-			Session.UpdatedTime = Now;
-			Session.LastMessageText = editable.Text;
-			Session.LastMessageType = editable.Type;
-			Session.MessageCount++;
-			DataContext.Update(Session);
-		}
 
 		private static void ValidateArguments(SessionMessage editable)
 		{

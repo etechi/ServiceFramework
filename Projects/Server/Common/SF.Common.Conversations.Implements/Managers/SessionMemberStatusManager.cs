@@ -43,7 +43,10 @@ namespace SF.Common.Conversations.Managers
 		{
 			var editable = ctx.Editable;
 			var model = ctx.Model;
-			if (editable.LastReadTime != model.LastReadTime)
+			//如果修改了读取时间，但未修改读取数，重新获得读取数
+			if (editable.LastReadTime != model.LastReadTime && 
+				editable.MessageReaded==model.MessageReaded
+				)
 			{
 				var messageCount = await DataContext
 					.Set<DataModels.DataSessionStatus>()
@@ -79,7 +82,7 @@ namespace SF.Common.Conversations.Managers
 
 			await base.OnNewModel(ctx);
 		}
-		internal async Task<long> InternalSetLastMessage(long SessionId,long UserId,long MessageId)
+		internal async Task<long> InternalSetLastMessage(long SessionId,long UserId,long MessageId,DateTime Now,int MessageCount)
 		{
 			AutoSaveChanges = false;
 			var re=await base.InternalCreateOrUpdateAsync(
@@ -96,6 +99,8 @@ namespace SF.Common.Conversations.Managers
 					m.LastMessageId = MessageId;
 					m.LastMessageTime = Now;
 					m.MessageCount++;
+					m.LastReadTime = Now;
+					m.MessageReaded = MessageCount;
 					return Task.FromResult(m.Id);
 				}
 				);
