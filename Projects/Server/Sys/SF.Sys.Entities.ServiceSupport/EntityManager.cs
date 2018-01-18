@@ -221,7 +221,6 @@ namespace SF.Sys.Entities
 			SF.Sys.Threading.ISyncQueue<TSyncKey> Queue,
 			Func<TEditable, TSyncKey> GetSyncKey
 			)
-
 		{
 			if (Queue == null)
 				throw new ArgumentNullException(nameof(Queue));

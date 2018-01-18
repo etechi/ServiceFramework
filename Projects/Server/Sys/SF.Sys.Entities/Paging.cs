@@ -89,7 +89,7 @@ namespace SF.Sys.Entities
 		};
 		public static Paging Default => new Paging
 		{
-			Count = 100
+			Count = 200
 		};
 		public static Paging All => new Paging
 		{
