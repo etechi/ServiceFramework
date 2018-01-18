@@ -163,7 +163,7 @@ namespace SF.Sys.Data
 			catch(Exception e)
 			{
 				_Exception = e;
-				throw e;
+				throw;
 			}
 			finally
 			{
