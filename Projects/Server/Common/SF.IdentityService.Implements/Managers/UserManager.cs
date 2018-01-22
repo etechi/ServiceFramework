@@ -304,6 +304,7 @@ namespace SF.Auth.IdentityServices.Managers
 				}
 			}).SingleOrDefaultAsync();
 			if (re == null) return null;
+			re.data.Roles = re.data.Roles.ToArray();
 			re.data.SecurityStamp = re.stamp.Base64();
 			return re.data;
 		}
@@ -324,6 +325,41 @@ namespace SF.Auth.IdentityServices.Managers
 				r.PasswordHash = PasswordHash;
 				r.SecurityStamp = SecurityStamp.Base64();
 			});
+		}
+		public async Task RoleEnsure(long UserId, string[] Roles)
+		{
+			var set = DataContext.Set<TUserRole>();
+			var exists = await (
+				from u in DataContext.Set<TUser>().AsQueryable()
+				where u.Id == UserId && u.LogicState == EntityLogicState.Enabled
+				from r in u.Roles
+				where Roles.Contains(r.RoleId)
+				select r.RoleId
+				)
+				.ToDictionaryAsync(r => r, r => true);
+			if (exists == null)
+				throw new PublicArgumentException("找不到用户:" + UserId);
+
+			foreach(var r in Roles.Where(ri=>!exists.ContainsKey(ri)))
+			{
+				set.Add(new TUserRole { UserId = UserId, RoleId = r });
+			}
+			await set.Context.SaveChangesAsync();
+		}
+		public async Task RoleRemove(long UserId, string[] Roles)
+		{
+			var set = DataContext.Set<TUserRole>();
+			var exists = await (
+				from u in DataContext.Set<TUser>().AsQueryable(false)
+				where u.Id == UserId && u.LogicState == EntityLogicState.Enabled
+				from r in u.Roles
+				where Roles.Contains(r.RoleId)
+				select r
+				).ToArrayAsync();
+			if (exists == null)
+				throw new PublicArgumentException("找不到用户:" + UserId);
+			set.RemoveRange(exists);
+			await set.Context.SaveChangesAsync();
 		}
 	}
 

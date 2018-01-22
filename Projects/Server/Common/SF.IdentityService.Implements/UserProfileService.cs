@@ -145,15 +145,24 @@ namespace SF.Auth.IdentityServices
 		{
 			return await UserScope.Use(async Users =>
 			{
-				return await Users.AsQueryable()
-				.Where(u => u.Id == UserId && u.LogicState == EntityLogicState.Enabled)
-				.Select(u => new User
+				var user=await (
+				from u in Users.AsQueryable()
+				where u.Id == UserId && u.LogicState == EntityLogicState.Enabled
+				let roles= from r in u.Roles
+						   let rid = r.RoleId
+						   select rid
+				select new User
 				{
 					Id = u.Id,
 					Icon = u.Icon,
-					Name = u.Name
-				})
+					Name = u.Name,
+					Roles=roles
+				}
+				)
 				.SingleOrDefaultAsync();
+				if(user!=null)
+					user.Roles = user.Roles.ToArray();
+				return user;
 			}
 			);
 		}

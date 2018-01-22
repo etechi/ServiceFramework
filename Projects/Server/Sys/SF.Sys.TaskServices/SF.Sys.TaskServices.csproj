@@ -7,12 +7,18 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.TaskServices.xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.TaskServices.xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="TimedTaskRunnerService.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove=".licenseheader" />
@@ -22,6 +28,7 @@
     <ProjectReference Include="..\SF.Sys.ServiceFeatures\SF.Sys.ServiceFeatures.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
     <ProjectReference Include="..\SF.Sys.Threading\SF.Sys.Threading.csproj" />
+    <ProjectReference Include="..\SF.Sys.TimeServices\SF.Sys.TimeServices.csproj" />
   </ItemGroup>
 
 </Project>

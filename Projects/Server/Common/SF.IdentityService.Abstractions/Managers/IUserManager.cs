@@ -18,6 +18,7 @@ using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
+using System.Threading.Tasks;
 
 namespace SF.Auth.IdentityServices.Managers
 {
@@ -61,6 +62,8 @@ namespace SF.Auth.IdentityServices.Managers
 	}
 	public interface IUserManager: IUserManager<UserInternal, UserEditable, UserQueryArgument>
 	{
+		Task RoleEnsure(long UserId, string[] Roles);
+		Task RoleRemove(long UserId, string[] Roles);
 	}
 }
 

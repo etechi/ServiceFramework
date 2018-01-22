@@ -52,6 +52,7 @@ namespace SF.Auth.IdentityServices
 				Id = data.Id,
 				Icon = data.Icon,
 				Name = data.Name,
+				Roles=data.Roles
 				//OwnerId = data.Entity
 			};
 		}

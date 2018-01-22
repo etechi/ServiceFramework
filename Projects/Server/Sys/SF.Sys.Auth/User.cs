@@ -56,6 +56,11 @@ namespace SF.Sys.Auth
 		/// </summary>
 		[MaxLength(100)]
 		public string Icon { get; set; }
+
+		/// <summary>
+		/// 用户身份
+		/// </summary>
+		public IEnumerable<string> Roles { get; set; }
 	}
 }
 
