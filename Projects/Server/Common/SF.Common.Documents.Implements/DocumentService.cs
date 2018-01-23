@@ -94,7 +94,7 @@ namespace SF.Common.Documents
 
 		public long? ServiceInstanceId => ServiceInstanceDescriptor.InstanceId;
 
-		public async Task<TDocumentPublic> GetAsync(ObjectKey<long> Id)
+		public async Task<TDocumentPublic> GetAsync(ObjectKey<long> Id,string[] Fields=null)
 		{
 			var q = Documents.Value.AsQueryable()
 				.Where(i=>i.Id==Id.Id)

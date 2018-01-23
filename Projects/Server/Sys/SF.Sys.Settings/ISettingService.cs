@@ -14,6 +14,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using System;
+using System.Threading.Tasks;
+
 namespace SF.Sys.Settings
 {
 	/// <summary>
@@ -23,5 +26,10 @@ namespace SF.Sys.Settings
 	public interface ISettingService<T>
 	{
 		T Value { get; }
+	}
+
+	public interface ISettingChangedTrackerService
+	{
+		IDisposable OnSettingChanged<T>(Func<IServiceProvider, Task> Callback);
 	}
 }

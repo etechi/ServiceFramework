@@ -14,8 +14,18 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
-
 namespace SF.Sys.Settings
 {
-
+	/// <summary>
+	/// 设置服务
+	/// </summary>
+	/// <typeparam name="T"></typeparam>
+	public class SettingService<T> : ISettingService<T>
+	{
+		public T Value { get; }
+		public SettingService(T Value)
+		{
+			this.Value = Value;
+		}
+	}
 }

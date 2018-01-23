@@ -134,5 +134,10 @@ namespace SF.Sys.Data
         {
             return ((IDataContextExtension)_Provider).GetEntitySetName<T>();
         }
-    }
+
+		public void ClearTrackingEntities()
+		{
+			_Provider.ClearTrackingEntities();
+		}
+	}
 }

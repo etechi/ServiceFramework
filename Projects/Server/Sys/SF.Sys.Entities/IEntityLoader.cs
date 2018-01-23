@@ -24,7 +24,8 @@ namespace SF.Sys.Entities
 		/// 通过主键获取对象
 		/// </summary>
 		/// <param name="Id">主键</param>
+		/// <param name="Fields">字段</param>
 		/// <returns>对象实体</returns>
-		Task<TEntity> GetAsync(TKey Id);
+		Task<TEntity> GetAsync(TKey Id,string[] Fields=null);
 	}
 }

@@ -26,11 +26,11 @@ namespace SF.Sys.Data
 	/// </summary>
 	public interface IIdentGenerator
 	{
-        Task<long> GenerateAsync(string Type,int Section=0);
+        Task<long[]> GenerateAsync(string Type, int Count , int Section=0);
 	}
 
 	public interface IIdentGenerator<T>: IIdentGenerator
 	{
-		Task<long> GenerateAsync(int Section=0);
+		Task<long[]> GenerateAsync(int Count, int Section=0);
 	}
 }

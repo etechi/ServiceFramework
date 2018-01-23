@@ -24,7 +24,7 @@ namespace SF.IdentityService.UnitTest
 				sc.AddEFCoreDataEntity();
 				sc.AddDataContext(sp =>ds);
 
-				sc.AddIdentityService();
+				sc.AddIdentityServices();
 				sc.AddIdentityServer4Support();
 			});
 	}

@@ -57,6 +57,7 @@ namespace SF.Sys.Serialization.Newtonsoft
 				new OptionConverter()
 			};
 			JsonSerializerSettings.ReferenceLoopHandling = global::Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+
 			return JsonSerializerSettings;
 		}
 		public static JsonSerializerSettings MapSetting(JsonSetting Setting)

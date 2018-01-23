@@ -69,9 +69,9 @@ namespace SF.Sys.Entities.AutoEntityProvider
 			return AutoEntityProvider.CreateAsync( Entity);
 		}
 
-		public Task<TDetail> GetAsync(TKey Id)
+		public Task<TDetail> GetAsync(TKey Id, string[] Fields = null)
 		{
-			return AutoEntityProvider.GetAsync(Id);
+			return AutoEntityProvider.GetAsync(Id,Fields);
 		}
 
 		public Task<TDetail[]> BatchGetAsync(TKey[] Ids,string[] Properties)

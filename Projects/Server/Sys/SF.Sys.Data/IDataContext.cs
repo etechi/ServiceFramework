@@ -34,7 +34,7 @@ namespace SF.Sys.Data
 
 		void Reset();
         int SaveChanges();
-
+		void ClearTrackingEntities();
 		Task<int> SaveChangesAsync();
 
 		IDataContextProvider Provider { get; }

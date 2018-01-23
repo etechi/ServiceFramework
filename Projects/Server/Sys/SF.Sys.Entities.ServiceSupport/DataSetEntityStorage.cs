@@ -115,7 +115,8 @@ namespace SF.Sys.Entities
 		(
 			this IEntityServiceContext Storage,
 			TKey Id,
-			int QueryDeep
+			int QueryDeep,
+			string[] Fields = null
 		)
 			where TModel : class
 		{
@@ -125,7 +126,7 @@ namespace SF.Sys.Entities
 				{
 					return await Storage.QueryResultBuildHelperCache
 						.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Detail)
-						.QuerySingleOrDefault(q,QueryDeep);
+						.QuerySingleOrDefault(q,QueryDeep, PropertySelector.Get(Fields));
 				}
 				);
 		}
@@ -475,7 +476,8 @@ namespace SF.Sys.Entities
 				{
 					return await Storage.QueryResultBuildHelperCache.GetHelper<TModel,TEditable>(QueryMode.Edit).QuerySingleOrDefault(
 						Storage.DataContext.Set<TModel>().AsQueryable(false).Where(Entity<TModel>.ObjectFilter(Key)),
-						QueryDeep
+						QueryDeep,
+						PropertySelector.All
 						);
 				});
 		}

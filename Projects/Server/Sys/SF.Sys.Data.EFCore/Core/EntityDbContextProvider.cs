@@ -263,6 +263,21 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		{
 			DbContext.Dispose();
 		}
-    }
+
+		public void ClearTrackingEntities()
+		{
+			var changedEntriesCopy = DbContext.ChangeTracker.Entries()
+			   .Where(e => e.State == EntityState.Added ||
+						   e.State == EntityState.Modified ||
+						   e.State == EntityState.Deleted || 
+						   e.State==EntityState.Unchanged
+						   )
+			   .ToList();
+			foreach (var entity in changedEntriesCopy)
+			{
+				DbContext.Entry(entity.Entity).State = EntityState.Detached;
+			}
+		}
+	}
 	
 }

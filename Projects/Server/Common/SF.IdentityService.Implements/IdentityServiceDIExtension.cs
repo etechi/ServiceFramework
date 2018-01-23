@@ -50,7 +50,7 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IAccessTokenHandler, NotImplementedAccessTokenHandler>();
 			return sc;
 		}
-		public static IServiceCollection AddIdentityService(
+		public static IServiceCollection AddIdentityServices(
 			this IServiceCollection sc,
 			string TablePrefix=null,
 			bool VerifyCodeDisabled=false,

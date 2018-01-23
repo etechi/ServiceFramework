@@ -28,7 +28,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		where TQueryArgument:IPagingArgument
 	{
 		Task<TKey> CreateAsync(IEntityServiceContext ServiceContext, TEntityEditable Entity);
-		Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id,int DetailModelDeep);
+		Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id,int DetailModelDeep, string[] Properties);
 
 		Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids,string[] Properties, int DetailModelDeep);
 
@@ -76,9 +76,9 @@ namespace SF.Sys.Entities.AutoEntityProvider
 				);
 		}
 
-		public Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id,int DetailModelDeep)
+		public Task<TEntityDetail> GetAsync(IEntityServiceContext ServiceContext, TKey Id,int DetailModelDeep, string[] Properties)
 		{
-			return ServiceContext.AutoGetAsync<TKey,TEntityDetail,TDataModel>(Id,DetailModelDeep);
+			return ServiceContext.AutoGetAsync<TKey,TEntityDetail,TDataModel>(Id,DetailModelDeep, Properties);
 		}
 
 		public Task<TEntityDetail[]> GetAsync(IEntityServiceContext ServiceContext, TKey[] Ids,string[] Properties,int DetailModelDeep)

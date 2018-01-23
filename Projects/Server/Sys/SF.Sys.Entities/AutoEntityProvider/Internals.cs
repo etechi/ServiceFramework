@@ -134,7 +134,7 @@ namespace SF.Sys.Entities.AutoEntityProvider
 	{
 		EntityManagerCapability Capabilities { get; }
 		IEntityServiceContext ServiceContext { get; }
-		Task<TDetail> GetAsync(TKey Id);
+		Task<TDetail> GetAsync(TKey Id,string[] Properties);
 		Task<TDetail[]> GetAsync(TKey[] Ids,string[] Properties);
 		Task<TKey> CreateAsync(TEditable Entity);
 		Task<TEditable> LoadForEdit(TKey Id);

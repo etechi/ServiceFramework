@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Services;
 using SF.Sys.Threading;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace SF.Sys.TaskServices
 		public ITaskServiceDefination Defination { get; }
 		public TaskServiceState State { get; private set; } = TaskServiceState.Stopped;
 		SyncScope SyncScope { get; } = new SyncScope();
-		IServiceProvider ServiceProvider { get; }
+		IServiceScopeFactory ScopeFactory { get; }
 		Func<IServiceProvider,Task> Init { get; }
 		Func<IServiceProvider,ITaskServiceState,CancellationToken,Task> Entry { get; }
 
@@ -45,7 +46,7 @@ namespace SF.Sys.TaskServices
 			)
 		{
 			this.Defination= Defination;
-			this.ServiceProvider = ServiceProvider;
+			this.ScopeFactory = ServiceProvider.Resolve< IServiceScopeFactory>();
 			this.Entry = Entry;
 			this.Init = Init;
 		}
@@ -62,7 +63,9 @@ namespace SF.Sys.TaskServices
 				try
 				{
 					if (Init != null)
-						await Init(ServiceProvider);
+					{
+						await ScopeFactory.WithScope(sp =>Init(sp));
+					}
 					StartTaskProcess();
 				}
 				catch (Exception e)
@@ -148,7 +151,9 @@ namespace SF.Sys.TaskServices
 			_LongTaskCancellationSource = new CancellationTokenSource();
 			try
 			{
-				var re = Entry(ServiceProvider, this, _LongTaskCancellationSource.Token);
+				var re = ScopeFactory.WithScope(isp =>
+						Entry(isp, this, _LongTaskCancellationSource.Token)
+					);
 				re.ContinueWith(
 					t=>
 						Task.Run(()=>

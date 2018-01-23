@@ -122,9 +122,14 @@ namespace SF.Sys.Data.EntityFrameworkCore
 
 		public T Update(T item)
 		{
-			var re = Set.Update(item).Entity;
-			Provider.SetChanged();
-			return re;
+			var state = Provider.DbContext.Entry(item).State;
+			if (state == EntityState.Unchanged || state==EntityState.Detached)
+			{
+				var re=Set.Update(item).Entity;
+				Provider.SetChanged();
+				return re;
+			}
+			return item;
 		}
 
 		

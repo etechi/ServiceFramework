@@ -109,6 +109,15 @@ namespace SF.Sys.Threading
 				});
 			}
 		}
+
+		/// <summary>
+		/// 开始延时执行
+		/// </summary>
+		/// <typeparam name="K"></typeparam>
+		/// <param name="key">键值</param>
+		/// <param name="Callback">延时回调委托,若被取消参数未true,正常执行为true</param>
+		/// <param name="MinDelay">最小延时</param>
+		/// <param name="MaxDelay">最大延时</param>
 		public static void Start<K>(K key,Action<bool> Callback,int MinDelay= 1000, int MaxDelay = 1000 * 20)
 			where K:IEquatable<K>
 		{

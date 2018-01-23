@@ -108,9 +108,9 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 				);
 		}
 
-		public async Task<TResult> QuerySingleOrDefault(IContextQueryable<TDataModel> queryable,int Level)
+		public async Task<TResult> QuerySingleOrDefault(IContextQueryable<TDataModel> queryable,int Level,IPropertySelector PropertySelector)
 		{
-			var m = GetMapper(PropertySelector.All,Level);
+			var m = GetMapper(PropertySelector, Level);
 			var re = await queryable.Select(m.EntityMapper).SingleOrDefaultAsync();
 			if (re == null)
 				return default(TResult);

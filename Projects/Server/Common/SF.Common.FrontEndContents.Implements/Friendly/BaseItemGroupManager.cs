@@ -39,7 +39,7 @@ namespace SF.Common.FrontEndContents.Friendly
 		}
 		protected abstract TItem ContentToItem(ContentItem Content);
 		protected abstract ContentItem ItemToContent(TItem Item);
-		public Task<ItemGroup<TItem>> GetAsync(ObjectKey<long> key)
+		public Task<ItemGroup<TItem>> GetAsync(ObjectKey<long> key,string[] Fields=null)
 			=> LoadForEdit(key);
 
 		public async Task<ItemGroup<TItem>> LoadForEdit(ObjectKey<long> key)

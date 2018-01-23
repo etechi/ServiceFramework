@@ -31,9 +31,9 @@ namespace SF.Sys.Data.IdentGenerator
 		{
 		}
 
-		public Task<long> GenerateAsync(int Section)
+		public Task<long[]> GenerateAsync(int Section,int Count=1)
 		{
-			return GenerateAsync(typeof(T).FullName, Section);
+			return GenerateAsync(typeof(T).FullName, Section,Count);
 		}
 	}
 	/// <summary>
@@ -91,7 +91,7 @@ namespace SF.Sys.Data.IdentGenerator
 			});
 		}
 		
-		public async Task<long> GenerateAsync(string Type,int Section)
+		public async Task<long[]> GenerateAsync(string Type, int Count, int Section)
 		{
 			var cacheKey = Type;
 			IdentBatch v;
@@ -99,14 +99,18 @@ namespace SF.Sys.Data.IdentGenerator
 				v = Cache.GetOrAdd(cacheKey, new IdentBatch());
 			return await SyncQueue.Queue(cacheKey,async () =>
 			{
-				if (v.Current == v.End || v.Section!=Section )
+				var re = new long[Count];
+				for (var i = 0; i < Count; i++)
 				{
-					v.Current = await GetNextBatchStartAsync(cacheKey,Section);
-					v.End = v.Current + CountPerBatch;
-					v.Section = Section;
+					if (v.Current == v.End || v.Section != Section)
+					{
+						v.Current = await GetNextBatchStartAsync(cacheKey, Section);
+						v.End = v.Current + CountPerBatch;
+						v.Section = Section;
+					}
+					re[i] = v.Current;
+					v.Current++;
 				}
-				var re = v.Current;
-				v.Current++;
 				return re;
 			});
 

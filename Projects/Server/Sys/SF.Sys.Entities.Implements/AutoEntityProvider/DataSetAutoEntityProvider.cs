@@ -42,9 +42,9 @@ namespace SF.Sys.Entities.AutoEntityProvider
 		}
 		protected int DetailModelDeep => 2;
 		protected int EditableModelDepp => 2;
-		public Task<TEntityDetail> GetAsync(TKey Id)
+		public Task<TEntityDetail> GetAsync(TKey Id, string[] Properties)
 		{
-			return Setting.GetAsync(ServiceContext, Id,DetailModelDeep);
+			return Setting.GetAsync(ServiceContext, Id, DetailModelDeep, Properties);
 		}
 
 		public Task<TEntityDetail[]> GetAsync(TKey[] Ids,string[] Properties)

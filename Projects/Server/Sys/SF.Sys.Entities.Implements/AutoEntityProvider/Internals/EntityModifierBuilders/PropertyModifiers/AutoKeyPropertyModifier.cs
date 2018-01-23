@@ -20,6 +20,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using SF.Sys.Reflection;
+using SF.Sys.Data;
 
 namespace SF.Sys.Entities.AutoEntityProvider.Internals.EntityModifiers
 {

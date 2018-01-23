@@ -89,10 +89,13 @@ namespace SF.Sys
 			
 		}
 
-		public static string Base64(this byte[] data)
+		public static string Base64(this byte[] data,bool UriSafe=false)
 		{
 			if (data == null) throw new ArgumentNullException(nameof(data));
-			return Convert.ToBase64String(data);
+			var re=Convert.ToBase64String(data);
+			if (UriSafe)
+				re = re.TrimEnd('=').Replace('+', '-').Replace('/', '_');
+			return re;
 		}
 		public static string UTF8String(this byte[] data)
 		{

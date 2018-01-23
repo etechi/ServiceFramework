@@ -31,7 +31,7 @@ namespace SF.Sys.Data
 		IEntityQueryableProvider EntityQueryableProvider { get; }
     
         int SaveChanges();
-
+		void ClearTrackingEntities();
 		Task<int> SaveChangesAsync();
 		DbTransaction Transaction { get; set; }
 

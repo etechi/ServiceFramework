@@ -37,7 +37,7 @@ namespace SF.Externals.Aliyun
 		public string DeviceName { get; set; }
 		public DeviceStatus Status { get; set; }
 	}
-	public class RrpcException : AliyunException
+	public class RrpcException : AliyunIOTException
 	{
 		public RrpcException(string Code, string Message, string RequestId, string HostId) : 
 			base(Code, Message, RequestId, HostId)
@@ -95,6 +95,17 @@ namespace SF.Externals.Aliyun
 		public string[] Desired { get; set; }
 		public string[] Reported { get; set; }
 	}
+	public class AliyunIOTException : AliyunException
+	{
+		public AliyunIOTException(
+			string Code, 
+			string Message, 
+			string RequestId, 
+			string HostId
+			) : base(Code, Message, RequestId, HostId)
+		{
+		}
+	}
 	public interface IAliyunIOTService
 	{
 		/// <summary>
@@ -111,6 +122,8 @@ namespace SF.Externals.Aliyun
 		//Task<int> ApplyDevices(string ProductKey, string DeviceName);
 
 		Task<DeviceInfo> QueryDeviceByName(string ProductKey, string DeviceName);
+
+		Task<DeviceInfo> RegistDevice(string ProductKey, string DeviceName);
 
 		Task<DeviceShadowReply> DeviceShadowGet(string ProductKey, string DeviceName);
 		Task DeviceShadowUpdate(DeviceShadowUpdateArgument Argument);

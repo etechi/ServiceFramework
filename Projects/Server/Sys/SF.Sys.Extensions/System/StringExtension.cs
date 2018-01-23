@@ -35,8 +35,14 @@ namespace SF.Sys
 
 	public static class StringExtension
 	{
-		public static byte[] Base64(this string str)
+		public static byte[] Base64(this string str, bool UriSafe = false)
 		{
+			if(UriSafe)
+			{
+				str = str.Replace('-', '+').Replace('_', '/');
+				var l = str.Length % 4;
+				if (l > 0) str += new string('=', 4 - l);
+			}
 			return Convert.FromBase64String(str);
 		}
 		public static string Random(this string seed,int length,Random rand=null)

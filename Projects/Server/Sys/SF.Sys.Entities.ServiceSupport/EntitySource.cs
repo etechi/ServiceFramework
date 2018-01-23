@@ -97,7 +97,7 @@ namespace SF.Sys.Entities
 			return ServiceContext.BatchGetAsync<TKey, TDetailTemp,TDetail,TModel>(Ids, OnMapModelToDetail,OnPrepareDetails);
 		}
 
-		public Task<TDetail> GetAsync(TKey Id)
+		public Task<TDetail> GetAsync(TKey Id, string[] Fields = null)
 		{
 			return ServiceContext.GetAsync<TKey, TDetailTemp, TDetail, TModel>(Id, OnMapModelToDetail, OnPrepareDetails);
 		}
@@ -116,9 +116,9 @@ namespace SF.Sys.Entities
 		{
 			return ServiceContext.AutoBatchGetAsync<TKey, TDetail, TModel>(Ids,Properties,DetailDeep);
 		}
-		public virtual Task<TDetail> GetAsync(TKey Id)
+		public virtual Task<TDetail> GetAsync(TKey Id, string[] Fields = null)
 		{
-			return ServiceContext.AutoGetAsync<TKey, TDetail, TModel>(Id,DetailDeep);
+			return ServiceContext.AutoGetAsync<TKey, TDetail, TModel>(Id,DetailDeep,Fields);
 		}
 	}
 	public abstract class ConstantEntitySource<TKey, TEntityDetail> :
@@ -167,7 +167,7 @@ namespace SF.Sys.Entities
 			return Query.Select(Poco.MapExpression<TModel, TTemp>());
 		}
 		protected abstract Task<TEntityDetail[]> OnPrepareInternals(TTemp[] Internals);
-		public async Task<TEntityDetail> GetAsync(TKey Id)
+		public async Task<TEntityDetail> GetAsync(TKey Id,string[] Fields=null)
 		{
 			if (Models.TryGetValue(Id, out var m))
 			{

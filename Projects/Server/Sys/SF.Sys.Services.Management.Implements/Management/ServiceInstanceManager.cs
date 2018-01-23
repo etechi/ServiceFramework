@@ -143,7 +143,13 @@ namespace SF.Sys.Services.Management
 
 		
 		
-		IServiceFactory TestConfig(long Id, long? ParentId,string ServiceType, string ImplementType, string CreateArguments)
+		IServiceFactory TestConfig(
+			long Id, 
+			long? ParentId,
+			string ServiceType, 
+			string ImplementType, 
+			string CreateArguments
+			)
 		{
 			var ServiceResolver = this.ServiceProvider.Value.Resolver();
 			using (ServiceResolver.WithScopeService(Id))
@@ -166,7 +172,6 @@ namespace SF.Sys.Services.Management
 					ServiceResolver.Resolve<IServiceMetadata>(),
 					string.IsNullOrWhiteSpace(CreateArguments) ? "{}" : CreateArguments
 					);
-
 				var svr = factory.Create(ServiceResolver);
 				if (svr == null)
 					throw new PublicArgumentException("创建服务失败,请检查配置是否有误");
@@ -201,10 +206,10 @@ namespace SF.Sys.Services.Management
 			m.Update(e, Now);
 
 			m.Setting = e.Setting;
-
+			IServiceFactory factory = null;
 			if (m.LogicState == EntityLogicState.Enabled)
 			{
-				var factory = TestConfig(m.Id, m.ContainerId, m.ServiceType, m.ImplementType, m.Setting);
+				factory = TestConfig(m.Id, m.ContainerId, m.ServiceType, m.ImplementType, m.Setting);
 				if (factory.ServiceImplement.ManagedServiceInitializer != null)
 					await factory.ServiceImplement.ManagedServiceInitializer.Init(
 						ServiceProvider.Value,

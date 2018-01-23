@@ -61,7 +61,7 @@ namespace SF.Sys.Services.Management
 				);
 		}
 
-		public Task<ServiceDeclaration> GetAsync(ObjectKey<string> Id)
+		public Task<ServiceDeclaration> GetAsync(ObjectKey<string> Id,string[] Fields=null)
 		{
 			return Task.FromResult(Items.Get(Id.Id));
 		}

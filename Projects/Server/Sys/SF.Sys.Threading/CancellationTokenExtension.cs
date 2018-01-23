@@ -1,4 +1,4 @@
-#region Apache License Version 2.0
+﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -13,18 +13,29 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Events;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
 
-namespace SF.Sys.Services.Internals
+namespace SF.Sys.Threading
 {
-	public class ServiceInstanceChanged : CommonEvent
+	public static class CancellationTokenExtension
 	{
-		public long Id { get; set; }
-	}
-	public class InternalServiceChanged : CommonEvent
-	{
-		public long? ScopeId { get; set; }
-		public string ServiceType { get; set; }
+		public static async Task WaitAsync(this CancellationToken token)
+		{
+			var tcs = new TaskCompletionSource<int>();
+			using (token.Register(() =>
+				 tcs.SetResult(0)
+			 ))
+			{
+				if (token.IsCancellationRequested)
+					tcs.SetResult(0);
+				await tcs.Task;
+			}
+		}
+		
 	}
 }

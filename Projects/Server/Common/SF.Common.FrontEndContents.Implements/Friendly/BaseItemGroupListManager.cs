@@ -42,7 +42,7 @@ namespace SF.Common.FrontEndContents.Friendly
 		protected abstract ContentItem ItemToContent(TItem Item);
 
 
-		public async Task<ItemGroup<TItem>> GetAsync(ObjectKey<long> Id)
+		public async Task<ItemGroup<TItem>> GetAsync(ObjectKey<long> Id, string[] Fields = null)
 		{
 			var re = await ContentManager.LoadForEdit(Id);
 			if (re == null)
