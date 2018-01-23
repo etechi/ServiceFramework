@@ -31,5 +31,11 @@ namespace SF.Sys.Settings
 		/// 系统版本
 		/// </summary>
 		public string Version { get; set; } = "1.0.0";
+
+		///<title>外部流水后缀</title>
+		/// <summary>
+		/// 用于系统重置或不同部署环境下,保持外部流水号唯一.
+		/// </summary>
+		public string ExtIdentPostfix { get; set; } = "00";
 	}
 }
