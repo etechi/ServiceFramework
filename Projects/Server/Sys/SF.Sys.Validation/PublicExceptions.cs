@@ -51,7 +51,7 @@ namespace SF.Sys
 	}
 	public class PublicNotSupportedException : PublicException
 	{
-		public PublicNotSupportedException(string message) : base(message) { }
+		public PublicNotSupportedException(string message=null) : base(message?? "暂不支持此功能") { }
 		public PublicNotSupportedException(string message, System.Exception innerException) : base(message, innerException) { }
 	}
 	public class PublicArgumentException : PublicException

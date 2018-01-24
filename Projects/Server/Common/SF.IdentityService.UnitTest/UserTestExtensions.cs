@@ -164,7 +164,7 @@ namespace SF.IdentityService.UnitTest
 			var user=await sp.UserCreate();
 			return await Callback(user.user);
 		}
-		public static ITestContext<(OV,User User,string Account,string Password)> WithNewSigninedUser<OV>(this ITestContext<OV> scope,string prefix=null)
+		public static ITestContext<(OV Prev,User User,string Account,string Password)> WithNewSigninedUser<OV>(this ITestContext<OV> scope,string prefix=null)
 		{
 			return scope.NewContext<OV, (OV Prev, User User, string Account, string Password)>(
 				async (sp, ov, cb) =>
