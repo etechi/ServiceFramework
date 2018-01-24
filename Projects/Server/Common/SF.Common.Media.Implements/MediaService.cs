@@ -146,7 +146,7 @@ namespace SF.Common.Media
                 if (file.ContentLength > Setting.MaxSize * 1024 * 1024)
                     throw new PublicNotSupportedException($"文件尺寸太大，不能超过{Setting.MaxSize}MB");
                 if (!Setting.Mimes.Contains(file.ContentType))
-                    throw new PublicNotSupportedException($"不支持这类文件，文件必须是Png,Jpg,Gif等等");
+                    throw new PublicNotSupportedException($"不支持这类文件({file.ContentType})，文件必须是Png,Jpg,Gif等等");
 
                 IMediaMeta mm = null;
                 IContent mc = null;

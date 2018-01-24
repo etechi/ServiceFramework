@@ -22,6 +22,7 @@ namespace SF.Sys
 	public static class Json
 	{
 		public static Serialization.IJsonSerializer DefaultSerializer { get; set; }
+			= new SF.Sys.Serialization.Newtonsoft.JsonSerializer();
 		public static Serialization.JsonSetting DefaultSetting { get; set; } = new Serialization.JsonSetting
 		{
 			IgnoreDefaultValue = true,
