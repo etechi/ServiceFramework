@@ -60,7 +60,6 @@ namespace SF.Sys.Services
 	}
 	public static class TimedTaskRunnerExtension
 	{
-	
 		enum WaitResult
 		{
 			Timeout,
@@ -68,7 +67,6 @@ namespace SF.Sys.Services
 			Exit
 
 		}
-
 
 		class Timer : ADT.Timer<DateTime, Func<CancellationToken,Task>>
 		{
