@@ -55,7 +55,7 @@ namespace SF.Sys.AtLeastOnceActions
 			var source = AtLeastOnceActionSourceResolver(cacheItem.Type);
 			if (source == null)
 				return;
-			await SyncQueue.Queue.Queue((cacheItem.Type, cacheItem.Ident), async () =>
+			await SyncQueue.Queue(cacheItem.Type+"/"+cacheItem.Ident, async () =>
 			{
 				await source.ExecAction(cacheItem.Type, cacheItem.Ident, cacheItem.Context);
 
@@ -78,11 +78,7 @@ namespace SF.Sys.AtLeastOnceActions
 		}
 		public async Task<long> Register(string Type, string Ident, string Name, object Context, TimeSpan? RetryDelay)
 		{
-			if (SyncQueue.Queue == null)
-				throw new InvalidOperationException(
-					$"至少一次执行同步队列尚未赋值，请检查至少一次执行服务是否已启动:{Type} {Ident} {Name}"
-					);
-			return await SyncQueue.Queue.Queue((Type, Ident), async () =>
+			return await SyncQueue.Queue(Type+"/"+Ident, async () =>
 			{
 				var id = await IdentGenerator.Value.GenerateAsync();
 				var cacheKey = id.ToString();
@@ -109,10 +105,10 @@ namespace SF.Sys.AtLeastOnceActions
 								LogicState = EntityLogicState.Enabled,
 								Name = Name.Limit(100),
 								TaskStartTime = now,
-								TaskNextRunTime = retryTime,
+								TaskNextTryTime = retryTime,
 								Ident = Ident,
 								Type = Type,
-								TaskState = AtLeastOnceTasks.Models.AtLeastOnceTaskState.Waiting,
+								TaskState = AtLeastOnceTasks.AtLeastOnceTaskState.Waiting,
 							})
 					)
 				);

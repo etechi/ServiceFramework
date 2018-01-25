@@ -26,9 +26,9 @@ using SF.Sys.Threading;
 
 namespace SF.Sys.Services
 {
-	class AtLeastOnceActionSyncQueue
+	class AtLeastOnceActionSyncQueue : ObjectSyncQueue<string>
 	{
-		public ISyncQueue<(string,string)> Queue { get; set; }
+	
 	}
 	public static class AtLeastOnceActionDIExtension
 	{
@@ -62,21 +62,16 @@ namespace SF.Sys.Services
 			var syncQueue = new AtLeastOnceActionSyncQueue();
 			sc.AddSingleton(sp => syncQueue);
 			sc.AddAtLeastOnceEntityTaskService(
-				new AtLeastOnceActionEntityServiceSetting<
-					(long Id, string Type, string Ident),
-					(string Type, string Ident),
-					SF.Sys.AtLeastOnceActions.DataModels.AtLeastOnceAction
-					>
+				new AtLeastOnceTaskEntityServiceSetting<long,string, SF.Sys.AtLeastOnceActions.DataModels.AtLeastOnceAction>
 				{
-					Name = "至少一次调用服务",
-					GetKey = t => (t.Id, t.Type, t.Ident),
-					KeyEqual = t => e => e.Id.Equals(t.Id),
-					Init = (sp, sq) =>
+					SyncQueue=syncQueue,
+					TaskIdentSelector=e=>new AtLeastOnceTaskTaskIdent<long, string>
 					{
-						syncQueue.Queue = sq;
-						return Task.CompletedTask;
+						Id=e.Id,
+						SyncKey=e.Type+"/"+e.Ident,
+						TaskNextTryTime=e.TaskNextTryTime.Value
 					},
-					RunTask = async (sp, entity) =>
+					TaskExecutor = async (sp, entity) =>
 					{
 						var re=	await ((AtLeastOnceActionProvider)sp.Resolve<IAtLeastOnceActionProvider>()).ActiveByTimer(entity);
 						return re;

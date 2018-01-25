@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.TaskServices
 {
-	public static class Timer
+	public static class TaskTimer
 	{
 		static async Task<bool> Delay(int Timeout, CancellationToken cancelToken)
 		{

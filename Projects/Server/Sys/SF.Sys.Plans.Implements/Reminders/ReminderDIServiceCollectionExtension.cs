@@ -26,9 +26,9 @@ using SF.Sys.Threading;
 
 namespace SF.Sys.Services
 {
-	class RemindSyncQueue
+	class RemindSyncQueue : ObjectSyncQueue<long>
 	{
-		public ISyncQueue<long> Queue { get; set; }
+		
 	}
 	public static class ReminderDIServiceCollectionExtension
 	{
@@ -67,18 +67,16 @@ namespace SF.Sys.Services
 			var syncQueue = new RemindSyncQueue();
 			sc.AddSingleton(sp => syncQueue);
 			sc.AddAtLeastOnceEntityTaskService(
-				new AtLeastOnceActionEntityServiceSetting<long, long, SF.Sys.Reminders.DataModels.Reminder>
+				new AtLeastOnceTaskEntityServiceSetting<long, long, SF.Sys.Reminders.DataModels.Reminder>
 				{
-					Name="用户提醒服务",
-					GetKey=e=>e.Id,
-					KeyEqual=id=>e=>e.Id==id,
-					GetSyncKey=id=>id,
-					Init = (sp, sq) =>
-					{
-						syncQueue.Queue = sq;
-						return Task.CompletedTask;
-					},
-					RunTask = async (sp, entity) =>
+					SyncQueue = syncQueue,
+					TaskIdentSelector = e => new AtLeastOnceTaskTaskIdent<long, long>
+						{
+							Id = e.Id,
+							SyncKey = e.Id,
+							TaskNextTryTime = e.TaskNextTryTime.Value
+						},
+					TaskExecutor = async (sp, entity) =>
 					{
 						var re=	await ((ReminderManager)sp.Resolve<IReminderManager>()).RunTasks(entity);
 						return re;

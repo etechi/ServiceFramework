@@ -17,10 +17,6 @@
 	</PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="TimedTaskRunnerService.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove=".licenseheader" />
   </ItemGroup>
 

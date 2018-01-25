@@ -22,6 +22,7 @@ using SF.Sys.Services.Management.Models;
 using SF.Sys.Threading;
 using SF.Sys.TimeServices;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Services
@@ -35,7 +36,6 @@ namespace SF.Sys.Services
 		public int Interval { get; set; } = 5000;
 		public int ErrorDelayUnit { get; set; } = 10;
 		public int ExecTimeoutSeconds { get; set; } = 0;
-		public Func<TKey, TSyncKey> GetSyncKey { get; set; }
 		public Func<IServiceProvider, ISyncQueue<TSyncKey> ,Task> Init { get; set; }
 		public Func<IServiceProvider, int, DateTime, Task<TKey[]>> GetIdentsToRunning { get; set; }
 		public Func<IServiceProvider, Task<TTask[]>> LoadRunningTasks { get; set; }
@@ -44,8 +44,30 @@ namespace SF.Sys.Services
 		public Func<IServiceProvider, TKey, Task<TTask>> LoadTask { get; set; }
 		public Func<IServiceProvider,Func<Task>,Task> UseDataScope { get; set; }
 	}
+	public interface IAtLeastOnceExecuteService
+	{
+		public Task Execute<TKey>()
+	}
 	public static class AtLeastOnceTaskService
 	{
+		class TaskLoader<TKey, TSyncKey, TTask> : ITimedTaskSoruce
+			where TTask:class
+		{
+			AtLeastOnceActionServiceSetting<TKey, TSyncKey, TTask> Setting { get; }
+			public TaskLoader(AtLeastOnceActionServiceSetting<TKey, TSyncKey, TTask> Setting)
+			{
+				this.Setting = Setting;
+			}
+			public Task<bool> LoadTimedTasks(DateTime EndTargetTime, int MaxCount, CancellationToken cancellactionToken)
+			{
+				throw new NotImplementedException();
+			}
+
+			public Task Startup(CancellationToken cancellationToken)
+			{
+				throw new NotImplementedException();
+			}
+		}
 		public static IServiceCollection AddAtLeastOnceTaskService<TKey,TSyncKey, TTask>(
 			this IServiceCollection sc,
 			AtLeastOnceActionServiceSetting<TKey, TSyncKey, TTask> Setting
@@ -79,8 +101,8 @@ namespace SF.Sys.Services
 							 foreach (var t in tasks)
 							 {
 								 t.TaskState = AtLeastOnceTaskState.Waiting;
-								 t.TaskNextRunTime = now.AddSeconds(Setting.ErrorDelayUnit * (1 << t.TaskRunCount));
-								 t.TaskLastRunError = "异常终止";
+								 t.TaskNextTryTime = now.AddSeconds(Setting.ErrorDelayUnit * (1 << t.TaskTryCount));
+								 t.TaskLastError = "异常终止";
 								 await Setting.SaveTask(isp, t);
 							 }
 						 });
@@ -121,26 +143,26 @@ namespace SF.Sys.Services
 								else
 								{
 									task.TaskState = AtLeastOnceTaskState.Waiting;
-									task.TaskNextRunTime = timeService.Now.AddSeconds(
-										Setting.ErrorDelayUnit * (1 << (task.TaskRunCount - 1))
+									task.TaskNextTryTime = timeService.Now.AddSeconds(
+										Setting.ErrorDelayUnit * (1 << (task.TaskTryCount - 1))
 										);
 								}
-								task.TaskLastRunError = error.Message;
+								task.TaskLastError = error.Message;
 							}
 							else if (delayed == null)
 							{
 								task.TaskState = AtLeastOnceTaskState.Completed;
-								task.TaskLastRunError = null;
+								task.TaskLastError = null;
 							}
 							else
 							{
 								task.TaskState = AtLeastOnceTaskState.Waiting;
-								task.TaskNextRunTime = delayed.Value;
-								task.TaskLastRunError = null;
+								task.TaskNextTryTime = delayed.Value;
+								task.TaskLastError = null;
 							}
 
-							task.TaskLastRunTime = now;
-							task.TaskRunCount++;
+							task.TaskLastTryTime = now;
+							task.TaskTryCount++;
 
 							await Setting.SaveTask(isp, task);
 						});

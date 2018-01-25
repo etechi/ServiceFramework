@@ -50,9 +50,7 @@ namespace SF.Sys.Reminders
 
 		public async Task RefreshAt(long Id,DateTime Time,string DefaultName)
 		{
-			if (RemindSyncQueue.Value.Queue == null)
-				throw new InvalidOperationException("提醒同步队列尚未赋值，请检查定时任务服务是否已启动");
-			await RemindSyncQueue.Value.Queue.Queue(Id, async () =>
+			await RemindSyncQueue.Value.Queue(Id, async () =>
 			{
 				var reminder = await DataSet.FindAsync(Id);
 				if (reminder == null)
@@ -67,8 +65,8 @@ namespace SF.Sys.Reminders
 					DataSet.Update(reminder);
 
 				reminder.PlanTime = Now;
-				reminder.TaskNextRunTime = Time;
-				reminder.TaskState = SF.Sys.AtLeastOnceTasks.Models.AtLeastOnceTaskState.Waiting;
+				reminder.TaskNextTryTime = Time;
+				reminder.TaskState = SF.Sys.AtLeastOnceTasks.AtLeastOnceTaskState.Waiting;
 				await DataSet.Context.SaveChangesAsync();
 				return 0;
 			});

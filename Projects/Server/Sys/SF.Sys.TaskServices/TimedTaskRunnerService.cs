@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.ADT;
 using SF.Sys.Services;
+using SF.Sys.TaskServices;
 using SF.Sys.Threading;
 using SF.Sys.TimeServices;
 using System;
@@ -27,19 +28,22 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Services
 {
-	
+
 	public interface ITimedTaskExecutor
 	{
-		Task Enqueue(IEnumerable<KeyValuePair<DateTime, Func<CancellationToken, Task>>> Tasks);
+		IDisposable Enqueue<TKey>(
+			TKey Key,
+			DateTime Target, 
+			Func<CancellationToken,Task> Task,
+			bool IgnoreLongWaitTask=true
+			);
 	}
-	
 	
 	public interface ITimedTaskSoruce
 	{
 		Task Startup(CancellationToken cancellationToken);
-		Task<bool> LoadTimedTasks(
+		Task LoadTimedTasks(
 			DateTime EndTargetTime, 
-			int MaxCount, 
 			CancellationToken cancellactionToken
 			);
 	}
@@ -56,384 +60,213 @@ namespace SF.Sys.Services
 		/// </summary>
 		public int PreloadIntervalSeconds { get; set; } = 60;
 		public int PreloadAheadSeconds { get; set; } = 10;
-		public int LoadBatchCount { get; set; } = 100;
 	}
-	public static class TimedTaskRunnerExtension
+
+	public class TimedTaskExecutor : ITimedTaskExecutor
 	{
-		enum WaitResult
+		class TypedTask<TKey>:SF.Sys.TaskServices.Timer,IDisposable
 		{
-			Timeout,
-			TimerChanged,
-			Exit
-
-		}
-
-		class Timer : ADT.Timer<DateTime, Func<CancellationToken,Task>>
-		{
-			static void WaitTimeout(TimeSpan span, TaskCompletionSource<WaitResult> tcs)
+			public static CancellationToken CancelledCancellationToken { get; }
+			static TypedTask()
 			{
-				Task.Delay(span)
-					.ContinueWith(t => tcs.TrySetResult(WaitResult.Timeout));
+				var tcs = new CancellationTokenSource();
+				tcs.Cancel();
+				CancelledCancellationToken = tcs.Token;
 			}
-			TaskCompletionSource<WaitResult> CurCompletionSource { get; set; }
-			public void Enqueue(IEnumerable<KeyValuePair<DateTime, Func<CancellationToken, Task>>> Callbacks)
+			public TypedTaskDict<TKey> Dict { get; set; }
+			public Func<CancellationToken, Task> Callback { get; set; }
+			public TKey Key { get; }
+			public TypedTask(TypedTaskDict<TKey> Dict, TKey Key)
 			{
-				Func<CancellationToken, Task> func
-					;
-				func.Invoke()
-				TaskCompletionSource<WaitResult> tcs;
+				this.Dict = Dict;
+				this.Key = Key;
+			}
+			async Task Run(CancellationToken ct)
+			{
+				Func<CancellationToken, Task> Callback;
 				lock (this)
 				{
-					foreach(var pair in Callbacks)
-						base.Enqueue(pair.Key, pair.Value);
-					tcs = CurCompletionSource;
+					if (Dict == null)
+						return;
+					if (ct.IsCancellationRequested)
+						Dict.TimerService.Remove(this);
+
+					Callback = this.Callback;
+					Dict.TryRemove(Key, out var cur);
+
+					Dict = null;
+					this.Callback = null;
 				}
-				if (tcs!= null)
-					tcs.TrySetResult(WaitResult.TimerChanged);
-			}
-			public void RemoveTaskItem(base.Item Item)
-			{
-				TaskCompletionSource<WaitResult> tcs;
-				lock (this)
-				{
-					base.Remove(Item);
-					tcs = CurCompletionSource;
-				}
-				if (tcs != null)
-					tcs.TrySetResult(WaitResult.TimerChanged);
-			}
-			public async Task<IEnumerable<TaskItem>> Wait(ITimeService timeService, CancellationToken token)
-			{
-				for (; ; )
-				{
-					if (token.IsCancellationRequested)
-						return null;
-					DateTime target = default;
-					var now = timeService.Now;
-					var waitResult = WaitResult.Timeout;
-					TaskCompletionSource<WaitResult> tcs;
-					lock (this)
-					{
-						if (KeyCount > 0)
-							target = Peek().Key;
-						if (target == default && target > now)
-							CurCompletionSource = tcs = new TaskCompletionSource<WaitResult>();
-						else
-							CurCompletionSource = tcs = null;
-					}
+				if (Callback == null)
+					return;
 
-					if (tcs != null)
-					{
-						if (target != default)
-							WaitTimeout(target.Subtract(now), tcs);
-						using (token.Register(() => tcs.SetResult(WaitResult.Exit)))
-						{
-							waitResult = await tcs.Task;
-						}
-					}
-
-					if (waitResult == WaitResult.Exit)
-						return null;
-					else if (waitResult == WaitResult.TimerChanged)
-						continue;
-
-					IEnumerable<Item> items;
-					lock (this)
-					{
-						items = Dequeue().Value;
-					}
-
-					return items.Select(i => i.Value);
-				}
-			}
-			public TaskCompletionSource<WaitResult> WaitTaskCompletionSource { get; set; }
-		}
-
-		class TaskCollection
-		{
-			ConcurrentDictionary<Type, object> ItemCategoryDict { get; } =
-				new ConcurrentDictionary<Type, object>();
-
-			ConcurrentDictionary<T,TaskItemWithIdent<T>> GetCategoryDict<T>()
-			{
-				var type = typeof(T);
-				if (!ItemCategoryDict.TryGetValue(type, out var dict))
-					dict=ItemCategoryDict.GetOrAdd(
-						type, 
-						new ConcurrentDictionary<T, TaskItemWithIdent<T>>()
-						);
-				return (ConcurrentDictionary<T, TaskItemWithIdent<T>>)dict;
-			}
-
-			public void Add(TaskCallback Callback)
-			{
-				if (Task == null)
-					throw new ArgumentNullException(nameof(Task));
-
-				if (IdDict.TryGetValue(Task.Ident, out var item))
-				{
-					var OrgTask = item.Task;
-					item.Task = Task;
-
-					//如果有旧任务
-					if (OrgTask != null)
-					{
-						//如果没有在运行，且和新任务时间不同，需要删除定时器
-						if (item.IsRunning && OrgTask.Target != Task.Target)
-							RemoveFromTaskDict(item);
-						OrgTask.Cancel();
-					}
-
-
-					//假如没有在运行，没有旧任务或者两者时间不同，需要重新插入定时器
-					if (item.IsRunning && (OrgTask == null || OrgTask.Target != Task.Target))
-						AddToTimeDict(item);
-				}
-				else
-				{
-					item = new TaskItem
-					{
-						Ident=Task.Ident,
-						Task = Task
-					};
-					IdDict[Task.Ident] = item;
-
-					//新任务总是加入定时器
-					AddToTimeDict(item);
-				}
-			}
-			public bool Remove(string Ident)
-			{
-				if (!IdDict.TryGetValue(Ident, out var item))
-					return false;
-
-				var orgItem = item.Task;
-				item.Task = null;
-				if (orgItem != null)
-					orgItem.Cancel();
-
-				//如果已经在运行
-				if (item.IsRunning)
-					return true;
-
-				RemoveFromTaskDict(item);
-				IdDict.Remove(Ident);
-				return true;
-			}
-			public DateTime GetNextTargetTime()
-			{
-				foreach (var pair in TimeDict)
-					return TargetOffset.AddSeconds(pair.Key);
-				return DateTime.MaxValue;
-			}
-			static IEnumerable<TaskItem> GetItems(TaskItem Head)
-			{
-				var end = Head;
-				do
-				{
-					yield return Head;
-					Head = Head.TimerListNext;
-				}
-				while (Head != end) ;
-			}
-			public void TaskComplete(TaskItem item)
-			{
-				//运行期间没有新任务，直接删除
-				if(item.Task==null)
-				{
-					item.TCS.SetResult(0);
-					IdDict.Remove(item.Ident);
-				}
-				//运行期间有新任务，重新加入定时器
-				else
-				{
-					AddToTimeDict(item);
-				}
-			}
-			async Task RunTask(TaskItem item,CancellationToken cancelTask)
-			{
 				try
 				{
-					await item.Task.Execute(cancelTask);
+					await Callback(ct);
 				}
-				catch {
+				catch (Exception ex)
+				{
+
+				}
+			}
+			public override void OnTimer()
+			{
+				Task.Run(() =>Run(CancellationToken.None));
+			}
+			public override void OnCancelled()
+			{
+				Task.Run(() => Run(CancelledCancellationToken));
+			}
+
+			public void Dispose()
+			{
+				OnCancelled();
+			}
+
+		}
+
+		//字典中保存的是为运行的任务，一旦运行，从字典中删除
+		class TypedTaskDict<TKey>:
+			ConcurrentDictionary<TKey, TypedTask<TKey>>
+		{
+			public ITimeService TimeService { get; }
+			public ITimerService TimerService { get; }
+			public TypedTaskDict(ITimeService TimeService, ITimerService TimerService)
+			{
+				this.TimeService = TimeService;
+				this.TimerService = TimerService;
+			}
+
+		}
+		ConcurrentDictionary<Type, object> ItemCategoryDict { get; } =
+				   new ConcurrentDictionary<Type, object>();
+
+		ITimerService TimerService { get; }
+		ITimeService TimeService { get; }
+		TimedTaskRunnerSetting Setting { get; }
+		public TimedTaskExecutor(ITimerService TimerService, ITimeService TimeService, TimedTaskRunnerSetting Setting)
+		{
+			this.TimerService = TimerService;
+			this.TimeService = TimeService;
+			this.Setting = Setting;
+		}
+		TypedTaskDict<TKey> GetCategoryDict<TKey>()
+		{
+			var type = typeof(TKey);
+			if (!ItemCategoryDict.TryGetValue(type, out var dict))
+				dict = ItemCategoryDict.GetOrAdd(
+					type,
+					new TypedTaskDict<TKey>(TimeService, TimerService)
+					);
+			return (TypedTaskDict<TKey>)dict;
+		}
+		public IDisposable Enqueue<TKey>(
+			TKey Key, 
+			DateTime Target, 
+			Func<CancellationToken, Task> Callback,
+			bool IgnoreLongWaitTask=true
+			)
+		{
+			//超出载入时间，可以忽略
+			if (IgnoreLongWaitTask && 
+				Target.Subtract(TimeService.Now).TotalSeconds >
+				Setting.PreloadIntervalSeconds + Setting.PreloadAheadSeconds)
+				return null;
+
+			var dict = GetCategoryDict<TKey>();
+			
+			for (; ; )
+			{
+				if (!dict.TryGetValue(Key, out var item))
+					item = dict.GetOrAdd(Key, new TypedTask<TKey>(dict, Key));
+
+				Func<CancellationToken, Task> OrgCallback=null;
+				try
+				{
+					lock (item)
+					{
+						//在从字典中获取后，刚好遇上定时器执行，已经从字典中删除，需要重新获取
+						if (item.Dict == null)
+							continue;
+
+						OrgCallback = item.Callback;
+						item.Callback = Callback;
+						var offset = (int)Target.Subtract(TimeService.Now).TotalMilliseconds;
+						if (offset < 0) offset = 0;
+						TimerService.Update(offset, item);
+					}
+					return item;
 				}
 				finally
 				{
-					TaskComplete(item);
-				}
-			}
-			public void RunTasks(DateTime now,CancellationToken cancelTask)
-			{
-				var LastIndex = (int)now.Subtract(TargetOffset).TotalSeconds;
-				KeyValuePair<int, TaskItem>[] Lists;
-				Lists = TimeDict.TakeWhile(i => i.Key <= LastIndex).ToArray();
-				foreach (var list in Lists)
-				{
-					TimeDict.Remove(list.Key);
-					foreach (var n in GetItems(list.Value))
+					if (OrgCallback != null)
 					{
-						if (n.TCS == null)
-							n.TCS = new TaskCompletionSource<int>();
-						Task.Run(() =>
-							RunTask(n, cancelTask)
-							);
-					}
-				}
-			}
-
-		}
-
-
-		class TimedTaskRunner : ITimedTaskExecutor
-		{
-			public TaskCollection Collection { get; }
-			public TimedTaskRunnerSetting Setting { get; }
-			public ITimeService TimeService { get; }
-
-			DateTime NextLoadTime;
-
-			public TimedTaskRunner(
-				TimedTaskRunnerSetting Setting, 
-				TaskCollection Collection,
-				ITimeService TimeService
-				)
-			{
-				this.TimeService = TimeService;
-				this.Collection = Collection;
-				this.Setting = Setting;
-			}
-			public bool Execute(ITimedTask Task)
-			{
-				if (Task.Target > NextLoadTime)
-					return false;
-				lock (Collection)
-					Collection.Add(Task);
-				return true;
-			}
-
-			public bool Remove(string Task)
-			{
-				return Collection.Remove(Task);
-			}
-		}
-
-		
-		static async Task LoadTasks(
-			TaskCollection collection,
-			IServiceScopeFactory scopeFactory,
-			ITimeService timeService,
-			CancellationToken cancelToken,
-			int PreloadIntervalSeconds,
-			int PreloadAheadSeconds,
-			int LoadBatchCount
-			)
-		{
-			var reloadTarget = timeService.Now;
-			for (; ; )
-			{
-				var now = timeService.Now;
-				if (reloadTarget > now)
-					await Task.Delay(reloadTarget.Subtract(now), cancelToken);
-				reloadTarget = now.AddSeconds(
-					PreloadIntervalSeconds
-					);
-				var end = reloadTarget.AddSeconds(PreloadAheadSeconds);
-				await scopeFactory.WithScope(async isp => {
-					foreach (var src in isp.Resolve<IEnumerable<ITimedTaskSoruce>>())
-					{
-						for (; ; )
+						Task.Run(async () =>
 						{
-							var hasMoreTasks = await src.LoadTimedTasks(
-								end, 
-								LoadBatchCount, 
-								cancelToken
-								);
-							if (!hasMoreTasks)
-								break;
-						}
+							try
+							{
+								await OrgCallback(TypedTask<TKey>.CancelledCancellationToken);
+							}
+							catch { }
+						});
 					}
-				});
+				}
 			}
 		}
+	}
 
-
-		static async Task RunTasks(
-			Timer timer,
-			ITimeService timeService,
-			CancellationToken cancelToken
-			)
-		{
-			while (!cancelToken.IsCancellationRequested)
-			{
-				var items=await timer.Wait(timeService, cancelToken);
-				if (items == null)
-					break;
-				collection.RunTasks(now, cancelToken);
-			}
-		}
-
-		static async Task SourceStartup(
-			IServiceScopeFactory scopeFactory,
-			CancellationToken cancelToken
-			)
-		{
-			await scopeFactory.WithScope(async isp =>
-			{
-				var sources = isp.Resolve<IEnumerable<ITimedTaskSoruce>>().ToArray();
-				foreach (var src in sources)
-					await src.Startup(cancelToken);
-			});
-
-		}
-
+	public static class TimedTaskRunnerExtension
+	{
+		
 		public static IServiceCollection AddTimedTaskRunnerService(
 			this IServiceCollection sc,
 			TimedTaskRunnerSetting Setting
 			)
 		{
-			var collection = new TaskCollection();
-			sc.AddSingleton<ITimedTaskExecutor>(sp =>
-				new TimedTaskRunner(
-					Setting,
-					collection,
-					sp.Resolve<ITimeService>()
-					)
-				);
-
+			sc.AddSingleton<ITimedTaskExecutor>(sp => 
+				new TimedTaskExecutor(
+				sp.Resolve<ITimerService>(),
+				sp.Resolve<ITimeService>(),
+				Setting
+				));
 
 			sc.AddTaskService(
 				Setting.Name,
 				sp=>Task.CompletedTask,
 				async (sp, ss, cancelToken) =>
 				{
-					var scopeFactory = sp.Resolve<IServiceScopeFactory>();
+					var sources = sp.Resolve<IEnumerable<ITimedTaskSoruce>>();
 
-					await SourceStartup(scopeFactory, cancelToken);
+					foreach (var src in sources)
+						await src.Startup(cancelToken);
 
 					var timeService = sp.Resolve<ITimeService>();
 
-					var taskLoadTask = Task.Run(()=>
-						LoadTasks(
-							collection,
-							scopeFactory,
-							timeService,
-							cancelToken,
-							Setting.PreloadIntervalSeconds,
-							Setting.PreloadAheadSeconds,
-							Setting.LoadBatchCount
-							)
-						);
+					var reloadTarget = timeService.Now;
+					for (; ; )
+					{
+						var now = timeService.Now;
+						if (reloadTarget > now)
+							await Task.Delay(reloadTarget.Subtract(now), cancelToken);
+						reloadTarget = now.AddSeconds(
+							Setting.PreloadIntervalSeconds
+							);
+						var end = reloadTarget.AddSeconds(Setting.PreloadAheadSeconds);
+						foreach (var src in sources)
+						{
+							try
+							{
+								await src.LoadTimedTasks(
+									end,
+									cancelToken
+									);
+							}
+							catch(Exception ex)
+							{
 
-					var taskRunTask = Task.Run(()=>
-						RunTasks(
-							collection,
-							timeService,
-							cancelToken
-							)
-						);
-
-					await Task.WhenAll(taskLoadTask, taskRunTask);
+							}
+						}
+					}
 				},
 				Setting.AutoStartup
 			);

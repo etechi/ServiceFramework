@@ -30,22 +30,22 @@ namespace SF.Sys.AtLeastOnceTasks.DataModels
 		/// <summary>
 		/// 任务执行次数
 		/// </summary>
-		public int TaskRunCount { get; set; }
+		public int TaskTryCount { get; set; }
 		/// <summary>
 		/// 最后执行错误
 		/// </summary>
-		public string TaskLastRunError { get; set; }
+		public string TaskLastError { get; set; }
 		/// <summary>
 		/// 任务开始时间
 		/// </summary>
 		public DateTime? TaskStartTime { get; set; }
 		/// <summary>
-		/// 任务最后执行时间
+		/// 任务最后尝试时间
 		/// </summary>
-		public DateTime? TaskLastRunTime { get; set; }
+		public DateTime? TaskLastTryTime { get; set; }
 		/// <summary>
-		/// 任务下次执行时间
+		/// 任务下次尝试时间
 		/// </summary>
-		public DateTime? TaskNextRunTime { get; set; }
+		public DateTime? TaskNextTryTime { get; set; }
 	}
 }

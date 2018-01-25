@@ -37,7 +37,7 @@ namespace SF.Sys.Services
 				Name,
 				InitCallback,
 				(sp,ss,ct) =>
-					TaskServices.Timer.StartTaskTimer(
+					TaskServices.TaskTimer.StartTaskTimer(
 						Period,
 						async () =>
 						{

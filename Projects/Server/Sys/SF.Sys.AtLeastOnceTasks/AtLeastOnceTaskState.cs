@@ -14,7 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
-namespace SF.Sys.AtLeastOnceTasks.Models
+namespace SF.Sys.AtLeastOnceTasks
 {
 	/// <summary>
 	/// 任务状态

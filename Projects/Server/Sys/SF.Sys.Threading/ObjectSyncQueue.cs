@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace SF.Sys.Threading
 {
@@ -47,81 +48,111 @@ namespace SF.Sys.Threading
 	}
 	public class ObjectSyncQueue<K> : ISyncQueue<K>,IDisposable
 	{
-		class Item : SemaphoreSlim
+		abstract class Item
 		{
-			public Item() : base(1) {}
-			public int WaitCount;
+			static int seed = 0;
+			int id;
+			public Item() {
+				Next = Prev = this;
+				id = Interlocked.Increment(ref seed);
+			}
+			public Item Next;
+			public Item Prev;
+			public abstract Task Execute();
 		}
-        static Stack<Item> ItemCache { get; } = new Stack<Item>();
-		Dictionary<K, Item> Dicts { get; } = new Dictionary<K, Item>();
-		bool _Disposed;
-		
-		public async Task<T> Queue<T>(K key, Func<Task<T>> callback)
+		class Item<T> : Item
 		{
-			Item item = null;
-			try
+			public Func<Task<T>> Callback;
+			public TaskCompletionSource<T> TCS;
+			public override async Task Execute()
 			{
-				lock (Dicts)
-				{
-					if (_Disposed)
-						throw new ObjectDisposedException("同步操作队列");
-
-                    if (Dicts.TryGetValue(key, out item))
-                        item.WaitCount++;
-                    else
-                    {
-						lock (ItemCache)
-						{
-							if(ItemCache.Count > 0)
-								item = ItemCache.Pop();
-						}
-						if (item == null)
-							item = new Item();
-
-						item.WaitCount = 1;
-                        Dicts.Add(key, item);
-                    }
-
-				}
-				await item.WaitAsync();
 				try
 				{
-					return await callback();
+					var re = await Callback();
+					TCS.TrySetResult(re);
 				}
-				finally
+				catch(Exception ex)
 				{
-					item.Release();
+					TCS.TrySetException(ex);
+				}
+				Callback = null;
+			}
+		}
+		ConcurrentDictionary<K, Item> Dict { get; } = new ConcurrentDictionary<K, Item>();
+		bool _Disposed;
+		public Task<T> Queue<T>(K key, Func<Task<T>> callback)
+		{
+			TaskCompletionSource<T> tcs = null;
+			Item head = null;
+			for (; ; )
+			{
+				if (!Dict.TryGetValue(key, out head))
+					head = Dict.GetOrAdd(key, new Item<T>() {Callback= callback });
+
+				lock (head)
+				{
+					if (head.Next == null)
+						continue;
+
+					var curItem = head as Item<T>;
+					if (curItem==null || curItem.Callback!=callback)
+					{
+						var item = new Item<T> { Callback = callback };
+						var tail = head.Prev;
+						item.Next = head;
+						item.Prev = tail;
+						tail.Next = item;
+						head.Prev = item;
+						item.TCS = tcs = new TaskCompletionSource<T>();
+					}
+					break;
 				}
 			}
-			finally
+			if (tcs != null)
+				return tcs.Task;
+			
+			var re = callback();
+			re.ContinueWith(async t =>
 			{
-				if (item != null)
-					lock (Dicts)
+				for (; ; )
+				{
+					Item item;
+					lock (head)
 					{
-						item.WaitCount--;
-						if (item.WaitCount == 0)
-							Dicts.Remove(key);
-						else
-							item = null;
+						item = head.Next;
+						if (item == head)
+						{
+							head.Next = null;
+							Dict.TryRemove(key, out item);
+							if (item != head)
+								throw new InvalidOperationException();
+							break;
+						}
+						head.Next = item.Next;
+						item.Next.Prev = head;
 					}
-				if(item!=null)
-					lock (ItemCache)
-						ItemCache.Push(item);
-
-			}
+					try
+					{
+						await item.Execute();
+					}
+					catch { }
+				}
+				
+			});
+			return re;
 		}
 
 		public void Dispose()
 		{
-			lock (Dicts)
+			lock (Dict)
 				_Disposed = true;
 			Task.Run(async () =>
 			{
 				for (; ; )
 				{
-					lock (Dicts)
+					lock (Dict)
 					{
-						if (Dicts.Count == 0)
+						if (Dict.Count == 0)
 							break;
 					}
 					await Task.Delay(10);
