@@ -76,6 +76,16 @@ namespace SF.Sys.Data
 				return await set.AddOrUpdateAsync(filter, creator, null);
 			});
 		}
+		public static IEnumerable<string> GetUnderlingCommandTexts<T>(
+			this IContextQueryable<T> Queryable
+			) where T : class
+		{
+			var ext=Queryable.Context as IDataContextExtension;
+			if (ext == null)
+				return Enumerable.Empty<string>();
+			return ext.GetUnderlingCommandTexts(Queryable);
+		}
+
 		public static Task<T> UseTransaction< T>(
 			this IDataContext Context,
 			string TransMessage,

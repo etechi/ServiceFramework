@@ -30,15 +30,16 @@ namespace SF.Auth.IdentityServices
 {
 	public class UserProfileService : IUserProfileService
 	{
-		public IScoped<IDataSet<DataModels.User>> UserScope { get; }
-		public UserProfileService(IScoped<IDataSet<DataModels.User>> UserScope)
+		public IScoped<IDataContext> ScopedDataContext { get; }
+		public UserProfileService(IScoped<IDataContext> ScopedDataContext)
 		{
-			this.UserScope = UserScope;
+			this.ScopedDataContext = ScopedDataContext;
 		}
 		public async Task<Claim[]> GetClaims(long id, string[] ClaimTypes,IEnumerable<Claim> ExtraClaims)
 		{
-			return await UserScope.Use(async Users =>
+			return await ScopedDataContext.Use(async ctx =>
 			{
+				var Users = ctx.Set<DataModels.User>();
 				var desc = await (
 					from u in Users.AsQueryable()
 					where u.Id == id && u.LogicState == EntityLogicState.Enabled
@@ -87,44 +88,60 @@ namespace SF.Auth.IdentityServices
 
 				if (types.Count > 0 || grantResources.Count > 0)
 				{
-					var re = await (
-						from u in Users.AsQueryable()
-						where u.Id == id
-						select new
-						{
-							userCredentials = from uc in u.Credentials
-										 where types.Contains(uc.ClaimTypeId)
-										 select new { type = uc.ClaimTypeId, value = uc.Credential },
-							userClaims = from uc in u.ClaimValues
-										 where types.Contains(uc.TypeId)
-										 select new { type = uc.TypeId, value = uc.Value },
-							roleClaims = from r in u.Roles
-										 from rc in r.Role.ClaimValues
-										 where types.Contains(rc.TypeId)
-										 select new { type = rc.TypeId, value = rc.Value },
-							grants = from r in u.Roles
-									 from g in r.Role.Grants
-									 where grantResources.Contains(g.ResourceId)
-									 group g.OperationId by g.ResourceId into gg
-									 select new { rs = gg.Key, os = gg.Distinct() },
-							roles = from r in u.Roles
-									select r.RoleId
-						}
-						).SingleOrDefaultAsync();
-					if (re != null)
-					{
-						foreach (var c in re.userCredentials)
-							claims.Add(new Claim(c.type, c.value));
-						foreach (var c in re.userClaims)
-							claims.Add(new Claim(c.type, c.value));
-						foreach (var c in re.roleClaims)
-							claims.Add(new Claim(c.type, c.value));
-						foreach (var g in re.grants)
-							claims.Add(new Claim("g:" + g.rs, "|" + g.os.Join("|") + "|"));
+					var Credentials = ctx.Set<DataModels.UserCredential>();
 
-						if (types.Contains("role"))
-							claims.Add(new Claim("role", re.roles.Join(" ")));
-					}
+					//var re = await (
+					//	from u in Users.AsQueryable()
+					//	where u.Id == id
+					//	select new
+					//	{
+					var userCredentials = await (
+								from uc in ctx.Set<DataModels.UserCredential>().AsQueryable()
+								where uc.UserId == id && types.Contains(uc.ClaimTypeId)
+								select new { type = uc.ClaimTypeId, value = uc.Credential }
+								 ).ToArrayAsync();
+
+					var userClaims = await (
+							from uc in ctx.Set<DataModels.UserClaimValue>().AsQueryable()
+							where uc.UserId == id && types.Contains(uc.TypeId)
+							select new { type = uc.TypeId, value = uc.Value }
+								).ToArrayAsync();
+
+					var roleClaims = await (
+							from r in ctx.Set<DataModels.UserRole>().AsQueryable()
+							where r.UserId == id
+							from rc in r.Role.ClaimValues
+							where types.Contains(rc.TypeId)
+							select new { type = rc.TypeId, value = rc.Value }
+						).ToArrayAsync();
+
+					var grants = (await (
+						from r in ctx.Set<DataModels.UserRole>().AsQueryable()
+						where r.UserId == id
+						from g in r.Role.Grants
+						where grantResources.Contains(g.ResourceId)
+						select new { g.OperationId, g.ResourceId }
+						).ToListAsync())
+						.GroupBy(p => p.OperationId)
+						.Select(g => (rs: g.Key, os: g.Distinct()));
+
+					var roles = await (
+						from r in ctx.Set<DataModels.UserRole>().AsQueryable()
+						where r.UserId == id
+						select r.RoleId
+						).ToArrayAsync();
+				
+					foreach (var c in userCredentials)
+						claims.Add(new Claim(c.type, c.value));
+					foreach (var c in userClaims)
+						claims.Add(new Claim(c.type, c.value));
+					foreach (var c in roleClaims)
+						claims.Add(new Claim(c.type, c.value));
+					foreach (var g in grants)
+						claims.Add(new Claim("g:" + g.rs, "|" + g.os.Join("|") + "|"));
+
+					if (types.Contains("role"))
+						claims.Add(new Claim("role", roles.Join(" ")));
 				}
 				return claims.ToArray();
 			});
@@ -132,9 +149,9 @@ namespace SF.Auth.IdentityServices
 
 		public async Task<bool> IsValid(long Id)
 		{
-			return await UserScope.Use(async Users =>
+			return await ScopedDataContext.Use(async ctx=>
 			{
-				return await Users.AsQueryable()
+				return await ctx.Set<DataModels.User>().AsQueryable()
 					.Where(u => u.Id == Id && u.LogicState == EntityLogicState.Enabled)
 					.Select(u => true)
 					.SingleOrDefaultAsync();
@@ -143,10 +160,10 @@ namespace SF.Auth.IdentityServices
 
 		public async Task<User> GetUser(long UserId)
 		{
-			return await UserScope.Use(async Users =>
+			return await ScopedDataContext.Use(async ctx =>
 			{
 				var user=await (
-				from u in Users.AsQueryable()
+				from u in ctx.Set<DataModels.User>().AsQueryable()
 				where u.Id == UserId && u.LogicState == EntityLogicState.Enabled
 				let roles= from r in u.Roles
 						   let rid = r.RoleId

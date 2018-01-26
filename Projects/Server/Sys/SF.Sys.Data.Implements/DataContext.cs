@@ -139,5 +139,10 @@ namespace SF.Sys.Data
 		{
 			_Provider.ClearTrackingEntities();
 		}
+
+		public IEnumerable<string> GetUnderlingCommandTexts<T>(IContextQueryable<T> Queryable) where T : class
+		{
+			return ((IDataContextExtension)_Provider).GetUnderlingCommandTexts(Queryable);
+		}
 	}
 }

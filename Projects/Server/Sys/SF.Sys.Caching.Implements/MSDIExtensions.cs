@@ -13,7 +13,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using Microsoft.Extensions.Caching.Memory;
 using System;
+using System.Linq;
 
 namespace SF.Sys.Services
 {
@@ -21,6 +23,9 @@ namespace SF.Sys.Services
 	{
 		public static IServiceCollection AddMicrosoftMemoryCacheAsLocalCache(this IServiceCollection sc)
 		{
+			if (!sc.Any(s => s.InterfaceType == typeof(IMemoryCache)))
+				sc.AddSingleton<IMemoryCache, MemoryCache>();
+
 			return sc.AddSingleton(
 				typeof(SF.Sys.Caching.ILocalCache<>),
 				typeof(SF.Sys.Caching.MicrosoftExtensions.LocalCache<>)

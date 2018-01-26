@@ -68,7 +68,8 @@ namespace SF.Common.Media
 			"image/jpeg",
 			"image/jpg",
 			"image/gif",
-			"image/png"
+			"image/png",
+			"audio/amr"
 		};
 
 		///<title>允许任意图片样式</title>

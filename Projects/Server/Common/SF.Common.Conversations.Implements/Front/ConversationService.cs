@@ -171,6 +171,7 @@ namespace SF.Common.Conversations.Front
 			}
 
 			var ssQuery = DataContext.Set<DataModels.DataSessionStatus>().AsQueryable();
+			var Members = DataContext.Set<DataModels.DataSessionMemberStatus>().AsQueryable();
 
 			//填充会话状态
 			foreach(var g in from grp in grps 
@@ -186,7 +187,9 @@ namespace SF.Common.Conversations.Front
 				var dics =await (
 					from s in ssQuery
 					where s.BizIdentType == g.BizIdentType && g.BizIdents.Contains(s.BizIdent)
-					let m= s.Members.Where(m => m.OwnerId.Value == user).SingleOrDefault()
+					join tm in Members on s.Id equals tm.SessionId into tms
+					from m in tms.Where(tm=>tm.OwnerId.Value==user).DefaultIfEmpty()
+					//let m= s.Members.Where(m => m.OwnerId.Value == user).SingleOrDefault()
 					let readed= m==null?0:m.MessageReaded
 					select new
 					{

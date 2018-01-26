@@ -19,6 +19,13 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 using SF.Sys.Data;
+using System.Collections.Generic;
+using System.Reflection;
+using Microsoft.EntityFrameworkCore.Query.Internal;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore.Internal;
+using Remotion.Linq.Parsing.Structure;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace SF.Sys.Data.EntityFrameworkCore
 {
@@ -277,6 +284,40 @@ namespace SF.Sys.Data.EntityFrameworkCore
 			{
 				DbContext.Entry(entity.Entity).State = EntityState.Detached;
 			}
+		}
+		private static readonly TypeInfo QueryCompilerTypeInfo = typeof(QueryCompiler).GetTypeInfo();
+
+		private static readonly FieldInfo QueryCompilerField = typeof(EntityQueryProvider).GetTypeInfo().DeclaredFields.First(x => x.Name == "_queryCompiler");
+
+		private static readonly PropertyInfo NodeTypeProviderField = QueryCompilerTypeInfo.DeclaredProperties.Single(x => x.Name == "NodeTypeProvider");
+
+		private static readonly MethodInfo CreateQueryParserMethod = QueryCompilerTypeInfo.DeclaredMethods.First(x => x.Name == "CreateQueryParser");
+
+		private static readonly FieldInfo DataBaseField = QueryCompilerTypeInfo.DeclaredFields.Single(x => x.Name == "_database");
+
+		private static readonly PropertyInfo DatabaseDependenciesField = typeof(Database).GetTypeInfo().DeclaredProperties.Single(x => x.Name == "Dependencies");
+
+		public IEnumerable<string> GetUnderlingCommandTexts<TEntity>(IContextQueryable<TEntity> Queryable) where TEntity:class
+		{
+			var dbq = Queryable as DbQueryable<TEntity>;
+			if (dbq == null)
+				return Enumerable.Empty<string>();
+			var query = dbq.Queryable;
+			//if (!(query is EntityQueryable<TEntity>) && !(query is InternalDbSet<TEntity>))
+			//{
+			//	throw new ArgumentException("Invalid query");
+			//}
+
+			var queryCompiler = (QueryCompiler)QueryCompilerField.GetValue(query.Provider);
+			var nodeTypeProvider = (INodeTypeProvider)NodeTypeProviderField.GetValue(queryCompiler);
+			var parser = (IQueryParser)CreateQueryParserMethod.Invoke(queryCompiler, new object[] { nodeTypeProvider });
+			var queryModel = parser.GetParsedQuery(query.Expression);
+			var database = DataBaseField.GetValue(queryCompiler);
+			var databaseDependencies = (DatabaseDependencies)DatabaseDependenciesField.GetValue(database);
+			var queryCompilationContext = databaseDependencies.QueryCompilationContextFactory.Create(false);
+			var modelVisitor = (RelationalQueryModelVisitor)queryCompilationContext.CreateQueryModelVisitor();
+			modelVisitor.CreateQueryExecutor<TEntity>(queryModel);
+			return modelVisitor.Queries.Select(q => q.ToString());
 		}
 	}
 	

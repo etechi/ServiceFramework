@@ -13,12 +13,13 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using Microsoft.Extensions.Logging;
 using SF.Sys.Comments;
 using System;
 
 namespace SF.Sys.Logging
 {
-	class Logger<T> : ILogger<T>, IDisposable
+	class Logger<T> : ILogger<T>,Microsoft.Extensions.Logging.ILogger<T>, IDisposable
 	{
 		ILogger GlobalLogger { get; }
 		ILogger ScopedLogger { get; }
@@ -68,7 +69,21 @@ namespace SF.Sys.Logging
 				ScopedLogger.BeginScope(State)
 				);
 		}
+		
+		void Microsoft.Extensions.Logging.ILogger.Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+		{
+			Write(LoggerCollection.MapLevel(logLevel), new EventId(eventId.Id, eventId.Name), state, exception, formatter);
+		}
 
+		bool Microsoft.Extensions.Logging.ILogger.IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel)
+		{
+			return IsEnabled(LoggerCollection.MapLevel(logLevel));
+		}
+
+		IDisposable Microsoft.Extensions.Logging.ILogger.BeginScope<TState>(TState state)
+		{
+			return BeginScope(state);
+		}
 	}
 
 }

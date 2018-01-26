@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Sys.Logging;
 using SF.Sys.Services;
 
+
 namespace SF.Sys.Services
 {
 	public static class LoggerDIServiceCollectionService
@@ -23,7 +24,10 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddLogService(this IServiceCollection sc,ILogService LogService=null)
 		{
 			sc.AddSingleton<ILogService>(LogService??new LogService());
-			sc.Add(new ServiceDescriptor(typeof(ILogger<>), typeof(Logger<>), ServiceImplementLifetime.Scoped));
+			sc.AddSingleton<Microsoft.Extensions.Logging.ILoggerFactory>(sp=>(Microsoft.Extensions.Logging.ILoggerFactory)sp.Resolve<ILogService>());
+			sc.Add(new ServiceDescriptor(typeof(SF.Sys.Logging.ILogger<>), typeof(SF.Sys.Logging.Logger<>), ServiceImplementLifetime.Scoped));
+			sc.Add(new ServiceDescriptor(typeof(Microsoft.Extensions.Logging.ILogger<>), typeof(SF.Sys.Logging.Logger<>), ServiceImplementLifetime.Scoped));
+			// MSDependencyInjectionExtension . sc.AsMicrosoftServiceCollection();
 			return sc;
 		}
 	}

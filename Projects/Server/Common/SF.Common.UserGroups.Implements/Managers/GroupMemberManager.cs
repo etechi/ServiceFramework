@@ -137,21 +137,21 @@ namespace SF.Common.UserGroups.Managers
 			long? BizIdent			
 			)
 		{
+			var Members = DataContext.Set<TMember>().AsQueryable();
 			var sq = from s in DataContext.Set<TDataGroup>().AsQueryable()
 					 where s.Id == GroupId && s.LogicState == EntityLogicState.Enabled
-					 let m = (from m in s.Members
-							 where m.OwnerId == TargetUserId
-							 select new
-							 {
-								 m.Id,
-								 m.LogicState,
-								 m.MemberAccepted,
-								 m.GroupAccepted
-							 }).SingleOrDefault()
+					 join tm in Members on s.Id equals tm.GroupId into tms
+					 from m in tms.Where(tm=>tm.OwnerId==TargetUserId).DefaultIfEmpty()
 					 select new
 					 {
 						 s.Flags,
-						 Member = m
+						 Member = m==null?null:new
+						 {
+							 m.Id,
+							 m.LogicState,
+							 m.MemberAccepted,
+							 m.GroupAccepted
+						 }
 					 };
 			var data = await sq.SingleOrDefaultAsync();
 			if (data == null)

@@ -15,10 +15,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace SF.Sys.Logging
 {
-	public class LogService : ILogService, IDisposable
+	public class LogService : ILogService, IDisposable,Microsoft.Extensions.Logging.ILoggerFactory
 	{
 		private readonly Dictionary<string, LoggerCollection> _loggers = new Dictionary<string, LoggerCollection>(StringComparer.Ordinal);
 
@@ -137,6 +138,16 @@ namespace SF.Sys.Logging
 					catch { }
 				}
 			}
+		}
+
+		Microsoft.Extensions.Logging.ILogger ILoggerFactory.CreateLogger(string categoryName)
+		{
+			return (Microsoft.Extensions.Logging.ILogger)GetLogger(categoryName);
+		}
+
+		void ILoggerFactory.AddProvider(Microsoft.Extensions.Logging.ILoggerProvider provider)
+		{
+			this.AsMSLoggerFactory().AddProvider(provider);
 		}
 
 	}
