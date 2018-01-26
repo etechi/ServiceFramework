@@ -36,6 +36,7 @@ namespace SF.Sys.Settings
 				typeof(SettingService<T>),
 				ServiceImplementLifetime.Scoped
 				);
+			sc.AddSingleton<ISettingChangedTrackerService, SettingChangedTrackerService>();
 			sc.InitServices($"初始化配置:{typeof(T)}", async (sp, sim, ParentId) =>
 			{
 				await sim.EnsureDefaultService(

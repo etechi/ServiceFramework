@@ -278,6 +278,8 @@ namespace SF.Externals.Aliyun.Implements
 			var result = Json.Parse<GetDeviceShadowResult>(re);
 			ResultValidate(result, "GetDeviceShadow");
 
+			if (result.ShadowMessage == null)
+				return new DeviceShadowReply();
 			var msg = Json.Parse<DeviceShadowMessage>(result.ShadowMessage);
 			var reply = new DeviceShadowReply
 			{

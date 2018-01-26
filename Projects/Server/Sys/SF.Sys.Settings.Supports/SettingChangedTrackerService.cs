@@ -29,7 +29,6 @@ namespace SF.Sys.Settings
 		ConcurrentDictionary<Type, List<Func<IServiceProvider, Task>>> Callbacks { get; }
 			= new ConcurrentDictionary<Type, List<Func<IServiceProvider, Task>>>();
 		IServiceScopeFactory ScopeFactory { get; }
-		IServiceProvider ServiceProvider { get; }
 		public SettingChangedTrackerService(
 			IEventSubscriber<ServiceInstanceChanged> Subscriber, 
 			IServiceScopeFactory ScopeFactory,
@@ -37,7 +36,7 @@ namespace SF.Sys.Settings
 			)
 		{
 			this.ScopeFactory = ScopeFactory;
-			this.ServiceProvider = ServiceProvider;
+			var resolver = ServiceProvider.Resolver();
 			Subscriber.Wait((ei) =>
 			{
 				SF.Sys.Threading.Debouncer.Start(ei.Id, (cancelled) =>
@@ -45,7 +44,7 @@ namespace SF.Sys.Settings
 					if (cancelled) return;
 					Task.Run(async () =>
 					{
-						var desc = ServiceProvider.Resolver().ResolveDescriptorByIdent(ei.Event.Id);
+						var desc = resolver.ResolveDescriptorByIdent(ei.Event.Id);
 						if (!Callbacks.TryGetValue(desc.ServiceDeclaration.ServiceType, out var cbs))
 							return;
 
