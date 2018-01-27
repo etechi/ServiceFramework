@@ -20,16 +20,17 @@ using System.Data.Common;
 using Dapper;
 using SF.Sys.Collections.Generic;
 using SF.Sys.Reflection;
+using SF.Sys.Data;
 
 namespace SF.Sys.Services.Storages
 {
 	public class DBServiceSource : IServiceConfigLoader, IServiceInstanceLister
 	{
-		DbConnection Connection { get; }
+		IDataSource DataSource { get; }
 		IServiceMetadata Metadata { get; }
-		public DBServiceSource(DbConnection Connection, IServiceMetadata Metadata)
+		public DBServiceSource(IDataSource DataSource, IServiceMetadata Metadata)
 		{
-			this.Connection = Connection;
+			this.DataSource = DataSource;
 			this.Metadata = Metadata;
 		}
 		class Config : IServiceConfig
@@ -47,50 +48,58 @@ namespace SF.Sys.Services.Storages
 		}
 		public IServiceConfig GetConfig(long Id)
 		{
-			var re = Connection.Query<Config>(
-				"select Id,ServiceType,ImplementType,Setting,ContainerId " +
-				"from SysServiceInstance " +
-				"where Id=@Id", 
-				new { Id = Id }
-				).SingleOrDefault();
-			if (re == null)
-				return null;
-			var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
-			if (svcDef == null)
-				throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
+			using (var Connection = DataSource.Connect())
+			{
+				var re = Connection.Query<Config>(
+					"select Id,ServiceType,ImplementType,Setting,ContainerId " +
+					"from SysServiceInstance " +
+					"where Id=@Id",
+					new { Id = Id }
+					).SingleOrDefault();
+				if (re == null)
+					return null;
+				var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
+				if (svcDef == null)
+					throw new InvalidOperationException($"找不到定义的服务{re.ServiceType}");
 
-			var implType = re.ImplementType;
-			var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.GetFullName() == implType);
-			if (svcImpl == null)
-				throw new InvalidOperationException($"找不到服务实现{implType}");
-			re.ImplementType = implType;
+				var implType = re.ImplementType;
+				var svcImpl = svcDef.Implements.SingleOrDefault(i => i.ImplementType.GetFullName() == implType);
+				if (svcImpl == null)
+					throw new InvalidOperationException($"找不到服务实现{implType}");
+				re.ImplementType = implType;
 
-			if (re.Setting == null) re.Setting = "{}";
-			return re;
+				if (re.Setting == null) re.Setting = "{}";
+				return re;
+			}
 		}
 
 		ServiceReference[] IServiceInstanceLister.List(long? ScopeId, string ServiceType, int Limit)
 		{
-			if (ScopeId.HasValue)
+			using (var Connection = DataSource.Connect())
 			{
-				var re = Connection.Query<ServiceReference>(
-				"select top " + Limit + " Id,ServiceIdent " +
-				"from SysServiceInstance " +
-				"where ContainerId=@ContainerId and ServiceType=@ServiceType " +
-				"order by ItemOrder", new { ContainerId = ScopeId, ServiceType = ServiceType }
-				).ToArray();
-				return re;
+
+				if (ScopeId.HasValue)
+				{
+					var re = Connection.Query<ServiceReference>(
+					"select top " + Limit + " Id,ServiceIdent " +
+					"from SysServiceInstance " +
+					"where ContainerId=@ContainerId and ServiceType=@ServiceType " +
+					"order by ItemOrder", new { ContainerId = ScopeId, ServiceType = ServiceType }
+					).ToArray();
+					return re;
+				}
+				else
+				{
+					var re = Connection.Query<ServiceReference>(
+					"select top " + Limit + " Id,ServiceIdent " +
+					"from SysServiceInstance " +
+					"where ContainerId is null and ServiceType=@ServiceType " +
+					"order by ItemOrder", new { ServiceType = ServiceType }
+					).ToArray();
+					return re;
+				}
 			}
-			else
-			{
-				var re = Connection.Query<ServiceReference>(
-				"select top " + Limit + " Id,ServiceIdent " +
-				"from SysServiceInstance " +
-				"where ContainerId is null and ServiceType=@ServiceType " +
-				"order by ItemOrder", new { ServiceType = ServiceType }
-				).ToArray();
-				return re;
-			}
+			
 		}
 	}
 

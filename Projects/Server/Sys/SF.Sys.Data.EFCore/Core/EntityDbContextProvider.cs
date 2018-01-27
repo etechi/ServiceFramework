@@ -77,6 +77,9 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		public EntityDbContextProvider(DbContext DbContext, IDataContext DataContext)
 		{
 			this.DbContext = DbContext;
+			var cs = DbContext as IDbDataContextState;
+			if (cs != null)
+				System.Diagnostics.Debugger.Log(1, "DB", "DBContext被分配:"+cs.State + "\n");
 			DbContext.ChangeTracker.AutoDetectChangesEnabled = false;
 			this.DataContext = DataContext;
 		}
@@ -98,7 +101,8 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		DbTransaction _tran;
 		public DbTransaction Transaction {
 			get => _tran;
-			set => DbContext.Database.UseTransaction(_tran=value);
+			set => 
+				DbContext.Database.UseTransaction(_tran=value);
 		}
 
 
@@ -268,6 +272,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 
 		public void Dispose()
 		{
+			
 			DbContext.Dispose();
 		}
 
@@ -318,6 +323,11 @@ namespace SF.Sys.Data.EntityFrameworkCore
 			var modelVisitor = (RelationalQueryModelVisitor)queryCompilationContext.CreateQueryModelVisitor();
 			modelVisitor.CreateQueryExecutor<TEntity>(queryModel);
 			return modelVisitor.Queries.Select(q => q.ToString());
+		}
+
+		public DbConnection GetDbConnection()
+		{
+			return DbContext.Database.GetDbConnection();
 		}
 	}
 	

@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -46,5 +47,10 @@ namespace SF.Sys.Data
 		object GetEntityOriginalValue(object Entity, string Field);
         string GetEntitySetName<T>() where T : class;
 		IEnumerable<string> GetUnderlingCommandTexts<T>(IContextQueryable<T> Queryable) where T: class;
+		DbConnection GetDbConnection();
     }
+	public interface IDbDataContextState
+	{
+		string State { get; set; }
+	}
 }

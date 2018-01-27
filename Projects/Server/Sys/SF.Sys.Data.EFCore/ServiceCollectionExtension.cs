@@ -38,7 +38,8 @@ namespace SF.Sys.Services
 		{
 			sc.AddScoped<IDataContextProviderFactory>(x => 
 				new DataContextProviderFactory<TDbContext>(
-					()=>x.GetRequiredService<TDbContext>()
+					()=>
+					x.GetRequiredService<TDbContext>()
 					)
 				);
 
@@ -48,11 +49,12 @@ namespace SF.Sys.Services
 				);
 			return sc;
 		}
-		public static IServiceCollection AddEFCoreDataEntity(this IServiceCollection sc,Func<IServiceProvider,DbConnection, Microsoft.EntityFrameworkCore.DbContext> DbContextCreator)
+		public static IServiceCollection AddEFCoreDataEntity(this IServiceCollection sc,Func<IServiceProvider, Microsoft.EntityFrameworkCore.DbContext> DbContextCreator)
 		{
 			sc.AddScoped<IDataContextProviderFactory>(x =>
 				new DataContextProviderFactory(
-					() => DbContextCreator(x,x.GetRequiredService<DbConnection>())
+					() => 
+					DbContextCreator(x)
 					)
 				);
 			return sc;

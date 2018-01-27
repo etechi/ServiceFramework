@@ -13,8 +13,10 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Services;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,11 +30,18 @@ namespace SF.Sys.Data
 		public IDataContextProvider Provider => _Provider;
         public IDataContextProviderFactory ProviderFactory { get; }
 		public Lazy<ITransactionScopeManager> LazyTransactionScopeManager { get; }
-		public DataContext(IDataContextProviderFactory ProviderFactory, Lazy<ITransactionScopeManager> TransactionScopeManager)
+		IServiceProvider ServiceProvider { get; }
+		public DataContext(
+			IDataContextProviderFactory ProviderFactory,
+			IServiceProvider ServiceProvider
+			//Lazy<ITransactionScopeManager> TransactionScopeManager
+			)
         {
+			this.ServiceProvider = ServiceProvider;
             this.ProviderFactory = ProviderFactory;
             _Provider = ProviderFactory.Create(this);
-			this.LazyTransactionScopeManager = TransactionScopeManager;
+			LazyTransactionScopeManager = new Lazy<ITransactionScopeManager>(() => ServiceProvider.Resolve<ITransactionScopeManager>());
+			//this.LazyTransactionScopeManager = TransactionScopeManager;
 		}
 		IEnumerable<IDataSetProviderResetable> ListRestable(IDataSetProviderResetable resetable)
 		{
@@ -143,6 +152,11 @@ namespace SF.Sys.Data
 		public IEnumerable<string> GetUnderlingCommandTexts<T>(IContextQueryable<T> Queryable) where T : class
 		{
 			return ((IDataContextExtension)_Provider).GetUnderlingCommandTexts(Queryable);
+		}
+
+		public DbConnection GetDbConnection()
+		{
+			return ((IDataContextExtension)_Provider).GetDbConnection();
 		}
 	}
 }

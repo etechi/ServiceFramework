@@ -19,7 +19,7 @@ using Microsoft.Extensions.Logging;
 
 namespace SF.Sys.Logging
 {
-	public class LogService : ILogService, IDisposable,Microsoft.Extensions.Logging.ILoggerFactory
+	public class LogService : ILogService
 	{
 		private readonly Dictionary<string, LoggerCollection> _loggers = new Dictionary<string, LoggerCollection>(StringComparer.Ordinal);
 
@@ -118,6 +118,7 @@ namespace SF.Sys.Logging
 		}
 		public void Dispose()
 		{
+			return;
 			if (!this._disposed)
 			{
 				this._disposed = true;
@@ -140,16 +141,28 @@ namespace SF.Sys.Logging
 			}
 		}
 
-		Microsoft.Extensions.Logging.ILogger ILoggerFactory.CreateLogger(string categoryName)
-		{
-			return (Microsoft.Extensions.Logging.ILogger)GetLogger(categoryName);
-		}
-
-		void ILoggerFactory.AddProvider(Microsoft.Extensions.Logging.ILoggerProvider provider)
-		{
-			this.AsMSLoggerFactory().AddProvider(provider);
-		}
-
 	}
 
+	public class MSLoggerFactory:Microsoft.Extensions.Logging.ILoggerFactory
+	{
+		public ILogService LogService { get; }
+		public MSLoggerFactory(ILogService LogService)
+		{
+			this.LogService = LogService;
+		}
+		public Microsoft.Extensions.Logging.ILogger CreateLogger(string categoryName)
+		{
+			return (Microsoft.Extensions.Logging.ILogger)LogService.GetLogger(categoryName);
+		}
+
+		
+		public void AddProvider(Microsoft.Extensions.Logging.ILoggerProvider provider)
+		{
+			LogService.AsMSLoggerFactory().AddProvider(provider);
+		}
+
+		public void Dispose()
+		{
+		}
+	}
 }

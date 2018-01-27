@@ -25,13 +25,13 @@ namespace SF.Sys.Data
 	
     public class TransactionScopeManager : ITransactionScopeManager
     {
-		DbConnection Connection { get; }
-
+		//DbConnection Connection { get; }
+		IDataContext DataContext { get; }
 		public DbTransaction CurrentDbTransaction => _DBTransaction;
 
-		public TransactionScopeManager(DbConnection Connection)
-        {
-            this.Connection = Connection;
+		public TransactionScopeManager(IDataContext DataContext)
+		{
+            this.DataContext = DataContext;
         }
 
 		class Scope : ITransactionScope
@@ -151,6 +151,7 @@ namespace SF.Sys.Data
                 throw new InvalidOperationException("事务已存在");
 			if (_DBTransaction == null)
 			{
+				var Connection = ((IDataContextExtension)DataContext).GetDbConnection();
 				if (Connection.State == System.Data.ConnectionState.Closed)
 					await Connection.OpenAsync();
 				_DBTransaction = Connection.BeginTransaction(IsolationLevel);

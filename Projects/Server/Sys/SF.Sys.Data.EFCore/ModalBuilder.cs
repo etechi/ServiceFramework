@@ -174,13 +174,13 @@ namespace SF.Sys.Services
 			Action<IServiceProvider, DbContextOptionsBuilder> config
 			) where TDbContext:DbContext
 		{
-			Services.AddDbContext<TDbContext>(
+			Services.AddDbContextPool<TDbContext>(
 				(IServiceProvider isp, DbContextOptionsBuilder options) =>
 					{
 						LoadDataModels(options, isp);
 						config(isp, options);
-					},
-				ServiceLifetime.Transient
+					}
+				//ServiceLifetime.Transient
 				);
 			return Services;
 		}

@@ -24,7 +24,7 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddLogService(this IServiceCollection sc,ILogService LogService=null)
 		{
 			sc.AddSingleton<ILogService>(LogService??new LogService());
-			sc.AddSingleton<Microsoft.Extensions.Logging.ILoggerFactory>(sp=>(Microsoft.Extensions.Logging.ILoggerFactory)sp.Resolve<ILogService>());
+			sc.AddSingleton<Microsoft.Extensions.Logging.ILoggerFactory, MSLoggerFactory>();
 			sc.Add(new ServiceDescriptor(typeof(SF.Sys.Logging.ILogger<>), typeof(SF.Sys.Logging.Logger<>), ServiceImplementLifetime.Scoped));
 			sc.Add(new ServiceDescriptor(typeof(Microsoft.Extensions.Logging.ILogger<>), typeof(SF.Sys.Logging.Logger<>), ServiceImplementLifetime.Scoped));
 			// MSDependencyInjectionExtension . sc.AsMicrosoftServiceCollection();

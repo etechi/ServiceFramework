@@ -19,6 +19,7 @@ using System.Data.Common;
 using System.Threading.Tasks;
 using System.Threading;
 using SF.Sys;
+using SF.Sys.Logging;
 
 namespace System.Data.Debug
 {
@@ -305,8 +306,10 @@ namespace SF.Sys.Data
 		//	}
 		//	catch (System.Data.ConstraintException) { }
 		//}
-		public DefaultDataSource(DataSourceConfig Config)
+		ILogger<DefaultDataSource> Logger { get; }
+		public DefaultDataSource(DataSourceConfig Config,ILogger<DefaultDataSource> Logger)
 		{
+			this.Logger = Logger;
 			//if (Config == null)
 			//{
 			//	var conn = System.Configuration.ConfigurationManager.ConnectionStrings["default"];
@@ -321,18 +324,24 @@ namespace SF.Sys.Data
 			//var f=System.Data.SqlClient.SqlClientFactory.Instance.CreateConnection()
 			
 		}
+		static int connId = 0;
+		public string ConnectionString=> Config.ConnectionString;
 		public DbConnection Connect()
 		{
 			var connection = Factory.CreateConnection();
-			connection.ConnectionString = Config.ConnectionString;
+			connection.ConnectionString = Config.ConnectionString+ ";Connection Timeout="+(10+(++connId));
+			//connection.ConnectionTimeout = 10000 + (connId++);
 			connection.Disposed += Connection_Disposed;
+			//connection.
+			Logger.Info("Connect");
 			return connection;
 			//return new System.Data.Debug.DebugDbConnection(connection, new System.Data.Debug.DebugDbProviderFactory(Factory));
 		}
 
 		private void Connection_Disposed(object sender, EventArgs e)
 		{
-			
+
+			Logger.Info("Connect Displaced");
 		}
 	}
 }
