@@ -17,11 +17,11 @@ namespace SF.Sys.AtLeastOnceActions
 	{
 		IEnumerable<IAtLeastOnceActionSource> ActionSources { get; }
 		AtLeastOnceActionSyncQueue SyncQueue { get; }
-		IScoped<IDataSet<DataModels.AtLeastOnceAction>> DataSet { get; }
 		ILocalCache<CacheItem> ContextCache { get; }
 		Lazy<IIdentGenerator<DataModels.AtLeastOnceAction>> IdentGenerator { get; }
 		ITimeService TimeService { get; }
 		NamedServiceResolver<IAtLeastOnceActionSource> AtLeastOnceActionSourceResolver { get; }
+		IDataScope DataScope { get; }
 		public class CacheItem
 		{
 			public string Ident;
@@ -29,7 +29,7 @@ namespace SF.Sys.AtLeastOnceActions
 			public object Context;
 		}
 		public AtLeastOnceActionProvider(
-			IScoped<IDataSet<DataModels.AtLeastOnceAction>> DataSet,
+			IDataScope DataScope,
 			IEnumerable<IAtLeastOnceActionSource> ActionSources,
 			AtLeastOnceActionSyncQueue SyncQueue,
 			ILocalCache<CacheItem> ContextCache,
@@ -39,7 +39,7 @@ namespace SF.Sys.AtLeastOnceActions
 			) 
 		{
 			this.TimeService = TimeService;
-			this.DataSet = DataSet;
+			this.DataScope = DataScope;
 			this.ActionSources = ActionSources;
 			this.SyncQueue = SyncQueue;
 			this.ContextCache = ContextCache;
@@ -55,17 +55,14 @@ namespace SF.Sys.AtLeastOnceActions
 			var source = AtLeastOnceActionSourceResolver(cacheItem.Type);
 			if (source == null)
 				return;
-			await SyncQueue.Queue(cacheItem.Type+"/"+cacheItem.Ident, async () =>
-			{
-				await source.ExecAction(cacheItem.Type, cacheItem.Ident, cacheItem.Context);
-
-				return await DataSet.Use(async set =>
+			await SyncQueue.Queue(cacheItem.Type + "/" + cacheItem.Ident, async () =>
 				{
-					await set.RemoveRangeAsync(a => a.Id == Id);
+					await source.ExecAction(cacheItem.Type, cacheItem.Ident, cacheItem.Context);
+					await DataScope.Use("删除任务", ctx =>
+					ctx.Set<DataModels.AtLeastOnceAction>().RemoveRangeAsync(a => a.Id == Id)
+					);
 					return 0;
 				});
-
-			});
 		}
 		public async Task<DateTime?> ActiveByTimer(DataModels.AtLeastOnceAction Action)
 		{
@@ -94,8 +91,8 @@ namespace SF.Sys.AtLeastOnceActions
 				var now = TimeService.Now;
 				var retryTime = now.Add(RetryDelay ?? TimeSpan.FromMinutes(5));
 
-				await DataSet.Use(set =>
-					set.EnsureAsync(
+				await DataScope.Use("添加任务",ctx =>
+					ctx.Set< DataModels.AtLeastOnceAction>().EnsureAsync(
 						a => a.Type == Type && a.Ident == Ident,
 						() => Task.FromResult(
 							new DataModels.AtLeastOnceAction

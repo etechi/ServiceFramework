@@ -18,6 +18,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using SF.Sys.Comments;
+using SF.Sys.Data;
 
 namespace SF.Sys.Entities
 {
@@ -135,7 +136,7 @@ namespace SF.Sys.Entities
 
 		protected virtual Task OnRemoveModel(IModifyContext ctx)
 		{
-			ServiceContext.DataContext.Set<TModel>().Remove(ctx.Model);
+			ctx.DataContext.Set<TModel>().Remove(ctx.Model);
 			return Task.CompletedTask;
 		}
 
@@ -180,7 +181,7 @@ namespace SF.Sys.Entities
 			return OnLoadChildObjectsForUpdate(Id,ctx).SingleOrDefaultAsync();
 		}
 
-		protected virtual Task<TEditable> OnMapModelToEditable(IContextQueryable<TModel> Query)
+		protected virtual Task<TEditable> OnMapModelToEditable(IDataContext Context,IContextQueryable<TModel> Query)
 		{
 			return Query.Select(Poco.MapExpression<TModel, TEditable>()).SingleOrDefaultAsync();
 		}

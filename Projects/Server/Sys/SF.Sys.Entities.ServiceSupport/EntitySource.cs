@@ -55,9 +55,9 @@ namespace SF.Sys.Entities
 		BaseEntityManager
 		where TModel:class
 	{
-		public IDataSet<TModel> DataSet => ServiceContext.DataContext.Set<TModel>();
-		public IDataContext DataContext => DataSet.Context;
-
+		//public IDataSet<TModel> DataSet => ServiceContext.DataContext.Set<TModel>();
+		//public IDataContext DataContext => DataSet.Context;
+		public IDataScope DataScope => ServiceContext.DataScope;
 		public BaseDataSetEntityManager(IEntityServiceContext ServiceContext) :base(ServiceContext)
 		{
 		}

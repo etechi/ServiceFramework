@@ -56,7 +56,7 @@ namespace SF.Sys.Services.Management
 				b => b.Add("name", i => i.Name));
 
 
-		protected override async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IContextQueryable<DataModels.DataServiceInstance> Query)
+		protected override async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IDataContext DataContext, IContextQueryable<DataModels.DataServiceInstance> Query)
 		{
 			var re= await Query.SelectUIObjectEntity(i => new Models.ServiceInstanceEditable
 			{
@@ -237,7 +237,7 @@ namespace SF.Sys.Services.Management
 			{
 				var orgParentId = m.ContainerId;
 				m.ContainerId = e.ContainerId;
-				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				ctx.DataContext.TransactionScopeManager.AddCommitTracker(
 					TransactionCommitNotifyType.AfterCommit,
 					async (t,ex) =>
 					{
@@ -261,7 +261,7 @@ namespace SF.Sys.Services.Management
 			}
 			
 
-			if (await DataSet.ModifyPosition(
+			if (await ctx.DataContext.Set<DataModels.DataServiceInstance>().ModifyPosition(
 				m,
 				PositionModifyAction.Insert,
 				i => i.ContainerId == m.ContainerId && i.ServiceType==m.ServiceType,
@@ -269,7 +269,7 @@ namespace SF.Sys.Services.Management
 				i => i.ItemOrder,
 				(i, p) => i.ItemOrder = p
 				) || m.ServiceIdent != e.ServiceIdent)
-				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				ctx.DataContext.TransactionScopeManager.AddCommitTracker(
 					TransactionCommitNotifyType.AfterCommit,
 					async (t, ex) =>
 					{
@@ -282,7 +282,7 @@ namespace SF.Sys.Services.Management
 					});
 			m.ServiceIdent = e.ServiceIdent;
 
-			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+			ctx.DataContext.TransactionScopeManager.AddCommitTracker(
 				TransactionCommitNotifyType.AfterCommit,
 				async (t, ex) =>
 				{

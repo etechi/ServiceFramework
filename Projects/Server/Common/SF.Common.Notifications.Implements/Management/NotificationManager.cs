@@ -83,7 +83,8 @@ namespace SF.Common.Notifications.Management
 
 		public async Task<long> FindPolicy(string Ident)
 		{
-			var pid=await DataContext
+			var pid=await DataScope.Use("查找策略", DataContext=>
+				DataContext
 				.Set<DataModels.NotificationSendPolicy>()
 				.AsQueryable()
 				.Where(p => 
@@ -91,7 +92,8 @@ namespace SF.Common.Notifications.Management
 					p.Ident == Ident
 					)
 				.Select(p => p.Id)
-				.SingleOrDefaultAsync();
+				.SingleOrDefaultAsync()
+				);
 			if (pid == 0)
 				throw new PublicArgumentException("找不到通知发送策略:" + Ident);
 			return pid;
@@ -128,13 +130,13 @@ namespace SF.Common.Notifications.Management
 				return;
 
 			if (editable.Targets == null)
-				await AddSendRecord(model.Id, sas, editable, null);
+				await AddSendRecord(ctx.DataContext,model.Id, sas, editable, null);
 			else
 				foreach (var target in editable.Targets)
-					await AddSendRecord(model.Id, sas, editable, target);
+					await AddSendRecord(ctx.DataContext, model.Id, sas, editable, target);
 
 			//更新提醒
-			DataContext.TransactionScopeManager.AddCommitTracker(
+			ctx.DataContext.TransactionScopeManager.AddCommitTracker(
 				TransactionCommitNotifyType.AfterCommit |
 				TransactionCommitNotifyType.BeforeCommit
 				,
@@ -150,6 +152,7 @@ namespace SF.Common.Notifications.Management
 		}
 
 		async Task AddSendRecord(
+			IDataContext DataContext,
 			long NotificationId,
 			NotificationSendPolicy nsp,
 			NotificationEditable editable,

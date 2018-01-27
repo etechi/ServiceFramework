@@ -85,13 +85,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 				if (Value == null && Context.Action!=ModifyAction.Delete)
 					return OrgValue;
 				var (create,update,remove)= LazyModifiers.Value;
-				var set = Manager.DataContext.Set<TChildModel>();
+				var set = Context.DataContext.Set<TChildModel>();
 
 				var parentCtx = (IEntityModifyContext<TEntity, TModel>)Context;
 				var parentKey = Entity<TModel>.GetKey<ObjectKey<TParentKey>>(parentCtx.Model).Id;
 
 				var arg = Expression.Parameter(typeof(TChildModel));
-				var orgItems = await Manager.DataContext.Set<TChildModel>().AsQueryable(false).Where(
+				var orgItems = await Context.DataContext.Set<TChildModel>().AsQueryable(false).Where(
 					Expression.Lambda<Func<TChildModel,bool>>(
 						Expression.Equal(
 							Expression.Property(arg,ForeignKeyProperty),
@@ -109,7 +109,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					async e =>
 					{
 						var ctx = new EntityModifyContext<EmptyEntity, TChildModel>();
-						ctx.InitCreate(EmptyEntity.Instance, null);
+						ctx.InitCreate(ctx.DataContext, EmptyEntity.Instance, null);
 						await create.Execute(Manager, ctx);
 						FuncSetItemKey(ctx.Model, e.v);
 						FuncSetParentKey(ctx.Model, parentKey);
@@ -119,7 +119,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					async (d, e) =>
 					{
 						var ctx = new EntityModifyContext<EmptyEntity, TChildModel>();
-						ctx.InitUpdate(d, EmptyEntity.Instance, null);
+						ctx.InitUpdate(ctx.DataContext,d, EmptyEntity.Instance, null);
 						FuncSetItemKey(ctx.Model, e.v);
 						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
 						await update.Execute(Manager, ctx);
@@ -127,7 +127,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					async d =>
 					{
 						var ctx = new EntityModifyContext<EmptyEntity, TChildModel>();
-						ctx.InitRemove(d, null, null);
+						ctx.InitRemove(ctx.DataContext,d, null, null);
 						await remove.Execute(Manager, ctx);
 					}
 					);

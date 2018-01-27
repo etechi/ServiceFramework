@@ -35,7 +35,7 @@ namespace SF.Common.Conversations.Managers
 			this.SessionStatusManager = SessionStatusManager;
 
 		}
-		private async Task<int> UpdateSessionStatus(SessionMessage editable, DataModels.DataSessionMessage model)
+		private async Task<int> UpdateSessionStatus(IDataContext DataContext, SessionMessage editable, DataModels.DataSessionMessage model)
 		{
 			var Session = await DataContext.Set<DataModels.DataSessionStatus>().FindAsync(editable.SessionId);
 			if (Session == null)
@@ -57,7 +57,7 @@ namespace SF.Common.Conversations.Managers
 				var editable = ctx.Editable;
 				var model = ctx.Model;
 
-				var msgCount=await UpdateSessionStatus(editable, model);
+				var msgCount=await UpdateSessionStatus(ctx.DataContext,editable, model);
 				var mid = await ((SessionMemberStatusManager)SessionMemberStatusManager.Value).InternalSetLastMessage(
 					editable.SessionId,
 					editable.UserId.Value,

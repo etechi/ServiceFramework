@@ -30,6 +30,7 @@ namespace SF.Sys.Entities
 	}
 	public interface IEntityModifyContext
 	{
+		IDataContext DataContext { get; set; }
 		ModifyAction Action { get; set; }
 		object OwnerId { get; set; }
 		object UserData { get; set; }
@@ -60,12 +61,12 @@ namespace SF.Sys.Entities
 		//IClientService ClientService { get; }
 		IEntityMetadata EntityMetadata { get; }
 		IEntityMetadataCollection EntityMetadataCollection { get; }
-		IScoped<IDataContext> ScopedDataContext { get; }
 		IQueryResultBuildHelperCache QueryResultBuildHelperCache { get; }
 		IPagingQueryBuilderCache PagingQueryBuilderCache { get; }
 		IQueryFilterCache QueryFilterCache { get; }
 		IEntityModifierCache EntityModifierCache { get; }
-		IDataContext DataContext { get; }
+		//IDataContext DataContext { get; }
+		IDataScope DataScope { get;  }
 		IUserAgent UserAgent { get; }
 		IAccessToken AccessToken { get; }
 		DateTime Now { get; }

@@ -27,7 +27,7 @@ namespace SF.Common.Documents
 		DocumentService<Document, Category, DataModels.DataDocument, DataModels.DataDocumentAuthor, DataModels.DataDocumentCategory, DataModels.DocumentTag, DataModels.DocumentTagReference>,
 		IDocumentService
 	{
-		public DocumentService(Lazy<IDataSet<DataModels.DataDocument>> Documents, Lazy<IDataSet<DataDocumentCategory>> Categories, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(Documents, Categories, ServiceInstanceDescriptor)
+		public DocumentService(IDataScope DataScope, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(DataScope, ServiceInstanceDescriptor)
 		{
 		}
 	}
@@ -43,13 +43,11 @@ namespace SF.Common.Documents
 		where TTagReference : DataModels.DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
 
 	{
-		public Lazy<IDataSet<TDocument>> Documents { get; }
-		public Lazy<IDataSet<TCategory>> Categories { get; }
+		public IDataScope DataScope { get; }
 		public IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
-		public DocumentService(Lazy<IDataSet<TDocument>> Documents, Lazy<IDataSet<TCategory>> Categories, IServiceInstanceDescriptor ServiceInstanceDescriptor)
+		public DocumentService(IDataScope DataScope, IServiceInstanceDescriptor ServiceInstanceDescriptor)
 		{
-			this.Documents = Documents;
-			this.Categories = Categories;
+			this.DataScope = DataScope;
 			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
 		protected virtual IContextQueryable<TDocumentPublic> MapModelToPublic(IContextQueryable<TDocument> query, bool detail)
@@ -84,91 +82,105 @@ namespace SF.Common.Documents
 			i => i.Add("order", d => d.ItemOrder));
 
 
-		IContextQueryable<TDocument> LimitedDocuments => Documents.Value.AsQueryable()
+		IContextQueryable<TDocument> LimitedDocuments(IDataContext ctx) => ctx.Set<TDocument>().AsQueryable()
 				.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
-		IContextQueryable<TCategory> LimitedCategories => Categories.Value.AsQueryable()
+		IContextQueryable<TCategory> LimitedCategories(IDataContext ctx) => ctx.Set<TCategory>().AsQueryable()
 				.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
 		public long? ServiceInstanceId => ServiceInstanceDescriptor.InstanceId;
 
-		public async Task<TDocumentPublic> GetAsync(ObjectKey<long> Id,string[] Fields=null)
+		public Task<TDocumentPublic> GetAsync(ObjectKey<long> Id,string[] Fields=null)
 		{
-			var q = Documents.Value.AsQueryable()
-				.Where(i=>i.Id==Id.Id)
-				.EnabledScopedById(Id.Id, ServiceInstanceDescriptor)
-				;
+			return DataScope.Use("获取文档", ctx => {
+				var q = ctx.Queryable<TDocument>()
+					.Where(i => i.Id == Id.Id)
+					.EnabledScopedById(Id.Id, ServiceInstanceDescriptor)
+					;
 
-			return await MapModelToPublic(q, true)
-				.SingleOrDefaultAsync();
+				return MapModelToPublic(q, true)
+					.SingleOrDefaultAsync();
+				});
 		}
 
-		public async Task<TDocumentPublic> GetByKeyAsync(string Key)
+		public Task<TDocumentPublic> GetByKeyAsync(string Key)
 		{
-			var q = LimitedDocuments
+			return DataScope.Use("以标签获取文档", ctx => {
+				var q = LimitedDocuments(ctx)
 				.Where(d => d.Ident == Key);
-			return await MapModelToPublic(q, true).SingleOrDefaultAsync();
+				return MapModelToPublic(q, true).SingleOrDefaultAsync();
+				});
 		}
 
-		public async Task<TCategoryPublic> LoadContainerAsync(long Key)
+		public Task<TCategoryPublic> LoadContainerAsync(long Key)
 		{
-			var q = LimitedCategories
-				.Where(i=>i.Id==Key)
+			return DataScope.Use("获取分类", ctx => {
+				var q = LimitedCategories(ctx)
+					.Where(i => i.Id == Key)
 				.EnabledScopedById(Key, ServiceInstanceDescriptor)
 				;
-			return await MapModelToPublic(q, true).SingleOrDefaultAsync();
+				return MapModelToPublic(q, true).SingleOrDefaultAsync();
+				});
 		}
 
-		public async Task<QueryResult<TDocumentPublic>> SearchAsync(SearchArgument Arg)
+		public Task<QueryResult<TDocumentPublic>> SearchAsync(SearchArgument Arg)
 		{
-			var q = LimitedDocuments;
-			if (!string.IsNullOrWhiteSpace(Arg.Key))
-				q = q.Where(
-					d=>
-					d.Name.Contains(Arg.Key) || 
-					d.Description.Contains(Arg.Key) || 
-					d.Content.Contains(Arg.Key) || 
-					d.SubTitle.Contains(Arg.Key) || 
-					d.Remarks.Contains(Arg.Key)
+			return DataScope.Use("查询文档", ctx =>
+			{
+				var q = LimitedDocuments(ctx);
+				if (!string.IsNullOrWhiteSpace(Arg.Key))
+					q = q.Where(
+						d =>
+						d.Name.Contains(Arg.Key) ||
+						d.Description.Contains(Arg.Key) ||
+						d.Content.Contains(Arg.Key) ||
+						d.SubTitle.Contains(Arg.Key) ||
+						d.Remarks.Contains(Arg.Key)
+						);
+
+				return q.ToQueryResultAsync(
+					iq => MapModelToPublic(iq, false),
+					r => r,
+					docPageBuilder,
+					Arg.Paging
 					);
-
-			return await q.ToQueryResultAsync(
-				iq => MapModelToPublic(iq, false),
-				r => r,
-				docPageBuilder,
-				Arg.Paging
-				);
+			});
 		}
 
-		public async Task<QueryResult<TDocumentPublic>> ListItemsAsync(ListItemsArgument<long?> Arg)
+		public Task<QueryResult<TDocumentPublic>> ListItemsAsync(ListItemsArgument<long?> Arg)
 		{
-
-			var q = LimitedDocuments;
-			if(Arg.Container.HasValue)
-				q=q.Where(d => 
-					d.ContainerId == Arg.Container 
+			return DataScope.Use("文档列表", ctx =>
+			{
+				var q = LimitedDocuments(ctx);
+				if (Arg.Container.HasValue)
+					q = q.Where(d =>
+						  d.ContainerId == Arg.Container
+						);
+				return q.ToQueryResultAsync(
+					iq => MapModelToPublic(iq, false),
+					r => r,
+					docPageBuilder,
+					Arg.Paging
 					);
-			return await q.ToQueryResultAsync(
-				iq => MapModelToPublic(iq, false),
-				r => r,
-				docPageBuilder,
-				Arg.Paging
-				);
+			});
 		}
 
-		public async Task<QueryResult<TCategoryPublic>> ListChildContainersAsync(ListItemsArgument<long?> Arg)
+		public Task<QueryResult<TCategoryPublic>> ListChildContainersAsync(ListItemsArgument<long?> Arg)
 		{
-			var q = LimitedCategories.Where(d=>
-				d.ContainerId ==Arg.Container
+			return DataScope.Use("文档列表", ctx =>
+			{
+				var q = LimitedCategories(ctx).Where(d =>
+				d.ContainerId == Arg.Container
 				);
-			return await q.ToQueryResultAsync(
-				iq => MapModelToPublic(q,false),
-				r => r,
-				catPageBuilder,
-				Arg.Paging
-				);
+				return q.ToQueryResultAsync(
+					iq => MapModelToPublic(q, false),
+					r => r,
+					catPageBuilder,
+					Arg.Paging
+					);
+			});
 		}
 	}
 }

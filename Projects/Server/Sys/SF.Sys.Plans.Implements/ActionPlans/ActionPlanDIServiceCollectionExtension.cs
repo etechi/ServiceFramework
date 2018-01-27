@@ -34,9 +34,9 @@ namespace SF.Sys.Services
 				   TablePrefix ?? "Sys"
 				   );
 			sc.AddEntityLocalCache(
-				async (IDataSet<ActionPlan> set, long Id) =>
+				async (IDataScope scope, long Id) =>
 				{
-					var re=await RuntimePlan.Load(set, Id);
+					var re=await RuntimePlan.Load(scope, Id);
 					return re;
 				},
 				(IEventSubscriber<EntityChanged<ActionPlan>> OnPlanModified, IEntityCacheRemover<long> remover) =>

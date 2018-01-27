@@ -77,9 +77,6 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		public EntityDbContextProvider(DbContext DbContext, IDataContext DataContext)
 		{
 			this.DbContext = DbContext;
-			var cs = DbContext as IDbDataContextState;
-			if (cs != null)
-				System.Diagnostics.Debugger.Log(1, "DB", "DBContext被分配:"+cs.State + "\n");
 			DbContext.ChangeTracker.AutoDetectChangesEnabled = false;
 			this.DataContext = DataContext;
 		}

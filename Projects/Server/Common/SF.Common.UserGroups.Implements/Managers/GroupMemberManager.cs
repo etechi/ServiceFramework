@@ -73,11 +73,11 @@ namespace SF.Common.UserGroups.Managers
 			this.UserProfileService = UserProfileService;
 			SetSyncQueue(SessionSyncScope, e => e.GroupId);
 		}
-		async Task UpdateMemberCount(long SessionId,int Diff)
+		async Task UpdateMemberCount(IDataContext ctx,long SessionId,int Diff)
 		{
-			var Session = await DataContext.Set<TDataGroup>().FindAsync(SessionId);
+			var Session = await ctx.Set<TDataGroup>().FindAsync(SessionId);
 			Session.MemberCount += Diff;
-			DataContext.Update(Session);
+			ctx.Update(Session);
 		}
 		internal static GroupJoinState DetectJoinState(bool? SessionAccepted,bool? MemberAccepted)
 		{
@@ -95,14 +95,14 @@ namespace SF.Common.UserGroups.Managers
 			model.JoinState = newJoinState;
 
 			if (memberCountDiff != 0)
-				await UpdateMemberCount(editable.GroupId, memberCountDiff);
+				await UpdateMemberCount(ctx.DataContext,editable.GroupId, memberCountDiff);
 			await base.OnUpdateModel(ctx);
 		}
 		protected override async Task OnRemoveModel(IModifyContext ctx)
 		{
 			var model = ctx.Model;
 			if (model.LogicState == EntityLogicState.Enabled && model.JoinState==GroupJoinState.Joined)
-				await UpdateMemberCount(model.GroupId, -1);
+				await UpdateMemberCount(ctx.DataContext,model.GroupId, -1);
 			
 			await base.OnRemoveModel(ctx);
 		}
@@ -137,23 +137,28 @@ namespace SF.Common.UserGroups.Managers
 			long? BizIdent			
 			)
 		{
-			var Members = DataContext.Set<TMember>().AsQueryable();
-			var sq = from s in DataContext.Set<TDataGroup>().AsQueryable()
-					 where s.Id == GroupId && s.LogicState == EntityLogicState.Enabled
-					 join tm in Members on s.Id equals tm.GroupId into tms
-					 from m in tms.Where(tm=>tm.OwnerId==TargetUserId).DefaultIfEmpty()
-					 select new
-					 {
-						 s.Flags,
-						 Member = m==null?null:new
-						 {
-							 m.Id,
-							 m.LogicState,
-							 m.MemberAccepted,
-							 m.GroupAccepted
-						 }
-					 };
-			var data = await sq.SingleOrDefaultAsync();
+			var data = await DataScope.Use(
+				"查找已有成员",
+				ctx =>
+				{
+					var Members = ctx.Set<TMember>().AsQueryable();
+					var sq = from s in ctx.Set<TDataGroup>().AsQueryable()
+							 where s.Id == GroupId && s.LogicState == EntityLogicState.Enabled
+							 join tm in Members on s.Id equals tm.GroupId into tms
+							 from m in tms.Where(tm => tm.OwnerId == TargetUserId).DefaultIfEmpty()
+							 select new
+							 {
+								 s.Flags,
+								 Member = m == null ? null : new
+								 {
+									 m.Id,
+									 m.LogicState,
+									 m.MemberAccepted,
+									 m.GroupAccepted
+								 }
+							 };
+					return sq.SingleOrDefaultAsync();
+				});
 			if (data == null)
 				throw new PublicArgumentException("指定的用户组已被删除");
 			if (data.Flags.HasFlag(SessionFlag.Public))

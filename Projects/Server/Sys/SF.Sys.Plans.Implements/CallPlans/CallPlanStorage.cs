@@ -25,17 +25,17 @@ namespace SF.Sys.CallPlans
 	public class CallPlanStorage :
 		ICallPlanStorage
 	{
-		public IDataSet<DataModels.CallInstance> CallInstances { get; }
-		public Lazy<IDataSet<DataModels.CallExpired>> CallExpireds { get; }
-
+		IDataScope DataScope { get; }
 		public CallPlanStorage(
-			IDataSet<DataModels.CallInstance> CallInstances,
-			Lazy<IDataSet<DataModels.CallExpired>> CallExpireds
+			IDataScope DataScope
 			)
 		{
-			this.CallInstances = CallInstances;
-			this.CallExpireds = CallExpireds;
+			this.DataScope = DataScope;
 		}
+
+		public static IDataSet<DataModels.CallInstance> CallInstances(IDataContext ctx) => ctx.Set<DataModels.CallInstance>();
+		public static IDataSet<DataModels.CallExpired> CallExpireds(IDataContext ctx) => ctx.Set<DataModels.CallExpired>();
+
 		public async Task<bool> Create(
 			string Type,
 			string Ident,
@@ -51,21 +51,23 @@ namespace SF.Sys.CallPlans
 		{
             try
             {
-                this.CallInstances.Add(new DataModels.CallInstance
-                {
-                    Type = Type,
-					Ident=Ident,
-					ServiceScopeId=ServiceScopeId,
-                    Argument = Argument,
-                    Error = Error.Limit(200),
-                    Name = Title,
-                    CreateTime = Now,
-                    Expire = ExpireTime,
-                    DelaySecondsOnError = DelaySecondsOnError,
-                    CallTime = CallTime
-                });
-                await CallInstances.Context.SaveChangesAsync();
-                return true;
+				return 0!=await DataScope.Use("添加调用", ctx =>
+				{
+					ctx.Add(new DataModels.CallInstance
+					{
+						Type = Type,
+						Ident = Ident,
+						ServiceScopeId = ServiceScopeId,
+						Argument = Argument,
+						Error = Error.Limit(200),
+						Name = Title,
+						CreateTime = Now,
+						Expire = ExpireTime,
+						DelaySecondsOnError = DelaySecondsOnError,
+						CallTime = CallTime
+					});
+					return ctx.SaveChangesAsync();
+				});
             }
             catch (DbDuplicatedKeyException)
             {
@@ -73,12 +75,15 @@ namespace SF.Sys.CallPlans
                 return false;
             }
 		}
-        public async Task Remove(string Type,string Ident)
+        public  Task Remove(string Type,string Ident)
         {
-            var c = await CallInstances.FindAsync(Type,Ident);
-            if (c == null) return;
-			CallInstances.Remove(c);
-            await CallInstances.Context.SaveChangesAsync();
+			return DataScope.Use("删除调用", async ctx =>
+			{
+				var c = await CallInstances(ctx).FindAsync(Type, Ident);
+				if (c == null) return;
+				ctx.Remove(c);
+				await ctx.SaveChangesAsync();
+			});
         }
 
         abstract class BaseAction 
@@ -86,7 +91,7 @@ namespace SF.Sys.CallPlans
 			public DataModels.CallInstance Instance { get; set; }
 			public abstract void Update(
 				IDataSet<DataModels.CallInstance> CallInstances,
-				Lazy<IDataSet<DataModels.CallExpired>> CallExpireds
+				IDataSet<DataModels.CallExpired> CallExpireds
 				);
 		}
 		class ExpiredAction : BaseAction, ICallPlanStorageAction
@@ -95,11 +100,11 @@ namespace SF.Sys.CallPlans
 			public string ExecError { get; set; }
 			public override void Update(
 				IDataSet<DataModels.CallInstance> CallInstances,
-				Lazy<IDataSet<DataModels.CallExpired>> CallExpireds
+				IDataSet<DataModels.CallExpired> CallExpireds
 				)
 			{
 				CallInstances.Remove(Instance);
-				CallExpireds.Value.Add(new DataModels.CallExpired
+				CallExpireds.Add(new DataModels.CallExpired
 				{
 					Type = Instance.Type,
 					Ident=Instance.Type,
@@ -122,7 +127,7 @@ namespace SF.Sys.CallPlans
 			public string NewArgument { get; set; }
 			public override void Update(
 				IDataSet<DataModels.CallInstance> CallInstances,
-				Lazy<IDataSet<DataModels.CallExpired>> CallExpireds
+				IDataSet<DataModels.CallExpired> CallExpireds
 				)
 			{
 				if (ExecError != null)
@@ -140,7 +145,7 @@ namespace SF.Sys.CallPlans
 		{
 			public override void Update(
 				IDataSet<DataModels.CallInstance> CallInstances,
-				Lazy<IDataSet<DataModels.CallExpired>> CallExpireds
+				IDataSet<DataModels.CallExpired> CallExpireds
 				)
 			{
 				CallInstances.Remove(Instance);
@@ -176,42 +181,53 @@ namespace SF.Sys.CallPlans
 			};
 		}
 
-		public async Task ExecuteActions(IEnumerable<ICallPlanStorageAction> Actions)
+		public Task ExecuteActions(IEnumerable<ICallPlanStorageAction> Actions)
 		{
-			foreach (var action in Actions)
-				((BaseAction)action).Update(
-					CallInstances,
-					CallExpireds
-					);
-			await CallInstances.Context.SaveChangesAsync();
+			return DataScope.Use("执行动作", async ctx =>
+			{
+				foreach (var action in Actions)
+					((BaseAction)action).Update(
+						CallInstances(ctx),
+						CallExpireds(ctx)
+						);
+				await ctx.SaveChangesAsync();
+			});
 		}
 		public async Task<ICallInstance> GetInstance(string Type,string Ident)
 		{
-			return await CallInstances.FindAsync(Type,Ident);
+			return await DataScope.Use("获取调用实例", ctx =>
+				 CallInstances(ctx).FindAsync(Type, Ident)
+				);
 		}
 		public async Task<ICallInstance[]> GetInstancesForCleanup(DateTime ExecutingStartTime)
 		{
-			var timers = await CallInstances.LoadListAsync(t => t.CallTime > ExecutingStartTime);
-			return timers;
+			return await DataScope.Use("查找异常终止实例", async ctx =>
+			{ 
+				var timers = await CallInstances(ctx).LoadListAsync(t => t.CallTime > ExecutingStartTime);
+				return timers;
+			});
 		}
 
 		public async Task<(string Type,string Ident)[]> GetOnTimeInstances(int Count,DateTime Now, DateTime ExecutingStartTime, DateTime InitTime)
 		{
-			var q = from t in CallInstances.AsQueryable(false)
-					where t.CallTime <= Now
-					orderby t.CallTime
-					select t;
-
-			var instances = await q.Take(Count).ToArrayAsync();
-			//logger.trace("定时器", "执行定时器调度： {0} limit:{1} count:{2}", now, count, timers.Length);
-			foreach (var t in instances)
+			return await DataScope.Use("获取实例", async ctx =>
 			{
-				t.LastExecTime = Now;
-				t.CallTime = ExecutingStartTime.Add(t.CallTime.Subtract(InitTime));
-				CallInstances.Update(t);
-			}
-			await CallInstances.Context.SaveChangesAsync();
-			return instances.Select(t=>(t.Type,t.Ident)).ToArray();
+				var q = from t in CallInstances(ctx).AsQueryable(false)
+						where t.CallTime <= Now
+						orderby t.CallTime
+						select t;
+
+				var instances = await q.Take(Count).ToArrayAsync();
+				//logger.trace("定时器", "执行定时器调度： {0} limit:{1} count:{2}", now, count, timers.Length);
+				foreach (var t in instances)
+				{
+					t.LastExecTime = Now;
+					t.CallTime = ExecutingStartTime.Add(t.CallTime.Subtract(InitTime));
+					ctx.Update(t);
+				}
+				await ctx.SaveChangesAsync();
+				return instances.Select(t => (t.Type, t.Ident)).ToArray();
+			});
 		}
 	}
 }

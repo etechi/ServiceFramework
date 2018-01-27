@@ -48,7 +48,7 @@ namespace SF.Common.Conversations.Managers
 				editable.MessageReaded==model.MessageReaded
 				)
 			{
-				var messageCount = await DataContext
+				var messageCount = await ctx.DataContext
 					.Set<DataModels.DataSessionStatus>()
 					.AsQueryable()
 					.Where(s => s.Id == editable.SessionId)

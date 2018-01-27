@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys;
+using SF.Sys.Data;
 using SF.Sys.Entities;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace SF.Common.FrontEndContents
 		where TSiteTemplate : DataModels.SiteTemplate<TSite,TSiteTemplate>, new()
 	{
 
-        protected override async Task<TSiteTemplatePublic> OnMapModelToEditable(IContextQueryable<TSiteTemplate> Query)
+        protected override async Task<TSiteTemplatePublic> OnMapModelToEditable(IDataContext DataContext, IContextQueryable<TSiteTemplate> Query)
 		{
 			var re=await Query.Select(s =>
 				new
@@ -87,12 +88,15 @@ namespace SF.Common.FrontEndContents
         }
 
 		
-		public async Task<string> LoadConfig(long templateId)
+		public Task<string> LoadConfig(long templateId)
 		{
-			return await DataSet.AsQueryable()
+			return DataScope.Use(
+				"查找站点配置",
+				ctx => ctx.Queryable<DataModels.SiteTemplate>()
 				.Where(t => t.Id == templateId)
 				.Select(t => t.Data)
-				.SingleOrDefaultAsync();
+				.SingleOrDefaultAsync()
+				);
 		}
 
     }

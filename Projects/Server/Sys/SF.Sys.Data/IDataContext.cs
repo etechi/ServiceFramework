@@ -29,6 +29,17 @@ namespace SF.Sys.Data
         IFieldUpdater<T> Update<P>(Expression<Func<T, P>> field);
     }
 
+	[Flags]
+	public enum DataContextFlag
+	{
+		None=0,
+		UseTransaction=1
+	}
+	public interface IDataScope
+	{
+		Task<T> Use<T>(string Actin,Func<IDataContext, Task<T>> Callback, DataContextFlag Flags=DataContextFlag.None);
+	}
+
 	public interface IDataContext :IDisposable
 	{
 		IDataSet<T> Set<T>() where T : class;

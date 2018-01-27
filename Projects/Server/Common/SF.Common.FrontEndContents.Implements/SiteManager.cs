@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Data;
 using SF.Sys.Entities;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace SF.Common.FrontEndContents
 		where TSiteTemplate : DataModels.SiteTemplate<TSite,TSiteTemplate>
 	{
 
-        protected override async Task<TSitePublic> OnMapModelToEditable(IContextQueryable<TSite> Query)
+        protected override async Task<TSitePublic> OnMapModelToEditable(IDataContext DataContext ,IContextQueryable<TSite> Query)
 		{
 			return await Query.Select(s => new TSitePublic
 				{
@@ -76,17 +77,22 @@ namespace SF.Common.FrontEndContents
 		{
 		}
 
-		public async Task<long> FindTemplateId(string site)
+		public Task<long> FindTemplateId(string site)
 		{
-			return await DataSet.AsQueryable()
-				.Where(s => s.Id == site)
-				.Select(s => s.TemplateId)
-				.SingleOrDefaultAsync();
+			return DataScope.Use(
+				"查找站点模板",
+				ctx => ctx.Queryable<DataModels.Site>()
+					.Where(s => s.Id == site)
+					.Select(s => s.TemplateId)
+					.SingleOrDefaultAsync()
+				);
 		}
 
-		public async Task<TSitePublic[]> List()
+		public Task<TSitePublic[]> List()
 		{
-			return await OnMapModelToDetail(DataSet.AsQueryable()).ToArrayAsync();
+			return DataScope.Use("获取站点列表", ctx =>
+				 OnMapModelToDetail(ctx.Queryable<TSite>()).ToArrayAsync()
+				);
 		}
 
     }

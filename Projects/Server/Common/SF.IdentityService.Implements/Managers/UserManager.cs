@@ -276,90 +276,111 @@ namespace SF.Auth.IdentityServices.Managers
 			await base.OnRemoveModel(ctx);
 		}
 
-		async Task<UserData> IUserStorage.Load(long Id)
+		Task<UserData> IUserStorage.Load(long Id)
 		{
-			var re=await DataSet.AsQueryable().Where(i => i.Id == Id)
-				.Select(i => new 
-			{
-				stamp=i.SecurityStamp,
-				data=new UserData
+			return DataScope.Use(
+				"查询用户数据",
+				async ctx =>
 				{
-					Id=i.Id,
-					Icon=i.Icon,
-					Name=i.Name,
-					
-					IsEnabled=i.LogicState==EntityLogicState.Enabled,
-					PasswordHash=i.PasswordHash,
-					Roles=i.Roles.Select(r=>r.RoleId),
-					//Claims=i.Roles.SelectMany(r=>r.Role.ClaimValues.Select(cv=>new ClaimValue
-					//{
-					//	TypeId=cv.TypeId,
-					//	Value=cv.Value
-					//})).Union(
-					//i.ClaimValues.Select(cv=>new ClaimValue
-					//{
-					//	TypeId = cv.TypeId,
-					//	Value = cv.Value
-					//}))
-				}
-			}).SingleOrDefaultAsync();
-			if (re == null) return null;
-			re.data.Roles = re.data.Roles.ToArray();
-			re.data.SecurityStamp = re.stamp.Base64();
-			return re.data;
+					var re = await ctx.Queryable<TUser>().Where(i => i.Id == Id)
+						.Select(i => new
+						{
+							stamp = i.SecurityStamp,
+							data = new UserData
+							{
+								Id = i.Id,
+								Icon = i.Icon,
+								Name = i.Name,
+
+								IsEnabled = i.LogicState == EntityLogicState.Enabled,
+								PasswordHash = i.PasswordHash,
+								Roles = i.Roles.Select(r => r.RoleId),
+								//Claims=i.Roles.SelectMany(r=>r.Role.ClaimValues.Select(cv=>new ClaimValue
+								//{
+								//	TypeId=cv.TypeId,
+								//	Value=cv.Value
+								//})).Union(
+								//i.ClaimValues.Select(cv=>new ClaimValue
+								//{
+								//	TypeId = cv.TypeId,
+								//	Value = cv.Value
+								//}))
+							}
+						}).SingleOrDefaultAsync();
+					if (re == null) return null;
+					re.data.Roles = re.data.Roles.ToArray();
+					re.data.SecurityStamp = re.stamp.Base64();
+					return re.data;
+				});
 		}
 
-		async Task IUserStorage.UpdateDescription(User Identity)
+		Task IUserStorage.UpdateDescription(User Identity)
 		{
-			await DataSet.Update(Identity.Id, r =>
-			{
-				r.Name = Identity.Name;
-				r.Icon = Identity.Icon;
-			});
+			return DataScope.Use(
+				"更新用户描述",
+				ctx => ctx.Set<TUser>().Update(Identity.Id, r =>
+					  {
+						  r.Name = Identity.Name;
+						  r.Icon = Identity.Icon;
+					  })
+				);
 		}
 
-		async Task IUserStorage.UpdateSecurity(long Id, string PasswordHash, byte[] SecurityStamp)
+		Task IUserStorage.UpdateSecurity(long Id, string PasswordHash, byte[] SecurityStamp)
 		{
-			await DataSet.Update(Id, r =>
-			{
-				r.PasswordHash = PasswordHash;
-				r.SecurityStamp = SecurityStamp.Base64();
-			});
+			return DataScope.Use(
+				"更新用户描述",
+				ctx => ctx.Set<TUser>().Update(Id, r =>
+				{
+					r.PasswordHash = PasswordHash;
+					r.SecurityStamp = SecurityStamp.Base64();
+				})
+			);
 		}
-		public async Task RoleEnsure(long UserId, string[] Roles)
+		public Task RoleEnsure(long UserId, string[] Roles)
 		{
-			var set = DataContext.Set<TUserRole>();
-			var exists = await (
-				from u in DataContext.Set<TUser>().AsQueryable()
-				where u.Id == UserId && u.LogicState == EntityLogicState.Enabled
-				from r in u.Roles
-				where Roles.Contains(r.RoleId)
-				select r.RoleId
-				)
-				.ToDictionaryAsync(r => r, r => true);
-			if (exists == null)
-				throw new PublicArgumentException("找不到用户:" + UserId);
+			return DataScope.Use(
+				"设置用户角色",
+				async ctx =>
+				{
+					var set=ctx.Set<TUserRole>();
+					var exists = await (
+						from u in ctx.Set<TUser>().AsQueryable()
+						where u.Id == UserId && u.LogicState == EntityLogicState.Enabled
+						from r in u.Roles
+						where Roles.Contains(r.RoleId)
+						select r.RoleId
+						)
+						.ToDictionaryAsync(r => r, r => true);
+					if (exists == null)
+						throw new PublicArgumentException("找不到用户:" + UserId);
 
-			foreach(var r in Roles.Where(ri=>!exists.ContainsKey(ri)))
-			{
-				set.Add(new TUserRole { UserId = UserId, RoleId = r });
-			}
-			await set.Context.SaveChangesAsync();
+					foreach (var r in Roles.Where(ri => !exists.ContainsKey(ri)))
+					{
+						set.Add(new TUserRole { UserId = UserId, RoleId = r });
+					}
+					await set.Context.SaveChangesAsync();
+				});
 		}
-		public async Task RoleRemove(long UserId, string[] Roles)
+		public  Task RoleRemove(long UserId, string[] Roles)
 		{
-			var set = DataContext.Set<TUserRole>();
-			var exists = await (
-				from u in DataContext.Set<TUser>().AsQueryable(false)
-				where u.Id == UserId && u.LogicState == EntityLogicState.Enabled
-				from r in u.Roles
-				where Roles.Contains(r.RoleId)
-				select r
-				).ToArrayAsync();
-			if (exists == null)
-				throw new PublicArgumentException("找不到用户:" + UserId);
-			set.RemoveRange(exists);
-			await set.Context.SaveChangesAsync();
+			return DataScope.Use(
+				"移除用户角色",
+				async ctx =>
+				{
+					var set = ctx.Set<TUserRole>();
+					var exists = await (
+						from u in ctx.Set<TUser>().AsQueryable(false)
+						where u.Id == UserId && u.LogicState == EntityLogicState.Enabled
+						from r in u.Roles
+						where Roles.Contains(r.RoleId)
+						select r
+						).ToArrayAsync();
+					if (exists == null)
+						throw new PublicArgumentException("找不到用户:" + UserId);
+					set.RemoveRange(exists);
+					await set.Context.SaveChangesAsync();
+				});					   
 		}
 	}
 

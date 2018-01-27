@@ -27,8 +27,9 @@ namespace SF.Sys.Entities
 	class EntityServiceContext : IEntityServiceContext
 	{
 		public IServiceProvider ServiceProvider { get; }
-		IScoped<IDataContext> _ScopedDataContext;
-		IDataContext _DataContext;
+		//IScoped<IDataContext> _ScopedDataContext;
+		//IDataContext _DataContext;
+		IDataScope _DataScope;
 		ITimeService _TimeService;
 		//IEntityReferenceResolver _DataEntityResolver;
 		IEntityPropertyFiller _EntityPropertyFiller;
@@ -70,7 +71,7 @@ namespace SF.Sys.Entities
 				return _Now;
 			}
 		}
-		public IDataContext DataContext => Resolve(ref _DataContext);
+		public IDataScope DataScope => Resolve(ref _DataScope);
 		public IIdentGenerator IdentGenerator => Resolve(ref _IdentGenerator);
 		IIdentGenerator IEntityServiceContext.IdentGenerator => Resolve(ref _IdentGenerator);
 		public IEntityPropertyFiller EntityPropertyFiller => Resolve(ref _EntityPropertyFiller);
@@ -79,7 +80,7 @@ namespace SF.Sys.Entities
 		public IEventEmitService EventEmitService => Resolve(ref _EventEmitter);
 		public IClientService ClientService => Resolve(ref _ClientService);
 		public IAccessToken AccessToken => Resolve(ref _AccessToken);
-		public IScoped<IDataContext> ScopedDataContext => Resolve(ref _ScopedDataContext);
+		//public IScoped<IDataContext> ScopedDataContext => Resolve(ref _ScopedDataContext);
 		public IQueryFilterCache QueryFilterCache=> Resolve(ref _QueryFilterCache);
 		public IQueryResultBuildHelperCache QueryResultBuildHelperCache => Resolve(ref _QueryResultBuildHelperCache);
 		public IEntityModifierCache EntityModifierCache => Resolve(ref _EntityModifierCache);

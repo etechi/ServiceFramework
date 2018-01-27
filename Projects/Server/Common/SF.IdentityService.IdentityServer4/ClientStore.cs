@@ -25,27 +25,28 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 {
 	public class ClientStore : IClientStore
 	{
-		IDataSet<DataModels.DataClient > Clients { get; }
+		IDataScope DataScope { get; }
 		
-		public ClientStore(IDataSet<DataModels.DataClient > Clients)
+		public ClientStore(IDataScope DataScope)
 		{
-			this.Clients = Clients;
+			this.DataScope=DataScope;
 		}
 
 		public async Task<Client> FindClientByIdAsync(string clientId)
 		{
-			if (clientId==null)
+			if (clientId == null)
 				return null;
 
-			var re = await (
-				from c in Clients.AsQueryable()
-				where c.Id == clientId && c.LogicState == EntityLogicState.Enabled
-				select new
-				{
-					cfg = c.ClientConfig,
-					cli=c,
-					scopes=c.ClientConfig.Scopes.Select(s=>s.ScopeId)
-				}).SingleOrDefaultAsync();
+			var re = await DataScope.Use("查找客户端", ctx =>
+				 (from c in ctx.Queryable<DataModels.DataClient>()
+				 where c.Id == clientId && c.LogicState == EntityLogicState.Enabled
+				 select new
+				 {
+					 cfg = c.ClientConfig,
+					 cli = c,
+					 scopes = c.ClientConfig.Scopes.Select(s => s.ScopeId)
+				 }).SingleOrDefaultAsync()
+			);
 			if (re == null) return null;
 			var cfg = re.cfg;
 			var cli = re.cli;

@@ -28,7 +28,7 @@ namespace SF.Sys.Services
 
 		public static IServiceCollection AddDataContext(this IServiceCollection sc,Func<IServiceProvider, DataSourceConfig> Config)
 		{
-			sc.AddSingleton<IDataSource>(sp=>new DefaultDataSource(Config(sp),sp.Resolve<ILogger<DefaultDataSource>>()));
+			sc.AddSingleton<IDataSource>(sp=>new DefaultDataSource(Config(sp)));
 			//sc.AddScoped(sp => sp.Resolve<IDataSource>().Connect());
 
 			sc.AddScoped<SF.Sys.Data.IDataContext, SF.Sys.Data.DataContext>();

@@ -32,19 +32,17 @@ namespace SF.Sys.MenuServices.Entity
 		where TMenu: DataModels.DataMenu<TMenu,TMenuItem>,new()
 		where TMenuItem : DataModels.DataMenuItem<TMenu, TMenuItem>, new()
 	{
-		public Lazy<IDataSet<TMenuItem>> MenuItemSet { get; }
 		
 		public EntityMenuService(
-			IEntityServiceContext ServiceContext,
-			Lazy<IDataSet<TMenuItem>> MenuItemSet
+			IEntityServiceContext ServiceContext
 			) : base(ServiceContext)
 		{
-			this.MenuItemSet = MenuItemSet;
+
 		}
 
 		protected override PagingQueryBuilder<TMenu> PagingQueryBuilder =>
 			PagingQueryBuilder<TMenu>.Simple("ident", b => b.Ident, true);
-		protected override async Task<MenuEditable> OnMapModelToEditable(IContextQueryable<TMenu> Query)
+		protected override async Task<MenuEditable> OnMapModelToEditable(IDataContext DataContext, IContextQueryable<TMenu> Query)
 		{
 			var menu = await Query.SelectObjectEntity(i =>
 				  new MenuEditable
@@ -55,7 +53,7 @@ namespace SF.Sys.MenuServices.Entity
 			if (menu == null)
 				return null;
 
-			var items = await MenuItemSet.Value.AsQueryable()
+			var items = await DataContext.Set<TMenuItem>().AsQueryable()
 				.Where(i => i.MenuId == menu.Id)
 				.OrderBy(i=>i.ItemOrder)
 				.SelectUIObjectEntity(i =>
@@ -119,11 +117,11 @@ namespace SF.Sys.MenuServices.Entity
 			var time = Now;
 			m.Update(e, time);
 
-			var items = await MenuItemSet.Value.LoadListAsync(i => i.MenuId == m.Id);
+			var items = await ctx.DataContext.Set<TMenuItem>().LoadListAsync(i => i.MenuId == m.Id);
 			foreach (var n in ADT.Tree.AsEnumerable(e.Items, (ii,i) => { ii.ItemOrder = i; return ii.Children; }).Where(i => i.Id == 0))
 				n.Id = await IdentGenerator.GenerateAsync<TMenuItem>();
 
-			MenuItemSet.Value.MergeTree(
+			ctx.DataContext.Set<TMenuItem>().MergeTree(
 				null,
 				items,
 				e.Items,
@@ -160,29 +158,33 @@ namespace SF.Sys.MenuServices.Entity
 		public async Task<MenuItem[]> GetMenu(string Ident)
 		{
 			var scopeid = ServiceInstanceDescriptor.ParentInstanceId;
-			var menuId = await DataSet
-				.AsQueryable()
-				.Where(m=>m.ServiceDataScopeId== scopeid && m.Ident==Ident)
-				.Select(i => i.Id)
-				.SingleOrDefaultAsync();
+			var items = await DataScope.Use("获取菜单项", async ctx =>
+			 {
+				 var menuId = await ctx.Set<TMenu>()
+					 .AsQueryable()
+					 .Where(m => m.ServiceDataScopeId == scopeid && m.Ident == Ident)
+					 .Select(i => i.Id)
+					 .SingleOrDefaultAsync();
 
-			if (menuId == 0)
+				 if (menuId == 0)
+					 return null;
+
+				 return await ctx.Set<TMenuItem>().AsQueryable()
+					 .Where(i => i.MenuId == menuId)
+					 .OrderBy(i => i.ItemOrder)
+					 .SelectUIObjectEntity(i =>
+					   new MenuItem
+					   {
+						   Id = i.Id,
+						   ParentId = i.ParentId,
+						   Action = i.Action,
+						   ItemOrder = i.ItemOrder,
+						   ServiceId = i.ServiceId,
+						   ActionArgument = i.ActionArgument,
+					   }).ToArrayAsync();
+			 });
+			if (items == null)
 				return null;
-
-			var items = await MenuItemSet.Value.AsQueryable()
-				.Where(i => i.MenuId == menuId)
-				.OrderBy(i=>i.ItemOrder)
-				.SelectUIObjectEntity(i =>
-				  new MenuItem
-				  {
-					  Id = i.Id,
-					  ParentId=i.ParentId,
-					  Action = i.Action,
-					  ItemOrder=i.ItemOrder,
-					  ServiceId=i.ServiceId,
-					  ActionArgument = i.ActionArgument,
-				  }).ToArrayAsync();
-
 			var re= ADT.Tree.Build(
 				items,
 				i => i.Id,

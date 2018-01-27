@@ -67,13 +67,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 				if (Value == null && Context.Action!=ModifyAction.Delete)
 					return OrgValue;
 				var (create,update,remove)= LazyModifiers.Value;
-				var set = Manager.DataContext.Set<TChildModel>();
+				var set = Context.DataContext.Set<TChildModel>();
 
 				var parentCtx = (IEntityModifyContext<TEntity, TModel>)Context;
 				var parentKey = Entity<TModel>.GetKey<ObjectKey<TParentKey>>(parentCtx.Model).Id;
 
 				var arg = Expression.Parameter(typeof(TChildModel));
-				var orgItem = await Manager.DataContext.Set<TChildModel>().AsQueryable(false).Where(
+				var orgItem = await Context.DataContext.Set<TChildModel>().AsQueryable(false).Where(
 					Expression.Lambda<Func<TChildModel,bool>>(
 						Expression.Equal(
 							Expression.Property(arg,ForeignKeyProperty),
@@ -89,7 +89,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					if (orgItem != null)
 					{
 						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitRemove(orgItem, default(TChildEntity), null);
+						ctx.InitRemove(Context.DataContext, orgItem, default(TChildEntity), null);
 						await remove.Execute(Manager, ctx);
 						set.Remove(orgItem);
 					}
@@ -98,7 +98,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 				else if (orgItem == null)
 				{
 					var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-					ctx.InitCreate(Value, null);
+					ctx.InitCreate(Context.DataContext, Value, null);
 					await create.Execute(Manager, ctx);
 					FuncSetParentKey(ctx.Model, parentKey);
 					return ctx.Model;
@@ -107,7 +107,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 				else
 				{
 					var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-					ctx.InitUpdate(orgItem, Value, null);
+					ctx.InitUpdate(Context.DataContext, orgItem, Value, null);
 					await update.Execute(Manager, ctx);
 				}
 				

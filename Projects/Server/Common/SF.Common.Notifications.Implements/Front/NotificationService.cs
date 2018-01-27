@@ -96,7 +96,7 @@ namespace SF.Common.Notifications.Front
 		//}
 
 		Lazy<INotificationManager> NotificationManager { get; }
-		Lazy<IDataContext> DataContext { get; }
+		Lazy<IDataScope> DataScope { get; }
 		IAccessToken AccessToken { get; }
 		Lazy<ITimeService> TimeService { get; }
 		public long EnsureUserIdent() =>
@@ -105,80 +105,82 @@ namespace SF.Common.Notifications.Front
 		public NotificationService(
 			Lazy<INotificationManager> NotificationManager,
 			IAccessToken AccessToken,
-			Lazy<IDataContext> DataContext,
+			Lazy<IDataScope> DataScope,
 			Lazy<ITimeService> TimeService
 			)
 		{
 			this.TimeService = TimeService;
 			this.NotificationManager = NotificationManager;
 			this.AccessToken = AccessToken;
-			this.DataContext = DataContext;
+			this.DataScope = DataScope;
 		}
-		public async Task Delete(long NotificationId)
+		public Task Delete(long NotificationId)
 		{
-			var uid = EnsureUserIdent();
-			var now = TimeService.Value.Now;
+			return DataScope.Value.Use("删除通知", async DataContext =>
+			 {
+				 var uid = EnsureUserIdent();
+				 var now = TimeService.Value.Now;
 
-			var re = await (
-				from n in DataContext.Value.Set<DataModels.Notification>().AsQueryable()
-				where n.Id == NotificationId
-				let t = n.Targets.FirstOrDefault(t => t.UserId == uid)
-				where 
-					//全局通知，可以没有通知对象，或通知对象没有删除
-					n.Mode==NotificationMode.Boardcast && 
-						(t==null || t!=null && t.LogicState!=EntityLogicState.Deleted)
-					
-					//普通通知，必须有通知对象，且通知对象没有删除
-					|| n.Mode==NotificationMode.Normal && 
-						t!=null && t.LogicState!=EntityLogicState.Deleted 
+				 var re = await (
+					 from n in DataContext.Set<DataModels.Notification>().AsQueryable()
+					 where n.Id == NotificationId
+					 let t = n.Targets.FirstOrDefault(t => t.UserId == uid)
+					 where
+						 //全局通知，可以没有通知对象，或通知对象没有删除
+						 n.Mode == NotificationMode.Boardcast &&
+							 (t == null || t != null && t.LogicState != EntityLogicState.Deleted)
 
-				select new
-				{
-					mode=n.Mode,
-					time = n.Time,
-					target = t
-				}).SingleOrDefaultAsync();
-			if (re == null)
-				return;
+						 //普通通知，必须有通知对象，且通知对象没有删除
+						 || n.Mode == NotificationMode.Normal &&
+							 t != null && t.LogicState != EntityLogicState.Deleted
 
-			//如果是普通通知，需要调整用户通知计数
-			var status = re.mode == NotificationMode.Normal ?
-				await DataContext.Value.Set<DataModels.NotificationUserStatus>().FindAsync(uid):
-				null;
+					 select new
+					 {
+						 mode = n.Mode,
+						 time = n.Time,
+						 target = t
+					 }).SingleOrDefaultAsync();
+				 if (re == null)
+					 return;
 
-			if (re.target == null)
-			{
-				//如果是全局通知，需要增加删除记录
-				if(re.mode==NotificationMode.Boardcast)
-					DataContext.Value.Add(new DataModels.NotificationTarget
-					{
-						UserId = uid,
-						NotificationId = NotificationId,
-						LogicState = EntityLogicState.Deleted,
-						Time = re.time,
-						ReadTime = now
-					});
-			}
-			//如果没有删除
-			else if (re.target.LogicState != EntityLogicState.Deleted)
-			{
-				if (status != null)
-				{
-					status.Received = Math.Max(0, status.Received - 1);
-					if (re.target.ReadTime == null)
-						status.ReceivedUnreaded = Math.Max(0, status.ReceivedUnreaded - 1);
-					DataContext.Value.Update(status);
-				}
+				//如果是普通通知，需要调整用户通知计数
+				var status = re.mode == NotificationMode.Normal ?
+					 await DataContext.Set<DataModels.NotificationUserStatus>().FindAsync(uid) :
+					 null;
 
-				if (!re.target.ReadTime.HasValue)
-					re.target.ReadTime = now;
+				 if (re.target == null)
+				 {
+					//如果是全局通知，需要增加删除记录
+					if (re.mode == NotificationMode.Boardcast)
+						 DataContext.Add(new DataModels.NotificationTarget
+						 {
+							 UserId = uid,
+							 NotificationId = NotificationId,
+							 LogicState = EntityLogicState.Deleted,
+							 Time = re.time,
+							 ReadTime = now
+						 });
+				 }
+				//如果没有删除
+				else if (re.target.LogicState != EntityLogicState.Deleted)
+				 {
+					 if (status != null)
+					 {
+						 status.Received = Math.Max(0, status.Received - 1);
+						 if (re.target.ReadTime == null)
+							 status.ReceivedUnreaded = Math.Max(0, status.ReceivedUnreaded - 1);
+						 DataContext.Update(status);
+					 }
 
-				re.target.LogicState = EntityLogicState.Deleted;
-				DataContext.Value.Update(re.target);
-			}
+					 if (!re.target.ReadTime.HasValue)
+						 re.target.ReadTime = now;
 
-			await DataContext.Value.SaveChangesAsync();
-		
+					 re.target.LogicState = EntityLogicState.Deleted;
+					 DataContext.Update(re.target);
+				 }
+
+				 await DataContext.SaveChangesAsync();
+			 });
 		}
 
 		IContextQueryable<UserNotification> Select(
@@ -203,52 +205,60 @@ namespace SF.Common.Notifications.Front
 		{
 			var now = TimeService.Value.Now;
 			var uid = EnsureUserIdent();
-			var q = from n in DataContext.Value.Set<DataModels.Notification>().AsQueryable()
-					where n.Id == Id &&
-						n.Time<=now &&
-						n.Expires>now &&
-						n.LogicState==EntityLogicState.Enabled &&
-						(n.Mode == NotificationMode.Boardcast ||
-						n.Targets.Any(t => t.UserId == uid)
-					  )
-					select n;
-			var re = await Select(q,uid,true).SingleOrDefaultAsync();
+
+			var re = await DataScope.Value.Use("获取通知",
+				DataContext =>
+				{
+					var q = from n in DataContext.Set<DataModels.Notification>().AsQueryable()
+							where n.Id == Id &&
+								n.Time <= now &&
+								n.Expires > now &&
+								n.LogicState == EntityLogicState.Enabled &&
+								(n.Mode == NotificationMode.Boardcast ||
+								n.Targets.Any(t => t.UserId == uid)
+							  )
+							select n;
+					return Select(q, uid, true).SingleOrDefaultAsync();
+				});
 			if (re == null)
 				throw new PublicArgumentException("找不到指定的通知:" + Id);
 			return re;
 		}
 
-		public async Task<UserNotificationStatus> GetStatus()
+		public Task<UserNotificationStatus> GetStatus()
 		{
 			var uid = EnsureUserIdent();
-			var re = await DataContext.Value.Set<DataModels.NotificationUserStatus>().AsQueryable()
-			   .Where(s => s.Id == uid)
-			   .Select(s => new UserNotificationStatus
-			   {
-				   Id = s.Id,
-				   Received = s.Received,
-				   ReceivedUnreaded = s.ReceivedUnreaded
-			   }).SingleOrDefaultAsync();
-			if (re == null)
-				re = new UserNotificationStatus { Id = uid};
+			return DataScope.Value.Use("获取通知状态", async DataContext =>
+			{
+				var re = await DataContext.Set<DataModels.NotificationUserStatus>().AsQueryable()
+				   .Where(s => s.Id == uid)
+				   .Select(s => new UserNotificationStatus
+				   {
+					   Id = s.Id,
+					   Received = s.Received,
+					   ReceivedUnreaded = s.ReceivedUnreaded
+				   }).SingleOrDefaultAsync();
+				if (re == null)
+					re = new UserNotificationStatus { Id = uid };
 
-			var now = TimeService.Value.Now;
+				var now = TimeService.Value.Now;
 
-			var broadcast_status_query =
-				from n in DataContext.Value.Set<DataModels.Notification>().AsQueryable()
-				where n.Mode == NotificationMode.Boardcast &&
-					n.Time < now && n.Expires > now &&
-					n.LogicState == EntityLogicState.Enabled
-				from nt in n.Targets
-				where nt.UserId == uid
-				group 1 by nt.ReadTime.HasValue into g
-				select new { readed = g.Key, count = g.Count() }
-				;
+				var broadcast_status_query =
+					from n in DataContext.Set<DataModels.Notification>().AsQueryable()
+					where n.Mode == NotificationMode.Boardcast &&
+						n.Time < now && n.Expires > now &&
+						n.LogicState == EntityLogicState.Enabled
+					from nt in n.Targets
+					where nt.UserId == uid
+					group 1 by nt.ReadTime.HasValue into g
+					select new { readed = g.Key, count = g.Count() }
+					;
 
-			var broadcast_status = await broadcast_status_query.ToArrayAsync();
-			re.Received += broadcast_status.Select(s=>s.count).DefaultIfEmpty(0).Sum();
-			re.ReceivedUnreaded += broadcast_status.Where(s=>!s.readed).Select(s => s.count).FirstOrDefault();
-			return re;
+				var broadcast_status = await broadcast_status_query.ToArrayAsync();
+				re.Received += broadcast_status.Select(s => s.count).DefaultIfEmpty(0).Sum();
+				re.ReceivedUnreaded += broadcast_status.Where(s => !s.readed).Select(s => s.count).FirstOrDefault();
+				return re;
+			});
 		}
 
 		public async Task<QueryResult<UserNotification>> Query(NotificationQueryArgument Arg)
@@ -269,100 +279,106 @@ namespace SF.Common.Notifications.Front
 			var uid = EnsureUserIdent();
 			var now = TimeService.Value.Now;
 
-			IContextQueryable<DataModels.Notification> q;
-			if (Arg.Mode == NotificationMode.Boardcast)
-			{
-				q = from n in DataContext.Value.Set<DataModels.Notification>().AsQueryable()
-						where n.Mode==NotificationMode.Boardcast &&
-						n.LogicState==EntityLogicState.Enabled &&
-							n.Time<=now &&
-							n.Expires>now
-						select n;
-				if (Arg.Readed.HasValue)
-				{
-					if (Arg.Readed.Value)
-						q = q.Where(n => n.Targets.Any(t => t.UserId == uid && t.ReadTime.HasValue));
-					else
-						q = q.Where(n => n.Targets.All(t => t.UserId != uid || !t.ReadTime.HasValue));
-				}
-			}
-			else
-			{
-				var readed = Arg.Readed;
-				q = from nt in DataContext.Value.Set<DataModels.NotificationTarget>().AsQueryable()
-					where 
-						nt.Mode == NotificationMode.Normal && 
-						nt.UserId==uid &&
-						nt.LogicState==EntityLogicState.Enabled &&
-						(!readed.HasValue ||
-						readed.HasValue && nt.ReadTime.HasValue==readed.Value
-						)
-					let n=nt.Notification
-					where n.LogicState==EntityLogicState.Enabled &&
-						n.Time<=now && n.Expires>now
-					select n;
-			}
-			var re = await Select(q, uid, false)
-				.ToQueryResultAsync(Arg.Paging);
-			return re;
+			return await DataScope.Value.Use("查询通知", async DataContext =>
+			 {
+				 IContextQueryable<DataModels.Notification> q;
+				 if (Arg.Mode == NotificationMode.Boardcast)
+				 {
+					 q = from n in DataContext.Set<DataModels.Notification>().AsQueryable()
+						 where n.Mode == NotificationMode.Boardcast &&
+						 n.LogicState == EntityLogicState.Enabled &&
+							 n.Time <= now &&
+							 n.Expires > now
+						 select n;
+					 if (Arg.Readed.HasValue)
+					 {
+						 if (Arg.Readed.Value)
+							 q = q.Where(n => n.Targets.Any(t => t.UserId == uid && t.ReadTime.HasValue));
+						 else
+							 q = q.Where(n => n.Targets.All(t => t.UserId != uid || !t.ReadTime.HasValue));
+					 }
+				 }
+				 else
+				 {
+					 var readed = Arg.Readed;
+					 q = from nt in DataContext.Set<DataModels.NotificationTarget>().AsQueryable()
+						 where
+							 nt.Mode == NotificationMode.Normal &&
+							 nt.UserId == uid &&
+							 nt.LogicState == EntityLogicState.Enabled &&
+							 (!readed.HasValue ||
+							 readed.HasValue && nt.ReadTime.HasValue == readed.Value
+							 )
+						 let n = nt.Notification
+						 where n.LogicState == EntityLogicState.Enabled &&
+							 n.Time <= now && n.Expires > now
+						 select n;
+				 }
+				 var re = await Select(q, uid, false)
+					 .ToQueryResultAsync(Arg.Paging);
+				 return re;
+			 });
 		}
 
-		public async Task SetReaded(SetReadedArgument Arg)
+		public Task SetReaded(SetReadedArgument Arg)
 		{
 			var uid = EnsureUserIdent();
 			var ids = Arg.NotificationIds;
 			if (ids == null || ids.Length == 0)
-				return;
-			await DataContext.Value.Retry(async (ct) =>
-			{
-				var now = TimeService.Value.Now;
-				var notifications = await (
-					from n in DataContext.Value.Set<DataModels.Notification>().AsQueryable(true)
-					where ids.Contains(n.Id)
-					select new
-					{
-						id=n.Id,
-						mode=n.Mode,
-						time=n.Time,
-						target=n.Targets.FirstOrDefault(nt=>nt.UserId==uid && !nt.ReadTime.HasValue)
-					}
-					)
-					.ToArrayAsync();
+				return Task.CompletedTask;
+
+			return DataScope.Value.Use("设置已读状态", DataContext =>
+				 DataContext.Retry(async (ct) =>
+			 {
+				 var now = TimeService.Value.Now;
+				 var notifications = await (
+					 from n in DataContext.Set<DataModels.Notification>().AsQueryable(true)
+					 where ids.Contains(n.Id)
+					 select new
+					 {
+						 id = n.Id,
+						 mode = n.Mode,
+						 time = n.Time,
+						 target = n.Targets.FirstOrDefault(nt => nt.UserId == uid && !nt.ReadTime.HasValue)
+					 }
+					 )
+					 .ToArrayAsync();
 
 				//更新找到对象的通知记录统计
-				var status = await DataContext.Value.Set<DataModels.NotificationUserStatus>().FindAsync(uid);
-				var statusUpdated = false;
-				foreach (var nt in notifications)
-				{	
-					if (nt.target != null)
-					{
-						nt.target.ReadTime = now;
-						DataContext.Value.Update(nt);
+				var status = await DataContext.Set<DataModels.NotificationUserStatus>().FindAsync(uid);
+				 var statusUpdated = false;
+				 foreach (var nt in notifications)
+				 {
+					 if (nt.target != null)
+					 {
+						 nt.target.ReadTime = now;
+						 DataContext.Update(nt);
 
-						if (nt.mode == NotificationMode.Normal &&
-							status != null &&
-							status.ReceivedUnreaded > 0)
-						{
-							status.ReceivedUnreaded--;
-							statusUpdated = true;
-						}
-					}
-					else if (nt.mode == NotificationMode.Boardcast)
-						DataContext.Value.Add(new DataModels.NotificationTarget
-						{
-							LogicState = EntityLogicState.Enabled,
-							Mode = NotificationMode.Boardcast,
-							NotificationId = nt.id,
-							ReadTime = now,
-							Time = nt.time,
-							UserId = uid
-						});
-				}
-				if (statusUpdated)
-					DataContext.Value.Update(status);
-				await DataContext.Value.SaveChangesAsync();
-				return 0;
-			});
+						 if (nt.mode == NotificationMode.Normal &&
+							 status != null &&
+							 status.ReceivedUnreaded > 0)
+						 {
+							 status.ReceivedUnreaded--;
+							 statusUpdated = true;
+						 }
+					 }
+					 else if (nt.mode == NotificationMode.Boardcast)
+						 DataContext.Add(new DataModels.NotificationTarget
+						 {
+							 LogicState = EntityLogicState.Enabled,
+							 Mode = NotificationMode.Boardcast,
+							 NotificationId = nt.id,
+							 ReadTime = now,
+							 Time = nt.time,
+							 UserId = uid
+						 });
+				 }
+				 if (statusUpdated)
+					 DataContext.Update(status);
+				 await DataContext.SaveChangesAsync();
+				 return 0;
+			 })
+			);
 		}
 	}
 }

@@ -27,8 +27,8 @@ namespace SF.Common.Comments
 		CommentService<Comment, DataModels.Comment>,
 		ICommentService
 	{
-		public CommentService(Lazy<IDataSet<DataModels.Comment>> Comments) : 
-			base(Comments)
+		public CommentService(IDataScope DataScope) : 
+			base(DataScope)
 		{
 		}
 	}
@@ -39,10 +39,10 @@ namespace SF.Common.Comments
 		where TComment : DataModels.Comment<TComment>, new()
 
 	{
-		public Lazy<IDataSet<TComment>> Comments { get; }
-		public CommentService(Lazy<IDataSet<TComment>> Comments)
+		public IDataScope DataScope { get; }
+		public CommentService(IDataScope DataScope)
 		{
-			this.Comments = Comments;
+			this.DataScope = DataScope;
 		}
 
 		public Task<TCommentPublic> GetAsync(ObjectKey<long> Id)

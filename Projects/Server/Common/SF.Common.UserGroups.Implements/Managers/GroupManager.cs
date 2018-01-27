@@ -108,9 +108,9 @@ namespace SF.Common.UserGroups.Managers
 
 				//由于循环引用，不能直接设置OwnerMemberId，需要先保存，然后重新设置
 				//由数据库事务确保原子性
-				await DataContext.SaveChangesAsync();
+				await ctx.DataContext.SaveChangesAsync();
 
-				DataContext.Update(ctx.Model);
+				ctx.DataContext.Update(ctx.Model);
 
 
 				ctx.Model.OwnerMemberId = ctx.Model.Members.First().Id;

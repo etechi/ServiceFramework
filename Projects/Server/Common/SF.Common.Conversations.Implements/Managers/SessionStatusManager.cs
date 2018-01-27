@@ -62,14 +62,16 @@ namespace SF.Common.Conversations.Managers
 
 		public async Task<long> GetOrCreateSession(string BizIdentType, long BizIdent)
 		{
-			var sess = await DataContext.Set<DataModels.DataSessionStatus>()
-				.AsQueryable()
-				.Where(s =>
-					s.BizIdentType == BizIdentType &&
-					s.BizIdent == BizIdent
-					)
-				.Select(s => new { s.LogicState,s.Id })
-				.SingleOrDefaultAsync();
+			var sess = await DataScope.Use("查询已有会话", DataContext =>
+				DataContext.Set<DataModels.DataSessionStatus>()
+					.AsQueryable()
+					.Where(s =>
+						s.BizIdentType == BizIdentType &&
+						s.BizIdent == BizIdent
+						)
+					.Select(s => new { s.LogicState, s.Id })
+					.SingleOrDefaultAsync()
+					);
 
 			if (sess != null)
 			{

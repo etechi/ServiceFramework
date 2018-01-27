@@ -48,33 +48,36 @@ namespace SF.Sys.Reminders
 			return actions;
 		}
 
-		public async Task RefreshAt(long Id,DateTime Time,string DefaultName)
+		public Task RefreshAt(long Id,DateTime Time,string DefaultName)
 		{
-			await RemindSyncQueue.Value.Queue(Id, async () =>
-			{
-				var reminder = await DataSet.FindAsync(Id);
-				if (reminder == null)
-					reminder = DataSet.Add(new DataModels.Reminder
-					{
-						Id=Id,
-						CreatedTime = Now,
-						LogicState = EntityLogicState.Enabled,
-						Name= DefaultName
-					});
-				else
-					DataSet.Update(reminder);
+			return RemindSyncQueue.Value.Queue(Id, () =>
+			   DataScope.Use("刷新提醒", async ctx =>
+			   {
+				   var DataSet = ctx.Set<DataModels.Reminder>();
+				   var reminder = await DataSet.FindAsync(Id);
+				   if (reminder == null)
+					   reminder = DataSet.Add(new DataModels.Reminder
+					   {
+						   Id = Id,
+						   CreatedTime = Now,
+						   LogicState = EntityLogicState.Enabled,
+						   Name = DefaultName
+					   });
+				   else
+					   DataSet.Update(reminder);
 
-				reminder.PlanTime = Now;
-				reminder.TaskNextTryTime = Time;
-				reminder.TaskState = SF.Sys.AtLeastOnceTasks.AtLeastOnceTaskState.Waiting;
-				await DataSet.Context.SaveChangesAsync();
-				return 0;
-			});
+				   reminder.PlanTime = Now;
+				   reminder.TaskNextTryTime = Time;
+				   reminder.TaskState = SF.Sys.AtLeastOnceTasks.AtLeastOnceTaskState.Waiting;
+				   await DataSet.Context.SaveChangesAsync();
+				   return 0;
+			   }
+		   ));
 		}
 
-		async Task ExecTasks(DataModels.Reminder Model,IRemindAction[] actions)
+		async Task ExecTasks(IDataContext ctx,DataModels.Reminder Model,IRemindAction[] actions)
 		{
-			var recSet = DataContext.Set<DataModels.DataRemindRecord>();
+			var recSet = ctx.Set<DataModels.DataRemindRecord>();
 			var recs = await recSet
 				.AsQueryable()
 				.Where(r => r.ReminderId == Model.Id && r.Time == Now)
@@ -138,8 +141,10 @@ namespace SF.Sys.Reminders
 			if (actions[0].Time < Now)
 			{
 				//如果有动作存在，则执行动作
-				if (actions.Length>0)
-					await ExecTasks(Model, actions);
+				if (actions.Length > 0)
+					await DataScope.Use("执行提醒", ctx =>
+						 ExecTasks(ctx, Model, actions)
+						 );
 			
 				//正常执行完成，尝试查找下一批动作
 				Model.PlanTime = Now;

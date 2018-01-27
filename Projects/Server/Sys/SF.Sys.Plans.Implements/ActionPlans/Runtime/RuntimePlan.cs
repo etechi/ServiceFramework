@@ -34,28 +34,29 @@ namespace SF.Sys.ActionPlans.Runtime
 		}
 
 
-		public static async Task<RuntimePlan> Load(IDataSet<DataModels.ActionPlan> Plans, long Id)
+		public static async Task<RuntimePlan> Load(IDataScope DataScope, long Id)
 		{
-			var plan = await Plans
-				.AsQueryable()
-				.Where(p => p.Id == Id && p.LogicState == EntityLogicState.Enabled)
-				.Select(p => new RuntimePlan
-				{
-					Id = p.Id,
-					Name = p.Name,
-					TempActions = from a in p.Actions
-								  where a.LogicState == EntityLogicState.Enabled
-								  orderby a.ItemOrder
-								  select new RuntimeAction
-								  {
-									  Id = a.Id,
-									  ParentId = a.ContainerId,
-									  Name = a.Name,
-									  ActionProviderId = a.ActionProviderId,
-									  ActionProviderOptions = a.ActionProviderOptions
-								  }
-				})
-				.SingleOrDefaultAsync();
+			var plan = await DataScope.Use("载入计划", ctx =>
+				 ctx.Queryable<DataModels.ActionPlan>()
+				 .Where(p => p.Id == Id && p.LogicState == EntityLogicState.Enabled)
+				 .Select(p => new RuntimePlan
+				 {
+					 Id = p.Id,
+					 Name = p.Name,
+					 TempActions = from a in p.Actions
+								   where a.LogicState == EntityLogicState.Enabled
+								   orderby a.ItemOrder
+								   select new RuntimeAction
+								   {
+									   Id = a.Id,
+									   ParentId = a.ContainerId,
+									   Name = a.Name,
+									   ActionProviderId = a.ActionProviderId,
+									   ActionProviderOptions = a.ActionProviderOptions
+								   }
+				 })
+				 .SingleOrDefaultAsync()
+				);
 			if (plan == null)
 				return plan;
 

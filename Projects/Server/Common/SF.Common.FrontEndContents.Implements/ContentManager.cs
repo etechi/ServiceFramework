@@ -18,6 +18,7 @@ using SF.Sys.Entities;
 using System.Linq;
 using System.Threading.Tasks;
 using SF.Sys.NetworkService;
+using SF.Sys.Data;
 
 namespace SF.Common.FrontEndContents
 {
@@ -40,7 +41,7 @@ namespace SF.Common.FrontEndContents
 		where TContent: DataModels.Content, new() 
 	{
 
-        protected override async Task<TContentPublic> OnMapModelToEditable(IContextQueryable<TContent> Query)
+        protected override async Task<TContentPublic> OnMapModelToEditable(IDataContext DataContext, IContextQueryable<TContent> Query)
 		{
 			var re = await Query.Select(m => new
 			{

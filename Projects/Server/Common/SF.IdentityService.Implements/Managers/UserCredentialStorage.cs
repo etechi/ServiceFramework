@@ -28,7 +28,7 @@ namespace SF.Auth.IdentityServices.Managers
 	public class UserCredentialStorage :
 		UserCredentialStorage<DataModels.User, DataModels.UserCredential, DataModels.UserClaimValue, DataModels.UserRole>
 	{
-		public UserCredentialStorage(IDataSet<DataModels.UserCredential> DataSet, ITimeService TimeService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(DataSet, TimeService, ServiceInstanceDescriptor)
+		public UserCredentialStorage(IDataScope DataScope, ITimeService TimeService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(DataScope, TimeService, ServiceInstanceDescriptor)
 		{
 		}
 	}
@@ -39,88 +39,110 @@ namespace SF.Auth.IdentityServices.Managers
 		where TUserClaimValue : DataModels.UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
 		where TUserRole : DataModels.UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
 	{
-		IDataSet<TUserCredential> DataSet { get; }
+		IDataScope DataScope { get; }
 		ITimeService TimeService { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
 		public UserCredentialStorage(
-			IDataSet<TUserCredential> DataSet,
+			IDataScope DataScope,
 			ITimeService TimeService,
 			IServiceInstanceDescriptor ServiceInstanceDescriptor
 			)
 		{
-			this.DataSet = DataSet;
+			this.DataScope = DataScope;
 			this.TimeService = TimeService;
 			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
 
-		public async Task<UserCredential> FindOrBind(string ClaimTypeId, string Credential, bool Confirmed, long UserId)
+		public Task<UserCredential> FindOrBind(string ClaimTypeId, string Credential, bool Confirmed, long UserId)
 		{
-			var exist = await DataSet.FirstOrDefaultAsync(i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential);
-			var existUserId = exist?.UserId;
+			return DataScope.Use("查找或绑定用户", async ctx =>
+			 {
+				 var DataSet = ctx.Set<TUserCredential>();
+				 var exist = await DataSet.FirstOrDefaultAsync(i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential);
+				 var existUserId = exist?.UserId;
 
-			if (exist == null)
+				 if (exist == null)
+				 {
+					 exist = DataSet.Add(new TUserCredential
+					 {
+						 ClaimTypeId = ClaimTypeId,
+						 Credential = Credential,
+						 UserId = existUserId ?? UserId,
+						 CreatedTime = TimeService.Now,
+						 ConfirmedTime = Confirmed ? (DateTime?)TimeService.Now : null
+					 });
+					 await DataSet.Context.SaveChangesAsync();
+				 }
+				 return Poco.Map<TUserCredential, UserCredential>(exist);
+			 });
+		}
+
+		public Task<UserCredential> Find(string ClaimTypeId, string Credential)
+		{
+			return DataScope.Use("查找凭证", ctx => 
+				ctx.Set<TUserCredential>()
+				.FirstOrDefaultAsync(
+				 i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential,
+				 Poco.MapExpression<TUserCredential, UserCredential>()
+				 ));
+		}
+
+		public Task Bind(string ClaimTypeId, string Credential, bool Confirmed, long UserId)
+		{
+			return DataScope.Use("查找凭证", ctx =>
 			{
-				exist = DataSet.Add(new TUserCredential
+				ctx.Add(new TUserCredential
 				{
 					ClaimTypeId = ClaimTypeId,
 					Credential = Credential,
-					UserId = existUserId ?? UserId,
+					UserId = UserId,
 					CreatedTime = TimeService.Now,
 					ConfirmedTime = Confirmed ? (DateTime?)TimeService.Now : null
 				});
-				await DataSet.Context.SaveChangesAsync();
-			}
-			return Poco.Map<TUserCredential, UserCredential>(exist);
-
+				return ctx.SaveChangesAsync();
+			});
 		}
 
-		public async Task<UserCredential> Find(string ClaimTypeId, string Credential)
+		public Task Unbind(string ClaimTypeId, string Credential, long UserId)
 		{
-			return await DataSet.FirstOrDefaultAsync(
-				i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential,
-				Poco.MapExpression<TUserCredential, UserCredential>()
+			return DataScope.Use("解绑", ctx =>
+				
+				ctx.Set<TUserCredential>().RemoveRangeAsync(
+					i => 
+					i.ClaimTypeId == ClaimTypeId && 
+					i.Credential == Credential && 
+					i.UserId == UserId
+					)
 				);
 		}
 
-		public async Task Bind(string ClaimTypeId, string Credential, bool Confirmed, long UserId)
+		public Task SetConfirmed(string ClaimTypeId, string Credential, bool Confirmed)
 		{
-			DataSet.Add(new TUserCredential
-			{
-				ClaimTypeId=ClaimTypeId,
-				Credential = Credential,
-				UserId = UserId,
-				CreatedTime = TimeService.Now,
-				ConfirmedTime = Confirmed ? (DateTime?)TimeService.Now : null
-			});
-			await DataSet.Context.SaveChangesAsync();
+			return DataScope.Use("设置验证状态", ctx =>
+				ctx.Set<TUserCredential>().Update(
+					i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential,
+					e =>
+					{
+						e.ConfirmedTime = Confirmed ? (DateTime?)TimeService.Now : null;
+					})
+				);
 		}
 
-		public async Task Unbind(string ClaimTypeId, string Credential, long UserId)
+		public Task<UserCredential[]> GetIdents(string ClaimTypeId, long UserId)
 		{
-			await DataSet.RemoveRangeAsync(i => i.ClaimTypeId == ClaimTypeId && i.Credential == Credential && i.UserId == UserId);
-		}
-
-		public async Task SetConfirmed(string ClaimTypeId, string Credential, bool Confirmed)
-		{
-			await DataSet.Update(
-				i =>i.ClaimTypeId == ClaimTypeId && i.Credential == Credential,
-				e =>
-				{
-					e.ConfirmedTime = Confirmed ? (DateTime?)TimeService.Now : null;
-				});
-		}
-
-		public async Task<UserCredential[]> GetIdents(string ClaimTypeId, long UserId)
-		{
-			return await DataSet.QueryAsync(
+			return DataScope.Use("设置验证状态", ctx =>
+				ctx.Set<TUserCredential>().QueryAsync(
 				i => i.ClaimTypeId == ClaimTypeId && i.UserId == UserId,
 				Poco.MapExpression<TUserCredential, UserCredential>()
-				);
+				)
+			);
 		}
 
-		public async Task RemoveAllAsync()
+		public Task RemoveAllAsync()
 		{
-			await DataSet.RemoveRangeAsync(ic => true);
+			return DataScope.Use("设置验证状态", ctx =>
+				ctx.Set<TUserCredential>().RemoveRangeAsync(ic => true)
+				);
 		}
 	}
 	

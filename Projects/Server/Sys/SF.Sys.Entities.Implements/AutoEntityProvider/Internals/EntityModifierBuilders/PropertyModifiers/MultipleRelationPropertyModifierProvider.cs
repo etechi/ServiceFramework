@@ -77,13 +77,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 				if (Value == null && Context.Action!=ModifyAction.Delete)
 					return OrgValue;
 				var (create,update,remove)= LazyModifiers.Value;
-				var set = Manager.DataContext.Set<TChildModel>();
+				var set = Context.DataContext.Set<TChildModel>();
 
 				var parentCtx = (IEntityModifyContext<TEntity, TModel>)Context;
 				var parentKey = Entity<TModel>.GetKey<ObjectKey<TParentKey>>(parentCtx.Model).Id;
 
 				var arg = Expression.Parameter(typeof(TChildModel));
-				var orgItems = await Manager.DataContext.Set<TChildModel>().AsQueryable(false).Where(
+				var orgItems = await Context.DataContext.Set<TChildModel>().AsQueryable(false).Where(
 					Expression.Lambda<Func<TChildModel,bool>>(
 						Expression.Equal(
 							Expression.Property(arg,ForeignKeyProperty),
@@ -103,30 +103,30 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					async e =>
 					{
 						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitCreate(e.v,null);
+						ctx.InitCreate(Context.DataContext,e.v,null);
 						await create.Execute(Manager, ctx);
 						await update.Execute(Manager, ctx);
 
 						FuncSetParentKey(ctx.Model, parentKey);
 						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
 
-						Manager.PostChangedEvents( ctx.Editable, DataActionType.Create, childMeta);
+						Manager.PostChangedEvents(Context.DataContext, ctx.Editable, DataActionType.Create, childMeta);
 						return ctx.Model;
 					},
 					async (d, e) =>
 					{
 						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitUpdate(d, e.v, null);
+						ctx.InitUpdate(Context.DataContext, d, e.v, null);
 						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
 						await update.Execute(Manager, ctx);
-						Manager.PostChangedEvents(ctx.Editable, DataActionType.Update, childMeta);
+						Manager.PostChangedEvents(Context.DataContext, ctx.Editable, DataActionType.Update, childMeta);
 					},
 					async d =>
 					{
 						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitRemove(d, Entity<TChildModel>.GetKey<TChildEntity>(d), null);
+						ctx.InitRemove(Context.DataContext, d, Entity<TChildModel>.GetKey<TChildEntity>(d), null);
 						await remove.Execute(Manager, ctx);
-						Manager.PostChangedEvents(ctx.Editable, DataActionType.Delete, childMeta);
+						Manager.PostChangedEvents(Context.DataContext, ctx.Editable, DataActionType.Delete, childMeta);
 					}
 					);
 				return OrgValue;

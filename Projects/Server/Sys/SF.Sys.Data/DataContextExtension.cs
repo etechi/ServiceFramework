@@ -24,9 +24,12 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Data
 {
+	
 	public static class DataContextExtension
 	{
-		
+		public static IContextQueryable<TModel> Queryable<TModel>(this IDataContext Context) where TModel:class
+			=> Context.Set<TModel>().AsQueryable();
+
 		public static Task<T> Retry<T>(this IDataContext Context,Func<System.Threading.CancellationToken, Task<T>> Action,int Timeout=6000000,int Retry=5)
 		{
 			//如果当前上下文有显示事务，无法进行通过重置上下文进行并发重试
