@@ -90,16 +90,18 @@ namespace SF.Sys.Services
 			{
 				return ScopeFactory.WithScope(async sp =>
 				{
-					var query = sp.Resolve<IDataContext>()
-					.Set<TEntity>()
-					.AsQueryable()
-					.Where(e =>
-						e.TaskState == AtLeastOnceTaskState.Waiting &&
-						e.TaskNextTryTime < EndTargetTime
-						)
-					.Select(Setting.TaskIdentSelector)
-					;
-					var tasks = await query.ToArrayAsync();
+					var tasks = await sp.Resolve<IDataScope>().Use(
+						"查找任务", 
+						ctx =>
+						 ctx.Queryable<TEntity>()
+						 .Where(e =>
+							 e.TaskState == AtLeastOnceTaskState.Waiting &&
+							 e.TaskNextTryTime < EndTargetTime
+							 )
+						 .Select(Setting.TaskIdentSelector)
+						 .ToArrayAsync()
+					);
+
 					foreach (var task in tasks)
 						TimedTaskExecutor.Enqueue(
 							task.Id,
@@ -128,8 +130,10 @@ namespace SF.Sys.Services
 			async Task RunTask(IServiceProvider sp, TKey Id, TSyncKey SyncKey)
 			{ 
 				var timeService = sp.Resolve<ITimeService>();
-				var ctx = sp.Resolve<IDataContext>();
-				var task = await ctx.Set<TEntity>().FindAsync(Id);
+				var dataScope = sp.Resolve<IDataScope>();
+				var task = await dataScope.Use("载入任务",
+						ctx => ctx.Set<TEntity>().FindAsync(Id)
+						);
 				if (task == null)
 					return;
 				DateTime? delayed = null;
@@ -173,8 +177,11 @@ namespace SF.Sys.Services
 
 				task.TaskLastTryTime = now;
 				task.TaskTryCount++;
-				ctx.Update(task);
-				await ctx.SaveChangesAsync();
+				await dataScope.Use("载入任务", async ctx =>
+				{
+					ctx.Update(task);
+					await ctx.SaveChangesAsync();
+				});
 				if (task.TaskState == AtLeastOnceTaskState.Waiting)
 				{
 					TimedTaskExecutor.Enqueue(
@@ -189,20 +196,22 @@ namespace SF.Sys.Services
 			{
 				return ScopeFactory.WithScope(async sp =>
 				{
-					var ctx = sp.Resolve<IDataContext>();
-					var tasks = await ctx.Set<TEntity>().AsQueryable()
-						.Where(e => e.TaskState == AtLeastOnceTaskState.Running)
-						.ToArrayAsync();
-					var timeService = sp.Resolve<ITimeService>();
-					var now = timeService.Now;
-					foreach (var t in tasks)
-					{
-						t.TaskState = AtLeastOnceTaskState.Waiting;
-						t.TaskNextTryTime = now.AddSeconds(Setting.ErrorDelayUnit * (1 << t.TaskTryCount));
-						t.TaskLastError = "异常终止";
-						ctx.Update(t);
-					}
-					await ctx.SaveChangesAsync();
+					await sp.Resolve<IDataScope>().Use("清理异常任务", async ctx =>
+					 {
+						 var tasks = await ctx.Set<TEntity>().AsQueryable()
+							 .Where(e => e.TaskState == AtLeastOnceTaskState.Running)
+							 .ToArrayAsync();
+						 var timeService = sp.Resolve<ITimeService>();
+						 var now = timeService.Now;
+						 foreach (var t in tasks)
+						 {
+							 t.TaskState = AtLeastOnceTaskState.Waiting;
+							 t.TaskNextTryTime = now.AddSeconds(Setting.ErrorDelayUnit * (1 << t.TaskTryCount));
+							 t.TaskLastError = "异常终止";
+							 ctx.Update(t);
+						 }
+						 await ctx.SaveChangesAsync();
+					 });
 				});
 			}
 		}

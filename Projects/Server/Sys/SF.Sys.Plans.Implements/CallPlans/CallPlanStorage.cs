@@ -51,7 +51,7 @@ namespace SF.Sys.CallPlans
 		{
             try
             {
-				return 0!=await DataScope.Use("添加调用", ctx =>
+				await DataScope.Use("添加调用", ctx =>
 				{
 					ctx.Add(new DataModels.CallInstance
 					{
@@ -68,6 +68,7 @@ namespace SF.Sys.CallPlans
 					});
 					return ctx.SaveChangesAsync();
 				});
+				return true;
             }
             catch (DbDuplicatedKeyException)
             {
@@ -75,7 +76,7 @@ namespace SF.Sys.CallPlans
                 return false;
             }
 		}
-        public  Task Remove(string Type,string Ident)
+        public Task Remove(string Type,string Ident)
         {
 			return DataScope.Use("删除调用", async ctx =>
 			{

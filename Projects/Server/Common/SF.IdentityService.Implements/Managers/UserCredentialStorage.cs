@@ -106,7 +106,6 @@ namespace SF.Auth.IdentityServices.Managers
 		public Task Unbind(string ClaimTypeId, string Credential, long UserId)
 		{
 			return DataScope.Use("解绑", ctx =>
-				
 				ctx.Set<TUserCredential>().RemoveRangeAsync(
 					i => 
 					i.ClaimTypeId == ClaimTypeId && 

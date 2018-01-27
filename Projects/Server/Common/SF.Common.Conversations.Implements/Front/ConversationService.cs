@@ -18,7 +18,7 @@ namespace SF.Common.Conversations.Front
 	/// </summary>
 	public class ConversationService : IConversationService
 	{
-		IDataContext DataContext { get; }
+		IDataScope DataScope { get; }
 		IAccessToken AccessToken { get; }
 		Lazy<Managers.ISessionStatusManager> SessionStatusManager { get; }
 		Lazy<Managers.ISessionMemberStatusManager> SessionMemberStatusManager { get; }
@@ -33,7 +33,7 @@ namespace SF.Common.Conversations.Front
 
 
 		public ConversationService(
-			IDataContext DataContext, 
+			IDataScope DataScope, 
 			IAccessToken AccessToken,
 			
 			Lazy<Managers.ISessionStatusManager> SessionStatusManager,
@@ -47,7 +47,7 @@ namespace SF.Common.Conversations.Front
 			)
 		{
 			this.AccessToken = AccessToken;
-			this.DataContext = DataContext;
+			this.DataScope = DataScope;
 			this.SessionStatusManager= SessionStatusManager;
 			this.SessionMemberStatusManager = SessionMemberStatusManager;
 			this.SessionMessageManager = SessionMessageManager;
@@ -85,46 +85,48 @@ namespace SF.Common.Conversations.Front
 		public async Task<QueryResult<SessionMessage>> QueryMessages(MessageQueryArgument Arg)
 		{
 			var ctx =await EnsureSessionMember(Arg.BizIdentType,Arg.BizIdent);
+			return await DataScope.Use("查询消息", async DataContext =>
+			 {
+				 var q = from s in DataContext.Set<DataModels.DataSessionStatus>().AsQueryable()
+						 where s.BizIdentType == Arg.BizIdentType &&
+								 s.BizIdent == Arg.BizIdent &&
+								 s.LogicState == EntityLogicState.Enabled
+						 from m in s.Messages
+						 select m;
+				 if (Arg.StartId.HasValue)
+					 q = q.Where(m => m.Id > Arg.StartId.Value);
 
-			var q = from s in DataContext.Set<DataModels.DataSessionStatus>().AsQueryable()
-					where	s.BizIdentType==Arg.BizIdentType && 
-							s.BizIdent==Arg.BizIdent && 
-							s.LogicState==EntityLogicState.Enabled
-					from m in s.Messages
-					select m;
-			if (Arg.StartId.HasValue)
-				q = q.Where(m => m.Id > Arg.StartId.Value);
+				 var user = ctx.UserId;
+				 var rq = from m in q
+						  orderby m.Id ascending
+						  select new SessionMessage
+						  {
+							  Id = m.Id,
+							  Argument = m.Argument,
+							  SessionId = m.SessionId,
+							  Text = m.Text,
+							  Time = m.Time,
+							  Type = m.Type,
+							  UserId = m.UserId,
+							  Self = m.UserId.HasValue && m.UserId.Value == user
+						  };
 
-			var user = ctx.UserId;
-			var rq = from m in q
-					orderby m.Id ascending
-					select new SessionMessage
-					{
-						Id = m.Id,
-						Argument = m.Argument,
-						SessionId = m.SessionId,
-						Text = m.Text,
-						Time = m.Time,
-						Type = m.Type,
-						UserId=m.UserId,
-						Self= m.UserId.HasValue && m.UserId.Value== user
-					};
-
-			var re = await rq.ToQueryResultAsync(Arg.Paging);
+				 var re = await rq.ToQueryResultAsync(Arg.Paging);
 
 
-			var uids = re.Items.Select(i => i.UserId).Where(i => i.HasValue).Select(i=>i.Value).ToArray();
-			var users = await ctx.Provider.GetMemberDesc(Arg.BizIdent, uids);
+				 var uids = re.Items.Select(i => i.UserId).Where(i => i.HasValue).Select(i => i.Value).ToArray();
+				 var users = await ctx.Provider.GetMemberDesc(Arg.BizIdent, uids);
 
-			foreach(var i in re.Items)
-				if (i.UserId.HasValue && users.TryGetValue(i.UserId.Value, out var u))
-				{
-					i.PosterName = u.Name;
-					i.PosterIcon = u.Icon;
-					i.MemberBizIdent = u.BizIdent;
-					i.MemberBizIdentType = u.BizIdentType;
-				}
-			return re;
+				 foreach (var i in re.Items)
+					 if (i.UserId.HasValue && users.TryGetValue(i.UserId.Value, out var u))
+					 {
+						 i.PosterName = u.Name;
+						 i.PosterIcon = u.Icon;
+						 i.MemberBizIdent = u.BizIdent;
+						 i.MemberBizIdentType = u.BizIdentType;
+					 }
+				 return re;
+			 });
 		}
 
 
@@ -169,66 +171,69 @@ namespace SF.Common.Conversations.Front
 			{
 				grps.AddRange(await sp.QuerySessions(user));
 			}
+			return await DataScope.Use("查询消息", async DataContext =>
+			{
 
-			var ssQuery = DataContext.Set<DataModels.DataSessionStatus>().AsQueryable();
-			var Members = DataContext.Set<DataModels.DataSessionMemberStatus>().AsQueryable();
+				var ssQuery = DataContext.Set<DataModels.DataSessionStatus>().AsQueryable();
+				var Members = DataContext.Set<DataModels.DataSessionMemberStatus>().AsQueryable();
 
-			//填充会话状态
-			foreach(var g in from grp in grps 
-							from s in grp.Sessions
-							group s by s.BizIdentType into g
-							select (
-								BizIdentType:g.Key,
-								BizIdents:g.Select(gi=>gi.BizIdent).Distinct().ToArray(),
-								Sessions:g.ToArray()
+				//填充会话状态
+				foreach (var g in from grp in grps
+								  from s in grp.Sessions
+								  group s by s.BizIdentType into g
+								  select (
+									  BizIdentType: g.Key,
+									  BizIdents: g.Select(gi => gi.BizIdent).Distinct().ToArray(),
+									  Sessions: g.ToArray()
+									  )
 								)
-							)
-			{
-				var dics =await (
-					from s in ssQuery
-					where s.BizIdentType == g.BizIdentType && g.BizIdents.Contains(s.BizIdent)
-					join tm in Members on s.Id equals tm.SessionId into tms
-					from m in tms.Where(tm=>tm.OwnerId.Value==user).DefaultIfEmpty()
-					//let m= s.Members.Where(m => m.OwnerId.Value == user).SingleOrDefault()
-					let readed= m==null?0:m.MessageReaded
-					select new
-					{
-						s.BizIdent,
-						s.BizIdentType,
-						s.LogicState,
-						Unread=s.MessageCount - readed,
-						s.UpdatedTime,
-						s.LastMessageText
-					}).ToDictionaryAsync(s => (s.BizIdentType, s.BizIdent));
+				{
+					var dics = await (
+						from s in ssQuery
+						where s.BizIdentType == g.BizIdentType && g.BizIdents.Contains(s.BizIdent)
+						join tm in Members on s.Id equals tm.SessionId into tms
+						from m in tms.Where(tm => tm.OwnerId.Value == user).DefaultIfEmpty()
+							//let m= s.Members.Where(m => m.OwnerId.Value == user).SingleOrDefault()
+						let readed = m == null ? 0 : m.MessageReaded
+						select new
+						{
+							s.BizIdent,
+							s.BizIdentType,
+							s.LogicState,
+							Unread = s.MessageCount - readed,
+							s.UpdatedTime,
+							s.LastMessageText
+						}).ToDictionaryAsync(s => (s.BizIdentType, s.BizIdent));
 
-				foreach (var s in g.Sessions)
-					if (dics.TryGetValue((s.BizIdentType, s.BizIdent), out var ss))
-					{
-						s.Unread = ss.Unread;
-						s.Text = s.Text ?? ss.LastMessageText;
-						s.Time = s.Time ?? ss.UpdatedTime;
-					}
-			}
+					foreach (var s in g.Sessions)
+						if (dics.TryGetValue((s.BizIdentType, s.BizIdent), out var ss))
+						{
+							s.Unread = ss.Unread;
+							s.Text = s.Text ?? ss.LastMessageText;
+							s.Time = s.Time ?? ss.UpdatedTime;
+						}
+				}
 
 
-			var q = from g in grps
-					from s in g.Sessions
-					group (g, s) by g.Name into gi
-					let fg = gi.First().g
-					orderby fg.Order
-					select new SessionGroup
-					{
-						Name = fg.Name,
-						Text = fg.Text,
-						Sessions = gi.Select(p => p.s)
-								  .OrderByDescending(s => s.Time)
-								  .ToArray()
-					};
-			var items = q.ToArray();
-			return new QueryResult<SessionGroup>
-			{
-				Items = items
-			};
+				var q = from g in grps
+						from s in g.Sessions
+						group (g, s) by g.Name into gi
+						let fg = gi.First().g
+						orderby fg.Order
+						select new SessionGroup
+						{
+							Name = fg.Name,
+							Text = fg.Text,
+							Sessions = gi.Select(p => p.s)
+									  .OrderByDescending(s => s.Time)
+									  .ToArray()
+						};
+				var items = q.ToArray();
+				return new QueryResult<SessionGroup>
+				{
+					Items = items
+				};
+			});
 		}
 		public async Task<QueryResult<SessionMember>> QueryMembers(MemberQueryArgument Arg)
 		{

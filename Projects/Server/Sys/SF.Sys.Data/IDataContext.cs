@@ -23,7 +23,19 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Data
 {
-
+	[Flags]
+	public enum TransactionCommitNotifyType
+	{
+		None = 0,
+		BeforeCommit = 1,
+		AfterCommit = 2,
+		Rollback = 4
+	}
+	public interface ITransactionCommitTracker
+	{
+		TransactionCommitNotifyType TrackNotifyTypes { get; }
+		Task Notify(TransactionCommitNotifyType Type, Exception Exception);
+	}
 	public interface IFieldUpdater<T>
     {
         IFieldUpdater<T> Update<P>(Expression<Func<T, P>> field);
@@ -33,24 +45,26 @@ namespace SF.Sys.Data
 	public enum DataContextFlag
 	{
 		None=0,
-		UseTransaction=1
+		//优先使用当前数据上下文
+		LightMode=1
 	}
 	public interface IDataScope
 	{
-		Task<T> Use<T>(string Actin,Func<IDataContext, Task<T>> Callback, DataContextFlag Flags=DataContextFlag.None);
+		Task<T> Use<T>(
+			string Actin,
+			Func<IDataContext, Task<T>> Callback, 
+			DataContextFlag Flags=DataContextFlag.None,
+			System.Data.IsolationLevel TransactionLevel=System.Data.IsolationLevel.Unspecified
+			);
 	}
-
 	public interface IDataContext :IDisposable
 	{
 		IDataSet<T> Set<T>() where T : class;
+		void AddCommitTracker(ITransactionCommitTracker Tracker);
 
-		void Reset();
-        int SaveChanges();
+		//int SaveChanges();
 		void ClearTrackingEntities();
-		Task<int> SaveChangesAsync();
-
-		IDataContextProvider Provider { get; }
-		ITransactionScopeManager TransactionScopeManager { get; }
+		Task SaveChangesAsync();
 	}
 	public interface IDataContextExtension
     {

@@ -21,34 +21,36 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Data.Common;
 using SF.Sys.Data;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace SF.Sys.Data.EntityFrameworkCore
 {
-	public class DataContextProviderFactory<T> : 
-		IDataContextProviderFactory
-		where T: Microsoft.EntityFrameworkCore.DbContext
-	{
-		Func<T> DbContextCreator { get; }
-		public DataContextProviderFactory(Func<T> DbContextCreator)
-		{
-			this.DbContextCreator = DbContextCreator;
-		}
-		public IDataContextProvider Create(IDataContext DataContext)
-		{
-			return new EntityDbContextProvider<T>(DbContextCreator(), DataContext);
-		}
-	}
+	
 	public class DataContextProviderFactory :
 		IDataContextProviderFactory
 	{
-		Func<Microsoft.EntityFrameworkCore.DbContext> DbContextCreator { get; }
+		Func<DbContext> DbContextCreator { get; }
 		public DataContextProviderFactory(Func<DbContext> DbContextCreator)
 		{
 			this.DbContextCreator = DbContextCreator;
 		}
-		public IDataContextProvider Create(IDataContext DataContext)
+		public IDataContextProvider Create()
 		{
-			return new EntityDbContextProvider(DbContextCreator(), DataContext);
+			return new EFDbContext(DbContextCreator());
+		}
+	}
+	public class PoolDataContextFactory<TContext> :
+		IDataContextProviderFactory
+		where TContext:DbContext
+	{
+		DbContextPool<TContext> Pool { get; }
+		public PoolDataContextFactory(DbContextPool<TContext> Pool)
+		{
+			this.Pool = Pool;
+		}
+		public IDataContextProvider Create()
+		{
+			return new EFDbContext(Pool.Rent());
 		}
 	}
 }

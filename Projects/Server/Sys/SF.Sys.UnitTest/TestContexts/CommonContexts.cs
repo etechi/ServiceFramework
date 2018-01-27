@@ -38,7 +38,30 @@ namespace SF.Sys.UnitTest
 			=> sp.TestContext().NewScope();
 
 
+		public static ITestContext<(V Prev,IDataScope DataScope)> NewDataScope<V>(this ITestContext<V> s)
+		{
+			return s.NewContext<V, (V Prev, IDataScope DataScope)>(
+				(sp, v, cb) =>
+				{
+					return cb(sp, (v, sp.Resolve<IDataScope>()));
 
+				});
+		}
+		public static ITestContext<(V Prev, IDataScope DataScope,IDataContext DataContext)> NewDataContext<V>(
+			this ITestContext<V> s,
+			string Name=null,
+			DataContextFlag Flags=DataContextFlag.None
+			)
+		{
+			return s.NewContext<V, (V Prev, IDataScope DataScope,IDataContext DataContext)> (
+				(sp, v, cb) =>
+				{
+					var ds = sp.Resolve<IDataScope>();
+					return ds.Use(Name ?? "²âÊÔ", ctx =>
+						   cb(sp, (v, ds, ctx))
+					   );
+				});
+		}
 	}
 
 

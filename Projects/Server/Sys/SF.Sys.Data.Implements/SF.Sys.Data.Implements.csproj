@@ -7,12 +7,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Data.Implements.xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.Data.Implements.xml</DocumentationFile>
 		<NoWarn>1701;1702;1705;1591</NoWarn>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DataContext1.cs" />
+    <Compile Remove="DataSet.cs" />
+    <Compile Remove="TransactionScopeManager.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove=".licenseheader" />

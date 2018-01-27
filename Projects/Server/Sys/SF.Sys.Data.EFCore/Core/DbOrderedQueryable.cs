@@ -22,7 +22,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		IOrderedContextQueryable<T>
 	{
 
-		public DbOrderedQueryable(EntityDbContextProvider Context, IQueryable<T> query):base(Context,query)
+		public DbOrderedQueryable(EFDbContext Context, IQueryable<T> query):base(Context,query)
 		{
 		}
 

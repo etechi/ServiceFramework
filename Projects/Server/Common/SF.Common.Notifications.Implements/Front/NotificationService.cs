@@ -327,8 +327,7 @@ namespace SF.Common.Notifications.Front
 			if (ids == null || ids.Length == 0)
 				return Task.CompletedTask;
 
-			return DataScope.Value.Use("设置已读状态", DataContext =>
-				 DataContext.Retry(async (ct) =>
+			return DataScope.Value.Retry("设置已读状态", async DataContext =>
 			 {
 				 var now = TimeService.Value.Now;
 				 var notifications = await (
@@ -377,7 +376,7 @@ namespace SF.Common.Notifications.Front
 					 DataContext.Update(status);
 				 await DataContext.SaveChangesAsync();
 				 return 0;
-			 })
+			 }
 			);
 		}
 	}

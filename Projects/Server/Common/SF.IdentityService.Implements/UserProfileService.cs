@@ -30,14 +30,14 @@ namespace SF.Auth.IdentityServices
 {
 	public class UserProfileService : IUserProfileService
 	{
-		public IScoped<IDataContext> ScopedDataContext { get; }
-		public UserProfileService(IScoped<IDataContext> ScopedDataContext)
+		public IDataScope DataScope { get; }
+		public UserProfileService(IDataScope DataScope)
 		{
-			this.ScopedDataContext = ScopedDataContext;
+			this.DataScope= DataScope;
 		}
 		public async Task<Claim[]> GetClaims(long id, string[] ClaimTypes,IEnumerable<Claim> ExtraClaims)
 		{
-			return await ScopedDataContext.Use(async ctx =>
+			return await DataScope.Use("获取凭证",async ctx =>
 			{
 				var Users = ctx.Set<DataModels.User>();
 				var desc = await (
@@ -149,7 +149,7 @@ namespace SF.Auth.IdentityServices
 
 		public async Task<bool> IsValid(long Id)
 		{
-			return await ScopedDataContext.Use(async ctx=>
+			return await DataScope.Use("检查ID是否有效",async ctx=>
 			{
 				return await ctx.Set<DataModels.User>().AsQueryable()
 					.Where(u => u.Id == Id && u.LogicState == EntityLogicState.Enabled)
@@ -160,7 +160,7 @@ namespace SF.Auth.IdentityServices
 
 		public async Task<User> GetUser(long UserId)
 		{
-			return await ScopedDataContext.Use(async ctx =>
+			return await DataScope.Use("查找用户", async ctx =>
 			{
 				var user=await (
 				from u in ctx.Set<DataModels.User>().AsQueryable()

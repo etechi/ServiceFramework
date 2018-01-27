@@ -24,26 +24,33 @@ using SF.Sys.Data;
 
 namespace SF.Sys.Data.EntityFrameworkCore
 {
-	class DataSetProvider<T> :  IDataSetProvider<T>,IDataSetMetadata
+	class EFDataSet
+	{
+		public EFDbContext Context { get; }
+		public EFDataSet(EFDbContext Context)
+		{
+			this.Context = Context;
+		}
+	}
+	class EFDataSet<T> : EFDataSet, IDataSet<T>,IDataSetMetadata
 		where T:class
 	{
-		public DataSetProvider(EntityDbContextProvider Provider)
+		public IDataContext DataContext { get; }
+		public EFDataSet(IDataContext DataContext,EFDbContext Context):base(Context)
 		{
-			this.Set = Provider.DbContext.Set<T>();
-			this.Provider = Provider;
+			this.DataContext = DataContext;
+			this.Set = Context.DbContext.Set<T>();
 		}
 
 		DbSet<T> Set { get; }
 
-		EntityDbContextProvider Provider { get; }
-
-		public IDataContext Context => Provider.DataContext;
+		IDataContext IDataSet.Context => DataContext;
 
 		string IDataSetMetadata.EntitySetName
 		{
 			get
 			{
-				return Provider.DbContext.Model.FindEntityType(typeof(T)).Relational().TableName;
+				return Context.DbContext.Model.FindEntityType(typeof(T)).Relational().TableName;
 			}
 		}
 		class EntityProperty : IEntityProperty
@@ -56,7 +63,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		{
 			get
 			{
-				return Provider.DbContext
+				return Context.DbContext
 					.Model
 					.FindEntityType(typeof(T))
 					.FindPrimaryKey()
@@ -72,7 +79,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		{
 			get
 			{
-				return Provider.DbContext
+				return Context.DbContext
 					.Model
 					.FindEntityType(typeof(T))
 					.GetProperties()
@@ -95,38 +102,38 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		public T Add(T Model)
 		{
 			var re = Set.Add(Model).Entity;
-			Provider.SetChanged();
+			Context.SetChanged();
 			return re;
 		}
 
 		public void AddRange(IEnumerable<T> Items)
 		{
 			Set.AddRange(Items);
-			Provider.SetChanged();
+			Context.SetChanged();
 		}
 
 
 		public T Remove(T Model)
 		{
 			var re=Set.Remove(Model).Entity;
-			Provider.SetChanged();
+			Context.SetChanged();
 			return re;
 		}
 
 		public void RemoveRange(IEnumerable<T> Items)
 		{
 			Set.RemoveRange(Items);
-			Provider.SetChanged();
+			Context.SetChanged();
 		}
 
 
 		public T Update(T item)
 		{
-			var state = Provider.DbContext.Entry(item).State;
+			var state = Context.DbContext.Entry(item).State;
 			if (state == EntityState.Unchanged || state==EntityState.Detached)
 			{
 				var re=Set.Update(item).Entity;
-				Provider.SetChanged();
+				Context.SetChanged();
 				return re;
 			}
 			return item;
@@ -139,7 +146,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 			IQueryable<T> query = Set;
 			if (ReadOnly)
 				query = query.AsNoTracking();
-			return new DbQueryable<T>(Provider, query);
+			return new DbQueryable<T>(Context, query);
 		}
 
 		public Task<T> FindAsync(params object[] Idents)

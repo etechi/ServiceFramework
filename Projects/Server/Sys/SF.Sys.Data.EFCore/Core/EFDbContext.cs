@@ -26,6 +26,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Internal;
 using Remotion.Linq.Parsing.Structure;
 using Microsoft.EntityFrameworkCore.Query;
+using System.Threading;
 
 namespace SF.Sys.Data.EntityFrameworkCore
 {
@@ -54,31 +55,23 @@ namespace SF.Sys.Data.EntityFrameworkCore
 	//	{ }
 	//}
 
-	public class EntityDbContextProvider<T> :
-		EntityDbContextProvider
-		where T : DbContext
-	{
-		public EntityDbContextProvider(T Context, IDataContext DataContext) : base(Context, DataContext)
-		{
-		}
-	}
-	public class EntityDbContextProvider :
-        IDataContextProvider,
-        IDataContextExtension
+	
+	public class EFDbContext :
+		IDataContextProvider,
+        IDataContextProviderExtension
     {
 		public DbContext DbContext { get; }
-		public IDataContext DataContext { get; }
 		public bool IsChanged { get; private set; }
 		internal void SetChanged()
 		{
 			
 			IsChanged = true;
 		}
-		public EntityDbContextProvider(DbContext DbContext, IDataContext DataContext)
+		public EFDbContext(DbContext DbContext)
 		{
+			
 			this.DbContext = DbContext;
 			DbContext.ChangeTracker.AutoDetectChangesEnabled = false;
-			this.DataContext = DataContext;
 		}
 		public IAsyncQueryableProvider AsyncQueryableProvider
 		{
@@ -94,12 +87,6 @@ namespace SF.Sys.Data.EntityFrameworkCore
 			{
 				return EntityFrameworkCore.AsyncQueryableProvider.Instance;
 			}
-		}
-		DbTransaction _tran;
-		public DbTransaction Transaction {
-			get => _tran;
-			set => 
-				DbContext.Database.UseTransaction(_tran=value);
 		}
 
 
@@ -205,11 +192,11 @@ namespace SF.Sys.Data.EntityFrameworkCore
 				}
 			return 0;
 		}
-		
-		public IDataSetProvider<T> SetProvider<T>() where T:class
+		public IDataSet<T> CreateDataSet<T>(IDataContext DataContext)where T : class
 		{
-			return new DataSetProvider<T>(this);
+			return new EFDataSet<T>(DataContext,this);
 		}
+	
 
 
 		public IContextQueryable<T> CreateQueryable<T>(IQueryable<T> Query)
@@ -325,6 +312,38 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		public DbConnection GetDbConnection()
 		{
 			return DbContext.Database.GetDbConnection();
+		}
+
+		class Transaction : IDataContextTransaction
+		{
+			IDbContextTransaction _Transaction;
+			public Transaction(IDbContextTransaction Transaction)
+			{
+				_Transaction = Transaction;
+			}
+			public void Commit()
+			{
+				_Transaction.Commit();
+			}
+
+			public void Dispose()
+			{
+				Disposable.Release(ref _Transaction);
+			}
+
+			public void Rollback()
+			{
+				_Transaction.Rollback();
+			}
+		}
+
+		public async Task<IDataContextTransaction> BeginTransaction(
+			System.Data.IsolationLevel IsolationLevel,
+			CancellationToken cancellationToken
+			)
+		{
+			var tran = await DbContext.Database.BeginTransactionAsync(IsolationLevel, cancellationToken);
+			return new Transaction(tran);
 		}
 	}
 	

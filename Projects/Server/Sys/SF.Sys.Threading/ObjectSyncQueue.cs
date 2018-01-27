@@ -46,7 +46,7 @@ namespace SF.Sys.Threading
 			return callback();
 		}
 	}
-	public class ObjectSyncQueue<K> : ISyncQueue<K>,IDisposable
+	public class ObjectSyncQueue<K> : ISyncQueue<K>
 	{
 		abstract class Item
 		{
@@ -79,9 +79,9 @@ namespace SF.Sys.Threading
 			}
 		}
 		ConcurrentDictionary<K, Item> Dict { get; } = new ConcurrentDictionary<K, Item>();
-		bool _Disposed;
 		public Task<T> Queue<T>(K key, Func<Task<T>> callback)
 		{
+
 			TaskCompletionSource<T> tcs = null;
 			Item head = null;
 			for (; ; )
@@ -142,22 +142,5 @@ namespace SF.Sys.Threading
 			return re;
 		}
 
-		public void Dispose()
-		{
-			lock (Dict)
-				_Disposed = true;
-			Task.Run(async () =>
-			{
-				for (; ; )
-				{
-					lock (Dict)
-					{
-						if (Dict.Count == 0)
-							break;
-					}
-					await Task.Delay(10);
-				}
-			}).Wait();
-		}
 	}
 }

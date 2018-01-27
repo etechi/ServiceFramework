@@ -23,140 +23,104 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Data
 {
-
     public class DataContext : IDataContext,IDataContextExtension
     {
-        IDataContextProvider _Provider;
-		public IDataContextProvider Provider => _Provider;
-        public IDataContextProviderFactory ProviderFactory { get; }
-		public Lazy<ITransactionScopeManager> LazyTransactionScopeManager { get; }
-		IServiceProvider ServiceProvider { get; }
+		public string Name { get; }
+        public IDataContextProvider Provider { get; }
+		bool _Disposed;
+
+		public RootDataContext RootContext { get; }
+		public DataContext PrevContext { get; }
+		protected void CheckDispose()
+		{
+			if (_Disposed)
+				throw new ObjectDisposedException(GetType().FullName);
+		}
+
 		public DataContext(
-			IDataContextProviderFactory ProviderFactory,
-			IServiceProvider ServiceProvider
-			//Lazy<ITransactionScopeManager> TransactionScopeManager
+			string Name,
+			IDataContextProvider Provider,
+			RootDataContext RootContext,
+			DataContext PrevContext
 			)
         {
-			this.ServiceProvider = ServiceProvider;
-            this.ProviderFactory = ProviderFactory;
-            _Provider = ProviderFactory.Create(this);
-			LazyTransactionScopeManager = new Lazy<ITransactionScopeManager>(() => ServiceProvider.Resolve<ITransactionScopeManager>());
-			//this.LazyTransactionScopeManager = TransactionScopeManager;
+			this.Name = Name;
+			this.Provider = Provider;
+			this.RootContext = RootContext;
+			this.PrevContext = PrevContext;
 		}
-		IEnumerable<IDataSetProviderResetable> ListRestable(IDataSetProviderResetable resetable)
+        protected virtual void OnDisposed()
 		{
-			var item = resetable;
-			if (item == null)
-				yield break;
-			yield return item;
-			for (;;)
-			{
-				item = item.NextResetable;
-				if (item == resetable)
-					break;
-				yield return item;
-			}
+
 		}
-        public void Reset()
-        {
-            Dispose();
-            _Provider = ProviderFactory.Create(this);
-			foreach (var pair in Sets)
-				foreach (var r in ListRestable(pair.Value))
-					r.SetProvider=null;
-        }
-		Dictionary<Type, IDataSetProviderResetable> Sets { get; } = new Dictionary<Type, IDataSetProviderResetable>();
-
-		public ITransactionScopeManager TransactionScopeManager => LazyTransactionScopeManager.Value;
-
-		internal IDataSetProvider<T> GetSetProvider<T>() where T : class
-		{
-			var type = typeof(T);
-			IDataSetProviderResetable r;
-			if (!Sets.TryGetValue(type, out r))
-				throw new InvalidOperationException();
-			var p = r.SetProvider;
-			if (p == null)
-				r.SetProvider = p = Provider.SetProvider<T>();
-			return (IDataSetProvider<T>)p;
-		}
-		internal void RegisterDataSet<T>(DataSet<T> Set) where T:class
-		{
-			var type = typeof(T);
-			var r = (IDataSetProviderResetable)Set;
-			if (r.NextResetable != null)
-				throw new InvalidOperationException();
-			IDataSetProviderResetable head;
-			if (Sets.TryGetValue(type, out head))
-			{
-				r.NextResetable = head.NextResetable;
-				head.NextResetable = r;
-			}
-			else {
-				r.NextResetable = r;
-				Sets.Add(type, r);
-			}
-		}
-
-
         public void Dispose()
         {
-			if (_Provider != null)
-			{
-				_Provider.Dispose();
-				_Provider = null;
-			}
+			if (_Disposed) return;
+			_Disposed = true;
+			OnDisposed();
         }
-
-        public IDataSet<T> Set<T>() where T : class
-        {
+		Dictionary<Type, IDataSet> Sets { get; } = new Dictionary<Type, IDataSet>();
+		public IDataSet<T> Set<T>() where T : class
+		{
+			CheckDispose();
 			var type = typeof(T);
-			IDataSetProviderResetable r;
-			if (!Sets.TryGetValue(type, out r))
-				r = new DataSet<T>(this);
-			return (IDataSet<T>)r;
+			if (Sets.TryGetValue(type, out var re))
+				return (IDataSet<T>)re;
+			re = Provider.CreateDataSet<T>(this);
+			Sets.Add(type, re);
+			return (IDataSet<T>)re;
 		}
 
-        public int SaveChanges()
+		
+		public virtual Task SaveChangesAsync()
         {
-			return _Provider.SaveChanges();
+			CheckDispose();
+			return Task.CompletedTask;
+			//return await Provider.SaveChangesAsync();
         }
 
-        public async Task<int> SaveChangesAsync()
-        {
-			return await _Provider.SaveChangesAsync();
-        }
+		public virtual void AddCommitTracker(
+			ITransactionCommitTracker Tracker
+			)
+		{
+			CheckDispose();
+			RootContext.AddCommitTracker(Tracker);
+		}
 
-       
 
-        public void UpdateFields<T>(T item, Func<IFieldUpdater<T>, IFieldUpdater<T>> updater) where T : class
+		public void UpdateFields<T>(T item, Func<IFieldUpdater<T>, IFieldUpdater<T>> updater) where T : class
         {
             //_internalDataContext.UpdateFields(item, updater);
         }
 
         public object GetEntityOriginalValue(object Entity, string Field)
         {
-            return ((IDataContextExtension)_Provider).GetEntityOriginalValue(Entity, Field);
+			CheckDispose();
+			return ((IDataContextExtension)Provider).GetEntityOriginalValue(Entity, Field);
         }
 
         public string GetEntitySetName<T>() where T : class
         {
-            return ((IDataContextExtension)_Provider).GetEntitySetName<T>();
+			CheckDispose();
+			return ((IDataContextExtension)Provider).GetEntitySetName<T>();
         }
 
 		public void ClearTrackingEntities()
 		{
-			_Provider.ClearTrackingEntities();
+			CheckDispose();
+			Provider.ClearTrackingEntities();
 		}
 
 		public IEnumerable<string> GetUnderlingCommandTexts<T>(IContextQueryable<T> Queryable) where T : class
 		{
-			return ((IDataContextExtension)_Provider).GetUnderlingCommandTexts(Queryable);
+			CheckDispose();
+			return ((IDataContextExtension)Provider).GetUnderlingCommandTexts(Queryable);
 		}
 
 		public DbConnection GetDbConnection()
 		{
-			return ((IDataContextExtension)_Provider).GetDbConnection();
+			CheckDispose();
+			return ((IDataContextExtension)Provider).GetDbConnection();
 		}
 	}
 }

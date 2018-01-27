@@ -220,41 +220,7 @@ namespace SF.Sys.Data
 			return set.AsQueryable(true).Where(filter).SingleOrDefaultAsync();
 		}
 
-		public static async Task<T> GetOrCreateAtomEntity<T>(
-			this IDataSet<T> set, 
-			IScoped<IDataContext> DataContex, 
-			Expression<Func<T, bool>> Filter,
-			Func<Task<T>> Creater
-			)
-			where T:class
-		{
-			var re = await set.AsQueryable().Where(Filter).SingleOrDefaultAsync();
-			if (re != null)
-				return re;
-			for (; ; )
-			{
-				try
-				{
-					return await DataContex.Use(async ctx =>
-					{
-						var iset = ctx.Set<T>();
-						for (; ; )
-						{
-							var ire = await iset.AsQueryable().Where(Filter).SingleOrDefaultAsync();
-							if (ire != null)
-								return re;
-
-							iset.Add(await Creater());
-							await ctx.SaveChangesAsync();
-						}
-					});
-				}
-				catch (DbDuplicatedKeyException)
-				{
-					continue;
-				}
-			}
-		}
+		
 
 		public static async Task<T> EnsureAsync<T>(
 			this IDataSet<T> set,
@@ -287,7 +253,7 @@ namespace SF.Sys.Data
 			this IDataSet<T> set,
 			System.Linq.Expressions.Expression<Func<T, bool>> filter,
 			Func<Task<T>> creator,
-			Func<T,Task> updater,
+			Func<T,Task> updater=null,
 			bool AutoSave=true
 			) where T : class
 		{
@@ -688,43 +654,43 @@ namespace SF.Sys.Data
 				async () =>
 				{
 					await Action();
-					return 0;
+					
 				},
 				Retry,
 				DelayMilliseconds
 				);
 		}
-		public static async Task<R> RetryForConcurrencyExceptionAsync<T,R>(
-			this IDataSet<T> set,
-			Func<Task<R>> Action,
-            int Retry=5,
-            int DelayMilliseconds=500
-			) where T : class
-		{
-			//如果当前上下文有显示事务，无法进行通过重置上下文进行并发重试
-			if (set.Context.Provider.Transaction != null)
-				return await Action();
+		//public static async Task<R> RetryForConcurrencyExceptionAsync<T,R>(
+		//	this IDataSet<T> set,
+		//	Func<Task<R>> Action,
+  //          int Retry=5,
+  //          int DelayMilliseconds=500
+		//	) where T : class
+		//{
+		//	//如果当前上下文有显示事务，无法进行通过重置上下文进行并发重试
+		//	if (set.Context.Provider.Transaction != null)
+		//		return await Action();
 
-			var i = -1;
-			Random rand = null;
-            for(;;)
-            {
-                try
-                {
-                    return await Action();
-                }
-                catch(DbUpdateConcurrencyException)
-                {
-                    i++;
-                    if (i >=Retry)
-                        throw;
-					set.Context.Reset();
-                }
-				if (rand == null)
-					rand = RandomFactory.Create();
-				await Task.Delay(DelayMilliseconds/2+rand.Next(DelayMilliseconds));
-            }
-        }
+		//	var i = -1;
+		//	Random rand = null;
+  //          for(;;)
+  //          {
+  //              try
+  //              {
+  //                  return await Action();
+  //              }
+  //              catch(DbUpdateConcurrencyException)
+  //              {
+  //                  i++;
+  //                  if (i >=Retry)
+  //                      throw;
+		//			set.Context.Reset();
+  //              }
+		//		if (rand == null)
+		//			rand = RandomFactory.Create();
+		//		await Task.Delay(DelayMilliseconds/2+rand.Next(DelayMilliseconds));
+  //          }
+  //      }
 		public static async Task<TEntity> AddOrUpdateAsync<TKey,TEntity>(
 			this IDataSet<TEntity> set,
 			TKey key,

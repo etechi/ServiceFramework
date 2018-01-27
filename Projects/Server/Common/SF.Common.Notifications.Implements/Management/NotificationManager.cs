@@ -136,7 +136,7 @@ namespace SF.Common.Notifications.Management
 					await AddSendRecord(ctx.DataContext, model.Id, sas, editable, target);
 
 			//更新提醒
-			ctx.DataContext.TransactionScopeManager.AddCommitTracker(
+			ctx.DataContext.AddCommitTracker(
 				TransactionCommitNotifyType.AfterCommit |
 				TransactionCommitNotifyType.BeforeCommit
 				,

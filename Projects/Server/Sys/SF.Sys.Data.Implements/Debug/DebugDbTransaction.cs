@@ -13,18 +13,36 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.Common;
 
-namespace SF.Sys.Data
+namespace System.Data.Debug
 {
-	public interface IDataContextProviderFactory
+	class DebugDbTransaction : DbTransaction
 	{
-		IDataContextProvider Create();
+		public DbTransaction BaseTransaction { get; }
+		public DebugDbTransaction(DbTransaction BaseTransaction, DebugDbConnection Connection)
+		{
+			this.BaseTransaction = BaseTransaction;
+			DbConnection = Connection;
+		}
+		public override IsolationLevel IsolationLevel => throw new NotImplementedException();
+
+		protected override DbConnection DbConnection { get; }
+
+		public override void Commit()
+		{
+			BaseTransaction.Commit();
+		}
+
+		public override void Rollback()
+		{
+			BaseTransaction.Rollback();
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			BaseTransaction.Dispose();
+			base.Dispose(disposing);
+		}
 	}
-
-
 }

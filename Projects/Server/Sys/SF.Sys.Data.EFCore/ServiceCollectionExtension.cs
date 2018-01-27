@@ -30,33 +30,50 @@ namespace SF.Sys.Services
 {
 	public static class EFCoreServiceCollectioExtension
 	{
-		public static IServiceCollection AddEFCoreDataEntity(this IServiceCollection sc)
-			=> sc.AddEFCoreDataEntity<DbContext>();
+		//public static IServiceCollection AddEFCoreDataEntity(this IServiceCollection sc)
+		//	=> sc.AddEFCoreDataEntity<DbContext>();
 
-		public static IServiceCollection AddEFCoreDataEntity<TDbContext>(this IServiceCollection sc)
-			where TDbContext : Microsoft.EntityFrameworkCore.DbContext
-		{
-			sc.AddScoped<IDataContextProviderFactory>(x => 
-				new DataContextProviderFactory<TDbContext>(
-					()=>
-					x.GetRequiredService<TDbContext>()
-					)
-				);
+		//public static IServiceCollection AddEFCoreDataEntity<TDbContext>(this IServiceCollection sc)
+		//	where TDbContext : Microsoft.EntityFrameworkCore.DbContext
+		//{
+		//	sc.AddScoped<IDataContextFactory>(x => 
+		//		new DataContextFactory<TDbContext>(
+		//			()=>
+		//			x.GetRequiredService<TDbContext>()
+		//			)
+		//		);
 
-			sc.AsMicrosoftServiceCollection().AddEFCoreDbContext<TDbContext>(
-				(IServiceProvider isp, DbContextOptionsBuilder options) =>
-					options.UseSqlServer(isp.Resolve<DbConnection>())
-				);
-			return sc;
-		}
-		public static IServiceCollection AddEFCoreDataEntity(this IServiceCollection sc,Func<IServiceProvider, Microsoft.EntityFrameworkCore.DbContext> DbContextCreator)
+		//	sc.AsMicrosoftServiceCollection().AddEFCoreDbContext<TDbContext>(
+		//		(IServiceProvider isp, DbContextOptionsBuilder options) =>
+		//			options.UseSqlServer(isp.Resolve<DbConnection>())
+		//		);
+		//	return sc;
+		//}
+		public static IServiceCollection AddEFCoreDataContextFactory(
+			this IServiceCollection sc,
+			Func<IServiceProvider, DbContext> DbContextCreator)
 		{
-			sc.AddScoped<IDataContextProviderFactory>(x =>
+			sc.AddSingleton<IDataContextProviderFactory>(x =>
 				new DataContextProviderFactory(
 					() => 
 					DbContextCreator(x)
 					)
 				);
+			return sc;
+		}
+		public static IServiceCollection AddEFCorePoolDataContextFactory<TDbContext>(
+			this IServiceCollection sc
+			)
+			where TDbContext:DbContext
+		{
+			sc.AddSingleton<IDataContextProviderFactory, PoolDataContextFactory<TDbContext>>();
+			return sc;
+		}
+		public static IServiceCollection AddEFCorePoolDataContextFactory(
+		   this IServiceCollection sc
+		   )
+		{
+			sc.AddSingleton<IDataContextProviderFactory, PoolDataContextFactory<DbContext>>();
 			return sc;
 		}
 	}

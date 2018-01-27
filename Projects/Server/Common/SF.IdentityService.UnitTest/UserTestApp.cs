@@ -21,8 +21,8 @@ namespace SF.IdentityService.UnitTest
 					ConnectionString =
 						"Data Source=.\\sqlexpress;User ID=sa;pwd=system;initial catalog=sfut;MultipleActiveResultSets=True;App=EntityFramework"
 				};
-				sc.AddEFCoreDataEntity();
-				sc.AddDataContext(sp =>ds);
+				sc.AddEFCorePoolDataContextFactory();
+				sc.AddDataScope(sp =>ds);
 
 				sc.AddIdentityServices();
 				sc.AddIdentityServer4Support();

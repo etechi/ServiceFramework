@@ -237,7 +237,7 @@ namespace SF.Sys.Services.Management
 			{
 				var orgParentId = m.ContainerId;
 				m.ContainerId = e.ContainerId;
-				ctx.DataContext.TransactionScopeManager.AddCommitTracker(
+				ctx.DataContext.AddCommitTracker(
 					TransactionCommitNotifyType.AfterCommit,
 					async (t,ex) =>
 					{
@@ -269,7 +269,7 @@ namespace SF.Sys.Services.Management
 				i => i.ItemOrder,
 				(i, p) => i.ItemOrder = p
 				) || m.ServiceIdent != e.ServiceIdent)
-				ctx.DataContext.TransactionScopeManager.AddCommitTracker(
+				ctx.DataContext.AddCommitTracker(
 					TransactionCommitNotifyType.AfterCommit,
 					async (t, ex) =>
 					{
@@ -282,7 +282,7 @@ namespace SF.Sys.Services.Management
 					});
 			m.ServiceIdent = e.ServiceIdent;
 
-			ctx.DataContext.TransactionScopeManager.AddCommitTracker(
+			ctx.DataContext.AddCommitTracker(
 				TransactionCommitNotifyType.AfterCommit,
 				async (t, ex) =>
 				{

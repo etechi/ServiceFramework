@@ -27,7 +27,7 @@ namespace SF.Sys.Data.IdentGenerator
 	/// <typeparam name="T"></typeparam>
 	public class StorageIdentGenerator<T> : StorageIdentGenerator,IIdentGenerator<T>
 	{
-		public StorageIdentGenerator(IScoped<IDataSet<DataModels.IdentSeed>> IdentSeedSet) : base(IdentSeedSet)
+		public StorageIdentGenerator(IDataScope DataScope) : base(DataScope)
 		{
 		}
 
@@ -50,43 +50,43 @@ namespace SF.Sys.Data.IdentGenerator
 		static ConcurrentDictionary<string, IdentBatch> Cache { get; } = new ConcurrentDictionary<string, IdentBatch>();
 		static ObjectSyncQueue<string> SyncQueue { get; } = new ObjectSyncQueue<string>();
 
-		public IScoped<IDataSet<DataModels.IdentSeed>> IdentSeedSet { get; }
+		public IDataScope DataScope { get; }
 		const int CountPerBatch = 100;
 
 		public StorageIdentGenerator(
-			IScoped<IDataSet<DataModels.IdentSeed>> IdentSeedSet
+			IDataScope DataScope
 			)
 		{
-			this.IdentSeedSet = IdentSeedSet;
+			this.DataScope = DataScope;
 		}
 		Task<long> GetNextBatchStartAsync(string Scope, int Section)
 		{
-			return IdentSeedSet.Use(async (dataSet) =>
+			var type = Scope;
+			return DataScope.Retry(
+				"批量生成标识",
+				async ctx =>
 			{
-				var type = Scope;
-				var re = await dataSet.RetryForConcurrencyExceptionAsync(() =>
-					  dataSet.AddOrUpdateAsync(
-						  e => e.Type == type,
-						  () => Task.FromResult(new DataModels.IdentSeed
-						  {
-							  NextValue = 1 + CountPerBatch,
-							  Section = Section,
-							  Type = type
-						  }),
-						  s =>
-						  {
-							  if (s.Section == Section)
-							  {
-								  s.NextValue += CountPerBatch;
-							  }
-							  else
-							  {
-								  s.NextValue = 1 + CountPerBatch;
-								  s.Section = Section;
-							  }
-							  return Task.CompletedTask;
-						  })
-					);
+				var re = await ctx.Set<DataModels.IdentSeed>().AddOrUpdateAsync(
+					e => e.Type == type,
+					() => Task.FromResult(new DataModels.IdentSeed
+					{
+						NextValue = 1 + CountPerBatch,
+						Section = Section,
+						Type = type
+					}),
+					s =>
+					{
+						if (s.Section == Section)
+						{
+							s.NextValue += CountPerBatch;
+						}
+						else
+						{
+							s.NextValue = 1 + CountPerBatch;
+							s.Section = Section;
+						}
+						return Task.CompletedTask;
+					});
 				return re.NextValue - CountPerBatch;
 			});
 		}

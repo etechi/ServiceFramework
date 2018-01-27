@@ -26,42 +26,47 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 {
 	public class ResourceStore : IResourceStore
 	{
-		IDataContext DataContext { get; }
+		IDataScope DataScope { get; }
 		public ResourceStore(
-			IDataContext DataContext
+			IDataScope DataScope
 			)
 		{
-			this.DataContext = DataContext;
+			this.DataScope = DataScope;
 		}
-		public async Task<ApiResource> FindApiResourceAsync(string name)
+		public  Task<ApiResource> FindApiResourceAsync(string name)
 		{
-			var re = await (
-				from r in DataContext.Set<DataModels.DataResource>().AsQueryable()
-				where r.Id == name && !r.IsIdentityResource
-				where r.LogicState == EntityLogicState.Enabled
-				select new
-				{
-					title = r.Title,
-					desceiption = r.Description,
-					scopes = from s in r.Scopes
-							 let ss=s.Scope
-							 where ss.LogicState==EntityLogicState.Enabled
-							 select new { id = s.ScopeId, name = ss.Name },
-					resClaims=r.RequiredClaims.Select(c=>c.ClaimTypeId)
-				} 
-				).SingleOrDefaultAsync();
-			if (re == null)
-				return null;
-			return new ApiResource(name, re.title, re.resClaims.WithFirst("g:"+name))
-			{
-				Description = re.desceiption,
-				Scopes = re.scopes.Select(s => new Scope(s.id, s.name)).ToArray()
-			};
+			return DataScope.Use("查找资源", async DataContext =>
+			 {
+				 var re = await (
+					 from r in DataContext.Set<DataModels.DataResource>().AsQueryable()
+					 where r.Id == name && !r.IsIdentityResource
+					 where r.LogicState == EntityLogicState.Enabled
+					 select new
+					 {
+						 title = r.Title,
+						 desceiption = r.Description,
+						 scopes = from s in r.Scopes
+								  let ss = s.Scope
+								  where ss.LogicState == EntityLogicState.Enabled
+								  select new { id = s.ScopeId, name = ss.Name },
+						 resClaims = r.RequiredClaims.Select(c => c.ClaimTypeId)
+					 }
+					 ).SingleOrDefaultAsync();
+				 if (re == null)
+					 return null;
+				 return new ApiResource(name, re.title, re.resClaims.WithFirst("g:" + name))
+				 {
+					 Description = re.desceiption,
+					 Scopes = re.scopes.Select(s => new Scope(s.id, s.name)).ToArray()
+				 };
+			 });
 		}
 
-		public async Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
+		public  Task<IEnumerable<ApiResource>> FindApiResourcesByScopeAsync(IEnumerable<string> scopeNames)
 		{
-			var re = await (
+			return DataScope.Use("查找资源", async DataContext =>
+			{
+				var re = await (
 				from s in DataContext.Set<DataModels.Scope>().AsQueryable()
 				where scopeNames.Contains(s.Id) && s.LogicState == EntityLogicState.Enabled
 				from sr in s.Resources
@@ -72,28 +77,32 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 					id = r.Id,
 					title = r.Title,
 					desceiption = r.Description,
-					scope=s.Id,
+					scope = s.Id,
 					resClaims = r.RequiredClaims.Select(c => c.ClaimTypeId)
 				}
 				).ToArrayAsync();
 
-			if (re.Length == 0)
-				return Enumerable.Empty<ApiResource>();
+				if (re.Length == 0)
+					return Enumerable.Empty<ApiResource>();
 
-			//return scopeNames.Select(n => new ApiResource(n + "1", n + "1 name") {
-			//	Scopes = new[] { new Scope(n) }
-			//});
+				//return scopeNames.Select(n => new ApiResource(n + "1", n + "1 name") {
+				//	Scopes = new[] { new Scope(n) }
+				//});
 
-			return re.Select(r => new ApiResource(r.id, r.title, r.resClaims.WithFirst("g:" + r.id))
-			{
-				Description = r.desceiption,
-				Scopes=new[] {new Scope(r.scope)}
-			}).ToArray();
+				return re.Select(r => new ApiResource(r.id, r.title, r.resClaims.WithFirst("g:" + r.id))
+				{
+					Description = r.desceiption,
+					Scopes = new[] { new Scope(r.scope) }
+				}).ToArray();
+			});
 		}
 
-		public async Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
+		public  Task<IEnumerable<IdentityResource>> FindIdentityResourcesByScopeAsync(IEnumerable<string> scopeNames)
 		{
-			var re = await (
+			return DataScope.Use("查找资源", async DataContext =>
+			{
+
+				var re = await (
 				from s in DataContext.Set<DataModels.Scope>().AsQueryable()
 				where scopeNames.Contains(s.Id) && s.LogicState == EntityLogicState.Enabled
 				from sr in s.Resources
@@ -108,41 +117,47 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 				}
 				).ToArrayAsync();
 
-			if (re.Length == 0)
-				return Enumerable.Empty<IdentityResource>();
+				if (re.Length == 0)
+					return Enumerable.Empty<IdentityResource>();
 
-			return re.Select(r => new IdentityResource(r.id, r.title, r.resClaims)
-			{
-				Description = r.desceiption
-			}).ToArray();
+				return re.Select(r => new IdentityResource(r.id, r.title, r.resClaims)
+				{
+					Description = r.desceiption
+				}).ToArray();
+			});
 		}
 
-		public async Task<Resources> GetAllResourcesAsync()
+		public  Task<Resources> GetAllResourcesAsync()
 		{
-			var ress = await (
+			return DataScope.Use("查找资源", async DataContext =>
+			{
+
+				var ress = await (
 				from r in DataContext.Set<DataModels.DataResource>().AsQueryable()
 				where r.LogicState == EntityLogicState.Enabled
 				select new
 				{
 					id = r.Id,
-					isIdentityResource=r.IsIdentityResource,
-					title = r.Title ,
-					desceiption = r.Description ,
+					isIdentityResource = r.IsIdentityResource,
+					title = r.Title,
+					desceiption = r.Description,
 					resClaims = r.RequiredClaims.Select(c => c.ClaimTypeId)
 				}
 				).ToArrayAsync();
 
-			return new Resources(
-				ress.Where(r=>r.isIdentityResource)
-				.Select(r => new IdentityResource(r.id,r.title,r.resClaims){
-					Description = r.desceiption
-				}),
-				ress.Where(r => !r.isIdentityResource)
-				.Select(r => new ApiResource(r.id, r.title, r.isIdentityResource?r.resClaims:r.resClaims.WithFirst("g:" +r.id))
-				{
-					Description = r.desceiption
-				})
-				);
+				return new Resources(
+					ress.Where(r => r.isIdentityResource)
+					.Select(r => new IdentityResource(r.id, r.title, r.resClaims)
+					{
+						Description = r.desceiption
+					}),
+					ress.Where(r => !r.isIdentityResource)
+					.Select(r => new ApiResource(r.id, r.title, r.isIdentityResource ? r.resClaims : r.resClaims.WithFirst("g:" + r.id))
+					{
+						Description = r.desceiption
+					})
+					);
+			});
 		}
 	}
 }

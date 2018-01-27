@@ -23,7 +23,7 @@ namespace SF.Sys.Threading
 	
 	public static class TaskUtils
 	{
-		public static async Task<T> Retry<T>(this Func<Task<T>> Action, int Timeout = 60000, int Retry = 5)
+		public static async Task<T> Retry<T>(this Func<Task<T>> Action, int Timeout = 4000, int Retry = 5)
 		{
 			Random rand = null;
 			for (var i = 0; i < Retry; i++)
@@ -38,12 +38,12 @@ namespace SF.Sys.Threading
 						throw;
 					if (rand == null)
 						rand = new Random();
-					await Task.Delay(rand.Next(Timeout / 10) + 1000);
+					await Task.Delay(rand.Next(Timeout) + 1000);
 				}
 			}
 			throw new NotSupportedException();
 		}
-		public static async Task<T> Retry<T>(this Func<CancellationToken, Task<T>> Action,int Timeout=60000,int Retry=5)
+		public static async Task<T> Retry<T>(this Func<CancellationToken, Task<T>> Action,int Timeout=4000,int Retry=5)
         {
 			Random rand = null;
 			for (var i = 0; i < Retry; i++)

@@ -22,7 +22,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 	class DbQueryable<T> : IContextQueryable<T>
 	{
 		public IQueryable<T> Queryable { get; }
-		public EntityDbContextProvider Context { get; }
+		public EFDbContext Context { get; }
 
 		IQueryable IContextQueryable.Queryable
 		{
@@ -40,7 +40,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 			}
 		}
 
-		public DbQueryable(EntityDbContextProvider Context,IQueryable<T> query)
+		public DbQueryable(EFDbContext Context,IQueryable<T> query)
 		{
 			this.Context = Context;
 			this.Queryable = query;

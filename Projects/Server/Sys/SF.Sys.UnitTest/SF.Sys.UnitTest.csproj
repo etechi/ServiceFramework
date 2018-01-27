@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Auth\SF.Sys.Auth.csproj" />
+    <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
     <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />
     <ProjectReference Include="..\SF.Sys.Hosting.Implements\SF.Sys.Hosting.Implements.csproj" />
     <ProjectReference Include="..\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />

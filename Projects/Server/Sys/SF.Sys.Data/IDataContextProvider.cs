@@ -18,22 +18,23 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Data
 {
 
-
+	public interface IDataContextTransaction : IDisposable
+	{
+		void Commit();
+		void Rollback();
+	}
 	public interface IDataContextProvider :IDisposable, IQueryableContext,IAsyncQueryableContext
 	{
-		IDataSetProvider<T> SetProvider<T>() where T : class;
-
 		IEntityQueryableProvider EntityQueryableProvider { get; }
-    
-        int SaveChanges();
+		IDataSet<T> CreateDataSet<T>(IDataContext DataContext) where T:class;
 		void ClearTrackingEntities();
 		Task<int> SaveChangesAsync();
-		DbTransaction Transaction { get; set; }
 
 	}
 	public interface IDataContextProviderExtension
@@ -41,5 +42,9 @@ namespace SF.Sys.Data
 		void UpdateFields<T>(T item, Func<IFieldUpdater<T>, IFieldUpdater<T>> updater) where T : class;
 		object GetEntityOriginalValue(object Entity, string Field);
         string GetEntitySetName<T>() where T : class;
-    }
+		Task<IDataContextTransaction> BeginTransaction(
+			System.Data.IsolationLevel IsolationLevel,
+			CancellationToken cancellationToken
+			);
+	}
 }

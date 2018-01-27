@@ -502,7 +502,7 @@ namespace SF.Sys.Entities
 					//throw new ArgumentException($"找不到类型{typeof(TEntity)}相关的实体");
 			}
 			IEventEmitter ee = null;
-			DataContext.TransactionScopeManager.AddCommitTracker(
+			DataContext.AddCommitTracker(
 				TransactionCommitNotifyType.BeforeCommit | 
 				TransactionCommitNotifyType.AfterCommit | 
 				TransactionCommitNotifyType.Rollback,
@@ -720,7 +720,7 @@ namespace SF.Sys.Entities
 				$"创建或修改实体{typeof(TModel).Comment().Title}",
 				async ctx =>
 				{
-					var q = ctx.Queryable<TModel>().Where(Selector);
+					var q = ctx.Queryable<TModel>(false).Where(Selector);
 					var helper = ServiceContext.QueryResultBuildHelperCache.GetHelper<TModel, TEditable>(QueryMode.Edit);
 
 					var expr = helper.BuildEntityMapper(CreateOrUpdateResult<TEditable, TModel>.Argument, 1, PropertySelector.All);
@@ -758,7 +758,9 @@ namespace SF.Sys.Entities
 					if(AutoSaveChange)
 						await ctx.SaveChangesAsync();
 					return Entity<TModel>.GetKey<TKey>(Context.Model);
-				});
+				},
+				AutoSaveChange?DataContextFlag.None:DataContextFlag.LightMode
+				);
 		}
 		public static async Task<TKey> CreateOrUpdateAsync<TKey, TEditable, TModel>(
 			this IEntityServiceContext ServiceContext,
@@ -805,7 +807,7 @@ namespace SF.Sys.Entities
 				$"编辑实体{typeof(TModel).Comment().Title}:{Entity<TEditable>.GetIdentValues(Entity)}",
 				async ctx =>
 				{
-					var q = ctx.Queryable<TModel>().Where(Entity<TModel>.ObjectFilter(Entity));
+					var q = ctx.Queryable<TModel>(false).Where(Entity<TModel>.ObjectFilter(Entity));
 					var model = LoadModelForEdit == null ? 
 						await q.SingleOrDefaultAsync() : 
 						await LoadModelForEdit(Entity<TEditable>.GetKey<TKey>(Entity),q);

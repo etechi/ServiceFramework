@@ -22,6 +22,7 @@ using SF.Sys.Services;
 using SF.Sys.Linq.Expressions;
 using SF.Sys.Collections.Generic;
 using SF.Sys.ADT;
+using SF.Sys.Threading;
 
 namespace SF.Sys.Data
 {
@@ -40,8 +41,24 @@ namespace SF.Sys.Data
 		{
 			return scope.Use(Action,ctx => Callback(ctx).ContinueWith(FuncTaskCompleted),Flags);
 		}
-		
-		
+
+		public static Task<T> Retry<T>(
+			this IDataScope scope,
+			string Action,
+			Func<IDataContext,Task<T>> Callback,
+			DataContextFlag Flags = DataContextFlag.None,
+			System.Data.IsolationLevel IsolationLevel=System.Data.IsolationLevel.Unspecified,
+			int RetryInterval = 4000, 
+			int RetryRepeat = 5
+			)
+		{
+			return TaskUtils.Retry(ct =>
+				scope.Use(Action, Callback, Flags, IsolationLevel)
+				, RetryInterval, 
+				RetryRepeat
+				);
+		}
+
 		//public static Task<T> UseSet<TSet, T>(this IDataScope scope, string Action,Func<IDataSet<TSet>, Task<T>> Callback, DataContextFlag Flags=DataContextFlag.None) where TSet:class
 		//	=> scope.Use(Action, ctx =>Callback(ctx.Set<TSet>()), Flags);
 
