@@ -15,22 +15,38 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Annotations;
 using SF.Sys.AtLeastOnceTasks.DataModels;
+using SF.Sys.Data;
 using SF.Sys.Entities;
 using SF.Sys.Entities.DataModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Sys.Reminders.DataModels
 {
 	[Table("Reminder")]
-	public class Reminder : AtLeastOnceTaskEntityBase<long>
-	{	
+	public class DataReminder : DataRemindRecord
+	{   
 		/// <summary>
-		/// 计划时间
+		/// 业务类型
 		/// </summary>
-		public DateTime PlanTime { get; set; }
-	
+		[Index("biz", IsUnique = true, Order = 1)]
+		public override string BizType { get; set; }
+
+		/// <summary>
+		/// 业务标识类型
+		/// </summary>
+		[Index("biz",IsUnique =true,Order =2)]
+		public override string BizIdentType { get; set; }
+
+		/// <summary>
+		/// 业务标识
+		/// </summary>
+		[Index("biz",IsUnique =true,Order =3)]
+		public override long BizIdent { get; set; }
+
+
 	}
 }

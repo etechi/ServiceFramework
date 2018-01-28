@@ -16,9 +16,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Sys.Entities.DataModels;
 using System;
 using SF.Sys.AtLeastOnceTasks.Models;
+using SF.Sys.Data;
+
 namespace SF.Sys.AtLeastOnceTasks.DataModels
 {
-	public class AtLeastOnceTaskEntityBase<TKey> : 
+	public class DataAtLeastOnceTaskEntityBase<TKey> : 
 		DataObjectEntityBase<TKey>, 
 		IAtLeastOnceTask
 		where TKey:IEquatable<TKey>
@@ -26,26 +28,28 @@ namespace SF.Sys.AtLeastOnceTasks.DataModels
 		/// <summary>
 		/// 任务状态
 		/// </summary>
-		public AtLeastOnceTaskState TaskState { get; set; }
+		[Index("timer",Order =1)]
+		public virtual AtLeastOnceTaskState TaskState { get; set; }
 		/// <summary>
 		/// 任务执行次数
 		/// </summary>
-		public int TaskTryCount { get; set; }
+		public virtual int TaskExecCount { get; set; }
 		/// <summary>
-		/// 最后执行错误
+		/// 最后执行消息
 		/// </summary>
-		public string TaskLastError { get; set; }
+		public virtual string TaskMessage { get; set; }
 		/// <summary>
 		/// 任务开始时间
 		/// </summary>
-		public DateTime? TaskStartTime { get; set; }
+		public virtual DateTime? TaskStartTime { get; set; }
 		/// <summary>
 		/// 任务最后尝试时间
 		/// </summary>
-		public DateTime? TaskLastTryTime { get; set; }
+		public virtual DateTime? TaskLastExecTime { get; set; }
 		/// <summary>
 		/// 任务下次尝试时间
 		/// </summary>
-		public DateTime? TaskNextTryTime { get; set; }
+		[Index("timer", Order = 2)]
+		public virtual DateTime? TaskNextExecTime { get; set; }
 	}
 }

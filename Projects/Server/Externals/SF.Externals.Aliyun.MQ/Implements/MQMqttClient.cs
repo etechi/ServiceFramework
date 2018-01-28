@@ -37,7 +37,12 @@ namespace SF.Externals.Aliyun.Implements
 
 			var cc = new SF.Net.Mqtt.Clients.Client();
 			//cc.Logger = new Logger("MQ ");
-			cc.Connector = Net.Connector.For(Setting.MqttServerEndPoint).Tcp().Mqtt(cc.Logger);
+			cc.Connector = Net.Connector.For(Setting.MqttServerEndPoint)
+				.Tcp(new Net.Sockets.SocketSetting
+					{
+						ConnectTimeout=5000
+					})
+					.Mqtt(cc.Logger);
 			cc.UserName = mqttUsername;
 			cc.Password = mqttPassword;
 			cc.ClientIdentifier = mqttClientId;

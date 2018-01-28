@@ -40,6 +40,10 @@ namespace SF.Sys.AtLeastOnceTasks
 		/// <summary>
 		/// 执行错误
 		/// </summary>
-		Failed
+		Failed,
+		/// <summary>
+		/// 移除中
+		/// </summary>
+		Removing
 	}
 }

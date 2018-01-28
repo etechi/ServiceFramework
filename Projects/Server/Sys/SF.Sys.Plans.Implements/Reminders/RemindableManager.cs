@@ -21,21 +21,25 @@ using System.Threading.Tasks;
 using SF.Sys.Annotations;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
+using SF.Sys.Services;
 
 namespace SF.Sys.Reminders
 {
-	public class ReminderQueryArgument : QueryArgument
+
+	public class RemindableManager
 	{
-		
+		Dictionary<string, IRemindableDefination> Definations { get; } = new Dictionary<string, IRemindableDefination>();
+		public RemindableManager(IEnumerable<IRemindableDefination> Definations)
+		{
+			this.Definations = Definations.ToDictionary(d => d.Name);
+		}
+		public IRemindableDefination GetDefination(string RemindableName)
+		{
+			if(!Definations.TryGetValue(RemindableName,out var def))
+				throw new ArgumentException("提醒通知名称无效:" + RemindableName);
+			return def;
+		}
+
 	}
-	/// <summary>
-	/// 提醒管理
-	/// </summary>
-	[NetworkService]
-	[EntityManager]
-	public interface IReminderManager :
-		IEntitySource<ObjectKey<long>, Models.Reminder, ReminderQueryArgument>
-	{
-		Task RefreshAt(long Id,DateTime Time,string NewItemName);
-	}
+
 }

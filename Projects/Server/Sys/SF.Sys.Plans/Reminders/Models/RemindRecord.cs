@@ -28,52 +28,38 @@ namespace SF.Sys.Reminders.Models
 	public class RemindRecord : EventEntityBase
 	{
 		/// <summary>
-		/// 名称
-		/// </summary>
-		[MaxLength(100)]
+		 /// 业务类型
+		 /// </summary>
+		 [MaxLength(100)]
 		[Required]
-		[TableVisible]
-		public string Name { get; set; }
+		public virtual string BizType { get; set; }
+
 
 		/// <summary>
-		/// 动作
+		/// 业务标识类型
 		/// </summary>
-		[MaxLength(100)]
-		[Required]
-		[TableVisible]
-		public string Action { get; set; }
+		[EntityType]
+		public string BizIdentType { get; set; }
 
 		/// <summary>
-		/// 描述
+		/// 业务标识
 		/// </summary>
-		[MaxLength(200)]
-		public string Description { get; set; }
+		[EntityIdent(null, nameof(BizIdentName), EntityTypeField = nameof(BizIdentType))]
+		public long BizIdentIdent { get; set; }
 
 		/// <summary>
-		/// 错误
-		/// </summary>
-		[MaxLength(200)]
-		public string Error { get; set; }
-
-		/// <summary>
-		/// 提醒
-		/// </summary>
-		[EntityIdent(typeof(Reminder),nameof(ReminderName))]
-		public long ReminderId { get; set; }
-
-		/// <summary>
-		/// 提醒名称
+		/// 业务标识
 		/// </summary>
 		[TableVisible]
 		[Ignore]
-		public string ReminderName { get; set; }
+		public string BizIdentName { get; set; }
 
-		/// <summary>
-		/// 业务跟踪
-		/// </summary>
+
+		[MaxLength(1000)]
+		public string Data { get; set; }
+
 		[MaxLength(100)]
 		[Required]
-		[TableVisible]
-		public string BizIdent { get; set; }
+		public string RemindableName { get; set; }
 	}
 }

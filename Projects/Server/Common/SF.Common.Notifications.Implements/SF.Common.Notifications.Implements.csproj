@@ -19,6 +19,7 @@
   <ItemGroup>
     <Compile Remove="DefaultMsgLogger.cs" />
     <Compile Remove="Management\EntityMsgLogger.cs" />
+    <Compile Remove="Senders\NotificationSendActionSource.cs" />
   </ItemGroup>
 
   <ItemGroup>

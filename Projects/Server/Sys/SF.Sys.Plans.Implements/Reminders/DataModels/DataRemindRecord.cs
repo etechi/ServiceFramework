@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
+using SF.Sys.AtLeastOnceTasks.DataModels;
 using SF.Sys.Data;
 using SF.Sys.Entities.DataModels;
 using System;
@@ -24,35 +25,32 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Sys.Reminders.DataModels
 {
 	[Table("RemindRecord")]
-	public class DataRemindRecord : DataEventEntityBase
+	public class DataRemindRecord : DataAtLeastOnceTaskEntityBase<long>
 	{
-		
-		[Index("action", IsUnique = true, Order = 1)]
-		public long ReminderId { get; set; }
+		/// <summary>
+		 /// 业务类型
+		 /// </summary>
+		[Index("biz", Order = 1)]
+		public virtual string BizType { get; set; }
 
-		[Index("action", IsUnique = true, Order = 2)]
-		public DateTime ActionTime { get; set; }
+		/// <summary>
+		/// 业务标识类型
+		/// </summary>
+		[Index("biz", Order = 2)]
+		public virtual string BizIdentType { get; set; }
 
-		[Index("action", IsUnique = true, Order = 3)]
+		/// <summary>
+		/// 业务标识
+		/// </summary>
+		[Index("biz", Order = 3)]
+		public virtual long BizIdent { get; set; }
+
+
+		[MaxLength(1000)]
+		public string Data { get; set; }
+
 		[MaxLength(100)]
 		[Required]
-		public string BizIdent { get; set; }
-
-		[MaxLength(100)]
-		[Required]
-		public string Name { get; set; }
-
-		[MaxLength(100)]
-		[Required]
-		public string Action { get; set; }
-
-		[MaxLength(200)]
-		public string Description { get; set; }
-
-		[MaxLength(200)]
-		public string Error { get; set; }
-
-
-
+		public string RemindableName { get; set; }
 	}
 }

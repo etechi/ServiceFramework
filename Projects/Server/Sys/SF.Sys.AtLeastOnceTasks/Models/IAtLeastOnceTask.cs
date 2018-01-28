@@ -27,11 +27,11 @@ namespace SF.Sys.AtLeastOnceTasks.Models
 		/// <summary>
 		/// 任务执行次数
 		/// </summary>
-		int TaskTryCount { get; set; }
+		int TaskExecCount { get; set; }
 		/// <summary>
 		/// 最后执行错误
 		/// </summary>
-		string TaskLastError { get; set; }
+		string TaskMessage { get; set; }
 		/// <summary>
 		/// 任务开始时间
 		/// </summary>
@@ -39,10 +39,10 @@ namespace SF.Sys.AtLeastOnceTasks.Models
 		/// <summary>
 		/// 任务最后执行时间
 		/// </summary>
-		DateTime? TaskLastTryTime { get; set; }
+		DateTime? TaskLastExecTime { get; set; }
 		/// <summary>
 		/// 任务下次执行时间
 		/// </summary>
-		DateTime? TaskNextTryTime { get; set; }
+		DateTime? TaskNextExecTime { get; set; }
 	}
 }

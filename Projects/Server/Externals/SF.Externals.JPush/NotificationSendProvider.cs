@@ -4,6 +4,7 @@ using SF.Sys.Auth;
 using SF.Sys.Collections.Generic;
 using SF.Sys.HttpClients;
 using SF.Sys.Linq;
+using SF.Sys.NetworkService;
 using SF.Sys.Threading;
 using System;
 using System.Collections.Generic;
@@ -35,10 +36,13 @@ namespace SF.Externals.JPush
 	/// <summary>
 	/// 微信公共号模板消息服务
 	/// </summary>
-	public class NotificationSendProvider : INotificationSendProvider
+	public class NotificationSendProvider : INotificationSendProvider, Sys.NetworkService.IClientSettingProvider
 	{
 		JPushSetting Setting { get; }
 		IHttpClient HttpClient { get; }
+
+		string IClientSettingProvider.Name => "jpush";
+
 		public NotificationSendProvider(JPushSetting Setting, IHttpClient HttpClient)
 		{
 			this.Setting = Setting;
@@ -95,6 +99,15 @@ namespace SF.Externals.JPush
 		public Task<IEnumerable<string>> GroupResolve(IEnumerable<long> GroupIds)
 		{
 			return Task.FromResult(GroupIds.Select(i => "G"+i.ToString()));
+		}
+
+		Task<object> IClientSettingProvider.GetOption(string ClientId)
+		{
+			return Task.FromResult((object)new
+			{
+				
+
+			});
 		}
 	}
 }

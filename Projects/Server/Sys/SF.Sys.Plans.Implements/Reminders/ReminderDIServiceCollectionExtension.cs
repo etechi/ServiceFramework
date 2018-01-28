@@ -26,8 +26,10 @@ using SF.Sys.Threading;
 
 namespace SF.Sys.Services
 {
-	class RemindSyncQueue : ObjectSyncQueue<long>
+	public class RemindSyncQueue : ObjectSyncQueue<long>
 	{
+		//public static string BuildKey(string BizType, string BizIdentType, long BizIdent)
+		//	=> BizType + "-" + BizIdentType + "-" + BizIdent;
 		
 	}
 	public static class ReminderDIServiceCollectionExtension
@@ -36,7 +38,7 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddReminderServices(this IServiceCollection sc,string TablePrefix=null)
 		{
 			sc.AddDataModules<
-				   SF.Sys.Reminders.DataModels.Reminder,
+				   SF.Sys.Reminders.DataModels.DataReminder,
 				   SF.Sys.Reminders.DataModels.DataRemindRecord
 				   >(
 				   TablePrefix ?? "Sys"
@@ -67,19 +69,19 @@ namespace SF.Sys.Services
 			var syncQueue = new RemindSyncQueue();
 			sc.AddSingleton(sp => syncQueue);
 			sc.AddAtLeastOnceEntityTaskService(
-				new AtLeastOnceTaskEntityServiceSetting<long, long, SF.Sys.Reminders.DataModels.Reminder>
+				new AtLeastOnceTaskEntityServiceSetting<long, long, SF.Sys.Reminders.DataModels.DataReminder>
 				{
 					SyncQueue = syncQueue,
-					TaskIdentSelector = e => new AtLeastOnceTaskTaskIdent<long, long>
+					TaskSettingSelector = e => new AtLeastOnceTaskSetting<long, long>
 						{
 							Id = e.Id,
-							SyncKey = e.Id,
-							TaskNextTryTime = e.TaskNextTryTime.Value
+							SyncKey =e.Id,
+							TaskNextTryTime = e.TaskNextExecTime.Value
 						},
-					TaskExecutor = async (sp, entity) =>
+					TaskExecutor = (sp, entity, arg) =>
 					{
-						var re=	await ((ReminderManager)sp.Resolve<IReminderManager>()).RunTasks(entity);
-						return re;
+						var rs = (RemindService)sp.Resolve<IRemindService>();
+						return rs.Remind(sp, entity, arg);
 					}
 				});
 

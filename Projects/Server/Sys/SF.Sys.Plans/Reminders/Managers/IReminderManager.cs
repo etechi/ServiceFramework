@@ -13,31 +13,28 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.AtLeastOnceTasks.DataModels;
-using SF.Sys.Data;
-using SF.Sys.Entities;
-using SF.Sys.Entities.DataModels;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SF.Sys.Annotations;
+using SF.Sys.Entities;
+using SF.Sys.NetworkService;
 
-namespace SF.Sys.AtLeastOnceActions.DataModels
+namespace SF.Sys.Reminders
 {
-	[Table("AtLeastOnceAction")]
-	public class AtLeastOnceAction : DataAtLeastOnceTaskEntityBase<long>
-	{	
-		[Index("ident",IsUnique =true,Order =1)]
-		[StringLength(100)]
-		[Required]
-		public string Type { get; set; }
-
-		[Index("ident", IsUnique = true, Order = 2)]
-		[StringLength(100)]
-		[Required]
-		public string Ident { get; set; }
-
+	public class ReminderQueryArgument : QueryArgument
+	{
+		
+	}
+	/// <summary>
+	/// 提醒管理
+	/// </summary>
+	[NetworkService]
+	[EntityManager]
+	public interface IReminderManager :
+		IEntitySource<ObjectKey<long>, Models.Reminder, ReminderQueryArgument>
+	{
 	}
 }

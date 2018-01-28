@@ -32,6 +32,8 @@ namespace SF.Sys.Services
 			string TablePrefix=null
 			)
 		{
+			sc.AddRemindable<SF.Common.Notifications.Senders.Remindable>();
+
 			sc.AddDataModules<
 				SF.Common.Notifications.DataModels.DataNotificationSendRecord,
 				SF.Common.Notifications.DataModels.NotificationSendPolicy,

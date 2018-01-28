@@ -31,11 +31,10 @@ namespace SF.Sys.Services
 
 	public interface ITimedTaskExecutor
 	{
-		IDisposable Enqueue<TKey>(
+		IDisposable Update<TKey>(
 			TKey Key,
 			DateTime Target, 
-			Func<CancellationToken,Task> Task,
-			bool IgnoreLongWaitTask=true
+			Func<CancellationToken,Task> Task
 			);
 	}
 	
@@ -160,25 +159,32 @@ namespace SF.Sys.Services
 					);
 			return (TypedTaskDict<TKey>)dict;
 		}
-		public IDisposable Enqueue<TKey>(
+		public IDisposable Update<TKey>(
 			TKey Key, 
 			DateTime Target, 
-			Func<CancellationToken, Task> Callback,
-			bool IgnoreLongWaitTask=true
+			Func<CancellationToken, Task> Callback
 			)
 		{
 			//超出载入时间，可以忽略
-			if (IgnoreLongWaitTask && 
-				Target.Subtract(TimeService.Now).TotalSeconds >
-				Setting.PreloadIntervalSeconds + Setting.PreloadAheadSeconds)
-				return null;
+			var loadRequired =
+				Target.Subtract(TimeService.Now).TotalSeconds <=
+				Setting.PreloadIntervalSeconds + Setting.PreloadAheadSeconds;
 
 			var dict = GetCategoryDict<TKey>();
 			
 			for (; ; )
 			{
 				if (!dict.TryGetValue(Key, out var item))
+				{
+					if (!loadRequired)
+						return null;
 					item = dict.GetOrAdd(Key, new TypedTask<TKey>(dict, Key));
+				}
+				else if (Callback == null || !loadRequired)
+				{
+					item.Dispose();
+					return null;
+				}
 
 				Func<CancellationToken, Task> OrgCallback=null;
 				try
@@ -188,7 +194,7 @@ namespace SF.Sys.Services
 						//在从字典中获取后，刚好遇上定时器执行，已经从字典中删除，需要重新获取
 						if (item.Dict == null)
 							continue;
-
+						
 						OrgCallback = item.Callback;
 						item.Callback = Callback;
 						var offset = (int)Target.Subtract(TimeService.Now).TotalMilliseconds;

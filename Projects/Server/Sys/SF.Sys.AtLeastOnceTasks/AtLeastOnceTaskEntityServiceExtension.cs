@@ -46,26 +46,43 @@ namespace SF.Sys.Services
 	//	public Func<IServiceProvider, ISyncQueue<TSyncKey>, Task> Init { get; set; }
 	//	public Func<IServiceProvider,TEntity, Task<DateTime?> > RunTask { get; set; }
 	//}
-	public class AtLeastOnceTaskTaskIdent<TKey,TSyncKey> 
+	public class AtLeastOnceTaskSetting<TKey,TSyncKey> 
 		where TKey : IEquatable<TKey>
 	{
 		public TKey Id { get; set; }
 		public TSyncKey SyncKey { get; set; }
 		public DateTime TaskNextTryTime { get; set; }
 	}
+	public class AtLeastOnceTaskExecuteResult
+	{
+		public string Message { get; set; }
+		public DateTime? NextExecTime { get; set; }
+	}
 	public class AtLeastOnceTaskEntityServiceSetting<TKey, TSyncKey, TEntity>
 		where TKey : IEquatable<TKey>
 	{
-		public int ErrorDelayUnit { get; set; } = 10;
-		public int ExecTimeoutSeconds { get; set; } = 0;
 		public ISyncQueue<TSyncKey> SyncQueue { get; set; }
-		public Expression<Func<TEntity, AtLeastOnceTaskTaskIdent<TKey, TSyncKey>>> TaskIdentSelector { get; set; }
-		public Func<IServiceProvider,TEntity,Task<DateTime?>> TaskExecutor { get; set; }
+		public int StartRescheduleDuetime { get; set; } = 5 * 60;
+		public Expression<Func<TEntity, AtLeastOnceTaskSetting<TKey, TSyncKey>>> TaskSettingSelector { get; set; }
+		public Func<IServiceProvider,TEntity,object,Task> TaskExecutor { get; set; }
 	}
 
+	public interface IAtLeastOnceTaskExecutor<TKey,TEntity,TSyncKey> 
+		where TKey : IEquatable<TKey>
+		where TEntity : class, IAtLeastOnceTask
+	{
+		Task Execute(TKey Id, TSyncKey SyncKey, object Argument);
+		IDisposable UpdateTimedTaskExecutor(TKey Id, TSyncKey SyncKey, DateTime Time);
+		void RemoveTimedTaskExecutor(TKey Id);
+	}
+	public class ProgramAbortException : InvalidOperationException
+	{
+		public ProgramAbortException(string Message) :base(Message??"程序异常结束")
+		{ }
+	}
 	public static class AtLeastOnceTaskEntityService
 	{
-		class TaskSoruce<TKey, TEntity, TSyncKey> : ITimedTaskSoruce
+		class TaskSoruce<TKey, TEntity, TSyncKey> : ITimedTaskSoruce, IAtLeastOnceTaskExecutor<TKey, TEntity, TSyncKey>
 			where TKey : IEquatable<TKey>
 			where TEntity : class, IAtLeastOnceTask
 		{
@@ -83,51 +100,50 @@ namespace SF.Sys.Services
 				this.ScopeFactory = ScopeFactory;
 			}
 
-			public Task LoadTimedTasks(
+			public async Task LoadTimedTasks(
 				DateTime EndTargetTime, 
 				CancellationToken cancellactionToken
 				)
 			{
-				return ScopeFactory.WithScope(async sp =>
-				{
-					var tasks = await sp.Resolve<IDataScope>().Use(
-						"查找任务", 
-						ctx =>
-						 ctx.Queryable<TEntity>()
-						 .Where(e =>
-							 e.TaskState == AtLeastOnceTaskState.Waiting &&
-							 e.TaskNextTryTime < EndTargetTime
-							 )
-						 .Select(Setting.TaskIdentSelector)
-						 .ToArrayAsync()
+				var tasks = await ScopeFactory.WithScope(sp =>
+						sp.Resolve<IDataScope>().Use(
+							"查找任务",
+							ctx =>
+							ctx.Queryable<TEntity>()
+							.Where(e =>
+								e.TaskState == AtLeastOnceTaskState.Waiting &&
+								e.TaskNextExecTime < EndTargetTime
+								)
+							.Select(Setting.TaskSettingSelector)
+							.ToArrayAsync()
+						)
 					);
 
-					foreach (var task in tasks)
-						TimedTaskExecutor.Enqueue(
-							task.Id,
-							task.TaskNextTryTime,
-							ct => RunTask(task.Id, task.SyncKey)
-							);
-				});
+				foreach (var task in tasks)
+					TimedTaskExecutor.Update(
+						(typeof(TEntity),task.Id),
+						task.TaskNextTryTime,
+						ct => Execute(task.Id, task.SyncKey,null)
+						);
 			}
 
-			Task RunTask(TKey Id, TSyncKey SyncKey)
+			public Task Execute(TKey Id, TSyncKey SyncKey,object Argument)
 			{
 				if (Setting.SyncQueue == null)
 					return ScopeFactory.WithScope(
 						sp => 
-							RunTask(sp, Id, SyncKey)
+							Execute(sp, Id, SyncKey, Argument)
 						);
 				else
 					return Setting.SyncQueue.Queue(
 						SyncKey,
 						()=>
 							ScopeFactory.WithScope(sp => 
-								RunTask(sp, Id, SyncKey)
+								Execute(sp, Id, SyncKey, Argument)
 							)
 						);
 			}
-			async Task RunTask(IServiceProvider sp, TKey Id, TSyncKey SyncKey)
+			async Task Execute(IServiceProvider sp, TKey Id, TSyncKey SyncKey,object Argument)
 			{ 
 				var timeService = sp.Resolve<ITimeService>();
 				var dataScope = sp.Resolve<IDataScope>();
@@ -136,12 +152,15 @@ namespace SF.Sys.Services
 						);
 				if (task == null)
 					return;
-				DateTime? delayed = null;
 				Exception error = null;
 				var now = timeService.Now;
+				task.TaskLastExecTime = now;
+				task.TaskExecCount++;
+				task.TaskNextExecTime = null;
+				task.TaskState = AtLeastOnceTaskState.Running;
 				try
 				{
-					delayed = await Setting.TaskExecutor(sp, task);
+					await Setting.TaskExecutor(sp, task, Argument);
 				}
 				catch (Exception ex)
 				{
@@ -149,45 +168,37 @@ namespace SF.Sys.Services
 				}
 				if (error != null)
 				{
-					if (
-						Setting.ExecTimeoutSeconds > 0 &&
-						now.Subtract(task.TaskStartTime.Value).TotalSeconds > Setting.ExecTimeoutSeconds
-						)
-						task.TaskState = AtLeastOnceTaskState.Failed;
-					else
+					task.TaskState = AtLeastOnceTaskState.Failed;
+					task.TaskMessage = error.Message;
+				}
+				if (task.TaskState == AtLeastOnceTaskState.Waiting)
+				{
+					if (!task.TaskNextExecTime.HasValue)
 					{
-						task.TaskState = AtLeastOnceTaskState.Waiting;
-						task.TaskNextTryTime = timeService.Now.AddSeconds(
-							Setting.ErrorDelayUnit * (1 << (task.TaskTryCount - 1))
-							);
+						task.TaskMessage = "再次执行任务没有指定下次执行时间";
+						task.TaskState = AtLeastOnceTaskState.Failed;
 					}
-					task.TaskLastError = error.Message;
 				}
-				else if (delayed == null)
-				{
-					task.TaskState = AtLeastOnceTaskState.Completed;
-					task.TaskLastError = null;
+				else if(task.TaskNextExecTime.HasValue)
+				{ 
+					task.TaskMessage = "必须要再次执行的任务指定了下次执行时间";
+					task.TaskState = AtLeastOnceTaskState.Failed;
 				}
-				else
-				{
-					task.TaskState = AtLeastOnceTaskState.Waiting;
-					task.TaskNextTryTime = delayed.Value;
-					task.TaskLastError = null;
-				}
-
-				task.TaskLastTryTime = now;
-				task.TaskTryCount++;
+				
 				await dataScope.Use("载入任务", async ctx =>
 				{
-					ctx.Update(task);
+					if (task.TaskState == AtLeastOnceTaskState.Removing)
+						ctx.Remove(task);
+					else
+						ctx.Update(task);
 					await ctx.SaveChangesAsync();
 				});
 				if (task.TaskState == AtLeastOnceTaskState.Waiting)
 				{
-					TimedTaskExecutor.Enqueue(
-						Id,
-						task.TaskNextTryTime.Value,
-						ct => RunTask(Id, SyncKey)
+					TimedTaskExecutor.Update(
+						(typeof(TEntity),Id),
+						task.TaskNextExecTime.Value,
+						ct => Execute(Id, SyncKey, null)
 						);
 				}
 			}
@@ -203,16 +214,36 @@ namespace SF.Sys.Services
 							 .ToArrayAsync();
 						 var timeService = sp.Resolve<ITimeService>();
 						 var now = timeService.Now;
+						 var rand = new Random();
+						 var error = new ProgramAbortException(null);
 						 foreach (var t in tasks)
 						 {
-							 t.TaskState = AtLeastOnceTaskState.Waiting;
-							 t.TaskNextTryTime = now.AddSeconds(Setting.ErrorDelayUnit * (1 << t.TaskTryCount));
-							 t.TaskLastError = "异常终止";
-							 ctx.Update(t);
+							t.TaskExecCount++;
+							t.TaskLastExecTime = now.AddSeconds(rand.Next(Setting.StartRescheduleDuetime));
+ 							t.TaskState = AtLeastOnceTaskState.Waiting;
+ 							t.TaskMessage = "系统异常终止";
+							ctx.Update(t);
 						 }
 						 await ctx.SaveChangesAsync();
 					 });
 				});
+			}
+
+			public IDisposable UpdateTimedTaskExecutor(TKey Id,TSyncKey SyncKey,DateTime Time)
+			{
+				return TimedTaskExecutor.Update(
+					(typeof(TEntity), Id),
+					Time,
+					ct => Execute(Id, SyncKey, null)
+					);
+			}
+			public void RemoveTimedTaskExecutor(TKey Id)
+			{
+				TimedTaskExecutor.Update(
+					(typeof(TEntity), Id),
+					DateTime.MaxValue,
+					null
+					);
 			}
 		}
 		public static IServiceCollection AddAtLeastOnceEntityTaskService<TKey, TEntity, TSyncKey>(
@@ -223,12 +254,17 @@ namespace SF.Sys.Services
 			where TSyncKey : IEquatable<TSyncKey>
 			where TEntity : class, IAtLeastOnceTask
 		{
-			sc.AddSingleton<ITimedTaskSoruce>(sp => 
-				new TaskSoruce<TKey, TEntity, TSyncKey>(
-					Setting,
-					sp.Resolve<ITimedTaskExecutor>(),
-					sp.Resolve<IServiceScopeFactory>()
-				)
+
+			sc.AddSingleton<IAtLeastOnceTaskExecutor<TKey, TEntity, TSyncKey>>(sp =>
+				  new TaskSoruce<TKey, TEntity, TSyncKey>(
+					  Setting,
+					  sp.Resolve<ITimedTaskExecutor>(),
+					  sp.Resolve<IServiceScopeFactory>()
+				  )
+			);
+
+			sc.AddSingleton(sp =>
+				(ITimedTaskSoruce)sp.Resolve<IAtLeastOnceTaskExecutor<TKey, TEntity, TSyncKey>>()
 			);
 			return sc;
 		}

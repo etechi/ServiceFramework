@@ -65,16 +65,16 @@ namespace SF.Sys.Services
 				new AtLeastOnceTaskEntityServiceSetting<long,string, SF.Sys.AtLeastOnceActions.DataModels.AtLeastOnceAction>
 				{
 					SyncQueue=syncQueue,
-					TaskIdentSelector=e=>new AtLeastOnceTaskTaskIdent<long, string>
+					TaskSettingSelector=e=>new AtLeastOnceTaskSetting<long, string>
 					{
 						Id=e.Id,
 						SyncKey=e.Type+"/"+e.Ident,
-						TaskNextTryTime=e.TaskNextTryTime.Value
+						TaskNextTryTime=e.TaskNextExecTime.Value
 					},
-					TaskExecutor = async (sp, entity) =>
+					TaskExecutor = (sp, entity,arg) =>
 					{
-						var re=	await ((AtLeastOnceActionProvider)sp.Resolve<IAtLeastOnceActionProvider>()).ActiveByTimer(entity);
-						return re;
+						return ((AtLeastOnceActionProvider)sp.Resolve<IAtLeastOnceActionProvider>()).ActiveByTimer(entity);
+
 					}
 				});
 

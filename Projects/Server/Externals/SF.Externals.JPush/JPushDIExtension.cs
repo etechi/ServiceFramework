@@ -1,8 +1,11 @@
-﻿using SF.Common.Notifications.Senders;
+﻿using System.Threading.Tasks;
+using SF.Common.Notifications.Senders;
 using SF.Externals.JPush;
+using SF.Sys.NetworkService;
 
 namespace SF.Sys.Services
 {
+	
 	public static class JPushDIExtension
     {
         public static IServiceCollection AddJPushServices(this IServiceCollection sc,JPushSetting setting)

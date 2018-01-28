@@ -39,18 +39,18 @@ namespace SF.Common.Notifications.Management
 			>,
 		INotificationManager
 	{
-		Lazy<IReminderManager> ReminderManager { get; }
+		Lazy<IRemindService> RemindService { get; }
 
 		Lazy<IEntityCache<long, NotificationSendPolicy>> Cache { get; }
 		TypedInstanceResolver<INotificationSendProvider> NotificationSendProviderResolver { get; }
 		public NotificationManager(
 			IEntityServiceContext ServiceContext,
 			Lazy<IEntityCache<long, NotificationSendPolicy>> Cache,
-			Lazy<IReminderManager> ReminderManager,
+			Lazy<IRemindService> RemindService,
 			TypedInstanceResolver<INotificationSendProvider> NotificationSendProviderResolver
 			) : base(ServiceContext)
 		{
-			this.ReminderManager = ReminderManager;
+			this.RemindService = RemindService;
 			this.Cache = Cache;
 			this.NotificationSendProviderResolver = NotificationSendProviderResolver;
 		}
@@ -135,20 +135,26 @@ namespace SF.Common.Notifications.Management
 				foreach (var target in editable.Targets)
 					await AddSendRecord(ctx.DataContext, model.Id, sas, editable, target);
 
-			//更新提醒
-			ctx.DataContext.AddCommitTracker(
-				TransactionCommitNotifyType.AfterCommit |
-				TransactionCommitNotifyType.BeforeCommit
-				,
-				async (t, e) =>
+			await RemindService.Value.Setup(
+				new RemindSetupArgument
 				{
-					foreach(var target in editable.Targets)
-						await ReminderManager.Value.RefreshAt(
-							target,
-							Now.AddMinutes(t == TransactionCommitNotifyType.BeforeCommit ? 1 : 0),
-							$"用户{target}通知发送"
-							);
+					BizIdent = editable.Id,
+					BizIdentType = "Notification",
+					BizType = "发送通知",
+					Name = editable.Name,
+					RemindableName = typeof(Remindable).FullName,
+					RemindTime = editable.Time,
+					UserId = editable?.Targets?.FirstOrDefault() ?? editable.SenderId
 				});
+		}
+		protected override async Task OnRemoveModel(IModifyContext ctx)
+		{
+			await RemindService.Value.Remove(
+				"发送通知",
+				"Notification",
+				ctx.Model.Id
+				);
+			await base.OnRemoveModel(ctx);
 		}
 
 		async Task AddSendRecord(

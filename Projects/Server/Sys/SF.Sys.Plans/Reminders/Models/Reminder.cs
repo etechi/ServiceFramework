@@ -19,45 +19,55 @@ using SF.Sys.Entities.DataModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace SF.Sys.Reminders.Models
 {
-	public class RemindAction:IEntityWithId<string>
-	{
-		/// <summary>
-		/// 标题
-		/// </summary>
-		[ReadOnly(true)]
-		public string Id { get; set; }
 
-		/// <summary>
-		/// 动作
-		/// </summary>
-		[ReadOnly(true)]
-		public string Action { get; set; }
-
-		/// <summary>
-		/// 描述
-		/// </summary>
-		[ReadOnly(true)]
-		public string Description { get; set; }
-	}
 	/// <summary>
 	/// 提醒
 	/// </summary>
 	[EntityObject]
 	public class Reminder : SF.Sys.AtLeastOnceTasks.Models.AtLeastOnceTaskEntityBase<long>
-	{	
+	{      
 		/// <summary>
-		/// 计划时间
+		/// 业务类型
 		/// </summary>
-		[TableVisible]
-		public DateTime PlanTime { get; set; }
+		[MaxLength(100)]
+		[Required]
+		public virtual string BizType { get; set; }
+
 
 		/// <summary>
-		/// 下次执行计划
+		/// 业务标识类型
 		/// </summary>
-		[TableRows]
-		public RemindAction[] Actions { get; set; }
+		[EntityType]
+		public string BizIdentType { get; set; }
+
+		/// <summary>
+		/// 业务标识
+		/// </summary>
+		[EntityIdent(null,nameof(BizIdentName),EntityTypeField =nameof(BizIdentType))]
+		public long BizIdentIdent { get; set; }
+
+		/// <summary>
+		/// 业务标识
+		/// </summary>
+		[TableVisible]
+		[Ignore]
+		public string BizIdentName { get; set; }
+
+		/// <summary>
+		/// 提醒数据
+		/// </summary>
+		[MaxLength(1000)]
+		public string Data { get; set; }
+
+		/// <summary>
+		/// 提醒名称
+		/// </summary>
+		[MaxLength(100)]
+		[Required]
+		public string RemindableName { get; set; }
 	}
 }

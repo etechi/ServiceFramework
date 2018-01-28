@@ -37,24 +37,24 @@ namespace SF.Sys.AtLeastOnceTasks.Models
 		/// 最后执行时间
 		/// </summary>
 		[TableVisible]
-		public DateTime? TaskLastRunTime { get; set; }
+		public DateTime? TaskLastExecTime { get; set; }
 		/// <summary>
 		/// 下次执行时间
 		/// </summary>
 		[TableVisible]
-		public DateTime? TaskNextRunTime { get; set; }
+		public DateTime? TaskNextExecTime { get; set; }
 
 		/// <summary>
 		/// 任务执行次数
 		/// </summary>
 		[TableVisible]
-		public int TaskRunCount { get; set; }
+		public int TaskExecCount { get; set; }
 
 		/// <summary>
-		/// 最后执行错误
+		/// 任务执行消息
 		/// </summary>
 		[TableVisible]
-		public string TaskLastRunError { get; set; }
+		public string TaskMessage { get; set; }
 		
 	}
 }
