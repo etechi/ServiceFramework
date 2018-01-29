@@ -46,7 +46,6 @@ namespace SF.Sys.ADT
 					.ToArray();
 			}
 			public int NextItemIndex;
-			public int EndIndex;
 		}
 		public int MaxLevel { get; }
 		public int GroupItemCount { get; }
@@ -62,18 +61,29 @@ namespace SF.Sys.ADT
 			Groups = Enumerable.Range(0, MaxLevel).Select(i => new TimerGroup(GroupItemCount)).ToArray();
 		}
 
-		public IEnumerable<Timer> InternalTimers
+		public void Trace()
 		{
-			get
+			var lev = 0;
+			foreach(var g in Groups)
 			{
-				var timers = new List<Timer>();
-				foreach(var g in Groups)
+				Console.WriteLine($"TimeQueueGroup:{lev++} {g.NextItemIndex}");
+				for (var i = g.NextItemIndex; i < GroupItemCount; i++)
 				{
-					for (var i = g.NextItemIndex; i < GroupItemCount; i++)
-						foreach (var t in GetEnumerable(g.Items[i]))
-							timers.Add(t);
+					var idx = i % GroupItemCount;
+					var list = g.Items[idx];
+					var first = true;
+					for(var n= list.Next;n != list;n=n.Next)
+					{
+						if (first)
+						{
+							Console.Write($"\t{idx}:");
+							first = false;
+						}
+						Console.Write($" {n}");
+					}
+					if (!first)
+						Console.WriteLine();
 				}
-				return timers;
 			}
 		}
 
@@ -172,19 +182,13 @@ namespace SF.Sys.ADT
 			for (; i < MaxLevel; i++)
 			{
 				var g = Groups[i];
-				var curLevelLeft = GroupItemCount - g.NextItemIndex;
-				if (idx < curLevelLeft)
-				{
-					item.Left = left - idx * levelCount;
-					AddItem(g, g.NextItemIndex + idx, item);
-					break;
-				}
-				else if (i == MaxLevel - 1 && idx < GroupItemCount)
+				if (idx < GroupItemCount)
 				{
 					item.Left = left - idx * levelCount;
 					AddItem(g, (g.NextItemIndex + idx) % GroupItemCount, item);
 					break;
 				}
+				var curLevelLeft = GroupItemCount - g.NextItemIndex;
 				idx = (idx - curLevelLeft) / GroupItemCount;
 				left -= curLevelLeft * levelCount;
 				levelCount *= GroupItemCount;

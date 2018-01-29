@@ -18,6 +18,7 @@ using SF.Sys.AtLeastOnceTasks.DataModels;
 using SF.Sys.Data;
 using SF.Sys.Entities;
 using SF.Sys.Entities.DataModels;
+using SF.Sys.Logging;
 using SF.Sys.Services;
 using SF.Sys.TimeServices;
 using System;
@@ -39,13 +40,15 @@ namespace SF.Sys.Reminders
 		Lazy<ITimeService> TimeService { get; }
 		Lazy<IAtLeastOnceTaskExecutor<long,DataModels.DataReminder, long>> AtLeastOnceTaskExecutor { get; }
 		Lazy<RemindSyncQueue> RemindSyncQueue { get; }
+		Lazy<ILogger<RemindService>> Logger { get; }
 		public RemindService(
 			IDataScope DataScope,
 			Lazy<RemindableManager> RemindableManager,
 			Lazy<IIdentGenerator> IdentGenerator,
 			Lazy<ITimeService> TimeService,
 			Lazy<IAtLeastOnceTaskExecutor<long, DataModels.DataReminder, long>> AtLeastOnceTaskExecutor,
-			Lazy<RemindSyncQueue> RemindSyncQueue
+			Lazy<RemindSyncQueue> RemindSyncQueue,
+			Lazy<ILogger<RemindService>> Logger
 			)
 		{
 			this.AtLeastOnceTaskExecutor = AtLeastOnceTaskExecutor;
@@ -54,6 +57,7 @@ namespace SF.Sys.Reminders
 			this.IdentGenerator = IdentGenerator;
 			this.TimeService = TimeService;
 			this.RemindSyncQueue = RemindSyncQueue;
+			this.Logger = Logger;
 		}
 
 		public Task<bool> Remove(long Id)
@@ -195,7 +199,7 @@ namespace SF.Sys.Reminders
 				}
 				else
 				{
-					entity.TaskState = AtLeastOnceTasks.AtLeastOnceTaskState.Completed;
+					entity.TaskState = AtLeastOnceTasks.AtLeastOnceTaskState.Removing;
 					try
 					{
 						await DataScope.Use("提醒任务完成",async dbctx =>
@@ -228,17 +232,20 @@ namespace SF.Sys.Reminders
 							await dbctx.SaveChangesAsync();
 						}
 						);
-					}catch
+					}catch(Exception ex)
 					{
-
+						Logger.Value.Error(ex, "提醒日志记录失败:" + Json.Stringify(entity));
 					}
 				}
 			}
 			catch(Exception ex)
 			{
+				Logger.Value.Error(ex, "提醒执行异常:" + Json.Stringify(entity));
+
 				entity.TaskMessage = ex.ToString();
 				if (entity.TaskExecCount >= def.RetryMaxCount)
 				{
+					Logger.Value.Error(ex, "提醒执行失败:" + Json.Stringify(entity));
 					entity.TaskState = AtLeastOnceTasks.AtLeastOnceTaskState.Failed;
 				}
 				else

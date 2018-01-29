@@ -17,6 +17,7 @@ using SF.Sys.Logging;
 using SF.Sys.TimeServices;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -98,12 +99,24 @@ namespace SF.Sys.TaskServices
 		[ThreadStatic]
 		volatile bool _InTimerCallback;
 		double _Offset;
+		[Conditional("Debug")]
+		void DebugTrace(string Message)
+		{
+			Logger.Trace(Message);
+		}
+		void TimerQueueTrace()
+		{
+			//TimerQueue.Trace();
+		}
 		void OnTimer(object ctx)
 		{
+			DebugTrace($"系统定时器开始:{TimeService.Now}");
+
 			var items = new List<ADT.TimerQueue.Timer>();
 				var now = TimeService.Now;
 			lock (TimerQueue)
 			{
+
 				var diff = now.Subtract(_NextTime).TotalMilliseconds;
 				//如果少于1分钟，认为系统时间往前调整，直接将当前时间设置为系统时间
 				if(diff<-1000*60)
@@ -117,8 +130,11 @@ namespace SF.Sys.TaskServices
 					_Offset = _Offset * 0.95 + diff * 0.05;
 
 				while (_NextTime<=now)
-				{	
+				{
+					DebugTrace($"定时器滴答开始:当前时间:{_NextTime} 目标时间:{now}");
+					TimerQueueTrace();
 					items.AddRange(TimerQueue.NextTick());
+					TimerQueueTrace();
 					_NextTime = _NextTime.AddSeconds(1);
 				}
 				var dueTime = (int)(_NextTime.Subtract(now).TotalMilliseconds - _Offset);
@@ -126,7 +142,7 @@ namespace SF.Sys.TaskServices
 					dueTime = 1;
 				SysTimer.Change(dueTime, Timeout.Infinite);
 			}
-
+			
 			_InTimerCallback = true;
 			try
 			{
@@ -134,11 +150,13 @@ namespace SF.Sys.TaskServices
 				{
 					try
 					{
+						DebugTrace($"定时器调用开始: {item} {TimeService.Now}");
 						((Timer)item).OnTimer();
+						DebugTrace($"定时器调用结束: {item} {TimeService.Now}");
 					}
 					catch (Exception ex)
 					{
-						Logger?.Error(ex, $"定时器异常:{item}");
+						Logger?.Error(ex, $"定时器异常:{item} {TimeService.Now}");
 					}
 				}
 			}
@@ -146,28 +164,35 @@ namespace SF.Sys.TaskServices
 			{
 				_InTimerCallback = false;
 			}
+			DebugTrace($"系统定时器结束:{TimeService.Now}");
 		}
 		public TimerService(ITimeService TimeService, ILogger<TimeService> Logger)
 		{
 			this.TimeService = TimeService;
 			TimerQueue = new ADT.TimerQueue(2, 1024);
 			_NextTime = TimeService.Now.AddSeconds(1);
+			DebugTrace($"注册系统定时器:{TimeService.Now}");
 			SysTimer = new System.Threading.Timer(OnTimer,null,1000,Timeout.Infinite);
 			this.Logger = Logger;
 		}
 				
 		public void Add(int Period,Timer Timer)
 		{
+			DebugTrace($"添加定时器开始:{Period} {Timer}");
 			lock (TimerQueue)
 			{
 				if (_InTimerCallback && Period >= 1)
 					Period--;
 				TimerQueue.Add(Period, Timer);
+
+				TimerQueueTrace();
 			}
+			DebugTrace($"添加定时器结束:{Period} {Timer}");
 		}
 		public void Update(int Period, Timer Timer)
 		{
-			lock(TimerQueue)
+			DebugTrace($"更新定时器开始:{Period} {Timer}");
+			lock (TimerQueue)
 			{
 				if(Timer.IsInTimerQueue)
 					TimerQueue.Remove(Timer);
@@ -176,15 +201,25 @@ namespace SF.Sys.TaskServices
 					Period--;
 
 				TimerQueue.Add(Period, Timer);
+
+				TimerQueueTrace();
+
 			}
+			DebugTrace($"更新定时器结束:{Period} {Timer}");
 		}
 		public void Remove(Timer Timer)
 		{
+			DebugTrace($"删除定时器开始: {Timer}");
 			bool re;
 			lock (TimerQueue)
-				re=TimerQueue.Remove(Timer);
+			{
+				re = TimerQueue.Remove(Timer);
+				TimerQueueTrace();
+
+			}
 			if (re)
 				Timer.OnCancelled();
+			DebugTrace($"删除定时器开始: {Timer}");
 		}
 
 		public void Dispose()
@@ -203,6 +238,7 @@ namespace SF.Sys.TaskServices
 			{
 				try
 				{
+
 					((Timer)item).OnCancelled();
 				}
 				catch { }

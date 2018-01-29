@@ -86,9 +86,14 @@ namespace SF.Sys.Logging
 		{
 			return new FakeLoggerFactory { LogService = ls };
 		}
-		public static ILogService AddDebug(this ILogService svc)
+		public static ILogService AddDebug(this ILogService svc,LogLevel LogLevel=LogLevel.Warn)
 		{
-			svc.AsMSLoggerFactory().AddDebug();
+			svc.AsMSLoggerFactory().AddDebug(MSLogLevelMapper.MapLevel(LogLevel));
+			return svc;
+		}
+		public static ILogService AddConsole(this ILogService svc, LogLevel LogLevel = LogLevel.Warn)
+		{
+			svc.AsMSLoggerFactory().AddConsole(MSLogLevelMapper.MapLevel(LogLevel));
 			return svc;
 		}
 	}

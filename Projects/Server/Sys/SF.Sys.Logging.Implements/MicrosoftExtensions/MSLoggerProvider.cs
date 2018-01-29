@@ -29,24 +29,10 @@ namespace SF.Sys.Logging.MicrosoftExtensions
 			this.Provider = Provider;
 			this.InnerLogger = InnerLogger;
 		}
-		Microsoft.Extensions.Logging.LogLevel MapLevel(LogLevel level)
-		{
-			switch (level)
-			{
-				case LogLevel.Trace:return Microsoft.Extensions.Logging.LogLevel.Trace;
-				case LogLevel.Debug: return Microsoft.Extensions.Logging.LogLevel.Debug;
-				case LogLevel.Info: return Microsoft.Extensions.Logging.LogLevel.Information;
-				case LogLevel.Warn: return Microsoft.Extensions.Logging.LogLevel.Warning;
-				case LogLevel.Error: return Microsoft.Extensions.Logging.LogLevel.Error;
-				case LogLevel.Critical: return Microsoft.Extensions.Logging.LogLevel.Critical;
-				case LogLevel.None: return Microsoft.Extensions.Logging.LogLevel.None;
-				default:
-					throw new NotSupportedException();
-			}
-		}
+		
 		public bool IsEnabled(LogLevel level)
 		{
-			return InnerLogger.IsEnabled(MapLevel(level));
+			return InnerLogger.IsEnabled(MSLogLevelMapper.MapLevel(level));
 		}
 
 		public IDisposable BeginScope<T>(T State)
@@ -57,7 +43,7 @@ namespace SF.Sys.Logging.MicrosoftExtensions
 		public void Write<TState>(LogLevel logLevel, SF.Sys.Logging.EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
 		{
 			InnerLogger.Log(
-				MapLevel(logLevel),
+				MSLogLevelMapper.MapLevel(logLevel),
 				new Microsoft.Extensions.Logging.EventId(eventId.Id,eventId.Name),
 				state,
 				exception,

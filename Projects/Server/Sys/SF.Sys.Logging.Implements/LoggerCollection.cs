@@ -234,29 +234,15 @@ namespace SF.Sys.Logging
 						catch { }
 				}
 		}
-		public static LogLevel MapLevel(Microsoft.Extensions.Logging.LogLevel level)
-		{
-			switch (level)
-			{
-				case Microsoft.Extensions.Logging.LogLevel.Trace: return LogLevel.Trace;
-				case Microsoft.Extensions.Logging.LogLevel.Debug: return LogLevel.Debug;
-				case Microsoft.Extensions.Logging.LogLevel.Information: return LogLevel.Info;
-				case Microsoft.Extensions.Logging.LogLevel.Warning: return LogLevel.Warn;
-				case Microsoft.Extensions.Logging.LogLevel.Error: return LogLevel.Error;
-				case Microsoft.Extensions.Logging.LogLevel.Critical: return LogLevel.Critical;
-				case Microsoft.Extensions.Logging.LogLevel.None: return LogLevel.None;
-				default:
-					throw new NotSupportedException();
-			}
-		}
+		
 		void Microsoft.Extensions.Logging.ILogger.Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
 		{
-			Write(MapLevel(logLevel), new EventId(eventId.Id, eventId.Name), state, exception, formatter);
+			Write(MicrosoftExtensions.MSLogLevelMapper.MapLevel(logLevel), new EventId(eventId.Id, eventId.Name), state, exception, formatter);
 		}
 
 		bool Microsoft.Extensions.Logging.ILogger.IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel)
 		{
-			return IsEnabled(LoggerCollection.MapLevel(logLevel));
+			return IsEnabled(MicrosoftExtensions.MSLogLevelMapper.MapLevel(logLevel));
 
 		}
 

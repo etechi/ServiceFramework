@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace SF.Sys.Logging
@@ -29,21 +30,25 @@ namespace SF.Sys.Logging
 		public static void Write<TState>(this ILogger logger, LogLevel logLevel, TState state, Exception exception, Func<TState, Exception, string> formatter)
 			=> logger.Write(logLevel, EventId.None, state, exception, formatter);
 
+		[Conditional("DEBUG")]
 		public static void Debug(this ILogger Logger, string Message)
 		{
-			Logger.Write(LogLevel.Trace, null, Message);
+			Logger.Write(LogLevel.Debug, null, Message);
 		}
+		[Conditional("DEBUG")]
 		public static void Debug(this ILogger Logger, string Format, params object[] args)
 		{
-			Logger.Write( LogLevel.Trace, null, Format, args);
+			Logger.Write( LogLevel.Debug, null, Format, args);
 		}
+		[Conditional("DEBUG")]
 		public static void Debug(this ILogger Logger, Exception exception, string Message)
 		{
-			Logger.Write( LogLevel.Trace, exception, Message);
+			Logger.Write( LogLevel.Debug, exception, Message);
 		}
+		[Conditional("DEBUG")]
 		public static void Debug(this ILogger Logger, Exception exception, string Format, params object[] args)
 		{
-			Logger.Write( LogLevel.Trace, exception, Format, args);
+			Logger.Write( LogLevel.Debug, exception, Format, args);
 		}
 
 		public static void Trace(this ILogger Logger, string Message)

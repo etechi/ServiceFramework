@@ -28,6 +28,8 @@ namespace SF.Sys.Services
 			sc.Add(new ServiceDescriptor(typeof(SF.Sys.Logging.ILogger<>), typeof(SF.Sys.Logging.Logger<>), ServiceImplementLifetime.Scoped));
 			sc.Add(new ServiceDescriptor(typeof(Microsoft.Extensions.Logging.ILogger<>), typeof(SF.Sys.Logging.Logger<>), ServiceImplementLifetime.Scoped));
 			// MSDependencyInjectionExtension . sc.AsMicrosoftServiceCollection();
+
+			
 			return sc;
 		}
 	}

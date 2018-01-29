@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -28,10 +29,12 @@ namespace SF.Sys.Data
     {
 		IDataContextProviderFactory ProviderFactory { get; }
 		RootDataContext _TopRootContext;
-
-		public DataScope(IDataContextProviderFactory ProviderFactory)
+		ILogger Logger { get; }
+		
+		public DataScope(IDataContextProviderFactory ProviderFactory, ILogger<DataScope> Logger)
 		{
 			this.ProviderFactory = ProviderFactory;
+			this.Logger = Logger;
 		}
 		
 		public async Task<T> Use<T>(
@@ -41,6 +44,8 @@ namespace SF.Sys.Data
 			System.Data.IsolationLevel TransactionIsolationLevel= System.Data.IsolationLevel.Unspecified
 			)
 		{
+			//Logger.Debug($"进入数据开始 {Action} {Flags} {TransactionIsolationLevel}");
+			T result;
 			if (_TopRootContext == null || !Flags.HasFlag(DataContextFlag.LightMode))
 			{
 				using (var provider = ProviderFactory.Create())
@@ -55,11 +60,12 @@ namespace SF.Sys.Data
 							Exception error = null;
 							try
 							{
-								return await Callback(ctx);
+								result= await Callback(ctx);
 							}
 							catch (Exception ex)
 							{
 								error = ex;
+								Logger.Warn(ex,$"根数据区域异常 {Action} {Flags} {TransactionIsolationLevel}");
 								throw;
 							}
 							finally
@@ -84,13 +90,16 @@ namespace SF.Sys.Data
 				using (var ctx = _TopRootContext.PushChildContext(Action))
 					try
 					{
-						return await Callback(ctx);
+						result= await Callback(ctx);
 					}
 					finally
 					{
 						_TopRootContext.PopChildContext(ctx);
 					}
 			}
+			//Logger.Debug($"数据区域结束 {Action} {Flags} {TransactionIsolationLevel}");
+			return result;
+
 		}
 
 		public void Dispose()

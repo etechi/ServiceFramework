@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.ADT;
+using SF.Sys.Logging;
 using SF.Sys.Services;
 using SF.Sys.TaskServices;
 using SF.Sys.Threading;
@@ -75,6 +76,10 @@ namespace SF.Sys.Services
 			public TypedTaskDict<TKey> Dict { get; set; }
 			public Func<CancellationToken, Task> Callback { get; set; }
 			public TKey Key { get; }
+			public override string ToString()
+			{
+				return $"任务:{typeof(TKey).Name} {Key}";
+			}
 			public TypedTask(TypedTaskDict<TKey> Dict, TKey Key)
 			{
 				this.Dict = Dict;
@@ -82,9 +87,12 @@ namespace SF.Sys.Services
 			}
 			async Task Run(CancellationToken ct)
 			{
+				var logger = Dict?.Logger;
+				logger?.Debug($"任务定时器执行开始 {typeof(TKey).Name} {Key}");
 				Func<CancellationToken, Task> Callback;
 				lock (this)
 				{
+					
 					if (Dict == null)
 						return;
 					if (ct.IsCancellationRequested)
@@ -102,11 +110,13 @@ namespace SF.Sys.Services
 				try
 				{
 					await Callback(ct);
+					logger?.Debug($"任务定时器执行完成 {typeof(TKey).Name} {Key}");
 				}
 				catch (Exception ex)
 				{
-
+					logger?.Error(ex, $"任务定时器执行异常 {typeof(TKey).Name} {Key}");
 				}
+				
 			}
 			public override void OnTimer()
 			{
@@ -130,10 +140,12 @@ namespace SF.Sys.Services
 		{
 			public ITimeService TimeService { get; }
 			public ITimerService TimerService { get; }
-			public TypedTaskDict(ITimeService TimeService, ITimerService TimerService)
+			public ILogger Logger { get; }
+			public TypedTaskDict(ITimeService TimeService, ITimerService TimerService, ILogger Logger)
 			{
 				this.TimeService = TimeService;
 				this.TimerService = TimerService;
+				this.Logger = Logger;
 			}
 
 		}
@@ -143,11 +155,17 @@ namespace SF.Sys.Services
 		ITimerService TimerService { get; }
 		ITimeService TimeService { get; }
 		TimedTaskRunnerSetting Setting { get; }
-		public TimedTaskExecutor(ITimerService TimerService, ITimeService TimeService, TimedTaskRunnerSetting Setting)
+		ILogger Logger { get; }
+		public TimedTaskExecutor(
+			ITimerService TimerService, 
+			ITimeService TimeService,
+			ILogger<TimedTaskExecutor> Logger,
+			TimedTaskRunnerSetting Setting)
 		{
 			this.TimerService = TimerService;
 			this.TimeService = TimeService;
 			this.Setting = Setting;
+			this.Logger = Logger;
 		}
 		TypedTaskDict<TKey> GetCategoryDict<TKey>()
 		{
@@ -155,9 +173,14 @@ namespace SF.Sys.Services
 			if (!ItemCategoryDict.TryGetValue(type, out var dict))
 				dict = ItemCategoryDict.GetOrAdd(
 					type,
-					new TypedTaskDict<TKey>(TimeService, TimerService)
+					new TypedTaskDict<TKey>(TimeService, TimerService, Logger)
 					);
 			return (TypedTaskDict<TKey>)dict;
+		}
+		
+		void DebugTrace(string Message)
+		{
+			Logger.Trace(Message);
 		}
 		public IDisposable Update<TKey>(
 			TKey Key, 
@@ -165,25 +188,26 @@ namespace SF.Sys.Services
 			Func<CancellationToken, Task> Callback
 			)
 		{
+			DebugTrace($"任务定时器更新开始 {typeof(TKey).Name} {Key} {Target}");
 			//超出载入时间，可以忽略
 			var loadRequired =
 				Target.Subtract(TimeService.Now).TotalSeconds <=
 				Setting.PreloadIntervalSeconds + Setting.PreloadAheadSeconds;
 
 			var dict = GetCategoryDict<TKey>();
-			
+			IDisposable result = null;
 			for (; ; )
 			{
 				if (!dict.TryGetValue(Key, out var item))
 				{
 					if (!loadRequired)
-						return null;
+						break;
 					item = dict.GetOrAdd(Key, new TypedTask<TKey>(dict, Key));
 				}
 				else if (Callback == null || !loadRequired)
 				{
 					item.Dispose();
-					return null;
+					break;
 				}
 
 				Func<CancellationToken, Task> OrgCallback=null;
@@ -197,11 +221,12 @@ namespace SF.Sys.Services
 						
 						OrgCallback = item.Callback;
 						item.Callback = Callback;
-						var offset = (int)Target.Subtract(TimeService.Now).TotalMilliseconds;
+						var offset = (int)Target.Subtract(TimeService.Now).TotalSeconds;
 						if (offset < 0) offset = 0;
 						TimerService.Update(offset, item);
 					}
-					return item;
+					result=item;
+					break;
 				}
 				finally
 				{
@@ -218,6 +243,8 @@ namespace SF.Sys.Services
 					}
 				}
 			}
+			DebugTrace($"任务定时器更新结束 {typeof(TKey).Name} {Key} {Target}");
+			return result;
 		}
 	}
 
@@ -233,6 +260,7 @@ namespace SF.Sys.Services
 				new TimedTaskExecutor(
 				sp.Resolve<ITimerService>(),
 				sp.Resolve<ITimeService>(),
+				sp.Resolve<ILogger<TimedTaskExecutor>>(),
 				Setting
 				));
 
@@ -247,7 +275,7 @@ namespace SF.Sys.Services
 						await src.Startup(cancelToken);
 
 					var timeService = sp.Resolve<ITimeService>();
-
+					var logger = sp.Resolve<ILogger<TimedTaskExecutor>>();
 					var reloadTarget = timeService.Now;
 					for (; ; )
 					{
@@ -258,6 +286,7 @@ namespace SF.Sys.Services
 							Setting.PreloadIntervalSeconds
 							);
 						var end = reloadTarget.AddSeconds(Setting.PreloadAheadSeconds);
+						logger.Info($"任务定时器载入开始: {timeService.Now}");
 						foreach (var src in sources)
 						{
 							try
@@ -269,9 +298,10 @@ namespace SF.Sys.Services
 							}
 							catch(Exception ex)
 							{
-
+								logger.Error(ex,$"任务定时器载入异常");
 							}
 						}
+						logger.Info($"任务定时器载入结束 {timeService.Now}");
 					}
 				},
 				Setting.AutoStartup

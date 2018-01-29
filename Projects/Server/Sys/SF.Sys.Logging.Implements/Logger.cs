@@ -72,12 +72,12 @@ namespace SF.Sys.Logging
 		
 		void Microsoft.Extensions.Logging.ILogger.Log<TState>(Microsoft.Extensions.Logging.LogLevel logLevel, Microsoft.Extensions.Logging.EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
 		{
-			Write(LoggerCollection.MapLevel(logLevel), new EventId(eventId.Id, eventId.Name), state, exception, formatter);
+			Write(MicrosoftExtensions.MSLogLevelMapper.MapLevel(logLevel), new EventId(eventId.Id, eventId.Name), state, exception, formatter);
 		}
 
 		bool Microsoft.Extensions.Logging.ILogger.IsEnabled(Microsoft.Extensions.Logging.LogLevel logLevel)
 		{
-			return IsEnabled(LoggerCollection.MapLevel(logLevel));
+			return IsEnabled(MicrosoftExtensions.MSLogLevelMapper.MapLevel(logLevel));
 		}
 
 		IDisposable Microsoft.Extensions.Logging.ILogger.BeginScope<TState>(TState state)
