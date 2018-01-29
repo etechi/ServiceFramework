@@ -62,6 +62,20 @@ namespace SF.Sys.ADT
 			Groups = Enumerable.Range(0, MaxLevel).Select(i => new TimerGroup(GroupItemCount)).ToArray();
 		}
 
+		public IEnumerable<Timer> InternalTimers
+		{
+			get
+			{
+				var timers = new List<Timer>();
+				foreach(var g in Groups)
+				{
+					for (var i = g.NextItemIndex; i < GroupItemCount; i++)
+						foreach (var t in GetEnumerable(g.Items[i]))
+							timers.Add(t);
+				}
+				return timers;
+			}
+		}
 
 		void AddItem(TimerGroup grp, int idx, Timer item)
 		{

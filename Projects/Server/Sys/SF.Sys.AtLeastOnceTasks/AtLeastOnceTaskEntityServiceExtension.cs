@@ -71,7 +71,7 @@ namespace SF.Sys.Services
 		where TKey : IEquatable<TKey>
 		where TEntity : class, IAtLeastOnceTask
 	{
-		Task Execute(TKey Id, TSyncKey SyncKey, object Argument);
+		Task Execute(TKey Id, TSyncKey SyncKey, object Argument,CancellationToken cancellationToken);
 		IDisposable UpdateTimedTaskExecutor(TKey Id, TSyncKey SyncKey, DateTime Time);
 		void RemoveTimedTaskExecutor(TKey Id);
 	}
@@ -123,12 +123,15 @@ namespace SF.Sys.Services
 					TimedTaskExecutor.Update(
 						(typeof(TEntity),task.Id),
 						task.TaskNextTryTime,
-						ct => Execute(task.Id, task.SyncKey,null)
+						ct => Execute(task.Id, task.SyncKey,null,ct)
 						);
 			}
 
-			public Task Execute(TKey Id, TSyncKey SyncKey,object Argument)
+			public Task Execute(TKey Id, TSyncKey SyncKey,object Argument,CancellationToken cancelToken)
 			{
+				if (cancelToken.IsCancellationRequested)
+					return Task.CompletedTask;
+
 				if (Setting.SyncQueue == null)
 					return ScopeFactory.WithScope(
 						sp => 
@@ -198,7 +201,7 @@ namespace SF.Sys.Services
 					TimedTaskExecutor.Update(
 						(typeof(TEntity),Id),
 						task.TaskNextExecTime.Value,
-						ct => Execute(Id, SyncKey, null)
+						ct => Execute(Id, SyncKey, null,ct)
 						);
 				}
 			}
@@ -234,7 +237,7 @@ namespace SF.Sys.Services
 				return TimedTaskExecutor.Update(
 					(typeof(TEntity), Id),
 					Time,
-					ct => Execute(Id, SyncKey, null)
+					ct => Execute(Id, SyncKey, null, ct)
 					);
 			}
 			public void RemoveTimedTaskExecutor(TKey Id)
@@ -268,83 +271,6 @@ namespace SF.Sys.Services
 			);
 			return sc;
 		}
-			//public static IServiceCollection AddAtLeastOnceEntityTaskService<TKey, TSyncKey, TEntity>(
-			//	this IServiceCollection sc,
-			//	AtLeastOnceActionEntityServiceSetting<TKey, TSyncKey, TEntity> Setting
-			//	)
-			//	where TKey : IEquatable<TKey>
-			//	where TSyncKey: IEquatable<TSyncKey>
-			//	where TEntity : class, IAtLeastOnceTask
-			//{
-
-
-
-			//	sc.AddAtLeastOnceTaskService(
-			//		new AtLeastOnceActionServiceSetting<TKey, TSyncKey, TEntity>
-			//		{
-			//			Name = Setting.Name,
-			//			GetSyncKey=Setting.GetSyncKey,
-			//			BatchCount = Setting.BatchCount,
-			//			ThreadCount = Setting.ThreadCount,
-			//			Interval = Setting.Interval,
-			//			ErrorDelayUnit = Setting.ErrorDelayUnit,
-			//			ExecTimeoutSeconds = Setting.ExecTimeoutSeconds,
-			//			Init=Setting.Init,
-			//			GetIdentsToRunning = async (isp, count, time) =>
-			//			  {
-			//				  var set = isp.Resolve<IDataSet<TEntity>>();
-			//				  var tasks = await set.AsQueryable()
-			//					  .Where(e => e.TaskState == AtLeastOnceTaskState.Waiting && e.TaskNextTryTime <= time)
-			//					  .OrderBy(e=>e.TaskNextTryTime)
-			//					  .Take(count)
-			//					  .ToArrayAsync();
-			//				  foreach (var t in tasks)
-			//				  {
-			//					  t.TaskState = AtLeastOnceTaskState.Running;
-			//					  set.Update(t);
-			//				  }
-			//				  await set.Context.SaveChangesAsync();
-			//				  var ids = tasks.Select(Setting.GetKey).ToArray();
-			//				  return ids;
-			//			  },
-			//			LoadRunningTasks = async (isp) =>
-			//			  {
-			//				  var set = isp.Resolve<IDataSet<TEntity>>();
-			//				  var re = await set.AsQueryable()
-			//					  .Where(e => e.TaskState == AtLeastOnceTaskState.Running)
-			//					  .ToArrayAsync();
-			//				  return re;
-			//			  },
-			//			LoadTask = async (isp, id) =>
-			//			{
-			//				var set = isp.Resolve<IDataSet<TEntity>>();
-			//				var re = await set.AsQueryable()
-			//					.Where(e => e.TaskState == AtLeastOnceTaskState.Running)
-			//					.Where(Setting.KeyEqual(id))
-			//					.SingleOrDefaultAsync();
-			//				return re;
-			//			},
-			//			RunTask = Setting.RunTask,
-			//			SaveTask = async (isp, task) =>
-			//			{
-			//				var set = isp.Resolve<IDataSet<TEntity>>();
-			//				set.Update(task);
-			//				await set.Context.SaveChangesAsync();
-			//			},
-			//			UseDataScope = async (isp, action) =>
-			//			 {
-			//				 var ctx = isp.Resolve<IDataContext>();
-			//				 await ctx.UseTransaction(
-			//					 Setting.Name,
-			//					 async ts => {
-			//						 await action();
-			//						 return 0;
-			//					 }
-			//					 );
-			//			 }
-			//		}
-			//		);
-			//	return sc;
-			//}
-		}
+			
+	}
 }

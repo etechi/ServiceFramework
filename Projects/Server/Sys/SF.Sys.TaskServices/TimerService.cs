@@ -101,9 +101,9 @@ namespace SF.Sys.TaskServices
 		void OnTimer(object ctx)
 		{
 			var items = new List<ADT.TimerQueue.Timer>();
+				var now = TimeService.Now;
 			lock (TimerQueue)
 			{
-				var now = TimeService.Now;
 				var diff = now.Subtract(_NextTime).TotalMilliseconds;
 				//如果少于1分钟，认为系统时间往前调整，直接将当前时间设置为系统时间
 				if(diff<-1000*60)
@@ -122,6 +122,8 @@ namespace SF.Sys.TaskServices
 					_NextTime = _NextTime.AddSeconds(1);
 				}
 				var dueTime = (int)(_NextTime.Subtract(now).TotalMilliseconds - _Offset);
+				if (dueTime < 1)
+					dueTime = 1;
 				SysTimer.Change(dueTime, Timeout.Infinite);
 			}
 
@@ -205,6 +207,18 @@ namespace SF.Sys.TaskServices
 				}
 				catch { }
 			}
+		}
+	}
+}
+
+namespace SF.Sys.Services
+{
+	public static class TimerDIExtension
+	{
+		public static IServiceCollection AddTimerService(this IServiceCollection sc)
+		{
+			sc.AddSingleton<TaskServices.ITimerService, TaskServices.TimerService>();
+			return sc;
 		}
 	}
 }

@@ -37,6 +37,9 @@ namespace SF.Sys.Services
 		
 		public static IServiceCollection AddReminderServices(this IServiceCollection sc,string TablePrefix=null)
 		{
+			sc.AddScoped<IRemindService, RemindService>();
+			sc.AddSingleton<RemindableManager>();
+
 			sc.AddDataModules<
 				   SF.Sys.Reminders.DataModels.DataReminder,
 				   SF.Sys.Reminders.DataModels.DataRemindRecord

@@ -27,26 +27,31 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Sys.Reminders.DataModels
 {
 	[Table("Reminder")]
-	public class DataReminder : DataRemindRecord
+	public class DataReminder : DataAtLeastOnceTaskEntityBase<long>
 	{   
 		/// <summary>
 		/// 业务类型
 		/// </summary>
 		[Index("biz", IsUnique = true, Order = 1)]
-		public override string BizType { get; set; }
+		public virtual string BizType { get; set; }
 
 		/// <summary>
 		/// 业务标识类型
 		/// </summary>
 		[Index("biz",IsUnique =true,Order =2)]
-		public override string BizIdentType { get; set; }
+		public virtual string BizIdentType { get; set; }
 
 		/// <summary>
 		/// 业务标识
 		/// </summary>
 		[Index("biz",IsUnique =true,Order =3)]
-		public override long BizIdent { get; set; }
+		public virtual long BizIdent { get; set; }
+		[MaxLength(1000)]
+		public string Data { get; set; }
 
+		[MaxLength(100)]
+		[Required]
+		public string RemindableName { get; set; }
 
 	}
 }

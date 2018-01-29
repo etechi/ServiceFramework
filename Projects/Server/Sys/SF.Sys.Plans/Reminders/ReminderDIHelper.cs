@@ -54,6 +54,7 @@ namespace SF.Sys.Services
 			string Name = null
 		) where TRemindable : class, IRemindable
 		{
+			sc.AddScoped<TRemindable>();
 			return sc.AddSingleton<IRemindableDefination>(
 				sp =>
 				new RemindableDefination<TRemindable>

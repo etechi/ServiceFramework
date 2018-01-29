@@ -138,7 +138,7 @@ namespace SF.Common.Notifications.Management
 			await RemindService.Value.Setup(
 				new RemindSetupArgument
 				{
-					BizIdent = editable.Id,
+					BizIdent = model.Id,
 					BizIdentType = "Notification",
 					BizType = "发送通知",
 					Name = editable.Name,

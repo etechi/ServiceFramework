@@ -22,6 +22,7 @@ using SF.Common.Notifications.Front;
 using SF.Sys.Entities;
 using SF.Sys.Events;
 using System.Threading.Tasks;
+using SF.Common.Notifications.Models;
 
 namespace SF.Sys.Services
 {
@@ -86,13 +87,44 @@ namespace SF.Sys.Services
 					.Ensure(sp, scope);
 				 await sim.DefaultService<INotificationSendRecordManager, NotificationSendRecordManager>(null).Ensure(sp, scope);
 
-				 await sim.Service<INotificationSendProvider, DebugNotificationSendProvider>(null)
+				 var debugProviderId = await sim.Service<INotificationSendProvider, DebugNotificationSendProvider>(null)
 					.WithIdent("debug")
 					.Ensure(sp, scope);
 
 				 await sim.Service<INotificationSendProvider, SystemEMailProvider>(null)
 					.WithIdent("email")
 					.Ensure(sp, scope);
+
+
+
+				 var pm = sp.Resolve<INotificationSendPolicyManager>();
+				 await pm.EnsurePolicy(
+					 "测试",
+					 "测试",
+					 "Name:{Name}",
+					 "Content:{Content}",
+					 new MessageSendAction
+					 {
+						 ProviderId = debugProviderId,
+						 ContentTemplate = "ContentTemplate:{Content}",
+						 ExtTemplateArguments = new[]
+						 {
+							new ExtTemplateArgument
+							{
+								Name="Arg1",
+								Value="Arg1:{Arg1}"
+							},
+							new ExtTemplateArgument
+							{
+								Name="Arg2",
+								Value="Arg2:{Arg2}"
+							},
+						 },
+						 Name = "测试动作",
+						 TargetTemplate = "TargetTemplate:{Target}",
+						 TitleTemplate = "TitleTemplate:{Title}",
+					 }
+					 );
 			 });
 			
 			return sc;

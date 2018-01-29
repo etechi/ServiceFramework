@@ -26,6 +26,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Reminders
@@ -147,7 +148,7 @@ namespace SF.Sys.Reminders
 							AtLeastOnceTaskExecutor.Value.UpdateTimedTaskExecutor(
 								remind.Id, 
 								remind.Id, 
-								remind.TaskLastExecTime.Value
+								remind.TaskNextExecTime.Value
 								);
 						});
 				await ctx.SaveChangesAsync();
@@ -199,9 +200,30 @@ namespace SF.Sys.Reminders
 					{
 						await DataScope.Use("提醒任务完成",async dbctx =>
 						{
-							var rec = new DataModels.DataRemindRecord();
-							Poco.Update<DataModels.DataRemindRecord>(rec, entity);
-							rec.Id = await IdentGenerator.Value.GenerateAsync<DataModels.DataRemindRecord>();
+							var rec = new DataModels.DataRemindRecord
+							{
+								Id = await IdentGenerator.Value.GenerateAsync<DataModels.DataRemindRecord>(),
+								BizIdent = entity.BizIdent,
+								BizIdentType = entity.BizIdentType,
+								BizType = entity.BizType,
+								CreatedTime = entity.CreatedTime,
+								Data = entity.Data,
+								InternalRemarks = entity.InternalRemarks,
+								LogicState = entity.LogicState,
+								Name = entity.Name,
+								OwnerId = entity.OwnerId,
+								RemindableName = entity.RemindableName,
+								ServiceDataScopeId = entity.ServiceDataScopeId,
+								TaskExecCount = entity.TaskExecCount,
+								TaskLastExecTime = entity.TaskLastExecTime,
+								TaskMessage = entity.TaskMessage,
+								TaskNextExecTime = entity.TaskNextExecTime,
+								TaskStartTime = entity.TaskStartTime,
+								TaskState = entity.TaskState,
+								UpdatedTime = entity.UpdatedTime,
+								UpdatorId = entity.UpdatorId
+							};
+								
 							dbctx.Add(rec);
 							await dbctx.SaveChangesAsync();
 						}
@@ -246,7 +268,8 @@ namespace SF.Sys.Reminders
 			await AtLeastOnceTaskExecutor.Value.Execute(
 				rid, 
 				rid,//SF.Sys.Services.RemindSyncQueue.BuildKey(BizType,BizIdentType,BizIdent), 
-				Argument
+				Argument,
+				CancellationToken.None
 				);
 		}
 		public Task Remind(long Id, object Argument)
@@ -254,7 +277,8 @@ namespace SF.Sys.Reminders
 			return AtLeastOnceTaskExecutor.Value.Execute(
 				Id, 
 				Id,//SF.Sys.Services.RemindSyncQueue.BuildKey(sk.BizType, sk.BizIdentType, sk.BizIdent),  
-				Argument
+				Argument,
+				CancellationToken.None
 				);
 		}
 		public async Task<T> Sync<T>(string BizType, string BizIdentType, long BizIdent, Func<Task<T>> Callback)

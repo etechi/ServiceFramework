@@ -48,7 +48,7 @@ namespace SF.Sys.Services
 	}
 	public class TimedTaskRunnerSetting
 	{
-		public string Name { get; set; }
+		public string Name { get; set; } = "定时任务服务";
 		public bool AutoStartup { get; set; } = true;
 		/// <summary>
 		/// 任务载入间隔，
@@ -57,8 +57,8 @@ namespace SF.Sys.Services
 		///     interval |-------------------|
 		///               ahead        |------------------|
 		/// </summary>
-		public int PreloadIntervalSeconds { get; set; } = 60;
-		public int PreloadAheadSeconds { get; set; } = 10;
+		public int PreloadIntervalSeconds { get; set; } = 120;
+		public int PreloadAheadSeconds { get; set; } = 30;
 	}
 
 	public class TimedTaskExecutor : ITimedTaskExecutor
