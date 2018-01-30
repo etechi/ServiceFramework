@@ -105,8 +105,10 @@ namespace SF.Common.Notifications.Management
 			var editable = ctx.Editable;
 			if (editable.Time == default)
 				editable.Time = Now;
-			if (editable.Expires < editable.Time)
-				editable.Expires = editable.Time;
+
+			//默认过期事件为10分钟
+			if (editable.Expires==default)
+				editable.Expires = editable.Time.AddMinutes(10);
 
 			var sas = editable.PolicyId.HasValue?
 					await Cache.Value.Find(editable.PolicyId.Value):

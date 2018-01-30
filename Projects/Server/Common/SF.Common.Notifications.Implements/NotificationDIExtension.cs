@@ -54,10 +54,10 @@ namespace SF.Sys.Services
 				);
 
 			sc.AddManagedTransient<INotificationSendProvider, SystemEMailProvider>();
-			sc.AddManagedScoped<INotificationSendProvider, DebugNotificationSendProvider>();
+			sc.AddSingleton<INotificationSendProvider, DebugNotificationSendProvider>();
 
 			sc.AddManagedScoped<INotificationService, NotificationService>();
-			sc.AddTransient(sp => (IDebugNotificationSendProvider)sp.Resolve<INotificationSendProvider>("debug"));
+			sc.AddSingleton(sp => (IDebugNotificationSendProvider)sp.Resolve<INotificationSendProvider>("debug"));
 
 			sc.AddEntityGlobalCache(
 				async (INotificationSendPolicyManager nspm, long Id) =>
