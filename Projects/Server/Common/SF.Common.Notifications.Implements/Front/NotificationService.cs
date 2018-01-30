@@ -145,14 +145,14 @@ namespace SF.Common.Notifications.Front
 
 				//如果是普通通知，需要调整用户通知计数
 				var status = re.mode == NotificationMode.Normal ?
-					 await DataContext.Set<DataModels.NotificationUserStatus>().FindAsync(uid) :
+					 await DataContext.Set<DataModels.DataNotificationUserStatus>().FindAsync(uid) :
 					 null;
 
 				 if (re.target == null)
 				 {
 					//如果是全局通知，需要增加删除记录
 					if (re.mode == NotificationMode.Boardcast)
-						 DataContext.Add(new DataModels.NotificationTarget
+						 DataContext.Add(new DataModels.DataNotificationTarget
 						 {
 							 UserId = uid,
 							 NotificationId = NotificationId,
@@ -188,7 +188,7 @@ namespace SF.Common.Notifications.Front
 		{
 			return q.Select(n => new UserNotification
 			{
-				BizTrackId=n.BizIdent,
+				BizIdent=n.BizIdent,
 				Content= WithContent?n.Content:null,
 				HasBody=n.Content!=null && n.Content.Length>0,
 				Id=n.Id,
@@ -230,7 +230,7 @@ namespace SF.Common.Notifications.Front
 			var uid = EnsureUserIdent();
 			return DataScope.Value.Use("获取通知状态", async DataContext =>
 			{
-				var re = await DataContext.Set<DataModels.NotificationUserStatus>().AsQueryable()
+				var re = await DataContext.Set<DataModels.DataNotificationUserStatus>().AsQueryable()
 				   .Where(s => s.Id == uid)
 				   .Select(s => new UserNotificationStatus
 				   {
@@ -301,7 +301,7 @@ namespace SF.Common.Notifications.Front
 				 else
 				 {
 					 var readed = Arg.Readed;
-					 q = from nt in DataContext.Set<DataModels.NotificationTarget>().AsQueryable()
+					 q = from nt in DataContext.Set<DataModels.DataNotificationTarget>().AsQueryable()
 						 where
 							 nt.Mode == NotificationMode.Normal &&
 							 nt.UserId == uid &&
@@ -344,7 +344,7 @@ namespace SF.Common.Notifications.Front
 					 .ToArrayAsync();
 
 				//更新找到对象的通知记录统计
-				var status = await DataContext.Set<DataModels.NotificationUserStatus>().FindAsync(uid);
+				var status = await DataContext.Set<DataModels.DataNotificationUserStatus>().FindAsync(uid);
 				 var statusUpdated = false;
 				 foreach (var nt in notifications)
 				 {
@@ -362,7 +362,7 @@ namespace SF.Common.Notifications.Front
 						 }
 					 }
 					 else if (nt.mode == NotificationMode.Boardcast)
-						 DataContext.Add(new DataModels.NotificationTarget
+						 DataContext.Add(new DataModels.DataNotificationTarget
 						 {
 							 LogicState = EntityLogicState.Enabled,
 							 Mode = NotificationMode.Boardcast,

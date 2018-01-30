@@ -26,7 +26,7 @@ using SF.Common.Notifications.Models;
 namespace SF.Common.Notifications.Management
 {
 	public class NotificationSendPolicyManager :
-		SF.Sys.Entities.AutoModifiableEntityManager<ObjectKey<long>, NotificationSendPolicy, NotificationSendPolicy, NotificationSendPolicyQueryArgument, NotificationSendPolicy, DataModels.NotificationSendPolicy>,
+		SF.Sys.Entities.AutoModifiableEntityManager<ObjectKey<long>, NotificationSendPolicy, NotificationSendPolicy, NotificationSendPolicyQueryArgument, NotificationSendPolicy, DataModels.DataNotificationSendPolicy>,
 		INotificationSendPolicyManager
 	{
 		

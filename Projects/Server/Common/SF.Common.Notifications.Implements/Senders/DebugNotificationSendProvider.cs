@@ -11,7 +11,8 @@ namespace SF.Common.Notifications.Senders
 
 	public class DebugNotificationSendProvider : IDebugNotificationSendProvider
 	{
-		public ISendArgument LastArgument { get; set; }
+		static ISendArgument _LastArgument;
+		public ISendArgument LastArgument { get=> _LastArgument; set=> _LastArgument=value; }
 
 		
 

@@ -32,6 +32,8 @@ namespace SF.Sys.Services
 
 	public interface ITimedTaskExecutor
 	{
+		Task WaitNextTimerCompleted();
+
 		IDisposable Update<TKey>(
 			TKey Key,
 			DateTime Target, 
@@ -64,6 +66,7 @@ namespace SF.Sys.Services
 
 	public class TimedTaskExecutor : ITimedTaskExecutor
 	{
+
 		class TypedTask<TKey>:SF.Sys.TaskServices.Timer,IDisposable
 		{
 			public static CancellationToken CancelledCancellationToken { get; }
@@ -87,36 +90,36 @@ namespace SF.Sys.Services
 			}
 			async Task Run(CancellationToken ct)
 			{
-				var logger = Dict?.Logger;
+				var executor = Dict?.Executor;
+				var logger = executor?.Logger;
 				logger?.Debug($"任务定时器执行开始 {typeof(TKey).Name} {Key}");
-				Func<CancellationToken, Task> Callback;
+				Func<CancellationToken, Task> cb;
 				lock (this)
 				{
-					
 					if (Dict == null)
 						return;
 					if (ct.IsCancellationRequested)
-						Dict.TimerService.Remove(this);
+						Dict.Executor.TimerService.Remove(this);
 
-					Callback = this.Callback;
+					cb = this.Callback;
 					Dict.TryRemove(Key, out var cur);
 
 					Dict = null;
 					this.Callback = null;
 				}
-				if (Callback == null)
+				if (cb == null)
 					return;
 
 				try
 				{
-					await Callback(ct);
+					await cb(ct);
 					logger?.Debug($"任务定时器执行完成 {typeof(TKey).Name} {Key}");
 				}
 				catch (Exception ex)
 				{
 					logger?.Error(ex, $"任务定时器执行异常 {typeof(TKey).Name} {Key}");
 				}
-				
+				executor?.OnTaskCompleted();
 			}
 			public override void OnTimer()
 			{
@@ -138,14 +141,11 @@ namespace SF.Sys.Services
 		class TypedTaskDict<TKey>:
 			ConcurrentDictionary<TKey, TypedTask<TKey>>
 		{
-			public ITimeService TimeService { get; }
-			public ITimerService TimerService { get; }
-			public ILogger Logger { get; }
-			public TypedTaskDict(ITimeService TimeService, ITimerService TimerService, ILogger Logger)
+			public TimedTaskExecutor Executor { get; }
+			public TypedTaskDict(TimedTaskExecutor Executor)
 			{
-				this.TimeService = TimeService;
-				this.TimerService = TimerService;
-				this.Logger = Logger;
+				this.Executor = Executor;
+				
 			}
 
 		}
@@ -156,6 +156,8 @@ namespace SF.Sys.Services
 		ITimeService TimeService { get; }
 		TimedTaskRunnerSetting Setting { get; }
 		ILogger Logger { get; }
+		TaskCompletionSource<int> _OnNextTimerCompleted;
+
 		public TimedTaskExecutor(
 			ITimerService TimerService, 
 			ITimeService TimeService,
@@ -167,13 +169,20 @@ namespace SF.Sys.Services
 			this.Setting = Setting;
 			this.Logger = Logger;
 		}
+		public Task WaitNextTimerCompleted()
+		{
+			var tcs = new TaskCompletionSource<int>();
+			var re = Interlocked.Exchange(ref _OnNextTimerCompleted, tcs);
+			if (re != null) re.TrySetCanceled();
+			return tcs.Task;
+		}
 		TypedTaskDict<TKey> GetCategoryDict<TKey>()
 		{
 			var type = typeof(TKey);
 			if (!ItemCategoryDict.TryGetValue(type, out var dict))
 				dict = ItemCategoryDict.GetOrAdd(
 					type,
-					new TypedTaskDict<TKey>(TimeService, TimerService, Logger)
+					new TypedTaskDict<TKey>(this)
 					);
 			return (TypedTaskDict<TKey>)dict;
 		}
@@ -245,6 +254,12 @@ namespace SF.Sys.Services
 			}
 			DebugTrace($"任务定时器更新结束 {typeof(TKey).Name} {Key} {Target}");
 			return result;
+		}
+		public void OnTaskCompleted()
+		{
+			var tcs = Interlocked.Exchange(ref _OnNextTimerCompleted, null);
+			if (tcs != null)
+				tcs.TrySetResult(0);
 		}
 	}
 

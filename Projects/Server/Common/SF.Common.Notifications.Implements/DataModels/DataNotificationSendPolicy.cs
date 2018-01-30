@@ -27,7 +27,7 @@ namespace SF.Common.Notifications.DataModels
 	/// 通知发送策略
 	/// </summary>
 	[Table("NotificationSendPolicy")]
-	public class NotificationSendPolicy : SF.Sys.Entities.DataModels.DataObjectEntityBase
+	public class DataNotificationSendPolicy : SF.Sys.Entities.DataModels.DataObjectEntityBase
 	{
 		/// <summary>
 		/// 策略标识
@@ -43,6 +43,17 @@ namespace SF.Common.Notifications.DataModels
 		[JsonData]
 		public string Actions { get; set; }
 
+		/// <summary>
+		/// 通知标题模板
+		/// </summary>
+		[MaxLength(100)]
+		public string NameTemplate { get; set; }
+
+		/// <summary>
+		/// 通知内容模板
+		/// </summary>
+		[MaxLength(1000)]
+		public string ContentTemplate { get; set; }
 	}
 
 }

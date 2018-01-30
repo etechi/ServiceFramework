@@ -21,52 +21,41 @@ using SF.Sys.Data;
 using SF.Sys.Annotations;
 using SF.Common.Notifications.Models;
 using SF.Sys.Entities;
+using System.Collections.Generic;
 
 namespace SF.Common.Notifications.DataModels
 {
 
 	/// <summary>
-	/// 通知对象
-	/// 普通通知每个通知用户跟随通知对象创建
-	/// 全局通知用户读取通知后创建
+	/// 普通通知用户状态
 	/// </summary>
-	[Table("NotificationTarget")]
-	public class NotificationTarget
+	[Table("NotificationUserStatus")]
+	public class DataNotificationUserStatus :
+	   IEntityWithId<long>
 	{
-
+		/// <summary>
+		/// ID
+		/// </summary>
 		[Key]
-		[Column(Order = 1)]
-		[Index("user", Order = 1)]
 		[DatabaseGenerated(DatabaseGeneratedOption.None)]
-		[Display(Name = "用户ID")]
-		public long UserId { get; set; }
-
-		[Key]
-		[Column(Order = 2)]
-		[DatabaseGenerated(DatabaseGeneratedOption.None)]
-		[Display(Name = "通知ID")]
-		public long NotificationId { get; set; }
+		public long Id { get; set; }
 
 		/// <summary>
-		/// 通知模式
+		/// 已收到
 		/// </summary>
-		public NotificationMode Mode { get; set; }
+		public int Received { get; set; }
 
-		[Index("user", Order = 2)]
-		[Display(Name = "逻辑状态")]
-		public EntityLogicState LogicState { get; set; }
+		/// <summary>
+		/// 已收到未读
+		/// </summary>
+		public int ReceivedUnreaded { get; set; }
 
-		[Index("user", Order = 3)]
-		[Display(Name = "时间")]
-		public DateTime Time { get; set; }
-
-		[Display(Name = "已读时间")]
-		public DateTime? ReadTime { get; set; }
-
-		[ForeignKey(nameof(NotificationId))]
-		public Notification Notification { get; set; }
-
+		/// <summary>
+		/// 乐观锁时间戳
+		/// </summary>
+		[ConcurrencyCheck]
+		[Timestamp]
+		public byte[] RowVersion { get; set; }
 	}
-
 
 }

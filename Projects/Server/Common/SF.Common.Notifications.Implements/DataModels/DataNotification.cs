@@ -98,8 +98,8 @@ namespace SF.Common.Notifications.DataModels
 		/// </summary>
 		public EntityLogicState LogicState { get; set; }
 
-		[InverseProperty(nameof(NotificationTarget.Notification))]
-		public ICollection<NotificationTarget> Targets { get; set; }
+		[InverseProperty(nameof(DataNotificationTarget.Notification))]
+		public ICollection<DataNotificationTarget> Targets { get; set; }
 
 		
 		/// <summary>
@@ -109,7 +109,7 @@ namespace SF.Common.Notifications.DataModels
 		public long? PolicyId { get; set; }
 		
 		[ForeignKey(nameof(PolicyId))]
-		public NotificationSendPolicy Policy { get; set; }
+		public DataNotificationSendPolicy Policy { get; set; }
 
 
 		///<title>消息参数</title>

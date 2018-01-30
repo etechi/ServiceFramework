@@ -37,10 +37,10 @@ namespace SF.Sys.Services
 
 			sc.AddDataModules<
 				SF.Common.Notifications.DataModels.DataNotificationSendRecord,
-				SF.Common.Notifications.DataModels.NotificationSendPolicy,
+				SF.Common.Notifications.DataModels.DataNotificationSendPolicy,
 				SF.Common.Notifications.DataModels.Notification,
-				SF.Common.Notifications.DataModels.NotificationTarget,
-				SF.Common.Notifications.DataModels.NotificationUserStatus
+				SF.Common.Notifications.DataModels.DataNotificationTarget,
+				SF.Common.Notifications.DataModels.DataNotificationUserStatus
 				>(
 				TablePrefix??"Common"
 				);
@@ -54,10 +54,10 @@ namespace SF.Sys.Services
 				);
 
 			sc.AddManagedTransient<INotificationSendProvider, SystemEMailProvider>();
-			sc.AddSingleton<INotificationSendProvider, DebugNotificationSendProvider>();
+			sc.AddManagedTransient<INotificationSendProvider, DebugNotificationSendProvider>();
 
 			sc.AddManagedScoped<INotificationService, NotificationService>();
-			sc.AddSingleton(sp => (IDebugNotificationSendProvider)sp.Resolve<INotificationSendProvider>("debug"));
+			sc.AddTransient(sp => (IDebugNotificationSendProvider)sp.Resolve<INotificationSendProvider>("debug"));
 
 			sc.AddEntityGlobalCache(
 				async (INotificationSendPolicyManager nspm, long Id) =>
@@ -65,7 +65,7 @@ namespace SF.Sys.Services
 					var re = await nspm.GetAsync(ObjectKey.From(Id));
 					return re;
 				},
-				(IEventSubscriber<EntityChanged<SF.Common.Notifications.DataModels.NotificationSendPolicy>> OnPolicyModified, IEntityCacheRemover<long> remover) =>
+				(IEventSubscriber<EntityChanged<SF.Common.Notifications.DataModels.DataNotificationSendPolicy>> OnPolicyModified, IEntityCacheRemover<long> remover) =>
 				{
 					OnPolicyModified.Wait(e =>
 					{
@@ -121,7 +121,7 @@ namespace SF.Sys.Services
 							},
 						 },
 						 Name = "测试动作",
-						 TargetTemplate = "TargetTemplate:{Target}",
+						 TargetTemplate = null,//"{Target}",
 						 TitleTemplate = "TitleTemplate:{Title}",
 					 }
 					 );

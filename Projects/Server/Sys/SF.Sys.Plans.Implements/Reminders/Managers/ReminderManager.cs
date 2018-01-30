@@ -24,6 +24,15 @@ namespace SF.Sys.Reminders
 		{
 		}
 
-	
+		public Task ClearAllReminders()
+		{
+			return DataScope.Use("删除所有提醒", async ctx =>
+			{
+				ctx.RemoveRange(
+					await ctx.Set<DataModels.DataReminder>().AsQueryable(false).ToArrayAsync()
+					);
+				await ctx.SaveChangesAsync();
+			});
+		}
 	}
 }

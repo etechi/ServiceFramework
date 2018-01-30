@@ -234,37 +234,36 @@ namespace SF.Sys.Entities
 		}
 
 		
-		//public static async Task QueryAndRemoveAsync<TManager, TKey, TQueryArgument>(
-		//	this TManager Manager,
-		//	ITransactionScopeManager transScopeManager,
-		//	TQueryArgument QueryArgument =null,
-		//	int BatchCount=100
-		//	)
-		//	where TKey : IEquatable<TKey>
-		//	where TQueryArgument : class, IQueryArgument<TKey>,new()
-		//	where TManager : IEntityIdentQueryable<TKey, TQueryArgument>, IEntityRemover<TKey>
-		//{
-		//	var arg = QueryArgument ?? new TQueryArgument();
-		//	if (arg.Paging == null)
-		//		arg.Paging = new Paging { Count = BatchCount };
-		//	for(; ; )
-		//	{
-		//		var left=await transScopeManager.UseTransaction(
-		//			"批量删除", 
-		//			async s =>
-		//			 {
-		//				 var re = await Manager.QueryIdentsAsync(arg);
-		//				 var ids = re.Items.ToArray();
-		//				 foreach (var id in ids)
-		//					 await Manager.RemoveAsync(id);
-		//				 return ids.Length;
-		//			 }, 
-		//			 TransactionScopeMode.RequireTransaction
-		//			);
-		//		if (left == 0)
-		//			break;
-		//	}
-		//}
-	
+		public static async Task QueryAndRemoveAsync<TManager, TKey, TQueryArgument>(
+			this TManager Manager,
+			IDataScope DataScope,
+			TQueryArgument QueryArgument,
+			int BatchCount = 100
+			)
+			where TKey : IEquatable<TKey>
+			where TQueryArgument : class, IQueryArgument<TKey>, new()
+			where TManager : IEntityIdentQueryable<TKey, TQueryArgument>, IEntityRemover<TKey>
+		{
+			var arg = QueryArgument ?? new TQueryArgument();
+			if (arg.Paging == null)
+				arg.Paging = new Paging { Count = BatchCount };
+			for (; ; )
+			{
+				var left=await DataScope.Use("批量删除", async ctx => { 
+					 
+						 var re = await Manager.QueryIdentsAsync(arg);
+						 var ids = re.Items.ToArray();
+						 foreach (var id in ids)
+							 await Manager.RemoveAsync(id);
+						return ids.Length;
+					 },
+					DataContextFlag.None,
+					System.Data.IsolationLevel.ReadUncommitted
+					);
+				if (left == 0)
+					break;
+			}
+		}
+
 	}
 }

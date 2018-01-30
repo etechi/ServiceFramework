@@ -47,7 +47,8 @@ namespace SF.Sys.UnitTest
 			return Task.CompletedTask;
 
 		}
-		
+		public string NewRandString(int Len)
+			=>Strings.NumberAndLowerUpperChars.Random(Len);
 	}
 	
 

@@ -97,7 +97,7 @@ namespace SF.Sys.TaskServices
 		DateTime StartTime { get; }
 		ILogger Logger { get; }
 		[ThreadStatic]
-		volatile bool _InTimerCallback;
+		volatile static bool _InTimerCallback;
 		double _Offset;
 		[Conditional("Debug")]
 		void DebugTrace(string Message)
@@ -108,6 +108,7 @@ namespace SF.Sys.TaskServices
 		{
 			//TimerQueue.Trace();
 		}
+		
 		void OnTimer(object ctx)
 		{
 			DebugTrace($"系统定时器开始:{TimeService.Now}");
@@ -144,6 +145,7 @@ namespace SF.Sys.TaskServices
 			}
 			
 			_InTimerCallback = true;
+			var onTimerCompleted = false;
 			try
 			{
 				foreach (var item in items)
@@ -152,6 +154,7 @@ namespace SF.Sys.TaskServices
 					{
 						DebugTrace($"定时器调用开始: {item} {TimeService.Now}");
 						((Timer)item).OnTimer();
+						onTimerCompleted = true;
 						DebugTrace($"定时器调用结束: {item} {TimeService.Now}");
 					}
 					catch (Exception ex)
@@ -164,6 +167,7 @@ namespace SF.Sys.TaskServices
 			{
 				_InTimerCallback = false;
 			}
+			
 			DebugTrace($"系统定时器结束:{TimeService.Now}");
 		}
 		public TimerService(ITimeService TimeService, ILogger<TimeService> Logger)

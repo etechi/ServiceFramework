@@ -72,7 +72,7 @@ namespace SF.Common.Notifications.Front
 		/// <summary>
 		/// 业务跟踪参数
 		/// </summary>
-        public string BizTrackId { get; set; }
+        public string BizIdent { get; set; }
         
 		/// <summary>
 		/// 详细内容

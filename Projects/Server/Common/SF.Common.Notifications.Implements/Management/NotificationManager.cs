@@ -85,7 +85,7 @@ namespace SF.Common.Notifications.Management
 		{
 			var pid=await DataScope.Use("查找策略", DataContext=>
 				DataContext
-				.Set<DataModels.NotificationSendPolicy>()
+				.Set<DataModels.DataNotificationSendPolicy>()
 				.AsQueryable()
 				.Where(p => 
 					p.LogicState == EntityLogicState.Enabled && 
@@ -179,7 +179,14 @@ namespace SF.Common.Notifications.Management
 						RetryInterval = sa.RetryInterval,
 						Template = sa.ExtTemplateId,
 						Content = sa.ContentTemplate.Replace(editable.Args),
-						Args = Json.Stringify(editable.Args),
+						Args = (sa.ExtTemplateArguments?.Length??0)==0?
+							null:
+							Json.Stringify(
+								sa.ExtTemplateArguments.ToDictionary(
+									a=>a.Name,
+									a=>a.Value.Replace(editable.Args)
+								)
+							),
 						Id = await IdentGenerator.GenerateAsync<DataModels.DataNotificationSendRecord>(),
 						NotificationId = NotificationId,
 						ProviderId = sa.ProviderId,

@@ -50,11 +50,13 @@ namespace SF.Common.Notifications.Management
 			   DateTime Expires = default,
 			   string BizIdent = null,
 			   string Image = null,
-			   string Link = null
+			   string Link = null,
+			   string Name = null,
+			   string Content = null
 			   )
 		{
 			return Manager.CreateNotification(
-				NotificationMode.Normal,
+				NotificationMode.Boardcast,
 				null,
 				Policy,
 				Args,
@@ -62,7 +64,9 @@ namespace SF.Common.Notifications.Management
 				Expires == default ? Time.AddYears(1) : Expires,
 				BizIdent,
 				Image,
-				Link
+				Link,
+				Name,
+				Content
 				);
 		}
 		public static Task<long> CreateNormalNotification(
@@ -74,7 +78,9 @@ namespace SF.Common.Notifications.Management
 			DateTime Expires = default,
 			string BizIdent = null,
 			string Image = null,
-			string Link = null
+			string Link = null,
+			string Name = null,
+			string Content = null
 			)
 		{
 			return Manager.CreateNotification(
@@ -86,7 +92,9 @@ namespace SF.Common.Notifications.Management
 				Expires,
 				BizIdent,
 				Image,
-				Link
+				Link,
+				Name,
+				Content
 				);
 
 		}
@@ -99,7 +107,9 @@ namespace SF.Common.Notifications.Management
 			DateTime Expires=default,
 			string BizIdent = null,
 			string Image=null,
-			string Link=null
+			string Link=null,
+			string Name=null,
+			string Content=null
 			)
 		{
 			return Manager.CreateNotification(
@@ -111,7 +121,9 @@ namespace SF.Common.Notifications.Management
 				Expires,
 				BizIdent,
 				Image,
-				Link
+				Link,
+				Name,
+				Content
 				);
 
 		}
@@ -125,7 +137,9 @@ namespace SF.Common.Notifications.Management
 			DateTime Expires=default,
 			string BizIdent = null,
 			string Image=null,
-			string Link=null
+			string Link=null,
+			string Name=null,
+			string Content=null
 			)
 		{
 			var policyId = Policy == null ? (long?)null : await Manager.FindPolicy(Policy);
@@ -140,7 +154,9 @@ namespace SF.Common.Notifications.Management
 				Mode = Mode,
 				PolicyId = policyId,
 				Targets = Targets,
-				TargetId = Targets == null ? (long?)null : Targets.FirstOrDefault()
+				TargetId = Targets == null ? (long?)null : Targets.FirstOrDefault(),
+				Content=Content,
+				Name=Name
 			});
 			return re.Id;
 		}

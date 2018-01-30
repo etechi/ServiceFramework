@@ -36,5 +36,6 @@ namespace SF.Sys.Reminders
 	public interface IReminderManager :
 		IEntitySource<ObjectKey<long>, Models.Reminder, ReminderQueryArgument>
 	{
+		Task ClearAllReminders();
 	}
 }
