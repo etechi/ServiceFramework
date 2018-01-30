@@ -25,6 +25,8 @@ using SF.Common.Notifications.Models;
 using SF.Common.Notifications.Senders;
 using SF.Sys.Linq;
 using SF.Sys.Reminders;
+using SF.Common.Notifications.DataModels;
+using SF.Sys.Collections.Generic;
 
 namespace SF.Common.Notifications.Management
 {
@@ -35,7 +37,7 @@ namespace SF.Common.Notifications.Management
 			Notification, 
 			NotificationQueryArgument,
 			NotificationEditable,
-			DataModels.Notification
+			DataModels.DataNotification
 			>,
 		INotificationManager
 	{
@@ -55,7 +57,7 @@ namespace SF.Common.Notifications.Management
 			this.NotificationSendProviderResolver = NotificationSendProviderResolver;
 		}
 
-		protected override IContextQueryable<DataModels.Notification> OnBuildQuery(IContextQueryable<DataModels.Notification> Query, NotificationQueryArgument Arg)
+		protected override IContextQueryable<DataModels.DataNotification> OnBuildQuery(IContextQueryable<DataModels.DataNotification> Query, NotificationQueryArgument Arg)
 		{
 			if (Arg.State.HasValue)
 			{
@@ -97,6 +99,62 @@ namespace SF.Common.Notifications.Management
 			if (pid == 0)
 				throw new PublicArgumentException("找不到通知发送策略:" + Ident);
 			return pid;
+		}
+
+		protected override async Task OnUpdateModel(IModifyContext ctx)
+		{
+			if(ctx.Editable.Mode==NotificationMode.Normal)
+				await UpdateUserStatus(ctx);
+			await base.OnUpdateModel(ctx);
+		}
+		
+
+		private static async Task UpdateUserStatus(IModifyContext ctx)
+		{
+			var editable = ctx.Editable;
+			var model = ctx.Model;
+
+			if (editable.Targets != null)
+			{
+				var users = new HashSet<long>(editable.Targets);
+				
+				var statuses = await ctx.DataContext
+					.Queryable<DataModels.DataNotificationUserStatus>()
+					.Where(s => users.Contains(s.Id)).ToDictionaryAsync(s => s.Id);
+				if (model.Targets == null && ctx.Action == ModifyAction.Update)
+					model.Targets = await ctx.DataContext
+					.Queryable<DataModels.DataNotificationTarget>()
+					.Where(t => t.NotificationId == ctx.Model.Id)
+					.ToListAsync();
+
+				if(model.Targets!=null)
+					foreach (var t in model.Targets.Where(t => !users.Contains(t.UserId)))
+						if (statuses.TryGetValue(t.UserId, out var s))
+						{
+							if (s.Received > 0)
+								s.Received--;
+							if (s.ReceivedUnreaded > 0 && !t.ReadTime.HasValue)
+								s.ReceivedUnreaded--;
+							ctx.DataContext.Update(s);
+						}
+				foreach (var u in users.Where(i => model.Targets==null || !model.Targets.Any(t => t.UserId == i)))
+					if (statuses.TryGetValue(u, out var s))
+					{
+						s.Received++;
+						s.ReceivedUnreaded++;
+						ctx.DataContext.Update(s);
+					}
+					else
+						ctx.DataContext.Add(
+							new DataNotificationUserStatus
+							{
+								Id = u,
+								Received = 1,
+								ReceivedUnreaded = 1
+							});
+
+				
+			}
 		}
 
 		protected override async Task OnNewModel(IModifyContext ctx)
@@ -151,12 +209,41 @@ namespace SF.Common.Notifications.Management
 		}
 		protected override async Task OnRemoveModel(IModifyContext ctx)
 		{
+			await RemoveStatus(ctx);
+
 			await RemindService.Value.Remove(
 				"发送通知",
 				"Notification",
 				ctx.Model.Id
 				);
 			await base.OnRemoveModel(ctx);
+		}
+
+		private static async Task RemoveStatus(IModifyContext ctx)
+		{
+			var model = ctx.Model;
+			if (model.Mode == NotificationMode.Normal)
+			{
+				//全体通知数量不记录
+				var dics = await ctx.DataContext
+					.Queryable<DataModels.DataNotificationTarget>()
+					.Where(t => t.NotificationId == model.Id)
+					.ToDictionaryAsync(t => t.UserId);
+				var users = dics.Keys.ToArray();
+
+				var statuses = await ctx.DataContext
+					.Queryable<DataModels.DataNotificationUserStatus>(false)
+					.Where(s => users.Contains(s.Id))
+					.ToArrayAsync();
+				foreach (var status in statuses)
+				{
+					if (status.Received > 0)
+						status.Received--;
+					if (!dics[status.Id].ReadTime.HasValue && status.ReceivedUnreaded > 0)
+						status.ReceivedUnreaded--;
+					ctx.DataContext.Update(status);
+				}
+			}
 		}
 
 		async Task AddSendRecord(

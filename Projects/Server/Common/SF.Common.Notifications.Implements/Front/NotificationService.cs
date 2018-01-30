@@ -122,7 +122,7 @@ namespace SF.Common.Notifications.Front
 				 var now = TimeService.Value.Now;
 
 				 var re = await (
-					 from n in DataContext.Set<DataModels.Notification>().AsQueryable()
+					 from n in DataContext.Set<DataModels.DataNotification>().AsQueryable()
 					 where n.Id == NotificationId
 					 let t = n.Targets.FirstOrDefault(t => t.UserId == uid)
 					 where
@@ -184,7 +184,7 @@ namespace SF.Common.Notifications.Front
 		}
 
 		IContextQueryable<UserNotification> Select(
-			IContextQueryable<DataModels.Notification> q,long user,bool WithContent)
+			IContextQueryable<DataModels.DataNotification> q,long user,bool WithContent)
 		{
 			return q.Select(n => new UserNotification
 			{
@@ -209,19 +209,18 @@ namespace SF.Common.Notifications.Front
 			var re = await DataScope.Value.Use("获取通知",
 				DataContext =>
 				{
-					var q = from n in DataContext.Set<DataModels.Notification>().AsQueryable()
+					var q = from n in DataContext.Set<DataModels.DataNotification>().AsQueryable()
 							where n.Id == Id &&
 								n.Time <= now &&
 								n.Expires > now &&
-								n.LogicState == EntityLogicState.Enabled &&
-								(n.Mode == NotificationMode.Boardcast ||
-								n.Targets.Any(t => t.UserId == uid)
-							  )
+								n.LogicState == EntityLogicState.Enabled
+							join ti in DataContext.Queryable<DataModels.DataNotificationTarget>() on n.Id equals ti.NotificationId into tt
+							from t in tt.DefaultIfEmpty()
+							where n.Mode == NotificationMode.Boardcast && (t==null || t.LogicState==EntityLogicState.Enabled) ||
+								n.Mode==NotificationMode.Normal && t!=null && t.LogicState==EntityLogicState.Enabled
 							select n;
 					return Select(q, uid, true).SingleOrDefaultAsync();
 				});
-			if (re == null)
-				throw new PublicArgumentException("找不到指定的通知:" + Id);
 			return re;
 		}
 
@@ -243,20 +242,24 @@ namespace SF.Common.Notifications.Front
 
 				var now = TimeService.Value.Now;
 
-				var broadcast_status_query =
-					from n in DataContext.Set<DataModels.Notification>().AsQueryable()
-					where n.Mode == NotificationMode.Boardcast &&
-						n.Time < now && n.Expires > now &&
-						n.LogicState == EntityLogicState.Enabled
-					from nt in n.Targets
-					where nt.UserId == uid
-					group 1 by nt.ReadTime.HasValue into g
-					select new { readed = g.Key, count = g.Count() }
-					;
+				var readed = await (from nr in DataContext.Set<DataModels.DataNotificationTarget>().AsQueryable()
+									where nr.UserId == uid && nr.ReadTime.HasValue && nr.LogicState==EntityLogicState.Enabled
+									let n = nr.Notification
+									where n.Mode == NotificationMode.Boardcast &&
+											n.Time <= now && n.Expires > now &&
+											n.LogicState == EntityLogicState.Enabled
+									select 1).SumAsync();
 
-				var broadcast_status = await broadcast_status_query.ToArrayAsync();
-				re.Received += broadcast_status.Select(s => s.count).DefaultIfEmpty(0).Sum();
-				re.ReceivedUnreaded += broadcast_status.Where(s => !s.readed).Select(s => s.count).FirstOrDefault();
+				var count= await (from n in DataContext.Set<DataModels.DataNotification>().AsQueryable()
+								  where n.Mode == NotificationMode.Boardcast &&
+										  n.Time <= now && n.Expires > now &&
+										  n.LogicState == EntityLogicState.Enabled
+									join ti in DataContext.Queryable<DataModels.DataNotificationTarget>() on n.Id equals ti.NotificationId into tt
+									from t in tt.DefaultIfEmpty()
+									where t==null || t.LogicState==EntityLogicState.Enabled
+								  select 1).SumAsync();
+				re.Received += count;
+				re.ReceivedUnreaded += count-readed;
 				return re;
 			});
 		}
@@ -281,10 +284,10 @@ namespace SF.Common.Notifications.Front
 
 			return await DataScope.Value.Use("查询通知", async DataContext =>
 			 {
-				 IContextQueryable<DataModels.Notification> q;
+				 IContextQueryable<DataModels.DataNotification> q;
 				 if (Arg.Mode == NotificationMode.Boardcast)
 				 {
-					 q = from n in DataContext.Set<DataModels.Notification>().AsQueryable()
+					 q = from n in DataContext.Set<DataModels.DataNotification>().AsQueryable()
 						 where n.Mode == NotificationMode.Boardcast &&
 						 n.LogicState == EntityLogicState.Enabled &&
 							 n.Time <= now &&
@@ -331,7 +334,7 @@ namespace SF.Common.Notifications.Front
 			 {
 				 var now = TimeService.Value.Now;
 				 var notifications = await (
-					 from n in DataContext.Set<DataModels.Notification>().AsQueryable(true)
+					 from n in DataContext.Set<DataModels.DataNotification>().AsQueryable(true)
 					 where ids.Contains(n.Id)
 					 select new
 					 {
@@ -351,7 +354,7 @@ namespace SF.Common.Notifications.Front
 					 if (nt.target != null)
 					 {
 						 nt.target.ReadTime = now;
-						 DataContext.Update(nt);
+						 DataContext.Update(nt.target);
 
 						 if (nt.mode == NotificationMode.Normal &&
 							 status != null &&

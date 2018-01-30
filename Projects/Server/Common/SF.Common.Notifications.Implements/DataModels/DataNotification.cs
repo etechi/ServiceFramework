@@ -30,7 +30,7 @@ namespace SF.Common.Notifications.DataModels
 	/// 通知记录
 	/// </summary>
 	[Table("Notification")]
-	public class Notification : 
+	public class DataNotification : 
 		IEntityWithId<long>
 	{
 		/// <summary>

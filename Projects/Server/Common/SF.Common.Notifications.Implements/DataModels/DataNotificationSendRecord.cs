@@ -126,7 +126,7 @@ namespace SF.Common.Notifications.DataModels
 		public long NotificationId { get; set; }
 
 		[ForeignKey(nameof(NotificationId))]
-		public Notification Notification { get; set; }
+		public DataNotification Notification { get; set; }
 
 		IEnumerable<long> ISendArgument.TargetIds => TargetId.HasValue? (IEnumerable<long>)new[] { TargetId.Value }: Enumerable.Empty<long>();
 

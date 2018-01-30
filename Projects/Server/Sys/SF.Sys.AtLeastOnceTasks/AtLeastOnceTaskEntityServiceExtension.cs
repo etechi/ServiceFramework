@@ -86,12 +86,12 @@ namespace SF.Sys.Services
 			where TKey : IEquatable<TKey>
 			where TEntity : class, IAtLeastOnceTask
 		{
-			ITimedTaskExecutor TimedTaskExecutor { get; }
+			ITimedTaskService TimedTaskExecutor { get; }
 			AtLeastOnceTaskEntityServiceSetting<TKey, TSyncKey, TEntity> Setting { get; }
 			IServiceScopeFactory ScopeFactory { get; }
 			public TaskSoruce(
 				AtLeastOnceTaskEntityServiceSetting<TKey, TSyncKey, TEntity> Setting,
-				ITimedTaskExecutor TimedTaskExecutor,
+				ITimedTaskService TimedTaskExecutor,
 				IServiceScopeFactory ScopeFactory
 				)
 			{
@@ -261,7 +261,7 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IAtLeastOnceTaskExecutor<TKey, TEntity, TSyncKey>>(sp =>
 				  new TaskSoruce<TKey, TEntity, TSyncKey>(
 					  Setting,
-					  sp.Resolve<ITimedTaskExecutor>(),
+					  sp.Resolve<ITimedTaskService>(),
 					  sp.Resolve<IServiceScopeFactory>()
 				  )
 			);

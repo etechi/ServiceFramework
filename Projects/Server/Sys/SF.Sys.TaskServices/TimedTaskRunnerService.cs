@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 namespace SF.Sys.Services
 {
 
-	public interface ITimedTaskExecutor
+	public interface ITimedTaskService
 	{
 		Task WaitNextTimerCompleted();
 
@@ -39,8 +39,12 @@ namespace SF.Sys.Services
 			DateTime Target, 
 			Func<CancellationToken,Task> Task
 			);
+
+		Task LoadTasks(
+			CancellationToken cancellactionToken
+			);
 	}
-	
+
 	public interface ITimedTaskSoruce
 	{
 		Task Startup(CancellationToken cancellationToken);
@@ -64,7 +68,7 @@ namespace SF.Sys.Services
 		public int PreloadAheadSeconds { get; set; } = 30;
 	}
 
-	public class TimedTaskExecutor : ITimedTaskExecutor
+	public class TimedTaskService : ITimedTaskService
 	{
 
 		class TypedTask<TKey>:SF.Sys.TaskServices.Timer,IDisposable
@@ -141,8 +145,8 @@ namespace SF.Sys.Services
 		class TypedTaskDict<TKey>:
 			ConcurrentDictionary<TKey, TypedTask<TKey>>
 		{
-			public TimedTaskExecutor Executor { get; }
-			public TypedTaskDict(TimedTaskExecutor Executor)
+			public TimedTaskService Executor { get; }
+			public TypedTaskDict(TimedTaskService Executor)
 			{
 				this.Executor = Executor;
 				
@@ -157,13 +161,16 @@ namespace SF.Sys.Services
 		TimedTaskRunnerSetting Setting { get; }
 		ILogger Logger { get; }
 		TaskCompletionSource<int> _OnNextTimerCompleted;
-
-		public TimedTaskExecutor(
+		IEnumerable<ITimedTaskSoruce> Sources { get; }
+		public TimedTaskService(
 			ITimerService TimerService, 
 			ITimeService TimeService,
-			ILogger<TimedTaskExecutor> Logger,
-			TimedTaskRunnerSetting Setting)
+			ILogger<TimedTaskService> Logger,
+			IEnumerable<ITimedTaskSoruce> Sources,
+			TimedTaskRunnerSetting Setting
+			)
 		{
+			this.Sources = Sources;
 			this.TimerService = TimerService;
 			this.TimeService = TimeService;
 			this.Setting = Setting;
@@ -261,6 +268,41 @@ namespace SF.Sys.Services
 			if (tcs != null)
 				tcs.TrySetResult(0);
 		}
+
+		SemaphoreSlim LoadLock { get; } = new SemaphoreSlim(1);
+		public async Task LoadTasks(
+			CancellationToken cancellactionToken
+			)
+		{
+			Logger.Info($"任务定时器载入开始: {TimeService.Now}");
+			await LoadLock.WaitAsync();
+			try
+			{
+				var now = TimeService.Now;
+				var reloadTarget = now.AddSeconds(Setting.PreloadIntervalSeconds);
+				var end = reloadTarget.AddSeconds(Setting.PreloadAheadSeconds);
+
+				foreach (var src in Sources)
+				{
+					try
+					{
+						await src.LoadTimedTasks(
+							end,
+							cancellactionToken
+							);
+					}
+					catch (Exception ex)
+					{
+						Logger.Error(ex, $"任务定时器载入异常");
+					}
+				}
+			}
+			finally
+			{
+				LoadLock.Release();
+			}
+			Logger.Info($"任务定时器载入结束 {TimeService.Now}");
+		}
 	}
 
 	public static class TimedTaskRunnerExtension
@@ -271,11 +313,12 @@ namespace SF.Sys.Services
 			TimedTaskRunnerSetting Setting
 			)
 		{
-			sc.AddSingleton<ITimedTaskExecutor>(sp => 
-				new TimedTaskExecutor(
+			sc.AddSingleton<ITimedTaskService>(sp => 
+				new TimedTaskService(
 				sp.Resolve<ITimerService>(),
 				sp.Resolve<ITimeService>(),
-				sp.Resolve<ILogger<TimedTaskExecutor>>(),
+				sp.Resolve<ILogger<TimedTaskService>>(),
+				sp.Resolve<IEnumerable<ITimedTaskSoruce>>(),
 				Setting
 				));
 
@@ -285,38 +328,20 @@ namespace SF.Sys.Services
 				async (sp, ss, cancelToken) =>
 				{
 					var sources = sp.Resolve<IEnumerable<ITimedTaskSoruce>>();
-
 					foreach (var src in sources)
 						await src.Startup(cancelToken);
 
+					var timedTaskService = sp.Resolve<ITimedTaskService>();
 					var timeService = sp.Resolve<ITimeService>();
-					var logger = sp.Resolve<ILogger<TimedTaskExecutor>>();
+
 					var reloadTarget = timeService.Now;
+					var now = reloadTarget;
 					for (; ; )
 					{
-						var now = timeService.Now;
-						if (reloadTarget > now)
-							await Task.Delay(reloadTarget.Subtract(now), cancelToken);
-						reloadTarget = now.AddSeconds(
-							Setting.PreloadIntervalSeconds
-							);
-						var end = reloadTarget.AddSeconds(Setting.PreloadAheadSeconds);
-						logger.Info($"任务定时器载入开始: {timeService.Now}");
-						foreach (var src in sources)
-						{
-							try
-							{
-								await src.LoadTimedTasks(
-									end,
-									cancelToken
-									);
-							}
-							catch(Exception ex)
-							{
-								logger.Error(ex,$"任务定时器载入异常");
-							}
-						}
-						logger.Info($"任务定时器载入结束 {timeService.Now}");
+						await Task.Delay(reloadTarget.Subtract(now), cancelToken);
+						await timedTaskService.LoadTasks( cancelToken);
+						now = timeService.Now;
+						reloadTarget = now.AddSeconds(Setting.PreloadIntervalSeconds);
 					}
 				},
 				Setting.AutoStartup

@@ -38,7 +38,7 @@ namespace SF.Sys.Services
 			sc.AddDataModules<
 				SF.Common.Notifications.DataModels.DataNotificationSendRecord,
 				SF.Common.Notifications.DataModels.DataNotificationSendPolicy,
-				SF.Common.Notifications.DataModels.Notification,
+				SF.Common.Notifications.DataModels.DataNotification,
 				SF.Common.Notifications.DataModels.DataNotificationTarget,
 				SF.Common.Notifications.DataModels.DataNotificationUserStatus
 				>(

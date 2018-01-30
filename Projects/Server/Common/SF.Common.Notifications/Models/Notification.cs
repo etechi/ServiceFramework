@@ -146,9 +146,7 @@ namespace SF.Common.Notifications.Models
 		/// 业务跟踪对象
 		/// </summary>
 		[EntityIdent]
-		[ReadOnly(true)]
 		[Layout(80)]
-		[Uneditable]
 		public string BizIdent { get; set; }
 
 		/// <summary>

@@ -64,7 +64,7 @@ namespace SF.Common.Notifications.DataModels
 		public DateTime? ReadTime { get; set; }
 
 		[ForeignKey(nameof(NotificationId))]
-		public Notification Notification { get; set; }
+		public DataNotification Notification { get; set; }
 
 	}
 
