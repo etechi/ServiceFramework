@@ -14,6 +14,7 @@ namespace SF.Common.Notifications.Senders
 		IEnumerable<string> Targets { get; }
 		IEnumerable<long> GroupIds { get; }
 		IEnumerable<string> Groups { get; }
+		DateTime SendTime { get; }
 		string Title { get; }
 		string Content { get; }
 		string Template { get; }

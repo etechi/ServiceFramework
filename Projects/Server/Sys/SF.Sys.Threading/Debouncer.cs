@@ -23,26 +23,27 @@ namespace SF.Sys.Threading
 	
 	public static class Debouncer
 	{
-		class Item
+		class Item<V>
 		{
+			public V Value;
 			public DateTime StartTime;
 			public DateTime ExecTime;
 			public DateTime DeadLine;
 			public Action<bool> Callback;
 		}
-		static class Impl<K> where K:IEquatable<K>
+		static class Impl<K,V> where K:IEquatable<K> where V:IComparable<V>
 		{	
-			static Dictionary<K, Item> Dict { get; }
-				= new Dictionary<K, Item>();
-			public static void Exec(K key, Action<bool> Callback, int MinDelay, int MaxDelay)
+			static Dictionary<K, Item<V>> Dict { get; }
+				= new Dictionary<K, Item<V>>();
+			public static void Exec(K key, V value, Action<bool> Callback, int MinDelay, int MaxDelay)
 			{
-				Item item = null;
+				Item<V> item = null;
 				var newItem = false;
 				lock (Dict)
 				{
 					if (!Dict.TryGetValue(key, out item))
 					{
-						Dict[key] = item = new Item();
+						Dict[key] = item = new Item<V>();
 						newItem = true;
 					}
 				}
@@ -57,7 +58,17 @@ namespace SF.Sys.Threading
 					}
 					else
 					{
-						replacedCallback = item.Callback;
+						if (value.CompareTo(item.Value) >= 0)
+						{
+							item.Value = value;
+							replacedCallback = item.Callback;
+						}
+						else
+						{
+							replacedCallback = Callback;
+							Callback = item.Callback;
+						}
+
 						//检查是否延时
 						var deadLine = item.StartTime.AddSeconds(MaxDelay);
 						if (deadLine < item.DeadLine) item.DeadLine = deadLine;
@@ -121,7 +132,24 @@ namespace SF.Sys.Threading
 		public static void Start<K>(K key,Action<bool> Callback,int MinDelay= 1000, int MaxDelay = 1000 * 20)
 			where K:IEquatable<K>
 		{
-			Impl<K>.Exec(key, Callback, MinDelay, MaxDelay);
+			Impl<K,int>.Exec(key, 0, Callback, MinDelay, MaxDelay);
 		}
-    }
+
+		/// <summary>
+		/// 开始延时执行值最大的调用
+		/// </summary>
+		/// <typeparam name="K"></typeparam>
+		/// <typeparam name="V"></typeparam>
+		/// <param name="key">键值</param>
+		/// <param name="value">数值</param>
+		/// <param name="Callback">延时回调委托,若被取消参数未true,正常执行为true</param>
+		/// <param name="MinDelay">最小延时</param>
+		/// <param name="MaxDelay">最大延时</param>
+		public static void Start<K,V>(K key, V value,Action<bool> Callback, int MinDelay = 1000, int MaxDelay = 1000 * 20)
+			where K : IEquatable<K>
+			where V : IComparable<V>
+		{
+			Impl<K, V>.Exec(key, value, Callback, MinDelay, MaxDelay);
+		}
+	}
 }
