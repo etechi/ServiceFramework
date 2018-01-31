@@ -17,6 +17,12 @@ namespace SF.Common.UserGroups.Managers
 		public virtual long? GroupId { get; set; }
 
 		/// <summary>
+		/// 用户组所有人
+		/// </summary>
+		//[EntityIdent(typeof(Group))]
+		public virtual long? GroupOwnerId { get; set; }
+
+		/// <summary>
 		/// 用户
 		/// </summary>
 		[EntityIdent(typeof(User))]

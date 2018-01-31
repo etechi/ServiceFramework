@@ -27,14 +27,14 @@ namespace SF.Sys.Reminders
 	public interface IRemindContext
 	{
 		long? ServiceScopeId { get; }
-		string BizType { get; set; }
+		string BizType { get;  }
 		string BizIdentType { get; }
 		long BizIdent { get; }
 		object Argument { get; }
 		string RemindableName { get; }
 		string Data { get; set; }
 		DateTime? NextRemindTime { get; set; }
-		DateTime Time { get; set; }
+		DateTime Time { get;  }
 	}
 
 

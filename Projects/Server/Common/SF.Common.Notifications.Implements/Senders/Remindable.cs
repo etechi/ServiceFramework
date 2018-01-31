@@ -7,6 +7,7 @@ using SF.Sys;
 using SF.Sys.Data;
 using SF.Sys.Entities;
 using SF.Sys.Linq;
+using SF.Sys.Logging;
 using SF.Sys.Reminders;
 using SF.Sys.Services;
 using SF.Sys.TimeServices;
@@ -21,13 +22,15 @@ namespace SF.Common.Notifications.Senders
 		IDataScope DataScope { get; }
 		TypedInstanceResolver<INotificationSendProvider> NotificationSendProviderResolver { get; }
 		ITimeService TimeService { get; }
-		
+		ILogger Logger { get; }
 		public Remindable(
 			ITimeService TimeService,
 			IDataScope DataScope,
-			TypedInstanceResolver<INotificationSendProvider> NotificationSendProviderResolver
+			TypedInstanceResolver<INotificationSendProvider> NotificationSendProviderResolver,
+			ILogger<Remindable> Logger
 			)
 		{
+			this.Logger = Logger;
 			this.TimeService = TimeService;
 			this.DataScope = DataScope;
 			this.NotificationSendProviderResolver = NotificationSendProviderResolver;
@@ -67,6 +70,7 @@ namespace SF.Common.Notifications.Senders
 					var provider = NotificationSendProviderResolver(SendRecord.ProviderId);
 					SendRecord.SendCount++;
 					SendRecord.LastSendTime = Context.Time;
+					Logger.Info($"[{TimeService.Now}]发送通知:{Context.Time}Id:{SendRecord.Id} 提供者:{SendRecord.ProviderId} BizIdent:{SendRecord.BizIdent} Targets:{SendRecord.Target} {SendRecord.Title} 第{SendRecord.SendCount}次");
 
 					var result = await provider.Send(SendRecord);
 
@@ -75,6 +79,7 @@ namespace SF.Common.Notifications.Senders
 				}
 				catch (Exception ex)
 				{
+					Logger.Warn(ex,$"[{TimeService.Now}]发送通知失败:{Context.Time} Id:{SendRecord.Id} 提供者:{SendRecord.ProviderId} BizIdent:{SendRecord.BizIdent} Targets:{SendRecord.Target} {SendRecord.Title} 第{SendRecord.SendCount}次");
 					SendRecord.Error = ex.Message.Limit(1000);
 					var nextTime = Context.Time.AddSeconds(SendRecord.RetryInterval);
 					if (nextTime < SendRecord.Expires && (SendRecord.RetryLimit == 0 || SendRecord.SendCount < SendRecord.RetryLimit))

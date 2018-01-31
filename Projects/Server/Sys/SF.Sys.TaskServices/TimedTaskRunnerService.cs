@@ -22,6 +22,7 @@ using SF.Sys.TimeServices;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -32,7 +33,6 @@ namespace SF.Sys.Services
 
 	public interface ITimedTaskService
 	{
-		Task WaitNextTimerCompleted();
 
 		IDisposable Update<TKey>(
 			TKey Key,
@@ -68,7 +68,7 @@ namespace SF.Sys.Services
 		public int PreloadAheadSeconds { get; set; } = 30;
 	}
 
-	public class TimedTaskService : ITimedTaskService
+	public class TimedTaskService : ITimedTaskService,IDisposable
 	{
 
 		class TypedTask<TKey>:SF.Sys.TaskServices.Timer,IDisposable
@@ -94,7 +94,7 @@ namespace SF.Sys.Services
 			}
 			async Task Run(CancellationToken ct)
 			{
-				var executor = Dict?.Executor;
+				var executor = Dict?.Service;
 				var logger = executor?.Logger;
 				logger?.Debug($"任务定时器执行开始 {typeof(TKey).Name} {Key}");
 				Func<CancellationToken, Task> cb;
@@ -102,8 +102,11 @@ namespace SF.Sys.Services
 				{
 					if (Dict == null)
 						return;
+					var svc = Dict.Service;
+					if (svc.IsDisposed)
+						return;
 					if (ct.IsCancellationRequested)
-						Dict.Executor.TimerService.Remove(this);
+						svc.TimerService.Remove(this);
 
 					cb = this.Callback;
 					Dict.TryRemove(Key, out var cur);
@@ -145,23 +148,31 @@ namespace SF.Sys.Services
 		class TypedTaskDict<TKey>:
 			ConcurrentDictionary<TKey, TypedTask<TKey>>
 		{
-			public TimedTaskService Executor { get; }
-			public TypedTaskDict(TimedTaskService Executor)
+			public TimedTaskService Service { get; }
+			public TypedTaskDict(TimedTaskService Service)
 			{
-				this.Executor = Executor;
+				this.Service = Service;
 				
 			}
 
 		}
-		ConcurrentDictionary<Type, object> ItemCategoryDict { get; } =
+		ConcurrentDictionary<Type, object> TypeDict { get; } =
 				   new ConcurrentDictionary<Type, object>();
 
 		ITimerService TimerService { get; }
 		ITimeService TimeService { get; }
 		TimedTaskRunnerSetting Setting { get; }
 		ILogger Logger { get; }
-		TaskCompletionSource<int> _OnNextTimerCompleted;
 		IEnumerable<ITimedTaskSoruce> Sources { get; }
+		bool _Disposed;
+
+		public bool IsDisposed => _Disposed;
+		public void Dispose()
+		{
+			if (_Disposed) return;
+			_Disposed=true;
+			TypeDict.Clear();
+		}
 		public TimedTaskService(
 			ITimerService TimerService, 
 			ITimeService TimeService,
@@ -176,27 +187,21 @@ namespace SF.Sys.Services
 			this.Setting = Setting;
 			this.Logger = Logger;
 		}
-		public Task WaitNextTimerCompleted()
-		{
-			var tcs = new TaskCompletionSource<int>();
-			var re = Interlocked.Exchange(ref _OnNextTimerCompleted, tcs);
-			if (re != null) re.TrySetCanceled();
-			return tcs.Task;
-		}
+		
 		TypedTaskDict<TKey> GetCategoryDict<TKey>()
 		{
 			var type = typeof(TKey);
-			if (!ItemCategoryDict.TryGetValue(type, out var dict))
-				dict = ItemCategoryDict.GetOrAdd(
+			if (!TypeDict.TryGetValue(type, out var dict))
+				dict = TypeDict.GetOrAdd(
 					type,
 					new TypedTaskDict<TKey>(this)
 					);
 			return (TypedTaskDict<TKey>)dict;
 		}
-		
+		[Conditional("Debug")]
 		void DebugTrace(string Message)
 		{
-			Logger.Trace(Message);
+			Logger.Debug(Message);
 		}
 		public IDisposable Update<TKey>(
 			TKey Key, 
@@ -264,9 +269,6 @@ namespace SF.Sys.Services
 		}
 		public void OnTaskCompleted()
 		{
-			var tcs = Interlocked.Exchange(ref _OnNextTimerCompleted, null);
-			if (tcs != null)
-				tcs.TrySetResult(0);
 		}
 
 		SemaphoreSlim LoadLock { get; } = new SemaphoreSlim(1);

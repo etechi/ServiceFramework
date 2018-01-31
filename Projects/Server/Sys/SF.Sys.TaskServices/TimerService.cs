@@ -38,6 +38,35 @@ namespace SF.Sys.TaskServices
 	
 	public static class TimerServiceExtension
 	{
+		class WaitTimer : Timer
+		{
+			public ITimerService TimerService { get; set; }
+			public TaskCompletionSource<int> TCS { get; set; }
+			public Func<bool> Condition { get; set; }
+			public override void OnTimer()
+			{
+				if (Condition())
+					TCS.TrySetResult(0);
+				else
+					TimerService.Add(0, this);
+			}
+			public override void OnCancelled()
+			{
+				TCS.TrySetCanceled();
+			}
+		}
+		public static Task WaitFor(this ITimerService TimerService, Func<bool> Condition)
+		{
+			var timer = new WaitTimer
+			{
+				TimerService=TimerService,
+				TCS = new TaskCompletionSource<int>(),
+				Condition = Condition
+			};
+			TimerService.Add(0, timer);
+			return timer.TCS.Task;
+		}
+
 		class TaskTimer : Timer
 		{
 			public TaskCompletionSource<bool> TCS;
@@ -111,13 +140,15 @@ namespace SF.Sys.TaskServices
 		
 		void OnTimer(object ctx)
 		{
+			if (_Disposed)
+				return;
+
 			DebugTrace($"系统定时器开始:{TimeService.Now}");
 
 			var items = new List<ADT.TimerQueue.Timer>();
-				var now = TimeService.Now;
+			var now = TimeService.Now;
 			lock (TimerQueue)
 			{
-
 				var diff = now.Subtract(_NextTime).TotalMilliseconds;
 				//如果少于1分钟，认为系统时间往前调整，直接将当前时间设置为系统时间
 				if(diff<-1000*60)
@@ -145,7 +176,6 @@ namespace SF.Sys.TaskServices
 			}
 			
 			_InTimerCallback = true;
-			var onTimerCompleted = false;
 			try
 			{
 				foreach (var item in items)
@@ -154,7 +184,6 @@ namespace SF.Sys.TaskServices
 					{
 						DebugTrace($"定时器调用开始: {item} {TimeService.Now}");
 						((Timer)item).OnTimer();
-						onTimerCompleted = true;
 						DebugTrace($"定时器调用结束: {item} {TimeService.Now}");
 					}
 					catch (Exception ex)
@@ -231,6 +260,8 @@ namespace SF.Sys.TaskServices
 			if (_Disposed)
 				return;
 			_Disposed = true;
+
+			SysTimer.Dispose();
 
 			var items = new List<ADT.TimerQueue.Timer>();
 			lock (TimerQueue)

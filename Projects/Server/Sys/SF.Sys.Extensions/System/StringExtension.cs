@@ -254,7 +254,7 @@ namespace SF.Sys
 
 
 		static readonly System.Text.RegularExpressions.Regex _reg_replace =
-			new System.Text.RegularExpressions.Regex("\\{([^:\\}]+)(:[^:\\}]+)?(:[^:\\}]+)?\\}");
+			new System.Text.RegularExpressions.Regex("\\{([^:\\|\\}]+)(:[^\\|\\}]+)?(\\|[^\\}]+)?\\}");
 
 		public static string Replace(this string tmpl, IReadOnlyDictionary<string, object> args)
 		{

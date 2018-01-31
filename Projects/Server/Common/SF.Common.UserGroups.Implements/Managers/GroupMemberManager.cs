@@ -84,6 +84,15 @@ namespace SF.Common.UserGroups.Managers
 			return JoinStateDetector.Detect(SessionAccepted, MemberAccepted);
 
 		}
+		protected override IContextQueryable<TDataMember> OnBuildQuery(IContextQueryable<TDataMember> Query, TQueryArument Arg)
+		{
+			if (Arg.GroupOwnerId.HasValue)
+			{
+				var go = Arg.GroupOwnerId.Value;
+				Query = Query.Where(m => m.Group.OwnerId.HasValue && m.Group.OwnerId.Value == go);
+			}
+			return base.OnBuildQuery(Query, Arg);
+		}
 		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			var editable = ctx.Editable;
