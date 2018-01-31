@@ -130,7 +130,7 @@ namespace SF.Common.Notifications.DataModels
 
 		IEnumerable<long> ISendArgument.TargetIds => TargetId.HasValue? (IEnumerable<long>)new[] { TargetId.Value }: Enumerable.Empty<long>();
 
-		IEnumerable<string> ISendArgument.Targets => Target==null?(IEnumerable<string>)new[] { Target} : Enumerable.Empty<string>();
+		IEnumerable<string> ISendArgument.Targets => Target == null ? Enumerable.Empty<string>() : (IEnumerable<string>)new[] { Target };
 
 		IEnumerable<long> ISendArgument.GroupIds => Enumerable.Empty<long>();
 

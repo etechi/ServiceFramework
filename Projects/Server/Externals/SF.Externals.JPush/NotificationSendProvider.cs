@@ -31,6 +31,16 @@ namespace SF.Externals.JPush
 		/// 服务器地址
 		/// </summary>
 		public string Uri { get; set; } 
+
+		/// <summary>
+		/// 别名前缀
+		/// </summary>
+		public string AliasPrefix { get; set; }
+
+		/// <summary>
+		/// 标签前缀
+		/// </summary>
+		public string TagPrefix { get; set; }
 	}
 
 	/// <summary>
@@ -61,6 +71,7 @@ namespace SF.Externals.JPush
 		}
 		public async Task<string> Send(ISendArgument message)
 		{
+			var tag = message.Groups.ToArray();
 			var req = new
 			{
 				//cid = message.Id.ToString(),
@@ -68,7 +79,7 @@ namespace SF.Externals.JPush
 				audience = new
 				{
 					alias = message.Targets,
-					tag=message.Groups
+					tag=tag.Length==0?null:tag,
 				},
 				notification = new
 				{
@@ -93,12 +104,12 @@ namespace SF.Externals.JPush
 
 		public Task<IEnumerable<string>> TargetResolve(IEnumerable<long> TargetIds)
 		{
-			return Task.FromResult(TargetIds.Select(i => "U"+i.ToString()));
+			return Task.FromResult(TargetIds.Select(i => Setting.AliasPrefix+ i.ToString()));
 		}
 
 		public Task<IEnumerable<string>> GroupResolve(IEnumerable<long> GroupIds)
 		{
-			return Task.FromResult(GroupIds.Select(i => "G"+i.ToString()));
+			return Task.FromResult(GroupIds.Select(i => Setting.TagPrefix+i.ToString()));
 		}
 
 		Task<object> IClientSettingProvider.GetOption(string ClientId)

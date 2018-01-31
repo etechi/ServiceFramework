@@ -7,15 +7,17 @@ namespace SF.Sys.Services
     {
         public static IServiceCollection AddWeiXinOpenServices(this IServiceCollection sc, OAuth2Setting setting =null)
         {
-			sc.AddManagedScoped<IOAuthAuthorizationProvider, OAuth2Provider>();
-
-			sc.AddServiceInstanceInitializer(
-				sim => 
-					sim.Service<IOAuthAuthorizationProvider, OAuth2Provider>(
-						setting
-					).WithIdent("weixin.open")
-					);
-
+			sc.AddManagedScoped<IExternalAuthorizationProvider, OAuth2Provider>();
+			sc.InitServices("微信开放平台", async (sp, sim, parent) =>
+			 {
+				 await sim.Service<IExternalAuthorizationProvider, OAuth2Provider>(
+						 new
+						 {
+							 Setting = setting
+						 }
+					 ).WithIdent("weixin.open").Ensure(sp, parent);
+ 
+			 });
 			return sc;
 		}
         
