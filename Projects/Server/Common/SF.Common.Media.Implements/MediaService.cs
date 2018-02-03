@@ -134,7 +134,15 @@ namespace SF.Common.Media
 			this.ImageProvider = ImageProvider;
 			this.FileCache = FileCache;
 		}
-
+		public async Task<CopyResult> CopyImage(string uri)
+		{
+			var re=await Manager.TryCreateByImageUri(
+				Setting.UploadMediaType,
+				uri,
+				Setting.MaxImageSize
+				);
+			return new CopyResult { Id = re };
+		}
 		[HeavyMethod]
         public async Task<HttpResponseMessage> Upload( bool returnJson = false)
 		{

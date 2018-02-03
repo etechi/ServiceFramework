@@ -71,7 +71,7 @@ namespace SF.Externals.JPush
 		}
 		public async Task<string> Send(ISendArgument message)
 		{
-			var tag = message.Groups.ToArray();
+			var tag = message.Groups?.ToArray();
 			var req = new
 			{
 				//cid = message.Id.ToString(),
@@ -79,7 +79,7 @@ namespace SF.Externals.JPush
 				audience = new
 				{
 					alias = message.Targets,
-					tag=tag.Length==0?null:tag,
+					tag=(tag?.Length??0)==0?null:tag,
 				},
 				notification = new
 				{

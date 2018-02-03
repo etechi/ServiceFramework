@@ -183,7 +183,7 @@ namespace SF.Externals.WeiXin.Open.OAuth2
 					$"令牌:{Token}，" +
 					$"请求:{uri}");
 
-			Logger.Info($"获取微信用户信息:openid:{tokens.openid} access_token:{tokens.access_token} {re}");
+			Logger.Info($"获取微信用户信息:openid:{tokens.openid} access_token:{tokens.access_token} {0}", re);
 			WeichatUserInfo ui;
 			try
 			{
@@ -267,7 +267,7 @@ namespace SF.Externals.WeiXin.Open.OAuth2
 			return Task.FromResult(new Dictionary<string,string>
 			{
 				{"appid",Setting.AppId },
-				{"scope ", "snsapi_userinfo" },
+				{"scope", "snsapi_userinfo" },
 			});
 		}
 

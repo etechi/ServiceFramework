@@ -157,6 +157,11 @@ namespace SF.Common.Notifications.Management
 			}
 		}
 
+		protected override Task<ObjectKey<long>> InternalCreateAsync(IModifyContext Context, NotificationEditable obj, object ExtraArgument,bool LightContextMode)
+		{
+			return base.InternalCreateAsync(Context, obj, ExtraArgument,true);
+		}
+
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
 			var model = ctx.Model;

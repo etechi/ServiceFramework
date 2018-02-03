@@ -37,10 +37,20 @@ namespace SF.Sys.Linq
 			}
 			throw new IndexOutOfRangeException();
 		}
+		public static Queue<T> ToQueue<T>(this IEnumerable<T> enumerable)
+			=> new Queue<T>(enumerable);
+
+		public static HashSet<T> ToHashSet<T>(this IEnumerable<T> enumerable)
+			=> new HashSet<T>(enumerable);
+
 		public static T GetByIndex<T>(this IEnumerable<T> enumerable, int Index)
 		{
 			return enumerable.Skip(Index).First();
 		}
+		public static T FindPeak<T>(this IEnumerable<T> enumerable, Func<T,T,int> Comparer) 
+		{
+			return enumerable.Aggregate((x, y) => Comparer(x, y) >= 0 ? x : y);
+		} 
 		public static int IndexOf<T>(this IEnumerable<T> enumerable, Func<T, bool> Predicate)
 		{
 			var idx = 0;

@@ -33,7 +33,7 @@ namespace SF.Auth.IdentityServices.Externals
 		public Lazy<ITimeService> TimeService { get; }
 		public IDataProtector DataProtector { get; }
 		public Lazy<IClientService> ClientService { get; }
-		public Lazy<IMediaManager> MediaManager { get; }
+		public Lazy<IMediaService> MediaService { get; }
 		public ILogger Logger { get; }
 		public BaseExtAuthService(
 			NamedServiceResolver<IExternalAuthorizationProvider> Resolver,
@@ -41,7 +41,7 @@ namespace SF.Auth.IdentityServices.Externals
 			Lazy<IUserManager> UserManager,
 			IDataProtector DataProtector,
 			 Lazy<IClientService> ClientService,
-			 Lazy<IMediaManager> MediaManager,
+			 Lazy<IMediaService> MediaService,
 			 Lazy<ITimeService> TimeService,
 			ILogger Logger
 			)
@@ -51,7 +51,7 @@ namespace SF.Auth.IdentityServices.Externals
 			this.UserManager = UserManager;
 			this.DataProtector = DataProtector;
 			this.ClientService = ClientService;
-			this.MediaManager = MediaManager;
+			this.MediaService = MediaService;
 			this.Logger = Logger;
 			this.TimeService = TimeService;
 		}
@@ -80,11 +80,13 @@ namespace SF.Auth.IdentityServices.Externals
 			{
 				try
 				{
-					icon.Value = await MediaManager.Value.TryCreateByImageUri("ms", icon.Value, 1024 * 1024);
+					var re = await MediaService.Value.CopyImage(icon.Value);
+					icon.Value = re.Id;
 				}
 				catch (Exception e)
 				{
 					Logger.Warn(e, $"获取用户图标时发生异常：用户:{name} Uri:{icon.Value}");
+					icon.Value = null;
 				}
 			}
 

@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Data;
 using SF.Sys.Logging;
 using System;
 using System.Linq;
@@ -24,23 +25,32 @@ namespace SF.Sys.ServiceFeatures
 	{
 		IServiceProvider ServiceProvider { get; }
 		ILogger Logger { get; }
+		IDataScope DataScope { get; }
 		SF.Sys.NetworkService.IInvokeContext InvokeContext { get; }
 		public ServiceFeatureControlService(
 			IServiceProvider ServiceProvider,
 			ILogger<ServiceFeatureControlService> Logger,
-			SF.Sys.NetworkService.IInvokeContext InvokeContext
+			SF.Sys.NetworkService.IInvokeContext InvokeContext,
+			IDataScope DataScope
 			)
 		{
+			this.DataScope = DataScope;
 			this.InvokeContext = InvokeContext;
 			this.Logger = Logger;
 			this.ServiceProvider = ServiceProvider;
 		}
-		public async Task<string> Init(string Id=null)
+		public Task<string> Init(string Id=null)
 		{
-			var u = new Uri(InvokeContext.Request.Uri);
-			var args = u.ParseQuery().ToDictionary(p => p.key, p => p.value);
-			await ServiceProvider.InitServices(Id,args);
-			return "OK";
+			return DataScope.Use("服务初始化:" + Id, async ctx =>
+			{
+				var u = new Uri(InvokeContext.Request.Uri);
+				var args = u.ParseQuery().ToDictionary(p => p.key, p => p.value);
+				await ServiceProvider.InitServices(Id, args);
+				return "OK";
+			},
+			DataContextFlag.None,
+			System.Data.IsolationLevel.Serializable
+			);
 		}
 	}
 

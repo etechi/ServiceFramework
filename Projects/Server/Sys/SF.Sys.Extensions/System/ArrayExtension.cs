@@ -87,5 +87,68 @@ namespace SF.Sys
                 return re;
             return (~re) - 1;
         }
-    }
+		class Comparer<T> : IComparer<T>
+		{
+			public Func<T, T, int> func;
+
+			public int Compare(T x, T y)
+			{
+				return func(x, y);
+			}
+		}
+		//查找左侧区域，比当前项小的值属于当前项区域
+		public static int BinarySearch<T>(this T[] data, Func<T, T, int> comparer)
+		{
+			return Array.BinarySearch(data, new Comparer<T> { func = comparer });
+		}
+		//查找左侧区域，比当前项小的值属于当前项区域
+		public static int BinarySearchLeftRange<T>(this IReadOnlyList<T> data, Func<T, int> comparer)
+		{
+			var re = data.BinarySearch(comparer);
+			if (re >= 0)
+				return re;
+			return ~re;
+		}
+
+		//查找右侧区域，比当前项大的值属于当前项区域
+		public static int BinarySearchRightRange<T>(this IReadOnlyList<T> data, Func<T,  int> comparer)
+		{
+			var re = data.BinarySearch(comparer);
+			if (re >= 0)
+				return re;
+			return (~re) - 1;
+		}
+		static int GetMedian(int low, int hi)
+		{
+			return low + (hi - low >> 1);
+		}
+
+		public static int BinarySearch<T>(this IReadOnlyList<T> list, Func<T, int> Comparer)
+		=> list.BinarySearch(0, list.Count, Comparer);
+
+		public static int BinarySearch<T>(this IReadOnlyList<T> list,int index,int length,Func<T,int> Comparer)
+		{
+			if (index < 0 || length < 0 || index + length > list.Count)
+				throw new IndexOutOfRangeException();
+			int begin = index;
+			int end = index + length - 1;
+			while (begin <= end)
+			{
+				int medianIndex = GetMedian(begin, end);
+				int compareResult= Comparer(list[medianIndex]);
+				if (compareResult == 0)
+					return medianIndex;
+				if (compareResult < 0)
+				{
+					begin = medianIndex + 1;
+				}
+				else
+				{
+					end = medianIndex - 1;
+				}
+			}
+			
+			return ~begin;
+		}
+	}
 }

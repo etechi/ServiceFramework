@@ -38,7 +38,7 @@ namespace SF.Auth.IdentityServices.Externals
 			Lazy<IUserManager> UserManager, 
 			IDataProtector DataProtector, 
 			Lazy<IClientService> ClientService,
-			 Lazy<IMediaManager> MediaManager,
+			 Lazy<IMediaService> MediaService,
 			 ILogger<ClientExtAuthService> Logger,
 			Lazy<IUserProfileService> UserProfileService,
 			Lazy<IAccessTokenHandler> AccessTokenGenerator,
@@ -49,7 +49,7 @@ namespace SF.Auth.IdentityServices.Externals
 				UserManager, 
 				DataProtector,
 				ClientService,
-				MediaManager,
+				MediaService,
 				TimeService,
 				Logger
 				)

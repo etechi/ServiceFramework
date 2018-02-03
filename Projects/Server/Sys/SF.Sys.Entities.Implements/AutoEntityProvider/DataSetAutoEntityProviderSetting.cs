@@ -65,14 +65,14 @@ namespace SF.Sys.Entities.AutoEntityProvider
 			 );
 
 		}
-		public Task<TKey> CreateAsync(IEntityServiceContext ServiceContext, TEntityEditable Entity)
+		public virtual Task<TKey> CreateAsync(IEntityServiceContext ServiceContext, TEntityEditable Entity)
 		{
 			return ServiceContext.CreateAsync<TKey, TEntityEditable, TDataModel>(
 				Entity,
 				null,
 				null,
 				null,
-				true
+				false
 				);
 		}
 

@@ -27,7 +27,7 @@ namespace SF.Sys.Services
 {
 	public static class NetworkServiceDICollectionExtension
 	{
-		class LocalInvokeContext : IInvokeContext,IInvokeRequest,IInvokeResponse
+		class LocalInvokeContext : IInvokeContext,IInvokeRequest,IInvokeResponse, IUploadedFileCollection
 		{
 			public IInvokeRequest Request => this;
 
@@ -41,6 +41,8 @@ namespace SF.Sys.Services
 
 			public string Status { get; set; }
 
+			public IUploadedFile[] Files => Array.Empty<IUploadedFile>();
+
 			IDictionary<string, IEnumerable<string>> IInvokeResponse.Headers { get; } = new Dictionary<string, IEnumerable<string>>();
 
 			public string GetCookie(string Key) => null;
@@ -53,6 +55,8 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddLocalInvokeContext(this IServiceCollection sc)
 		{
 			sc.AddSingleton<IInvokeContext, LocalInvokeContext>();
+			sc.AddSingleton<IUploadedFileCollection, LocalInvokeContext>();
+
 
 			return sc;
 		}

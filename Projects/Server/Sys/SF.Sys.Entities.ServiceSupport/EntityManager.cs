@@ -244,12 +244,12 @@ namespace SF.Sys.Entities
 		{
 			var ctx = NewModifyContext();
 			if (_SyncQueue == null)
-				await InternalCreateAsync(ctx, obj, null);
+				await InternalCreateAsync(ctx, obj, null,false);
 			else
-				await _SyncQueue.Queue(obj, () => InternalCreateAsync(ctx, obj, null));
+				await _SyncQueue.Queue(obj, () => InternalCreateAsync(ctx, obj, null,false));
 			return Entity<TModel>.GetKey<TKey>(ctx.Model);
 		}
-		protected virtual Task<TKey> InternalCreateAsync(IModifyContext Context, TEditable obj, object ExtraArgument)
+		protected virtual Task<TKey> InternalCreateAsync(IModifyContext Context, TEditable obj, object ExtraArgument,bool LightContextMode)
 		{
 			return ServiceContext.InternalCreateAsync<TKey, TEditable, TModel, IModifyContext>(
 				Context,
@@ -257,7 +257,7 @@ namespace SF.Sys.Entities
 				OnUpdateModel,
 				OnNewModel,
 				ExtraArgument,
-				true
+				LightContextMode
 				);
 		}
 		#endregion

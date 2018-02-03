@@ -20,6 +20,10 @@ using System.Threading.Tasks;
 
 namespace SF.Common.Media
 {
+	public class CopyResult
+	{
+		public string Id { get; set; }
+	}
 	/// <summary>
 	/// 媒体附件支持
 	/// </summary>
@@ -35,6 +39,10 @@ namespace SF.Common.Media
 
 		Task<HttpResponseMessage> Get(string id, string format = null);
 
+
+		[Authorize]
+		[HeavyMethod]
+		Task<CopyResult> CopyImage(string uri);
 
 	}
 }

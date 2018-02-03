@@ -162,7 +162,7 @@ namespace SF.Sys.Services
 		{
 			sc.AddSingleton<IMediaMetaCache, MediaMetaCache>();
 			sc.AddManagedScoped<IMediaManager, MediaManager>();
-			if(EnvType!=EnvironmentType.Utils)
+			//if(EnvType!=EnvironmentType.Utils)
 				sc.AddManagedScoped<IMediaService, MediaService>();
 
 			sc.AddManagedScoped<IMediaStorage, FileSystemMediaStorage>();
