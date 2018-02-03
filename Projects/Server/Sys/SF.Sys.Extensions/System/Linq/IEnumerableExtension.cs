@@ -25,6 +25,12 @@ namespace SF.Sys.Linq
 {
 	public static class EnumerableEx
 	{
+		public static bool IsEmpty<T>(this IEnumerable<T> enumerable)
+		{
+			foreach (var i in enumerable)
+				return false;
+			return true;
+		}
 		public static T At<T>(this IEnumerable<T> enumerable,int Index)
 		{
 			if (Index < 0)

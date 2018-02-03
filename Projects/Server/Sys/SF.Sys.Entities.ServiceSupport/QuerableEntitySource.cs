@@ -20,7 +20,7 @@ using SF.Sys.Linq;
 
 namespace SF.Sys.Entities
 {
-	public abstract class AutoQuerableEntitySource<TKey, TEntityDetail, TEntitySummary, TQueryArgument, TModel> :
+	public abstract class AutoQueryableEntitySource<TKey, TEntityDetail, TEntitySummary, TQueryArgument, TModel> :
 			  AutoEntitySource<TKey, TEntityDetail, TModel>,
 			  IEntitySource<TKey, TEntitySummary, TEntityDetail, TQueryArgument>
 			  where TEntityDetail : class
@@ -28,7 +28,7 @@ namespace SF.Sys.Entities
 			   where TQueryArgument :class, IPagingArgument
 			  where TModel : class
 	{
-		public AutoQuerableEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		public AutoQueryableEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
 

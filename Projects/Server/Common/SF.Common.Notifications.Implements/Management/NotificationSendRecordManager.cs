@@ -26,7 +26,7 @@ using SF.Common.Notifications.Models;
 namespace SF.Common.Notifications.Management
 {
 	public class NotificationSendRecordManager :
-		AutoQuerableEntitySource<ObjectKey<long>, NotificationSendRecord, NotificationSendRecord,  NotificationSendRecordQueryArgument, DataModels.DataNotificationSendRecord>,
+		AutoQueryableEntitySource<ObjectKey<long>, NotificationSendRecord, NotificationSendRecord,  NotificationSendRecordQueryArgument, DataModels.DataNotificationSendRecord>,
 		INotificationSendRecordManager
 	{
 		

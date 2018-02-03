@@ -234,18 +234,18 @@ namespace SF.Sys.Reminders
 						);
 					}catch(Exception ex)
 					{
-						Logger.Value.Error(ex, "提醒日志记录失败:" + Json.Stringify(entity));
+						Logger.Value.Error(ex, "提醒日志记录失败:{0}", Json.Stringify(entity));
 					}
 				}
 			}
 			catch(Exception ex)
 			{
-				Logger.Value.Error(ex, "提醒执行异常:" + Json.Stringify(entity));
+				Logger.Value.Error(ex, "提醒执行异常:{0}", Json.Stringify(entity));
 
 				entity.TaskMessage = ex.ToString();
 				if (entity.TaskExecCount >= def.RetryMaxCount)
 				{
-					Logger.Value.Error(ex, "提醒执行失败:" + Json.Stringify(entity));
+					Logger.Value.Error(ex, "提醒执行失败:{0}", Json.Stringify(entity));
 					entity.TaskState = AtLeastOnceTasks.AtLeastOnceTaskState.Failed;
 				}
 				else

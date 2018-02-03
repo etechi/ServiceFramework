@@ -193,7 +193,7 @@ namespace SF.Sys.Entities
 	}
 
 	public abstract class AutoModifiableEntityManager<TKey, TDetail, TSummary,  TQueryArgument, TEditable, TModel> :
-		 AutoQuerableEntitySource<TKey, TDetail, TSummary, TQueryArgument, TModel>,
+		 AutoQueryableEntitySource<TKey, TDetail, TSummary, TQueryArgument, TModel>,
 		 IEntityManager<TKey, TEditable>
 		 where TDetail : class
 		 where TModel : class, new()
