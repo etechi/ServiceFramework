@@ -19,11 +19,19 @@ using Microsoft.Net.Http.Headers;
 using SF.Sys.NetworkService;
 using System.Linq;
 using System.Net.Http;
+using SF.Sys.Auth;
+using SF.Sys.Logging;
+using System.Text;
 
 namespace SF.Sys.AspNetCore.NetworkServices
 {
 	class NetworkServiceResultFilter : IResultFilter
 	{
+		ILogger Logger { get; }
+		public NetworkServiceResultFilter(ILogService LogService)
+		{
+			this.Logger = LogService.GetLogger("api");
+		}
 		public void OnResultExecuted(ResultExecutedContext context)
 		{
 		}
@@ -119,17 +127,40 @@ namespace SF.Sys.AspNetCore.NetworkServices
 
 		public void OnResultExecuting(ResultExecutingContext context)
 		{
-			
+			string logMsg = null;			
 			var or = context.Result as ObjectResult;
 			if (or != null)
 			{
-				if(or.Value is HttpResponseMessage rm)
+				//if(or.Value is MvcObject)
+				if (or.Value is HttpResponseMessage rm)
+				{
 					ProcessHttpResponseMessage(context, rm);
-				else if(or.Value is IContent ictn)
+					logMsg = "HttpResponseMessage Object";
+				}
+				else if (or.Value is IContent ictn)
+				{
 					context.Result = MapContent(ictn);
-				else if(or.Value is HttpContent ctn)
+					logMsg = "IContent Object";
+				}
+				else if (or.Value is HttpContent ctn)
+				{
 					context.Result = MapHttpContent(ctn);
+					logMsg = "HttpContent Object";
+				}
+				else
+					logMsg = "Json:" + Json.Stringify(or.Value);
 			}
+			var ctx = context.HttpContext;
+			var req = ctx.Request;
+			var reqBody = ctx.Items["sf-req-body"] as byte[];
+			Logger.Info(
+				"{0} {1} {2} 请求:{3} 应答:{4}",
+				ctx.User.GetUserIdent(),
+				req.Method,
+				req.Uri(),
+				reqBody==null?"":Encoding.UTF8.GetString(reqBody),
+				logMsg
+				);
 		}
 	}
 }

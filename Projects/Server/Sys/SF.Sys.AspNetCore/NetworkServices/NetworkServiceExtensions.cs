@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using SF.Sys.AspNetCore.NetworkServices;
+using SF.Sys.Logging;
 using SF.Sys.NetworkService;
 using SF.Sys.Services;
 
@@ -38,7 +39,8 @@ namespace SF.Core.ServiceManagement
 				new ServiceActionDescProvider(
 					cfg?.RouterPrefix ?? "api",
 					sp.Resolve<IServiceTypeCollection>().Types,
-					sp.Resolve<IServiceBuildRuleProvider>()
+					sp.Resolve<IServiceBuildRuleProvider>(),
+					sp.Resolve<ILogService>()
 					)
 				);
 

@@ -1,4 +1,4 @@
-#region Apache License Version 2.0
+﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -13,25 +13,20 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System;
 using SF.Sys.Logging;
-using SF.Sys.Services;
-
-
-namespace SF.Sys.Services
+using Microsoft.Extensions.Logging;
+using SF.Sys.Logging.MicrosoftExtensions;
+using SF.Sys.Logging.Providors.NLog;
+namespace SF.Sys.Logging
 {
-	public static class LoggerDIServiceCollectionService
+	public static class NLogDOExtensions
 	{
-		public static IServiceCollection AddLogService(this IServiceCollection sc,ILogService LogService=null)
+
+		public static ILogService AddNLog(this ILogService svc)
 		{
-			sc.AddSingleton<ILogService>(LogService??new LogService());
-			sc.AddSingleton<Microsoft.Extensions.Logging.ILoggerFactory, MSLoggerFactory>();
-			sc.Add(new ServiceDescriptor(typeof(SF.Sys.Logging.ILogger<>), typeof(SF.Sys.Logging.Logger<>), ServiceImplementLifetime.Scoped));
-			sc.Add(new ServiceDescriptor(typeof(Microsoft.Extensions.Logging.ILogger<>), typeof(SF.Sys.Logging.Logger<>), ServiceImplementLifetime.Scoped));
-			// MSDependencyInjectionExtension . sc.AsMicrosoftServiceCollection();
-			
-			return sc;
+			svc.AddProvider(new NLogProvider());
+			return svc;
 		}
-
 	}
-
 }

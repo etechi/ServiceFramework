@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using SF.Sys.Logging;
 using SF.Sys.NetworkService;
 using SF.Sys.Reflection;
 using System;
@@ -33,8 +34,14 @@ namespace SF.Sys.AspNetCore.NetworkServices
 		public Type[] ServiceTypes { get; }
 		public string RoutePrefix { get; }
 		public IServiceBuildRuleProvider ServiceBuildRule { get; }
-		public ServiceActionDescProvider(string RoutePrefix,IEnumerable<Type> ServiceTypes, IServiceBuildRuleProvider ServiceBuildRule)
+		public ILogService LogService { get; }
+		public ServiceActionDescProvider(
+			string RoutePrefix,
+			IEnumerable<Type> ServiceTypes, 
+			IServiceBuildRuleProvider ServiceBuildRule,
+			ILogService LogService)
 		{
+			this.LogService = LogService;
 			this.RoutePrefix = RoutePrefix;
 			this.ServiceTypes = ServiceTypes.ToArray();
 			this.ServiceBuildRule = ServiceBuildRule;
@@ -43,14 +50,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 		{
 			return ServiceBuildRule.FormatServiceName(Type);
 		}
-		static List<FilterDescriptor> filters { get; }=new List<FilterDescriptor>
-		{
-			new FilterDescriptor(
-				new NetworkServiceResultFilter(),
-				0
-				)
-
-		};
+		
 		ControllerActionDescriptor BuildDescriptor(
 			Type type, 
 			string controllerName, 
@@ -107,7 +107,14 @@ namespace SF.Sys.AspNetCore.NetworkServices
 						},
 				BoundProperties = new List<ParameterDescriptor>(),
 				Properties = new Dictionary<object, object>(),
-				FilterDescriptors = filters,
+				FilterDescriptors = new List<FilterDescriptor>
+				{
+					new FilterDescriptor(
+						new NetworkServiceResultFilter(LogService),
+						0
+						)
+
+				},
 				Parameters = args.Select(
 					a => new ControllerParameterDescriptor
 					{
@@ -174,6 +181,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 		}
 		public void OnProvidersExecuted(ActionDescriptorProviderContext context)
 		{
+			
 			foreach (var type in ServiceTypes)
 			{
 				var controllerName = GetControllerName(type);

@@ -1,4 +1,4 @@
-#region Apache License Version 2.0
+﻿#region Apache License Version 2.0
 /*----------------------------------------------------------------
 Copyright 2017 Yang Chen (cy2000@gmail.com)
 
@@ -13,25 +13,35 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Logging;
-using SF.Sys.Services;
+using Microsoft.Extensions.Logging;
+using SF.Sys.Comments;
+using System;
 
-
-namespace SF.Sys.Services
+namespace SF.Sys.Logging.Providors.NLog
 {
-	public static class LoggerDIServiceCollectionService
+	partial class NLogProvider : ILoggerProvider
 	{
-		public static IServiceCollection AddLogService(this IServiceCollection sc,ILogService LogService=null)
+		public bool Scoped => false;
+		public NLogProvider()
 		{
-			sc.AddSingleton<ILogService>(LogService??new LogService());
-			sc.AddSingleton<Microsoft.Extensions.Logging.ILoggerFactory, MSLoggerFactory>();
-			sc.Add(new ServiceDescriptor(typeof(SF.Sys.Logging.ILogger<>), typeof(SF.Sys.Logging.Logger<>), ServiceImplementLifetime.Scoped));
-			sc.Add(new ServiceDescriptor(typeof(Microsoft.Extensions.Logging.ILogger<>), typeof(SF.Sys.Logging.Logger<>), ServiceImplementLifetime.Scoped));
-			// MSDependencyInjectionExtension . sc.AsMicrosoftServiceCollection();
-			
-			return sc;
+
+			var path = System.IO.Path.Combine(
+				System.AppDomain.CurrentDomain.BaseDirectory,
+				"nlog.config"
+				);
+			global::NLog.LogManager.LogFactory.LoadConfiguration(path);
 		}
+		
 
+		public IProviderLogger CreateLogger(string categoryName)
+		{
+			var logger=global::NLog.LogManager.GetLogger(categoryName);
+			
+			return new Logger(this,logger);
+		}
+		
+		public void Dispose()
+		{
+		}
 	}
-
 }
