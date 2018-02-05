@@ -82,8 +82,9 @@ namespace SF.Sys.AspNetCore
 				try
 				{
 					var req = context.Request;
-					if (req.ContentType == "application/json" && 
-						req.ContentLength.HasValue && 
+					if ((req.ContentType == "application/json" ||
+						req.ContentType== "application/x- www-form-urlencoded")
+						&& req.ContentLength.HasValue && 
 						req.ContentLength.Value < 1024 * 1024)
 					{
 						var buf = new byte[req.ContentLength.Value];

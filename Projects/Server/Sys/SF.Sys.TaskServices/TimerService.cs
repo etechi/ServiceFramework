@@ -42,24 +42,38 @@ namespace SF.Sys.TaskServices
 		{
 			public ITimerService TimerService { get; set; }
 			public TaskCompletionSource<int> TCS { get; set; }
-			public Func<bool> Condition { get; set; }
+			public Func<Task<bool>> Condition { get; set; }
+			public DateTime Expire{ get; set; }
 			public override void OnTimer()
 			{
-				if (Condition())
-					TCS.TrySetResult(0);
-				else
-					TimerService.Add(0, this);
+				Task.Run(async () =>
+				{
+					try
+					{
+						if (await Condition())
+							TCS.TrySetResult(0);
+						else if(DateTime.Now>Expire)
+							TCS.TrySetCanceled();
+						else
+							TimerService.Add(0, this);
+					}
+					catch(Exception ex)
+					{
+						TCS.TrySetException(ex);
+					}
+				});
 			}
 			public override void OnCancelled()
 			{
 				TCS.TrySetCanceled();
 			}
 		}
-		public static Task WaitFor(this ITimerService TimerService, Func<bool> Condition)
+		public static Task WaitFor(this ITimerService TimerService, Func<Task<bool>> Condition,int TimeoutSeconds=30)
 		{
 			var timer = new WaitTimer
 			{
-				TimerService=TimerService,
+				Expire = DateTime.Now.AddSeconds(TimeoutSeconds),
+				TimerService =TimerService,
 				TCS = new TaskCompletionSource<int>(),
 				Condition = Condition
 			};

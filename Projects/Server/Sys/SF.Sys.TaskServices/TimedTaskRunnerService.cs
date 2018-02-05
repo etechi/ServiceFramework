@@ -41,7 +41,7 @@ namespace SF.Sys.Services
 			);
 
 		Task LoadTasks(
-			CancellationToken cancellactionToken
+			CancellationToken cancellactionToken=default
 			);
 	}
 

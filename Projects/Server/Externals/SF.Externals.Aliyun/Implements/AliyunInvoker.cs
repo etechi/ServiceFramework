@@ -49,7 +49,7 @@ namespace SF.Externals.Aliyun.Implements
 			args.Add(("Format", "JSON"));
 			args.Add(("AccessKeyId", Uri.EscapeDataString(Setting.AppKey)));
 			args.Add(("SignatureMethod", "HMAC-SHA1"));
-			args.Add(("Timestamp", Uri.EscapeDataString(TimeService.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))));
+			args.Add(("Timestamp", Uri.EscapeDataString(DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ"))));
 			args.Add(("SignatureVersion", Uri.EscapeDataString("1.0")));
 			args.Add(("SignatureNonce", Strings.NumberAndLowerUpperChars.Random(6)));
 
