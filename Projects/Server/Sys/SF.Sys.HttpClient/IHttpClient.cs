@@ -27,18 +27,6 @@ namespace SF.Sys.HttpClients
 		Task<T> Request<T>(HttpRequestMessage Request, Func<HttpResponseMessage, Task<T>> GetResult);
 	}
 
-	public class HttpClient : IHttpClient
-	{
-		public async Task<T> Request<T>(HttpRequestMessage Request,Func<HttpResponseMessage,Task<T>> GetResult)
-		{
-			var cli = new System.Net.Http.HttpClient();
-			using (var resp = await cli.SendAsync(Request))
-			{
-				//resp.EnsureSuccessStatusCode();
-				return await GetResult(resp);
-			}
-		}
-	}
 	public static class HttpClientExtension
 	{
 		public class Request
