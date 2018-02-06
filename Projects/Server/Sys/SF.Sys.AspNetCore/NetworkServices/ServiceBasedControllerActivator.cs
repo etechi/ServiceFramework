@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Internal;
+using SF.Sys.Comments;
 using SF.Sys.Services;
 using System;
 
@@ -34,21 +35,30 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			{
 				throw new ArgumentNullException("actionContext");
 			}
+
 			Type serviceType = actionContext.ActionDescriptor.ControllerTypeInfo.AsType();
 			var services = actionContext.HttpContext.RequestServices;
 
-			long svcId = actionContext.RouteData.Values.TryGetValue("service", out var sid) ? Convert.ToInt64(sid) : 0;
-
-			var s = svcId == 0 ? 
-				services.GetService(serviceType) : 
-				services.Resolver().ResolveServiceByIdent(svcId, serviceType);
-			if (s == null)
+			object svc;
+			if (actionContext.RouteData.Values.TryGetValue("service", out var sid) && sid is string)
 			{
-				s = base.Create(actionContext);
-				if (s != null)
+				if (long.TryParse((string)sid, out var svcId))
+					svc=services.Resolver().ResolveServiceByIdent(svcId, serviceType);
+				else
+					svc = services.Resolver().ResolveServiceByType(null, serviceType, (string)sid);
+			}
+			else
+				svc = services.GetService(serviceType);
+
+			if (svc == null)
+			{
+				if (serviceType.IsInterface)
+					throw new PublicArgumentException("找不到指定服务:"+serviceType.Comment().Title);
+				svc = base.Create(actionContext);
+				if (svc != null)
 					actionContext.HttpContext.Items[IsCreatedFromDefaultActivator] = IsCreatedFromDefaultActivator;
 			}
-			return s;
+			return svc;
 		}
 
 		/// <inheritdoc />

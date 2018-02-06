@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Entities;
+using SF.Sys.NetworkService;
 using System;
 using System.Threading.Tasks;
 
@@ -38,6 +39,7 @@ namespace SF.Common.Notifications.Front
 	/// <summary>
 	/// 用户通知服务
 	/// </summary>
+	[NetworkService]
 	public interface INotificationService
 	{
 		/// <summary>

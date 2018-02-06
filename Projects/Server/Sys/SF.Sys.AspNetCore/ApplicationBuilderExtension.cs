@@ -134,7 +134,7 @@ namespace SF.Sys.AspNetCore
 				);
 				routes.MapRoute(
 					name: "ServiceApi",
-					template: "api/{controller}-{service}/{action}/{id?}",
+					template: "api/{controller}/{service}/{action}/{id?}",
 					defaults: new { scope = "api" }
 				);
 

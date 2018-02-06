@@ -20,6 +20,7 @@ using SF.Common.Documents.DataModels;
 using SF.Sys.Data;
 using SF.Sys.Services;
 using SF.Sys.Entities;
+using SF.Sys;
 
 namespace SF.Common.Documents
 {
@@ -105,11 +106,14 @@ namespace SF.Common.Documents
 				});
 		}
 
-		public Task<TDocumentPublic> GetByKeyAsync(string Key)
+		public Task<TDocumentPublic> GetByKeyAsync(string Id)
 		{
+			if (Id.IsNullOrEmpty())
+				throw new PublicArgumentException("没有文档标识");
+
 			return DataScope.Use("以标签获取文档", ctx => {
 				var q = LimitedDocuments(ctx)
-				.Where(d => d.Ident == Key);
+				.Where(d => d.Ident == Id);
 				return MapModelToPublic(q, true).SingleOrDefaultAsync();
 				});
 		}

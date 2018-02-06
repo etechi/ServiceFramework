@@ -22,8 +22,8 @@ namespace SF.Sys.Entities
 		/// <summary>
 		/// 通过快速访问键值获取对象
 		/// </summary>
-		/// <param name="Key">快速访问键值</param>
+		/// <param name="Id">快速访问键值</param>
 		/// <returns>对象实体</returns>
-		Task<TEntity> GetByKeyAsync(string Key);
+		Task<TEntity> GetByKeyAsync(string Id);
 	}
 }
