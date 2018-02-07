@@ -20,12 +20,11 @@ namespace SF.Sys.Events
 {
 	public interface IEventQueueProvider
 	{
-		IEventQueue<TEvent> GetQueue<TEvent>(
-			string Source,
-			string Type,
+		IEventQueue<TPayload> GetQueue<TPayload>(
+			string TopicFilter,
 			string Subscriber,
 			EventDeliveryPolicy Policy,
-			IEventObserver<TEvent> Observer
-			) where TEvent:IEvent;
+			IEventObserver<TPayload> Observer
+			);
 	}
 }

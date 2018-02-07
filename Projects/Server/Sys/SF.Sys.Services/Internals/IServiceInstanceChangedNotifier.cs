@@ -18,11 +18,11 @@ using System;
 
 namespace SF.Sys.Services.Internals
 {
-	public class ServiceInstanceChanged : CommonEvent
+	public class ServiceInstanceChanged 
 	{
 		public long Id { get; set; }
 	}
-	public class InternalServiceChanged : CommonEvent
+	public class InternalServiceChanged 
 	{
 		public long? ScopeId { get; set; }
 		public string ServiceType { get; set; }

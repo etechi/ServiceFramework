@@ -24,49 +24,49 @@ namespace SF.Sys.Events
 	
 	public static class EventSourceExtension
     {
-		public static async Task Emit<TEvent>(this IEventEmitService Service,TEvent Event) where TEvent:class,IEvent
+		public static async Task Emit<TPayload>(this IEventEmitService Service,  TPayload Payload)
 		{
-			var e = await Service.Create(Event);
+			var type = typeof(TPayload);
+			var topic = type.Namespace + "/" + type.Name;
+			var e = await Service.Create(topic, Payload);
 			await e.Commit();
 		}
-		public static IDisposable Subscribe<TEvent>(this IEventObservable Observable,Func<IEventInstance<TEvent>,Task> observer) where TEvent:class,IEvent
+		public static async Task Emit<TPayload>(this IEventEmitService Service,string Topic,TPayload Payload)
 		{
-			return Observable.Subscribe(null, EventDeliveryPolicy.NoGuarantee,new DelegateEventObserver<TEvent>(observer));
-		}
-		public static IEventObservable GetObservable(this IEventSubscribeService Resolver, string Source, string Type)
-		{
-			return Resolver.GetObservable(Source,Type);
+			var e = await Service.Create(Topic,Payload);
+			await e.Commit();
 		}
 		
-		public static IDisposable Subscribe<TEvent>(this IEventSubscribeService Resolver, string Source,string Type, Func<IEventInstance<TEvent>, Task> Callback)
-			where TEvent:class,IEvent
-		{
-			return Resolver.GetObservable(Source,Type)
-				.Subscribe(Callback);
-		}
-		public static IDisposable Subscribe<TEvent>(this IEventSubscribeService Resolver, string Source, Func<IEventInstance<TEvent>, Task> Callback)
-			where TEvent : class, IEvent
-		{
-			return Resolver.Subscribe(Source, null, Callback);
-		}
 		
-		public static IDisposable Filter<TSrcEvent,TDstEvent>(
-			this IEventSubscribeService Resolver,
-			string Source,
-			string Type,
-			IEventEmitService EmitService,
-			Func<IEventInstance<TSrcEvent>, Task<TDstEvent>> Filter
+		public static IDisposable Subscribe<TPayload>(
+			this IEventSubscribeService Resolver, 
+			string TopicFilter, 
+			Func<IEvent<TPayload>, Task> Callback, 
+			EventDeliveryPolicy Policy = EventDeliveryPolicy.NoGuarantee
 			)
-			where TSrcEvent: class, IEvent
-			where TDstEvent: class, IEvent
 		{
-			return Resolver.Subscribe<TSrcEvent>(
-                Source, 
-                Type, 
+			return Resolver.Subscribe(TopicFilter, null, Policy, new DelegateEventObserver<TPayload>(Callback));
+		}
+		
+		public static IDisposable Filter<TSrcPayload,TDstPayload>(
+			this IEventSubscribeService Resolver,
+			string TopicFilter,
+			IEventEmitService EmitService,
+			Func<IEvent<TSrcPayload>, Task<(string Topic,TDstPayload Payload)>> Filter
+			)
+			where TSrcPayload: class, IEvent
+			where TDstPayload: class, IEvent
+		{
+			return Resolver.Subscribe<TSrcPayload>(
+                TopicFilter,
                 async se =>
                 {
-					var de=await EmitService.Create(await Filter(se));
-					await de.Commit();
+					var (dstTopic, dstPayload) = await Filter(se);
+					if (dstTopic != null)
+					{
+						var de = await EmitService.Create(dstTopic, dstPayload);
+						await de.Commit();
+					}
                 }
                 );
 		}

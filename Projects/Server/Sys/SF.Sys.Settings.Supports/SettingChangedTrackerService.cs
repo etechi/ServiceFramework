@@ -44,7 +44,7 @@ namespace SF.Sys.Settings
 					if (cancelled) return;
 					Task.Run(async () =>
 					{
-						var desc = resolver.ResolveDescriptorByIdent(ei.Event.Id);
+						var desc = resolver.ResolveDescriptorByIdent(ei.Id);
 						if (!Callbacks.TryGetValue(desc.ServiceDeclaration.ServiceType, out var cbs))
 							return;
 

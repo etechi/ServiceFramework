@@ -18,7 +18,7 @@ using System;
 
 namespace SF.Sys.Entities
 {
-	public class EntityChanged<TEntity> : IEvent
+	public class EntityChanged<TEntity> 
 	{
 		public Type EventType => typeof(TEntity);
 		public string Target { get; set; }
@@ -29,7 +29,6 @@ namespace SF.Sys.Entities
 
 		static string EntityTypeFullName { get; } = typeof(TEntity).FullName;
 		public string Source => EntityTypeFullName;
-		public string Type => "SF.Sys.Entities.EntityChanged";
 		public DataActionType Action { get; set; }
 		public string TraceIdent { get; set; }
 

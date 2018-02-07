@@ -19,38 +19,38 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Events
 {
-	public class DelegateEventObserver<TEvent> : IEventObserver<TEvent> where TEvent : IEvent
+	public class DelegateEventObserver<TPayload> : IEventObserver<TPayload>
 	{
-		public Func<IEventInstance<TEvent>, Task<object>> DelegatePrepare { get; }
-		public Func<IEventInstance<TEvent>, object, Task> DelegateCommit { get; }
-		public Func<IEventInstance<TEvent>, object, Exception,Task> DelegateCancel { get; }
+		public Func<IEvent<TPayload>, Task<object>> DelegatePrepare { get; }
+		public Func<IEvent<TPayload>, object, Task> DelegateCommit { get; }
+		public Func<IEvent<TPayload>, object, Exception,Task> DelegateCancel { get; }
 		public DelegateEventObserver(
-			Func<IEventInstance<TEvent>, Task<object>> DelegatePrepare,
-			Func<IEventInstance<TEvent>, object, Task> DelegateCommit,
-			Func<IEventInstance<TEvent>, object, Exception,Task> DelegateCancel
+			Func<IEvent<TPayload>, Task<object>> DelegatePrepare,
+			Func<IEvent<TPayload>, object, Task> DelegateCommit,
+			Func<IEvent<TPayload>, object, Exception,Task> DelegateCancel
 			){
 			this.DelegateCancel = DelegateCancel;
 			this.DelegateCommit = DelegateCommit;
 			this.DelegatePrepare = DelegatePrepare;
 		}
 		public DelegateEventObserver(
-			Func<IEventInstance<TEvent>, Task> DelegateCommit
+			Func<IEvent<TPayload>, Task> DelegateCommit
 			):this(null,(i,c)=>DelegateCommit(i),null)
 		{
 		}
 
-		public Task Cancel(IEventInstance<TEvent> EventInstance, object Context,Exception Exception)
+		public Task Cancel(IEvent<TPayload> EventInstance, object Context,Exception Exception)
 		{
 			return DelegateCancel?.Invoke(EventInstance, Context, Exception) ?? Task.CompletedTask;
 		}
 
-		public Task Commit(IEventInstance<TEvent> EventInstance, object Context)
+		public Task Commit(IEvent<TPayload> EventInstance, object Context)
 		{
 			return DelegateCommit?.Invoke(EventInstance, Context) ?? Task.CompletedTask;
 		}
 
 		static Task<object> NullTask { get; } = Task.FromResult<object>(null);
-		public Task<object> Prepare(IEventInstance<TEvent> EventInstance)
+		public Task<object> Prepare(IEvent<TPayload> EventInstance)
 		{
 			return DelegatePrepare?.Invoke(EventInstance) ?? NullTask;
 		}

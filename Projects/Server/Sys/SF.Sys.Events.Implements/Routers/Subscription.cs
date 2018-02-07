@@ -14,25 +14,32 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SF.Sys.Events
 {
-	
-	public static class EventEmitterExtension
-    {
-
-		public static Task<IEventEmitter> Create<TPayload>(this IEventEmitService EventEmitService , TPayload Payload)
+	abstract class Subscription : IDisposable
+	{
+		public int Index;
+		public EventDeliveryPolicy Policy;
+		public TopicDirectory Dictionary;
+		public string[] SegFilters;
+		public virtual void Dispose()
 		{
-			var type = typeof(TPayload);
-			var topic = type.Namespace + "/" + type.Name;
-			return EventEmitService.Create(topic, Payload);
+			if (Index<0) return;
+			var idx = Index;
+			Index = -1;
+			Dictionary.RemoveSubscriber(idx, Policy);
 		}
-
 	}
-
-
+	class Subscription<TPayload> : Subscription
+	{
+		public IEventObserver<TPayload> Observer { get; set; }
+		public override void Dispose()
+		{
+			base.Dispose();
+			var d = Observer as IDisposable;
+			if (d != null)
+				d.Dispose();
+		}
+	}
 }

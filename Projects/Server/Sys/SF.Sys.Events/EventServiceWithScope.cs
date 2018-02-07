@@ -18,21 +18,48 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace SF.Sys.Events
-{
-	
-	public static class EventEmitterExtension
-    {
-
-		public static Task<IEventEmitter> Create<TPayload>(this IEventEmitService EventEmitService , TPayload Payload)
+{	
+	public static class TaskEventService
+	{
+		public static Task AddEventHandler<TPayload>(
+			this IEventSubscribeService EventSubscribeService,
+			Func<IEvent<TPayload>, Task> EventCallback,
+			CancellationToken token = default(CancellationToken)
+			)
 		{
 			var type = typeof(TPayload);
 			var topic = type.Namespace + "/" + type.Name;
-			return EventEmitService.Create(topic, Payload);
+			return AddEventHandler<TPayload>(EventSubscribeService, topic, EventCallback, token);
 		}
 
-	}
+		public static async Task AddEventHandler<TPayload>(
+            this IEventSubscribeService EventSubscribeService,
+            string EventTopicFilter,
+            Func<IEvent<TPayload>, Task> EventCallback,
+			CancellationToken token= default(CancellationToken)
+			) 
+		{
+			var tcs = new TaskCompletionSource<int>();
+			using (token.Register(() => tcs.TrySetResult(0)))
+				using (EventSubscribeService
+					.Subscribe<TPayload>(
+					EventTopicFilter,
+					e =>
+					{
+						if (token.IsCancellationRequested)
+							return Task.CompletedTask;
+						return EventCallback(e);
+					}))
+				{
+					await tcs.Task;
+				}
 
+		}
+       
 
+    }
+	
 }

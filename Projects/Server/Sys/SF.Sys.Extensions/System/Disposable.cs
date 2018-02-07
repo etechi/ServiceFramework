@@ -75,7 +75,7 @@ namespace SF.Sys
         {
             return FromAction(() =>{
                 foreach (var d in disposables)
-                    d.Dispose();
+                    d?.Dispose();
             });
         }
 	}

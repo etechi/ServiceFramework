@@ -22,143 +22,106 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Events
 {
-	class CommonEventInstance<TEvent> : IEventInstance<TEvent>
-		where TEvent : IEvent
-	{
-		public long Id { get; set; }
 
-		public TEvent Event { get; set; }
-	}
 
 	public class EventManager :
 		IEventEmitService,
 		IEventSubscribeService
 	{
+		
+		TopicRouter Router { get; }
 
-		ConcurrentDictionary<(string, string), EventObservable> SourceTypeLimitedObservables { get; } = new ConcurrentDictionary<(string, string), EventObservable>();
-		ConcurrentDictionary<string, EventObservable> TypeLimitedObservables { get; } = new ConcurrentDictionary<string, EventObservable>();
-		ConcurrentDictionary<string, EventObservable> SourceLimitedObservables { get; } = new ConcurrentDictionary<string, EventObservable>();
-		EventObservable UnlimitedObservables { get; }
 
 		IEventQueueProvider EventQueueProvider { get; }
 		IIdentGenerator IdentGenerator { get; }
+
 		public EventManager(IEventQueueProvider EventQueueProvider, IIdentGenerator IdentGenerator)
 		{
+			this.Router = new TopicRouter(this);
 			this.EventQueueProvider = EventQueueProvider;
 			this.IdentGenerator = IdentGenerator;
-			this.UnlimitedObservables = new EventObservable(this, null, null);
+		
 		}
-
-		public IEventObservable GetObservable(string Source, string Type)
+		public IDisposable Subscribe<TPayload>(
+			string TopicFilter,
+			string SubscriberIdent,
+			EventDeliveryPolicy Policy,
+			IEventObserver<TPayload> Observer
+			)
 		{
-			if (Source == null)
-			{
-				if (Type == null)
-					return UnlimitedObservables;
-				else
-					return TypeLimitedObservables.GetOrAdd(Type, t => new EventObservable(this, null, t));
-			}
-			else if (Type == null)
-				return SourceLimitedObservables.GetOrAdd(Source, s => new EventObservable(this, s, null));
-			else
-				return SourceTypeLimitedObservables.GetOrAdd((Source,Type), k => new EventObservable(this, k.Item1, k.Item2));
+			return Router.Subscribe<TPayload>(TopicFilter, SubscriberIdent, Policy, Observer);
 		}
+	
 
-
-		IEnumerable<EventObservable> GetObservables(string Source,string Type)
-		{
-			if (SourceTypeLimitedObservables.TryGetValue((Source, Type), out var s1))
-				yield return s1;
-			if (TypeLimitedObservables.TryGetValue(Type, out var s2))
-				yield return s2;
-			if (SourceLimitedObservables.TryGetValue(Source, out var s3))
-				yield return s3;
-			yield return UnlimitedObservables;
-		}
-
-		IEnumerable<IEventObserver<TEvent>> GetEventObservers<TEvent>(string Source,string Type,bool Sync) where TEvent:IEvent
-		{
-			foreach (var eo in GetObservables(Source, Type))
-				foreach (var o in eo.GetObservers<TEvent>(Sync))
-					yield return o;
-		}
-
-		public IEventQueue<TEvent> GetEventQueue<TEvent>(
-			string Source,
-			string Type, 
+		public IEventQueue<TPayload> GetEventQueue<TPayload>(
+			string Path, 
 			string SubscriberIdent, 
 			EventDeliveryPolicy Policy,
-			IEventObserver<TEvent> Observer
-			) where TEvent:IEvent
+			IEventObserver<TPayload> Observer
+			) 
 		{
 			if (EventQueueProvider == null)
 				throw new NotSupportedException();
 			return EventQueueProvider.GetQueue(
-				Source ,
-				Type ,
+				Path,
 				SubscriberIdent,
 				Policy,
 				Observer
 				);
 		}
 		
-		class EventEmitter<TEvent> : IEventEmitter where TEvent : IEvent
+		class EventEmitter<TPayload> : IEventEmitter<TPayload>,IEvent<TPayload>
 		{
+			public long Id { get; set; }
+			public string Topic { get; set; }
+			public TPayload Payload { get; set; }
 			public EventManager EventManager { get; set; }
-			public IEventInstance<TEvent> EventInstance { get; set; }
-			public List<(IEventObserver<TEvent>, object)> Results { get; set; }
-
-			public IEvent Event => EventInstance.Event;
-			public long Id => EventInstance.Id;
-
+			public List<(IEventObserver<TPayload>, object)> Results { get; set; }
 
 			public async Task Cancel(Exception Exception)
 			{
 				foreach (var (o, c) in Results)
-					await o.Cancel(EventInstance, c, Exception);
+					await o.Cancel(this, c, Exception);
 			}
 
 			void CommitAsync()
 			{
 				Task.Run(async () =>
 				{
-					var e = EventInstance.Event;
-					foreach (var o in EventManager.GetEventObservers<TEvent>(e.Source, e.Type, false))
+					foreach (var o in EventManager.Router.GetObservers<TPayload>(Topic, false))
 					{
-						var ctx =await o.Prepare(EventInstance);
-						await o.Commit(EventInstance, ctx);
+						var ctx =await o.Prepare(this);
+						await o.Commit(this, ctx);
 					}
 				});
 			}
 			public async Task Commit()
 			{
 				foreach (var (o, c) in Results)
-					await o.Commit(EventInstance,c);
+					await o.Commit(this,c);
 				CommitAsync();
 			}
 		
 		}
-		public async Task<IEventEmitter> Create<TEvent>(TEvent Event) where TEvent : IEvent
+		public async Task<IEventEmitter> Create<TPayload>(string Topic,TPayload Payload)
 		{
-			var obs = GetObservables(Event.Source, Event.Type).ToArray();
-
-			var ei = new CommonEventInstance<TEvent>
+			var Id = await IdentGenerator.GenerateAsync("event:"+Topic);
+			
+			var e = new EventEmitter<TPayload>
 			{
-				Id = await IdentGenerator.GenerateAsync($"Event/{Event.Source}/{Event.Type}"),
-				Event = Event
-			};
-
-			var ps = new List<(IEventObserver<TEvent>, object)>();
-
-			foreach (var o in GetEventObservers<TEvent>(Event.Source, Event.Type, true))
-				ps.Add((o, await o.Prepare(ei)));
-
-			return new EventEmitter<TEvent>
-			{
-				EventInstance=ei,
-				Results=ps,
+				Id = Id,
+				Payload = Payload,
+				Topic = Topic,
 				EventManager = this
 			};
+
+
+			var obs = Router.GetObservers<TPayload>(Topic, true);
+			var ps = new List<(IEventObserver<TPayload>, object)>();
+			foreach (var o in obs)
+				ps.Add((o, await o.Prepare(e)));
+			e.Results = ps;
+			return e;
 		}
 	}
 }

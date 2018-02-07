@@ -23,7 +23,12 @@ namespace SF.Sys.Events
 		{
 		}
 
-		public IEventQueue<TEvent> GetQueue<TEvent>(string Source, string Type, string Subscriber, EventDeliveryPolicy Policy, IEventObserver<TEvent> Observer) where TEvent : IEvent
+		public IEventQueue<TPayload> GetQueue<TPayload>(
+			string Topic,
+			string Subscriber, 
+			EventDeliveryPolicy Policy, 
+			IEventObserver<TPayload> Observer
+			) 
 		{
 			throw new NotImplementedException();
 		}

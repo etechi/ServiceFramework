@@ -21,53 +21,33 @@ using System.Collections;
 
 namespace SF.Sys.Events
 {
-	abstract class Subscriber : IDisposable
+
+	
+	class SubscriptionSet : IEnumerable<Subscription>
 	{
-		public int Index;
-		public EventDeliveryPolicy Policy;
-		public EventObservable Set;
-		public virtual void Dispose()
-		{
-			Set.RemoveSubscriber(Index, Policy);
-		}
-	}
-	class Subscriber<TEvent> : Subscriber
-		where TEvent : IEvent
-	{
-		public IEventObserver<TEvent> Observer { get; set; }
-		public override void Dispose()
-		{
-			base.Dispose();
-			var d = Observer as IDisposable;
-			if (d != null)
-				d.Dispose();
-		}
-	}
-	class SubscriberSet : IEnumerable<Subscriber>
-	{
-		Subscriber[] _Items;
+		Subscription[] _Items;
 		int _Count;
 		public int Count => _Count;
 
 
-		public int Add(Subscriber subscriber)
+		public int Add(Subscription subscription)
 		{
 			var l = _Items?.Length ?? 0;
 			if (_Count == l)
 				Array.Resize(ref _Items, (l == 0 ? 16 : l) * 2);
 			var idx = _Count;
-			_Items[_Count] = subscriber;
+			_Items[_Count] = subscription;
 			_Count++;
 			return idx;
 		}
 
-		public IEnumerator<Subscriber> GetEnumerator()
+		public IEnumerator<Subscription> GetEnumerator()
 		{
 			if (_Items == null)
 				yield break;
 			var l = _Items.Length;
 			//多线程下可能会有重复项目
-			var hash = new HashSet<Subscriber>();
+			var hash = new HashSet<Subscription>();
 			for (var i = 0; i < l; i++)
 			{
 				var s = _Items[i];

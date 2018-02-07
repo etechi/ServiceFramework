@@ -23,84 +23,70 @@ namespace SF.Sys.Events
 {
 	public interface IEvent
 	{
-		DateTime Time { get; }
-		string Source { get; }
-		string Type { get; }
-		string TraceIdent { get; }
-		string Target { get; }
+		long Id { get; }
+		string Topic { get; }
+	}
+	public interface IEvent<TPayload> : IEvent
+	{
+		TPayload Payload { get; }
 	}
 
-	public class CommonEvent : IEvent
+	public class CommonEvent<TPayload> : IEvent<TPayload>
 	{
-		public CommonEvent()
-		{
-			var t = GetType();
-			Source = t.Namespace;
-			Type = t.Name;
-		}
-		public DateTime Time { get; set; }
-		public string Target { get; set; }
-		public string Source { get; set; }
-		public string Type { get; set; }
-		public string TraceIdent { get; set; }
-	}
-	public interface IEventInstance<TEvent>
-		where TEvent:IEvent
-	{
-		long Id { get; }
-		TEvent Event { get; }
+		public long Id { get; set; }
+		public string Topic { get; set; }
+		public TPayload Payload { get; set; }
 	}
 
 	
 	public interface IEventEmitter 
 	{
 		long Id { get; }
-		IEvent Event { get; }
+		string Topic { get; }
 		Task Cancel(Exception Exception);
 		Task Commit();
 	}
+	public interface IEventEmitter<TPayload> : IEventEmitter {
+		TPayload Payload { get; }
+	}
+
 
 	public interface IEventValidator<T>
 	{
 		Task<bool> Validate(T Event);
 	}
 
-	public interface IEventSubscriber<TEvent> where TEvent:IEvent
+	public interface IEventSubscriber<TPayload> 
 	{
 		void Wait(
-			Func<IEventInstance<TEvent>,Task> Callback,
+			Func<IEvent<TPayload>,Task> Callback,
 			EventDeliveryPolicy Policy = EventDeliveryPolicy.NoGuarantee,
-			string EventSource = null,
-			string EventType = null,
+			string Topic = null,
 			string SubscriberIdent = null
 			);
 	}
-	public interface IEventObserver<TEvent> where TEvent:IEvent
+	public interface IEventObserver<TPayload> 
 	{
-		Task<object> Prepare(IEventInstance<TEvent> EventInstance);
-		Task Commit(IEventInstance<TEvent> EventInstance,object Context);
-		Task Cancel(IEventInstance<TEvent> EventInstance, object Context, Exception Exception);
+		Task<object> Prepare(IEvent<TPayload> Event);
+		Task Commit(IEvent<TPayload> Event,object Context);
+		Task Cancel(IEvent<TPayload> Event, object Context, Exception Exception);
 	}
-	public interface IEventObservable
-    {
-        IDisposable Subscribe<TEvent>(
-			string SubscriberIdent,
-			EventDeliveryPolicy Policy,
-			IEventObserver<TEvent> Observer
-			)
-			where TEvent:class,IEvent;
-    }
+	
 
 	public interface IEventSubscribeService
 	{
-		IEventObservable GetObservable(string Source,string Type);
+		IDisposable Subscribe<TPayload>(
+			string TopicFilter,
+			string SubscriberIdent,
+			EventDeliveryPolicy Policy,
+			IEventObserver<TPayload> Observer
+			);
 	}
 
 
 	public interface IEventEmitService
 	{
-		Task<IEventEmitter> Create<TEvent>(TEvent Event) where TEvent : IEvent;
-
+		Task<IEventEmitter> Create<TPayload>(string Topic, TPayload Payload);
 	}
    
 }

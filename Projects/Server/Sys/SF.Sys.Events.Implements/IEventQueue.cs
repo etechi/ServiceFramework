@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using System;
 namespace SF.Sys.Events
 {
-	public interface IEventQueue <TEvent> : IEventObserver<TEvent>,IDisposable where TEvent:IEvent
+	public interface IEventQueue <TPayload> : IEventObserver<TPayload>
 	{
 	}
 }

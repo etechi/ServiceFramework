@@ -77,7 +77,7 @@ namespace SF.Sys.Services.Internals
 			OnInternalServiceChanged.Wait(
 				isc =>
 				{
-					ManagedServiceFactoryManager.TryRemoveInternalEntries(isc.Event.ScopeId, isc.Event.ServiceType);
+					ManagedServiceFactoryManager.TryRemoveInternalEntries(isc.Payload.ScopeId, isc.Payload.ServiceType);
 					return Task.CompletedTask;
 				});
 		}
