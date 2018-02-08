@@ -15,22 +15,15 @@ namespace SF.Sys.UnitTest
 			=> sp.Resolve<ITimeService>().Now;
 
 
-		public static async Task<T> AppInstance<T>(this IAppInstanceBuilder AppInstanceBuilder,Func<IAppInstance,Task<T>> Callback)
-		{
-			using (var ins = AppInstanceBuilder.Build())
-				return await Callback(ins);
-		}
-		public static async Task<T> Scope<T>(this IAppInstance AppInstance, Func<IServiceProvider,Task<T>> Callback)
-		{
-			using (var s = AppInstance.ServiceProvider.Resolve<IServiceScopeFactory>().CreateServiceScope())
-			{
-				return await Callback(s.ServiceProvider);
-			}
-		}
-		public static async Task<T> Scope<T>(this IAppInstanceBuilder AppInstanceBuilder, Func<IServiceProvider, Task<T>> Callback)
-		{
-			return await AppInstanceBuilder.AppInstance(ins => ins.Scope(Callback));
-		}
+		public static IScope<IAppInstance> NewAppInstance(this IAppInstanceBuilder AppInstanceBuilder) 
+			=> Scope.From(AppInstanceBuilder).Using(b => b.Build());
+
+
+		public static IScope<IServiceProvider> NewServiceScope(this IAppInstanceBuilder AppInstanceBuilder)
+			=> (from ai in AppInstanceBuilder.NewAppInstance()
+				select ai.ServiceProvider
+				).NewServiceScope();
+
 
 		public static async Task<long> GetIdent(this IServiceProvider sp)
 		{

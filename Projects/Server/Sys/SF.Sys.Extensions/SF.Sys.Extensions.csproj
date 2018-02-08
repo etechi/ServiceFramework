@@ -20,4 +20,8 @@
     <None Remove=".licenseheader" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SF.Sys.Threading\SF.Sys.Threading.csproj" />
+  </ItemGroup>
+
 </Project>

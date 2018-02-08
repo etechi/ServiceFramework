@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SF.Sys.Data;
 using SF.Sys.Clients;
 using SF.Sys.UnitTest;
+using SF.Sys;
 
 namespace SF.IdentityService.UnitTest
 {
@@ -164,14 +165,11 @@ namespace SF.IdentityService.UnitTest
 			var user=await sp.UserCreate();
 			return await Callback(user.user);
 		}
-		public static ITestContext<(OV Prev,User User,string Account,string Password)> WithNewSigninedUser<OV>(this ITestContext<OV> scope,string prefix=null)
+		public static IScope<(User User,string Account,string Password)> WithNewSigninedUser(this IScope<IServiceProvider> scope,string prefix=null)
 		{
-			return scope.NewContext<OV, (OV Prev, User User, string Account, string Password)>(
-				async (sp, ov, cb) =>
-				 {
-					 var re = await UserCreate(sp,prefix);
-					 await cb(sp, (Prev:ov, re.user, re.account, re.password));
-				 });
+			return from sp in scope
+				   from re in UserCreate(sp, prefix)
+				   select (re.user, re.account, re.password);
 		}
 	}
 	

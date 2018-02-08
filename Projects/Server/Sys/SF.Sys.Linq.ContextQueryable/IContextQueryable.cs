@@ -433,16 +433,5 @@ namespace System.Linq
 		public static IContextQueryable<TResult> Zip<TFirst, TSecond, TResult>(this IContextQueryable<TFirst> source1, IEnumerable<TSecond> source2, Expression<Func<TFirst, TSecond, TResult>> resultSelector)
 			=> source1.New(source1.Queryable.Zip(source2.TryResolve(), resultSelector));
 
-
-		//public static void test()
-		//{
-		//	var q = (IContextQueryable<int, int>)null;
-		//	var qq = from i in q
-		//			 where i != 10
-		//			 select new { id = i };
-
-
-
-		//}
 	}
 }

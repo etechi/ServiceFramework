@@ -222,11 +222,11 @@ namespace SF.Sys.NetworkService
 			i = type.IndexOf('{');
 			if (i != -1)
 			{
-				var et = to_ios_type(type.Substring(0, i), true);
+				var et = to_ios_type(type.Substring(0, i), true,true,true);
 				if (et == "NSString *")
 					et = "NSDictionary";
 				else
-					et = "NSDictionary<NSString," + et + ">";
+					et = "NSDictionary<NSString*," + et + ">";
 				return et + (withPointer ? " *" : "");
 			}
 

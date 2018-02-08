@@ -71,7 +71,16 @@ namespace SF.Sys.Services
 			where T : class
 			=> ServiceProvider.Resolver().Resolve<T>(ServiceId);
 
-
+		public static IScope<IServiceProvider> AsScope(this IServiceProvider sp)
+			=>Scope.Create<IServiceProvider>(cb => cb(sp));
+		public static IScope<IServiceProvider> NewServiceScope(this IScope<IServiceProvider> scope)
+		{
+			return from s in scope
+					.Select(sp => sp.Resolve<IServiceScopeFactory>())
+					.Cached()
+					.Using(s=>s.CreateServiceScope())
+				   select s.ServiceProvider;
+		}
 		
 		public static Task WithScope(this IServiceProvider sp, Func<IServiceProvider, Task> action)
 		{

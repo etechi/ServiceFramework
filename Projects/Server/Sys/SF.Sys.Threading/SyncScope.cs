@@ -24,85 +24,92 @@ namespace SF.Sys.Threading
 {
 	public interface ISyncScope
 	{
-		Task ExecuteAsync(Func<Task> callback, CancellationToken cancellationToken);
-		void Execute(Action callback, CancellationToken cancellationToken);
+		Task<T> Sync<T>(Func<Task<T>> callback);
 	}
 	public static class SyncScopeExtension
 	{
-		public static Task SyncAsync(this ISyncScope Scope,Func<Task> callback, CancellationToken cancellationToken)
-			=>Scope.ExecuteAsync(callback, cancellationToken);
-
-		public static void Sync(this ISyncScope Scope,Action callback, CancellationToken cancellationToken)
-			=>Scope.Execute(callback, cancellationToken);
-
-		public static Task SyncAsync(this ISyncScope Scope, Func<Task> callback)
-			=> Scope.ExecuteAsync(callback, CancellationToken.None);
-		public static void Sync(this ISyncScope Scope, Action callback)
-			=> Scope.Execute(callback, CancellationToken.None);
-
-		public static async Task<T> SyncAsync<T>(this ISyncScope Scope, Func<Task<T>> callback, CancellationToken cancellationToken)
+		public static Task Sync(this ISyncScope SyncScope,Func<Task> callback)
 		{
-			T re = default;
-			await Scope.ExecuteAsync(async () =>
-			{ 
-				re = await callback();
-			},
-			cancellationToken
-			);
-			return re;
-		}
-		public static T Sync<T>(this ISyncScope Scope, Func<T> callback, CancellationToken cancellationToken)
-		{
-			T re = default;
-			Scope.Execute(() =>
+			return SyncScope.Sync(async () =>
 			{
-				re = callback();
-			},
-			cancellationToken
-			);
-			return re;
-		}
-		public static Task<T> SyncAsync<T>(this ISyncScope Scope, Func<Task<T>> callback)
-			=> Scope.SyncAsync<T>(callback, CancellationToken.None);
-		public static T Sync<T>(this ISyncScope Scope, Func<T> callback)
-			=> Scope.Sync(callback, CancellationToken.None);
-
-	}
-	public class SyncScope : ISyncScope, IDisposable
-	{
-		SemaphoreSlim _semaphore = new SemaphoreSlim(1);
-		
-		public async Task ExecuteAsync(Func<Task> callback,CancellationToken cancellationToken)
-		{
-			await _semaphore.WaitAsync(cancellationToken);
-			try { 
 				await callback();
-			}
-			finally
-			{
-				_semaphore.Release();
-			}
+				return 0;
+			});
 		}
-		public void Execute(Action callback, CancellationToken cancellationToken)
+	}
+	public class SyncScope : ISyncScope
+	{
+		abstract class Item
 		{
-			_semaphore.Wait(cancellationToken);
-			try
-			{
-				callback();
-			}
-			finally
-			{
-				_semaphore.Release();
-			}
+			public Item Next;
+			public abstract Task Execute();
 		}
+		class Item<T> : Item
+		{
 
-		public void Dispose()
-		{
-			if (_semaphore != null)
+			public Func<Task<T>> Callback;
+			public TaskCompletionSource<T> TCS;
+			public override async Task Execute()
 			{
-				_semaphore.Dispose();
-				_semaphore = null;
+				try
+				{
+					var re=await Callback();
+					TCS.TrySetResult(re);
+				}
+				catch (Exception ex)
+				{
+					TCS.TrySetException(ex);
+				}
+				Callback = null;
 			}
+
 		}
+		Item _Head;
+		Item _Tail;
+
+		public Task<T> Sync<T>(Func<Task<T>> callback)
+		{
+			var item = new Item<T> { Callback = callback };
+			var tcs=item.TCS = new TaskCompletionSource<T>();
+			lock (this)
+			{ 
+				if (_Head == null)
+				{
+					tcs = null;
+					_Head = item;
+				}
+				else
+					_Tail.Next = item;
+				_Tail = item;
+			}
+			if (tcs != null)
+				return tcs.Task;
+
+			var re = callback();
+			re.ContinueWith(async t =>
+			{
+				for (; ; )
+				{
+					Item next;
+					lock (this)
+					{
+						next = _Head.Next;
+						_Head = next;
+						if (next == null)
+							_Tail = null;
+					}
+					if (next == null)
+						break;
+					try
+					{
+						await next.Execute();
+					}
+					catch { }
+				}
+
+			});
+			return re;
+		}
+	
 	}
 }

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Caching\SF.Sys.Caching.csproj" />
     <ProjectReference Include="..\SF.Sys.Events\SF.Sys.Events.csproj" />
+    <ProjectReference Include="..\SF.Sys.Extensions\SF.Sys.Extensions.csproj" />
     <ProjectReference Include="..\SF.Sys.Linq.Expressions\SF.Sys.Linq.Expressions.csproj" />
     <ProjectReference Include="..\SF.Sys.Reflection\SF.Sys.Reflection.csproj" />
   </ItemGroup>
