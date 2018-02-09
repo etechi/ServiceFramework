@@ -21,13 +21,34 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Events
 {
-	
+	public static class TypeTopic<TPayload>
+	{
+		public static string Name { get; }
+		static string GetTypeTopic(Type type)
+		{
+			var topic = type.Namespace;
+			if (type.IsGenericType)
+			{
+				topic += "/" + type.GetGenericTypeDefinition().Name;
+				foreach (var d in type.GetGenericArguments())
+					topic += "/" + GetTypeTopic(d);
+			}
+			else
+				topic += "/" + type.Name;
+			return topic;
+		}
+		static TypeTopic()
+		{
+			Name = GetTypeTopic(typeof(TPayload));
+		}
+	}
 	public static class EventSourceExtension
     {
+		
+
 		public static async Task Emit<TPayload>(this IEventEmitService Service,  TPayload Payload)
 		{
-			var type = typeof(TPayload);
-			var topic = type.Namespace + "/" + type.Name;
+			var topic = TypeTopic<TPayload>.Name;
 			var e = await Service.Create(topic, Payload);
 			await e.Commit();
 		}

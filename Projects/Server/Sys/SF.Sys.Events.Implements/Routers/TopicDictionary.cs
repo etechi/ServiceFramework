@@ -51,7 +51,9 @@ namespace SF.Sys.Events
 		{
 			lock (this)
 			{
-				if (Policy != EventDeliveryPolicy.NoGuarantee && Policy != EventDeliveryPolicy.TryBest)
+				if (Policy == EventDeliveryPolicy.AtLeastOnce ||
+					Policy == EventDeliveryPolicy.AtMostOnce ||
+					Policy== EventDeliveryPolicy.JustOnce)
 				{
 					if (Ident.IsNullOrWhiteSpace())
 						throw new ArgumentException("需要提供订阅ID");

@@ -27,18 +27,19 @@ namespace SF.Sys.Events
 		public static Task AddEventHandler<TPayload>(
 			this IEventSubscribeService EventSubscribeService,
 			Func<IEvent<TPayload>, Task> EventCallback,
+			EventDeliveryPolicy Policy= EventDeliveryPolicy.NoGuarantee,
 			CancellationToken token = default(CancellationToken)
 			)
 		{
-			var type = typeof(TPayload);
-			var topic = type.Namespace + "/" + type.Name;
-			return AddEventHandler<TPayload>(EventSubscribeService, topic, EventCallback, token);
+			var topic = TypeTopic<TPayload>.Name;
+			return AddEventHandler<TPayload>(EventSubscribeService, topic, EventCallback, Policy ,token);
 		}
 
 		public static async Task AddEventHandler<TPayload>(
             this IEventSubscribeService EventSubscribeService,
             string EventTopicFilter,
             Func<IEvent<TPayload>, Task> EventCallback,
+			EventDeliveryPolicy Policy = EventDeliveryPolicy.NoGuarantee,
 			CancellationToken token= default(CancellationToken)
 			) 
 		{
@@ -52,7 +53,9 @@ namespace SF.Sys.Events
 						if (token.IsCancellationRequested)
 							return Task.CompletedTask;
 						return EventCallback(e);
-					}))
+					},
+					Policy
+					))
 				{
 					await tcs.Task;
 				}

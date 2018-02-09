@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using SF.Sys.ServiceFeatures;
+using System.Threading;
 
 namespace SF.Sys.UnitTest
 {
@@ -16,7 +17,7 @@ namespace SF.Sys.UnitTest
 			public IAppInstanceBuilder AppInstanceBuilder { get; set; }
 			public bool BootServices { get; set; }
 
-			public async Task Use(Func<IServiceProvider, Task> Callback)
+			public async Task Use(Func<IServiceProvider,CancellationToken, Task> Callback, CancellationToken ct)
 			{
 				using (var app = AppInstanceBuilder.Build())
 				{
@@ -25,7 +26,7 @@ namespace SF.Sys.UnitTest
 						Disposable = await app.ServiceProvider.BootServices();
 					try
 					{
-						await Callback(app.ServiceProvider);
+						await Callback(app.ServiceProvider,ct);
 					}
 					finally
 					{
@@ -46,17 +47,6 @@ namespace SF.Sys.UnitTest
 				BootServices= BootServices
 			};
 		}
-
-		class ServiceProviderRootTestContext : IScope<IServiceProvider>
-		{
-			public IServiceProvider ServiceProvider { get; set; }
-			public Task Use(Func<IServiceProvider, Task> Callback)
-			{
-				return Callback(ServiceProvider);
-			}
-		}
-		public static IScope<IServiceProvider> TestContext(this IServiceProvider sp)
-			=> new ServiceProviderRootTestContext { ServiceProvider = sp };
 
 			
 	

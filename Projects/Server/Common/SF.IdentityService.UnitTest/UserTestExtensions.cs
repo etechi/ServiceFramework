@@ -84,7 +84,7 @@ namespace SF.IdentityService.UnitTest
 			return Value;
 		}
 
-		public static async Task<(User user, string account, string password)> UserCreate(
+		public static async Task<(User User, string account, string password)> UserCreate(
 			this IServiceProvider sp,
 			string prefix=null,
 			string account = null,
@@ -130,15 +130,15 @@ namespace SF.IdentityService.UnitTest
 				}, true
 				);
 
-			User user;
+			User User;
 			if (ReturnToken)
 			{
 				var uid = await svc.ValidateAccessToken(accessToken);
 				Assert.AreEqual(postfix, uid);
 
-				user = await svc.GetUser(uid);
-				Assert.AreEqual(name, user.Name);
-				Assert.AreEqual(icon, user.Icon);
+				User = await svc.GetUser(uid);
+				Assert.AreEqual(name, User.Name);
+				Assert.AreEqual(icon, User.Icon);
 				//Assert.AreEqual(entity, ii.Entity);
 				//Assert.AreEqual(postfix, ii.Id);
 			}
@@ -147,29 +147,29 @@ namespace SF.IdentityService.UnitTest
 				var at = sp.Resolve<IAccessToken>();
 				var uid=at.User.GetUserIdent();
 
-				user = await svc.GetCurUser();
-				Assert.AreEqual(uid.Value, user.Id);
+				User = await svc.GetCurUser();
+				Assert.AreEqual(uid.Value, User.Id);
 
-				Assert.AreEqual(name, user.Name);
-				Assert.AreEqual(icon, user.Icon);
+				Assert.AreEqual(name, User.Name);
+				Assert.AreEqual(icon, User.Icon);
 			//	Assert.AreEqual(entity, uii.);
 			}
 
 			var uid2 = await sp.UserSignin(account, password);
-			Assert.AreEqual(user.Id, uid2);
-			return (user, account,password);
+			Assert.AreEqual(User.Id, uid2);
+			return (User, account,password);
 		}
 
 		public static async Task<T> WithNewUser<T>(this IServiceProvider sp,Func<User,Task<T>> Callback)
 		{
 			var user=await sp.UserCreate();
-			return await Callback(user.user);
+			return await Callback(user.User);
 		}
 		public static IScope<(User User,string Account,string Password)> WithNewSigninedUser(this IScope<IServiceProvider> scope,string prefix=null)
 		{
 			return from sp in scope
 				   from re in UserCreate(sp, prefix)
-				   select (re.user, re.account, re.password);
+				   select re;
 		}
 	}
 	

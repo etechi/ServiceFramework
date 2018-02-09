@@ -50,7 +50,7 @@ namespace SF.Externals.WeiXin.Mp.Core
 			if (_AccessToken != null && _AccessTokenExpire>now)
 				return _AccessToken;
 
-            return await SyncScopeExtension.Sync(accessTokenSyncScope, async () =>
+            return await accessTokenSyncScope.Sync(async () =>
 			 {
 				 if (_AccessToken != null && _AccessTokenExpire > now)
 					 return _AccessToken;
@@ -85,7 +85,7 @@ namespace SF.Externals.WeiXin.Mp.Core
 			if (_JsApiTicket != null && now < _JsApiTicketExpire)
 				return _JsApiTicket;
 
-            return await SyncScopeExtension.Sync(jsApiTicketSyncScope, async () =>
+            return await jsApiTicketSyncScope.Sync( async () =>
 			 {
 				 if (_JsApiTicket != null && now < _JsApiTicketExpire)
 					 return _JsApiTicket;

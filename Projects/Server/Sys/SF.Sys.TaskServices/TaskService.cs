@@ -52,7 +52,7 @@ namespace SF.Sys.TaskServices
 		}
 		public async Task Start(CancellationToken cancellationToken)
 		{
-			await SyncScope.SyncAsync(async () =>
+			await SyncScope.Sync(async () =>
 			{
 				if (State != TaskServiceState.Stopped &&
 					State != TaskServiceState.Error &&
@@ -74,7 +74,7 @@ namespace SF.Sys.TaskServices
 					State = TaskServiceState.Error;
 					throw;
 				}
-			}, cancellationToken);
+			});
 		}
 		void StartTaskProcess()
 		{
@@ -83,10 +83,10 @@ namespace SF.Sys.TaskServices
 		public async Task Stop(CancellationToken cancellationToken)
 		{
 			Task task=null;
-			SyncScope.Sync(() =>
+			await SyncScope.Sync(() =>
 			{
 				if (State == TaskServiceState.Stopped || State == TaskServiceState.Error || State == TaskServiceState.Exited)
-					return;
+					return Task.CompletedTask;
 
 				if (State != TaskServiceState.Running)
 					throw new InvalidOperationException("状态不正确");
@@ -94,23 +94,25 @@ namespace SF.Sys.TaskServices
 				State = TaskServiceState.Stopping;
 				_LongTaskCancellationSource.Cancel();
 				task = _StopTaskCompletionSource.Task;
-			}, cancellationToken);
+				return Task.CompletedTask;
+			});
 			try
 			{
 				await task;
 			}
 			finally
 			{
-				SyncScope.Sync(() =>
+				await SyncScope.Sync(() =>
 				{
 					_StopTaskCompletionSource = null;
+					return Task.CompletedTask;
 				});
 			}
 		}
 		void TaskEnd(Task task)
 		{
 			TaskCompletionSource<int> stcs = null;
-			SyncScope.Sync(() =>
+			Task.Run(()=>SyncScope.Sync(() =>
 			{
 				try
 				{
@@ -142,7 +144,8 @@ namespace SF.Sys.TaskServices
 						_LongTaskCancellationSource = null;
 					}
 				}
-			});
+				return Task.CompletedTask;
+			})).Wait();
 			if(stcs!=null)
 				stcs.TrySetResult(0);
 		}

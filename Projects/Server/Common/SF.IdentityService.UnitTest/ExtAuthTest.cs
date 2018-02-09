@@ -33,9 +33,8 @@ namespace SF.IdentityService.UnitTest
 		[TestMethod]
 		public async Task 外部认证_注册()
 		{
-			await TestContext()
-				.NewScope()
-				.Run(async sp =>
+			await NewServiceScope()
+				.Use(async (sp,ct) =>
 			{
 				var cei = sp.Resolve<IClientExtAuthService>();
 				var re=await cei.GetAuthArgument("test", "app.ios");

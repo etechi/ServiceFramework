@@ -49,10 +49,7 @@ namespace SF.Sys.Events
 				throw new InvalidOperationException();
 
 			if (EventTopic == null)
-			{
-				var et = typeof(TPayload);
-				EventTopic = et.Namespace+"/"+ et.Name;
-			}
+				EventTopic = TypeTopic<TPayload>.Name;
 			_Disposable=SubscribeService.Subscribe(EventTopic,
 				SubscriberIdent,
 				Policy,

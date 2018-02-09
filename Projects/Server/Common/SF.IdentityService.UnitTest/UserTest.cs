@@ -33,21 +33,21 @@ namespace SF.IdentityService.UnitTest
 		[Ignore]
 		public async Task 创建_成功_令牌()
 		{
-			await Scope(async (IServiceProvider svc) =>
+			await NewServiceScope().Use(async (svc,ct) =>
 				await svc.UserCreate(ReturnToken: true)
 			);
 		}
 		[TestMethod]
 		public async Task 创建_成功_会话()
 		{
-			await Scope(async (IServiceProvider svc) =>
+			await NewServiceScope().Use(async (svc, ct) =>
 				await svc.UserCreate(ReturnToken: false)
 			);
 		}
 		[TestMethod]
 		public async Task 创建_账号重复()
 		{
-			await Scope(async (IServiceProvider svc) =>
+			await NewServiceScope().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
 				await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
@@ -62,29 +62,29 @@ namespace SF.IdentityService.UnitTest
 		[Ignore]
 		public async Task 登录_成功_令牌()
 		{
-			await Scope(async (IServiceProvider svc) =>
+			await NewServiceScope().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
 				var uid2 = await svc.UserSignin(re.account, re.password, returnToken: true);
-				Assert.AreEqual(re.user.Id, uid2);
+				Assert.AreEqual(re.User.Id, uid2);
 				return 0;
 			});
 		}
 		[TestMethod]
 		public async Task 登录_成功_会话()
 		{
-			await Scope(async (IServiceProvider svc) =>
+			await NewServiceScope().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
 				var uid2 = await svc.UserSignin(re.account, re.password, returnToken: false);
-				Assert.AreEqual(re.user.Id, uid2);
+				Assert.AreEqual(re.User.Id, uid2);
 				return 0;
 			});
 		}
 		[TestMethod]
 		public async Task 登录_密码错误()
 		{
-			await Scope(async (IServiceProvider svc) =>
+			await NewServiceScope().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
 					await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
@@ -97,11 +97,11 @@ namespace SF.IdentityService.UnitTest
 		[TestMethod]
 		public async Task 修改密码()
 		{
-			await TestContext().Run(async (osp) =>
+			await NewServiceScope().Use(async (osp, ct) =>
 			{
 				var acc = await osp
-					.ScopedTestContext()
-					.Run(async (sp) =>
+					.AsScope().NewServiceScope()
+					.Use(async (sp) =>
 					{
 						var re = await sp.UserCreate(ReturnToken: false);
 						var newPassword = re.password + "123";
@@ -115,11 +115,11 @@ namespace SF.IdentityService.UnitTest
 								});
 						await svc.Signout();
 						Assert.IsFalse((await svc.GetCurUserId()).HasValue);
-						return (user:re.user, account: re.account, password: re.password, newPassword: newPassword);
+						return (user:re.User, account: re.account, password: re.password, newPassword: newPassword);
 					});
 				await osp
-					.ScopedTestContext()
-					.Run(async ( sp) =>
+					.AsScope().NewServiceScope()
+					.Use(async (sp) =>
 					{
 						await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
 						{

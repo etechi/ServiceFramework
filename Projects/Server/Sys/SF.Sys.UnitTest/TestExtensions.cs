@@ -24,6 +24,11 @@ namespace SF.Sys.UnitTest
 				select ai.ServiceProvider
 				).NewServiceScope();
 
+		public static IScope<IDataContext> NewDataContext(this IScope<IServiceProvider> scope)
+			=> scope.Convert<IServiceProvider, IDataContext>(
+				(sp, cb, ct) => sp.Resolve<IDataScope>().Use("²âÊÔ", ctx => cb(ctx, ct))
+				);
+
 
 		public static async Task<long> GetIdent(this IServiceProvider sp)
 		{

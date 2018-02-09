@@ -27,8 +27,7 @@ namespace SF.Sys.Events
 
 		public static Task<IEventEmitter> Create<TPayload>(this IEventEmitService EventEmitService , TPayload Payload)
 		{
-			var type = typeof(TPayload);
-			var topic = type.Namespace + "/" + type.Name;
+			var topic = TypeTopic<TPayload>.Name;
 			return EventEmitService.Create(topic, Payload);
 		}
 
