@@ -155,8 +155,9 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, MultipleRelationIdentQueryConverterProvider>();
 			sc.AddSingleton<IEntityPropertyQueryConverterProvider, SkipWhenDefaultQueryConverterProvider>();
 
-			sc.AddSingleton<IDataSetAutoEntityProviderCache, DataSetAutoEntityProviderCache>();
-			sc.AddTransient<IDataSetAutoEntityProviderFactory, DataSetAutoEntityProviderFactory>();
+			//暂不支持自动生成数据模型
+			//sc.AddSingleton<IDataSetAutoEntityProviderCache, DataSetAutoEntityProviderCache>();
+			//sc.AddTransient<IDataSetAutoEntityProviderFactory, DataSetAutoEntityProviderFactory>();
 
 			sc.AddSingleton(
 				sp => sp.Resolve<DataModelBuilder>().Build(string.Empty)

@@ -27,6 +27,7 @@ using SF.Sys.Data;
 
 namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 {
+	
 	public class MultipleRelationPropertyModifierProvider : IEntityPropertyModifierProvider
 	{
 		IEntityModifierCache EntityModifierCache { get; }
@@ -76,7 +77,6 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			{
 				if (Value == null && Context.Action!=ModifyAction.Delete)
 					return OrgValue;
-				var (create,update,remove)= LazyModifiers.Value;
 				var set = Context.DataContext.Set<TChildModel>();
 
 				var parentCtx = (IEntityModifyContext<TEntity, TModel>)Context;
@@ -92,46 +92,90 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 						arg
 					)
 					).ToArrayAsync();
-
-				var newItems = Value?.Select((v, i) => (v, i))?.ToArray() ?? Array.Empty<(TChildEntity v,int i)>();
-				var childMeta = Manager.EntityMetadataCollection.FindByEntityType(typeof(TChildEntity));
-
-				OrgValue=await set.MergeAsync(
-					orgItems,
-					newItems,
-					(d,e)=>FuncChildEqual(d,e.v),
-					async e =>
-					{
-						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitCreate(Context.DataContext,e.v,null);
-						await create.Execute(Manager, ctx);
-						await update.Execute(Manager, ctx);
-
-						FuncSetParentKey(ctx.Model, parentKey);
-						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
-
-						Manager.PostChangedEvents(Context.DataContext, ctx.Editable, DataActionType.Create, childMeta);
-						return ctx.Model;
-					},
-					async (d, e) =>
-					{
-						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitUpdate(Context.DataContext, d, e.v, null);
-						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
-						await update.Execute(Manager, ctx);
-						Manager.PostChangedEvents(Context.DataContext, ctx.Editable, DataActionType.Update, childMeta);
-					},
-					async d =>
-					{
-						var ctx = new EntityModifyContext<TChildEntity, TChildModel>();
-						ctx.InitRemove(Context.DataContext, d, Entity<TChildModel>.GetKey<TChildEntity>(d), null);
-						await remove.Execute(Manager, ctx);
-						Manager.PostChangedEvents(Context.DataContext, ctx.Editable, DataActionType.Delete, childMeta);
-					}
-					);
-				return OrgValue;
+				var merger = new Merger
+				{
+					Modifier = this,
+					ModifyContext = Context,
+					ServiceContext = Manager,
+					ParentKey = parentKey,
+					ChildEditables=Value,
+					ChildModels=orgItems
+				};
+				var handler = Context.ModifyHandlerProvider?.FindMergeHandler<TChildEntity, TChildModel>();
+				if (handler == null)
+					return await merger.Merge(
+						null
+						);
+				else
+					return await handler.Merge(merger);
 			}
 			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier) => this;
+
+			public class Merger : IEntityChildMerger<TChildEntity, TChildModel> 
+			{
+				public EntityPropertyModifier<TParentKey, TEntity, TModel, TChildEntity, TChildModel> Modifier { get; set; }
+				public IEntityServiceContext ServiceContext{ get; set; }
+				public IEntityModifyContext ModifyContext{get; set; }
+				public TParentKey ParentKey { get; set; }
+				public IEnumerable<TChildModel> ChildModels { get; set; }
+				public IEnumerable<TChildEntity> ChildEditables { get; set; }
+				public async Task<ICollection<TChildModel>> Merge(
+					Func<IEntityModifyContext<TChildEntity, TChildModel>,ModifyAction,Task> ModifyHandler
+				)
+				{
+					var newItems = ChildEditables?.Select((v, i) => (v, i))?.ToArray() ?? Array.Empty<(TChildEntity v, int i)>();
+					var childMeta = ServiceContext.EntityMetadataCollection.FindByEntityType(typeof(TChildEntity));
+					var set = ModifyContext.DataContext.Set<TChildModel>();
+					var (create, update, remove) = Modifier.LazyModifiers.Value;
+
+					var OrgValue = await set.MergeAsync(
+						ChildModels,
+						newItems,
+						(d, e) => Modifier.FuncChildEqual(d, e.v),
+						async e =>
+						{
+							var ctx = ModifyContext.CreateChildModifyContext<TChildEntity, TChildModel>();
+							ctx.InitCreate(ModifyContext.DataContext, e.v, null);
+							if (ModifyHandler != null)
+								await ModifyHandler(ctx,ModifyAction.Create);
+
+							await create.Execute(ServiceContext, ctx);
+
+							if (ModifyHandler != null)
+								await ModifyHandler(ctx, ModifyAction.Update);
+
+							await update.Execute(ServiceContext, ctx);
+
+							Modifier.FuncSetParentKey(ctx.Model, ParentKey);
+							Modifier.FuncSetItemOrder?.Invoke(ctx.Model, e.i);
+							ServiceContext.PostChangedEvents(ModifyContext.DataContext, ctx.Editable, DataActionType.Create, childMeta);
+							return ctx.Model;
+						},
+						async (d, e) =>
+						{
+							var ctx = ModifyContext.CreateChildModifyContext<TChildEntity, TChildModel>();
+							ctx.InitUpdate(ModifyContext.DataContext, d, e.v, null);
+							Modifier.FuncSetItemOrder?.Invoke(ctx.Model, e.i);
+							if (ModifyHandler != null)
+								await ModifyHandler(ctx, ModifyAction.Update);
+
+							await update.Execute(ServiceContext, ctx);
+							ServiceContext.PostChangedEvents(ModifyContext.DataContext, ctx.Editable, DataActionType.Update, childMeta);
+						},
+						async d =>
+						{
+							var ctx = ModifyContext.CreateChildModifyContext<TChildEntity, TChildModel>();
+							ctx.InitRemove(ModifyContext.DataContext, d, Entity<TChildModel>.GetKey<TChildEntity>(d), null);
+							if (ModifyHandler != null)
+								await ModifyHandler(ctx, ModifyAction.Update);
+
+							await remove.Execute(ServiceContext, ctx);
+							ServiceContext.PostChangedEvents(ModifyContext.DataContext, ctx.Editable, DataActionType.Delete, childMeta);
+						}
+						);
+					return OrgValue;
+				}
+			}
 		}
 
 		static string Desc(PropertyInfo EntityProperty, PropertyInfo DataModelProperty)

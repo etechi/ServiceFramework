@@ -17,6 +17,12 @@
 	</PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AutoEntityProvider\DataSetAutoEntityProvider.cs" />
+    <Compile Remove="AutoEntityProvider\DataSetAutoEntityProviderFactory.cs" />
+    <Compile Remove="AutoEntityProvider\DataSetAutoEntityProviderSetting.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove=".licenseheader" />
   </ItemGroup>
 

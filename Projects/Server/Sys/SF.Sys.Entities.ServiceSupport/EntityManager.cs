@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -76,11 +77,14 @@ namespace SF.Sys.Entities
 		{
 
 		}
-		class ModifyContext : EntityModifyContext<TEditable, TModel>, IModifyContext
+		class ModifyContext : RootEntityModifyContext<TEditable, TModel>, IModifyContext
 		{
+			public ModifyContext(IEntityModifyHandlerProvider HandlerProvider):base(HandlerProvider)
+			{
 
+			}
 		}
-        public ModidifiableEntityManager(IEntityServiceContext EntityServiceContext) :base(EntityServiceContext)
+		public ModidifiableEntityManager(IEntityServiceContext EntityServiceContext) :base(EntityServiceContext)
         {
         }
 
@@ -95,7 +99,7 @@ namespace SF.Sys.Entities
 			return Task.CompletedTask;
 		}
 		protected IModifyContext NewModifyContext()
-			=> new ModifyContext();
+			=> new ModifyContext(null);
 		public virtual async Task<TKey> CreateAsync(TEditable obj)
 		{
 			var ctx = NewModifyContext();
@@ -194,7 +198,8 @@ namespace SF.Sys.Entities
 
 	public abstract class AutoModifiableEntityManager<TKey, TDetail, TSummary,  TQueryArgument, TEditable, TModel> :
 		 AutoQueryableEntitySource<TKey, TDetail, TSummary, TQueryArgument, TModel>,
-		 IEntityManager<TKey, TEditable>
+		 IEntityManager<TKey, TEditable>,
+		 IEntityModifyHandlerProvider 
 		 where TDetail : class
 		 where TModel : class, new()
 		 where TQueryArgument : class,IPagingArgument, new()
@@ -205,9 +210,40 @@ namespace SF.Sys.Entities
 		{
 
 		}
-		class ModifyContext : EntityModifyContext<TEditable, TModel>, IModifyContext
+		Dictionary<(Type, Type), object> _ChildMergeHandlers;
+		class DelegateMergeHandler<TChildEditable, TChildModel> : IEntityChildMergeHandler<TChildEditable, TChildModel> where TChildModel :class
 		{
+			Func<IEntityChildMerger<TChildEditable, TChildModel>, Task<ICollection<TChildModel>>> Handler { get; }
+			public DelegateMergeHandler(Func<IEntityChildMerger<TChildEditable, TChildModel>, Task<ICollection<TChildModel>>> Handler)
+			{
+				this.Handler = Handler;
+			}
+			public Task<ICollection<TChildModel>> Merge(IEntityChildMerger<TChildEditable, TChildModel> Merger)
+			{
+				return Handler(Merger);
+			}
+		}
+		protected void OnChildModelModified<TChildEditable,TChildModel>(
+			Func<IEntityChildMerger<TChildEditable, TChildModel>, Task<ICollection<TChildModel>>> Handler
+			) where TChildModel:class
+		{
+			if (_ChildMergeHandlers == null)
+				_ChildMergeHandlers = new Dictionary<(Type, Type), object>();
+			var key = (typeof(TChildEditable), typeof(TChildModel));
+			_ChildMergeHandlers[key] = new DelegateMergeHandler<TChildEditable, TChildModel>(Handler);
+		}
+		IEntityChildMergeHandler<TChildEditable,TChildModel> IEntityModifyHandlerProvider.FindMergeHandler<TChildEditable, TChildModel>()
+		{
+			if (_ChildMergeHandlers == null) return null;
+			_ChildMergeHandlers.TryGetValue((typeof(TChildEditable), typeof(TChildModel)), out var h);
+			return (IEntityChildMergeHandler<TChildEditable, TChildModel>)h;
+		}
+		class ModifyContext : RootEntityModifyContext<TEditable, TModel>, IModifyContext
+		{
+			public ModifyContext(IEntityModifyHandlerProvider HandlerProvider) : base(HandlerProvider)
+			{
 
+			}
 		}
 		public AutoModifiableEntityManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
@@ -238,7 +274,7 @@ namespace SF.Sys.Entities
 				.Execute(ServiceContext, ctx);
 		}
 		protected IModifyContext NewModifyContext()
-			=> new ModifyContext();
+			=> new ModifyContext(this);
 		
 		public virtual async Task<TKey> CreateAsync(TEditable obj)
 		{

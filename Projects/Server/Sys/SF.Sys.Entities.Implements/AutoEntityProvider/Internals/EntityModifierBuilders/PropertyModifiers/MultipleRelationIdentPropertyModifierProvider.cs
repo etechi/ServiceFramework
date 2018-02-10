@@ -30,9 +30,9 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 	public class MultipleRelationIdentPropertyModifierProvider : IEntityPropertyModifierProvider
 	{
 		IEntityModifierCache EntityModifierCache { get; }
-		class EmptyEntity {
-			public static EmptyEntity Instance { get; } = new EmptyEntity();
-		}
+		//class EmptyEntity {
+		//	public static EmptyEntity Instance { get; } = new EmptyEntity();
+		//}
 
 		public MultipleRelationIdentPropertyModifierProvider(IEntityModifierCache EntityModifierCache)
 		{
@@ -44,7 +44,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 			where TModel:class
 			where TParentKey:IEquatable<TParentKey>
 		{
-			Lazy<(IEntityModifier<EmptyEntity, TChildModel>, IEntityModifier<EmptyEntity, TChildModel>, IEntityModifier<EmptyEntity, TChildModel>)> LazyModifiers { get; }
+			Lazy<(IEntityModifier<TChildEntityIdent, TChildModel>, IEntityModifier<TChildEntityIdent, TChildModel>, IEntityModifier<TChildEntityIdent, TChildModel>)> LazyModifiers { get; }
 			PropertyInfo ForeignKeyProperty { get; }
 			Action<TChildModel,TParentKey> FuncSetParentKey { get; }
 			Func<TChildModel,TChildEntityIdent,bool> FuncChildEqual { get; }
@@ -64,12 +64,12 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 				this.FuncSetParentKey = FuncSetParentKey;
 				this.ForeignKeyProperty = ForeignKeyProperty;
 				this.FuncSetItemOrder = FuncSetItemOrder;
-				LazyModifiers = new Lazy<(IEntityModifier<EmptyEntity, TChildModel>, IEntityModifier<EmptyEntity, TChildModel>, IEntityModifier<EmptyEntity, TChildModel>)>(
+				LazyModifiers = new Lazy<(IEntityModifier<TChildEntityIdent, TChildModel>, IEntityModifier<TChildEntityIdent, TChildModel>, IEntityModifier<TChildEntityIdent, TChildModel>)>(
 					() =>
 					(
-					EntityModifierCache.GetEntityModifier<EmptyEntity, TChildModel>(DataActionType.Create),
-					EntityModifierCache.GetEntityModifier<EmptyEntity, TChildModel>(DataActionType.Update),
-					EntityModifierCache.GetEntityModifier<EmptyEntity, TChildModel>(DataActionType.Delete)
+					EntityModifierCache.GetEntityModifier<TChildEntityIdent, TChildModel>(DataActionType.Create),
+					EntityModifierCache.GetEntityModifier<TChildEntityIdent, TChildModel>(DataActionType.Update),
+					EntityModifierCache.GetEntityModifier<TChildEntityIdent, TChildModel>(DataActionType.Delete)
 					)
 					);
 			}
@@ -101,41 +101,88 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					)
 					).ToArrayAsync();
 
-				var newItems = Value.Select((v, i) => (v, i)).ToArray();		
-				await set.MergeAsync(
-					orgItems,
-					newItems,
-					(d,e)=>FuncChildEqual(d,e.v),
-					async e =>
-					{
-						var ctx = new EntityModifyContext<EmptyEntity, TChildModel>();
-						ctx.InitCreate(ctx.DataContext, EmptyEntity.Instance, null);
-						await create.Execute(Manager, ctx);
-						FuncSetItemKey(ctx.Model, e.v);
-						FuncSetParentKey(ctx.Model, parentKey);
-						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
-						return ctx.Model;
-					},
-					async (d, e) =>
-					{
-						var ctx = new EntityModifyContext<EmptyEntity, TChildModel>();
-						ctx.InitUpdate(ctx.DataContext,d, EmptyEntity.Instance, null);
-						FuncSetItemKey(ctx.Model, e.v);
-						FuncSetItemOrder?.Invoke(ctx.Model, e.i);
-						await update.Execute(Manager, ctx);
-					},
-					async d =>
-					{
-						var ctx = new EntityModifyContext<EmptyEntity, TChildModel>();
-						ctx.InitRemove(ctx.DataContext,d, null, null);
-						await remove.Execute(Manager, ctx);
-					}
-					);
-				return OrgValue;
+				var merger = new Merger
+				{
+					Modifier = this,
+					ModifyContext = Context,
+					ServiceContext = Manager,
+					ParentKey = parentKey,
+					ChildModels=orgItems,
+					ChildEditables = Value,
+
+				};
+				var handler = Context.ModifyHandlerProvider?.FindMergeHandler<TChildEntityIdent, TChildModel>();
+				if (handler == null)
+					return await merger.Merge(null);
+				else
+					return await handler.Merge(merger);
 			}
 			public IEntityPropertyModifier Merge(IEntityPropertyModifier LowPriorityModifier) => this;
-		}
+		
+			public class Merger : IEntityChildMerger<TChildEntityIdent, TChildModel>
+			{
+				public EntityPropertyModifier<TParentKey, TEntity, TModel, TChildEntityIdent, TChildModel> Modifier { get; set; }
+				public IEntityServiceContext ServiceContext { get; set; }
+				public IEntityModifyContext ModifyContext { get; set; }
+				public TParentKey ParentKey { get; set; }
+				public IEnumerable<TChildModel> ChildModels { get; set; }
+				public IEnumerable<TChildEntityIdent> ChildEditables { get; set; }
 
+				public async Task<ICollection<TChildModel>> Merge(
+					Func<IEntityModifyContext<TChildEntityIdent, TChildModel>,ModifyAction,Task> ModifyHandler
+				)
+				{
+					var newItems = ChildEditables?.Select((v, i) => (v, i))?.ToArray() ?? Array.Empty<(TChildEntityIdent v, int i)>();
+					var set = ModifyContext.DataContext.Set<TChildModel>();
+					var (create, update, remove) = Modifier.LazyModifiers.Value;
+
+					var OrgValue=await set.MergeAsync(
+						ChildModels,
+						newItems,
+						(d, e) => Modifier.FuncChildEqual(d, e.v),
+						async e =>
+						{
+							var ctx = ModifyContext.CreateChildModifyContext<TChildEntityIdent, TChildModel>();
+							ctx.InitCreate(ctx.DataContext, default(TChildEntityIdent), null);
+
+							if (ModifyHandler != null)
+								await ModifyHandler(ctx, ModifyAction.Create);
+
+							await create.Execute(ServiceContext, ctx);
+							if (ModifyHandler != null)
+								await ModifyHandler(ctx, ModifyAction.Update);
+	
+							Modifier.FuncSetItemKey(ctx.Model, e.v);
+							Modifier.FuncSetParentKey(ctx.Model, ParentKey);
+							Modifier.FuncSetItemOrder?.Invoke(ctx.Model, e.i);
+							return ctx.Model;
+						},
+						async (d, e) =>
+						{
+							var ctx = ModifyContext.CreateChildModifyContext<TChildEntityIdent, TChildModel>();
+							ctx.InitUpdate(ctx.DataContext, d, default(TChildEntityIdent), null);
+
+							if (ModifyHandler != null)
+								await ModifyHandler(ctx, ModifyAction.Update);
+	
+							Modifier.FuncSetItemKey(ctx.Model, e.v);
+							Modifier.FuncSetItemOrder?.Invoke(ctx.Model, e.i);
+							await update.Execute(ServiceContext, ctx);
+						},
+						async d =>
+						{
+							var ctx = ModifyContext.CreateChildModifyContext<TChildEntityIdent, TChildModel>();
+							ctx.InitRemove(ctx.DataContext, d, default(TChildEntityIdent), null);
+							if (ModifyHandler != null)
+								await ModifyHandler(ctx, ModifyAction.Delete);
+							await remove.Execute(ServiceContext, ctx);
+						}
+						);
+					return OrgValue;
+				}
+			}
+		}
+	
 		static string Desc(PropertyInfo EntityProperty, PropertyInfo DataModelProperty)
 			=> $"一对多关系ID修改支持{EntityProperty.DeclaringType.FullName}.{EntityProperty.Name}=>{DataModelProperty.DeclaringType.FullName}.{DataModelProperty.Name}";
 

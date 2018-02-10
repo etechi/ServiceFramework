@@ -24,28 +24,63 @@ using SF.Sys.Auth.Permissions;
 using SF.Sys.Linq;
 using SF.Sys.Events;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace SF.Sys.Entities
 {
-	public class EntityModifyContext< TModel> : IEntityModifyContext<TModel>
+	public abstract class EntityModifyContext< TModel> : IEntityModifyContext<TModel>
 			   where TModel : class
 	{
-		
 		public TModel Model { get; set; }
 		public ModifyAction Action { get; set; }
 		public object OwnerId { get; set; }
 		public object UserData { get; set; }
 		public object ExtraArgument { get; set; }
 		public IDataContext DataContext { get; set; }
+		public abstract IEntityModifyHandlerProvider ModifyHandlerProvider { get; }
+
+		public abstract IEntityModifyContext<TEditale, TModel1> CreateChildModifyContext<TEditale, TModel1>() where TModel1 : class;
 	}
 
-	public class EntityModifyContext<TEditable, TModel> :
+	public abstract class EntityModifyContext<TEditable, TModel> :
 		EntityModifyContext<TModel>,
 		IEntityModifyContext<TEditable, TModel>
 		where TModel : class
 	{
-
 		public TEditable Editable { get; set; }
+
+	}
+	public abstract class RootEntityModifyContext<TEditable, TModel> :
+		EntityModifyContext<TEditable, TModel>
+		where TModel : class
+	{
+		IEntityModifyHandlerProvider HandlerProvider { get; }
+		public override IEntityModifyHandlerProvider ModifyHandlerProvider => HandlerProvider;
+		public RootEntityModifyContext(IEntityModifyHandlerProvider ModifyHandlerProvider)
+		{
+			this.HandlerProvider = ModifyHandlerProvider;
+		}
+		public override IEntityModifyContext<TChildEditable, TChildModel> CreateChildModifyContext<TChildEditable, TChildModel>()
+		{
+			return new ChildEntityModifyContext<TChildEditable, TChildModel>(ModifyHandlerProvider);
+		}
+	}
+	public class ChildEntityModifyContext<TEditable, TModel> :
+		EntityModifyContext<TEditable, TModel>
+		where TModel : class
+	{
+		IEntityModifyHandlerProvider HandlerProvider { get; }
+		public override IEntityModifyHandlerProvider ModifyHandlerProvider => HandlerProvider;
+
+		public ChildEntityModifyContext(IEntityModifyHandlerProvider HandlerProvider)
+		{
+			this.HandlerProvider = HandlerProvider;
+		}
+		public override IEntityModifyContext<TChildEditale, TChildModel> CreateChildModifyContext<TChildEditale, TChildModel>() 
+		{
+			return new ChildEntityModifyContext<TChildEditale, TChildModel>(ModifyHandlerProvider);
+
+		}
 	}
 
 	public interface IEntityModifySyncQueue<TEditable>
@@ -657,27 +692,27 @@ namespace SF.Sys.Entities
 				UseLightContext?DataContextFlag.LightMode:DataContextFlag.None
 				);
 		}
-		public static async Task<TKey> CreateAsync<TKey, TEditable,TModel>(
-			this IEntityServiceContext ServiceContext,
-			TEditable Entity,
-			Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel,
-			Func<IEntityModifyContext<TEditable, TModel>, Task> InitModel,
-			object ExtraArgument=null,
-			bool UseLightContext=false
-			) 
-			where TModel:class,new()
-		{
-			var ctx =new EntityModifyContext<TEditable, TModel>();
-			return await InternalCreateAsync<TKey, TEditable,TModel,IEntityModifyContext<TEditable, TModel>>(
-				ServiceContext, 
-				ctx,
-				Entity,
-				UpdateModel, 
-				InitModel,
-				ExtraArgument,
-				UseLightContext
-				);
-		}
+		//public static async Task<TKey> CreateAsync<TKey, TEditable,TModel>(
+		//	this IEntityServiceContext ServiceContext,
+		//	TEditable Entity,
+		//	Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel,
+		//	Func<IEntityModifyContext<TEditable, TModel>, Task> InitModel,
+		//	object ExtraArgument=null,
+		//	bool UseLightContext=false
+		//	) 
+		//	where TModel:class,new()
+		//{
+		//	var ctx =new EntityModifyContext<TEditable, TModel>();
+		//	return await InternalCreateAsync<TKey, TEditable,TModel,IEntityModifyContext<TEditable, TModel>>(
+		//		ServiceContext, 
+		//		ctx,
+		//		Entity,
+		//		UpdateModel, 
+		//		InitModel,
+		//		ExtraArgument,
+		//		UseLightContext
+		//		);
+		//}
 
 		#endregion
 
@@ -764,29 +799,29 @@ namespace SF.Sys.Entities
 				AutoSaveChange?DataContextFlag.None:DataContextFlag.LightMode
 				);
 		}
-		public static async Task<TKey> CreateOrUpdateAsync<TKey, TEditable, TModel>(
-			this IEntityServiceContext ServiceContext,
-			TEditable Entity,
-			Expression<Func<TModel, bool>> Selector,
-			Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel,
-			Func<IEntityModifyContext<TEditable, TModel>, Task> InitModel,
-			object ExtraArgument = null,
-			bool EnableAutoModifier = false
-			)
-			where TModel : class, new()
-		{
-			var ctx = new EntityModifyContext<TEditable, TModel>();
-			return await InternalCreateOrUpdateAsync<TKey, TEditable, TModel, IEntityModifyContext<TEditable, TModel>>(
-				ServiceContext,
-				ctx,
-				Entity,
-				Selector,
-				UpdateModel,
-				InitModel,
-				ExtraArgument,
-				EnableAutoModifier
-				);
-		}
+		//public static async Task<TKey> CreateOrUpdateAsync<TKey, TEditable, TModel>(
+		//	this IEntityServiceContext ServiceContext,
+		//	TEditable Entity,
+		//	Expression<Func<TModel, bool>> Selector,
+		//	Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel,
+		//	Func<IEntityModifyContext<TEditable, TModel>, Task> InitModel,
+		//	object ExtraArgument = null,
+		//	bool EnableAutoModifier = false
+		//	)
+		//	where TModel : class, new()
+		//{
+		//	var ctx = new EntityModifyContext<TEditable, TModel>();
+		//	return await InternalCreateOrUpdateAsync<TKey, TEditable, TModel, IEntityModifyContext<TEditable, TModel>>(
+		//		ServiceContext,
+		//		ctx,
+		//		Entity,
+		//		Selector,
+		//		UpdateModel,
+		//		InitModel,
+		//		ExtraArgument,
+		//		EnableAutoModifier
+		//		);
+		//}
 
 		#endregion
 		#region Update
@@ -829,17 +864,17 @@ namespace SF.Sys.Entities
 					return true;
 				});
 		}
-		public static async Task<bool> UpdateAsync<TKey, TEditable,TModel>(
-			this IEntityServiceContext ServiceContext,
-			TEditable Entity,
-			Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel=null,
-			Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
-			)
-			where TModel : class
-		{
-			var ctx = new EntityModifyContext<TEditable, TModel>();
-			return await InternalUpdateAsync(ServiceContext, ctx, Entity, UpdateModel, LoadModelForEdit);
-		}
+		//public static async Task<bool> UpdateAsync<TKey, TEditable,TModel>(
+		//	this IEntityServiceContext ServiceContext,
+		//	TEditable Entity,
+		//	Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel=null,
+		//	Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+		//	)
+		//	where TModel : class
+		//{
+		//	var ctx = new EntityModifyContext<TEditable, TModel>();
+		//	return await InternalUpdateAsync(ServiceContext, ctx, Entity, UpdateModel, LoadModelForEdit);
+		//}
 
 		#endregion
 
@@ -879,23 +914,23 @@ namespace SF.Sys.Entities
 					return true;
 				});
 		}
-		public static async Task<bool> RemoveAsync<TKey, TEditable, TModel>(
-			this IEntityServiceContext ServiceContext,
-			TKey Id,
-			Func<IEntityModifyContext<TEditable, TModel>, Task> RemoveModel=null,
-			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
-			)
-			where TModel : class
-		{
-			var ctx =(IEntityModifyContext < TEditable, TModel >) new EntityModifyContext<TEditable, TModel>();
-			return await InternalRemoveAsync<TKey,TEditable, TModel, IEntityModifyContext<TEditable, TModel>>(
-				ServiceContext, 
-				ctx, 
-				Id, 
-				RemoveModel, 
-				LoadModelForEdit
-				);
-		}
+		//public static async Task<bool> RemoveAsync<TKey, TEditable, TModel>(
+		//	this IEntityServiceContext ServiceContext,
+		//	TKey Id,
+		//	Func<IEntityModifyContext<TEditable, TModel>, Task> RemoveModel=null,
+		//	Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+		//	)
+		//	where TModel : class
+		//{
+		//	var ctx =(IEntityModifyContext < TEditable, TModel >) new EntityModifyContext<TEditable, TModel>();
+		//	return await InternalRemoveAsync<TKey,TEditable, TModel, IEntityModifyContext<TEditable, TModel>>(
+		//		ServiceContext, 
+		//		ctx, 
+		//		Id, 
+		//		RemoveModel, 
+		//		LoadModelForEdit
+		//		);
+		//}
 		public static async Task RemoveAllAsync<TKey,TEditable,TModel>(
 			this IEntityServiceContext ServiceContext,
 			Func<TKey, Task> Remove,

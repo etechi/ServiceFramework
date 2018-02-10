@@ -19,6 +19,9 @@ using SF.Sys.Services;
 using SF.Sys.Entities.AutoEntityProvider;
 using SF.Sys.Events;
 using SF.Sys.Clients;
+using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace SF.Sys.Entities
 {
@@ -28,6 +31,27 @@ namespace SF.Sys.Entities
 		Update,
 		Delete
 	}
+	
+	public interface IEntityChildMerger<TChildEditable, TChildModel> where TChildModel : class
+	{
+		IEntityServiceContext ServiceContext { get; }
+		IEntityModifyContext ModifyContext { get; }
+		IEnumerable<TChildModel> ChildModels { get; }
+		IEnumerable<TChildEditable> ChildEditables { get; }
+			
+		Task<ICollection<TChildModel>> Merge(
+			Func<IEntityModifyContext<TChildEditable, TChildModel>,ModifyAction,Task> Handler
+			);
+	}
+	public interface IEntityChildMergeHandler<TChildEditable, TChildModel> where TChildModel : class
+	{
+		Task<ICollection<TChildModel>> Merge(
+			IEntityChildMerger<TChildEditable, TChildModel> Merger
+			);
+	}
+	public interface IEntityModifyHandlerProvider {
+		IEntityChildMergeHandler<TEditable, TModel> FindMergeHandler<TEditable, TModel>() where TModel : class;
+	}
 	public interface IEntityModifyContext
 	{
 		IDataContext DataContext { get; set; }
@@ -35,6 +59,9 @@ namespace SF.Sys.Entities
 		object OwnerId { get; set; }
 		object UserData { get; set; }
 		object ExtraArgument { get; set; }
+
+		IEntityModifyHandlerProvider ModifyHandlerProvider { get; }
+		IEntityModifyContext<TEditale, TModel> CreateChildModifyContext<TEditale, TModel>() where TModel:class;
 	}
 	public interface IEntityModifyContext<TModel>:
 		IEntityModifyContext
