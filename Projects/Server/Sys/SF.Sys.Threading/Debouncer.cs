@@ -54,7 +54,7 @@ namespace SF.Sys.Threading
 					if (newItem)
 					{
 						item.StartTime = now;
-						item.DeadLine = now.AddSeconds(MaxDelay);
+						item.DeadLine = now.AddMilliseconds(MaxDelay);
 					}
 					else
 					{
@@ -70,11 +70,11 @@ namespace SF.Sys.Threading
 						}
 
 						//检查是否延时
-						var deadLine = item.StartTime.AddSeconds(MaxDelay);
+						var deadLine = item.StartTime.AddMilliseconds(MaxDelay);
 						if (deadLine < item.DeadLine) item.DeadLine = deadLine;
 					}
 
-					var execTime = now.AddSeconds(MinDelay);
+					var execTime = now.AddMilliseconds(MinDelay);
 					item.ExecTime = execTime > item.DeadLine ? item.DeadLine : execTime;
 					item.Callback = Callback;
 				}

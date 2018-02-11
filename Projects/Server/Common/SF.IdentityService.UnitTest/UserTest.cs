@@ -52,7 +52,7 @@ namespace SF.IdentityService.UnitTest
 				var re = await svc.UserCreate();
 				await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
 				{
-					await svc.UserCreate(null,re.account);
+					await svc.UserCreate(null,re.Account);
 				});
 				return 0;
 			}
@@ -65,7 +65,7 @@ namespace SF.IdentityService.UnitTest
 			await NewServiceScope().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
-				var uid2 = await svc.UserSignin(re.account, re.password, returnToken: true);
+				var uid2 = await svc.UserSignin(re.Account, re.Password, returnToken: true);
 				Assert.AreEqual(re.User.Id, uid2);
 				return 0;
 			});
@@ -76,7 +76,7 @@ namespace SF.IdentityService.UnitTest
 			await NewServiceScope().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
-				var uid2 = await svc.UserSignin(re.account, re.password, returnToken: false);
+				var uid2 = await svc.UserSignin(re.Account, re.Password, returnToken: false);
 				Assert.AreEqual(re.User.Id, uid2);
 				return 0;
 			});
@@ -89,7 +89,7 @@ namespace SF.IdentityService.UnitTest
 				var re = await svc.UserCreate();
 					await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
 					{
-						await svc.UserSignin(re.account, re.password + "123");
+						await svc.UserSignin(re.Account, re.Password + "123");
 					});
 					return 0;
 				});
@@ -104,18 +104,18 @@ namespace SF.IdentityService.UnitTest
 					.Use(async (sp) =>
 					{
 						var re = await sp.UserCreate(ReturnToken: false);
-						var newPassword = re.password + "123";
+						var newPassword = re.Password + "123";
 						var svc = sp.Resolve<IUserService>();
 						await svc.SetPassword(
 								new SetPasswordArgument
 								{
 									NewPassword = newPassword,
-									OldPassword = re.password,
+									OldPassword = re.Password,
 									ClientId= "app.android"
 								});
 						await svc.Signout();
 						Assert.IsFalse((await svc.GetCurUserId()).HasValue);
-						return (user:re.User, account: re.account, password: re.password, newPassword: newPassword);
+						return (user:re.User, account: re.Account, password: re.Password, newPassword: newPassword);
 					});
 				await osp
 					.AsScope().NewServiceScope()

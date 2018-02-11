@@ -11,6 +11,12 @@ using SF.Sys;
 
 namespace SF.IdentityService.UnitTest
 {
+	public class UserInfo
+	{
+		public User User { get; set; }
+		public string Account { get; set; }
+		public string Password { get; set; }
+	}
 	public static class UserTestExtensions
 	{
 		//public static async Task<T> UserTest<T>(this IServiceProvider sp,Func<IUserService, Task<T>> Action)
@@ -84,7 +90,7 @@ namespace SF.IdentityService.UnitTest
 			return Value;
 		}
 
-		public static async Task<(User User, string account, string password)> UserCreate(
+		public static async Task<UserInfo> UserCreate(
 			this IServiceProvider sp,
 			string prefix=null,
 			string account = null,
@@ -157,7 +163,7 @@ namespace SF.IdentityService.UnitTest
 
 			var uid2 = await sp.UserSignin(account, password);
 			Assert.AreEqual(User.Id, uid2);
-			return (User, account,password);
+			return new UserInfo { User = User, Account = account, Password = password };
 		}
 
 		public static async Task<T> WithNewUser<T>(this IServiceProvider sp,Func<User,Task<T>> Callback)
@@ -165,7 +171,7 @@ namespace SF.IdentityService.UnitTest
 			var user=await sp.UserCreate();
 			return await Callback(user.User);
 		}
-		public static IScope<(User User,string Account,string Password)> WithNewSigninedUser(this IScope<IServiceProvider> scope,string prefix=null)
+		public static IScope<UserInfo> WithNewSigninedUser(this IScope<IServiceProvider> scope,string prefix=null)
 		{
 			return from sp in scope
 				   from re in UserCreate(sp, prefix)
