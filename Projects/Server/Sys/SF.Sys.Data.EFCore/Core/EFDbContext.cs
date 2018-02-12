@@ -114,25 +114,31 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		//			select type.FullName + ":" + ctn
 		//			).Join(";");
 		//}
-		//string FormatDbUpdateConcurrencyException(System.Data.Entity.Infrastructure.DbUpdateConcurrencyException e)
-		//{
-		//	var ie = e.InnerException as System.Data.Entity.Core.OptimisticConcurrencyException;
-		//	if(ie!=null)
-		//		return (from ee in ie.StateEntries
-		//				let type = ee.Entity.GetType()
-		//				let id=ee.EntityKey.EntityKeyValues.Select(kv=>kv.Key+"="+kv.Value).Join(",")
-		//				let ctn = ee.Entity.ToString()
-		//				select type.FullName + ":" +id+":"+ ctn
-		//			).Join(";");
+		string FormatDbUpdateConcurrencyException(Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException e)
+		{
+			//var ie = e.InnerException as System.Data.Entity.Core.OptimisticConcurrencyException;
+			//if (ie != null)
+			//	return (from ee in ie.StateEntries
+			//			let type = ee.Entity.GetType()
+			//			let id = ee.EntityKey.EntityKeyValues.Select(kv => kv.Key + "=" + kv.Value).Join(",")
+			//			let ctn = ee.Entity.ToString()
+			//			select type.FullName + ":" + id + ":" + ctn
+			//		).Join(";");
 
-		//	return (from ee in e.Entries
-		//			let type = ee.Entity.GetType()
-		//			let ctn = ee.Entity.ToString()
-		//			select type.FullName + ":" + ctn
-		//			).Join(";");
-		//}
+			return (from ee in e.Entries
+					let type = ee.Entity.GetType()
+					let ctn = ee.Entity.ToString()
+					select type.FullName + ":" + ctn
+					).Join(";");
+		}
 		Exception MapException(System.Exception e)
 		{
+			if(e is Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException uce)
+			{
+				return new DbUpdateConcurrencyException(
+					"数据并发更新错误：" + FormatDbUpdateConcurrencyException(uce),
+					uce);
+			}
 			//var ve = e as DbEntityValidationException;
 			//if(ve!=null)
 			//	return new DbValidateException(

@@ -28,7 +28,7 @@ namespace SF.Sys.Events
 				{
 					if (f[0] == '+')
 						continue;
-					else if (f[0] == '*')
+					else if (f[0] == '#')
 						return true;
 				}
 

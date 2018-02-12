@@ -1,8 +1,10 @@
 ﻿using SF.Net;
 using SF.Net.Mqtt.Clients;
+using SF.Net.Mqtt.Core;
 using SF.Sys;
 using SF.Sys.HttpClients;
 using SF.Sys.Linq;
+using SF.Sys.Logging;
 using SF.Sys.Services;
 using SF.Sys.TimeServices;
 using System;
@@ -26,7 +28,41 @@ namespace SF.Externals.Aliyun.Implements
 				return Convert.ToBase64String(myhmacsha1.ComputeHash(stream));
 			}
 		}
-		public static SF.Net.Mqtt.Clients.Client Create(AliyunMQMqttClientSetting Setting)
+		class MqttLogger : Net.Mqtt.Core.ILogger
+		{
+			public SF.Sys.Logging.ILogger Logger { get; set; }
+
+			public void Write(Net.Mqtt.Core.LogLevel Level, PacketDirect Direct, IPacket Packet, string Message, Exception Exception)
+			{
+				if (Exception == null)
+					Logger.Trace(
+						"MQ {0} {1} {2} {3}",
+						(Level == Net.Mqtt.Core.LogLevel.Error ? "E" :
+						Level == Net.Mqtt.Core.LogLevel.Info ? "I" :
+						"T"),
+						Direct == PacketDirect.Inbound ? "<" :
+						Direct == PacketDirect.Undefined ? "!" : ">",
+						Packet,
+						Message
+						);
+				else
+					Logger.Error(
+						Exception,
+						"MQ {0} {1} {2} {3}",
+						(Level == Net.Mqtt.Core.LogLevel.Error ? "E" :
+						Level == Net.Mqtt.Core.LogLevel.Info ? "I" :
+						"T"),
+						Direct == PacketDirect.Inbound ? "<" :
+						Direct == PacketDirect.Undefined ? "!" : ">",
+						Packet,
+						Message
+						);
+			}
+		}
+		public static SF.Net.Mqtt.Clients.Client Create(
+			AliyunMQMqttClientSetting Setting,
+			SF.Sys.Logging.ILogger Logger
+			)
 		{
 			var timestamp = ((int)DateTime.Now.TimeOfDay.TotalSeconds).ToString();
 
@@ -36,7 +72,7 @@ namespace SF.Externals.Aliyun.Implements
 
 
 			var cc = new SF.Net.Mqtt.Clients.Client();
-			//cc.Logger = new Logger("MQ ");
+			cc.Logger = new MqttLogger { Logger = Logger };
 			cc.Connector = Net.Connector.For(Setting.MqttServerEndPoint)
 				.Tcp(new Net.Sockets.SocketSetting
 					{

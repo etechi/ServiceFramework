@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using SF.Sys.Threading;
 using SF.Sys.Settings;
+using SF.Sys.Logging;
 
 namespace SF.Sys.Services
 {
@@ -53,6 +54,8 @@ namespace SF.Sys.Services
 				Arg.Init,
 				async (sp, state, ct) =>
 				{
+					var logger = sp.Resolve<ILogService>().GetLogger("阿里云MQMqtt客户端");
+					logger.Info("开始启动");
 					while (!ct.IsCancellationRequested)
 					{
 						using (var ict = new System.Threading.CancellationTokenSource())
@@ -63,16 +66,24 @@ namespace SF.Sys.Services
 								using (scts.OnSettingChanged<TSetting>(
 									isp =>
 									{
+										logger.Info("由于配置变动，服务重新启动");
 										ict.Cancel();
 										return Task.CompletedTask;
 									}))
 								{
 
 									var cliSetting = sp.Resolve<ISettingService<TSetting>>().Value;
-									using (var cli = MQMqttClient.Create(cliSetting))
+									using (var cli = MQMqttClient.Create(
+										cliSetting,
+										logger
+										))
 									{
-										await Arg.OnClientCreated(sp, cli,cliSetting);
+										
+										await Arg.OnClientCreated(sp, cli, cliSetting);
 										cli.Start();
+
+										logger.Info("启动结束");
+
 										await ict.Token.WaitAsync();
 									}
 								}
