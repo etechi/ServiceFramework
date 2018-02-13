@@ -18,6 +18,7 @@ namespace SF.Common.UserGroups.Models
 		/// <summary>
 		/// 成员图标
 		/// </summary>
+		[Image]
 		public string Icon { get; set; }
 
 		/// <summary>
