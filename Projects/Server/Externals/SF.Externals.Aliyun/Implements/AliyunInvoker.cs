@@ -53,7 +53,7 @@ namespace SF.Externals.Aliyun.Implements
 			args.Add(("SignatureVersion", Uri.EscapeDataString("1.0")));
 			args.Add(("SignatureNonce", Strings.NumberAndLowerUpperChars.Random(6)));
 
-			args.Sort((a, b) => a.Key.CompareTo(b.Key));
+			args.Sort((a, b) =>String.CompareOrdinal(a.Key, b.Key));
 			var content = args.Select(p => p.Key + "=" + p.Value).Join("&");
 
 			var StringToSign =
@@ -84,7 +84,12 @@ namespace SF.Externals.Aliyun.Implements
 				return re;
 
 			var err = Json.Parse<ErrorInfo>(re);
-			throw new AliyunException(err.Code, err.Message, err.RequestId, err.HostId);
+			throw new AliyunException(
+				err.Code, 
+				err.Message+(err.Code== "SignatureDoesNotMatch"?"本地签名字符串:"+ StringToSign : ""), 
+				err.RequestId, 
+				err.HostId
+				);
 		}
 	}
 }
