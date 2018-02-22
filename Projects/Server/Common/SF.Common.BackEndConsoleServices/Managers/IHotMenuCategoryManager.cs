@@ -14,18 +14,29 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
-using System.Collections.Generic;
+using SF.Sys.Entities;
+using SF.Sys.NetworkService;
+using System.Threading.Tasks;
 
-namespace SF.Sys.MenuServices.Models
+namespace SF.Sys.BackEndConsole.Managers
 {
-
-	public class MenuEditable : Menu
-    {
+	public class HotMenuCategoryQueryArgument : Entities.QueryArgument<ObjectKey<long>>
+	{
 		/// <summary>
-		/// 菜单项
+		/// 名称
 		/// </summary>
-		[TreeNodes]
-		public IEnumerable<MenuItem> Items { get; set; }
+		public string Name { get; set; }
 	}
+	/// <summary>
+	/// 常用菜单分类管理
+	/// </summary>
+	[NetworkService]
+	[EntityManager]
+	public interface IHotMenuCategoryManager:
+		Entities.IEntitySource<ObjectKey<long>, Models.HotMenuCategory, HotMenuCategoryQueryArgument>,
+		Entities.IEntityManager<ObjectKey<long>, Models.HotMenuCategory>
+	{
+	}
+
 }
 

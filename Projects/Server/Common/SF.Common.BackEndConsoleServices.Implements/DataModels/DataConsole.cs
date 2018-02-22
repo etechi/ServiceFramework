@@ -13,12 +13,31 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-namespace SF.Sys.MenuServices
+using SF.Sys.Entities.DataModels;
+using SF.Sys.Data;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SF.Sys.BackEndConsole.Entity.DataModels
 {
-	public interface IDefaultMenuCollection
+	[Table("Console")]
+	public class DataConsole : DataObjectEntityBase
 	{
-		void AddMenuItems(string MenuIdent,string Path,MenuItem[] Items);
-		string[] MenuIdents { get; }
-		MenuItem[] GetMenuItems(string MenuIdent);
+		[Index("ident", Order = 2)]
+		[Required]
+		[MaxLength(100)]
+		public string Ident { get; set; }
+		
+		/// <summary>
+		/// 页面列表
+		/// </summary>
+		public string Pages { get; set; }
+
+		/// <summary>
+		/// 菜单列表
+		/// </summary>
+		public string Menus { get; set; }
 	}
 }
+

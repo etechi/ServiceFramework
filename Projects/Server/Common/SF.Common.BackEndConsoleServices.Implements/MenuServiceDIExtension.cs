@@ -14,12 +14,12 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
-using SF.Sys.MenuServices;
+using SF.Sys.BackEndConsole;
 using System.Linq;
-using SF.Sys.MenuServices.Models;
+using SF.Sys.BackEndConsole.Models;
 using System;
 using System.Threading.Tasks;
-using SF.Sys.MenuServices.Entity;
+using SF.Sys.BackEndConsole.Entity;
 using SF.Sys.ADT;
 using SF.Sys.Services;
 using SF.Sys.Entities;
@@ -84,7 +84,6 @@ namespace SF.Sys.Services
 						else
 							throw new ArgumentException("菜单项缺少名称:"+Json.Stringify(it));
 					}
-					it.Title = it.Title ?? it.Name;
 				});
 
 			var menuService = sp.Resolve<IMenuService>();
@@ -99,9 +98,7 @@ namespace SF.Sys.Services
 			);
 		}
 		public static IServiceInstanceInitializer<IMenuService> NewMenuService(this IServiceInstanceManager manager)
-			=>manager.Service<IMenuService, 
-				EntityMenuService<SF.Sys.MenuServices.Entity.DataModels.DataMenu, SF.Sys.MenuServices.Entity.DataModels.MenuItem>
-				>(null)
+			=>manager.Service<IMenuService, EntityMenuService>(null)
 			.WithMenuItems(
 				"系统管理/菜单管理"
 				);
@@ -124,7 +121,6 @@ namespace SF.Sys.Services
 						else
 							throw new ArgumentException("菜单项缺少名称:" + Json.Stringify(it));
 					}
-					it.Title = it.Title ?? it.Name;
 				});
 
 			var menuService = sp.Resolve<IMenuService>();
@@ -138,20 +134,18 @@ namespace SF.Sys.Services
 				}
 			);
 		}
-		public static IServiceCollection AddMenuServices<TMenu, TMenuItem>(
+		public static IServiceCollection AddMenuServices(
 			this IServiceCollection sc,
 			//Func<MenuItem[]> DefaultMenu=null,
 			string TablePrefix = null
 			)
-			where TMenu : SF.Sys.MenuServices.Entity.DataModels.DataMenu<TMenu, TMenuItem>,new()
-			where TMenuItem: SF.Sys.MenuServices.Entity.DataModels.DataMenuItem<TMenu,TMenuItem>,new()
 		{
 			sc.AddSingleton<IDefaultMenuCollection, DefaultMenuCollection>();
-			sc.AddDataModules<TMenu,TMenuItem>(TablePrefix??"Sys");
+			sc.AddDataModules<BackEndConsole.Entity.DataModels.DataMenu>(TablePrefix??"Sys");
 			sc.EntityServices(
 				"SysMenu",
 				"系统菜单",
-				d => d.Add<IMenuService, SF.Sys.MenuServices.Entity.EntityMenuService<TMenu, TMenuItem>>("SysMenu","系统菜单")
+				d => d.Add<IMenuService, SF.Sys.BackEndConsole.Entity.EntityMenuService>("SysMenu","系统菜单")
 				);
 
 			sc.AddInitializer(
@@ -177,16 +171,7 @@ namespace SF.Sys.Services
 						});
 		}
 
-		public static IServiceCollection AddMenuService(
-			this IServiceCollection sc,
-			//Func<MenuItem[]> DefaultMenu = null,
-			string TablePrefix = null
-			)
-			=> AddMenuServices<
-				SF.Sys.MenuServices.Entity.DataModels.DataMenu, 
-				SF.Sys.MenuServices.Entity.DataModels.MenuItem
-				>(sc, /*DefaultMenu,*/TablePrefix);
-
+	
 		
 	}
 }

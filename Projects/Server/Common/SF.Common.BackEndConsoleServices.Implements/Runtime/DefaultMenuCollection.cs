@@ -18,7 +18,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-namespace SF.Sys.MenuServices
+namespace SF.Sys.BackEndConsole
 {
 	public class DefaultMenuCollection : IDefaultMenuCollection
 	{
@@ -42,7 +42,6 @@ namespace SF.Sys.MenuServices
 					{
 						ItemOrder=path.order,
 						Name = path.name,
-						Title = path.name,
 						Children = i
 					} });
 

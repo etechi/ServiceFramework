@@ -21,7 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
     <ProjectReference Include="..\SF.Sys.Events\SF.Sys.Events.csproj" />
-    <ProjectReference Include="..\SF.Sys.MenuServices\SF.Sys.MenuServices.csproj" />
+    <ProjectReference Include="..\SF.Sys.BackEndConsole\SF.Sys.BackEndConsole.csproj" />
     <ProjectReference Include="..\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
     <ProjectReference Include="..\SF.Sys.Services.Runtime\SF.Sys.Services.Runtime.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />

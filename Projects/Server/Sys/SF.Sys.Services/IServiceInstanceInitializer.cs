@@ -40,10 +40,27 @@ namespace SF.Sys.Services
 		public string Ident { get; set; }
 		public bool Enabled { get; set; }
 	}
+	/// <summary>
+	/// 服务实例初始化器
+	/// </summary>
 	public interface IServiceInstanceInitializer
 	{
+		/// <summary>
+		/// 服务配置
+		/// </summary>
 		ServiceInstanceConfig Config { get; }
+		/// <summary>
+		/// 添加初始化动作，在初始化时调用
+		/// </summary>
+		/// <param name="Action"></param>
 		void AddAction(Func<IServiceProvider, long, Task> Action);
+
+		/// <summary>
+		/// 初始化服务
+		/// </summary>
+		/// <param name="ServiceProvider"></param>
+		/// <param name="ParentId"></param>
+		/// <returns></returns>
 		Task<long> Ensure(IServiceProvider ServiceProvider, long? ParentId);
 	}
 	public interface IServiceInstanceInitializer<T> : IServiceInstanceInitializer

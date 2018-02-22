@@ -23,6 +23,7 @@ using SF.Sys.Entities;
 using SF.Sys.Events;
 using System.Threading.Tasks;
 using SF.Common.Notifications.Models;
+using System;
 
 namespace SF.Sys.Services
 {
@@ -65,7 +66,7 @@ namespace SF.Sys.Services
 					var re = await nspm.GetAsync(ObjectKey.From(Id));
 					return re;
 				},
-				(IEventSubscriber<EntityChanged<SF.Common.Notifications.DataModels.DataNotificationSendPolicy>> OnPolicyModified, IEntityCacheRemover<long> remover) =>
+				(IServiceProvider isp,IEventSubscriber < EntityChanged<SF.Common.Notifications.DataModels.DataNotificationSendPolicy>> OnPolicyModified, IEntityCacheRemover<long> remover) =>
 				{
 					OnPolicyModified.Wait(e =>
 					{

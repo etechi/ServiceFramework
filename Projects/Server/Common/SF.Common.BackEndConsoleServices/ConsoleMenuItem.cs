@@ -13,33 +13,30 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Entities.DataModels;
-using SF.Sys.Data;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Sys.MenuServices.Entity.DataModels
+namespace SF.Sys.BackEndConsole
 {
-	[Table("Menu")]
-	public class DataMenu<TMenu,TMenuItem> : DataObjectEntityBase
-		where TMenu : DataMenu<TMenu, TMenuItem>
-		where TMenuItem : DataMenuItem<TMenu, TMenuItem>
+	public class ConsoleMenuItem
 	{
-		[Index("ident",Order =1)]
-		public override long? ServiceDataScopeId { get; set; }
+		/// <summary>
+		/// 图标
+		/// </summary>
+		public string FontIcon { get; set; }
+		/// <summary>
+		/// 标题
+		/// </summary>
+		public string Title { get; set; }
+		/// <summary>
+		/// 链接
+		/// </summary>
+		public string Link { get; set; }
 
-		[Index("ident",Order =2)]
-		[Required]
-		[MaxLength(100)]
-		public string Ident { get; set; }
-
-
-		[InverseProperty(nameof(DataMenuItem<TMenu, TMenuItem>.Menu))]
-		public ICollection<TMenuItem> Items { get; set; }
+		/// <summary>
+		/// 子菜单
+		/// </summary>
+		public List<ConsoleMenuItem> Children { get; set; }
 	}
 
-	public class DataMenu : DataMenu<DataMenu, MenuItem>
-	{ }
 }
 

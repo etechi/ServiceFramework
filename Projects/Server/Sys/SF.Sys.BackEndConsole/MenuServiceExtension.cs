@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using SF.Sys.Services.Management;
 using SF.Sys.Entities;
-using SF.Sys.MenuServices;
+using SF.Sys.BackEndConsole;
 using SF.Sys.Comments;
 
 namespace SF.Sys.Services
@@ -41,7 +41,6 @@ namespace SF.Sys.Services
 				items.Add(new MenuItem
 				{
 					Name = type.Comment().Title,//svcTypeResolver.GetTypeIdent(type),
-					Title = type.Comment().Title,
 					Action = MenuActionType.EntityManager,
 					ActionArgument = entity.Ident,// svcTypeResolver.GetTypeIdent(type),
 					ServiceId = svc.Id
@@ -101,7 +100,9 @@ namespace SF.Sys.Services
 			string Path,
 			params MenuItem[] MenuItems
 			)
-		{	
+		{
+			sii.WithConsolePages(Path);
+
 			sii.AddAction(async (sp, sid) =>
 			{
 				var dmc=sp.Resolve<IDefaultMenuCollection>();

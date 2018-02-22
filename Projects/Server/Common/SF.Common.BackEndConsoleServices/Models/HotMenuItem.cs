@@ -15,78 +15,55 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Entities.Models;
 using SF.Sys.Annotations;
-using SF.Sys.Entities.Annotations;
-using SF.Sys.Services.Management.Models;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-namespace SF.Sys.MenuServices
+using SF.Sys.Auth;
+
+namespace SF.Sys.BackEndConsole.Models
 {
 	/// <summary>
-	/// 菜单项动作
+	/// 常用菜单
 	/// </summary>
-	public enum MenuActionType
+	[EntityObject]
+	public class HotMenuItem : ObjectEntityBase<long>
 	{
 		/// <summary>
-		/// 无
+		/// 所有人
 		/// </summary>
-		None,
-		/// <summary>
-		/// 实体管理
-		/// </summary>
-		EntityManager,
-		/// <summary>
-		/// 显示表单
-		/// </summary>
-		Form,
-		/// <summary>
-		/// 显示列表
-		/// </summary>
-		List,
-		/// <summary>
-		/// 显示内嵌网页
-		/// </summary>
-		IFrame,
-		/// <summary>
-		/// 打开链接
-		/// </summary>
-		Link
-	}
-
-	public class MenuItem : UIObjectEntityBase<long>
-	{
+		[EntityIdent(typeof(User),nameof(OwnerName))]
+		public long? OwnerId { get; set; }
 
 		/// <summary>
-		/// 字体图标
+		/// 所有人
+		/// </summary>
+		[TableVisible]
+		[Ignore]
+		public string OwnerName { get; set; }
+
+		/// <summary>
+		/// 分类
+		/// </summary>
+		[EntityIdent(typeof(HotMenuCategory),nameof(CategoryName))]
+		public long CategoryId { get; set; }
+		/// <summary>
+		/// 分类
+		/// </summary>
+		[Ignore]
+		[TableVisible]
+		public string CategoryName { get; set; }
+
+		/// <summary>
+		/// 图标类
 		/// </summary>
 		[MaxLength(100)]
-		public virtual string FontIcon { get; set; }
+		public string FontIcon { get; set; }
 
 		/// <summary>
-		/// 动作
+		/// 链接
 		/// </summary>
-		public MenuActionType Action { get; set; }
+		[Required]
+		public string Link { get; set; }
 
-		/// <summary>
-		/// 动作参数
-		/// </summary>
-		public string ActionArgument { get; set; }
-
-		/// <summary>
-		/// 服务
-		/// </summary>
-		[EntityIdent(typeof(ServiceInstance))]
-		public long? ServiceId { get; set; }
-
-		/// <summary>
-		/// 子菜单
-		/// </summary>
-		[TreeNodes]
-		public IEnumerable<MenuItem> Children { get; set; }
-
-		[Ignore]
-		public long? ParentId { get; set; }
-
-		[Ignore]
-		public int ItemOrder { get; set; }
 	}
+
 }
+

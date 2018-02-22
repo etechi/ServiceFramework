@@ -45,21 +45,21 @@ namespace SF.Sys.Services
 			sc.AddDefaultMenuItems(
 				"default",
 				"1000:系统管理/系统服务",
-				new SF.Sys.MenuServices.MenuItem {
+				new SF.Sys.BackEndConsole.MenuItem {
 					Name = "系统服务定义",
-					Action = SF.Sys.MenuServices.MenuActionType.EntityManager,
+					Action = SF.Sys.BackEndConsole.MenuActionType.EntityManager,
 					ActionArgument = "SysServiceDeclaration"
 				},
-				new SF.Sys.MenuServices.MenuItem
+				new SF.Sys.BackEndConsole.MenuItem
 				{
 					Name = "系统服务实现",
-					Action = SF.Sys.MenuServices.MenuActionType.EntityManager,
+					Action = SF.Sys.BackEndConsole.MenuActionType.EntityManager,
 					ActionArgument = "SysServiceImplement"
 				},
-				new SF.Sys.MenuServices.MenuItem
+				new SF.Sys.BackEndConsole.MenuItem
 				{
 					Name = "系统服务实例",
-					Action = SF.Sys.MenuServices.MenuActionType.EntityManager,
+					Action = SF.Sys.BackEndConsole.MenuActionType.EntityManager,
 					ActionArgument = "SysServiceInstance"
 				}
 				);

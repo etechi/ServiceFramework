@@ -13,23 +13,31 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Entities.Models;
-using SF.Sys.Annotations;
-using System.ComponentModel.DataAnnotations;
 
-namespace SF.Sys.MenuServices.Models
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using SF.Sys.Entities;
+using SF.Sys.Data;
+using SF.Sys.BackEndConsole.Models;
+using SF.Sys.Linq;
+using System.Collections;
+using SF.Sys.BackEndConsole.Entity.DataModels;
+
+namespace SF.Sys.BackEndConsole.Managers
 {
-	[EntityObject]
-	public class Menu : ObjectEntityBase<long>
+	public class HotMenuItemManager :
+		AutoModifiableEntityManager<ObjectKey<long>,HotMenuItem,HotMenuItem,HotMenuItemQueryArgument,HotMenuItem,DataHotMenuItem>,
+		IHotMenuItemManager
 	{
-		///<title>菜单引用标识</title>
-		/// <summary>
-		/// 默认菜单：业务管理后台:bizness,系统管理后台:system"
-		/// </summary>
-		[MaxLength(100)]
-		[Required]
-		public string Ident { get; set; }
+		public HotMenuItemManager(
+			IEntityServiceContext ServiceContext
+			) : base(ServiceContext)
+		{
+
+		}
+
 	}
 
 }
-

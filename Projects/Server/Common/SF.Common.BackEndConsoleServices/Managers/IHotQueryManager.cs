@@ -18,30 +18,24 @@ using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.Threading.Tasks;
 
-namespace SF.Sys.MenuServices
+namespace SF.Sys.BackEndConsole.Managers
 {
-	public class MenuQueryArgument : Entities.QueryArgument<ObjectKey<long>>
+	public class HotQueryQueryArgument : Entities.QueryArgument<ObjectKey<long>>
 	{
 		/// <summary>
 		/// 名称
 		/// </summary>
 		public string Name { get; set; }
-		/// <summary>
-		/// 标识
-		/// </summary>
-		public string Ident { get; set; }
 	}
 	/// <summary>
-	/// 菜单管理
+	/// 常用查询管理
 	/// </summary>
 	[NetworkService]
 	[EntityManager]
-	[Category("系统管理", "系统菜单")]
-	public interface IMenuService :
-		Entities.IEntitySource<ObjectKey<long>, Models.Menu, MenuQueryArgument>,
-		Entities.IEntityManager<ObjectKey<long>, Models.MenuEditable>
+	public interface IHotQueryManager:
+		Entities.IEntitySource<ObjectKey<long>, Models.HotQuery, HotQueryQueryArgument>,
+		Entities.IEntityManager<ObjectKey<long>, Models.HotQuery>
 	{
-		Task<MenuItem[]> GetMenu(string Ident);
 	}
 
 }

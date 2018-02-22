@@ -128,9 +128,10 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddEntityGlobalCache<TKey, TItem, TLoadServices, TInitRemoveServices>(
 			this IServiceCollection sc,
 			Func<TLoadServices, TKey, Task<TItem>> Loader,
-			Action<TInitRemoveServices, IEntityCacheRemover<TKey>> InitRemover
+			Action<IServiceProvider,TInitRemoveServices, IEntityCacheRemover<TKey>> InitRemover
 			) where TItem : class
 			where TKey:IEquatable<TKey>
+			where TInitRemoveServices:class
 		{
 			sc.AddSingleton<IEntityCache<TKey, TItem>>(sp =>
 			{
@@ -138,9 +139,10 @@ namespace SF.Sys.Services
 					sp,
 					Loader
 					);
-				sp.WithServices((TInitRemoveServices svc) =>
+				sp.WithScope((IServiceProvider isp) =>
 				{
-					InitRemover(svc, cache);
+					var svc = isp.Resolve<TInitRemoveServices>();
+					InitRemover(isp, svc, cache);
 					return 0;
 				});
 				return cache;
