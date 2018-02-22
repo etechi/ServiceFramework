@@ -9,9 +9,9 @@ namespace SF.Externals.WeiXin.Mp
 {
     public static class WeiXinClientExtension
     {
-        public static Task<string> Json<T>(this IWeiXinClient client,string uri, T data)
+        public static Task<string> Json<T>(this IAccessTokenManager accessTokenManager,Uri uri, T data)
         {
-            return client.RequestString(
+            return accessTokenManager.RequestString(
                 uri, 
                 new StringContent(
                     SF.Sys.Json.Stringify(data), 

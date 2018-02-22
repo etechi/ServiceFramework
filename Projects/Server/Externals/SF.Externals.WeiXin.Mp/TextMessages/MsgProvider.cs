@@ -4,6 +4,7 @@ using SF.Sys.Auth;
 using SF.Sys.Collections.Generic;
 using SF.Sys.Linq;
 using SF.Sys.Threading;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,12 +35,12 @@ namespace SF.Externals.WeiXin.Mp.TextMessages
     public class MsgProvider : INotificationSendProvider
     {
         public TemplateMessageSetting Setting { get; }
-        public IWeiXinClient Client { get; }
+        public IAccessTokenManager AccessTokenManager { get; }
 		public IUserProfileService UserProfileService { get; }
-		public MsgProvider(TemplateMessageSetting Setting, IWeiXinClient Client, IUserProfileService UserProfileService)
+		public MsgProvider(TemplateMessageSetting Setting, IAccessTokenManager AccessTokenManager, IUserProfileService UserProfileService)
         {
             this.Setting = Setting;
-            this.Client = Client;
+            this.AccessTokenManager= AccessTokenManager;
 			this.UserProfileService = UserProfileService;
 		}
         public async Task<string> Send(ISendArgument message)
@@ -57,8 +58,8 @@ namespace SF.Externals.WeiXin.Mp.TextMessages
                     p => new DataItem { value = p.Value }
                     )
             };
-            var re = await TaskUtils.Retry(() => Client.Json(
-                "message/template/send",
+            var re = await TaskUtils.Retry(() => AccessTokenManager.Json(
+                new Uri("message/template/send"),
                 req
                 ));
             var resp = SF.Sys.Json.Parse<Response>(re);

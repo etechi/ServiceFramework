@@ -4,6 +4,7 @@ using SF.Sys.HttpClients;
 using SF.Sys.Threading;
 using SF.Sys.TimeServices;
 using System;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -57,13 +58,13 @@ namespace SF.Externals.WeiXin.Mp.Core
 
 				 var uri = new Uri(Setting.ApiUriBase + "token").WithQueryString(
 					 ("grant_type", "client_credential"),
-					 ("appid", AppId: Setting.AppId),
-					 ("secret", AppSecret: Setting.AppSecret)
+					 ("appid",Setting.AppId),
+					 ("secret", Setting.AppSecret)
 					 );
 				 var re = await TaskUtils.Retry(() => HttpClient.From(uri).GetString());
 				 var resp = Json.Parse<AccessTokenResponse>(re);
 				 if (resp.access_token == null)
-					 throw new ExternalServiceException("获取微信公众号访问令牌失败：" + resp.errcode + ":" + resp.errmsg);
+					 throw new WeiXinException(resp.errcode,"获取微信公众号访问令牌失败：" + resp.errcode + ":" + resp.errmsg);
 
 				 _AccessToken = resp.access_token;
 				 _AccessTokenExpire = TimeService.Now.AddSeconds(resp.expires_in / 2);
@@ -92,18 +93,35 @@ namespace SF.Externals.WeiXin.Mp.Core
 
 				 var access_token = await GetAccessToken();
 				 var uri = new Uri(Setting.ApiUriBase + "ticket/getticket").WithQueryString(
-					 ("access_token", access_token: access_token),
+					 ("access_token",  access_token),
 					 ("type", "jsapi")
 					 );
 				 var re = await TaskUtils.Retry(() => HttpClient.From(uri).GetString());
 				 var resp = Json.Parse<JsApiTicketResponse>(re);
 				 if (resp.ticket == null)
-					 throw new ExternalServiceException("获取微信公众号JSTicket失败:" + resp.errcode + ":" + resp.errmsg);
+					 throw new WeiXinException(resp.errcode, "获取微信公众号JSTicket失败:" + resp.errcode + ":" + resp.errmsg);
 
 				 _JsApiTicket = resp.ticket;
 				 _JsApiTicketExpire = TimeService.Now.AddSeconds(resp.expires_in / 2);
 				 return _JsApiTicket;
 			 });
         }
-    }
+		public async Task<string> RequestString(Uri uri, HttpContent Content)
+		{
+			var u = uri.IsAbsoluteUri ? uri : new Uri(new Uri(Setting.ApiUriBase), uri);
+
+			var access_token = await GetAccessToken();
+			u = u.WithQueryString(("access_token", access_token));
+
+			string result;
+			if (Content == null)
+				result=await HttpClient.From(u).GetString();
+			else
+				result=await HttpClient.From(u).WithContent(Content).GetString();
+			if (result.IsNullOrWhiteSpace())
+				throw new WeiXinException(-1, "请求未返回数据");
+			return result;
+		}
+
+	}
 }

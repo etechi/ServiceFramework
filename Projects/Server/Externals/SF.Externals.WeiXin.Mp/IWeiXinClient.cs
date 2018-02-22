@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SF.Sys.NetworkService;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -15,9 +16,9 @@ namespace SF.Externals.WeiXin.Mp
 	    public string nonceStr { get; set; }
 	    public string signature { get; set; }
     }
+	[NetworkService]
     public interface IWeiXinClient
     {
-        Task<string> RequestString(string uri, HttpContent Content);
         Task<JsApiSignatureResult> JsApiSignature(string uri);
         Task<string> SaveAndGetMediaId(string serverId);
     }

@@ -29,7 +29,10 @@ namespace SF.Sys
 		{
 			var qs = EncodeQueryString<T>(args);
 			var b = new UriBuilder(uri);
-			b.Query = qs;
+			if (b.Query.IsNullOrEmpty())
+				b.Query = qs;
+			else
+				b.Query += "&" + qs;
 			return b.Uri;
 		}
 		public static Uri WithFragment(this Uri uri, string fragment)

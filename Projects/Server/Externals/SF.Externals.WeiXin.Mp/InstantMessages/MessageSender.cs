@@ -33,14 +33,14 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
 	/// </summary>
     public class MessageSender : INotificationSendProvider
 	{
-        public IWeiXinClient Client { get; }
+        public IAccessTokenManager AccessTokenManager { get; }
 		public IUserProfileService UserProfileService { get; }
 
-		public MessageSender(IWeiXinClient Client, IUserProfileService UserProfileService)
+		public MessageSender(IAccessTokenManager AccessTokenManager, IUserProfileService UserProfileService)
         {
 			this.UserProfileService = UserProfileService;
 
-			this.Client = Client;
+			this.AccessTokenManager = AccessTokenManager;
         }
         
 		public async Task<string> Send(ISendArgument Arg)
@@ -64,13 +64,13 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
 
 			//}
 			var re = await TaskUtils.Retry(
-				() => Client.Json(
-				"message/custom/send",
+				() => AccessTokenManager.Json(
+				new Uri("message/custom/send"),
 				req
 				));
 			var resp = Json.Parse<Response>(re);
 			if (resp.errcode != 0)
-				throw new Exception(resp.errcode + ":" + resp.errmsg);
+				throw new WeiXinException(resp.errcode ,resp.errcode + ":" + resp.errmsg);
 			return resp.msgid.ToString();
 		}
 

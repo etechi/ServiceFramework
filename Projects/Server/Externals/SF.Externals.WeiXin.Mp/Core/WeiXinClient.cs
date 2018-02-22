@@ -32,17 +32,7 @@ namespace SF.Externals.WeiXin.Mp.Core
 			this.HttpClient = HttpClient;
 
 		}
-        public async Task<string> RequestString(string uri, HttpContent Content)
-        {
-            var access_token = await AccessTokenManager.GetAccessToken();
-            var u = new Uri(new Uri(Setting.ApiUriBase), uri)
-                .WithQueryString(("access_token", access_token));
-            if (Content == null)
-                return await HttpClient.From(u).GetString();
-            else
-                return await HttpClient.From(u).WithContent(Content).GetString();
-        }
-
+      
         public async Task<JsApiSignatureResult> JsApiSignature(string uri)
         {
             var jsapi_ticket = await AccessTokenManager.GetJsApiTicket();
