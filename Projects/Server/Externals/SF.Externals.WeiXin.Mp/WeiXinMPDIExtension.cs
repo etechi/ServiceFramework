@@ -23,7 +23,10 @@ namespace SF.Sys.Services
 			sc.AddServiceInstanceInitializer(
 				sim => 
 					sim.Service<IOAuthAuthorizationProvider, Externals.WeiXin.Mp.OAuth2.OAuth2Provider>(
-						new Externals.WeiXin.Mp.OAuth2.OAuth2Setting()
+						new
+						{
+							OAuthSetting = new Externals.WeiXin.Mp.OAuth2.OAuth2Setting()
+						}
 					).WithIdent("weixin.mp")
 					);
 
