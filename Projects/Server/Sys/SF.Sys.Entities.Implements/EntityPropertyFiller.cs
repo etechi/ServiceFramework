@@ -81,11 +81,12 @@ namespace SF.Sys.Entities
 					{
 						list.Add(varKey.Assign(argItem.GetMember(s.IdProp)));
 						list.Add(
-							Expression.IfThen(
-								varKey.GetMember("HasValue"),
-								argList.CallMethod(
-									"Add",
-									varKey.GetMember("Value")
+							argList.CallMethod(
+								"Add",
+								Expression.Condition(
+								varKey.GetMember("HasValue"), 
+								varKey.GetMember("Value"),
+								Expression.Constant(default(TKey)) //没有数据时填空，否则无法对应
 								)
 							)
 						);
@@ -151,19 +152,21 @@ namespace SF.Sys.Entities
 				var mel = manager as IEntityBatchLoadable<ObjectKey<TKey>, TEntity>;
 				if (mel != null)
 					entities = (await mel.BatchGetAsync(
-						keys.Select(id => new ObjectKey<TKey> { Id = id }).ToArray(),
+						keys.Where(id=>!id.IsDefault()).Distinct().Select(id => new ObjectKey<TKey> { Id = id }).ToArray(),
 						Properties
 						)).ToDictionary(e => e.Id);
 				else
 				{
 					entities = new Dictionary<TKey, TEntity>();
-					foreach (var id in keys)
+					foreach (var id in keys.Where(i=>!i.IsDefault()).Distinct())
 					{
 						var ins = await manager.GetAsync(new ObjectKey<TKey> { Id = id });
 						if (ins != null)
 							entities[id] = ins;
 					}
 				}
+				if (entities.Count == 0)
+					return;
 				var ffl = FillFields.Length;
 				var il = Items.Length;
 				for (var i = 0; i < il; i++)
