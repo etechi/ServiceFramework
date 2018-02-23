@@ -73,7 +73,8 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 				);
 			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
-				throw new ExternalServiceException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权AccessToken没有返回数据，" +
 					$"回调参数:{reqUri }，"+
 					$"请求:{uri}");
@@ -85,14 +86,16 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 			}
 			catch
 			{
-				throw new ExternalServiceException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权AccessToken返回的数据无法解析，" +
 					$"回调参数:{reqUri}，"+
 					$"请求:{uri}, 应答：{re}"
 					);
 			}
 			if(string.IsNullOrEmpty(token.access_token) ||string.IsNullOrEmpty(token.openid))
-				throw new ExternalServiceException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权AccessToken返回的数据中没有access_token或openid，" +
 					$"回调参数:{reqUri}，"+
 					$"请求:{uri}, 应答：{re}"
@@ -114,7 +117,10 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 		{
 			var tokens = Json.Parse<AccessToken>(Token);
 			if (string.IsNullOrEmpty(tokens.refresh_token))
-				throw new ArgumentException("没有refresh_token");
+				throw new WeiXinException(
+					-1, 
+					"没有refresh_token"
+					);
 
 			var uri = new Uri(OAuthSetting.RefreshTokenUri).WithQueryString(
 				("appid", MPSetting.AppId),
@@ -124,7 +130,8 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 
 			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
-				throw new ArgumentException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权RefreshToken没有返回数据，" +
 					$"旧令牌:{Token}，" +
 					$"请求:{uri}");
@@ -136,14 +143,16 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 			}
 			catch
 			{
-				throw new ExternalServiceException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权RefreshToken返回的数据无法解析，" +
 					$"旧令牌:{Token}，" +
 					$"请求:{uri}, 应答：{re}"
 					);
 			}
 			if (string.IsNullOrEmpty(newToken.access_token) || string.IsNullOrEmpty(newToken.openid))
-				throw new ExternalServiceException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权RefreshToken返回的数据中没有access_token或openid，" +
 					$"旧令牌:{Token}，" +
 					$"请求:{uri}, 应答：{re}"
@@ -175,7 +184,8 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 
 			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
-				throw new ExternalServiceException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权UserInfo没有返回数据，" +
 					$"令牌:{Token}，" +
 					$"请求:{uri}");
@@ -188,14 +198,16 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 			}
 			catch
 			{
-				throw new ExternalServiceException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权UserInfo返回的数据无法解析，" +
 					$"令牌:{Token}，" +
 					$"请求:{uri}, 应答：{re}"
 					);
 			}
 			if (string.IsNullOrEmpty(ui.nickname))
-				throw new ExternalServiceException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权UserInfo返回的数据中没有用户名，" +
 					$"令牌:{Token}，" +
 					$"请求:{uri}, 应答：{re}"
@@ -237,7 +249,8 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 
 			var re = await HttpClient.From(uri).GetString();
 			if (string.IsNullOrWhiteSpace(re))
-				throw new ExternalServiceException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权码验证没有返回数据，" +
 					$"令牌:{Token}，" +
 					$"请求:{uri}");
@@ -249,7 +262,8 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 			}
 			catch
 			{
-				throw new ExternalServiceException(
+				throw new WeiXinException(
+					-1,
 					$"微信授权码验证返回的数据无法解析，" +
 					$"令牌:{Token}，" +
 					$"请求:{uri}, 应答：{re}"
@@ -260,6 +274,7 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 			return result.errcode + ":" + (result.errmsg??"");
 		}
 
+		//微信服务号不支持客户端认证
 		public Task<Dictionary<string, string>> StartClientAuthorization()
 		{
 			throw new NotImplementedException();

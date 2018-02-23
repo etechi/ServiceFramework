@@ -38,7 +38,12 @@ namespace SF.Sys
 		public static Uri WithFragment(this Uri uri, string fragment)
 		{
 			var b = new UriBuilder(uri);
-			b.Fragment = fragment;
+			if (b.Fragment.IsNullOrEmpty())
+				b.Fragment = fragment;
+			else if (b.Fragment.Contains('?'))
+				b.Fragment += "&" + fragment;
+			else
+				b.Fragment += "?" + fragment;
 			return b.Uri;
 		}
 		public static IEnumerable<(string key, string value)> ParseQuery(this Uri uri)

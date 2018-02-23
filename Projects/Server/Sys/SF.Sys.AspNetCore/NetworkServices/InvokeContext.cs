@@ -190,7 +190,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			var options = new CookieOptions
 			{
 				Domain = Cookie.Domain,
-				Expires = Cookie.Expires,
+				Expires = Cookie.Expires.Year<2000?new DateTime(2000,1,1):Cookie.Expires,
 				HttpOnly = Cookie.HttpOnly,
 				Path = Cookie.Path,
 				SameSite = SameSiteMode.Lax,

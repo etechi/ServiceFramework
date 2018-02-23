@@ -30,10 +30,10 @@ namespace SF.Auth.IdentityServices.Externals
 		BaseExtAuthService,
 		IPageExtAuthService
 	{
+		public Lazy<IAccessTokenHandler> AccessTokenGenerator { get; }
 
 		public IInvokeContext InvokeContext { get; }
 		public HttpSetting HttpSetting { get; }
-	
 		public PageExtAuthService(
 			NamedServiceResolver<IExternalAuthorizationProvider> Resolver, 
 			Lazy<IUserCredentialStorage> UserCredentialStorage, 
@@ -44,7 +44,8 @@ namespace SF.Auth.IdentityServices.Externals
 			 ILogger<PageExtAuthService> Logger,
 			IInvokeContext InvokeContext,
 			ISettingService<HttpSetting> HttpSetting,
-			Lazy<ITimeService> TimeService
+			Lazy<ITimeService> TimeService,
+			 Lazy<IAccessTokenHandler> AccessTokenGenerator
 			) : base(
 				Resolver, 
 				UserCredentialStorage, 
@@ -58,23 +59,46 @@ namespace SF.Auth.IdentityServices.Externals
 		{
 			this.InvokeContext = InvokeContext;
 			this.HttpSetting = HttpSetting.Value;
+			this.AccessTokenGenerator = AccessTokenGenerator;
 		}
 	
 		class ExtAuthSession
 		{
 			public string Callback { get; set; }
 			public string State { get; set; }
+			public string ClientState { get; set; }
+			public string ClientId { get; set; }
+		}
+		HttpResponseMessage Error(string Callback, string message)
+		{
+			return HttpResponse.Redirect(
+				new Uri(Callback).WithFragment("message=" + Uri.EscapeDataString(message))
+				);
 		}
 		public async Task<HttpResponseMessage> Start(
 			string Provider,
-			string Callback
+			string Callback,
+			string ClientId,
+			string ClientState
 			)
 		{
+			if (Callback.IsNullOrEmpty())
+				throw new ArgumentException("未指定回调URI");
+
+			if (string.IsNullOrEmpty(Provider))
+				return Error(Callback, "认证提供者不能为空");
+			if(ClientId.IsNullOrEmpty())
+				return Error(Callback, "未指定客户端ID");
+			if (ClientState.IsNullOrEmpty())
+				return Error(Callback, "未指定客户端状态");
+
 			var provider = Resolver(Provider);
 			var sess = new ExtAuthSession
 			{
 				State = Strings.NumberAndLowerChars.Random(16),
-				Callback = Callback
+				Callback = Callback,
+				ClientId=ClientId,
+				ClientState= ClientState
 			};
 			var now = TimeService.Value.UtcNow;
 			InvokeContext.Response.SetCookie(new System.Net.Cookie
@@ -85,7 +109,7 @@ namespace SF.Auth.IdentityServices.Externals
 			});
 
 			return await provider.StartPageAuthorization(
-				sess.State,
+				sess.State+":"+sess.ClientState,
 				new Uri(new Uri(InvokeContext.Request.Uri), $"/api/pageextauth/callback/{Provider}").ToString()
 				);
 		}
@@ -108,10 +132,10 @@ namespace SF.Auth.IdentityServices.Externals
 
 			var now = TimeService.Value.UtcNow;
 			var sess =await Decrypt<ExtAuthSession>(sessStr);
-			if (sess.State != re.State)
+			if (sess.State+":"+sess.ClientState != re.State)
 				throw new ExternalServiceException($"外部认证返回验证状态错误");
 
-			await Signin(Id, p, re);
+			var uid=await Signin(Id, p, re);
 			
 			//清除外部认证Cookie
 			InvokeContext.Response.SetCookie(
@@ -119,7 +143,13 @@ namespace SF.Auth.IdentityServices.Externals
 					Name = ExtAuthCookieHead + Id
 				});
 
-			return HttpResponse.Redirect(new Uri(sess.Callback));
+			//ClientService.Value.SignInAsync();
+			var access_token = await AccessTokenGenerator.Value.Generate(uid, sess.ClientId, null, null);
+
+			return HttpResponse.Redirect(
+				new Uri(new Uri(InvokeContext.Request.Uri), sess.Callback)
+					.WithFragment($"state={Uri.EscapeDataString(sess.ClientState)}&access_token=" + Uri.EscapeDataString(access_token))
+					);
 		}
 		
 	

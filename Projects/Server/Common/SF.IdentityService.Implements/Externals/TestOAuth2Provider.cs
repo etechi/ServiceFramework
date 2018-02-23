@@ -41,7 +41,15 @@ namespace SF.Auth.IdentityServices.Externals
 		}
 		public Task<HttpResponseMessage> StartPageAuthorization(string State, string Callback)
 		{
-			throw new NotSupportedException();
+			return Task.FromResult(
+				HttpResponse.Redirect(
+					new Uri(Callback)
+						.WithQueryString(
+							("code",State.Split2(':').Item2),
+							("state", State)
+						)
+					)
+				);
 		}
 
 		
@@ -50,7 +58,8 @@ namespace SF.Auth.IdentityServices.Externals
 			var reqUri = InvokeContext.Request.Uri;
 			var args = new Uri(reqUri).ParseQuery().ToDictionary(p => p.key, p => p.value);
 			var code = args.Get("code");
-			return  GetCallResult(code,null);
+			var state = args.Get("state");
+			return  GetCallResult(code,state);
 		}
 
 		public Task<string> RefreshToken(string Token)
