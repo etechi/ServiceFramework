@@ -90,16 +90,16 @@ namespace SF.Auth.IdentityServices.Externals
 				);
 		}
 		
-		public async Task<HttpResponseMessage> Callback(string Provider)
+		public async Task<HttpResponseMessage> Callback(string Id)
 		{
-			var p = Resolver(Provider);
+			var p = Resolver(Id);
 			var re = await p.ProcessPageCallback();
 			if (re == null)
 			{
 				await OnSignin(0);
 				return HttpResponse.Redirect(new Uri(HttpSetting.HttpRoot));
 			}
-			var sessStr = InvokeContext.Request.GetCookie(ExtAuthCookieHead + Provider);
+			var sessStr = InvokeContext.Request.GetCookie(ExtAuthCookieHead + Id);
 			if(sessStr==null)
 			{
 				await OnSignin(0);
@@ -111,8 +111,13 @@ namespace SF.Auth.IdentityServices.Externals
 			if (sess.State != re.State)
 				throw new ExternalServiceException($"外部认证返回验证状态错误");
 
-			await Signin(Provider, p, re);
-			InvokeContext.Response.SetCookie(new System.Net.Cookie { Name = ExtAuthCookieHead + Provider });
+			await Signin(Id, p, re);
+			
+			//清除外部认证Cookie
+			InvokeContext.Response.SetCookie(
+				new System.Net.Cookie {
+					Name = ExtAuthCookieHead + Id
+				});
 
 			return HttpResponse.Redirect(new Uri(sess.Callback));
 		}

@@ -11,7 +11,7 @@ namespace SF.Auth.IdentityServices.Externals
             string Provider, 
             string Callback
             );
-		Task<HttpResponseMessage> Callback(string Provider);
+		Task<HttpResponseMessage> Callback(string Id);
 	}
 
 
