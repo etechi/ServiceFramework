@@ -80,5 +80,15 @@ namespace SF.Common.Conversations.Models
 		[TableVisible]
 		[Ignore]
 		public string LastMessageName { get; set; }
+
+		/// <summary>
+		/// 连续消息分段数
+		/// </summary>
+		public int MessageSectionCount { get; set; }
+
+		/// <summary>
+		/// 连续消息分段时间
+		/// </summary>
+		public int MessageSectionTotalTime { get; set; }
 	}
 }

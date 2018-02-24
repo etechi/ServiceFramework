@@ -75,7 +75,30 @@ namespace SF.Common.Conversations.Models
 		[Ignore]
 		public string LastMessageName { get; set; }
 
-	
+		/// <summary>
+		/// 最后消息成员
+		/// </summary>
+		[ReadOnly(true)]
+		[EntityIdent(typeof(SessionMemberStatus), nameof(LastMemberName))]
+		public long? LastMemberId { get; set; }
+
+		/// <summary>
+		/// 最后消息成员
+		/// </summary>
+		[TableVisible]
+		[Ignore]
+		public string LastMemberName { get; set; }
+
+
+		/// <summary>
+		/// 最后消息成员消息数
+		/// </summary>
+		public int LastMemberMessageCount { get; set; }
+
+		/// <summary>
+		/// 最后消息成员开始时间
+		/// </summary>
+		public DateTime? LastMemberStartTime { get; set; }
 
 	}
 

@@ -35,7 +35,7 @@ namespace SF.Common.Conversations.Managers
 			this.SessionStatusManager = SessionStatusManager;
 
 		}
-		private async Task<int> UpdateSessionStatus(IDataContext DataContext, SessionMessage editable, DataModels.DataSessionMessage model)
+		private async Task<DataModels.DataSessionStatus> UpdateSessionStatus(IDataContext DataContext, SessionMessage editable, DataModels.DataSessionMessage model)
 		{
 			var Session = await DataContext.Set<DataModels.DataSessionStatus>().FindAsync(editable.SessionId);
 			if (Session == null)
@@ -46,8 +46,33 @@ namespace SF.Common.Conversations.Managers
 			Session.LastMessageText = editable.Text;
 			Session.LastMessageType = editable.Type;
 			Session.MessageCount++;
+
+			
 			DataContext.Update(Session);
-			return Session.MessageCount;
+			return Session;
+		}
+		async Task UpdateSessionLastMember(IDataContext DataContext, DataModels.DataSessionStatus Session, long PosterId, DateTime Time)
+		{
+			if (Session.LastMemberId != PosterId)
+			{
+				if (Session.LastMemberId.HasValue)
+				{
+					var LastMember = await DataContext.Set<DataModels.DataSessionMemberStatus>().FindAsync(Session.LastMemberId.Value);
+					if (LastMember == null)
+						throw new ArgumentException("找不到成员:" + Session.LastMemberId.Value);
+
+					LastMember.MessageSectionCount++;
+					LastMember.MessageSectionTotalTime = (int)Time.Subtract(Session.LastMemberStartTime.Value).TotalSeconds;
+					DataContext.Update(LastMember);
+				}
+
+				Session.LastMemberId = PosterId;
+				Session.LastMemberStartTime = Time;
+				Session.LastMemberMessageCount = 1;
+			}
+			else
+				Session.LastMemberMessageCount++;
+
 		}
 		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
@@ -57,15 +82,16 @@ namespace SF.Common.Conversations.Managers
 				var editable = ctx.Editable;
 				var model = ctx.Model;
 
-				var msgCount=await UpdateSessionStatus(ctx.DataContext,editable, model);
+				var session=await UpdateSessionStatus(ctx.DataContext,editable, model);
 				var mid = await ((SessionMemberStatusManager)SessionMemberStatusManager.Value).InternalSetLastMessage(
 					editable.SessionId,
 					editable.UserId.Value,
 					ctx.Model.Id,
 					editable.Time,
-					msgCount
+					session.MessageCount
 					);
 				ctx.Model.PosterId = mid;
+				await UpdateSessionLastMember(ctx.DataContext, session, mid, editable.Time);
 			}
 			await base.OnUpdateModel(ctx);
 		}

@@ -60,5 +60,15 @@ namespace SF.Common.Conversations.DataModels
 		/// 最后阅读时间
 		/// </summary>
 		public DateTime? LastReadTime { get; set; }
+
+		/// <summary>
+		/// 连续消息分段数
+		/// </summary>
+		public int MessageSectionCount { get; set; }
+
+		/// <summary>
+		/// 连续消息分段时间
+		/// </summary>
+		public int MessageSectionTotalTime { get; set; }
 	}
 }
