@@ -55,7 +55,7 @@ namespace SF.Sys.Events
 				}
 				var seg = segs[i];
 				if (!dir.TryGetValue(seg, out var cdir))
-					break;
+					yield break;
 				dir = cdir;
 			}
 			foreach (var v in dir.GetObservers<TPayload>(Sync))
