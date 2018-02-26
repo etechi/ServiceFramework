@@ -43,7 +43,12 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			if (actionContext.RouteData.Values.TryGetValue("service", out var sid) && sid is string)
 			{
 				if (long.TryParse((string)sid, out var svcId))
-					svc=services.Resolver().ResolveServiceByIdent(svcId, serviceType);
+				{
+					if(svcId > 0)
+						svc = services.Resolver().ResolveServiceByIdent(svcId, serviceType);
+					else
+						svc = services.GetService(serviceType);
+				}
 				else
 					svc = services.Resolver().ResolveServiceByType(null, serviceType, (string)sid);
 			}

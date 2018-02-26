@@ -37,7 +37,7 @@ namespace SF.Sys.AspNetCore
 				get
 				{
 					//Context.ChallengeAsync("Bearer").Wait();
-					return Context.User;
+					return Context?.User;
 				}
 			}
 		Stack<ClaimsPrincipal> _Operators;

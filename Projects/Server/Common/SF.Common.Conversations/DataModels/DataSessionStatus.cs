@@ -65,7 +65,7 @@ namespace SF.Common.Conversations.DataModels
 		public int MessageCount { get; set; }
 
 		/// <summary>
-		/// 最后消息成员
+		/// 最后消息
 		/// </summary>
 		[Index]
 		public long? LastMemberId { get; set; }

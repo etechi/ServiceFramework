@@ -13,35 +13,20 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Annotations;
+using SF.Sys.Entities;
+using SF.Sys.NetworkService;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SF.Sys.NetworkService
+namespace SF.Sys.BackEndConsole.Front
 {
-	[NetworkService]
-	public interface IServiceMetadataService
-	{
-		//[Authorize(Roles ="admin")]
-		Metadata.Library Json();
-		//Task<Dictionary<string, long>> GetEntityRelatedService(long ServiceId, string EntityName);
 
-		IContent Typescript(bool all = true);
-		IContent TSD(string ApiName,string ResultFieldName=null, bool all = true);
-		IContent Javascript(string ApiName,  bool all = true);
-		IContent Java(
-			string CommonImports,
-			string PackagePath,
-			bool all = true,
-			bool MergeBaseType = true
-			);
-		IContent iOS(
-			 string CommonImports,
-			 string BaseService,
-			 bool all = true,
-			 bool mergeBaseType=true
-			 );
-		IContent Html();
-		IContent Script();
-		IContent Angular();
+	
+	[NetworkService]
+	public interface IQueryExportService
+	{
 	}
+
 }
+

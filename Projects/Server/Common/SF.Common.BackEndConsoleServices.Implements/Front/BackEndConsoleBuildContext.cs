@@ -94,57 +94,57 @@ namespace SF.Sys.BackEndConsole.Front
 			AddMenuItems(new MenuItemConfig
 			{
 				Path = MenuPath + "/" + Entity.Name,
-				Link = $"page://svc/{ServiceId}/entity/{EntityIdent}/list"
+				Link = $"/ap/entity/list/{EntityIdent}/{ServiceId}"
 			});
-			AddPage(new Page
-			{
-				Path = $"svc/{ServiceId}/entity/{EntityIdent}/list",
-				Title = Entity.Name,
-				Content = new PageContent
-				{
-					Config = Json.Stringify(new { entity = EntityIdent, service = ServiceId }),
-					Type = "EntityList",
-					ResAccessRequest = EntityIdent + ":" + Auth.Permissions.Operations.Read
-				}
-			});
+			//AddPage(new Page
+			//{
+			//	Path = $"svc/{ServiceId}/entity/{EntityIdent}/list",
+			//	Title = Entity.Name,
+			//	Content = new PageContent
+			//	{
+			//		Config = Json.Stringify(new { entity = EntityIdent, service = ServiceId }),
+			//		Type = "EntityList",
+			//		ResAccessRequest = EntityIdent + ":" + Auth.Permissions.Operations.Read
+			//	}
+			//});
 
-			AddPage(new Page
-			{
-				Path = $"svc/{ServiceId}/entity/{EntityIdent}/detail",
-				Title = "查看" + Entity.Name,
-				Content = new PageContent
-				{
-					Config = Json.Stringify(new { entity = EntityIdent, service = ServiceId }),
-					Type = "EntityDetail",
-					ResAccessRequest = EntityIdent + ":" + Auth.Permissions.Operations.Read
-				}
-			});
+			//AddPage(new Page
+			//{
+			//	Path = $"svc/{ServiceId}/entity/{EntityIdent}/detail",
+			//	Title = "查看" + Entity.Name,
+			//	Content = new PageContent
+			//	{
+			//		Config = Json.Stringify(new { entity = EntityIdent, service = ServiceId }),
+			//		Type = "EntityDetail",
+			//		ResAccessRequest = EntityIdent + ":" + Auth.Permissions.Operations.Read
+			//	}
+			//});
 
-			if (Entity.EntityManagerCapability.HasFlag(EntityCapability.Creatable))
-				AddPage(new Page
-				{
-					Path = $"svc/{ServiceId}/entity/{EntityIdent}/new",
-					Title = "添加" + Entity.Name,
-					Content = new PageContent
-					{
-						Config = Json.Stringify(new { entity = EntityIdent, service = ServiceId }),
-						Type = "EntityNew",
-						ResAccessRequest= EntityIdent + ":"+Auth.Permissions.Operations.Create
-					}
-				});
+			//if (Entity.EntityManagerCapability.HasFlag(EntityCapability.Creatable))
+			//	AddPage(new Page
+			//	{
+			//		Path = $"svc/{ServiceId}/entity/{EntityIdent}/new",
+			//		Title = "添加" + Entity.Name,
+			//		Content = new PageContent
+			//		{
+			//			Config = Json.Stringify(new { entity = EntityIdent, service = ServiceId }),
+			//			Type = "EntityNew",
+			//			ResAccessRequest= EntityIdent + ":"+Auth.Permissions.Operations.Create
+			//		}
+			//	});
 
-			if (Entity.EntityManagerCapability.HasFlag(EntityCapability.Updatable))
-				AddPage(new Page
-				{
-					Path = $"svc/{ServiceId}/entity/{EntityIdent}/edit",
-					Title = "编辑" + Entity.Name,
-					Content = new PageContent
-					{
-						Config = Json.Stringify(new { entity = EntityIdent, service = ServiceId }),
-						Type = "EntityEdit",
-						ResAccessRequest = EntityIdent + ":" + Auth.Permissions.Operations.Update
-					}
-				});
+			//if (Entity.EntityManagerCapability.HasFlag(EntityCapability.Updatable))
+			//	AddPage(new Page
+			//	{
+			//		Path = $"svc/{ServiceId}/entity/{EntityIdent}/edit",
+			//		Title = "编辑" + Entity.Name,
+			//		Content = new PageContent
+			//		{
+			//			Config = Json.Stringify(new { entity = EntityIdent, service = ServiceId }),
+			//			Type = "EntityEdit",
+			//			ResAccessRequest = EntityIdent + ":" + Auth.Permissions.Operations.Update
+			//		}
+			//	});
 		}
 		async Task BuildConsolePages(
 			string MenuPath,

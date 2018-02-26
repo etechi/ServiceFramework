@@ -377,9 +377,14 @@ namespace SF.Sys
 			//		sb.AppendFormat("%{0:x02}", c);
 			//}
 		}
-        
 
-        public static string EncodeQueryString<T>(
+		public static string EncodeQueryString<T>(
+			IEnumerable<KeyValuePair<string, T>> pairs,
+			Encoding encoding = null
+			)
+			=> EncodeQueryString(pairs.Select(p => (p.Key, p.Value)), encoding);
+
+		public static string EncodeQueryString<T>(
 			IEnumerable<(string key, T value)> pairs,
 			Encoding encoding = null
 			)

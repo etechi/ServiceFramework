@@ -15,6 +15,16 @@
 	</PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Entity\**" />
+    <EmbeddedResource Remove="Entity\**" />
+    <None Remove="Entity\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Front\QueryExportService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove=".licenseheader" />
   </ItemGroup>
 
@@ -25,10 +35,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Sys\SF.Sys.BackEndConsole\SF.Sys.BackEndConsole.csproj" />
     <ProjectReference Include="..\SF.Common.BackEndConsoleServices\SF.Common.BackEndConsoleServices.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Entity\" />
   </ItemGroup>
 
 </Project>

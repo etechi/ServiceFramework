@@ -83,7 +83,7 @@ namespace SF.Sys.AspNetCore
 				{
 					var req = context.Request;
 					if ((req.ContentType == "application/json" ||
-						req.ContentType== "application/x- www-form-urlencoded")
+						req.ContentType== "application/x-www-form-urlencoded")
 						&& req.ContentLength.HasValue && 
 						req.ContentLength.Value < 1024 * 1024)
 					{
