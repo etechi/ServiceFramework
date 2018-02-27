@@ -34,11 +34,32 @@ namespace SF.Common.Documents.Management
 		/// 父分类
 		/// </summary>
 		public override string ContainerName { get; set; }
+
+		/// <summary>
+		/// 文档区域
+		/// </summary>
+		[EntityIdent(typeof(DocumentScope),nameof(ScopeName))]
+		public string ScopeId { get; set; }
+
+		[Ignore]
+		[TableVisible]
+		public string ScopeName { get; set; }
 	}
 
 	[EntityObject]
 	public class DocumentBase : UIItemEntityBase<CategoryInternal>
 	{
+		/// <summary>
+		/// 文档区域
+		/// </summary>
+		[EntityIdent(typeof(DocumentScope), nameof(ScopeName))]
+		public string ScopeId { get; set; }
+
+		[Ignore]
+		[TableVisible]
+		public string ScopeName { get; set; }
+
+
 		/// <summary>
 		/// 文档分类
 		/// </summary>
@@ -76,5 +97,10 @@ namespace SF.Common.Documents.Management
 		/// </summary>
 		[Html]
 		public string Content { get; set; }
+	}
+
+	public class DocumentScope: ObjectEntityBase<string>
+	{
+		
 	}
 }

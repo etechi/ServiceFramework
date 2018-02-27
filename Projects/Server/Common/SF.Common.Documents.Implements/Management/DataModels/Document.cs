@@ -22,26 +22,40 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Documents.DataModels
 {
-	public class DataDocument : DataDocument<DataDocument, DataDocumentAuthor, DataDocumentCategory, DocumentTag, DocumentTagReference>
+	public class DataDocument : DataDocument<DataDocumentScope,DataDocument, DataDocumentAuthor, DataDocumentCategory, DataDocumentTag, DataDocumentTagReference>
 	{ }
 
 	/// <summary>
-	/// 文档作者
+	/// 文档
 	/// </summary>
+	/// <typeparam name="TScope"></typeparam>
 	/// <typeparam name="TDocument"></typeparam>
 	/// <typeparam name="TAuthor"></typeparam>
 	/// <typeparam name="TCategory"></typeparam>
 	/// <typeparam name="TTag"></typeparam>
 	/// <typeparam name="TTagReference"></typeparam>
 	[Table("Document")]
-	public class DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference> :
+	public class DataDocument<TScope,TDocument, TAuthor, TCategory, TTag, TTagReference> :
 		DataUIItemEntityBase<TCategory>
-		where TDocument : DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TAuthor : DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TCategory : DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TTag : DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TTagReference : DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TScope : DataDocumentScope<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TDocument : DataDocument<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TAuthor : DataDocumentAuthor<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TCategory : DataDocumentCategory<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TTag : DataDocumentTag<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TTagReference : DataDocumentTagReference<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{
+		/// <summary>
+		/// 区域
+		/// </summary>
+		[Required]
+		[MaxLength(100)]
+		[Index]
+		public string ScopeId { get; set; }
+		
+		[ForeignKey(nameof(ScopeId))]
+		public TScope Scope { get; set; }
+
+
 		/// <summary>
 		/// 标识
 		/// </summary>
@@ -77,7 +91,7 @@ namespace SF.Common.Documents.DataModels
 		[ForeignKey(nameof(AuthorId))]
 		public TAuthor Author { get; set; }
 
-		[InverseProperty(nameof(DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>.Document))]
+		[InverseProperty(nameof(DataDocumentTagReference<TScope,TDocument, TAuthor, TCategory, TTag, TTagReference>.Document))]
 		public ICollection<TTagReference> Tags { get; set; }
 		
 	}

@@ -168,6 +168,7 @@ namespace SF.Sys.Metadata
 			}
 			if (type.IsEnumType())
 			{
+				var tn= type.Name;
 				re.Properties = type
 					.GetFields(BindingFlags.Public | BindingFlags.Static )
 					.Select(p =>

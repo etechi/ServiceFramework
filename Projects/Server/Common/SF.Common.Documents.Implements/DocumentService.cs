@@ -25,7 +25,7 @@ using SF.Sys;
 namespace SF.Common.Documents
 {
 	public class DocumentService : 
-		DocumentService<Document, Category, DataModels.DataDocument, DataModels.DataDocumentAuthor, DataModels.DataDocumentCategory, DataModels.DocumentTag, DataModels.DocumentTagReference>,
+		DocumentService<Document, Category, DataDocumentScope, DataModels.DataDocument, DataModels.DataDocumentAuthor, DataModels.DataDocumentCategory, DataModels.DataDocumentTag, DataModels.DataDocumentTagReference>,
 		IDocumentService
 	{
 		public DocumentService(IDataScope DataScope, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(DataScope, ServiceInstanceDescriptor)
@@ -33,15 +33,16 @@ namespace SF.Common.Documents
 		}
 	}
 
-	public class DocumentService<TDocumentPublic, TCategoryPublic, TDocument, TAuthor, TCategory, TTag, TTagReference> :
+	public class DocumentService<TDocumentPublic, TCategoryPublic, TScope, TDocument, TAuthor, TCategory, TTag, TTagReference> :
 		IDocumentService<TDocumentPublic, TCategoryPublic>
 		where TDocumentPublic : Document, new()
 		where TCategoryPublic : Category, new()
-		where TDocument : DataModels.DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>, new()
-		where TAuthor : DataModels.DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TCategory : DataModels.DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TTag : DataModels.DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TTagReference : DataModels.DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TScope : DataModels.DataDocumentScope<TScope,TDocument, TAuthor, TCategory, TTag, TTagReference>, new()
+		where TDocument : DataModels.DataDocument<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>, new()
+		where TAuthor : DataModels.DataDocumentAuthor<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TCategory : DataModels.DataDocumentCategory<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TTag : DataModels.DataDocumentTag<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TTagReference : DataModels.DataDocumentTagReference<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
 
 	{
 		public IDataScope DataScope { get; }
@@ -84,21 +85,21 @@ namespace SF.Common.Documents
 
 
 		IContextQueryable<TDocument> LimitedDocuments(IDataContext ctx) => ctx.Set<TDocument>().AsQueryable()
-				.WithScope(ServiceInstanceDescriptor)
+				//.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
 		IContextQueryable<TCategory> LimitedCategories(IDataContext ctx) => ctx.Set<TCategory>().AsQueryable()
-				.WithScope(ServiceInstanceDescriptor)
+				//.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
 		public long? ServiceInstanceId => ServiceInstanceDescriptor.InstanceId;
 
-		public Task<TDocumentPublic> GetAsync(ObjectKey<long> Id,string[] Fields=null)
+		public Task<TDocumentPublic> GetDocument(long Id)
 		{
 			return DataScope.Use("获取文档", ctx => {
 				var q = ctx.Queryable<TDocument>()
-					.Where(i => i.Id == Id.Id)
-					.EnabledScopedById(Id.Id, ServiceInstanceDescriptor)
+					.Where(i => i.Id == Id)
+					//.EnabledScopedById(Id, ServiceInstanceDescriptor)
 					;
 
 				return MapModelToPublic(q, true)
@@ -106,34 +107,37 @@ namespace SF.Common.Documents
 				});
 		}
 
-		public Task<TDocumentPublic> GetByKeyAsync(string Id)
+		public Task<TDocumentPublic> GetDocumentByKey(string Id,string Scope)
 		{
 			if (Id.IsNullOrEmpty())
 				throw new PublicArgumentException("没有文档标识");
-
+			if (Scope == null) Scope = "default";
 			return DataScope.Use("以标签获取文档", ctx => {
 				var q = LimitedDocuments(ctx)
-				.Where(d => d.Ident == Id);
+				.Where(d => d.Ident == Id && d.ScopeId==Scope);
 				return MapModelToPublic(q, true).SingleOrDefaultAsync();
 				});
 		}
 
-		public Task<TCategoryPublic> LoadContainerAsync(long Key)
+		public Task<TCategoryPublic> GetCategory(long Id)
 		{
 			return DataScope.Use("获取分类", ctx => {
 				var q = LimitedCategories(ctx)
-					.Where(i => i.Id == Key)
-				.EnabledScopedById(Key, ServiceInstanceDescriptor)
+					.Where(i => i.Id == Id)
+				//.EnabledScopedById(Id, ServiceInstanceDescriptor)
 				;
 				return MapModelToPublic(q, true).SingleOrDefaultAsync();
 				});
 		}
 
-		public Task<QueryResult<TDocumentPublic>> SearchAsync(SearchArgument Arg)
+		public Task<QueryResult<TDocumentPublic>> Search(SearchArgument Arg)
 		{
 			return DataScope.Use("查询文档", ctx =>
 			{
 				var q = LimitedDocuments(ctx);
+				var scope = Arg.Scope ?? "default";
+				q = q.Where(d => d.ScopeId == scope);
+
 				if (!string.IsNullOrWhiteSpace(Arg.Key))
 					q = q.Where(
 						d =>
@@ -153,15 +157,14 @@ namespace SF.Common.Documents
 			});
 		}
 
-		public Task<QueryResult<TDocumentPublic>> ListItemsAsync(ListItemsArgument<long?> Arg)
+		public Task<QueryResult<TDocumentPublic>> ListDocuments(ListArgument Arg)
 		{
 			return DataScope.Use("文档列表", ctx =>
 			{
 				var q = LimitedDocuments(ctx);
-				if (Arg.Container.HasValue)
-					q = q.Where(d =>
-						  d.ContainerId == Arg.Container
-						);
+				q = q.Where(d => d.ContainerId == Arg.Category );
+				var scope = Arg.Scope ?? "default";
+				q = q.Where(d => d.ScopeId == scope);
 				return q.ToQueryResultAsync(
 					iq => MapModelToPublic(iq, false),
 					r => r,
@@ -171,13 +174,15 @@ namespace SF.Common.Documents
 			});
 		}
 
-		public Task<QueryResult<TCategoryPublic>> ListChildContainersAsync(ListItemsArgument<long?> Arg)
+		public Task<QueryResult<TCategoryPublic>> ListCategories(ListArgument Arg)
 		{
-			return DataScope.Use("文档列表", ctx =>
+			return DataScope.Use("目录列表", ctx =>
 			{
 				var q = LimitedCategories(ctx).Where(d =>
-				d.ContainerId == Arg.Container
+					d.ContainerId == Arg.Category
 				);
+				var scope = Arg.Scope ?? "default";
+				q = q.Where(d => d.ScopeId == scope);
 				return q.ToQueryResultAsync(
 					iq => MapModelToPublic(q, false),
 					r => r,

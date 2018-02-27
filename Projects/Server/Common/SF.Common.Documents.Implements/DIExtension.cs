@@ -18,6 +18,7 @@ using SF.Common.Documents;
 using SF.Sys.Services.Management;
 using SF.Sys.Entities.AutoTest;
 using SF.Sys.Entities.AutoEntityProvider;
+using SF.Sys.Entities;
 
 namespace SF.Sys.Services
 {
@@ -32,13 +33,14 @@ namespace SF.Sys.Services
 				"文档管理",
 				d => d.Add<IDocumentCategoryManager, DocumentCategoryManager>("DocumentCategory","文档分类",typeof(Category))
 					.Add<IDocumentManager, DocumentManager>("Document", "文档", typeof(Document))
-					//.Add<IDocumentService, DocumentService>()
+					.Add<IDocumentScopeManager, DocumentScopeManager>("DocumentScope", "文档区域", typeof(DocumentScope))
+				//.Add<IDocumentService, DocumentService>()
 				);
 
 			sc.AddManagedScoped<IDocumentService, DocumentService>(IsDataScope: true);
 
-			sc.GenerateEntityManager("DocumentCategory");
-			sc.GenerateEntityManager("Document");
+			//sc.GenerateEntityManager("DocumentCategory");
+			//sc.GenerateEntityManager("Document");
 
 			//sc.AddAutoEntityType(
 			//	(TablePrefix ?? "") + "Doc",
@@ -52,54 +54,60 @@ namespace SF.Sys.Services
 
 
 			sc.AddDataModules<
+				SF.Common.Documents.DataModels.DataDocumentScope, 
 				SF.Common.Documents.DataModels.DataDocument,
 				SF.Common.Documents.DataModels.DataDocumentCategory,
 				SF.Common.Documents.DataModels.DataDocumentAuthor,
-				SF.Common.Documents.DataModels.DocumentTag,
-				SF.Common.Documents.DataModels.DocumentTagReference
+				SF.Common.Documents.DataModels.DataDocumentTag,
+				SF.Common.Documents.DataModels.DataDocumentTagReference
 				>(TablePrefix ?? "Common");
 
 			//sc.AddAutoEntityTest(NewDocumentManager);
 			//sc.AddAutoEntityTest(NewDocumentCategoryManager);
+			sc.InitServices("Documents", async (sp, sim, parent) =>
+			 {
+				 await sim.DefaultService<IDocumentManager, DocumentManager>(null)
+					.WithMenuItems("内容管理/文档管理")
+					.Ensure(sp, parent);
+
+				 await sim.DefaultService<IDocumentCategoryManager, DocumentCategoryManager>(null)
+					.WithMenuItems("内容管理/文档管理")
+					.Ensure(sp, parent);
+
+				 await sim.DefaultService<IDocumentService, DocumentService>(
+					 null
+					 )
+					 .WithMenuItems("内容管理/文档管理")
+					 .Ensure(sp, parent);
+				 await sim.DefaultService<IDocumentScopeManager, DocumentScopeManager>(null)
+					.WithMenuItems("内容管理/文档管理")
+					.Ensure(sp, parent);
+				 await sp.Resolve<IDocumentScopeManager>().EnsureEntity(
+					 ObjectKey.From("default"),
+					 s =>
+					 {
+						 s.Id = "default";
+						 s.Name = "默认文档";
+					 });
+
+				 await sp.Resolve<IDocumentScopeManager>().EnsureEntity(
+					 ObjectKey.From("sys"),
+					 s =>
+					 {
+						 s.Id = "sys";
+						 s.Name = "系统文档";
+					 });
+
+				 await sp.Resolve<IDocumentScopeManager>().EnsureEntity(
+					  ObjectKey.From("help"),
+					  s =>
+					  {
+						  s.Id = "help";
+						  s.Name = "帮助文档";
+					  });
+			 });
+			
 			return sc;
-		}
-
-		public static IServiceInstanceInitializer<IDocumentManager> NewDocumentManager(
-			this IServiceInstanceManager manager
-			)
-		{
-			return manager.Service<IDocumentManager, DocumentManager>(null);
-		}
-		public static IServiceInstanceInitializer<IDocumentCategoryManager> NewDocumentCategoryManager(
-		   this IServiceInstanceManager manager
-		   )
-		{
-			return manager.Service<IDocumentCategoryManager, DocumentCategoryManager>(null);
-		}
-		public static IServiceInstanceInitializer NewDocumentService(
-			this IServiceInstanceManager manager,
-			string ServiceTitle,
-			string ServiceIdent=null,
-			IServiceInstanceInitializer<IDocumentManager> docManager = null,
-			IServiceInstanceInitializer<IDocumentCategoryManager> catManager = null
-			)
-		{
-			if (docManager == null)
-				docManager = manager.NewDocumentManager();
-			if (catManager == null)
-				catManager = manager.NewDocumentCategoryManager();
-
-			var svc = manager.DefaultServiceWithIdent<IDocumentService, DocumentService>(
-				ServiceIdent,
-				null,
-				docManager,
-				catManager
-				)
-				.WithDisplay(ServiceTitle)
-				.WithMenuItems(
-					"内容管理/"+ServiceTitle
-				);
-			return svc;
 		}
 	}
 }

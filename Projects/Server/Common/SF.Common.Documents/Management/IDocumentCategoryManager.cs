@@ -24,6 +24,13 @@ namespace SF.Common.Documents.Management
 	public class DocumentCategoryQueryArgument : QueryArgument
 	{
 		/// <summary>
+		 /// 文档区域
+		 /// </summary>
+		[EntityIdent(typeof(DocumentScope))]
+		public string ScopeId { get; set; }
+
+
+		/// <summary>
 		/// 父分类
 		/// </summary>
 		[EntityIdent(typeof(Category))]

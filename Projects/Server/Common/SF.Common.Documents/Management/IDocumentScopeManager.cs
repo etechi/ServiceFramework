@@ -20,48 +20,32 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Documents.Management
 {
-	public class DocumentQueryArguments : QueryArgument
+	public class DocumentScopeQueryArguments : QueryArgument
 	{
-		/// <summary>
-		/// 文档区域
-		/// </summary>
-		[EntityIdent(typeof(DocumentScope))]
-		public string ScopeId { get; set; }
-
-		/// <summary>
-		/// 文档分类
-		/// </summary>
-		[EntityIdent(typeof(Category))]
-		public int? CategoryId { get; set; }
-
 		/// <summary>
 		/// 标题
 		/// </summary>
 		[StringLength(50)]
 		public string Name { get; set; }
 
-		/// <summary>
-		/// 发布日期
-		/// </summary>
-		public NullableDateQueryRange PublishDate { get; set; }
 	}
 
 	/// <summary>
-	/// 文档管理
+	/// 文档区域管理
 	/// </summary>
 	/// <typeparam name="TInternal"></typeparam>
 	/// <typeparam name="TEditable"></typeparam>
 	[NetworkService]
 	[EntityManager]
-	public interface IDocumentManager<TInternal, TEditable> :
-		IEntitySource<ObjectKey<long>, TInternal, DocumentQueryArguments>,
-		IEntityManager<ObjectKey<long>, TEditable>
-		where TInternal : DocumentInternal
-		where TEditable : DocumentEditable
+	public interface IDocumentScopeManager<TInternal, TEditable> :
+		IEntitySource<ObjectKey<string>, TInternal, DocumentScopeQueryArguments>,
+		IEntityManager<ObjectKey<string>, TEditable>
+		where TInternal : DocumentScope
+		where TEditable : DocumentScope
 	{
 	}
-	public interface IDocumentManager:
-		IDocumentManager<DocumentInternal,DocumentEditable>
+	public interface IDocumentScopeManager:
+		IDocumentScopeManager<DocumentScope, DocumentScope>
 	{
 
 	}

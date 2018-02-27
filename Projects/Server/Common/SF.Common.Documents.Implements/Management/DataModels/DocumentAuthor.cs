@@ -21,15 +21,17 @@ using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using SF.Sys.Entities.DataModels;
+using SF.Sys.Data;
 
 namespace SF.Common.Documents.DataModels
 {
-	public class DataDocumentAuthor : DataDocumentAuthor<DataDocument, DataDocumentAuthor, DataDocumentCategory, DocumentTag, DocumentTagReference>
+	public class DataDocumentAuthor : DataDocumentAuthor<DataDocumentScope,DataDocument, DataDocumentAuthor, DataDocumentCategory, DataDocumentTag, DataDocumentTagReference>
 	{ }
 
 	/// <summary>
 	/// 文档作者
 	/// </summary>
+	/// <typeparam name="TScope"></typeparam>
 	/// <typeparam name="TDocument"></typeparam>
 	/// <typeparam name="TAuthor"></typeparam>
 	/// <typeparam name="TCategory"></typeparam>
@@ -37,16 +39,28 @@ namespace SF.Common.Documents.DataModels
 	/// <typeparam name="TTagReference"></typeparam>
 	[Table("DocumentAuthor")]
 	
-    public class DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference> :
+    public class DataDocumentAuthor<TScope,TDocument, TAuthor, TCategory, TTag, TTagReference> :
 		DataUIObjectEntityBase
-		where TDocument : DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TAuthor : DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TCategory : DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TTag : DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TTagReference : DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TScope : DataDocumentScope<TScope,TDocument, TAuthor, TCategory, TTag, TTagReference> 
+		where TDocument : DataDocument<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TAuthor : DataDocumentAuthor<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TCategory : DataDocumentCategory<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TTag : DataDocumentTag<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TTagReference : DataDocumentTagReference<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{
+		/// <summary>
+		/// 区域
+		/// </summary>
+		[Required]
+		[MaxLength(100)]
+		[Index]
+		public string ScopeId { get; set; }
 
-		[InverseProperty(nameof(DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>.Author))]
+		[ForeignKey(nameof(ScopeId))]
+		public TScope Scope { get; set; }
+
+
+		[InverseProperty(nameof(DataDocument<TScope,TDocument, TAuthor, TCategory, TTag, TTagReference>.Author))]
 		public ICollection<TDocument> Documents { get; set; }
 
 	}

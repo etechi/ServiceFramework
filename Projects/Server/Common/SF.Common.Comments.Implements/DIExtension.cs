@@ -54,35 +54,15 @@ namespace SF.Sys.Services
 
 			//sc.AddAutoEntityTest(NewCommentManager);
 			//sc.AddAutoEntityTest(NewCommentCategoryManager);
+			sc.InitServices("Comment", async (sp, sim, parent) =>
+			 {
+				 await sim.DefaultService<ICommentManager, CommentManager>(null).Ensure(sp, parent);
+				 await sim.DefaultService<ICommentService, CommentService>(null).Ensure(sp, parent);
+
+			 });
 			return sc;
 		}
 
-		public static IServiceInstanceInitializer<ICommentManager> NewCommentManager(
-			this IServiceInstanceManager manager
-			)
-		{
-			return manager.Service<ICommentManager, CommentManager>(null);
-		}
-		public static IServiceInstanceInitializer NewCommentService(
-			this IServiceInstanceManager manager,
-			string ServiceTitle,
-			string ServiceIdent=null,
-			IServiceInstanceInitializer<ICommentManager> docManager = null
-			)
-		{
-			if (docManager == null)
-				docManager = manager.NewCommentManager();
-			var svc = manager.DefaultServiceWithIdent<ICommentService, CommentService>(
-				ServiceIdent,
-				null,
-				docManager
-				)
-				.WithDisplay(ServiceTitle)
-				//.WithMenuItems(
-				//	"内容管理/"+ServiceTitle
-				//)
-				;
-			return svc;
-		}
+		
 	}
 }

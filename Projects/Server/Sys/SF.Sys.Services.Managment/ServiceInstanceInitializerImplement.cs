@@ -165,20 +165,20 @@ namespace SF.Sys.Services
 		//}
 		public static IServiceInstanceInitializer<I> DefaultService<I, T>(
 			this IServiceInstanceManager manager,
-			object cfg,
-			params IServiceInstanceInitializer[] childServices
+			object cfg
+			//,params IServiceInstanceInitializer[] childServices
 			) where T : I
 			=> manager.DefaultServiceWithIdent<I, T>(
 			 null,
-			 cfg ,
-			 childServices
+			 cfg
+			//,childServices
  			);
 
 		public static IServiceInstanceInitializer<I> DefaultServiceWithIdent<I, T>(
 			this IServiceInstanceManager manager,
 			string ServiceIdent,
-			object cfg,
-			params IServiceInstanceInitializer[] childServices
+			object cfg
+			//,params IServiceInstanceInitializer[] childServices
 			) where T : I
 			=>
 			manager.CreateService<I, T>(
@@ -193,7 +193,7 @@ namespace SF.Sys.Services
 					State: scfg.Enabled?EntityLogicState.Enabled:EntityLogicState.Disabled
 					),
 				cfg,
-				childServices
+				Array.Empty<IServiceInstanceInitializer>()
 				).WithIdent(ServiceIdent);
 
 		public static IServiceInstanceInitializer<I> Service<I, T>(

@@ -89,7 +89,7 @@ namespace SF.Sys.NetworkService
 			sb.AppendLine($"* {t.Title}");
 			sb.AppendLine($"* {t.Description}");
 			sb.AppendLine($"*/");
-			sb.AppendLine($"type {to_js_type(t.Name)} = {string.Join("|",t.Properties.Select(p => $"'{p.Name}'"))};");
+			sb.AppendLine($"type {to_js_type(t.Name)} = {(t.Properties.Length==0?"string": string.Join("|",t.Properties.Select(p => $"'{p.Name}'")))};");
 			sb.AppendLine($"const {to_js_type(t.Name)}Names={{");
 			foreach (var p in t.Properties)
 			{

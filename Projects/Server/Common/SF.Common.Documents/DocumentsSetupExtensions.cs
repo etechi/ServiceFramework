@@ -32,12 +32,14 @@ namespace SF.Common.Documents
 			string content, 
 			string image = null, 
 			string summary = null, 
-			long? author = null
+			long? author = null,
+			string scope=null
+
 			)
 			where TInternal:DocumentInternal
 			where TEditable:DocumentEditable, new()
 		{
-			return await Manager.DocumentEnsure( null, ident, 0, name, content, image, summary, author);
+			return await Manager.DocumentEnsure( null, ident, 0, name, content, image, summary, author,scope);
 		}
 		public static async Task<TEditable> DocumentEnsure<TInternal, TEditable>(
 				this IDocumentManager<TInternal, TEditable> Manager,
@@ -47,12 +49,13 @@ namespace SF.Common.Documents
 				string content, 
 				string image = null, 
 				string summary = null,
-				long? author = null
+				long? author = null,
+				string scope=null
 			)
 				where TInternal : DocumentInternal
 			where TEditable : DocumentEditable, new()
 		{
-			return await Manager.DocumentEnsure( cid, null, order, name, content, image, summary, author);
+			return await Manager.DocumentEnsure( cid, null, order, name, content, image, summary, author,scope);
 		}
 		public static async Task<TEditable> DocumentEnsure<TInternal, TEditable>(
 				this IDocumentManager<TInternal, TEditable> Manager,
@@ -63,13 +66,14 @@ namespace SF.Common.Documents
 				string content, 
 				string image = null, 
 				string summary = null,
-				long? author = null
+				long? author = null,
+				string scope=null
 			)
 			where TInternal : DocumentInternal
 			where TEditable : DocumentEditable,new()
 		{
 			return await Manager.EnsureEntity(
-				await Manager.QuerySingleEntityIdent(new DocumentQueryArguments { Name = name }),
+				await Manager.QuerySingleEntityIdent(new DocumentQueryArguments {ScopeId=scope ?? "default", Name = name }),
 				s =>
 				{
 					s.Name = name;
@@ -82,6 +86,7 @@ namespace SF.Common.Documents
 					s.Description = summary;
 					s.ItemOrder = order;
 					s.PublishDate = DateTime.Now;
+					s.ScopeId = scope ?? "default";
 				});
 		}
 
@@ -93,12 +98,13 @@ namespace SF.Common.Documents
 			string title=null,
 			string image = null, 
 			string summary = null, 
-			long? author = null
+			long? author = null,
+			string scope =null
 			)
 			where TInternal : CategoryInternal,new()
 		{
 			return await Manager.EnsureEntity(
-				await Manager.QuerySingleEntityIdent(new DocumentCategoryQueryArgument { Name = name }),
+				await Manager.QuerySingleEntityIdent(new DocumentCategoryQueryArgument {ScopeId=scope??"default", Name = name }),
 				(TInternal s) =>
 				{
 					s.Name = name;
@@ -108,6 +114,7 @@ namespace SF.Common.Documents
 					s.LogicState = EntityLogicState.Enabled;
 					s.Description = summary;
 					s.ItemOrder = order;
+					s.ScopeId = scope ?? "default";
 				}
 				);
 
@@ -125,7 +132,8 @@ namespace SF.Common.Documents
 			IDocumentCategoryManager<TCategoryInternal> CatManager,
 			long? catId,
 			string folder,
-			Dictionary<string, string> idents=null
+			Dictionary<string, string> idents=null,
+			string scope=null
 			)
 			where TDocInternal:DocumentInternal
 			where TDocEditable:DocumentEditable,new()
@@ -159,7 +167,8 @@ namespace SF.Common.Documents
 					idents?.Get(f.name),
 					f.index,
 					f.name,
-					html
+					html,
+					scope:scope
 					);
 				items.Add(new Item { Id = re.Id, Name = re.Name, IsFile = true });
 			}
@@ -183,7 +192,7 @@ namespace SF.Common.Documents
 
 			foreach (var d in dirs)
 			{
-				var pcat = await CatManager.CategoryEnsure(catId, d.index, d.name);
+				var pcat = await CatManager.CategoryEnsure(catId, d.index, d.name, scope: scope);
 				var chds = await DocEnsureFromFiles(DocManager,CatManager, pcat.Id, d.file, idents);
 				items.Add(new Item { Id = pcat.Id, Name = pcat.Name, Children = chds });
 			}

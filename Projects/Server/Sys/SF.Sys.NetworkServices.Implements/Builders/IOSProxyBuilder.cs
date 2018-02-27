@@ -213,7 +213,7 @@ namespace SF.Sys.NetworkService
 		{
 
 			if (type.EndsWith("?"))
-				return to_ios_type(type.Substring(0, type.Length - 1), withPointer);
+				return to_ios_type(type.Substring(0, type.Length - 1), withPointer, EscapeEnumName, true);
 
 			var i = type.IndexOf('[');
 			if (i != -1)

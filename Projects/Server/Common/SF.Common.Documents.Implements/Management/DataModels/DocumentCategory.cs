@@ -13,31 +13,45 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using SF.Sys.Data;
 using SF.Sys.Entities.DataModels;
 
 namespace SF.Common.Documents.DataModels
 {
-	public class DataDocumentCategory : DataDocumentCategory<DataDocument, DataDocumentAuthor, DataDocumentCategory, DocumentTag, DocumentTagReference>
+	public class DataDocumentCategory : DataDocumentCategory<DataDocumentScope, DataDocument, DataDocumentAuthor, DataDocumentCategory, DataDocumentTag, DataDocumentTagReference>
 	{ }
 
 	/// <summary>
 	/// 文档目录
 	/// </summary>
+	/// <typeparam name="TScope"></typeparam>
 	/// <typeparam name="TDocument"></typeparam>
 	/// <typeparam name="TAuthor"></typeparam>
 	/// <typeparam name="TCategory"></typeparam>
 	/// <typeparam name="TTag"></typeparam>
 	/// <typeparam name="TTagReference"></typeparam>
 	[Table("DocumentCategory")]
-    public class DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference> :
+    public class DataDocumentCategory<TScope,TDocument, TAuthor, TCategory, TTag, TTagReference> :
 		DataUITreeContainerEntityBase<TCategory,TDocument>
-		where TDocument : DataDocument<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TAuthor : DataDocumentAuthor<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TCategory : DataDocumentCategory<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TTag : DocumentTag<TDocument, TAuthor, TCategory, TTag, TTagReference>
-		where TTagReference : DocumentTagReference<TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TScope : DataDocumentScope<TScope,TDocument, TAuthor, TCategory, TTag, TTagReference> 
+		where TDocument : DataDocument<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TAuthor : DataDocumentAuthor<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TCategory : DataDocumentCategory<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TTag : DataDocumentTag<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
+		where TTagReference : DataDocumentTagReference<TScope, TDocument, TAuthor, TCategory, TTag, TTagReference>
 	{
+		/// <summary>
+		/// 区域
+		/// </summary>
+		[Required]
+		[MaxLength(100)]
+		[Index]
+		public string ScopeId { get; set; }
+
+		[ForeignKey(nameof(ScopeId))]
+		public TScope Scope { get; set; }
 
 	}
 }

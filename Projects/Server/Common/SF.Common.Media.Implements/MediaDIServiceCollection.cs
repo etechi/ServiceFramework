@@ -118,41 +118,41 @@ namespace SF.Sys.Services
 				}
 				).WithIdent(Ident);
 		}
-		public static IServiceInstanceInitializer<IMediaManager> NewMediaManager(
-			this IServiceInstanceManager manager
-			)
-		{
-			return manager.Service<IMediaManager, MediaManager>(new{});
-		}
-		public static IServiceInstanceInitializer NewMediaService(
-			this IServiceInstanceManager manager,
-			IServiceInstanceInitializer<IMediaManager> mediaManager = null,
-			Dictionary<string, string> ExtraStaticResourcePaths = null
-			)
-		{
+		//public static IServiceInstanceInitializer<IMediaManager> NewMediaManager(
+		//	this IServiceInstanceManager manager
+		//	)
+		//{
+		//	return manager.Service<IMediaManager, MediaManager>(new{});
+		//}
+		//public static IServiceInstanceInitializer NewMediaService(
+		//	this IServiceInstanceManager manager,
+		//	IServiceInstanceInitializer<IMediaManager> mediaManager = null,
+		//	Dictionary<string, string> ExtraStaticResourcePaths = null
+		//	)
+		//{
 
-			if (mediaManager == null)
-				mediaManager = manager.NewMediaManager();
-			var stgs = (ExtraStaticResourcePaths?.Select(p =>
-					 manager.NewStaticFileMediaStorage(p.Key, p.Value) as IServiceInstanceInitializer)
-					?? Enumerable.Empty<IServiceInstanceInitializer>()
-				).WithFirst(manager.NewFileSystemMediaStorage("ms"))
-					.WithFirst(manager.NewStaticFileMediaStorage("ss"))
-					.WithFirst(mediaManager)
-					.ToArray();
-			var svc = manager.DefaultService<IMediaService, MediaService>(
-				new
-				{
-					//Manager=mm.Id,
-					Setting = new MediaServiceSetting
-					{
-						UploadMediaType = "ms"
-					}
-				},
-				stgs
-				);
-			return svc;
-		}
+		//	if (mediaManager == null)
+		//		mediaManager = manager.NewMediaManager();
+		//	var stgs = (ExtraStaticResourcePaths?.Select(p =>
+		//			 manager.NewStaticFileMediaStorage(p.Key, p.Value) as IServiceInstanceInitializer)
+		//			?? Enumerable.Empty<IServiceInstanceInitializer>()
+		//		).WithFirst(manager.NewFileSystemMediaStorage("ms"))
+		//			.WithFirst(manager.NewStaticFileMediaStorage("ss"))
+		//			.WithFirst(mediaManager)
+		//			.ToArray();
+		//	var svc = manager.DefaultService<IMediaService, MediaService>(
+		//		new
+		//		{
+		//			//Manager=mm.Id,
+		//			Setting = new MediaServiceSetting
+		//			{
+		//				UploadMediaType = "ms"
+		//			}
+		//		},
+		//		stgs
+		//		);
+		//	return svc;
+		//}
 		public static IServiceCollection AddMediaService(
 			this IServiceCollection sc,
 			EnvironmentType EnvType,
@@ -163,14 +163,34 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IMediaMetaCache, MediaMetaCache>();
 			sc.AddManagedScoped<IMediaManager, MediaManager>();
 			//if(EnvType!=EnvironmentType.Utils)
-				sc.AddManagedScoped<IMediaService, MediaService>();
+			sc.AddManagedScoped<IMediaService, MediaService>();
 
 			sc.AddManagedScoped<IMediaStorage, FileSystemMediaStorage>();
 			sc.AddManagedScoped<IMediaStorage, StaticFileMediaStorage>();
 
 			if(InitMediaServiceInstance)
-				sc.InitService("媒体服务", (sp, sim) =>
-					sim.NewMediaService(null, ExtreStaticResourcePaths)
+				sc.InitServices("媒体服务", async (sp, sim, parent) =>
+					{
+						await sim.DefaultService<IMediaManager, MediaManager>(new { }).Ensure(sp, parent);
+
+						if(ExtreStaticResourcePaths!=null)
+							foreach(var p in ExtreStaticResourcePaths)
+								await sim.NewStaticFileMediaStorage(p.Key, p.Value).Ensure(sp, parent);
+
+						await sim.NewFileSystemMediaStorage("ms").Ensure(sp,parent);
+						await sim.NewStaticFileMediaStorage("ss").Ensure(sp, parent);
+
+						await sim.DefaultService<IMediaService, MediaService>(
+							new
+							{
+								//Manager=mm.Id,
+								Setting = new MediaServiceSetting
+								{
+									UploadMediaType = "ms"
+								}
+							}
+						).Ensure(sp, parent);
+					}
 					);
 
 
