@@ -1,6 +1,8 @@
 ﻿using SF.Sys;
 using SF.Sys.Caching;
 using SF.Sys.HttpClients;
+using SF.Sys.Services;
+using SF.Sys.Settings;
 using SF.Sys.Threading;
 using SF.Sys.TimeServices;
 using System;
@@ -24,19 +26,29 @@ namespace SF.Externals.WeiXin.Mp.Core
 
 		ITimeService TimeService { get; }
 
-		WeiXinMpSetting Setting { get; }
+		WeiXinMpSetting Setting { get; set; }
+
 		IHttpClient HttpClient { get; set; }
         public AccessTokenManager(
             ITimeService TimeService,
 			IHttpClient HttpClient,
-			WeiXinMpSetting Setting
+			ISettingService<WeiXinMpSetting> Setting,
+			ISettingChangedTrackerService SettingChangedTracker
             )
-
         {
+			
 			this.HttpClient = HttpClient;
-            this.Setting = Setting;
+            this.Setting = Setting.Value;
             this.TimeService = TimeService;
-        }
+			SettingChangedTracker.OnSettingChanged<WeiXinMpSetting>(sp =>
+			{
+				this.Setting = sp.Resolve<ISettingService<WeiXinMpSetting>>().Value;
+				_AccessTokenExpire = new DateTime(2000, 1, 1);
+				_JsApiTicketExpire=new DateTime(2000, 1, 1);
+				return Task.CompletedTask;
+			});
+
+		}
         class AccessTokenResponse
         {
             public string access_token { get; set; }

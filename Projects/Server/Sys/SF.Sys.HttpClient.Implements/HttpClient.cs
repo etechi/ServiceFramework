@@ -20,6 +20,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SF.Sys.HttpClients
@@ -32,16 +33,26 @@ namespace SF.Sys.HttpClients
 		{
 			Logger = LogService?.GetLogger("HTTP");
 		}
+		
 		public async Task<T> Request<T>(HttpRequestMessage Request,Func<HttpResponseMessage,Task<T>> GetResult)
 		{
+			//var handler = new HttpClientHandler
+			//{
+			//	UseDefaultCredentials = false,
+			//	Proxy = new WebProxy("http://101.132.131.224:13001", false, new string[] { }),
+			//	UseProxy = true,
+			//};
+
+			//var cli = new System.Net.Http.HttpClient(handler);
 			var cli = new System.Net.Http.HttpClient();
+
 			string respData=null;
 			string reqData=null;
 			HttpStatusCode StatusCode = default;
 			try
 			{
 				reqData = await GetReqData(Request);
-
+				
 				using (var resp = await cli.SendAsync(Request))
 				{
 					StatusCode = resp.StatusCode;

@@ -17,12 +17,13 @@ namespace SF.Sys.Services
 			sc.AddTransient<IWeiXinClient, Externals.WeiXin.Mp.Core.WeiXinClient>();
 			sc.AddSingleton<IAccessTokenManager, Externals.WeiXin.Mp.Core.AccessTokenManager>();
 
-			sc.AddManagedScoped<IOAuthAuthorizationProvider, Externals.WeiXin.Mp.OAuth2.OAuth2Provider>();
+			sc.AddManagedScoped<IExternalAuthorizationProvider, Externals.WeiXin.Mp.OAuth2.OAuth2Provider>();
 
 			sc.AddSetting(setting);
-			sc.AddServiceInstanceInitializer(
-				sim => 
-					sim.Service<IOAuthAuthorizationProvider, Externals.WeiXin.Mp.OAuth2.OAuth2Provider>(
+			sc.InitService(
+				"微信服务号",
+				(sp,sim) => 
+					sim.Service<IExternalAuthorizationProvider, Externals.WeiXin.Mp.OAuth2.OAuth2Provider>(
 						new
 						{
 							OAuthSetting = new Externals.WeiXin.Mp.OAuth2.OAuth2Setting()

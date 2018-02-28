@@ -93,6 +93,8 @@ namespace SF.Auth.IdentityServices.Externals
 				return Error(Callback, "未指定客户端状态");
 
 			var provider = Resolver(Provider);
+			if (provider == null)
+				throw new ArgumentException("不支持此外部认证提供者:" + Provider);
 			var sess = new ExtAuthSession
 			{
 				State = Strings.NumberAndLowerChars.Random(16),

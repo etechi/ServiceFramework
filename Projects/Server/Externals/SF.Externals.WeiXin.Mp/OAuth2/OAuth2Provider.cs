@@ -30,11 +30,17 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 	public class OAuth2Provider : IOAuthAuthorizationProvider
 	{
 		public OAuth2Setting OAuthSetting { get; }
-        public ILogger<OAuth2Provider> Logger { get; }
+        public ILogger Logger { get; }
 		public WeiXinMpSetting MPSetting { get; }
 		public Lazy<IInvokeContext> InvokeContext { get; }
 		public IHttpClient HttpClient { get; }
-		public OAuth2Provider(ISettingService<WeiXinMpSetting> MpSetting,OAuth2Setting OAuthSetting, ILogService LogService, Lazy<IInvokeContext> InvokeContext, IHttpClient HttpClient)
+		public OAuth2Provider(
+			ISettingService<WeiXinMpSetting> MpSetting,
+			OAuth2Setting OAuthSetting,
+			ILogger<OAuth2Provider> Logger, 
+			Lazy<IInvokeContext> InvokeContext, 
+			IHttpClient HttpClient
+			)
         {
 			this.OAuthSetting = OAuthSetting;
 			this.MPSetting = MpSetting.Value;
@@ -190,7 +196,12 @@ namespace SF.Externals.WeiXin.Mp.OAuth2
 					$"令牌:{Token}，" +
 					$"请求:{uri}");
 
-            Logger.Info($"获取微信用户信息:openid:{tokens.openid} access_token:{tokens.access_token} {re}");
+            Logger.Info(
+				"获取微信用户信息:openid:{0} access_token:{1} {2}", 
+				tokens.openid, 
+				tokens.access_token,
+				re
+				);
             WeichatUserInfo ui;
 			try
 			{

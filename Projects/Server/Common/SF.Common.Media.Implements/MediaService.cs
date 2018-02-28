@@ -139,7 +139,7 @@ namespace SF.Common.Media
 			var re=await Manager.TryCreateByImageUri(
 				Setting.UploadMediaType,
 				uri,
-				Setting.MaxImageSize
+				Setting.MaxSize*1024*1024
 				);
 			return new CopyResult { Id = re };
 		}
