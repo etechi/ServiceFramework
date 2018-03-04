@@ -16,15 +16,16 @@ namespace SF.Sys.Services
         public static IServiceCollection AddWeiXinDeviceServices(this IServiceCollection sc, WeiXinDeviceServiceSetting setting =null)
         {
 			sc.AddManagedTransient<IWeiXinDeviceService, WeiXinDeviceService>();
-			sc.AddServiceInstanceInitializer(
-				sim => 
-					sim.Service<IWeiXinDeviceService, WeiXinDeviceService>(
+			sc.InitService(
+				"微信设备服务",
+				(sp,sim) => 
+					sim.DefaultService<IWeiXinDeviceService, WeiXinDeviceService>(
 						new
 						{
 							Setting = setting ?? new WeiXinDeviceServiceSetting()
 						}
 					)
-					);
+			);
 
 			return sc;
 		}

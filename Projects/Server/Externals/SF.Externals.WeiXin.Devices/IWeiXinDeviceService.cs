@@ -23,12 +23,12 @@ namespace SF.Externals.WeiXin.Devices
 		/// <summary>
 		/// 1：退出公众号页面时即断开连接 
 		/// </summary>
-		DisconnectAfterExit,
+		DisconnectAfterExit=1,
 
 		/// <summary>
 		/// 2：退出公众号之后保持连接不断开
 		/// </summary>
-		UndisconnectAfterExit
+		UndisconnectAfterExit=2
 	}
 
 	public enum CryptMethod {
@@ -102,6 +102,11 @@ namespace SF.Externals.WeiXin.Devices
 		public int SerMacPos { get; set; }
 
 		public string BleSimpleProtocol { get; set; }
+
+		/// <summary>
+		/// 产品ID
+		/// </summary>
+		public string ProductId { get; set; }
 	}
 	public enum DeviceStatus
 	{

@@ -87,10 +87,10 @@ namespace SF.Externals.WeiXin.Devices
 			ValidateResponse(resp.resp_msg, "设备授权");
 			if (resp.deviceid.IsNullOrEmpty())
 				throw new WeiXinException(-1, "请求成功，但没有返回设备ID");
-
+			var id = resp.deviceid.LastSplit2('_').Item2;
 			return new GetQrCodeResult
 			{
-				DeviceId = resp.deviceid,
+				DeviceId = id,
 				QrCode = resp.qrticket
 			};
 		}
@@ -106,33 +106,49 @@ namespace SF.Externals.WeiXin.Devices
 		}
 		public async Task AuthorizeDevice(AuthorizeDeviceArgument Arg)
 		{
+			var devs = new[]{
+				new
+				{
+					id = Arg.DeviceId,
+					mac = Arg.Mac,
+					connect_protocol = Arg.ConnectProtocols.Select(p => (int)p).Join("|"),
+					auth_key = Arg.AuthKey,
+					close_strategy = ((int)Arg.CloseStrategy).ToString(),
+					conn_strategy = ((Arg.AutoReconnectOnPage ? 1 : 0) | (Arg.AutoRecordOnActive ? 4 : 0)).ToString(),
+					crypt_method = ((int)Arg.CryptMethod).ToString(),
+					auth_ver = Arg.AuthVersion,
+					manu_mac_pos = Arg.ManuMacPos.ToString(),
+					ser_mac_pos = Arg.SerMacPos.ToString(),
+					ble_simple_protocol = Arg.BleSimpleProtocol
+				}
+			};
 			var re = await AccessTokenManager.Json(
 				new Uri(Setting.ApiUriBase + "authorize_device"),
 				new
 				{
 					device_num = 1,
-					device_list = new[]{
-						new
-						{
-							id = Arg.DeviceId,
-							mac = Arg.Mac,
-							connect_protocol = Arg.ConnectProtocols.Select(p => (int)p).Join("|"),
-							auth_key = Arg.AuthKey,
-							close_strategy = (int)Arg.CloseStrategy,
-							conn_strategy = (Arg.AutoReconnectOnPage ? 1 : 0) | (Arg.AutoRecordOnActive ? 4 : 0),
-							crypt_method = (int)Arg.CryptMethod,
-							auth_ver = Arg.AuthVersion,
-							manu_mac_pos = Arg.ManuMacPos,
-							ser_mac_pos = Arg.SerMacPos,
-							ble_simple_protocol = Arg.BleSimpleProtocol
-						}
-					},
-					op_type = "1"
+					device_list =devs,
+					op_type = "0",
+					product_id=Arg.ProductId
 				}
 				);
+			
 			var result = Json.Parse<auth_resp>(re);
+			if(result.errcode== 100002)
+			{
+				re = await AccessTokenManager.Json(
+				   new Uri(Setting.ApiUriBase + "authorize_device"),
+				   new
+				   {
+					   device_num = 1,
+					   device_list = devs,
+					   op_type = "1",
+					   product_id = Arg.ProductId
+				   }
+				   );
+				result = Json.Parse<auth_resp>(re);
+			}
 			ValidateResponse(result, "设备授权");
-
 
 			if (result.resp == null || result.resp.Length != 1)
 				throw new WeiXinException(-1, $"设备授权失败:没有返回数据");
