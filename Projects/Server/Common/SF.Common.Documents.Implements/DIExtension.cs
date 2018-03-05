@@ -67,20 +67,20 @@ namespace SF.Sys.Services
 			sc.InitServices("Documents", async (sp, sim, parent) =>
 			 {
 				 await sim.DefaultService<IDocumentManager, DocumentManager>(null)
-					.WithMenuItems("内容管理/文档管理")
+					.WithMenuItems("前端内容/文档管理")
 					.Ensure(sp, parent);
 
 				 await sim.DefaultService<IDocumentCategoryManager, DocumentCategoryManager>(null)
-					.WithMenuItems("内容管理/文档管理")
+					.WithMenuItems("前端内容/文档管理")
 					.Ensure(sp, parent);
 
 				 await sim.DefaultService<IDocumentService, DocumentService>(
 					 null
 					 )
-					 .WithMenuItems("内容管理/文档管理")
+					 .WithMenuItems("前端内容/文档管理")
 					 .Ensure(sp, parent);
 				 await sim.DefaultService<IDocumentScopeManager, DocumentScopeManager>(null)
-					.WithMenuItems("内容管理/文档管理")
+					.WithMenuItems("前端内容/文档管理")
 					.Ensure(sp, parent);
 				 await sp.Resolve<IDocumentScopeManager>().EnsureEntity(
 					 ObjectKey.From("default"),

@@ -23,7 +23,7 @@ using SF.Sys.NetworkService;
 namespace SF.Common.Notifications.Management
 {
 	/// <summary>
-	/// 文本消息记录
+	/// 通知发送记录
 	/// </summary>
 	[EntityManager]
 	[Authorize("admin")]

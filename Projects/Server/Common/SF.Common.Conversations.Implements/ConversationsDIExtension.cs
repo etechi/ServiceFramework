@@ -34,7 +34,7 @@ namespace SF.Sys.Services
 
 			sc.InitServices("交谈", async (sp, sim, scope) =>
 			{
-				var MenuPath = "系统/交谈服务";
+				var MenuPath = "用户内容/会话服务";
 				await sim.Service<ISessionStatusManager, SessionStatusManager>(null)
 					.WithMenuItems(MenuPath)
 					.Ensure(sp, scope);

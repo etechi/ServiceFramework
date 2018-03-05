@@ -38,16 +38,17 @@ namespace SF.Sys.Services
 		{
 			ILocalCache<TItem> Cache { get; }
 			Func<LoadServices, TKey, Task<TItem>> Loader { get; }
-			IServiceProvider ServiceProvider { get; }
+			IServiceScopeFactory ServiceScopeFactory { get; }
 
 			public EntityLocalCache(
-				IServiceProvider sp,
+				ILocalCache<TItem> Cache,
+				IServiceScopeFactory ServiceScopeFactory,
 				Func<LoadServices,TKey, Task<TItem>> Loader
 				)
 			{
 				this.Loader = Loader;
-				this.Cache = sp.Resolve<ILocalCache<TItem>>();
-				this.ServiceProvider = sp;
+				this.Cache = Cache;
+				this.ServiceScopeFactory = ServiceScopeFactory;
 			}
 			public Task Remove(TKey Key)
 			{
@@ -59,14 +60,17 @@ namespace SF.Sys.Services
 				var key = Id.ToString();
 				var plan = Cache.Get(key);
 				if (plan != null) return plan;
-				return await ServiceProvider.WithScopedServices(async (LoadServices services) =>
+				using (var s = ServiceScopeFactory.CreateServiceScope())
 				{
-					var re = await Loader(services,Id);
-					if (re == null) return null;
-					return Cache.AddOrGetExisting(
-						key, re, TimeSpan.FromHours(1)
-						) ?? re;
-				});
+					return await s.ServiceProvider.WithServices(async (LoadServices services) =>
+					{
+						var re = await Loader(services, Id);
+						if (re == null) return null;
+						return Cache.AddOrGetExisting(
+							key, re, TimeSpan.FromHours(1)
+							) ?? re;
+					});
+				}
 			}
 		}
 		public static IServiceCollection AddEntityLocalCache<TKey, TItem, TLoadServices, TInitRemoveServices>(
@@ -78,7 +82,8 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IEntityCache<TKey, TItem>>(sp =>
 			{
 				var cache = new EntityLocalCache<TKey, TItem, TLoadServices>(
-					sp,
+					sp.Resolve< ILocalCache<TItem>>(),
+					sp.Resolve<IServiceScopeFactory>(),
 					Loader
 					);
 				sp.WithServices((TInitRemoveServices svc) =>
@@ -98,15 +103,15 @@ namespace SF.Sys.Services
 		{
 			ConcurrentDictionary<TKey, TItem> Cache { get; } = new ConcurrentDictionary<TKey, TItem>();
 			Func<LoadServices, TKey, Task<TItem>> Loader { get; }
-			IServiceProvider ServiceProvider { get; }
+			IServiceScopeFactory ServiceScopeFactory { get; }
 
 			public EntityGlobalCache(
-				IServiceProvider sp,
+				IServiceScopeFactory ServiceScopeFactory,
 				Func<LoadServices, TKey, Task<TItem>> Loader
 				)
 			{
 				this.Loader = Loader;
-				this.ServiceProvider = sp;
+				this.ServiceScopeFactory = ServiceScopeFactory;
 			}
 			public Task Remove(TKey Key)
 			{
@@ -117,12 +122,15 @@ namespace SF.Sys.Services
 			{
 				if (Cache.TryGetValue(Id, out var re))
 					return re;
-				return await ServiceProvider.WithScopedServices(async (LoadServices services) =>
+				using (var s = ServiceScopeFactory.CreateServiceScope())
 				{
-					var item = await Loader(services, Id);
-					if (item == null) return null;
-					return Cache.GetOrAdd(Id, item);
-				});
+					return await s.ServiceProvider.WithServices(async (LoadServices services) =>
+					{
+						var item = await Loader(services, Id);
+						if (item == null) return null;
+						return Cache.GetOrAdd(Id, item);
+					});
+				}
 			}
 		}
 		public static IServiceCollection AddEntityGlobalCache<TKey, TItem, TLoadServices, TInitRemoveServices>(
@@ -136,7 +144,7 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IEntityCache<TKey, TItem>>(sp =>
 			{
 				var cache = new EntityGlobalCache<TKey, TItem, TLoadServices>(
-					sp,
+					sp.Resolve<IServiceScopeFactory>(),
 					Loader
 					);
 				sp.WithScope((IServiceProvider isp) =>

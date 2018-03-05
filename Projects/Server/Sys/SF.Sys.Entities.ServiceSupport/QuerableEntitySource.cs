@@ -41,7 +41,8 @@ namespace SF.Sys.Entities
 		{
 			return ServiceContext.AutoQueryIdentsAsync<TKey, TQueryArgument, TModel>(Arg, OnBuildQuery, PagingQueryBuilder);
 		}
-		
+		//protected abstract Task<TEntitySummary[]> OnPrepareSummaries(TSummaryTemp[] Internals);
+
 		public virtual Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg)
 		{
 			return ServiceContext.AutoQueryAsync<TEntitySummary, TQueryArgument, TModel>(

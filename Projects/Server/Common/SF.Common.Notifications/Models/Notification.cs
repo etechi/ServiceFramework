@@ -133,7 +133,7 @@ namespace SF.Common.Notifications.Models
 		[EntityIdent(typeof(User), nameof(SenderName))]
 		[Layout(70)]
 		[Uneditable]
-		public int? SenderId { get; set; }
+		public long? SenderId { get; set; }
 
 		/// <summary>
 		/// 发布人

@@ -68,7 +68,7 @@ namespace SF.Sys.Services
 
 			sc.InitServices("后台管理", async (sp, sim, scope) =>
 			{
-				var MenuPath = "系统/后台管理";
+				var MenuPath = "系统管理/后台管理";
 				await sim.Service<IConsoleManager, ConsoleManager>(null)
 					.WithMenuItems(MenuPath)
 					.Ensure(sp, scope);

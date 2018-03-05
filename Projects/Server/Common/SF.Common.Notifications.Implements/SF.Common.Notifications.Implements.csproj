@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Sys\SF.Sys.BackEndConsole\SF.Sys.BackEndConsole.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Data\SF.Sys.Data.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Plans\SF.Sys.Plans.csproj" />

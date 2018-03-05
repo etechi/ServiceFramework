@@ -14,6 +14,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
+using System.Threading.Tasks;
+using SF.Sys.BackEndConsole;
 using SF.Sys.Services.Internals;
 using SF.Sys.Services.Storages;
 
@@ -41,10 +43,31 @@ namespace SF.Sys.Services
 
 			sc.AddScoped<IServiceConfigLoader, Storages.DBServiceSource>();
 			sc.AddScoped<IServiceInstanceLister, Storages.DBServiceSource>();
+			sc.AddConsoleBuilder("系统服务", (sp, b) =>
+			{
+				b.AddMenuItems(
+				 new MenuItemConfig
+				 {
+					 Path = "系统管理/系统服务/系统服务定义",
+					 Link = "/ap/entity/list/SysServiceDeclaration/0"
+				 },
+				 new MenuItemConfig
+				 {
+					 Path = "系统管理/系统服务/系统服务实现",
+					 Link = "/ap/entity/list/SysServiceImplement/0"
+				 },
+				 new MenuItemConfig
+				 {
+					 Path = "系统管理/系统服务/系统服务实例",
+					 Link = "/ap/entity/list/SysServiceInstance/0"
+				 }
+				 );
+				return Task.CompletedTask;
+			});
 
 			sc.AddDefaultMenuItems(
 				"default",
-				"1000:系统管理/系统服务",
+				"系统管理/系统服务",
 				new SF.Sys.BackEndConsole.MenuItem {
 					Name = "系统服务定义",
 					Action = SF.Sys.BackEndConsole.MenuActionType.EntityManager,

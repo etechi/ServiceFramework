@@ -56,21 +56,21 @@ namespace SF.Sys.Services
 		{
 			return sim.DefaultService<ISiteManager, SiteManager>(new { })
 				.WithMenuItems(
-					"系统管理/前端管理"
+					"前端内容/页面管理"
 					);
 		}
 		public static IServiceInstanceInitializer<ISiteTemplateManager> NewSiteTemplateManager(this IServiceInstanceManager sim)
 		{
 			return sim.DefaultService<ISiteTemplateManager, SiteTemplateManager>(new { })
 				.WithMenuItems(
-					"系统管理/前端管理"
+					"前端内容/页面管理"
 					);
 		}
 		public static IServiceInstanceInitializer<IContentManager> NewSiteContentManager(this IServiceInstanceManager sim)
 		{
 			return sim.DefaultService<IContentManager, ContentManager>(new { })
 				.WithMenuItems(
-					"系统管理/前端管理"
+					"前端内容/页面管理"
 					);
 		}
 	}

@@ -155,7 +155,7 @@ namespace SF.Sys.Entities
 		)
 			where TModel : class
 		{
-			return await ServiceContext.GetAsync<TKey,TReadOnlyEntity,TModel>(
+			var re= await ServiceContext.GetAsync<TKey,TReadOnlyEntity,TModel>(
 				Id,
 				async q =>
 				{
@@ -164,6 +164,10 @@ namespace SF.Sys.Entities
 						.QuerySingleOrDefault(q,QueryDeep, PropertySelector.Get(Fields));
 				}
 				);
+			if (re!=null)
+				await ServiceContext.EntityPropertyFiller.Fill(null, new[] { re });
+			return re;
+
 		}
 
 		public static async Task<TReadOnlyEntity> GetAsync<TKey,TTempReadOnlyEntity, TReadOnlyEntity, TModel>
@@ -245,7 +249,7 @@ namespace SF.Sys.Entities
 		)
 			where TModel : class
 		{
-			return await ServiceContext.BatchGetAsync<TKey, TReadOnlyEntity, TModel>(
+			 var re=await ServiceContext.BatchGetAsync<TKey, TReadOnlyEntity, TModel>(
 				Ids,
 				async q => {
 					return (await ServiceContext.QueryResultBuildHelperCache.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Detail).Query(
@@ -259,6 +263,9 @@ namespace SF.Sys.Entities
 						}
 						)).Items.ToArray();
 				});
+			if (re.Length > 0)
+				await ServiceContext.EntityPropertyFiller.Fill(null, re);
+			return re;
 		}
 		public static async Task<TReadOnlyEntity[]> BatchGetAsync<TKey, TTempReadOnlyEntity, TReadOnlyEntity, TModel>
 		(
@@ -393,7 +400,7 @@ namespace SF.Sys.Entities
 			where TModel : class
 			where TQueryArgument:IPagingArgument
 		{
-			return await ServiceContext.QueryAsync<TReadOnlyEntity, TModel>(async q => {
+			var re=await ServiceContext.QueryAsync<TReadOnlyEntity, TModel>(async q => {
 				q = ServiceContext.QueryFilterCache.
 					GetFilter<TModel, TQueryArgument>().Filter(q, ServiceContext, QueryArgument);
 				if (BuildQuery != null)
@@ -405,6 +412,8 @@ namespace SF.Sys.Entities
 					QueryArgument.Paging
 					);
 			});
+			await ServiceContext.EntityPropertyFiller.Fill(null, re.Items.ToArray());
+			return re;
 		}
 		public static async Task<QueryResult<TReadOnlyEntity>> QueryAsync<TTempReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
 			   this IEntityServiceContext ServiceContext,

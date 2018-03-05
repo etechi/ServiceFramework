@@ -105,7 +105,7 @@ namespace SF.Sys.Entities
 			if (!Fields.TryGetValue(method, out field))
 				throw new NotSupportedException("不支持排序类型：" + method);
 
-			if (order == SortOrder.Default)
+			if (order == SortOrder.Default || (int)order==-1)
 				order = field.defaultOrderDesc ? SortOrder.Desc : SortOrder.Asc;
 
 			query = field.query(query, order == SortOrder.Desc);

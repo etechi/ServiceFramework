@@ -45,8 +45,7 @@ namespace SF.Sys.Entities
 			bool FillRequired { get; }
 			string[] Properties { get;  }
 			public EntityFiller(
-				(PropertyInfo IdProp, Type EntityType,Type ManagerType, (PropertyInfo dstProp, PropertyInfo srcProp)[] ValueProps)[] settings,
-				bool NullableKeyField
+				(PropertyInfo IdProp, Type EntityType,Type ManagerType, (PropertyInfo dstProp, PropertyInfo srcProp)[] ValueProps)[] settings
 				)
 			{
 				var varName = Expression.Variable(typeof(string));
@@ -73,49 +72,51 @@ namespace SF.Sys.Entities
 				var argItem = Expression.Parameter(typeof(TItem));
 				var argList = Expression.Parameter(typeof(List<TKey>));
 
-				if (NullableKeyField)
+				
+				var varKey = typeof(TKey).IsClass?null: Expression.Variable(typeof(Nullable<>).MakeGenericType(typeof(TKey)));
+				var list = new List<Expression>();
+				foreach (var s in settings)
 				{
-					var varKey = Expression.Variable(settings[0].IdProp.PropertyType);
-					var list = new List<Expression>();
-					foreach (var s in settings)
+					var isNullable = varKey!=null && s.IdProp.PropertyType.GetGenericArgumentTypeAsNullable() != null;
+					if (isNullable)
 					{
 						list.Add(varKey.Assign(argItem.GetMember(s.IdProp)));
 						list.Add(
 							argList.CallMethod(
 								"Add",
 								Expression.Condition(
-								varKey.GetMember("HasValue"), 
+								varKey.GetMember("HasValue"),
 								varKey.GetMember("Value"),
 								Expression.Constant(default(TKey)) //没有数据时填空，否则无法对应
 								)
 							)
 						);
 					}
-					CollectIdents = Expression.Lambda<Action<TItem, List<TKey>>>(
-						Expression.Block(
-							new[] { varKey },
-							list
-							),
-							argItem,
-							argList
-						).Compile();
-				}
-				else
-					CollectIdents = Expression.Lambda<Action<TItem, List<TKey>>>(
-						Expression.Block(
-							settings.Select(s =>
-								argList.CallMethod(
-									"Add",
-									Expression.Property(
-										argItem,
-										s.IdProp
-										)
-									)
+					else
+					{
+						list.Add(
+							argList.CallMethod(
+								"Add",
+								argItem.GetMember(s.IdProp)
 								)
-							),
-							argItem,
-							argList
-						).Compile();
+						);
+					}
+				}
+				CollectIdents = 
+					
+					Expression.Lambda<Action<TItem, List<TKey>>>(
+						(varKey != null ?
+							Expression.Block(
+								new[] { varKey },
+								list
+								):
+							Expression.Block(
+									list
+								)),
+						argItem,
+						argList
+					).Compile();
+				
 
 				var argEntity = Expression.Parameter(typeof(TEntity));
 				FillFields = (from setting in settings
@@ -190,22 +191,39 @@ namespace SF.Sys.Entities
 		class Filler<TItem> : Filler
 		{
 			EntityFiller<TItem>[] EntityFillers { get; }
+			string GetEntityTitleField(Type Type)
+			{
+				var props = Type.AllPublicInstanceProperties();
+				var dta = props.FirstOrDefault(t => t.IsDefined(typeof(EntityTitleAttribute)));
+				if (dta != null) return dta.Name;
+
+				dta = props.FirstOrDefault(t => t.Name == "Title" || t.Name == "Name");
+				if (dta != null)
+					return dta.Name;
+
+				throw new InvalidOperationException("找不到类型标题:" + Type.FullName);
+			}
 			public Filler(IEntityMetadataCollection MetadataCollection)
 			{
 				var AllProps = typeof(TItem).AllPublicInstanceProperties();
 
 				var settings = (from prop in AllProps
 								let ei = prop.GetCustomAttribute<EntityIdentAttribute>()
-								where ei != null
+								where ei != null && ei.EntityType!=null
 								let meta = MetadataCollection.FindByEntityType(ei.EntityType) ?? 
 											throw new NotSupportedException($"未找到类型{ei.EntityType}对于的实体管理器")
 								let eprops = (from p in AllProps
 											  let pa = p.GetCustomAttribute<FromEntityPropertyAttribute>() ??
-														(ei.NameField==p.Name?new FromEntityPropertyAttribute(prop.Name,"Name"):null)
+														(ei.NameField==p.Name?new FromEntityPropertyAttribute(
+															prop.Name,
+															GetEntityTitleField(ei.EntityType)
+															):null)
 											  where pa != null && pa.IdentField == prop.Name
+											  
 											 let srcProp=meta.EntityDetailType.GetProperty(pa.Property)?? 
 															throw new NotSupportedException($"实体类型{meta.EntityDetailType}中找不到属性{pa.Property}")
-											  select (dstProp: p, srcProp: srcProp)
+
+											select (dstProp: p, srcProp: srcProp)
 											).ToArray()
 								where eprops.Length > 0
 								group (IdProp: prop, EntityType: meta.EntityDetailType, ManagerType:meta.EntityManagerType, ValueProps: eprops) by meta.EntityDetailType
@@ -226,8 +244,7 @@ namespace SF.Sys.Entities
 								g.First().ManagerType,
 								typeof(TItem)
 								),
-							g.ToArray(),
-							realIdType != idType
+							g.ToArray()
 							);
 					}
 					).ToArray();

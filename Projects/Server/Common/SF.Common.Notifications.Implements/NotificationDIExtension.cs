@@ -76,19 +76,27 @@ namespace SF.Sys.Services
 				}
 			);
 			sc.InitServices("通知服务",async (sp, sim, scope) =>
-			 {
-				 await sim.DefaultService<INotificationService, NotificationService>(
+			{
+				var MenuPath = "用户内容/通知服务";
+
+				await sim.DefaultService<INotificationService, NotificationService>(
 					 new NotificationServiceSetting { }
 					 ).Ensure(sp, scope);
 
-				 await sim.DefaultService<INotificationSendPolicyManager, NotificationSendPolicyManager>(null)
-					.Ensure(sp, scope);
-
 				 await sim.DefaultService<INotificationManager, NotificationManager>(null)
+					.WithMenuItems(MenuPath)
 					.Ensure(sp, scope);
-				 await sim.DefaultService<INotificationSendRecordManager, NotificationSendRecordManager>(null).Ensure(sp, scope);
 
-				 var debugProviderId = await sim.Service<INotificationSendProvider, DebugNotificationSendProvider>(null)
+				 await sim.DefaultService<INotificationSendRecordManager, NotificationSendRecordManager>(null)
+					.WithMenuItems(MenuPath)
+					.Ensure(sp, scope);
+
+				await sim.DefaultService<INotificationSendPolicyManager, NotificationSendPolicyManager>(null)
+				   .WithMenuItems(MenuPath)
+				   .Ensure(sp, scope);
+
+
+				var debugProviderId = await sim.Service<INotificationSendProvider, DebugNotificationSendProvider>(null)
 					.WithIdent("debug")
 					.Ensure(sp, scope);
 

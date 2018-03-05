@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace SF.Common.Notifications.Management
 {
 	/// <summary>
-	/// 文本消息记录
+	/// 通知策略管理
 	/// </summary>
 	[EntityManager]
 	[Authorize("admin")]
