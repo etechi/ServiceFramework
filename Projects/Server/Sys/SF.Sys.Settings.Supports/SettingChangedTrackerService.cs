@@ -39,12 +39,12 @@ namespace SF.Sys.Settings
 			var resolver = ServiceProvider.Resolver();
 			Subscriber.Wait((ei) =>
 			{
-				SF.Sys.Threading.Debouncer.Start(ei.Id, (cancelled) =>
+				SF.Sys.Threading.Debouncer.Start(ei.Payload.Id, (cancelled) =>
 				{
 					if (cancelled) return;
 					Task.Run(async () =>
 					{
-						var desc = resolver.ResolveDescriptorByIdent(ei.Id);
+						var desc = resolver.ResolveDescriptorByIdent(ei.Payload.Id);
 						if (!Callbacks.TryGetValue(desc.ServiceDeclaration.ServiceType, out var cbs))
 							return;
 
