@@ -122,8 +122,8 @@ namespace SF.Auth.IdentityServices
 						where grantResources.Contains(g.ResourceId)
 						select new { g.OperationId, g.ResourceId }
 						).ToListAsync())
-						.GroupBy(p => p.OperationId)
-						.Select(g => (rs: g.Key, os: g.Distinct()));
+						.GroupBy(p => p.ResourceId)
+						.Select(g => (rs: g.Key, os: g.Select(gi=>gi.OperationId).Distinct()));
 
 					var roles = await (
 						from r in ctx.Set<DataModels.UserRole>().AsQueryable()

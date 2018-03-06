@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Sys.Annotations;
 using SF.Sys.Entities.Models;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SF.Auth.IdentityServices.Models
@@ -27,7 +28,12 @@ namespace SF.Auth.IdentityServices.Models
 	[EntityObject]
 	public class Role: ObjectEntityBase<string>
 	{
-
+		/// <summary>
+		/// 系统角色
+		/// </summary>
+		/// <remarks>用于支持系统业务,不能删除</remarks>
+		[TableVisible]
+		public bool IsSysRole { get; set; }
 	}
 	public class Grant
 	{
@@ -35,29 +41,50 @@ namespace SF.Auth.IdentityServices.Models
 		/// 操作资源ID
 		/// </summary>
 		[Key]
-		[EntityIdent(typeof(ResourceInternal), nameof(ResourceName))]
+		[EntityIdent(typeof(ResourceInternal))]
 		public string ResourceId { get; set; }
 
-		[TableVisible]
-		[Ignore]
-		public string ResourceName { get; set; }
 
 		/// <summary>
 		/// 操作区域ID
 		/// </summary>
 		[Key]		
-		[EntityIdent(typeof(OperationInternal), nameof(OperationName))]
+		[EntityIdent(typeof(OperationInternal))]
 		public string OperationId { get; set; }
 
-		[TableVisible]
-		[Ignore]
-		public string OperationName { get; set; }
+	}
+	public class GrantEditable
+	{
+		/// <summary>
+		/// 资源
+		/// </summary>
+		[Key]
+		[EntityIdent(typeof(ResourceInternal))]
+		[Uneditable]
+		public string ResourceId { get; set; }
+
+		/// <summary>
+		/// 操作
+		/// </summary>
+		[EntityIdent(typeof(OperationInternal))]
+		public IEnumerable<string> OperationIds { get; set; }
+
 	}
 	public class RoleEditable : Role
 	{
+		/// <summary>
+		/// 凭证
+		/// </summary>
 		public IEnumerable<ClaimValue> Claims { get; set; }
-		[TableRows]
+		
+		[Ignore]
 		public IEnumerable<Grant> Grants { get; set; }
+
+		/// <summary>
+		/// 授权
+		/// </summary>
+		[TableRows]
+		public IEnumerable<GrantEditable> GrantEditables { get; set; }
 	}
 	public class UserRole
 	{

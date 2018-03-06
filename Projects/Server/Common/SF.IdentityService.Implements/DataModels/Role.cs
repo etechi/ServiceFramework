@@ -36,5 +36,10 @@ namespace SF.Auth.IdentityServices.DataModels
 		[InverseProperty(nameof(RoleGrant.Role))]
 		public ICollection<RoleGrant> Grants { get; set; }
 
+		/// <summary>
+		/// 系统角色
+		/// </summary>
+		/// <remarks>用于支持系统业务,不能删除</remarks>
+		public bool IsSysRole { get; set; }
 	}
 }

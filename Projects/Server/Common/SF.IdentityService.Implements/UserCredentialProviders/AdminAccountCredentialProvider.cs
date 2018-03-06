@@ -13,41 +13,43 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System.Threading.Tasks;
+using SF.Auth.IdentityServices.Internals;
 using SF.Auth.IdentityServices.Models;
-using SF.Sys.Entities;
+using SF.Sys.Annotations;
+using System;
+using System.Threading.Tasks;
 
-namespace SF.Auth.IdentityServices.Managers
+namespace SF.Auth.IdentityServices.UserCredentialProviders
 {
-	public static class ClientManagerExtension
+	public class AdminAccountCredentialProvider :
+		IUserCredentialProvider
 	{
-		public static async Task<ClientInternal> ClientEnsure(
-			this IClientManager ClientManager,
-			string Id,
-			string Name,
-			long ConfigId,
-			string Secret,
-			string Title=null,
-			string[] CredentialTypeIdents=null
-			) 
+
+		public long ClaimTypeId => 0;
+		public  string Name => "管理员账户";
+
+		public string Ident => "adm";
+
+		public string Description => "管理员账户";
+
+		public  bool IsConfirmable()
 		{
-			return await ClientManager.EnsureEntity(
-				ObjectKey.From(Id),
-				() => new ClientEditable
-				{
-					Id = Id
-				},
-				e =>
-				{
-					e.Name = Name;
-					e.Title = Title??Name;
-					e.ClientSecrets = Secret;
-					e.ClientConfigId = ConfigId;
-					e.RedirectUris = "http://localhost:52706/";
-				}
-				);
+			return false;
+		}
+
+		
+		public  Task<long> SendConfirmCode(
+			long? IdentityId, string Ident,  string Code, ConfirmMessageType Type, string TrackIdent)
+		{
+
+			throw new NotSupportedException("用户账号不支持验证");
+		}
+
+		public  Task<string> VerifyFormat(string Ident)
+		{
+			if (Ident.Length < 2)
+				return Task.FromResult("账号太短");
+			return Task.FromResult((string)null);
 		}
 	}
-
 }
-

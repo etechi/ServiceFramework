@@ -165,7 +165,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 						async d =>
 						{
 							var ctx = ModifyContext.CreateChildModifyContext<TChildEntity, TChildModel>();
-							ctx.InitRemove(ModifyContext.DataContext, d, Entity<TChildModel>.GetKey<TChildEntity>(d), null);
+							ctx.InitRemove(ModifyContext.DataContext, d, Entity<TChildModel>.GetKeyWithoutValidate<TChildEntity>(d), null);
 							if (ModifyHandler != null)
 								await ModifyHandler(ctx, ModifyAction.Update);
 

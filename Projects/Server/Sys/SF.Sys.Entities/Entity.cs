@@ -126,13 +126,17 @@ namespace SF.Sys.Entities
 
 		static class LazyKeySelector<TKey>
 		{
-			public static Lazy<Expression<Func<T, TKey>>> Expr { get; } = new Lazy<Expression<Func<T, TKey>>>(() =>
+			public static Expression<Func<T, TKey>> GetExpr(bool Validate)
 			{
-				EnsureSameKeys<TKey>();
+				if(Validate)
+					EnsureSameKeys<TKey>();
+
 				return Expression.Lambda<Func<T, TKey>>(
 					Expression.MemberInit(
 						Expression.New(typeof(TKey)),
-						KeyProperties.Select(p =>
+						KeyProperties
+						.Where(p=>Validate || typeof(TKey).GetProperty(p.Name)!=null)
+						.Select(p =>
 							Expression.Bind(
 								typeof(TKey).GetProperty(p.Name)
 									.IsNotNull(() => $"{typeof(TKey)}中找不到实体{typeof(T)}的主键字段{p.Name}")
@@ -146,9 +150,20 @@ namespace SF.Sys.Entities
 					),
 					ArgModel
 				);
+			}
+			public static Lazy<Expression<Func<T, TKey>>> Expr { get; } = new Lazy<Expression<Func<T, TKey>>>(() =>
+			{
+				return GetExpr(true);
 			});
 
 			public static Lazy<Func<T, TKey>> Func { get; } = new Lazy<Func<T, TKey>>(() => Expr.Value.Compile());
+
+			public static Lazy<Expression<Func<T, TKey>>> ExprWithoutValidate { get; } = new Lazy<Expression<Func<T, TKey>>>(() =>
+			{
+				return GetExpr(false);
+			});
+
+			public static Lazy<Func<T, TKey>> FuncWithoutValidate { get; } = new Lazy<Func<T, TKey>>(() => ExprWithoutValidate.Value.Compile());
 		}
 		public static Expression<Func<T, TKey>> KeySelector<TKey>()
 			=> LazyKeySelector<TKey>.Expr.Value;
@@ -157,6 +172,7 @@ namespace SF.Sys.Entities
 		public static TKey[] GetSingleKeys<TKey>(T[] Models) => Models.Select(m => LazySingleKeySelector<TKey>.Func.Value(m)).ToArray();
 
 		public static TKey GetKey<TKey>(T Model) => LazyKeySelector<TKey>.Func.Value(Model);
+		public static TKey GetKeyWithoutValidate<TKey>(T Model) => LazyKeySelector<TKey>.FuncWithoutValidate.Value(Model);
 
 		static MethodInfo MethodGetSingleKeys { get; } =
 			typeof(Entity<T>)

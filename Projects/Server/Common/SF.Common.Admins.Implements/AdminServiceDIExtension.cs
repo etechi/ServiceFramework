@@ -23,40 +23,40 @@ namespace SF.Sys.Services
 {
 	public static class AdminServiceDIExtension
 	{
-		public static IServiceCollection AddAdminManager<TService,TImplement,TInternal,TEditable,TQueryArgument,TAdmin>(
-			this IServiceCollection sc,
-			//Func<MenuItem[]> DefaultMenu=null,
-			string TablePrefix = null
+		public static IServiceCollection AddAdminService<TService,TImplement,TInternal,TEditable,TQueryArgument>(
+			this IServiceCollection sc
 			)
 			where TInternal: SF.Common.Admins.Models.AdminInternal, new()
 			where TEditable : SF.Common.Admins.Models.AdminEditable, new()
 			where TQueryArgument : SF.Common.Admins.AdminQueryArgument, new()
-			where TAdmin : SF.Common.Admins.DataModels.Admin<TAdmin>,new()
 			where TService: class,IAdminManager<TInternal, TEditable, TQueryArgument>
-			where TImplement : AdminManager<TInternal, TEditable, TQueryArgument, TAdmin>, TService
+			where TImplement : AdminManager<TInternal, TEditable, TQueryArgument>, TService
 		{
-			sc.AddDataModules<TAdmin>(TablePrefix??"Common");
 			sc.EntityServices(
 				"Admin",
 				"管理员",
-				d => d.Add<TService, TImplement>("Admin","管理员")
+				d => d.Add<TService, TImplement>("Admin","管理员",typeof(TInternal),typeof(TEditable))
 				);
 			return sc;
 		}
 
 		public static IServiceCollection AddAdminServices(
-			this IServiceCollection sc,
-			//Func<MenuItem[]> DefaultMenu=null,
-			string TablePrefix = null
+			this IServiceCollection sc
 			)
-			=> sc.AddAdminManager<
-				IAdminManager, 
-				AdminManager, 
-				AdminInternal, 
-				AdminEditable, 
-				AdminQueryArgument, 
-				SF.Common.Admins.DataModels.Admin
-				>(TablePrefix);
+		{
+			sc.AddAdminService<
+				IAdminManager,
+				AdminManager,
+				AdminInternal,
+				AdminEditable,
+				AdminQueryArgument
+				>();
+			sc.InitServices("管理员管理", async (sp, sim, parent) =>
+			{
+				await sim.NewAdminService().Ensure(sp, parent);
+			});
+			return sc;
+		}
 
 		public static IServiceInstanceInitializer<TService> NewAdminService<TService, TImplement, TInternal, TEditable, TQueryArgument, TAdmin>(
 			this IServiceInstanceManager sim
@@ -64,18 +64,17 @@ namespace SF.Sys.Services
 			where TInternal : SF.Common.Admins.Models.AdminInternal, new()
 			where TEditable : SF.Common.Admins.Models.AdminEditable, new()
 			where TQueryArgument : SF.Common.Admins.AdminQueryArgument, new()
-			where TAdmin : SF.Common.Admins.DataModels.Admin<TAdmin>, new()
 			where TService : class, IAdminManager<TInternal, TEditable, TQueryArgument>
-			where TImplement : AdminManager<TInternal, TEditable, TQueryArgument, TAdmin>, TService
+			where TImplement : AdminManager<TInternal, TEditable, TQueryArgument>, TService
 			=> sim.DefaultService<TService, TImplement>(
 				new { }
-				).WithMenuItems("系统管理/管理员");
+				).WithMenuItems("系统管理/身份权限");
 
 		public static IServiceInstanceInitializer<IAdminManager> NewAdminService(
 			this IServiceInstanceManager sim
 			)
 			=> sim.DefaultService<IAdminManager, AdminManager>(
 				new { }
-				).WithMenuItems("系统管理/管理员");
+				).WithMenuItems("系统管理/身份权限");
 	}
 }

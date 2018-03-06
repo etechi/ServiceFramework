@@ -37,7 +37,8 @@ namespace SF.Auth.IdentityServices.Managers
 			return await UserManager.EnsureEntity(
 				await UserManager.QuerySingleEntityIdent(new UserQueryArgument {
 					MainClaimTypeId = ClaimTypeId,
-					MainCredential = Credential
+					MainCredential = Credential,
+					IsAdmin= ClaimTypeId==SF.Sys.Auth.PredefinedClaimTypes.AdminAccount
 				}),
 				() => new UserEditable()
 				{

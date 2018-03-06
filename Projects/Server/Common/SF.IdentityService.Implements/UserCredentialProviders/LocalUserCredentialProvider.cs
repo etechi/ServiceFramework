@@ -36,8 +36,8 @@ namespace SF.Auth.IdentityServices.UserCredentialProviders
 		{
 			return false;
 		}
-		
-		public  Task<long> SendConfirmCode(
+
+		public Task<long> SendConfirmCode(
 			long? IdentityId, string Ident,  string Code, ConfirmMessageType Type, string TrackIdent)
 		{
 

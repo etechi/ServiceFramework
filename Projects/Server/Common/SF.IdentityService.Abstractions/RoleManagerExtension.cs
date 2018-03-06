@@ -25,6 +25,7 @@ namespace SF.Auth.IdentityServices.Managers
 			this IRoleManager RoleManager,
 			string Id,
 			string Name,
+			bool IsSysRole,
 			params Grant[] Grants
 			) 
 		{
@@ -38,7 +39,7 @@ namespace SF.Auth.IdentityServices.Managers
 				{
 					e.Name = Name;
 					e.Grants = Grants;
-
+					e.IsSysRole = IsSysRole;
 				}
 			);
 		}

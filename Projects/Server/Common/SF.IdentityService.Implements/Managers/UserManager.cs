@@ -171,6 +171,17 @@ namespace SF.Auth.IdentityServices.Managers
 			
 			await base.OnNewModel(ctx);
 		}
+		protected override IContextQueryable<TUser> OnBuildQuery(IContextQueryable<TUser> Query, TQueryArgument Arg)
+		{
+			if(Arg.IsAdmin ?? false)
+				Query = Query.Where(u => u.MainClaimTypeId==PredefinedClaimTypes.AdminAccount);
+			else
+				Query = Query.Where(u => u.MainClaimTypeId != PredefinedClaimTypes.AdminAccount);
+
+			if (Arg.RoleId!=null)
+				Query = Query.Where(u => u.Roles.Any(r => r.RoleId == Arg.RoleId));
+			return Query;
+		}
 		//async Task InitClaimTypes(TEditable obj)
 		//{
 		//	if (obj.Claims != null)
@@ -196,6 +207,12 @@ namespace SF.Auth.IdentityServices.Managers
 		{
 			var e = ctx.Editable;
 			var m = ctx.Model;
+			if (e.PasswordHash!=null && e.SecurityStamp==null)
+			{
+				var stamp = Bytes.Random(16);
+				e.PasswordHash =  PasswordHasher.Value.Hash(e.PasswordHash, stamp);
+				e.SecurityStamp = stamp.Base64();
+			}
 			return base.OnUpdateModel(ctx);
 			//if (e.Credentials != null)
 			//{

@@ -68,5 +68,6 @@ namespace SF.Auth.IdentityServices.DataModels
 		/// </summary>
 		public string FrontChannelLogoutUri { get; set; }
 
+		
 	}
 }

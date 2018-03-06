@@ -13,54 +13,58 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+
+using SF.Auth.IdentityServices.Models;
 using SF.Sys.Annotations;
+using SF.Sys.Entities;
 using SF.Sys.Entities.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace SF.Sys.Reminders.Models
+namespace SF.Common.Admins.Models
 {
-	/// <summary>
-	/// 提醒记录
-	/// </summary>
-	[EntityObject]
-	public class RemindRecord : SF.Sys.AtLeastOnceTasks.Models.AtLeastOnceTaskEntityBase<long>
+	
+	public class ResourceGrantInternal : IEntityWithId<string>
 	{
 		/// <summary>
-		 /// 业务类型
-		 /// </summary>
-		 [MaxLength(100)]
-		[Required]
-		public virtual string BizType { get; set; }
-
-
-		/// <summary>
-		/// 业务标识类型
+		/// Id
 		/// </summary>
-		[EntityType]
-		public string BizIdentType { get; set; }
-
-		/// <summary>
-		/// 业务标识
-		/// </summary>
-		[EntityIdent(null, nameof(BizIdentName), EntityTypeField = nameof(BizIdentType))]
-		public long BizIdentIdent { get; set; }
-
-		/// <summary>
-		/// 业务标识
-		/// </summary>
-		[TableVisible]
+		[Layout(10)]
+		[Key]
 		[Ignore]
-		public string BizIdentName { get; set; }
+		public string Id { get; set; }
 
+		/// <summary>
+		/// 资源分组
+		/// </summary>
+		[ReadOnly(true)]
+		[Layout(15)]
+		public string Group { get; set; }
 
-		[MaxLength(1000)]
-		public string Data { get; set; }
+		/// <summary>
+		/// 资源项目
+		/// </summary>
+		[ReadOnly(true)]
+		[Layout(20)]
+		public string Name { get; set; }
 
-		[MaxLength(100)]
-		[Required]
-		[TableVisible]
-		public string RemindableName { get; set; }
+		/// <summary>
+		/// 授权
+		/// </summary>
+		[Layout(25)]
+		[EntityIdent(typeof(ResourceInternal), ScopeField = nameof(Id))]
+		public string[] OperationIds { get; set; }
+
+		/// <summary>
+		/// 说明
+		/// </summary>
+		[ReadOnly(true)]
+		[Layout(30)]
+		[Ignore]
+		public string Description { get; set; }
+
 	}
 }
+

@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Auth.IdentityServices.Models;
 using SF.Common.Admins.Models;
 using SF.Sys.Annotations;
 using SF.Sys.Auth;
@@ -21,9 +22,18 @@ using SF.Sys.NetworkService;
 
 namespace SF.Common.Admins
 {
-	public class AdminQueryArgument : QueryArgument
+	public class AdminQueryArgument : ObjectQueryArgument
 	{
-		public string Account { get; set; }
+		/// <summary>
+		/// 用户名
+		/// </summary>
+		public string UserName { get; set; }
+
+		/// <summary>
+		/// 角色
+		/// </summary>
+		[EntityIdent(typeof(Role))]
+		public string RoleId { get; set; }
 	}
 
 	/// <summary>
@@ -37,8 +47,8 @@ namespace SF.Common.Admins
 	[NetworkService]
 	[Category("系统管理", "系统管理员管理")]
 	public interface IAdminManager<TInternal,TEditable,TQueryArgument> :
-		IEntitySource<long,TInternal,TQueryArgument>,
-		IEntityManager<long,TEditable>
+		IEntitySource<ObjectKey<long>,TInternal,TQueryArgument>,
+		IEntityManager<ObjectKey<long>, TEditable>
 		where TInternal:AdminInternal
 		where TEditable:AdminEditable
 		where TQueryArgument:AdminQueryArgument

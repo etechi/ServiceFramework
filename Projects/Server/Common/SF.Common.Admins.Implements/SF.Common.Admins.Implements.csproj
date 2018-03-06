@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.BackEndConsole\SF.Sys.BackEndConsole.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
     <ProjectReference Include="..\SF.Common.Admins\SF.Common.Admins.csproj" />
+    <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

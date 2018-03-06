@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Sys\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
+    <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

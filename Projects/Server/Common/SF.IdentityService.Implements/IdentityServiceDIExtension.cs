@@ -76,6 +76,7 @@ namespace SF.Sys.Services
 			sc.AddScoped(sp => (IAuthSessionService)sp.Resolve<IUserService>());
 			sc.AddManagedScoped<IUserCredentialProvider, PhoneNumberUserCredentialProvider>();
 			sc.AddManagedScoped<IUserCredentialProvider, LocalUserCredentialProvider>();
+			sc.AddManagedScoped<IUserCredentialProvider, AdminAccountCredentialProvider>();
 			sc.AddManagedScoped<IUserCredentialStorage, UserCredentialStorage>();
 			sc.AddTransient<IUserStorage>(sp => sp.Resolve<IUserManager>());
 			sc.AddSingleton<IUserProfileService, UserProfileService>();
@@ -197,15 +198,17 @@ namespace SF.Sys.Services
 			await sim.DefaultService<IUserCredentialStorage, UserCredentialStorage>(null)
 				.Ensure(ServiceProvider, ScopeId);
 
-			await sim.DefaultServiceWithIdent<IUserCredentialProvider, LocalUserCredentialProvider>("acc", null)
+			await sim.DefaultServiceWithIdent<IUserCredentialProvider, LocalUserCredentialProvider>(PredefinedClaimTypes.LocalAccount, null)
 				.Ensure(ServiceProvider, ScopeId);
-
-			await sim.DefaultServiceWithIdent<IUserCredentialProvider, PhoneNumberUserCredentialProvider>("phone", null)
+			await sim.DefaultServiceWithIdent<IUserCredentialProvider, AdminAccountCredentialProvider>(PredefinedClaimTypes.AdminAccount, null)
+				.Ensure(ServiceProvider, ScopeId);
+			await sim.DefaultServiceWithIdent<IUserCredentialProvider, PhoneNumberUserCredentialProvider>(PredefinedClaimTypes.Phone, null)
 				.Ensure(ServiceProvider, ScopeId);
 
 			//初始化默认申明类型
 			var ClaimTypeManager = ServiceProvider.Resolve<IClaimTypeManager>();
 			var predefinedClaimTypes = new[] {
+				(PredefinedClaimTypes.AdminAccount,"管理员账号"),
 				(PredefinedClaimTypes.LocalAccount,"本地账号"),
 				(PredefinedClaimTypes.Subject,"本地ID"),
 				(PredefinedClaimTypes.Phone,"电话"),
@@ -406,16 +409,13 @@ namespace SF.Sys.Services
 			await RoleManager.RoleEnsure(
 				"superadmin",
 				"超级管理员",
-				allGrants
-			);
-			await RoleManager.RoleEnsure(
-				"sysadmin",
-				"系统管理员",
+				true,
 				allGrants
 			);
 			await RoleManager.RoleEnsure(
 				"admin",
 				"管理员",
+				true,
 				allGrants
 			);
 
@@ -423,29 +423,14 @@ namespace SF.Sys.Services
 
 			var UserManager = ServiceProvider.Resolve<IUserManager>();
 			var superadmin = await UserManager.UserEnsure(
-				"acc",
+				PredefinedClaimTypes.AdminAccount,
 				"superadmin",
 				"system",
 				"超级管理员",
-				new[] {"superadmin"}
+				new[] {"superadmin","admin"}
 				);
 
-			var sysadmin = await UserManager.UserEnsure(
-				"acc",
-				"sysadmin",
-				"system",
-				"系统管理员",
-				new[] { "sysadmin" }
-				);
-
-			var admin = await UserManager.UserEnsure(
-				"acc",
-				"admin",
-				"system",
-				"管理员",
-				new[] { "admin" }
-				);
-
+			
 			await sim.Service<IExternalAuthorizationProvider, TestOAuth2Provider>(new { })
 				.WithIdent("test")
 				.Ensure(ServiceProvider, ScopeId);

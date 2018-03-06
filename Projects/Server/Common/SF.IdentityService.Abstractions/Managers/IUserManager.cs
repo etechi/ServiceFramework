@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.IdentityServices.Managers
 {
+
 	public class UserQueryArgument : ObjectQueryArgument<ObjectKey<long>>
 	{
 		/// <summary>
@@ -40,6 +41,17 @@ namespace SF.Auth.IdentityServices.Managers
 		/// </summary>
 		[StringContains]
 		public override string Name { get; set; }
+
+		/// <summary>
+		/// 管理员
+		/// </summary>
+		public bool? IsAdmin { get; set; }
+
+		/// <summary>
+		/// 角色
+		/// </summary>
+		[EntityIdent(typeof(Role))]
+		public string RoleId { get; set; }
 	}
 
 	/// <summary>
@@ -59,11 +71,12 @@ namespace SF.Auth.IdentityServices.Managers
 		where TEditable : Models.UserEditable
 		where TQueryArgument : UserQueryArgument
 	{
+		Task RoleEnsure(long UserId, string[] Roles);
+		Task RoleRemove(long UserId, string[] Roles);
+
 	}
 	public interface IUserManager: IUserManager<UserInternal, UserEditable, UserQueryArgument>
 	{
-		Task RoleEnsure(long UserId, string[] Roles);
-		Task RoleRemove(long UserId, string[] Roles);
 	}
 }
 

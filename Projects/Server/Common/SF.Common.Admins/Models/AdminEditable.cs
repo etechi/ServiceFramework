@@ -14,12 +14,31 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using SF.Auth.IdentityServices.Models;
+using SF.Sys.Annotations;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
 namespace SF.Common.Admins.Models
 {
 	public class AdminEditable : AdminInternal
 	{
-		
+		/// <summary>
+		/// 密码
+		/// </summary>
+		///<remarks>密码为空时，不修改旧密码, 密码不少于8位，注意密码强度</remarks>
+		[MinLength(8)]
+		[MaxLength(50)]
+		public string Password { get; set; }
 
+		/// <summary>
+		/// 角色
+		/// </summary>
+		/// <remarks>管理员的角色，重新登录后生效</remarks>
+		[EntityIdent(typeof(Role))]
+		[TableVisible]
+		public IEnumerable<string> Roles { get; set; }
 	}
 }
 

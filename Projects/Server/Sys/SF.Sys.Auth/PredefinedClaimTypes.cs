@@ -19,6 +19,10 @@ namespace SF.Sys.Auth
 {
 	public static class PredefinedClaimTypes {
 		/// <summary>
+		/// 管理员账号
+		/// </summary>
+		public const string AdminAccount = "adm";
+		/// <summary>
 		/// 本地账号
 		/// </summary>
 		public  const string LocalAccount = "acc";
