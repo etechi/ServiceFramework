@@ -68,13 +68,13 @@ namespace SF.Sys.Services
 			where TImplement : AdminManager<TInternal, TEditable, TQueryArgument>, TService
 			=> sim.DefaultService<TService, TImplement>(
 				new { }
-				).WithMenuItems("系统管理/身份权限");
+				).WithMenuItems("系统管理/身份和权限");
 
 		public static IServiceInstanceInitializer<IAdminManager> NewAdminService(
 			this IServiceInstanceManager sim
 			)
 			=> sim.DefaultService<IAdminManager, AdminManager>(
 				new { }
-				).WithMenuItems("系统管理/身份权限");
+				).WithMenuItems("系统管理/身份和权限");
 	}
 }

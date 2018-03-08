@@ -13,21 +13,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using Microsoft.Extensions.DependencyInjection;
-using SF.Sys.AspNetCore.Auth;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
-namespace SF.Sys.AspNetCore
+namespace SF.Sys.Auth
 {
-	public static class AspNetCoreSystemDIExtension
-	{
-		public static IServiceCollection AddAspNetCoreSystemServices(
-			this IServiceCollection services
-			)
-		{
-			//services.AddAspNetCoreCommonAuthorization();
-			return services;
-		}
 
-		
+	public interface IAccessTokenValidator
+	{
+		Task<ClaimsPrincipal> Validate(string Token);
 	}
 }
+

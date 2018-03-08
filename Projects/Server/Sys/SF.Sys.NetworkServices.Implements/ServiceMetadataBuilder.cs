@@ -47,6 +47,7 @@ namespace SF.Sys.NetworkService
 				ServiceTypes
                 .Select(type => GenerateServiceMetadata(type))
                 );
+			Services.Sort((x, y) => x.Name.CompareTo(y.Name));
             return new Metadata.Library
 			{
                 Services = Services.ToArray(),

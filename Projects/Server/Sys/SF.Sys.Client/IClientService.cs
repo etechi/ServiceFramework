@@ -33,11 +33,11 @@ namespace SF.Sys.Clients
 		//SigningCredentials SigningCredentials { get; }
 		//TokenValidationParameters TokenValidationParameters { get; }
 	}
-	public interface IAccessTokenHandler
-	{
-		string Create(ClaimsPrincipal User, DateTime? Expires);
-		ClaimsPrincipal Validate(string AccessToken);
-	}
+	//public interface IAccessTokenHandler
+	//{
+	//	string Create(ClaimsPrincipal User, DateTime? Expires);
+	//	ClaimsPrincipal Validate(string AccessToken);
+	//}
 	public interface IClientService
 	{
 		IUserAgent UserAgent { get; }

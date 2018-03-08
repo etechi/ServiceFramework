@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Auth.IdentityServices.Internals;
 using SF.Services.Security;
+using SF.Sys.Auth;
 using SF.Sys.Caching;
 using SF.Sys.Clients;
 using SF.Sys.Services;
@@ -46,7 +47,8 @@ namespace SF.Auth.IdentityServices
 		public NamedServiceResolver<IUserCredentialProvider> CredentialProviderResolver { get; set; }
 		public string DefaultIdentityCredentialProvider { get; set; }
 		public IEnumerable<IUserCredentialProvider> IdentityCredentialProviders { get; set; }
-		public Lazy<IAccessTokenHandler> AccessTokenHandler { get; set; }
+		public Lazy<IAccessTokenValidator> AccessTokenValidator { get; set; }
+		public Lazy<IAccessTokenGenerator> AccessTokenGenerator { get; set; }
 
 	}
 

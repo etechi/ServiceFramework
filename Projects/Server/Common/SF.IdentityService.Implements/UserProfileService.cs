@@ -35,6 +35,25 @@ namespace SF.Auth.IdentityServices
 		{
 			this.DataScope= DataScope;
 		}
+		public Task<Claim[]> GetClaims(long UserId, string ClientId, string[] Scopes)
+		{
+			return DataScope.Use(
+				"获取凭证", 
+				async ctx =>
+				{
+					var q = from u in ctx.Queryable<DataModels.User>()
+							where u.Id == UserId
+							from role in u.Roles
+							from g in role.Role.Grants
+							select new { g.ResourceId, g.OperationId };
+					var pairs = await q.ToArrayAsync();
+					return pairs
+						.GroupBy(p => p.ResourceId,p=>p.OperationId)
+						.Select(p => new Claim(p.Key, "|" + p.Distinct().Join("|") + "|"))
+						.ToArray();
+				});
+		}
+
 		public async Task<Claim[]> GetClaims(long id, string[] ClaimTypes,IEnumerable<Claim> ExtraClaims)
 		{
 			return await DataScope.Use("获取凭证",async ctx =>

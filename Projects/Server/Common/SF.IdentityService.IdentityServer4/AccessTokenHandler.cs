@@ -30,7 +30,7 @@ using SF.Sys.TimeServices;
 
 namespace SF.Auth.IdentityServices.IdentityServer4Impl
 {
-	public class AccessTokenHandler : IAccessTokenHandler
+	public class AccessTokenHandler : IAccessTokenGenerator
 	{
 		ITokenService TokenService { get; }
 		IdentityServerOptions Options { get; }
@@ -52,7 +52,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			this.TimeService = TimeService;
 
 		}
-		public async Task<string> Generate(long UserId, string ClientId, string[] Scopes,DateTime? Expires)
+		public async Task<AccessTokenGenerateResult> Generate(long UserId, string ClientId, string[] Scopes,DateTime? Expires)
 		{
 			if (ClientId.IsNullOrEmpty())
 				throw new ArgumentException(nameof(ClientId));
@@ -90,7 +90,10 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 			var Token = await TokenService.CreateAccessTokenAsync(Request);
 			Token.Issuer = Options.IssuerUri;
 			var TokenValue = await TokenService.CreateSecurityTokenAsync(Token);
-			return TokenValue;
+			return new AccessTokenGenerateResult
+			{
+				Token = TokenValue
+			};
 		}
 
 		public Task<long> Validate(string Token)

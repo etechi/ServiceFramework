@@ -30,7 +30,7 @@ namespace SF.Auth.IdentityServices.Externals
 		BaseExtAuthService,
 		IPageExtAuthService
 	{
-		public Lazy<IAccessTokenHandler> AccessTokenGenerator { get; }
+		public Lazy<IAccessTokenGenerator> AccessTokenGenerator { get; }
 
 		public IInvokeContext InvokeContext { get; }
 		public HttpSetting HttpSetting { get; }
@@ -45,7 +45,7 @@ namespace SF.Auth.IdentityServices.Externals
 			IInvokeContext InvokeContext,
 			ISettingService<HttpSetting> HttpSetting,
 			Lazy<ITimeService> TimeService,
-			 Lazy<IAccessTokenHandler> AccessTokenGenerator
+			 Lazy<IAccessTokenGenerator> AccessTokenGenerator
 			) : base(
 				Resolver, 
 				UserCredentialStorage, 
@@ -150,7 +150,7 @@ namespace SF.Auth.IdentityServices.Externals
 
 			return HttpResponse.Redirect(
 				new Uri(new Uri(InvokeContext.Request.Uri), sess.Callback)
-					.WithFragment($"state={Uri.EscapeDataString(sess.ClientState)}&access_token=" + Uri.EscapeDataString(access_token))
+					.WithFragment($"state={Uri.EscapeDataString(sess.ClientState)}&access_token=" + Uri.EscapeDataString(access_token.Token))
 					);
 		}
 		

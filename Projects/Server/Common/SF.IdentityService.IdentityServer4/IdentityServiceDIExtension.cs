@@ -44,7 +44,7 @@ namespace SF.Sys.Services
 				   
 			//   });
 			sc.AddTransient<ITokenService, DefaultTokenService>();
-			sc.AddTransient<IAccessTokenHandler, AccessTokenHandler>();
+			//sc.AddTransient<IAccessTokenHandler, AccessTokenHandler>();
 			return sc;
 		}
 	}

@@ -60,13 +60,32 @@ namespace SF.Sys.Comments
 
 			var id = Member.GetMemberXmlDocId();
 
-			 
-			comment = (type == null ?
-					XmlCodeDocument.GetComment(Member) :
-					type.AllRelatedTypes()
-						.Select(i => XmlCodeDocument.GetComment(i))
-						.FirstOrDefault(i => i != null)
-						) ?? new Comment(id, Member.Name,IsDefaultComment:true);
+
+			if (type == null)
+				comment = XmlCodeDocument.GetComment(Member);
+			else
+			{
+				comment = type.AllRelatedTypes().Select(i => XmlCodeDocument.GetComment(i))
+					.FirstOrDefault(i => i != null);
+				if (comment!=null && type.IsGeneric())
+				{
+					var ac = type.GetGenericArguments()[0].AllRelatedTypes().Select(i => XmlCodeDocument.GetComment(i))
+					.FirstOrDefault(i => i != null);
+					if (ac != null)
+						comment = new Comment(
+							comment.Id,
+							(ac.Title ?? "") + comment.Title,
+							ac.Summary ?? comment.Summary,
+							ac.Group ?? comment.Group,
+							ac.Remarks ?? comment.Remarks,
+							ac.Prompt ?? comment.Prompt,
+							ac.Order == 0 ? comment.Order : ac.Order
+							);
+				}
+
+			}
+			if(comment==null)
+				comment=new Comment(id, Member.Name, IsDefaultComment: true);
 
 			if (comment!=null && type != null && type.IsGeneric())
 			{

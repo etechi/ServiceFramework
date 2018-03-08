@@ -59,7 +59,7 @@ namespace SF.Auth.IdentityServices.IdentityServer4Impl
 				id,
 				OidcConstants.AuthenticationMethods.Password,
 				TimeService.UtcNow,
-				await UserProfileService.GetClaims(id.ToInt64(),null,null)
+				await UserProfileService.GetClaims(id.ToInt64(),(string[])null,null)
 				);
 		}
 	}

@@ -50,14 +50,14 @@ namespace SF.Sys.Entities.Models
 		/// <summary>
 		/// 对象状态
 		/// </summary>
-		[TableVisible]
+		[TableVisible(100)]
 		public virtual EntityLogicState LogicState { get; set; }
 
 
 		/// <summary>
 		/// 创建时间
 		/// </summary>
-		[TableVisible(100)]
+		[TableVisible(101)]
 		[ReadOnly(true)]
 		[CreatedTime]
 		public virtual DateTime CreatedTime { get; set; }
@@ -65,7 +65,7 @@ namespace SF.Sys.Entities.Models
 		/// <summary>
 		/// 修改时间
 		/// </summary>
-		[TableVisible(101)]
+		[TableVisible(102)]
 		[ReadOnly(true)]
 		[UpdatedTime]
 		public virtual DateTime UpdatedTime { get; set; }

@@ -64,6 +64,7 @@ namespace SF.Sys.Entities.Models
 		/// <summary>
 		/// 容器ID
 		/// </summary>
+
 		public virtual TContainerKey ContainerId { get; set; }
 
 		/// <summary>

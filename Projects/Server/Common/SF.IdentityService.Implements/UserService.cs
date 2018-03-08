@@ -80,11 +80,11 @@ namespace SF.Auth.IdentityServices
 		}
 		public async Task<long> ValidateAccessToken(string AccessToken)
 		{
-			var uid = await Setting.AccessTokenHandler.Value.Validate(AccessToken);
+			var uid = await Setting.AccessTokenValidator.Value.Validate(AccessToken);
 			//var id = p.GetUserIdent();
 			//if (!id.HasValue)
 			//	throw new PublicArgumentException("访问令牌问包含用户ID");
-			return uid;
+			return uid.GetUserIdent().Value;
 		}
 
 
@@ -284,16 +284,16 @@ namespace SF.Auth.IdentityServices
 		}
 		public async Task<string> CreateAccessToken(long Id,string ClientId,DateTime? Expires)
 		{
-			return await Setting.AccessTokenHandler.Value.Generate(
+			var re= await Setting.AccessTokenGenerator.Value.Generate(
 				Id,
 				ClientId,
 				null,
 				Expires
 				);
+			return re.Token;
 			//	await CreatePrincipal(Id),
 			//	Expires
 			//	);
-			
 			//return Task.FromResult((string)null);
 		}
 		public Task Signout()

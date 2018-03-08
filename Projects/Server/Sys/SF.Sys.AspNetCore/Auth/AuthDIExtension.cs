@@ -13,15 +13,34 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.Extensions.DependencyInjection;
+using SF.Sys.AspNetCore.Auth;
+using SF.Sys.Auth;
+using SF.Sys.Services;
+using SF.Sys.TimeServices;
 
-namespace SF.Sys.AspNetCore.Auth
+namespace SF.Sys.Services
 {
 	public static class AuthDIExtension
 	{
-		public static IServiceCollection AddAspNetCoreCommonAuthorization(this IServiceCollection services)
+		public static IServiceCollection AddAspNetCoreCommonAuthorization(
+			this IServiceCollection services,
+			TokenProviderOptions TokenProviderOptions,
+			AccessTokenValidatorArguments TokenValidatorArguments
+			)
 		{
+			services.AddScoped<IAccessTokenGenerator>(
+				sp =>
+				new DefaultAccessTokenGenerator(
+						sp.Resolve<ITimeService>(),
+						sp.Resolve<IUserProfileService>(),
+						TokenProviderOptions
+						)
+				);
+			services.AddSingleton<IAccessTokenValidator>(
+				sp => new DefaultAccessTokenValidator(
+					sp.Resolve<ITimeService>(),
+					TokenValidatorArguments
+					));
 			//services.AddAuthentication(
 			//	CookieAuthenticationDefaults.AuthenticationScheme
 			//	)

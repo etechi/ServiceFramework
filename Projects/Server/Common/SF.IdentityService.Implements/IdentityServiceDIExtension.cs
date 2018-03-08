@@ -28,17 +28,20 @@ using SF.Sys.Entities;
 using SF.Sys.Linq;
 using SF.Sys.Auth;
 using SF.Auth.IdentityServices.Externals;
+using System.Security.Claims;
 
 namespace SF.Sys.Services
 {
-	class NotImplementedAccessTokenHandler : IAccessTokenHandler
+	class NotImplementedIAccessTokenGenerator : IAccessTokenGenerator
 	{
-		public Task<string> Generate(long UserId, string ClientId, string[] Scopes, DateTime? Expires)
+		public Task<AccessTokenGenerateResult> Generate(long UserId, string ClientId, string[] Scopes, DateTime? Expires)
 		{
 			throw new NotImplementedException();
 		}
-
-		public Task<long> Validate(string Token)
+	}
+	class NotImplementedIAccessTokenValidator : IAccessTokenValidator
+	{
+		public Task<ClaimsPrincipal> Validate(string Token)
 		{
 			throw new NotImplementedException();
 		}
@@ -47,7 +50,8 @@ namespace SF.Sys.Services
 	{
 		public static IServiceCollection AddNotImplementedAccessTokenHandler(this IServiceCollection sc)
 		{
-			sc.AddSingleton<IAccessTokenHandler, NotImplementedAccessTokenHandler>();
+			sc.AddSingleton<IAccessTokenGenerator, NotImplementedIAccessTokenGenerator>();
+			sc.AddSingleton<IAccessTokenValidator, NotImplementedIAccessTokenValidator>();
 			return sc;
 		}
 		public static IServiceCollection AddIdentityServices(

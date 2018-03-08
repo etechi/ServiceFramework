@@ -21,6 +21,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Sys.Services.Management.Models
 {
+	/// <summary>
+	/// 服务实例
+	/// </summary>
 	[EntityObject]
 	public class ServiceInstance : 
 		UIObjectEntityBase<long>
@@ -94,6 +97,7 @@ namespace SF.Sys.Services.Management.Models
 		[TableVisible]
 		public string ContainerName { get; set; }
 
+		[Ignore]
 		public IEnumerable<ServiceInstanceInternal> Children { get; set; }
 	}
 

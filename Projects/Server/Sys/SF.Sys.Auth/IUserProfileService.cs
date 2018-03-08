@@ -23,6 +23,7 @@ namespace SF.Sys.Auth
 	{
 		Task<bool> IsValid(long UserId);
 		Task<User> GetUser(long UserId);
+		Task<Claim[]> GetClaims(long UserId, string ClientId,string[] Scopes);
 		Task<Claim[]> GetClaims(long UserId, string[] ClaimTypes, IEnumerable<Claim> ExtraClaims);
 	}
 }

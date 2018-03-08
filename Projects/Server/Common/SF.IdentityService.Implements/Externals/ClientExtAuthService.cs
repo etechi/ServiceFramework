@@ -29,7 +29,7 @@ namespace SF.Auth.IdentityServices.Externals
 		BaseExtAuthService,
 		IClientExtAuthService
 	{
-		public Lazy<IAccessTokenHandler> AccessTokenGenerator { get; }
+		public Lazy<IAccessTokenGenerator> AccessTokenGenerator { get; }
 		public Lazy<IUserProfileService> UserProfileService { get; }
 		
 		public ClientExtAuthService(
@@ -41,7 +41,7 @@ namespace SF.Auth.IdentityServices.Externals
 			 Lazy<IMediaService> MediaService,
 			 ILogger<ClientExtAuthService> Logger,
 			Lazy<IUserProfileService> UserProfileService,
-			Lazy<IAccessTokenHandler> AccessTokenGenerator,
+			Lazy<IAccessTokenGenerator> AccessTokenGenerator,
 			Lazy<ITimeService> TimeService
 			) : base(
 				Resolver, 
@@ -88,10 +88,10 @@ namespace SF.Auth.IdentityServices.Externals
 			var provider = Resolver(decState.Provider);
 			var re = await provider.ProcessClientCallback(Arg.Arguments);
 			var uid = await Signin(decState.Provider, provider, re);
-
+			var token = await AccessTokenGenerator.Value.Generate(uid, decState.ClientId, null, null);
 			return new AuthCallbackResult
 			{
-				AccessToken = await AccessTokenGenerator.Value.Generate(uid, decState.ClientId, null, null),
+				AccessToken = token.Token,
 				User = await UserProfileService.Value.GetUser(uid)
 			};
 		}

@@ -13,15 +13,26 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Auth
 {
-	//public interface IAccessTokenGenerator
-	//{
-	//	Task<string> Generate(long UserId);
-	//}
+	public class AccessTokenGenerateResult
+	{
+		public string Token { get; set; }
+		public DateTime Expires { get; set; }
+	}
+	public interface IAccessTokenGenerator
+	{
+		Task<AccessTokenGenerateResult> Generate(
+			long UserId, 
+			string ClientId, 
+			string[] Scopes, 
+			DateTime? Expires
+			);
+	}
 }
 

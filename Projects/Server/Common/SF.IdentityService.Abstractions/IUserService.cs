@@ -246,11 +246,7 @@ namespace SF.Auth.IdentityServices
 		Task Signin(long UserId,string ClientId,int? Expires);
 		Task Signout();
 	}
-	public interface IAccessTokenHandler
-	{
-		Task<string> Generate(long UserId, string ClientId, string[] Scopes,DateTime? Expires);
-		Task<long> Validate(string Token);
-	}
+
 
 	public class UserCredentialValue
 	{
