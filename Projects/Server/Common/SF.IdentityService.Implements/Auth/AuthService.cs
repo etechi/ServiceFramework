@@ -21,47 +21,44 @@ using System.Threading.Tasks;
 using SF.Auth.IdentityServices.Internals;
 using SF.Sys.Auth;
 using SF.Sys.Entities;
+using SF.Sys.Reflection;
 
 namespace SF.Auth.IdentityServices
 {
 	public class AuthService : IAuthService, IInterfaceAuthService
 	{
 		RoleGrantCache RoleGrantCache { get; }
-		IEntityMetadataCollection EntityMetadataCollection { get; }
-		public AuthService(RoleGrantCache RoleGrantCache, IEntityMetadataCollection EntityMetadataCollection)
+		ServiceMethodAuthorizeCache ServiceMethodAuthorizeCache { get; }
+		public AuthService(RoleGrantCache RoleGrantCache, ServiceMethodAuthorizeCache ServiceMethodAuthorizeCache)
 		{
 			this.RoleGrantCache = RoleGrantCache;
-			this.EntityMetadataCollection = EntityMetadataCollection;
+			this.ServiceMethodAuthorizeCache = ServiceMethodAuthorizeCache;
 		}
-		public async Task<AuthResult> Authorize(ClaimsPrincipal User, string Resource, string Operation, object Target)
+		public bool Authorize(ClaimsPrincipal User, string Service, string Method, object Target)
 		{
-			var roles = User?.Claims?.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultRoleClaimType)?.Value?.Split(',');
-			if ((roles?.Length ?? 0) == 0)
-				return new AuthResult
-				{
-					Messages = new[] { "您无权访问此操作" },
-					Succeeded = false
-				};
-			var re = await RoleGrantCache.Validate(Resource, Operation, roles);
-			if (re)
+			var type = ServiceMethodAuthorizeCache.GetAuthorizeType(Service, Method);
+			switch (type)
 			{
-				return new AuthResult
-				{
-					Succeeded = true
-				};
+				case ServiceMethodAuthorizeType.Anonymouse:
+					return true;
+				case ServiceMethodAuthorizeType.User:
+					return (User?.GetUserIdent()).HasValue;
+				default:
+					var roles = User?.Claims?.FirstOrDefault(c => c.Type == ClaimsIdentity.DefaultRoleClaimType)?.Value?.Split(',');
+					if ((roles?.Length ?? 0) == 0)
+						return false;
+					if(roles.Contains("superadmin"))
+						return true;
+					if (type == ServiceMethodAuthorizeType.SuperAdmin)
+						return false;
+
+					return  RoleGrantCache.Validate(Service, Method, roles);
 			}
-			else
-				return new AuthResult
-				{
-					Messages = new[] { "您无权访问此操作" },
-					Succeeded = false
-				};
 		}
 
-		public Task<AuthResult> Authorize(ClaimsPrincipal User, Type Service, MethodInfo Method)
+		public bool Authorize(ClaimsPrincipal User, Type Service, MethodInfo Method)
 		{
-			var meta = EntityMetadataCollection.FindByManagerType(Service);
-			return null;
+			return Authorize(User, Service.GetFullName(), Method.Name,null);
 		}
 	}
 }

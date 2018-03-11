@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System.Threading.Tasks;
 using System;
+using System.ComponentModel;
 
 namespace SF.Sys.Entities
 {
@@ -34,12 +35,14 @@ namespace SF.Sys.Entities
 	{
 		Task RemoveAllAsync();
 	}
-	public interface IEntityManagerCapabilities 
+	public interface IEntityManagerCapabilities
 	{
+		[ReadOnly(true)]
 		EntityManagerCapability Capabilities { get; }
 	}
 	public interface IEntityEditableLoader<TKey, TEntity>
 	{
+		[ReadOnly(true)]
 		Task<TEntity> LoadForEdit(TKey Key);
 	}
 	public interface IEntityUpdator<TEntity>

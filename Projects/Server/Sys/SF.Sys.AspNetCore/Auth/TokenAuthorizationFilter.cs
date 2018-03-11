@@ -36,26 +36,27 @@ namespace SF.Sys.AspNetCore.Auth
 
 		public void OnAuthorization(AuthorizationFilterContext context)
 		{
-			Task.Run(() => OnAuthorizationAsync(context)).Wait();
-		}
-
-		public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
-		{
 			var cad = context.ActionDescriptor as ControllerActionDescriptor;
 			if (cad == null)
-				return;
-			var type=cad.ControllerTypeInfo;
-			var method=cad.MethodInfo;
-			var user=context.HttpContext.User;
+				return ;
+			var type = cad.ControllerTypeInfo;
+			var method = cad.MethodInfo;
+			var user = context.HttpContext.User;
 			var sp = context.HttpContext.RequestServices;
 			//var client = sp.Resolve<IClientService>();
 			var authService = sp.Resolve<IInterfaceAuthService>();
-			var re=await authService.Authorize(user, type.AsType(), method);
-			if (re.Succeeded)
+			var re = authService.Authorize(user, type.AsType(), method);
+			if (re)
 				return;
 			context.Result = new ObjectResult(
 				new PublicDeniedException("您无权访问此方法")
 				);
+		}
+
+		public Task OnAuthorizationAsync(AuthorizationFilterContext context)
+		{
+			OnAuthorization(context);
+			return Task.CompletedTask;
 		}
 	}
 }

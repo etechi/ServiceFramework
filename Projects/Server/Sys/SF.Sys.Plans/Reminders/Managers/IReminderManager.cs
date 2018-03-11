@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 
@@ -33,6 +34,7 @@ namespace SF.Sys.Reminders
 	/// </summary>
 	[NetworkService]
 	[EntityManager]
+	[DefaultAuthorize(PredefinedRoles.客服专员,true)]
 	public interface IReminderManager :
 		IEntitySource<ObjectKey<long>, Models.Reminder, ReminderQueryArgument>
 	{

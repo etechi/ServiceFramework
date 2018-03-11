@@ -25,8 +25,8 @@ namespace SF.Auth.IdentityServices.Managers
 			this IRoleManager RoleManager,
 			string Id,
 			string Name,
-			bool IsSysRole,
-			params Grant[] Grants
+			bool IsSysRole
+		//	params Grant[] Grants
 			) 
 		{
 			return await RoleManager.EnsureEntity(
@@ -38,7 +38,7 @@ namespace SF.Auth.IdentityServices.Managers
 				e =>
 				{
 					e.Name = Name;
-					e.Grants = Grants;
+			//		e.Grants = Grants;
 					e.IsSysRole = IsSysRole;
 				}
 			);

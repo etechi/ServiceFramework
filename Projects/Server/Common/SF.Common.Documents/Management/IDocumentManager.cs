@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.ComponentModel.DataAnnotations;
@@ -53,6 +54,10 @@ namespace SF.Common.Documents.Management
 	/// <typeparam name="TEditable"></typeparam>
 	[NetworkService]
 	[EntityManager]
+
+	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
+	[DefaultAuthorize(PredefinedRoles.运营专员)]
+
 	public interface IDocumentManager<TInternal, TEditable> :
 		IEntitySource<ObjectKey<long>, TInternal, DocumentQueryArguments>,
 		IEntityManager<ObjectKey<long>, TEditable>

@@ -31,7 +31,9 @@ namespace SF.Common.Notifications.Management
 	/// 通知管理
 	/// </summary>
 	[EntityManager]
-	[DefaultAuthorizeAttribute("admin")]
+	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
+	[DefaultAuthorize(PredefinedRoles.运营专员)]
+
 	[NetworkService]
 	public interface INotificationManager : 
 		IEntitySource<ObjectKey<long>,Notification,NotificationQueryArgument>,

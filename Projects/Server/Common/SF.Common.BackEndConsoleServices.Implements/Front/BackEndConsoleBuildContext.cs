@@ -59,6 +59,7 @@ namespace SF.Sys.BackEndConsole.Front
 				}
 				last.FontIcon = item.FontIcon;
 				last.Link = item.Link;
+				last.Permission = item.Permission;
 			}
 		}
 
@@ -94,7 +95,8 @@ namespace SF.Sys.BackEndConsole.Front
 			AddMenuItems(new MenuItemConfig
 			{
 				Path = MenuPath + "/" + Entity.Name,
-				Link = $"/ap/entity/list/{EntityIdent}/{ServiceId}"
+				Link = $"/ap/entity/{EntityIdent}/list/{ServiceId}",
+				Permission="@"+EntityIdent
 			});
 			//AddPage(new Page
 			//{

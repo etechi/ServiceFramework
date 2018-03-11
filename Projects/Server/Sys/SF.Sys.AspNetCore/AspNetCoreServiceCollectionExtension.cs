@@ -61,11 +61,12 @@ namespace SF.Sys.Services
 				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 				
+				
 			})
 				.AddJwtBearer(options =>
 				{
 					options.TokenValidationParameters = tokenValidationParameters;
-
+					
 					options.RequireHttpsMetadata = false;
 					//// base-address of your identityserver
 					//options.Authority = "http://localost:5000/";

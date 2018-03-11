@@ -17,6 +17,8 @@ using System.Linq;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using SF.Sys.NetworkService;
+using System;
+using SF.Sys.Services;
 
 namespace SF.Sys.AspNetCore.NetworkServices
 {
@@ -35,9 +37,9 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			public Stream OpenStream() => file.OpenReadStream();
 		}
 		public Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor { get; }
-		public UploadedFileCollection(Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor)
+		public UploadedFileCollection(IServiceProvider Services)
 		{
-			this.HttpContextAccessor = HttpContextAccessor;
+			HttpContextAccessor = Services.Resolve<IHttpContextAccessor>();
 		}
 		public IUploadedFile[] Files
 		{

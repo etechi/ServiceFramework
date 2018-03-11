@@ -35,56 +35,20 @@ namespace SF.Auth.IdentityServices.Models
 		[TableVisible]
 		public bool IsSysRole { get; set; }
 	}
-	public class Grant
-	{
-		/// <summary>
-		/// 操作资源ID
-		/// </summary>
-		[Key]
-		[EntityIdent(typeof(ResourceInternal))]
-		public string ResourceId { get; set; }
 
-
-		/// <summary>
-		/// 操作区域ID
-		/// </summary>
-		[Key]		
-		[EntityIdent(typeof(OperationInternal))]
-		public string OperationId { get; set; }
-
-	}
-	public class GrantEditable
-	{
-		/// <summary>
-		/// 资源
-		/// </summary>
-		[Key]
-		[EntityIdent(typeof(ResourceInternal))]
-		[Uneditable]
-		public string ResourceId { get; set; }
-
-		/// <summary>
-		/// 操作
-		/// </summary>
-		[EntityIdent(typeof(OperationInternal))]
-		public IEnumerable<string> OperationIds { get; set; }
-
-	}
 	public class RoleEditable : Role
 	{
 		/// <summary>
 		/// 凭证
 		/// </summary>
 		public IEnumerable<ClaimValue> Claims { get; set; }
-		
-		[Ignore]
-		public IEnumerable<Grant> Grants { get; set; }
 
 		/// <summary>
-		/// 授权
+		/// 角色授权
 		/// </summary>
-		[TableRows]
-		public IEnumerable<GrantEditable> GrantEditables { get; set; }
+		[EntityIdent(typeof(Grant))]
+		public IEnumerable<long> Grants { get; set; }
+
 	}
 	public class UserRole
 	{

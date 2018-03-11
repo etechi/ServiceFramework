@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
 using System.Net.Http;
 using SF.Sys.NetworkService;
+using SF.Sys.Auth;
 
 namespace SF.Auth.IdentityServices.Externals
 {
 	[NetworkService]
+	[AnonymousAllowed]
 	public interface IPageExtAuthService
 	{
 		/// <summary>

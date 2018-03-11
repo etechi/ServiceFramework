@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using SF.Sys.AspNetCore.Auth;
 using SF.Sys.Logging;
 using SF.Sys.NetworkService;
 using SF.Sys.Reflection;
@@ -112,6 +113,10 @@ namespace SF.Sys.AspNetCore.NetworkServices
 				{
 					new FilterDescriptor(
 						new NetworkServiceResultFilter(LogService),
+						0
+						),
+					new FilterDescriptor(
+						new TokenAuthorizationFilter(),
 						0
 						)
 

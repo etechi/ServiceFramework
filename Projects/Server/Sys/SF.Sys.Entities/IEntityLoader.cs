@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Entities
@@ -26,6 +27,7 @@ namespace SF.Sys.Entities
 		/// <param name="Id">主键</param>
 		/// <param name="Fields">字段</param>
 		/// <returns>对象实体</returns>
+		[ReadOnly(true)]
 		Task<TEntity> GetAsync(TKey Id,string[] Fields=null);
 	}
 }

@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.ComponentModel.DataAnnotations;
@@ -92,12 +93,15 @@ namespace SF.Common.Comments
 	/// </summary>
 	/// <typeparam name="TComment">评论类型</typeparam>
 	[NetworkService]
+	[DefaultAuthorize]
+
 	public interface ICommentService<TComment>
 		where TComment : Comment
 	{
 		Task<ObjectKey<long>> Create(CommentCreateArgument Arg);
 		Task Update(CommentUpdateArgument Arg);
 		Task Remove(long Id);
+		[AnonymousAllowed]
 		Task<QueryResult<TComment>> Query(CommentQueryArgument Arg);
 	}
 

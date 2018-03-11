@@ -33,6 +33,11 @@ namespace SF.Sys.BackEndConsole
 		public string Link { get; set; }
 
 		/// <summary>
+		/// 权限
+		/// </summary>
+		public string Permission { get; set; }
+
+		/// <summary>
 		/// 子菜单
 		/// </summary>
 		public List<ConsoleMenuItem> Children { get; set; }

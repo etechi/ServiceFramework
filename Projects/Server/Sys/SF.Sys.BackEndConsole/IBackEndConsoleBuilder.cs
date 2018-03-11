@@ -74,6 +74,10 @@ namespace SF.Sys.BackEndConsole
 		/// </summary>
 		public string Link { get; set; }
 
+		/// <summary>
+		/// 权限
+		/// </summary>
+		public string Permission { get; set; }
 	}
 	public interface IBackEndConsoleBuildContext
 	{

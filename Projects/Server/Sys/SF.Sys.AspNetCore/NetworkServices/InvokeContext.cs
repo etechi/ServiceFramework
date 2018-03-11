@@ -22,15 +22,17 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Primitives;
 using SF.Sys.NetworkService;
 using System.Net;
+using SF.Sys.Services;
 
 namespace SF.Sys.AspNetCore.NetworkServices
 {
 	class InvokeContext : IInvokeContext, IInvokeRequest, IInvokeResponse
 	{
 		public Microsoft.AspNetCore.Http.HttpContext Context { get; }
-		public InvokeContext(Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor)
+
+		public InvokeContext(IServiceProvider Services)
 		{
-			Context = HttpContextAccessor.HttpContext;
+			Context = Services.Resolve<IHttpContextAccessor>().HttpContext;
 		}
 
 		public IInvokeRequest Request => this;

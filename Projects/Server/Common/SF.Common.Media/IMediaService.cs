@@ -28,15 +28,15 @@ namespace SF.Common.Media
 	/// 媒体附件支持
 	/// </summary>
 	[NetworkService]
+	[DefaultAuthorize]
     public interface IMediaService
     {
-		[DefaultAuthorizeAttribute]
 		[HeavyMethod]
 		Task<HttpResponseMessage> Upload(bool returnJson = false);
 
-		[DefaultAuthorizeAttribute]
 		Task<string> Clip(string src, double x, double y, double w, double h);
 
+		[AnonymousAllowed]
 		Task<HttpResponseMessage> Get(string id, string format = null);
 
 

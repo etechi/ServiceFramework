@@ -13,12 +13,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Entities
 {
 	public interface IEntityBatchLoadable<TKey, TEntity>
 	{
+		[ReadOnly(true)]
 		Task<TEntity[]> BatchGetAsync(TKey[] Ids,string[] Props);
 	}
 }

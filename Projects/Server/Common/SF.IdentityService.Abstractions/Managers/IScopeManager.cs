@@ -27,7 +27,7 @@ namespace SF.Auth.IdentityServices.Managers
 	/// 授权范围
 	/// </summary>
 	[EntityManager]
-	[DefaultAuthorizeAttribute("admin")]
+	[DefaultAuthorize(PredefinedRoles.安全专员)]
 	[NetworkService]
 	public interface IScopeManager :
 		IEntityManager<ObjectKey<string>,Models.ScopeEditable>,

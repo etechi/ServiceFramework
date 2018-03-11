@@ -40,7 +40,7 @@ namespace SF.Sys.Auth
 	}
 	public interface IAuthService
 	{
-		Task<AuthResult> Authorize(
+		bool Authorize(
 			ClaimsPrincipal User,
 			string Resource,
 			string Operation,
@@ -49,7 +49,7 @@ namespace SF.Sys.Auth
 	}
 	public interface IInterfaceAuthService
 	{
-		Task<AuthResult> Authorize(
+		bool Authorize(
 			ClaimsPrincipal User,
 			Type Service,
 			MethodInfo Method

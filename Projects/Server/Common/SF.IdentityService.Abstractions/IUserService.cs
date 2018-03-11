@@ -267,19 +267,20 @@ namespace SF.Auth.IdentityServices
 	/// 用户服务
 	/// </summary>
 	[NetworkService]
+	[DefaultAuthorize]
 	public interface IUserService
     {
 		/// <summary>
 		/// 获取当前用户ID
 		/// </summary>
 		/// <returns>用户ID</returns>
-		[DefaultAuthorizeAttribute]
 		Task<long?> GetCurUserId();
 
 		/// <summary>
 		/// 获取当前用户
 		/// </summary>
 		/// <returns>当前用户实体</returns>
+		
 		Task<User> GetCurUser();
 
 		/// <summary>
@@ -287,6 +288,7 @@ namespace SF.Auth.IdentityServices
 		/// </summary>
 		/// <param name="Arg">登录参数</param>
 		/// <returns>访问令牌</returns>
+		[AnonymousAllowed]
 		Task<string> Signin(SigninArgument Arg);
 
 		/// <summary>
@@ -300,6 +302,7 @@ namespace SF.Auth.IdentityServices
 		/// </summary>
 		/// <param name="Arg">找回密码参数</param>
 		/// <returns></returns>
+		[AnonymousAllowed]
 		Task SendPasswordRecorveryCode(SendPasswordRecorveryCodeArgument Arg);
 
 		/// <summary>
@@ -307,6 +310,7 @@ namespace SF.Auth.IdentityServices
 		/// </summary>
 		/// <param name="Arg"></param>
 		/// <returns>访问令牌</returns>
+		[AnonymousAllowed]
 		Task<string> ResetPasswordByRecoveryCode(ResetPasswordByRecorveryCodeArgument Arg);
 
 		/// <summary>
@@ -329,6 +333,7 @@ namespace SF.Auth.IdentityServices
 		/// </summary>
 		/// <param name="AccessToken">访问令牌</param>
 		/// <returns>用户ID</returns>
+		[AnonymousAllowed]
 		Task<long> ValidateAccessToken(string AccessToken);
 
 		/// <summary>
@@ -336,6 +341,7 @@ namespace SF.Auth.IdentityServices
 		/// </summary>
 		/// <param name="Arg">用户创建参数</param>
 		/// <returns></returns>
+		[AnonymousAllowed]
 		Task SendCreateIdentityVerifyCode(SendCreateIdentityVerifyCodeArgument Arg);
 
 		/// <summary>
@@ -344,6 +350,7 @@ namespace SF.Auth.IdentityServices
 		/// <param name="Arg">注册参数</param>
 		/// <param name="VerifyCode">是否验证验证信息</param>
 		/// <returns></returns>
+		[AnonymousAllowed]
 		Task<string> Signup(SignupArgument Arg, bool VerifyCode);
 
 		/// <summary>

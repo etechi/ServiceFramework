@@ -13,25 +13,17 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Data;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Auth.IdentityServices.DataModels
+namespace SF.Sys.Auth
 {
-	[Table("Permission")]
-	public class DataPermission : SF.Sys.Entities.DataModels.DataObjectEntityBase<long>
+	public class PredefinedRoles
 	{
-		[MaxLength(100)]
-		[Required]
-		public override long Id { get; set; }
-
-		[Index(IsUnique = true)]
-		public override string Name { get; set; }
-
-		[InverseProperty(nameof(DataPermissionItem.Permission))]
-		public ICollection<DataPermissionItem> Items { get; set; }
-
+		public const string 安全专员 = nameof(安全专员);
+		public const string 运营专员 = nameof(运营专员);
+		public const string 媒介专员= nameof(媒介专员);
+		public const string 客服专员 = nameof(客服专员);
+		public const string 财务专员 = nameof(财务专员);
+		public const string 销售专员= nameof(销售专员);
 	}
 }

@@ -34,6 +34,7 @@ namespace SF.Common.UserGroups.Managers
 	/// </summary>
 	[NetworkService]
 	[EntityManager]
+	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
 	public interface IGroupMemberManager<TGroup,TMember,TMemberEditable,TQueryArgument> :
 		IEntitySource<ObjectKey<long>, TMember, TQueryArgument>,
 		IEntityManager<ObjectKey<long>, TMemberEditable>

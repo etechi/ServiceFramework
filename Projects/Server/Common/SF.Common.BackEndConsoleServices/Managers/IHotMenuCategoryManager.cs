@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.Threading.Tasks;
@@ -32,6 +33,8 @@ namespace SF.Sys.BackEndConsole.Managers
 	/// </summary>
 	[NetworkService]
 	[EntityManager]
+	[DefaultAuthorize]
+
 	public interface IHotMenuCategoryManager:
 		Entities.IEntitySource<ObjectKey<long>, Models.HotMenuCategory, HotMenuCategoryQueryArgument>,
 		Entities.IEntityManager<ObjectKey<long>, Models.HotMenuCategory>

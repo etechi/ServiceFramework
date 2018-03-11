@@ -18,6 +18,7 @@ using SF.Sys.Auth;
 using SF.Sys.Clients;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
+using SF.Sys.Reflection;
 using SF.Sys.Services;
 using System;
 using System.Collections.Generic;
@@ -31,9 +32,65 @@ namespace SF.Sys.BackEndConsole.Front
 	public class CachedConsole: Console
 	{
 		public Dictionary<string,Page> Pages { get; set; }
-		public ConsoleMenuItem[] GetUserMenuItems(ClaimsPrincipal User)
+
+		public ConsoleMenuItem[] GetUserMenuItems(
+			ClaimsPrincipal User,
+			IAuthService AuthService,
+			IEntityMetadataCollection EntityMetadataCollection
+			)
 		{
-			return MenuItems;
+			bool PermissionCheck(string Permission)
+			{
+				if (Permission.IsNullOrEmpty())
+					return true;
+
+				if (Permission.StartsWith("@"))
+				{
+					var em = EntityMetadataCollection.FindByTypeIdent(Permission.Substring(1));
+					if (em == null)
+						return false;
+					if (em.EntityManagerType == null)
+						return false;
+					if (!em.EntityManagerCapability.HasFlag(EntityCapability.Queryable))
+						return false;
+					return AuthService.Authorize(
+						User,
+						em.EntityManagerType.GetFullName(),
+						"QueryAsync",
+						null
+						);
+				}
+				var pair = Permission.LastSplit2('.');
+				return AuthService.Authorize(
+					User,
+					pair.Item1,
+					pair.Item2,
+					null
+					);
+			}
+			
+			IEnumerable<ConsoleMenuItem> filter(IEnumerable<ConsoleMenuItem> items)
+			{
+				foreach(var i in items)
+				{
+					var re = PermissionCheck(i.Permission);
+					if (!re)
+						continue;
+					var nc = i.Children == null ? null : filter(i.Children).ToList();
+					if ((nc?.Count ?? 0) == 0 && i.Link == null)
+						continue;
+					yield return new ConsoleMenuItem
+					{
+						Children = nc,
+						FontIcon = i.FontIcon,
+						Link = i.Link,
+						Permission = i.Permission,
+						Title = i.Title
+					};
+				}
+
+			}
+			return filter(MenuItems).ToArray();
 		}
 		public Task<Page> GetUserPage(string PagePath,ClaimsPrincipal User)
 		{
@@ -51,13 +108,19 @@ namespace SF.Sys.BackEndConsole.Front
 	{
 		IAccessToken AccessToken { get; }
 		IEntityCache<string,CachedConsole> EntityCache { get; }
+		IEntityMetadataCollection EntityMetadataCollection { get; }
+		IAuthService AuthService { get; }
 		public ConsoleService(
 			IAccessToken AccessToken,
-			IEntityCache<string, CachedConsole> EntityCache
+			IEntityCache<string, CachedConsole> EntityCache,
+			IAuthService AuthService,
+			IEntityMetadataCollection EntityMetadataCollection
 			)
 		{
+			this.AuthService = AuthService;
 			this.EntityCache = EntityCache;
 			this.AccessToken = AccessToken;
+			this.EntityMetadataCollection = EntityMetadataCollection;
 		}
 		Task<CachedConsole> GetCachedConsole(string ConsoleIdent)
 		{
@@ -71,7 +134,7 @@ namespace SF.Sys.BackEndConsole.Front
 			{
 				Title = c.Title,
 				SystemVersion = c.SystemVersion,
-				MenuItems = c.GetUserMenuItems(AccessToken.User)
+				MenuItems = c.GetUserMenuItems(AccessToken.User, AuthService, EntityMetadataCollection)
 			};
 		}
 

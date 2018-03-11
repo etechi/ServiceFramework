@@ -21,8 +21,6 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.BackEndConsole.Front
 {
-
-	
 	[NetworkService]
 	public interface IQueryExportService
 	{

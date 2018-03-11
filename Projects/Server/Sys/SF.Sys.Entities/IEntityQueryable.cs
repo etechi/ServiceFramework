@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Entities
@@ -20,11 +21,13 @@ namespace SF.Sys.Entities
 	public interface IEntityIdentQueryable<TKey,TQueryArgument>
 		where TQueryArgument: IPagingArgument
 	{
+		[ReadOnly(true)]
 		Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg);
 	}
 	public interface IEntityQueryable<TEntity, TQueryArgument>
 		where TQueryArgument : IPagingArgument
 	{
+		[ReadOnly(true)]
 		Task<QueryResult<TEntity>> QueryAsync(TQueryArgument Arg);
 	}
 }

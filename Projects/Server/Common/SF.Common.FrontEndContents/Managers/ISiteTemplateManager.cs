@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.Entities.Annotations;
 using SF.Sys.NetworkService;
@@ -33,6 +34,7 @@ namespace SF.Common.FrontEndContents
 	/// <typeparam name="TSiteTemplate"></typeparam>
 	[EntityManager]
 	[NetworkService]
+	[DefaultAuthorize(PredefinedRoles.运营专员)]
 	public interface ISiteTemplateManager<TSiteTemplate> :
 		IEntityManager<ObjectKey<long>, TSiteTemplate>,
 		IEntitySource<ObjectKey<long>, TSiteTemplate, SiteTemplateQueryArgument>,

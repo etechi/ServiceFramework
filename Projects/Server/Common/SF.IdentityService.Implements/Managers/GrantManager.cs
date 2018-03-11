@@ -13,35 +13,31 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Data;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Auth.IdentityServices.DataModels
+using System.Linq;
+using System.Threading.Tasks;
+using SF.Auth.IdentityServices.DataModels;
+using SF.Auth.IdentityServices.Models;
+using SF.Sys.Entities;
+
+namespace SF.Auth.IdentityServices.Managers
 {
-	[Table("PermissionItem")]
-	public class DataPermissionItem
+	public class GrantManager:
+		//QuerableEntitySource<long, Models.IdentityInternal, IdentityQueryArgument, TIdentity>,
+		AutoModifiableEntityManager<
+			ObjectKey<long>,
+			Models.Grant,
+			Models.Grant,
+			GrantQueryArgument,
+			Models.GrantEditable,
+			DataModels.DataGrant
+			>,
+		IGrantManager
 	{
-		/// <summary>
-		/// 授权ID
-		/// </summary>
-		[Key]
-		[Column(Order = 1)]
-		[DatabaseGenerated(DatabaseGeneratedOption.None)]
-		public long PermissionId { get; set; }
-
-		[ForeignKey(nameof(PermissionId))]
-		public DataPermission Permission { get; set; }
-
-		/// <summary>
-		/// 服务方法
-		/// </summary>
-		[Key]
-		[Column(Order = 2)]
-		[MaxLength(200)]
-		[Required]
-		public string ServiceMethodId { get; set; }
-
+		public GrantManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+		{
+		}
+		
 	}
+
 }

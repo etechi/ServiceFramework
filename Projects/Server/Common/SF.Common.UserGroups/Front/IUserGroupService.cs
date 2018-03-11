@@ -14,6 +14,7 @@ namespace SF.Common.UserGroups.Front
 	/// 用户组服务
 	/// </summary>
 	[NetworkService]
+	[DefaultAuthorize]
 	public interface IUserGroupService<TGroup,TMember>
 		where TGroup:Group
 		where TMember:GroupMember

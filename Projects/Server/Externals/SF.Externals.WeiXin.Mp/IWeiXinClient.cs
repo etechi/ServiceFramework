@@ -1,4 +1,5 @@
-﻿using SF.Sys.NetworkService;
+﻿using SF.Sys.Auth;
+using SF.Sys.NetworkService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace SF.Externals.WeiXin.Mp
 	    public string signature { get; set; }
     }
 	[NetworkService]
+	[AnonymousAllowed]
     public interface IWeiXinClient
     {
         Task<JsApiSignatureResult> JsApiSignature(string uri);

@@ -38,6 +38,7 @@ using System.ComponentModel;
 using SF.Sys.Comments;
 using SF.Auth.IdentityServices.DataModels;
 using SF.Sys.TimeServices;
+using SF.Sys.Collections.Generic;
 
 namespace SF.Sys.Services
 {
@@ -80,13 +81,19 @@ namespace SF.Sys.Services
 					.Add<IOperationManager, OperationManager>("AuthOperation","操作",typeof(OperationInternal))
 					.Add<IResourceManager, ResourceManager>("AuthResource", "资源", typeof(ResourceInternal))
 					.Add<IRoleManager, RoleManager>("AuthRole", "身份", typeof(Role))
+					.Add<IGrantManager, GrantManager>("AuthGrant", "授权", typeof(Grant))
 					.Add<IUserManager, UserManager>("AuthUser", "用户", typeof(UserInternal),typeof(SF.Sys.Auth.User))
 					.Add<IScopeManager, ScopeManager>("AuthScope", "授权范围", typeof(ScopeInternal))
 				//.Add<IDocumentService, DocumentService>()
 				);
 			sc.AddSingleton<RoleGrantCache>();
+			sc.AddSingleton<ServiceMethodAuthorizeCache>();
+			sc.AddSingleton<IAuthService, AuthService>();
+			sc.AddSingleton<IInterfaceAuthService>(sp => (AuthService)sp.Resolve<IAuthService>());
+
 			sc.AddManagedScoped<IUserService, UserService>();
 			sc.AddScoped(sp => (IAuthSessionService)sp.Resolve<IUserService>());
+			
 			sc.AddManagedScoped<IUserCredentialProvider, PhoneNumberUserCredentialProvider>();
 			sc.AddManagedScoped<IUserCredentialProvider, LocalUserCredentialProvider>();
 			sc.AddManagedScoped<IUserCredentialProvider, AdminAccountCredentialProvider>();
@@ -129,8 +136,8 @@ namespace SF.Sys.Services
 				typeof(SF.Auth.IdentityServices.DataModels.DataRole),
 				typeof(SF.Auth.IdentityServices.DataModels.DataRoleClaimValue),
 				typeof(SF.Auth.IdentityServices.DataModels.DataRoleGrant),
-				typeof(SF.Auth.IdentityServices.DataModels.DataPermission),
-				typeof(SF.Auth.IdentityServices.DataModels.DataPermissionItem),
+				typeof(SF.Auth.IdentityServices.DataModels.DataGrant),
+				typeof(SF.Auth.IdentityServices.DataModels.DataGrantItem),
 				typeof(SF.Auth.IdentityServices.DataModels.DataUser),
 				typeof(SF.Auth.IdentityServices.DataModels.DataUserClaimValue),
 				typeof(SF.Auth.IdentityServices.DataModels.DataUserCredential),
@@ -166,10 +173,12 @@ namespace SF.Sys.Services
 			)
 		{
 			await sim.DefaultService<IUserService, UserService>(
-				new{
-					Setting = new UserServiceSetting {
+				new
+				{
+					Setting = new UserServiceSetting
+					{
 						VerifyCodeDisabled = VerifyCodeDisabled,
-						DefaultIdentityCredentialProvider= DefaultCredentialProvider
+						DefaultIdentityCredentialProvider = DefaultCredentialProvider
 					}
 				}
 				)
@@ -183,6 +192,10 @@ namespace SF.Sys.Services
 
 			await sim.DefaultService<IRoleManager, RoleManager>(null)
 				.WithDisplay("用户角色")
+				.WithMenuItems("系统管理/身份和权限")
+				.Ensure(ServiceProvider, ScopeId);
+			await sim.DefaultService<IGrantManager, GrantManager>(null)
+				.WithDisplay("授权管理")
 				.WithMenuItems("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 			await sim.DefaultService<IResourceManager, ResourceManager>(null)
@@ -248,12 +261,12 @@ namespace SF.Sys.Services
 			foreach (var ct in predefinedClaimTypes)
 			{
 				await ClaimTypeManager.EnsureEntity(
-					await ClaimTypeManager.QuerySingleEntityIdent(new ClaimTypeQueryArgument { Id = ObjectKey.From( ct.Item1) }),
-					() => new ClaimType() { Id=ct.Item1},
+					await ClaimTypeManager.QuerySingleEntityIdent(new ClaimTypeQueryArgument { Id = ObjectKey.From(ct.Item1) }),
+					() => new ClaimType() { Id = ct.Item1 },
 					ict =>
 					{
 						ict.Name = ct.Item2;
-						
+
 					}
 					);
 			}
@@ -307,7 +320,7 @@ namespace SF.Sys.Services
 			////		);
 			////}
 
-			
+
 
 			//foreach (var idres in predefinedClaimTypes)
 			//{
@@ -327,14 +340,14 @@ namespace SF.Sys.Services
 			//		{
 			//			r.Title =
 			//			r.Name = "用户信息";
-						
+
 			//			r.IsIdentityResource = true;
 			//			r.RequiredClaims = predefinedClaimTypes.Select(id => new ResourceRequiredClaim { ClaimTypeId = id.Item1 }).ToArray();
 			//		});
 
 			var scopeManager = ServiceProvider.Resolve<IScopeManager>();
 			//var allResourceIds = (await ResourceManager.QueryAllAsync()).Select(i => i.Id).ToArray();
-			var allResourceScope = await scopeManager.Ensure<IScopeManager,string,ScopeEditable>(
+			var allResourceScope = await scopeManager.Ensure<IScopeManager, string, ScopeEditable>(
 				"all",
 				e =>
 				{
@@ -343,10 +356,10 @@ namespace SF.Sys.Services
 				});
 
 
-			var ClientConfigManager =ServiceProvider.Resolve<IClientConfigManager>();
-			var allResConfig=await ClientConfigManager.EnsureEntity(
+			var ClientConfigManager = ServiceProvider.Resolve<IClientConfigManager>();
+			var allResConfig = await ClientConfigManager.EnsureEntity(
 				await ClientConfigManager.QuerySingleEntityIdent(new ClientConfigQueryArgument { Name = "所有资源" }),
-				() => new ClientConfigEditable{},
+				() => new ClientConfigEditable { },
 				e =>
 				{
 					e.Name = "所有资源";
@@ -434,7 +447,7 @@ namespace SF.Sys.Services
 			//	allGrants
 			//);
 
-			
+
 
 			var UserManager = ServiceProvider.Resolve<IUserManager>();
 			var superadmin = await UserManager.UserEnsure(
@@ -442,169 +455,191 @@ namespace SF.Sys.Services
 				"superadmin",
 				"system",
 				"超级管理员",
-				new[] {"superadmin","admin"}
+				new[] { "superadmin", "admin" }
 				);
 
-			
+
 			await sim.Service<IExternalAuthorizationProvider, TestOAuth2Provider>(new { })
 				.WithIdent("test")
 				.Ensure(ServiceProvider, ScopeId);
 
+			await InitGrantAndRoles(ServiceProvider);
 
+		}
 
+		private static async Task InitGrantAndRoles(IServiceProvider ServiceProvider)
+		{
 			//创建默认角色,并授权
-			var roles = new Dictionary<string, NamedItems>();
-			var permissions = new List<NamedItems>();
+			var roles = new Dictionary<string, NamedItems<string>>();
+			var permissions = new List<NamedItems<(string svc, string method)>>();
 
 			var svcs = ServiceProvider.Resolve<IServiceMetadata>();
-			var SigninRequired = new HashSet<(string type,string method)>();
+			var SigninRequired = new HashSet<(string type, string method)>();
 
-			foreach(var svc in svcs.Services.Values)
+			foreach (var svc in svcs.Services.Values)
 			{
-				if (!svc.ServiceType.IsDefined(typeof(NetworkServiceAttribute),true))
+				//仅处理网络接口
+				if (!svc.ServiceType.IsDefined(typeof(NetworkServiceAttribute), true))
 					continue;
+				//服务上的默认授权
 				var daas = svc.ServiceType.GetCustomAttributes<DefaultAuthorizeAttribute>(true);
-				var methods = new Dictionary<string, NamedItems>();
-				var typeName = svc.ServiceName;
-				foreach(var method in 
-					svc.ServiceType.AllRelatedTypes().SelectMany(it => it.AllPublicInstanceProperties())
+
+				var methods = new Dictionary<string, NamedItems<(string svc, string method)>>();
+
+				//服务名称
+				var svcName = svc.ServiceName;
+				var svcTitle = svc.ServiceType.Comment().Title.TrimEndTo("管理");
+				//处理服务上方法默认授权
+				foreach (var method in
+					svc.ServiceType.AllRelatedTypes().SelectMany(it => it.AllPublicInstanceMethods())
 					)
 				{
-					var methodName = typeName + "." + method.Name;
+					var methodName = method.Name;
 
 					var mdaas = method.GetCustomAttributes<DefaultAuthorizeAttribute>(true);
 					if (mdaas != null)
 					{
-						foreach (var r in mdaas.Where(mdaa=>mdaa.RoleIdent!=null))
-							AddItem(methods, r.RoleIdent,r.RoleName, methodName);
+						foreach (var r in mdaas.Where(mdaa => mdaa.RoleIdent != null))
+							AddItem(methods, r.RoleIdent, r.RoleName, (svcName, methodName));
 					}
-					if (daas != null && daas.Any() || mdaas!=null && mdaas.Any())
-						SigninRequired.Add((typeName, method.Name));
+					if (daas != null && daas.Any() || mdaas != null && mdaas.Any())
+						SigninRequired.Add((svcName, method.Name));
 
 					var rd = method.GetCustomAttribute<ReadOnlyAttribute>(true);
 					if (rd != null && rd.IsReadOnly)
-						AddItem(methods, "#readonly", "浏览", methodName);
-
-					AddItem(methods, "#all", "管理", methodName);
+						AddItem(methods, "#readonly", "浏览", (svcName, methodName));
 				}
-				foreach(var m in methods)
+				foreach (var m in methods)
 				{
-					m.Value.Name = svc.ServiceName + m.Value.Name;
+					m.Value.Name = svcTitle + m.Value.Name;
 					permissions.Add(m.Value);
 
 					if (m.Key.StartsWith("#"))
 					{
-						foreach(var daa in daas.Where(d=>d.RoleIdent!=null))
+						foreach (var daa in daas.Where(d => d.RoleIdent != null))
 							AddItem(roles, daa.RoleIdent, daa.RoleName, m.Value.Name);
 					}
 					else
 						AddItem(roles, m.Key, m.Value.Name, m.Value.Name);
 				}
 
-				var ds = ServiceProvider.Resolve<IDataScope>();
-				var idg = ServiceProvider.Resolve<IIdentGenerator>();
-				var timeService = ServiceProvider.Resolve<ITimeService>();
-				var now = timeService.Now;
-				var permissionIdMap = new Dictionary<string, long>();
+				var managerPermissionName = svcTitle + "管理";
+				var ni = new NamedItems<(string, string)> { Name = managerPermissionName };
+				ni.Add((svcName, "*"));
+				permissions.Add(ni);
 
-				await ds.Use("初始化权限", async ctx =>
-				{
-					var permissionSet = ctx.Set<DataPermission>();
-					foreach (var p in permissions)
-					{
-						var dbp = await permissionSet.AsQueryable()
-							.Where(pi => pi.Name == p.Name)
-							.Include(pi => pi.Items)
-							.FirstOrDefaultAsync();
-						if (dbp == null)
-						{
-							var id = await idg.GenerateAsync<DataPermission>();
-							permissionIdMap.Add(p.Name, id);
-							permissionSet.Add(new DataPermission
-							{
-								Id = id,
-								Name = p.Name,
-								Items = p.Select(pi => new DataPermissionItem
-								{
-									PermissionId = id,
-									ServiceMethodId = pi
-								}).ToArray(),
-								CreatedTime= now,
-								UpdatedTime= now
-							});
-						}
-						else
-						{
-							permissionIdMap.Add(p.Name, dbp.Id);
-							dbp.Name = p.Name;
-							dbp.UpdatedTime = now;
-							ctx.Set<DataPermissionItem>().Merge(
-								dbp.Items,
-								p,
-								(o, e) => o.ServiceMethodId == e,
-								e => new DataPermissionItem { PermissionId = dbp.Id, ServiceMethodId = e }
-								);
-							ctx.Update(dbp);
-						}
-					}
+				foreach (var daa in daas.Where(d => d.RoleIdent != null))
+					AddItem(roles, daa.RoleIdent, daa.RoleName, managerPermissionName);
 
-					var roleSet = ctx.Set<DataRole>();
-					foreach(var r in roles)
-					{
-						var dbr = await roleSet.AsQueryable()
-							.Where(pi => pi.Name == r.Key)
-							.Include(pi => pi.Grants)
-							.FirstOrDefaultAsync();
-						if (dbr == null)
-						{
-							roleSet.Add(new DataRole
-							{
-								Id = r.Key,
-								Name = r.Value.Name,
-								Grants = r.Value.Select(pi => new DataRoleGrant
-								{
-									PermissionId = permissionIdMap[pi],
-									RoleId=r.Key
-								}).ToArray(),
-								CreatedTime = now,
-								UpdatedTime = now
-							});
-						}
-						else
-						{
-							dbr.Name = r.Value.Name;
-							dbr.UpdatedTime = now;
-							ctx.Set<DataRoleGrant>().Merge(
-								dbr.Grants,
-								r.Value,
-								(o, e) => o.PermissionId == permissionIdMap[ e],
-								e => new DataRoleGrant{
-									RoleId = dbr.Id,
-									PermissionId = permissionIdMap[e]
-								}
-								);
-							ctx.Update(dbr);
-						}
-					}
-
-					await ctx.SaveChangesAsync();
-
-				});
 			}
+			var ds = ServiceProvider.Resolve<IDataScope>();
+			var idg = ServiceProvider.Resolve<IIdentGenerator>();
+			var timeService = ServiceProvider.Resolve<ITimeService>();
+			var now = timeService.Now;
+			var permissionIdMap = new Dictionary<string, long>();
+
+			await ds.Use("初始化权限", async ctx =>
+			{
+				var permissionSet = ctx.Set<DataGrant>();
+				var itemSet = ctx.Set<DataGrantItem>();
+				var dbPermissions = await permissionSet.AsQueryable()
+						.Include(pi => pi.Items)
+						.ToDictionaryAsync(pi => pi.Name);
+				foreach (var e in permissions)
+				{
+					var m = dbPermissions.Get(e.Name);
+					if (m == null)
+					{
+						var id = await idg.GenerateAsync<DataGrant>();
+						permissionIdMap.Add(e.Name, id);
+						permissionSet.Add(new DataGrant
+						{
+							Id = id,
+							Name = e.Name,
+							Items = e.Select(pi => new DataGrantItem
+							{
+								GrantId = id,
+								ServiceId = pi.svc,
+								ServiceMethodId = pi.method 
+							}).ToArray(),
+							CreatedTime = now,
+							UpdatedTime = now
+						});
+					}
+					else
+					{
+						permissionIdMap.Add(e.Name, m.Id);
+						m.UpdatedTime = now;
+						itemSet.Merge(
+							m.Items,
+							e,
+							(oi, ei) => oi.ServiceId == ei.svc && oi.ServiceMethodId == ei.method ,
+							ei => new DataGrantItem { GrantId = m.Id, ServiceId = ei.svc, ServiceMethodId = ei.method }
+							);
+						permissionSet.Update(m);
+
+					}
+				}
+
+				var roleSet = ctx.Set<DataRole>();
+				var dbRoles = await roleSet.AsQueryable()
+						.Include(pi => pi.Grants)
+						.ToDictionaryAsync(pi => pi.Id);
+
+				foreach (var r in roles)
+				{
+					var dbr = dbRoles.Get(r.Key);
+					if (dbr == null)
+					{
+						roleSet.Add(new DataRole
+						{
+							Id = r.Key,
+							Name = r.Value.Name ?? r.Key,
+							Grants = r.Value.Select(pi => new DataRoleGrant
+							{
+								DstGrantId = permissionIdMap[pi],
+								RoleId = r.Key
+							}).ToArray(),
+							CreatedTime = now,
+							UpdatedTime = now
+						});
+					}
+					else
+					{
+						dbr.Name = r.Value.Name ?? r.Key;
+						dbr.UpdatedTime = now;
+						ctx.Set<DataRoleGrant>().Merge(
+							dbr.Grants,
+							r.Value,
+							(o, e) => o.DstGrantId == permissionIdMap[e],
+							e => new DataRoleGrant
+							{
+								RoleId = dbr.Id,
+								DstGrantId = permissionIdMap[e]
+							}
+							);
+						ctx.Update(dbr);
+					}
+				}
+
+				await ctx.SaveChangesAsync();
+
+			});
 		}
-		class NamedItems:HashSet<string>
+
+		class NamedItems<T>:HashSet<T>
 		{
 			public string Name { get; set; }
 		}
-		static void AddItem(
-			Dictionary<string, NamedItems> dic,
+		static void AddItem<T>(
+			Dictionary<string, NamedItems<T>> dic,
 			string key,
 			string name,
-			string item
+			T item
 			)
 		{
 			if (!dic.TryGetValue(key, out var l))
-				dic[key] = l = new NamedItems();
+				dic[key] = l = new NamedItems<T>();
 			l.Add(item);
 		}
 	}

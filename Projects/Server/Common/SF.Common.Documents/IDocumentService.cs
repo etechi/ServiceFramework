@@ -51,6 +51,7 @@ namespace SF.Common.Documents
 	/// <typeparam name="TDocument"></typeparam>
 	/// <typeparam name="TCategory"></typeparam>
 	[NetworkService]
+	[AnonymouseAllowed]
 	public interface IDocumentService<TDocument, TCategory>
 		where TDocument : Document
 		where TCategory : Category

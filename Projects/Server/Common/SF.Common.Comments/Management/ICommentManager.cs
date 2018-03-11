@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.ComponentModel.DataAnnotations;
@@ -40,6 +41,8 @@ namespace SF.Common.Comments.Management
 	/// </summary>
 	[NetworkService]
 	[EntityManager]
+	[DefaultAuthorize(PredefinedRoles.运营专员,true)]
+	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
 	public interface ICommentManager<TComment>:
 		IEntitySource<ObjectKey<long>, TComment, CommentQueryArguments>,
 		IEntityManager<ObjectKey<long>, TComment>

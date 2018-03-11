@@ -37,34 +37,34 @@ namespace SF.Auth.IdentityServices.Managers
 		public RoleManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
-		public override async Task<RoleEditable> LoadForEdit(ObjectKey<string> Key)
-		{
-			var re=await base.LoadForEdit(Key);
-			if (re == null) return null;
-			re.GrantEditables = re.Grants.GroupBy(g => g.ResourceId).Select(g => new GrantEditable
-			{
-				ResourceId = g.Key,
-				OperationIds = g.Select(gi => gi.OperationId)
-			});
-			re.Grants = null;
-			return re;
-		}
-		protected override Task OnUpdateModel(IModifyContext ctx)
-		{
-			var e = ctx.Editable;
-			if (e.GrantEditables != null)
-			{
-				e.Grants = from ge in e.GrantEditables
-						   from oid in ge.OperationIds
-						   select new Grant
-						   {
-							   ResourceId = ge.ResourceId,
-							   OperationId = oid
-						   };
-			}
+		//public override async Task<RoleEditable> LoadForEdit(ObjectKey<string> Key)
+		//{
+		//	var re=await base.LoadForEdit(Key);
+		//	if (re == null) return null;
+		//	//re.GrantEditables = re.Grants.GroupBy(g => g.ResourceId).Select(g => new GrantEditable
+		//	//{
+		//	//	ResourceId = g.Key,
+		//	//	OperationIds = g.Select(gi => gi.OperationId)
+		//	//});
+		//	re.Grants = null;
+		//	return re;
+		//}
+		//protected override Task OnUpdateModel(IModifyContext ctx)
+		//{
+		//	var e = ctx.Editable;
+		//	//if (e.GrantEditables != null)
+		//	//{
+		//	//	e.Grants = from ge in e.GrantEditables
+		//	//			   from oid in ge.OperationIds
+		//	//			   select new Grant
+		//	//			   {
+		//	//				   ResourceId = ge.ResourceId,
+		//	//				   OperationId = oid
+		//	//			   };
+		//	//}
 
-			return base.OnUpdateModel(ctx);
-		}
+		//	return base.OnUpdateModel(ctx);
+		//}
 
 		//protected override async Task OnUpdateModel(IModifyContext ctx)
 		//{

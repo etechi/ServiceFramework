@@ -13,19 +13,25 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Auth;
-using SF.Sys.Entities.Annotations;
-using SF.Sys.NetworkService;
-using System;
+using SF.Sys.Data;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Sys.ServiceFeatures
-{	
-	[NetworkService]
-	public interface IServiceFeatureControlService
+namespace SF.Auth.IdentityServices.DataModels
+{
+	[Table("Grant")]
+	public class DataGrant : SF.Sys.Entities.DataModels.DataObjectEntityBase<long>
 	{
-		Task<string> Init(string Id=null);
+		[MaxLength(100)]
+		[Required]
+		public override long Id { get; set; }
+
+		[Index(IsUnique = true)]
+		public override string Name { get; set; }
+
+		[InverseProperty(nameof(DataGrantItem.Grant))]
+		public ICollection<DataGrantItem> Items { get; set; }
+
 	}
 }

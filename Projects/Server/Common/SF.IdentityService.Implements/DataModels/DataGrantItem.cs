@@ -13,19 +13,43 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Auth;
-using SF.Sys.Entities.Annotations;
-using SF.Sys.NetworkService;
-using System;
+using SF.Sys.Data;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Sys.ServiceFeatures
-{	
-	[NetworkService]
-	public interface IServiceFeatureControlService
+namespace SF.Auth.IdentityServices.DataModels
+{
+	[Table("GrantItem")]
+	public class DataGrantItem
 	{
-		Task<string> Init(string Id=null);
+		/// <summary>
+		/// 授权ID
+		/// </summary>
+		[Key]
+		[Column(Order = 1)]
+		[DatabaseGenerated(DatabaseGeneratedOption.None)]
+		public long GrantId { get; set; }
+
+		[ForeignKey(nameof(GrantId))]
+		public DataGrant Grant { get; set; }
+
+		/// <summary>
+		/// 服务
+		/// </summary>
+		[Key]
+		[Column(Order = 2)]
+		[MaxLength(200)]
+		[Required]
+		public string ServiceId { get; set; }
+
+		/// <summary>
+		/// 服务方法，方法为空为授权所有方法
+		/// </summary>
+		[Key]
+		[Column(Order = 3)]
+		[MaxLength(200)]
+		public string ServiceMethodId { get; set; }
+
 	}
 }

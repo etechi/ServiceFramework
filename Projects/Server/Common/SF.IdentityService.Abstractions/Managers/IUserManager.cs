@@ -61,7 +61,12 @@ namespace SF.Auth.IdentityServices.Managers
 	/// <typeparam name="TEditable"></typeparam>
 	/// <typeparam name="TQueryArgument"></typeparam>
 	[EntityManager]
-	[DefaultAuthorizeAttribute("admin")]
+	[DefaultAuthorize(PredefinedRoles.客服专员)]
+	[DefaultAuthorize(PredefinedRoles.安全专员)]
+	[DefaultAuthorize(PredefinedRoles.运营专员,true)]
+	[DefaultAuthorize(PredefinedRoles.财务专员,true)]
+	[DefaultAuthorize(PredefinedRoles.媒介专员,true)]
+	[DefaultAuthorize(PredefinedRoles.销售专员,true)]
 	[NetworkService]
 	public interface IUserManager<TInternal,TEditable,TQueryArgument> :
 		IEntityManager<ObjectKey<long>,TEditable>,

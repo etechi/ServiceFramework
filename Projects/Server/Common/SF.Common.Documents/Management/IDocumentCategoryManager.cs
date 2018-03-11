@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 
 using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.ComponentModel.DataAnnotations;
@@ -49,6 +50,9 @@ namespace SF.Common.Documents.Management
 	/// <typeparam name="TInternal"></typeparam>
 	[NetworkService]
 	[EntityManager]
+	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
+	[DefaultAuthorize(PredefinedRoles.运营专员)]
+
 	public interface IDocumentCategoryManager<TInternal> :
 		IEntitySource<ObjectKey<long>, TInternal, DocumentCategoryQueryArgument>,
 		IEntityManager<ObjectKey<long>, TInternal>

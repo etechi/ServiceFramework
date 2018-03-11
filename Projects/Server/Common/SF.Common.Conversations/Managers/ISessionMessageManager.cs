@@ -4,6 +4,7 @@ using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using SF.Sys.Annotations;
 using SF.Common.Conversations.Models;
+using SF.Sys.Auth;
 
 namespace SF.Common.Conversations.Managers
 {
@@ -17,6 +18,8 @@ namespace SF.Common.Conversations.Managers
 	/// </summary>
 	[NetworkService]
 	[EntityManager]
+	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
+
 	public interface ISessionMessageManager :
 		IEntitySource<ObjectKey<long>, SessionMessage, SessionMessageQueryArgument>,
 		IEntityManager<ObjectKey<long>, SessionMessage>

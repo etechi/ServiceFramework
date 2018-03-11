@@ -19,19 +19,30 @@ using System.Text;
 
 namespace SF.Sys.Auth
 {
+	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Interface, AllowMultiple = false)]
+	public class AnonymousAllowedAttribute : Attribute
+	{
+
+	}
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Interface,AllowMultiple = true)]
 	public class DefaultAuthorizeAttribute : Attribute
 	{
 		public string RoleIdent { get; set; }
 		public string RoleName { get; set; }
+		public bool ReadOnly { get; set; }
 		public DefaultAuthorizeAttribute():this(null,null)
 		{
 
 		}
-		public DefaultAuthorizeAttribute(string RoleIdent,string RoleName=null)
+		public DefaultAuthorizeAttribute(string RoleIdent, bool ReadOnly):this(RoleIdent,null,ReadOnly)
+		{
+
+		}
+		public DefaultAuthorizeAttribute(string RoleIdent,string RoleName=null,bool ReadOnly=false)
 		{
 			this.RoleIdent = RoleIdent;
 			this.RoleName = RoleName;
+			this.ReadOnly = ReadOnly;
 		}
 	}
 

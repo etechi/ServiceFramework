@@ -15,6 +15,7 @@ namespace SF.Common.Conversations.Front
 	/// 交谈服务
 	/// </summary>
 	[NetworkService]
+	[DefaultAuthorize]
 	public interface IConversationService
 	{
 		/// <summary>

@@ -32,16 +32,16 @@ namespace SF.Auth.IdentityServices.DataModels
 		public DataRole Role { get; set; }
 
 		/// <summary>
-		/// 操作资源ID
+		/// 授权ID
 		/// </summary>
 		[Key]
 		[Column(Order = 2)]
 		[MaxLength(100)]
 		[Required]
-		public long PermissionId { get; set; }
+		public long DstGrantId { get; set; }
 
-		[ForeignKey(nameof(PermissionId))]
-		public DataPermission Permission { get; set; }
+		[ForeignKey(nameof(DstGrantId))]
+		public DataGrant DstGrant { get; set; }
 
 	}
 }

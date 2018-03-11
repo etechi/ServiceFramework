@@ -13,12 +13,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Auth;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SF.Sys.NetworkService
 {
 	[NetworkService]
+	[AnonymousAllowed]
 	public interface IServiceMetadataService
 	{
 		//[Authorize(Roles ="admin")]

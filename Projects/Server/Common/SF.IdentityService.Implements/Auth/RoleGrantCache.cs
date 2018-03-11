@@ -35,35 +35,47 @@ namespace SF.Auth.IdentityServices
 		Dictionary<(string,string), HashSet<string>> _GrantRoles;
 		public RoleGrantCache(
 			IScoped<IDataScope> DataScope,
-			IEventSubscriber<EntityChanged<DataModels.DataRole>> OnConsoleModified
+			IEventSubscriber<EntityChanged<DataModels.DataRole>> OnRoleModified,
+			IEventSubscriber<EntityChanged<DataModels.DataGrant>> OnGrantModified
 			)
 		{
-			OnConsoleModified.Wait(e =>
+			OnRoleModified.Wait(e =>
+			{
+				_GrantRoles = null;
+				return Task.CompletedTask;
+			});
+			OnGrantModified.Wait(e =>
 			{
 				_GrantRoles = null;
 				return Task.CompletedTask;
 			});
 			this.DataScope = DataScope;
 		}
-		async Task<Dictionary<(string,string), HashSet<string>>> LoadGrantRoles()
+		Dictionary<(string,string), HashSet<string>> LoadGrantRoles()
 		{
-			//var re = await DataScope.Use(ds => ds.Use("获取权限角色", ctx =>
-			//		ctx.Queryable<DataModels.DataRole>()
-			//		.Where(r => r.LogicState == EntityLogicState.Enabled)
-			//		.SelectMany(r => r.Grants)
-			//		.ToArrayAsync()
-			//  ));
-			//return re
-			//	.GroupBy(r => (r.ResourceId ,r.OperationId), r => r.RoleId)
-			//	.ToDictionary(g => g.Key, g => g.ToHashSet());
-			return null;
+			var re = Task.Run(
+				() =>
+					 DataScope.Use(ds => ds.Use("获取权限角色", ctx =>
+					  (from r in ctx.Queryable<DataModels.DataRole>()
+					   where r.LogicState == EntityLogicState.Enabled
+					   from rg in r.Grants
+					   let g = rg.DstGrant
+					   where g.LogicState == EntityLogicState.Enabled
+					   from gi in g.Items
+					   select new { gi.ServiceId, gi.ServiceMethodId, rg.RoleId }
+					  ).ToArrayAsync()
+				))
+				).Result;
+			return re
+				.GroupBy(r => (r.ServiceId, r.ServiceMethodId), r => r.RoleId)
+				.ToDictionary(g => g.Key, g => g.ToHashSet());
 		}
-		public async Task<bool> Validate(string Resource,string Operation,string[] Roles)
+		public bool Validate(string Service,string Method,string[] Roles)
 		{
 			var gr = _GrantRoles;
 			if (gr == null)
-				_GrantRoles = gr = await LoadGrantRoles();
-			if (gr.TryGetValue((Resource,Operation), out var rs))
+				_GrantRoles = gr =  LoadGrantRoles();
+			if (gr.TryGetValue((Service,Method), out var rs))
 				return Roles.Any(r => rs.Contains(r));
 			return false;
 		}

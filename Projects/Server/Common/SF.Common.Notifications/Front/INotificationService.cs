@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System;
@@ -40,6 +41,7 @@ namespace SF.Common.Notifications.Front
 	/// 用户通知服务
 	/// </summary>
 	[NetworkService]
+	[DefaultAuthorize]
 	public interface INotificationService
 	{
 		/// <summary>
@@ -54,6 +56,7 @@ namespace SF.Common.Notifications.Front
 		/// </summary>
 		/// <param name="Arg">查询参数</param>
 		/// <returns></returns>
+		[AnonymousAllowed]
 		Task<QueryResult<UserNotification>> Query(NotificationQueryArgument Arg);
 
 		/// <summary>

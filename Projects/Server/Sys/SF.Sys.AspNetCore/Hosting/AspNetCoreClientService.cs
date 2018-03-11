@@ -15,7 +15,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using SF.Sys.Clients;
+using SF.Sys.Services;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -28,11 +30,11 @@ namespace SF.Sys.AspNetCore
 	public class AspNetCoreAccessToken : IAccessToken
 	{
 		public Microsoft.AspNetCore.Http.HttpContext Context { get; }
-		public AspNetCoreAccessToken(Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor)
+		public AspNetCoreAccessToken(IServiceProvider Services)
 		{
-			Context = HttpContextAccessor.HttpContext;
+			Context = Services.Resolve<IHttpContextAccessor>().HttpContext;
 		}
-		public ClaimsPrincipal User
+		public ClaimsPrincipal User 
 			{
 				get
 				{
@@ -61,9 +63,9 @@ namespace SF.Sys.AspNetCore
 	{
 		public Microsoft.AspNetCore.Http.HttpContext Context { get; }
 		public IClientDeviceTypeDetector ClientDeviceTypeDetector { get; }
-		public AspNetCoreClientService(Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor, IClientDeviceTypeDetector ClientDeviceTypeDetector)
+		public AspNetCoreClientService(IServiceProvider Services, IClientDeviceTypeDetector ClientDeviceTypeDetector)
 		{
-			Context = HttpContextAccessor.HttpContext;
+			Context = Services.Resolve<IHttpContextAccessor>().HttpContext;
 			this.ClientDeviceTypeDetector = ClientDeviceTypeDetector;
 		}
 		public IUserAgent UserAgent => this;

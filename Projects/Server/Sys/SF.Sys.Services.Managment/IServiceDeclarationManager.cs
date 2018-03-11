@@ -41,7 +41,6 @@ namespace SF.Sys.Services.Management
 	/// 定义系统内置服务
 	/// </summary>
 	[EntityManager]
-	[DefaultAuthorizeAttribute("sysadmin")]
 	[NetworkService]
 	[Category("系统管理", "系统服务管理")]
 	public interface IServiceDeclarationManager:

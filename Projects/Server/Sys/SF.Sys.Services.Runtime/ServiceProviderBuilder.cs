@@ -63,12 +63,13 @@ namespace SF.Sys.Services
 			IServiceImplement CallImplement,
 			IServiceMetadata Meta, 
 			HashSet<Type> ValidatedImplements,
-			HashSet<Type> UsedServiceImplements
+			HashSet<Type> UsedServiceImplements,
+			string RefPath
 			)
 		{
 			if (!UsedServiceImplements.Add(Implement.ImplementType))
 				throw new InvalidOperationException(
-					$"服务{Implement.ImplementType}存在循环引用，来自{CallImplement?.ImplementType}"
+					$"{RefPath} 服务{Implement.ImplementType}存在循环引用，来自{CallImplement?.ImplementType}"
 					);
 
 			if (!ValidatedImplements.Contains(Implement.ImplementType) && Implement.ServiceImplementType==ServiceImplementType.Type)
@@ -82,10 +83,10 @@ namespace SF.Sys.Services
 					
 					if (tuple.svcs == null )
 						throw new InvalidOperationException(
-							$"找不到{Implement.ImplementType}的构造函数参数 {tuple.arg.Name}引用的服务{tuple.type}"
+							$"{RefPath} 找不到{Implement.ImplementType}的构造函数参数 {tuple.arg.Name}引用的服务{tuple.type}"
 							);
 					foreach(var svc in tuple.svcs.Implements)
-							validate(svc, Implement, Meta, ValidatedImplements, UsedServiceImplements);
+							validate(svc, Implement, Meta, ValidatedImplements, UsedServiceImplements,RefPath+svc.ImplementName+"/");
 				}
 				);
 
@@ -101,7 +102,7 @@ namespace SF.Sys.Services
 			 from impl in svc.Implements
 				select impl
 			 ))
-			validate(sif,null, Meta, validated, used);
+			validate(sif,null, Meta, validated, used,"");
 		}
 		public virtual void PrepareServices(IServiceCollection Services)
 		{

@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.Collections.Generic;
@@ -49,6 +50,8 @@ namespace SF.Sys.BackEndConsole.Front
 	}
 	
 	[NetworkService]
+	[DefaultAuthorize]
+
 	public interface IBackEndAdminConsoleService
 	{
 		Task<Console> GetConsole(string ConsoleIdent);

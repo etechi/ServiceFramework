@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 
 using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.Entities.Annotations;
 using SF.Sys.NetworkService;
@@ -30,6 +31,7 @@ namespace SF.Common.FrontEndContents
 	/// <typeparam name="TSite"></typeparam>
 	[NetworkService]
 	[EntityManager]
+	[DefaultAuthorize(PredefinedRoles.运营专员)]
 	public interface ISiteManager<TSite>:
 		IEntityManager<ObjectKey<string>, TSite>,
 		IEntitySource<ObjectKey<string>, TSite, QueryArgument<ObjectKey<string>>>,

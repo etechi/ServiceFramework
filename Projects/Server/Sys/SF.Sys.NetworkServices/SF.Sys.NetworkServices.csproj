@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SF.Sys.Auth\SF.Sys.Auth.csproj" />
     <ProjectReference Include="..\SF.Sys.Metadata\SF.Sys.Metadata.csproj" />
   </ItemGroup>
 

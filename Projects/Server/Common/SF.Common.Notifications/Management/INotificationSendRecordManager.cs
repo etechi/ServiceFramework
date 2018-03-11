@@ -26,7 +26,8 @@ namespace SF.Common.Notifications.Management
 	/// 通知发送记录
 	/// </summary>
 	[EntityManager]
-	[DefaultAuthorizeAttribute("admin")]
+	[DefaultAuthorize(PredefinedRoles.客服专员,true)]
+	[DefaultAuthorize(PredefinedRoles.运营专员)]
 	[NetworkService]
 	public interface INotificationSendRecordManager : 
 		IEntitySource<ObjectKey<long>,NotificationSendRecord, NotificationSendRecordQueryArgument>

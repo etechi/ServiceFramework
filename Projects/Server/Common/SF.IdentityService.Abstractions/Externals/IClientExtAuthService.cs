@@ -38,6 +38,7 @@ namespace SF.Auth.IdentityServices.Externals
 		public User User { get; set; }
 	}
 	[NetworkService]
+	[AnonymousAllowed]
 	public interface IClientExtAuthService
 	{
 		/// <summary>
