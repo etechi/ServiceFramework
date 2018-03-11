@@ -15,25 +15,45 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Reflection;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SF.Sys.Auth
 {
-	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Interface,AllowMultiple = true)]
-	public class DefaultAuthorizeAttribute : Attribute
+	public interface IAuthContext
 	{
-		public string RoleIdent { get; set; }
-		public string RoleName { get; set; }
-		public DefaultAuthorizeAttribute():this(null,null)
-		{
-
-		}
-		public DefaultAuthorizeAttribute(string RoleIdent,string RoleName=null)
-		{
-			this.RoleIdent = RoleIdent;
-			this.RoleName = RoleName;
-		}
+		ClaimsPrincipal User { get; }
+		object Target { get; }
+		string Resource { get;  }
+		string Operation { get; }
+		void AddMessage(string Message);
 	}
-
-	
+	public interface IAuthProvider
+	{
+		Task Authorize(IAuthContext Context);
+	}
+	public class AuthResult
+	{
+		public bool Succeeded { get; set; }
+		public string[] Messages { get; set; }
+	}
+	public interface IAuthService
+	{
+		Task<AuthResult> Authorize(
+			ClaimsPrincipal User,
+			string Resource,
+			string Operation,
+			object Target
+			);
+	}
+	public interface IInterfaceAuthService
+	{
+		Task<AuthResult> Authorize(
+			ClaimsPrincipal User,
+			Type Service,
+			MethodInfo Method
+			);
+	}
 }
+

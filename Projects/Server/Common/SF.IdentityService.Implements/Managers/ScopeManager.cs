@@ -24,7 +24,7 @@ namespace SF.Auth.IdentityServices.Managers
 			Models.ScopeInternal,
 			ScopeQueryArgument,
 			Models.ScopeEditable,
-			DataModels.Scope
+			DataModels.DataScope
 			>,
 		IScopeManager
 	{

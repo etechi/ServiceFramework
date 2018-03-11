@@ -17,14 +17,11 @@ using System.Threading.Tasks;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Data.Common;
 using SF.Sys.Data;
 using SF.Sys.Comments;
-using SF.Sys.Auth.Permissions;
 using SF.Sys.Linq;
 using SF.Sys.Events;
 using System.Reflection;
-using System.Collections.Generic;
 
 namespace SF.Sys.Entities
 {
@@ -135,7 +132,7 @@ namespace SF.Sys.Entities
 			if (Id.IsDefault())
 				return default(TReadOnlyEntity);
 
-			ServiceContext.PermissionValidate(Operations.Read);
+			//ServiceContext.PermissionValidate(Operations.Read);
 
 			return await ServiceContext.DataScope.Use(
 				$"载入实体{typeof(TModel).Comment().Title}:{Id}",
@@ -233,7 +230,7 @@ namespace SF.Sys.Entities
 		{
 			if (Ids == null || Ids.Length == 0)
 				return Array.Empty<TReadOnlyEntity>();
-			ServiceContext.PermissionValidate(Operations.Read);
+			//ServiceContext.PermissionValidate(Operations.Read);
 			return await ServiceContext.DataScope.Use(
 				$"批量载入实体：{typeof(TModel).Comment().Title}",
 				(ctx) =>
@@ -330,7 +327,7 @@ namespace SF.Sys.Entities
 			where TModel : class
 			where TQueryArgument:IPagingArgument
 		{
-			ServiceContext.PermissionValidate(Operations.Read);
+			//ServiceContext.PermissionValidate(Operations.Read);
 			return await ServiceContext.DataScope.Use(
 				$"查询实体主键：{typeof(TModel).Comment().Title}",
 				async (ctx) =>
@@ -356,7 +353,7 @@ namespace SF.Sys.Entities
 			where TModel : class
 			where TQueryArgument:IPagingArgument
 		{
-			ServiceContext.PermissionValidate(Operations.Read);
+			//ServiceContext.PermissionValidate(Operations.Read);
 			return await ServiceContext.DataScope.Use(
 				$"查询实体主键：{typeof(TModel).Comment().Title}",
 				async (ctx) =>
@@ -384,7 +381,7 @@ namespace SF.Sys.Entities
 			)
 			where TModel : class
 		{
-			ServiceContext.PermissionValidate(Operations.Read);
+			//ServiceContext.PermissionValidate(Operations.Read);
 			return await ServiceContext.DataScope.Use(
 				$"查询实体{typeof(TModel).Comment().Title}",
 				(ctx) =>
@@ -491,7 +488,7 @@ namespace SF.Sys.Entities
 		{
 			if (Key.IsDefault())
 				return default(TEditable);
-			ServiceContext.PermissionValidate(Operations.Read);
+			//ServiceContext.PermissionValidate(Operations.Read);
 			return await ServiceContext.DataScope.Use(
 				$"载入编辑实体{typeof(TModel).Comment().Title}:{Entity<TKey>.GetIdents(Key)?.Join(",")}",
 				ctx =>
@@ -511,7 +508,7 @@ namespace SF.Sys.Entities
 		{
 			if (Key.IsDefault())
 				return default(TEditable);
-			ServiceContext.PermissionValidate(Operations.Read);
+			//ServiceContext.PermissionValidate(Operations.Read);
 			return await ServiceContext.DataScope.Use(
 				$"载入编辑实体{typeof(TModel).Comment().Title}:{Entity<TKey>.GetIdents(Key)?.Join(",")}",
 				ctx =>
@@ -677,7 +674,7 @@ namespace SF.Sys.Entities
 		{
 			if (Entity.IsDefault())
 				throw new ArgumentNullException("需要提供实体");
-			ServiceContext.PermissionValidate(Operations.Create);
+		//	ServiceContext.PermissionValidate(Operations.Create);
 
 			return await ServiceContext.DataScope.Use(
 				$"新建实体{typeof(TModel).Comment().Title}",
@@ -759,7 +756,7 @@ namespace SF.Sys.Entities
 			where TModel : class, new()
 			where TModifyContext : IEntityModifyContext<TEditable, TModel>
 		{
-			ServiceContext.PermissionValidate(Operations.Create);
+			//ServiceContext.PermissionValidate(Operations.Create);
 
 
 			return await ServiceContext.DataScope.Use(
@@ -847,7 +844,7 @@ namespace SF.Sys.Entities
 			if (Entity.IsDefault())
 				throw new ArgumentNullException("需要提供实体");
 
-			ServiceContext.PermissionValidate(Operations.Update);
+			//ServiceContext.PermissionValidate(Operations.Update);
 
 			return await ServiceContext.DataScope.Use(
 				$"编辑实体{typeof(TModel).Comment().Title}:{Entity<TEditable>.GetIdentValues(Entity)}",
@@ -900,7 +897,7 @@ namespace SF.Sys.Entities
 		{
 			if (Id.IsDefault())
 				throw new ArgumentNullException("需要指定主键");
-			ServiceContext.PermissionValidate(Operations.Remove);
+			//ServiceContext.PermissionValidate(Operations.Remove);
 
 			return await ServiceContext.DataScope.Use(
 				$"删除实体{typeof(TModel).Comment().Title}:{Id}",

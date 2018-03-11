@@ -28,7 +28,7 @@ namespace SF.Auth.IdentityServices.Managers
 	/// 客户端配置管理
 	/// </summary>
 	[EntityManager]
-	[Authorize("admin")]
+	[DefaultAuthorizeAttribute("admin")]
 	[NetworkService]
 	public interface IClientConfigManager :
 		IEntityManager<ObjectKey<long>,Models.ClientConfigEditable>,

@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace SF.Sys.ServiceFeatures
 {	
 	[NetworkService]
-	[Authorize("sysadmin")]
+	[DefaultAuthorizeAttribute("sysadmin")]
 	public interface IServiceFeatureControlService
 	{
 		Task<string> Init(string Id=null);

@@ -31,10 +31,10 @@ namespace SF.Auth.IdentityServices.DataModels
 		public long ClientConfigId { get; set; }
 
 		[ForeignKey(nameof(ClientConfigId))]
-		public ClientConfig ClientConfig { get; set; }
+		public DataClientConfig ClientConfig { get; set; }
 
-		[InverseProperty(nameof(ClientClaimValue.Client))]
-		public ICollection<ClientClaimValue> ClaimValues { get; set; }
+		[InverseProperty(nameof(DataClientClaimValue.Client))]
+		public ICollection<DataClientClaimValue> ClaimValues { get; set; }
 
 		///<title>客户端密钥</title>
 		/// <summary>

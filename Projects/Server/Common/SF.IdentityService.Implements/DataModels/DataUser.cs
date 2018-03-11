@@ -21,13 +21,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(User))]
-	public class User<TUser,TUserCredential, TClaimValue, TUserRole> :
+	[Table("User")]
+	public class DataUser<TUser,TUserCredential, TClaimValue, TUserRole> :
 		SF.Sys.Entities.DataModels.DataObjectEntityBase
-		where TUser: User<TUser, TUserCredential, TClaimValue, TUserRole>
-		where TUserCredential : UserCredential<TUser, TUserCredential, TClaimValue, TUserRole>
-		where TClaimValue : UserClaimValue<TUser, TUserCredential, TClaimValue, TUserRole>
-		where TUserRole : UserRole<TUser, TUserCredential, TClaimValue, TUserRole>
+		where TUser: DataUser<TUser, TUserCredential, TClaimValue, TUserRole>
+		where TUserCredential : DataUserCredential<TUser, TUserCredential, TClaimValue, TUserRole>
+		where TClaimValue : DataUserClaimValue<TUser, TUserCredential, TClaimValue, TUserRole>
+		where TUserRole : DataUserRole<TUser, TUserCredential, TClaimValue, TUserRole>
 	{
 
 		///<title>密码哈希</title>
@@ -80,13 +80,13 @@ namespace SF.Auth.IdentityServices.DataModels
 		public virtual string SignupExtraArgument { get; set; }
 
 
-		[InverseProperty(nameof(UserCredential<TUser,TUserCredential, TClaimValue, TUserRole>.User))]
+		[InverseProperty(nameof(DataUserCredential<TUser,TUserCredential, TClaimValue, TUserRole>.User))]
 		public ICollection<TUserCredential> Credentials { get; set; }
 
-		[InverseProperty(nameof(UserClaimValue<TUser, TUserCredential, TClaimValue, TUserRole>.User))]
+		[InverseProperty(nameof(DataUserClaimValue<TUser, TUserCredential, TClaimValue, TUserRole>.User))]
 		public ICollection<TClaimValue> ClaimValues { get; set; }
 
-		[InverseProperty(nameof(UserRole<TUser, TUserCredential, TClaimValue, TUserRole>.User))]
+		[InverseProperty(nameof(DataUserRole<TUser, TUserCredential, TClaimValue, TUserRole>.User))]
 		public ICollection<TUserRole> Roles { get; set; }
 
 		[Index]
@@ -97,6 +97,6 @@ namespace SF.Auth.IdentityServices.DataModels
 		public DataClient  SignupClient { get; set; }
 
 	}
-	public class User : User<User, UserCredential, UserClaimValue, UserRole>
+	public class DataUser : DataUser<DataUser, DataUserCredential, DataUserClaimValue, DataUserRole>
 	{ }
 }

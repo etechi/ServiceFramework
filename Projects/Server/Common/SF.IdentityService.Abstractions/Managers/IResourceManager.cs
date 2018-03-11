@@ -27,7 +27,7 @@ namespace SF.Auth.IdentityServices.Managers
 	/// 资源管理
 	/// </summary>
 	[EntityManager]
-	[Authorize("admin")]
+	[DefaultAuthorizeAttribute("admin")]
 	[NetworkService]
 	public interface IResourceManager :
 		IEntityManager<ObjectKey<string>,Models.ResourceEditable>,

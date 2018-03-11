@@ -19,17 +19,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(ResourceRequiredClaim))]
-	public class ResourceRequiredClaim
+	[Table("OperationRequiredClaim")]
+	public class DataOperationRequiredClaim
 	{
 		/// <summary>
-		/// 资源Id
+		/// 操作Id
 		/// </summary>
 		[Column(Order =1)]
 		[Key]
-		public string ResourceId { get; set; }
+		public string OperationId { get; set; }
 
-		[ForeignKey(nameof(ResourceId))]
+		[ForeignKey(nameof(OperationId))]
 		public DataResource Resource { get; set; }
 
 		/// <summary>
@@ -41,6 +41,6 @@ namespace SF.Auth.IdentityServices.DataModels
 		public string ClaimTypeId { get; set; }
 
 		[ForeignKey(nameof(ClaimTypeId))]
-		public ClaimType ClaimType { get; set; }
+		public DataClaimType ClaimType { get; set; }
 	}
 }

@@ -55,7 +55,7 @@ namespace SF.Sys.AspNetCore.Auth
 			var now = TimeService.UtcNow;
 			var user = await UserProfileService.GetUser(UserId);
 
-			var cs = await UserProfileService.GetClaims(UserId, ClientId, Scopes);
+			//var cs = await UserProfileService.GetClaims(UserId, ClientId, Scopes);
 
 			// Specifically add the jti (random nonce), iat (issued timestamp), and sub (subject/user) claims.
 			// You can add other claims here, if you want:
@@ -66,7 +66,7 @@ namespace SF.Sys.AspNetCore.Auth
 				new Claim(JwtRegisteredClaimNames.Iat, now.ToUnixTime().ToString(), ClaimValueTypes.Integer64),
 				new Claim(ClaimsIdentity.DefaultNameClaimType,user.Name)
 			};
-			claims.AddRange(cs);
+			//claims.AddRange(cs);
 			if (user.Roles?.Any() ?? false)
 				claims.Add(new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Roles.Join(",")));
 

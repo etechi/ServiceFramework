@@ -30,17 +30,17 @@ namespace SF.Common.Media
 	[NetworkService]
     public interface IMediaService
     {
-		[Authorize]
+		[DefaultAuthorizeAttribute]
 		[HeavyMethod]
 		Task<HttpResponseMessage> Upload(bool returnJson = false);
 
-		[Authorize]
+		[DefaultAuthorizeAttribute]
 		Task<string> Clip(string src, double x, double y, double w, double h);
 
 		Task<HttpResponseMessage> Get(string id, string format = null);
 
 
-		[Authorize]
+		[DefaultAuthorizeAttribute]
 		[HeavyMethod]
 		Task<CopyResult> CopyImage(string uri);
 

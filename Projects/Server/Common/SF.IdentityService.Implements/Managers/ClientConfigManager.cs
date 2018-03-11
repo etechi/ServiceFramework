@@ -25,7 +25,7 @@ namespace SF.Auth.IdentityServices.Managers
 			Models.ClientConfigInternal,
 			ClientConfigQueryArgument,
 			Models.ClientConfigEditable,
-			DataModels.ClientConfig
+			DataModels.DataClientConfig
 			>,
 		IClientConfigManager
 	{

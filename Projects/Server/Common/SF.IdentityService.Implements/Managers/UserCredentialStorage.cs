@@ -26,7 +26,7 @@ using System.Threading.Tasks;
 namespace SF.Auth.IdentityServices.Managers
 {
 	public class UserCredentialStorage :
-		UserCredentialStorage<DataModels.User, DataModels.UserCredential, DataModels.UserClaimValue, DataModels.UserRole>
+		UserCredentialStorage<DataModels.DataUser, DataModels.DataUserCredential, DataModels.DataUserClaimValue, DataModels.DataUserRole>
 	{
 		public UserCredentialStorage(IDataScope DataScope, ITimeService TimeService, IServiceInstanceDescriptor ServiceInstanceDescriptor) : base(DataScope, TimeService, ServiceInstanceDescriptor)
 		{
@@ -34,10 +34,10 @@ namespace SF.Auth.IdentityServices.Managers
 	}
 	public class UserCredentialStorage<TUser, TUserCredential, TUserClaimValue,TUserRole> :
 		IUserCredentialStorage
-		where TUser:DataModels.User<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserCredential : DataModels.UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
-		where TUserClaimValue : DataModels.UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
-		where TUserRole : DataModels.UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
+		where TUser:DataModels.DataUser<TUser, TUserCredential, TUserClaimValue, TUserRole>
+		where TUserCredential : DataModels.DataUserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
+		where TUserClaimValue : DataModels.DataUserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
+		where TUserRole : DataModels.DataUserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
 	{
 		IDataScope DataScope { get; }
 		ITimeService TimeService { get; }

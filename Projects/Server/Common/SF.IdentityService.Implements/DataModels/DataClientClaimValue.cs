@@ -19,28 +19,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(OperationRequiredClaim))]
-	public class OperationRequiredClaim
+	[Table("ClientClaimValue")]
+	public class DataClientClaimValue : DataBaseClaimValue
 	{
-		/// <summary>
-		/// 操作Id
-		/// </summary>
-		[Column(Order =1)]
-		[Key]
-		public string OperationId { get; set; }
-
-		[ForeignKey(nameof(OperationId))]
-		public DataResource Resource { get; set; }
 
 		/// <summary>
-		/// 申明类型Id
+		/// 客户端ID
 		/// </summary>
-		[Column(Order = 2)]
-		[Key]
 		[Index]
-		public string ClaimTypeId { get; set; }
+		[MaxLength(100)]
+		[Required]
+		public string ClientId { get; set; }
 
-		[ForeignKey(nameof(ClaimTypeId))]
-		public ClaimType ClaimType { get; set; }
+		[ForeignKey(nameof(ClientId))]
+		public DataClient  Client { get; set; }
+
 	}
 }

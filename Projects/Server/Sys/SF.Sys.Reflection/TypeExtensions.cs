@@ -490,7 +490,11 @@ namespace SF.Sys.Reflection
 				System.Reflection.BindingFlags.Public |
 				System.Reflection.BindingFlags.Instance
 			);
-
+		public static MethodInfo[] AllPublicInstanceMethods(this Type type)
+			=> type.GetMethods(
+				System.Reflection.BindingFlags.Public |
+				System.Reflection.BindingFlags.Instance
+			);
 		//=> WithHiddenProperty ?
 		//	type.GetProperties(
 		//	System.Reflection.BindingFlags.FlattenHierarchy |

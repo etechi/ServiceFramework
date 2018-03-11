@@ -22,12 +22,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Auth.IdentityServices.DataModels
 {
 
-	[Table(nameof(UserCredential))]
-	public class UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUser : User<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserCredential : UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserClaimValue : UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserRole : UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
+	[Table("UserCredential")]
+	public class DataUserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
+		where TUser : DataUser<TUser, TUserCredential, TUserClaimValue, TUserRole>
+		where TUserCredential : DataUserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
+		where TUserClaimValue : DataUserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>
+		where TUserRole : DataUserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
 	{
 
 
@@ -39,7 +39,7 @@ namespace SF.Auth.IdentityServices.DataModels
 		public string ClaimTypeId { get; set; }
 
 		[ForeignKey(nameof(ClaimTypeId))]
-		public ClaimType ClaimType { get; set; }
+		public DataClaimType ClaimType { get; set; }
 
 		[Key]
 		[Column(Order = 2)]
@@ -61,6 +61,6 @@ namespace SF.Auth.IdentityServices.DataModels
 		public TUser User { get; set; }
 
 	}
-	public class UserCredential : UserCredential<User, UserCredential,UserClaimValue,UserRole>
+	public class DataUserCredential : DataUserCredential<DataUser, DataUserCredential,DataUserClaimValue,DataUserRole>
 	{ }
 }

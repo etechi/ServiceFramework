@@ -61,7 +61,7 @@ namespace SF.Auth.IdentityServices.Managers
 	/// <typeparam name="TEditable"></typeparam>
 	/// <typeparam name="TQueryArgument"></typeparam>
 	[EntityManager]
-	[Authorize("admin")]
+	[DefaultAuthorizeAttribute("admin")]
 	[NetworkService]
 	public interface IUserManager<TInternal,TEditable,TQueryArgument> :
 		IEntityManager<ObjectKey<long>,TEditable>,

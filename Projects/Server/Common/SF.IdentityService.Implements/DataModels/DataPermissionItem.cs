@@ -13,34 +13,35 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Data;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table("Resource")]
-	public class DataResource : SF.Sys.Entities.DataModels.DataUIObjectEntityBase<string>
+	[Table("PermissionItem")]
+	public class DataPermissionItem
 	{
-		[MaxLength(100)]
-		[Required]
-		public override string Id { get; set; }
+		/// <summary>
+		/// 授权ID
+		/// </summary>
+		[Key]
+		[Column(Order = 1)]
+		[DatabaseGenerated(DatabaseGeneratedOption.None)]
+		public long PermissionId { get; set; }
+
+		[ForeignKey(nameof(PermissionId))]
+		public DataPermission Permission { get; set; }
 
 		/// <summary>
-		/// 是否是标识资源
+		/// 服务方法
 		/// </summary>
-		public bool IsIdentityResource { get; set; }
+		[Key]
+		[Column(Order = 2)]
+		[MaxLength(200)]
+		[Required]
+		public string ServiceMethodId { get; set; }
 
-		[InverseProperty(nameof(ResourceRequiredClaim.Resource))]
-		public ICollection<ResourceRequiredClaim> RequiredClaims { get; set; }
-
-		[InverseProperty(nameof(ResourceSupportedOperation.Resource))]
-		public ICollection<ResourceSupportedOperation> SupportedOperations { get; set; }
-
-		[InverseProperty(nameof(ScopeResource.Resource))]
-		public ICollection<ScopeResource> Scopes { get; set; }
 	}
-
-
-
 }

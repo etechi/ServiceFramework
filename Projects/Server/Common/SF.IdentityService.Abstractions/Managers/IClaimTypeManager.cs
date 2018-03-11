@@ -29,7 +29,7 @@ namespace SF.Auth.IdentityServices.Managers
 	/// 申明类型管理
 	/// </summary>
 	[EntityManager]
-	[Authorize("admin")]
+	[DefaultAuthorizeAttribute("admin")]
 	[NetworkService]
 	public interface IClaimTypeManager :
 		IEntityManager<ObjectKey<string>,Models.ClaimType>,

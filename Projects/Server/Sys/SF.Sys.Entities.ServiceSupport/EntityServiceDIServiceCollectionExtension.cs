@@ -15,15 +15,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using SF.Sys.Entities;
 using SF.Sys.Reflection;
 using SF.Sys.Linq;
-using SF.Sys.Auth.Permissions;
-using SF.Sys.Services;
 
 namespace SF.Sys.Services
 {
@@ -97,12 +93,12 @@ namespace SF.Sys.Services
 					{
 						Services.Add(new ServiceDescriptor(i.i, sp => sp.GetService(i.svc), ServiceImplementLifetime.Transient));
 					});
-				Services.AddAuthResource(Ident, GroupName, Name, null, new[]{
-					Operations.Read,
-					Operations.Create,
-					Operations.Update,
-					Operations.Remove
-				});
+				//Services.AddAuthResource(Ident, GroupName, Name, null, new[]{
+				//	Operations.Read,
+				//	Operations.Create,
+				//	Operations.Update,
+				//	Operations.Remove
+				//});
 				Descriptors.Add(
 					new EntityServiceDescriptor
 					{

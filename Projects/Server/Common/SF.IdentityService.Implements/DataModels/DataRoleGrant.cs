@@ -13,26 +13,35 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Data;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(ClientClaimValue))]
-	public class ClientClaimValue : BaseClaimValue
+	[Table("RoleGrant")]
+	public class DataRoleGrant 
 	{
-
 		/// <summary>
 		/// 客户端ID
 		/// </summary>
-		[Index]
+		[Key]
+		[Column(Order =1)]
+		public string RoleId { get; set; }
+
+		[ForeignKey(nameof(RoleId))]
+		public DataRole Role { get; set; }
+
+		/// <summary>
+		/// 操作资源ID
+		/// </summary>
+		[Key]
+		[Column(Order = 2)]
 		[MaxLength(100)]
 		[Required]
-		public string ClientId { get; set; }
+		public long PermissionId { get; set; }
 
-		[ForeignKey(nameof(ClientId))]
-		public DataClient  Client { get; set; }
+		[ForeignKey(nameof(PermissionId))]
+		public DataPermission Permission { get; set; }
 
 	}
 }

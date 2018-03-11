@@ -13,44 +13,39 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Data;
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	public abstract class BaseClaimValue
+	/// <summary>
+	/// 授权范围权限
+	/// </summary>
+	[Table("DataScopeResource")]
+	public class DataScopeResource
 	{
-
-		[DatabaseGenerated(DatabaseGeneratedOption.None)]
+		/// <summary>
+		/// 授权范围ID
+		/// </summary>
 		[Key]
-		public long Id { get; set; }
+		[Column(Order =1)]
+		public string ScopeId { get; set; }
+
+		[ForeignKey(nameof(ScopeId))]
+		public DataScope Scope { get; set; }
 
 		/// <summary>
-		/// 类型ID
+		/// 资源ID
 		/// </summary>
-		[Index]
-		[Required]
+		[Key]
+		[Column(Order = 2)]
 		[MaxLength(100)]
-		public string TypeId { get; set; }
+		[Required]
+		public string ResourceId { get; set; }
 
-		[ForeignKey(nameof(TypeId))]
-		public ClaimType Type { get; set; }
+		[ForeignKey(nameof(ResourceId))]
+		public DataResource Resource { get; set; }
 
-		/// <summary>
-		/// 声明值
-		/// </summary>
-		public string Value { get; set; }
 
-		/// <summary>
-		/// 创建时间
-		/// </summary>
-		public DateTime CreateTime { get; set; }
-
-		/// <summary>
-		/// 修改时间
-		/// </summary>
-		public DateTime UpdateTime { get; set; }
 	}
 }

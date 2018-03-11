@@ -13,30 +13,35 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System.ComponentModel.DataAnnotations;
+using SF.Sys.Data;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(ResourceSupportedOperation))]
-	public class ResourceSupportedOperation 
+	public class DataUserClaimValue: 
+		DataUserClaimValue<DataUser, DataUserCredential, DataUserClaimValue,DataUserRole>
 	{
-		[Key]
-		[Column(Order =1)]
-		public string ResourceId { get; set; }
-
-		[ForeignKey(nameof(ResourceId))]
-		public DataResource Resource { get; set; }
-
-		[Key]
-		[Column(Order =2)]
-		public string OperationId { get; set; }
-
-		[ForeignKey(nameof(OperationId))]
-		public DataOperation Operation { get; set; }
 
 	}
 
+	[Table("UserClaimValue")]
+	public class DataUserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole> :
+		DataBaseClaimValue
+		where TUser : DataUser<TUser, TUserCredential, TUserClaimValue, TUserRole>
+		where TUserCredential : DataUserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
+		where TUserClaimValue : DataUserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>
+		where TUserRole : DataUserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
 
+	{
 
+		/// <summary>
+		/// 身份标识ID
+		/// </summary>
+		[Index]
+		public long UserId { get; set; }
+
+		[ForeignKey(nameof(UserId))]
+		public TUser User { get; set; }
+		
+	}
 }

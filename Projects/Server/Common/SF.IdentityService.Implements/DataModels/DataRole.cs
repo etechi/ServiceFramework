@@ -13,20 +13,33 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
+using SF.Sys.Data;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Sys.Auth
+namespace SF.Auth.IdentityServices.DataModels
 {
-	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Interface)]
-	public class RequirePermissionAttribute : Attribute
+	[Table("Role")]
+	public class DataRole : SF.Sys.Entities.DataModels.DataObjectEntityBase<string>
 	{
-		public string Resource { get; set; }
-		public string Operation { get; set; }
-		public RequirePermissionAttribute(string Operation)
-		{
-			this.Operation = Operation;
-		}
+		[MaxLength(100)]
+		[Required]
+		public override string Id { get; set; }
+
+		[Index(IsUnique = true)]
+		public override string Name { get; set; }
+
+		[InverseProperty(nameof(DataRoleClaimValue.Role))]
+		public ICollection<DataRoleClaimValue> ClaimValues { get; set; }
+
+		[InverseProperty(nameof(DataRoleGrant.Role))]
+		public ICollection<DataRoleGrant> Grants { get; set; }
+
+		/// <summary>
+		/// 系统角色
+		/// </summary>
+		/// <remarks>用于支持系统业务,不能删除</remarks>
+		public bool IsSysRole { get; set; }
 	}
 }

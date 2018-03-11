@@ -13,27 +13,23 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Collections.Generic;
-using System.Text;
+using SF.Sys.Data;
+using SF.Sys.Entities.DataModels;
 
-namespace SF.Sys.Auth
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace SF.Auth.IdentityServices.DataModels
 {
-	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Interface,AllowMultiple = true)]
-	public class DefaultAuthorizeAttribute : Attribute
+	[Table("ClaimType")]
+	public class DataClaimType : DataObjectEntityBase<string>
 	{
-		public string RoleIdent { get; set; }
-		public string RoleName { get; set; }
-		public DefaultAuthorizeAttribute():this(null,null)
-		{
+		[MaxLength(100)]
+		[Required]
+		public override string Id { get; set; }
 
-		}
-		public DefaultAuthorizeAttribute(string RoleIdent,string RoleName=null)
-		{
-			this.RoleIdent = RoleIdent;
-			this.RoleName = RoleName;
-		}
+		[Index(IsUnique = true)]
+		public override string Name { get; set; }
+
 	}
-
-	
 }

@@ -28,7 +28,7 @@ namespace SF.Auth.IdentityServices.Managers
 	/// 角色管理
 	/// </summary>
 	[EntityManager]
-	[Authorize("admin")]
+	[DefaultAuthorizeAttribute("admin")]
 	[NetworkService]
 	public interface IRoleManager :
 		IEntityManager<ObjectKey<string>,Models.RoleEditable>,

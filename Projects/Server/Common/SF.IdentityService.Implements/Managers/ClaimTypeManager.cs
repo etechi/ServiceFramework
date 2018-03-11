@@ -24,7 +24,7 @@ namespace SF.Auth.IdentityServices.Managers
 			Models.ClaimType,
 			ClaimTypeQueryArgument,
 			Models.ClaimType,
-			DataModels.ClaimType
+			DataModels.DataClaimType
 			>,
 		IClaimTypeManager
 	{

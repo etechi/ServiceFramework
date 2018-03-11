@@ -29,6 +29,15 @@ using SF.Sys.Linq;
 using SF.Sys.Auth;
 using SF.Auth.IdentityServices.Externals;
 using System.Security.Claims;
+using SF.Sys.Data;
+using SF.Sys.Events;
+using SF.Sys.NetworkService;
+using SF.Sys.Reflection;
+using System.Reflection;
+using System.ComponentModel;
+using SF.Sys.Comments;
+using SF.Auth.IdentityServices.DataModels;
+using SF.Sys.TimeServices;
 
 namespace SF.Sys.Services
 {
@@ -75,7 +84,7 @@ namespace SF.Sys.Services
 					.Add<IScopeManager, ScopeManager>("AuthScope", "授权范围", typeof(ScopeInternal))
 				//.Add<IDocumentService, DocumentService>()
 				);
-
+			sc.AddSingleton<RoleGrantCache>();
 			sc.AddManagedScoped<IUserService, UserService>();
 			sc.AddScoped(sp => (IAuthSessionService)sp.Resolve<IUserService>());
 			sc.AddManagedScoped<IUserCredentialProvider, PhoneNumberUserCredentialProvider>();
@@ -105,25 +114,27 @@ namespace SF.Sys.Services
 
 			sc.AddDataModules(
 				TablePrefix??"Auth",
-				typeof(SF.Auth.IdentityServices.DataModels.ClaimType),
+				typeof(SF.Auth.IdentityServices.DataModels.DataClaimType),
 				typeof(SF.Auth.IdentityServices.DataModels.DataClient ),
-				typeof(SF.Auth.IdentityServices.DataModels.ClientConfig),
-				typeof(SF.Auth.IdentityServices.DataModels.ClientClaimValue),
-				typeof(SF.Auth.IdentityServices.DataModels.ClientScope),
-				typeof(SF.Auth.IdentityServices.DataModels.Scope),
-				typeof(SF.Auth.IdentityServices.DataModels.ScopeResource),
+				typeof(SF.Auth.IdentityServices.DataModels.DataClientConfig),
+				typeof(SF.Auth.IdentityServices.DataModels.DataClientClaimValue),
+				typeof(SF.Auth.IdentityServices.DataModels.DataClientScope),
+				typeof(SF.Auth.IdentityServices.DataModels.DataScope),
+				typeof(SF.Auth.IdentityServices.DataModels.DataScopeResource),
 				typeof(SF.Auth.IdentityServices.DataModels.DataOperation),
-				typeof(SF.Auth.IdentityServices.DataModels.OperationRequiredClaim),
+				typeof(SF.Auth.IdentityServices.DataModels.DataOperationRequiredClaim),
 				typeof(SF.Auth.IdentityServices.DataModels.DataResource),
-				typeof(SF.Auth.IdentityServices.DataModels.ResourceRequiredClaim),
-				typeof(SF.Auth.IdentityServices.DataModels.ResourceSupportedOperation),
-				typeof(SF.Auth.IdentityServices.DataModels.Role),
-				typeof(SF.Auth.IdentityServices.DataModels.RoleClaimValue),
-				typeof(SF.Auth.IdentityServices.DataModels.RoleGrant),
-				typeof(SF.Auth.IdentityServices.DataModels.User),
-				typeof(SF.Auth.IdentityServices.DataModels.UserClaimValue),
-				typeof(SF.Auth.IdentityServices.DataModels.UserCredential),
-				typeof(SF.Auth.IdentityServices.DataModels.UserRole)
+				typeof(SF.Auth.IdentityServices.DataModels.DataResourceRequiredClaim),
+				typeof(SF.Auth.IdentityServices.DataModels.DataResourceSupportedOperation),
+				typeof(SF.Auth.IdentityServices.DataModels.DataRole),
+				typeof(SF.Auth.IdentityServices.DataModels.DataRoleClaimValue),
+				typeof(SF.Auth.IdentityServices.DataModels.DataRoleGrant),
+				typeof(SF.Auth.IdentityServices.DataModels.DataPermission),
+				typeof(SF.Auth.IdentityServices.DataModels.DataPermissionItem),
+				typeof(SF.Auth.IdentityServices.DataModels.DataUser),
+				typeof(SF.Auth.IdentityServices.DataModels.DataUserClaimValue),
+				typeof(SF.Auth.IdentityServices.DataModels.DataUserCredential),
+				typeof(SF.Auth.IdentityServices.DataModels.DataUserRole)
 				);
 
 			//sc.AddAutoEntityTest(NewDocumentManager);
@@ -140,6 +151,9 @@ namespace SF.Sys.Services
 				null,
 				100000
 				);
+
+
+
 			return sc;
 		}
 
@@ -244,91 +258,88 @@ namespace SF.Sys.Services
 					);
 			}
 
+			//////初始化操作
+			////var OperationManager = ServiceProvider.Resolve<IOperationManager>();
+			////foreach (var o in ServiceProvider.Resolve<IEnumerable<Sys.Auth.Permissions.IOperation>>()
+			////	.WithFirst(
+			////		new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Read, "查看", "查看对象"),
+			////		new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Create, "新建", "新建对象"),
+			////		new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Update, "修改", "修改对象"),
+			////		new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Remove, "删除", "删除对象")
+			////		))
+			////{
+			////	await OperationManager.EnsureEntity(
+			////		new ObjectKey<string> { Id = o.Id },
+			////		() => new OperationInternal
+			////		{
+			////			Id = o.Id
+			////		},
+			////		e =>
+			////		{
+			////			e.Name = o.Name;
+			////			e.Title = o.Name;
+			////			e.Description = o.Description;
+			////		}
+			////		);
+			////}
+			//////初始化资源
+			////var ResourceManager = ServiceProvider.Resolve<IResourceManager>();
+			////var resPermissions = ServiceProvider.Resolve<IEnumerable<Sys.Auth.Permissions.IResource>>();
+			////foreach (var o in resPermissions)
+			////{
+			////	await ResourceManager.EnsureEntity(
+			////		new ObjectKey<string> { Id = o.Id },
+			////		() => new ResourceEditable
+			////		{
+			////			Id = o.Id
+			////		},
+			////		e =>
+			////		{
+			////			e.Name = o.Name;
+			////			e.Title = o.Name;
+			////			e.Description = o.Description;
+			////			e.SupportedOperations = o.AvailableOperations.Select(oi => new ResourceOperationInternal
+			////			{
+			////				OperationId = oi
 
-
-
-			//初始化操作
-			var OperationManager = ServiceProvider.Resolve<IOperationManager>();
-			foreach (var o in ServiceProvider.Resolve<IEnumerable<Sys.Auth.Permissions.IOperation>>()
-				.WithFirst(
-					new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Read, "查看", "查看对象"),
-					new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Create, "新建", "新建对象"),
-					new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Update, "修改", "修改对象"),
-					new Sys.Auth.Permissions.Operation(Sys.Auth.Permissions.Operations.Remove, "删除", "删除对象")
-					))
-			{
-				await OperationManager.EnsureEntity(
-					new ObjectKey<string> { Id = o.Id },
-					() => new OperationInternal
-					{
-						Id = o.Id
-					},
-					e =>
-					{
-						e.Name = o.Name;
-						e.Title = o.Name;
-						e.Description = o.Description;
-					}
-					);
-			}
-			//初始化资源
-			var ResourceManager = ServiceProvider.Resolve<IResourceManager>();
-			var resPermissions = ServiceProvider.Resolve<IEnumerable<Sys.Auth.Permissions.IResource>>();
-			foreach (var o in resPermissions)
-			{
-				await ResourceManager.EnsureEntity(
-					new ObjectKey<string> { Id = o.Id },
-					() => new ResourceEditable
-					{
-						Id = o.Id
-					},
-					e =>
-					{
-						e.Name = o.Name;
-						e.Title = o.Name;
-						e.Description = o.Description;
-						e.SupportedOperations = o.AvailableOperations.Select(oi => new ResourceOperationInternal
-						{
-							OperationId = oi
-
-						});
-					}
-					);
-			}
+			////			});
+			////		}
+			////		);
+			////}
 
 			
 
-			foreach (var idres in predefinedClaimTypes)
-			{
-				await ResourceManager.Ensure<IResourceManager, string, ResourceEditable>(
-					"id:"+idres.Item1,
-					r =>
-					{
-						r.Name =
-						r.Title = idres.Item2;
-						r.IsIdentityResource = true;
-						r.RequiredClaims = new[] { new ResourceRequiredClaim { ClaimTypeId = idres.Item1 } };
-					});
-			}
-			await ResourceManager.Ensure<IResourceManager, string, ResourceEditable>(
-					"profile",
-					r =>
-					{
-						r.Title =
-						r.Name = "用户信息";
+			//foreach (var idres in predefinedClaimTypes)
+			//{
+			//	await ResourceManager.Ensure<IResourceManager, string, ResourceEditable>(
+			//		"id:"+idres.Item1,
+			//		r =>
+			//		{
+			//			r.Name =
+			//			r.Title = idres.Item2;
+			//			r.IsIdentityResource = true;
+			//			r.RequiredClaims = new[] { new ResourceRequiredClaim { ClaimTypeId = idres.Item1 } };
+			//		});
+			//}
+			//await ResourceManager.Ensure<IResourceManager, string, ResourceEditable>(
+			//		"profile",
+			//		r =>
+			//		{
+			//			r.Title =
+			//			r.Name = "用户信息";
 						
-						r.IsIdentityResource = true;
-						r.RequiredClaims = predefinedClaimTypes.Select(id => new ResourceRequiredClaim { ClaimTypeId = id.Item1 }).ToArray();
-					});
+			//			r.IsIdentityResource = true;
+			//			r.RequiredClaims = predefinedClaimTypes.Select(id => new ResourceRequiredClaim { ClaimTypeId = id.Item1 }).ToArray();
+			//		});
 
 			var scopeManager = ServiceProvider.Resolve<IScopeManager>();
-			var allResourceIds = (await ResourceManager.QueryAllAsync()).Select(i => i.Id).ToArray();
+			//var allResourceIds = (await ResourceManager.QueryAllAsync()).Select(i => i.Id).ToArray();
 			var allResourceScope = await scopeManager.Ensure<IScopeManager,string,ScopeEditable>(
 				"all",
 				e =>
 				{
 					e.Name = "所有资源";
-					e.Resources = allResourceIds;//.Select(i => new ScopeResource { ResourceId = i });
+					//e.Resources = allResourceIds;//.Select(i => new ScopeResource { ResourceId = i });
 				});
 
 
@@ -398,30 +409,30 @@ namespace SF.Sys.Services
 			await ClientManager.ClientEnsure("app.other", "其他浏览器", customerConfig.Id, "pass");
 
 
-			var allGrants = (from r in resPermissions
-							 from o in r.AvailableOperations
-							 select new Grant
-							 {
-								 OperationId = o,
-								 ResourceId = r.Id
-							 }
-				 ).ToArray();
+			//var allGrants = (from r in resPermissions
+			//				 from o in r.AvailableOperations
+			//				 select new Grant
+			//				 {
+			//					 OperationId = o,
+			//					 ResourceId = r.Id
+			//				 }
+			//	 ).ToArray();
 
 
 			var RoleManager = ServiceProvider.Resolve<IRoleManager>();
 
-			await RoleManager.RoleEnsure(
-				"superadmin",
-				"超级管理员",
-				true,
-				allGrants
-			);
-			await RoleManager.RoleEnsure(
-				"admin",
-				"管理员",
-				true,
-				allGrants
-			);
+			//await RoleManager.RoleEnsure(
+			//	"superadmin",
+			//	"超级管理员",
+			//	true,
+			//	allGrants
+			//);
+			//await RoleManager.RoleEnsure(
+			//	"admin",
+			//	"管理员",
+			//	true,
+			//	allGrants
+			//);
 
 			
 
@@ -439,6 +450,162 @@ namespace SF.Sys.Services
 				.WithIdent("test")
 				.Ensure(ServiceProvider, ScopeId);
 
+
+
+			//创建默认角色,并授权
+			var roles = new Dictionary<string, NamedItems>();
+			var permissions = new List<NamedItems>();
+
+			var svcs = ServiceProvider.Resolve<IServiceMetadata>();
+			var SigninRequired = new HashSet<(string type,string method)>();
+
+			foreach(var svc in svcs.Services.Values)
+			{
+				if (!svc.ServiceType.IsDefined(typeof(NetworkServiceAttribute),true))
+					continue;
+				var daas = svc.ServiceType.GetCustomAttributes<DefaultAuthorizeAttribute>(true);
+				var methods = new Dictionary<string, NamedItems>();
+				var typeName = svc.ServiceName;
+				foreach(var method in 
+					svc.ServiceType.AllRelatedTypes().SelectMany(it => it.AllPublicInstanceProperties())
+					)
+				{
+					var methodName = typeName + "." + method.Name;
+
+					var mdaas = method.GetCustomAttributes<DefaultAuthorizeAttribute>(true);
+					if (mdaas != null)
+					{
+						foreach (var r in mdaas.Where(mdaa=>mdaa.RoleIdent!=null))
+							AddItem(methods, r.RoleIdent,r.RoleName, methodName);
+					}
+					if (daas != null && daas.Any() || mdaas!=null && mdaas.Any())
+						SigninRequired.Add((typeName, method.Name));
+
+					var rd = method.GetCustomAttribute<ReadOnlyAttribute>(true);
+					if (rd != null && rd.IsReadOnly)
+						AddItem(methods, "#readonly", "浏览", methodName);
+
+					AddItem(methods, "#all", "管理", methodName);
+				}
+				foreach(var m in methods)
+				{
+					m.Value.Name = svc.ServiceName + m.Value.Name;
+					permissions.Add(m.Value);
+
+					if (m.Key.StartsWith("#"))
+					{
+						foreach(var daa in daas.Where(d=>d.RoleIdent!=null))
+							AddItem(roles, daa.RoleIdent, daa.RoleName, m.Value.Name);
+					}
+					else
+						AddItem(roles, m.Key, m.Value.Name, m.Value.Name);
+				}
+
+				var ds = ServiceProvider.Resolve<IDataScope>();
+				var idg = ServiceProvider.Resolve<IIdentGenerator>();
+				var timeService = ServiceProvider.Resolve<ITimeService>();
+				var now = timeService.Now;
+				var permissionIdMap = new Dictionary<string, long>();
+
+				await ds.Use("初始化权限", async ctx =>
+				{
+					var permissionSet = ctx.Set<DataPermission>();
+					foreach (var p in permissions)
+					{
+						var dbp = await permissionSet.AsQueryable()
+							.Where(pi => pi.Name == p.Name)
+							.Include(pi => pi.Items)
+							.FirstOrDefaultAsync();
+						if (dbp == null)
+						{
+							var id = await idg.GenerateAsync<DataPermission>();
+							permissionIdMap.Add(p.Name, id);
+							permissionSet.Add(new DataPermission
+							{
+								Id = id,
+								Name = p.Name,
+								Items = p.Select(pi => new DataPermissionItem
+								{
+									PermissionId = id,
+									ServiceMethodId = pi
+								}).ToArray(),
+								CreatedTime= now,
+								UpdatedTime= now
+							});
+						}
+						else
+						{
+							permissionIdMap.Add(p.Name, dbp.Id);
+							dbp.Name = p.Name;
+							dbp.UpdatedTime = now;
+							ctx.Set<DataPermissionItem>().Merge(
+								dbp.Items,
+								p,
+								(o, e) => o.ServiceMethodId == e,
+								e => new DataPermissionItem { PermissionId = dbp.Id, ServiceMethodId = e }
+								);
+							ctx.Update(dbp);
+						}
+					}
+
+					var roleSet = ctx.Set<DataRole>();
+					foreach(var r in roles)
+					{
+						var dbr = await roleSet.AsQueryable()
+							.Where(pi => pi.Name == r.Key)
+							.Include(pi => pi.Grants)
+							.FirstOrDefaultAsync();
+						if (dbr == null)
+						{
+							roleSet.Add(new DataRole
+							{
+								Id = r.Key,
+								Name = r.Value.Name,
+								Grants = r.Value.Select(pi => new DataRoleGrant
+								{
+									PermissionId = permissionIdMap[pi],
+									RoleId=r.Key
+								}).ToArray(),
+								CreatedTime = now,
+								UpdatedTime = now
+							});
+						}
+						else
+						{
+							dbr.Name = r.Value.Name;
+							dbr.UpdatedTime = now;
+							ctx.Set<DataRoleGrant>().Merge(
+								dbr.Grants,
+								r.Value,
+								(o, e) => o.PermissionId == permissionIdMap[ e],
+								e => new DataRoleGrant{
+									RoleId = dbr.Id,
+									PermissionId = permissionIdMap[e]
+								}
+								);
+							ctx.Update(dbr);
+						}
+					}
+
+					await ctx.SaveChangesAsync();
+
+				});
+			}
+		}
+		class NamedItems:HashSet<string>
+		{
+			public string Name { get; set; }
+		}
+		static void AddItem(
+			Dictionary<string, NamedItems> dic,
+			string key,
+			string name,
+			string item
+			)
+		{
+			if (!dic.TryGetValue(key, out var l))
+				dic[key] = l = new NamedItems();
+			l.Add(item);
 		}
 	}
 }

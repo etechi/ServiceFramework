@@ -28,7 +28,7 @@ using SF.Services.Security;
 namespace SF.Auth.IdentityServices.Managers
 {
 	public class UserManager :
-		EntityUserManager<UserInternal, UserEditable, UserQueryArgument, DataModels.User, DataModels.UserCredential, DataModels.UserClaimValue, DataModels.UserRole>,
+		EntityUserManager<UserInternal, UserEditable, UserQueryArgument, DataModels.DataUser, DataModels.DataUserCredential, DataModels.DataUserClaimValue, DataModels.DataUserRole>,
 		IUserManager
 	{
 		public UserManager(IEntityServiceContext ServiceContext, Lazy<IPasswordHasher> PasswordHasher) : base(ServiceContext, PasswordHasher)
@@ -50,10 +50,10 @@ namespace SF.Auth.IdentityServices.Managers
 		where TInternal : Models.UserInternal
 		where TEditable : Models.UserEditable,new()
 		where TQueryArgument : UserQueryArgument,new()
-		where TUser :DataModels.User<TUser,TUserCredential, TUserClaimValue, TUserRole>,new()
-		where TUserCredential : DataModels.UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>,new()
-		where TUserClaimValue : DataModels.UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
-		where TUserRole : DataModels.UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
+		where TUser :DataModels.DataUser<TUser,TUserCredential, TUserClaimValue, TUserRole>,new()
+		where TUserCredential : DataModels.DataUserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>,new()
+		where TUserClaimValue : DataModels.DataUserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
+		where TUserRole : DataModels.DataUserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>, new()
 	{
 		Lazy<IPasswordHasher> PasswordHasher { get; }
 		public EntityUserManager(IEntityServiceContext ServiceContext,Lazy<IPasswordHasher> PasswordHasher) : base(ServiceContext)

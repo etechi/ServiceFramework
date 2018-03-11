@@ -14,32 +14,33 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Data;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(Role))]
-	public class Role : SF.Sys.Entities.DataModels.DataObjectEntityBase<string>
+	[Table("ResourceRequiredClaim")]
+	public class DataResourceRequiredClaim
 	{
-		[MaxLength(100)]
-		[Required]
-		public override string Id { get; set; }
+		/// <summary>
+		/// 资源Id
+		/// </summary>
+		[Column(Order =1)]
+		[Key]
+		public string ResourceId { get; set; }
 
-		[Index(IsUnique = true)]
-		public override string Name { get; set; }
-
-		[InverseProperty(nameof(RoleClaimValue.Role))]
-		public ICollection<RoleClaimValue> ClaimValues { get; set; }
-
-		[InverseProperty(nameof(RoleGrant.Role))]
-		public ICollection<RoleGrant> Grants { get; set; }
+		[ForeignKey(nameof(ResourceId))]
+		public DataResource Resource { get; set; }
 
 		/// <summary>
-		/// 系统角色
+		/// 申明类型Id
 		/// </summary>
-		/// <remarks>用于支持系统业务,不能删除</remarks>
-		public bool IsSysRole { get; set; }
+		[Column(Order = 2)]
+		[Key]
+		[Index]
+		public string ClaimTypeId { get; set; }
+
+		[ForeignKey(nameof(ClaimTypeId))]
+		public DataClaimType ClaimType { get; set; }
 	}
 }

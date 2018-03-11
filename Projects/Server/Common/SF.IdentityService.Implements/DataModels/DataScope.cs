@@ -13,22 +13,23 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Entities.DataModels;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-
-	[Table("Operation")]
-	public class DataOperation : SF.Sys.Entities.DataModels.DataUIObjectEntityBase<string>
+	[Table("Scope")]
+	public class DataScope : DataObjectEntityBase<string>
 	{
-		[MaxLength(100)]
 		[Required]
+		[MaxLength(100)]
 		public override string Id { get; set; }
 
-		[InverseProperty(nameof(ResourceSupportedOperation.Operation))]
-		public ICollection<ResourceSupportedOperation> Resources { get; set; }
+		[InverseProperty(nameof(DataScopeResource.Scope))]
+		public ICollection<DataScopeResource> Resources{ get; set; }
+
 
 	}
 }

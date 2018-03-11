@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Internal;
@@ -22,6 +23,7 @@ using System;
 
 namespace SF.Sys.AspNetCore.NetworkServices
 {
+	[AuthorizeAttribute]
 	public class ServiceBasedControllerActivator : DefaultControllerActivator
 	{
 		public ServiceBasedControllerActivator(ITypeActivatorCache TypeActivatorCache):base(TypeActivatorCache)

@@ -18,30 +18,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	public class UserClaimValue: 
-		UserClaimValue<User, UserCredential, UserClaimValue,UserRole>
+	[Table("RoleClaimValue")]
+	public class DataRoleClaimValue : DataBaseClaimValue
 	{
-
-	}
-
-	[Table(nameof(UserClaimValue))]
-	public class UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole> :
-		BaseClaimValue
-		where TUser : User<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserCredential : UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserClaimValue : UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserRole : UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
-
-	{
-
 		/// <summary>
 		/// 身份标识ID
 		/// </summary>
 		[Index]
-		public long UserId { get; set; }
+		public string RoleId { get; set; }
 
-		[ForeignKey(nameof(UserId))]
-		public TUser User { get; set; }
-		
+		[ForeignKey(nameof(RoleId))]
+		public DataRole Role { get; set; }
+
 	}
 }

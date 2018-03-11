@@ -60,6 +60,7 @@ namespace SF.Sys.Services
 			{
 				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+				
 			})
 				.AddJwtBearer(options =>
 				{
@@ -92,6 +93,7 @@ namespace SF.Sys.Services
 							return Task.CompletedTask;
 						}
 					};
+					
 				});
 
 			//services.AddAspNetCoreCommonAuthorization();

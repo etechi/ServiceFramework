@@ -13,23 +13,25 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Entities.DataModels;
+using SF.Sys.Data;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(Scope))]
-	public class Scope : DataObjectEntityBase<string>
+	[Table("Permission")]
+	public class DataPermission : SF.Sys.Entities.DataModels.DataObjectEntityBase<long>
 	{
-		[Required]
 		[MaxLength(100)]
-		public override string Id { get; set; }
+		[Required]
+		public override long Id { get; set; }
 
-		[InverseProperty(nameof(ScopeResource.Scope))]
-		public ICollection<ScopeResource> Resources{ get; set; }
+		[Index(IsUnique = true)]
+		public override string Name { get; set; }
 
+		[InverseProperty(nameof(DataPermissionItem.Permission))]
+		public ICollection<DataPermissionItem> Items { get; set; }
 
 	}
 }

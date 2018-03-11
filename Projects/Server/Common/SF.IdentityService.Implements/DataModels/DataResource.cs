@@ -13,47 +13,34 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	[Table(nameof(RoleGrant))]
-	public class RoleGrant 
+	[Table("Resource")]
+	public class DataResource : SF.Sys.Entities.DataModels.DataUIObjectEntityBase<string>
 	{
-		/// <summary>
-		/// 客户端ID
-		/// </summary>
-		[Key]
-		[Column(Order =1)]
-		public string RoleId { get; set; }
-
-		[ForeignKey(nameof(RoleId))]
-		public Role Role { get; set; }
-
-		/// <summary>
-		/// 操作资源ID
-		/// </summary>
-		[Key]
-		[Column(Order = 2)]
 		[MaxLength(100)]
 		[Required]
-		public string ResourceId { get; set; }
-
-		[ForeignKey(nameof(ResourceId))]
-		public DataResource Resource { get; set; }
+		public override string Id { get; set; }
 
 		/// <summary>
-		/// 操作区域ID
+		/// 是否是标识资源
 		/// </summary>
-		[Key]
-		[Column(Order = 3)]
-		[MaxLength(100)]
-		[Required]
-		public string OperationId { get; set; }
+		public bool IsIdentityResource { get; set; }
 
-		[ForeignKey(nameof(OperationId))]
-		public DataOperation Operation { get; set; }
+		[InverseProperty(nameof(DataResourceRequiredClaim.Resource))]
+		public ICollection<DataResourceRequiredClaim> RequiredClaims { get; set; }
 
+		[InverseProperty(nameof(DataResourceSupportedOperation.Resource))]
+		public ICollection<DataResourceSupportedOperation> SupportedOperations { get; set; }
+
+		[InverseProperty(nameof(DataScopeResource.Resource))]
+		public ICollection<DataScopeResource> Scopes { get; set; }
 	}
+
+
+
 }

@@ -25,7 +25,7 @@ namespace SF.IdentityService.UnitTest
 				sc.AddDataScope(sp =>ds);
 
 				sc.AddIdentityServices();
-				sc.AddIdentityServer4Support();
+				//sc.AddIdentityServer4Support();
 			});
 	}
 }

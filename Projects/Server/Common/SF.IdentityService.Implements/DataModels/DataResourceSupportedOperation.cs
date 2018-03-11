@@ -18,34 +18,25 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	/// <summary>
-	/// 授权范围权限
-	/// </summary>
-	[Table(nameof(ScopeResource))]
-	public class ScopeResource
+	[Table("ResourceSupportedOperation")]
+	public class DataResourceSupportedOperation 
 	{
-		/// <summary>
-		/// 授权范围ID
-		/// </summary>
 		[Key]
 		[Column(Order =1)]
-		public string ScopeId { get; set; }
-
-		[ForeignKey(nameof(ScopeId))]
-		public Scope Scope { get; set; }
-
-		/// <summary>
-		/// 资源ID
-		/// </summary>
-		[Key]
-		[Column(Order = 2)]
-		[MaxLength(100)]
-		[Required]
 		public string ResourceId { get; set; }
 
 		[ForeignKey(nameof(ResourceId))]
 		public DataResource Resource { get; set; }
 
+		[Key]
+		[Column(Order =2)]
+		public string OperationId { get; set; }
+
+		[ForeignKey(nameof(OperationId))]
+		public DataOperation Operation { get; set; }
 
 	}
+
+
+
 }

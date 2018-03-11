@@ -30,7 +30,7 @@ namespace SF.Auth.IdentityServices.Managers
 			Models.Role,
 			RoleQueryArgument,
 			Models.RoleEditable,
-			DataModels.Role
+			DataModels.DataRole
 			>,
 		IRoleManager
 	{

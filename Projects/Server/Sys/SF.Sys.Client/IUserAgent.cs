@@ -21,7 +21,7 @@ namespace SF.Sys.Clients
 	public interface IUserAgent
 	{
 		IReadOnlyDictionary<string,string> ExtraValues { get; }
-		string Address { get;  }
+		string Address { get; }
 		string AgentName { get; }
 		ClientDeviceType DeviceType { get; }
 	}

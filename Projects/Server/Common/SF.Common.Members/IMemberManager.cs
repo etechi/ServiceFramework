@@ -37,7 +37,7 @@ namespace SF.Common.Members
 	/// <typeparam name="TEditable"></typeparam>
 	/// <typeparam name="TQueryArgument"></typeparam>
 	[EntityManager]
-	[Authorize("admin")]
+	[DefaultAuthorizeAttribute("admin")]
 	[NetworkService]
 	[Category("用户管理", "会员管理")]
 	public interface IMemberManager<TInternal,TEditable,TQueryArgument>: 

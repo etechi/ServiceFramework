@@ -28,7 +28,7 @@ namespace SF.Auth.IdentityServices.Managers
 	/// 操作管理
 	/// </summary>
 	[EntityManager]
-	[Authorize("admin")]
+	[DefaultAuthorizeAttribute("admin")]
 	[NetworkService]
 	public interface IOperationManager :
 		IEntityManager<ObjectKey<string>,Models.OperationInternal>,

@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
-    <ProjectReference Include="..\SF.IdentityService.IdentityServer4\SF.IdentityService.IdentityServer4.csproj" />
     <ProjectReference Include="..\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Auth\SF.Sys.Auth.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Data.EFCore\SF.Sys.Data.EFCore.csproj" />

@@ -26,7 +26,7 @@ namespace SF.Common.Notifications.Management
 	/// 通知发送记录
 	/// </summary>
 	[EntityManager]
-	[Authorize("admin")]
+	[DefaultAuthorizeAttribute("admin")]
 	[NetworkService]
 	public interface INotificationSendRecordManager : 
 		IEntitySource<ObjectKey<long>,NotificationSendRecord, NotificationSendRecordQueryArgument>

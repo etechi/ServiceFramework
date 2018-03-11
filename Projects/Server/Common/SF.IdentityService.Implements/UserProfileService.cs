@@ -35,30 +35,30 @@ namespace SF.Auth.IdentityServices
 		{
 			this.DataScope= DataScope;
 		}
-		public Task<Claim[]> GetClaims(long UserId, string ClientId, string[] Scopes)
-		{
-			return DataScope.Use(
-				"获取凭证", 
-				async ctx =>
-				{
-					var q = from u in ctx.Queryable<DataModels.User>()
-							where u.Id == UserId
-							from role in u.Roles
-							from g in role.Role.Grants
-							select new { g.ResourceId, g.OperationId };
-					var pairs = await q.ToArrayAsync();
-					return pairs
-						.GroupBy(p => p.ResourceId,p=>p.OperationId)
-						.Select(p => new Claim(p.Key, "|" + p.Distinct().Join("|") + "|"))
-						.ToArray();
-				});
-		}
+		//public Task<Claim[]> GetClaims(long UserId, string ClientId, string[] Scopes)
+		//{
+		//	return DataScope.Use(
+		//		"获取凭证", 
+		//		async ctx =>
+		//		{
+		//			var q = from u in ctx.Queryable<DataModels.DataUser>()
+		//					where u.Id == UserId
+		//					from role in u.Roles
+		//					from g in role.Role.Grants
+		//					select new { g.ResourceId, g.OperationId };
+		//			var pairs = await q.ToArrayAsync();
+		//			return pairs
+		//				.GroupBy(p => p.ResourceId,p=>p.OperationId)
+		//				.Select(p => new Claim(p.Key, "|" + p.Distinct().Join("|") + "|"))
+		//				.ToArray();
+		//		});
+		//}
 
 		public async Task<Claim[]> GetClaims(long id, string[] ClaimTypes,IEnumerable<Claim> ExtraClaims)
 		{
 			return await DataScope.Use("获取凭证",async ctx =>
 			{
-				var Users = ctx.Set<DataModels.User>();
+				var Users = ctx.Set<DataModels.DataUser>();
 				var desc = await (
 					from u in Users.AsQueryable()
 					where u.Id == id && u.LogicState == EntityLogicState.Enabled
@@ -107,7 +107,7 @@ namespace SF.Auth.IdentityServices
 
 				if (types.Count > 0 || grantResources.Count > 0)
 				{
-					var Credentials = ctx.Set<DataModels.UserCredential>();
+					var Credentials = ctx.Set<DataModels.DataUserCredential>();
 
 					//var re = await (
 					//	from u in Users.AsQueryable()
@@ -115,37 +115,37 @@ namespace SF.Auth.IdentityServices
 					//	select new
 					//	{
 					var userCredentials = await (
-								from uc in ctx.Set<DataModels.UserCredential>().AsQueryable()
+								from uc in ctx.Set<DataModels.DataUserCredential>().AsQueryable()
 								where uc.UserId == id && types.Contains(uc.ClaimTypeId)
 								select new { type = uc.ClaimTypeId, value = uc.Credential }
 								 ).ToArrayAsync();
 
 					var userClaims = await (
-							from uc in ctx.Set<DataModels.UserClaimValue>().AsQueryable()
+							from uc in ctx.Set<DataModels.DataUserClaimValue>().AsQueryable()
 							where uc.UserId == id && types.Contains(uc.TypeId)
 							select new { type = uc.TypeId, value = uc.Value }
 								).ToArrayAsync();
 
 					var roleClaims = await (
-							from r in ctx.Set<DataModels.UserRole>().AsQueryable()
+							from r in ctx.Set<DataModels.DataUserRole>().AsQueryable()
 							where r.UserId == id
 							from rc in r.Role.ClaimValues
 							where types.Contains(rc.TypeId)
 							select new { type = rc.TypeId, value = rc.Value }
 						).ToArrayAsync();
 
-					var grants = (await (
-						from r in ctx.Set<DataModels.UserRole>().AsQueryable()
-						where r.UserId == id
-						from g in r.Role.Grants
-						where grantResources.Contains(g.ResourceId)
-						select new { g.OperationId, g.ResourceId }
-						).ToListAsync())
-						.GroupBy(p => p.ResourceId)
-						.Select(g => (rs: g.Key, os: g.Select(gi=>gi.OperationId).Distinct()));
+					//var grants = (await (
+					//	from r in ctx.Set<DataModels.DataUserRole>().AsQueryable()
+					//	where r.UserId == id
+					//	from g in r.Role.Grants
+					//	where grantResources.Contains(g.ResourceId)
+					//	select new { g.OperationId, g.ResourceId }
+					//	).ToListAsync())
+					//	.GroupBy(p => p.ResourceId)
+					//	.Select(g => (rs: g.Key, os: g.Select(gi=>gi.OperationId).Distinct()));
 
 					var roles = await (
-						from r in ctx.Set<DataModels.UserRole>().AsQueryable()
+						from r in ctx.Set<DataModels.DataUserRole>().AsQueryable()
 						where r.UserId == id
 						select r.RoleId
 						).ToArrayAsync();
@@ -156,8 +156,8 @@ namespace SF.Auth.IdentityServices
 						claims.Add(new Claim(c.type, c.value));
 					foreach (var c in roleClaims)
 						claims.Add(new Claim(c.type, c.value));
-					foreach (var g in grants)
-						claims.Add(new Claim("g:" + g.rs, "|" + g.os.Join("|") + "|"));
+					//foreach (var g in grants)
+					//	claims.Add(new Claim("g:" + g.rs, "|" + g.os.Join("|") + "|"));
 
 					if (types.Contains("role"))
 						claims.Add(new Claim("role", roles.Join(" ")));
@@ -170,7 +170,7 @@ namespace SF.Auth.IdentityServices
 		{
 			return await DataScope.Use("检查ID是否有效",async ctx=>
 			{
-				return await ctx.Set<DataModels.User>().AsQueryable()
+				return await ctx.Set<DataModels.DataUser>().AsQueryable()
 					.Where(u => u.Id == Id && u.LogicState == EntityLogicState.Enabled)
 					.Select(u => true)
 					.SingleOrDefaultAsync();
@@ -182,7 +182,7 @@ namespace SF.Auth.IdentityServices
 			return await DataScope.Use("查找用户", async ctx =>
 			{
 				var user=await (
-				from u in ctx.Set<DataModels.User>().AsQueryable()
+				from u in ctx.Set<DataModels.DataUser>().AsQueryable()
 				where u.Id == UserId && u.LogicState == EntityLogicState.Enabled
 				let roles= from r in u.Roles
 						   let rid = r.RoleId

@@ -43,7 +43,7 @@ namespace SF.Common.Admins
 	/// <typeparam name="TEditable"></typeparam>
 	/// <typeparam name="TQueryArgument"></typeparam>
 	[EntityManager]
-	[Authorize("admin")]
+	[DefaultAuthorizeAttribute("admin")]
 	[NetworkService]
 	[Category("系统管理", "系统管理员管理")]
 	public interface IAdminManager<TInternal,TEditable,TQueryArgument> :

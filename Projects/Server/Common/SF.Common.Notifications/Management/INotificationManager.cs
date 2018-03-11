@@ -31,7 +31,7 @@ namespace SF.Common.Notifications.Management
 	/// 通知管理
 	/// </summary>
 	[EntityManager]
-	[Authorize("admin")]
+	[DefaultAuthorizeAttribute("admin")]
 	[NetworkService]
 	public interface INotificationManager : 
 		IEntitySource<ObjectKey<long>,Notification,NotificationQueryArgument>,

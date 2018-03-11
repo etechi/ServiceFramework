@@ -273,7 +273,7 @@ namespace SF.Auth.IdentityServices
 		/// 获取当前用户ID
 		/// </summary>
 		/// <returns>用户ID</returns>
-		[Authorize]
+		[DefaultAuthorizeAttribute]
 		Task<long?> GetCurUserId();
 
 		/// <summary>

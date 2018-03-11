@@ -13,39 +13,36 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Data;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SF.Auth.IdentityServices.DataModels
 {
-	public class UserRole: UserRole<User, UserCredential, UserClaimValue, UserRole>
+	[Table("ClientScope")]
+	public class DataClientScope
 	{
-
-	}
-	[Table(nameof(UserRole))]
-	public class UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUser : User<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserCredential : UserCredential<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserClaimValue : UserClaimValue<TUser, TUserCredential, TUserClaimValue, TUserRole>
-		where TUserRole : UserRole<TUser, TUserCredential, TUserClaimValue, TUserRole>
-	{
-		[Key]
-		[Column(Order =1)]
-		public long UserId { get; set; }
-
-		[ForeignKey(nameof(UserId))]
-		public TUser User { get; set; }
-
 		/// <summary>
-		/// 角色
+		/// 客户端ID
 		/// </summary>
 		[Key]
-		[Column(Order = 1)]
-		[Index]
-		public string RoleId { get; set; }
+		[Column(Order =1)]
+		public long ClientConfigId { get; set; }
 
-		[ForeignKey(nameof(RoleId))]
-		public Role Role { get; set; }
+		[ForeignKey(nameof(ClientConfigId))]
+		public DataClientConfig ClientConfig { get; set; }
+
+		/// <summary>
+		/// 资源范围ID
+		/// </summary>
+		[Key]
+		[Column(Order = 2)]
+		[MaxLength(100)]
+		[Required]
+		public string ScopeId { get; set; }
+
+		[ForeignKey(nameof(ScopeId))]
+		public DataScope Scope { get; set; }
+
+
 	}
 }

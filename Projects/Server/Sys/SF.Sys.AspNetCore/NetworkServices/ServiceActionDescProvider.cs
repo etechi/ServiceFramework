@@ -92,6 +92,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 				ControllerName = controllerName,
 				ControllerTypeInfo = type.GetTypeInfo(),
 				MethodInfo = method,
+
 				//AttributeRouteInfo = new Microsoft.AspNetCore.Mvc.Routing.AttributeRouteInfo
 				//{
 				//	Template = $"{RoutePrefix}/{controllerName}/{ActionName}",

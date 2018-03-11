@@ -58,19 +58,19 @@ namespace SF.Sys.NetworkService
 		Metadata.Service GenerateServiceMetadata(Type type)
 		{
 			var attrs = type.AllInterfaces().SelectMany(i=>i.GetCustomAttributes()).Distinct();
-			var aas = attrs.Where(a => a is AuthorizeAttribute).Cast<AuthorizeAttribute>().ToArray();
-			var rps = attrs.Where(a => a is RequirePermissionAttribute).Cast<RequirePermissionAttribute>().ToArray();
-			var roles = aas.Length == 0 ? null :
-				aas.Where(aa => !string.IsNullOrWhiteSpace(aa.Roles))
-				.SelectMany(aa => aa.Roles.Split(','))
-				.Select(r => r.Trim())
-				.Distinct()
-				.ToArray();
+			var aas = attrs.Where(a => a is DefaultAuthorizeAttribute).Cast<DefaultAuthorizeAttribute>().ToArray();
+			//var rps = attrs.Where(a => a is RequirePermissionAttribute).Cast<RequirePermissionAttribute>().ToArray();
+			//var roles = aas.Length == 0 ? null :
+			//	aas.Where(aa => !string.IsNullOrWhiteSpace(aa.Roles))
+			//	.SelectMany(aa => aa.Roles.Split(','))
+			//	.Select(r => r.Trim())
+			//	.Distinct()
+			//	.ToArray();
             var ac = new Metadata.GrantInfo
             {
                 UserRequired = aas.Length > 0,
-                RolesRequired = roles,
-                PermissionsRequired = rps.Length > 0 ? rps.Select(rp => rp.Resource + ":" + rp.Operation).ToArray() : null
+                //RolesRequired = roles,
+               // PermissionsRequired = rps.Length > 0 ? rps.Select(rp => rp.Resource + ":" + rp.Operation).ToArray() : null
             };
 
             return LoadAttributes(
@@ -133,14 +133,14 @@ namespace SF.Sys.NetworkService
 		Metadata.Method GenerateMethodMetadata(MethodInfo method, Metadata.GrantInfo ac)
 		{
 			var attrs = method.GetCustomAttributes();
-			var aas = attrs.Where(a => a is AuthorizeAttribute).Cast<AuthorizeAttribute>().ToArray();
-			var rps = attrs.Where(a => a is RequirePermissionAttribute).Cast<RequirePermissionAttribute>().ToArray();
-			var roles = aas.Length == 0 ? null : 
-				aas.Where(aa=>!string.IsNullOrWhiteSpace(aa.Roles))
-				.SelectMany(aa => aa.Roles.Split(','))
-				.Select(r => r.Trim())
-				.Distinct()
-				.ToArray();
+			var aas = attrs.Where(a => a is DefaultAuthorizeAttribute).Cast<DefaultAuthorizeAttribute>().ToArray();
+			//var rps = attrs.Where(a => a is RequirePermissionAttribute).Cast<RequirePermissionAttribute>().ToArray();
+			//var roles = aas.Length == 0 ? null : 
+			//	aas.Where(aa=>!string.IsNullOrWhiteSpace(aa.Roles))
+			//	.SelectMany(aa => aa.Roles.Split(','))
+			//	.Select(r => r.Trim())
+			//	.Distinct()
+			//	.ToArray();
 			var parameters= GenerateMethodParameters(method);
 			return LoadAttributes(
 				new Metadata.Method(method)
@@ -151,8 +151,8 @@ namespace SF.Sys.NetworkService
 					GrantInfo = UseOrIgnoreGrantInfo(new Metadata.GrantInfo
 					{
 						UserRequired = aas.Length > 0 || ac.UserRequired,
-						RolesRequired = roles != null && roles.Length > 0 ? roles : ac.RolesRequired,
-						PermissionsRequired = rps != null && rps.Length > 0 ? rps.Select(rp => rp.Resource + ":" + rp.Operation).ToArray() : ac.PermissionsRequired
+						//RolesRequired = roles != null && roles.Length > 0 ? roles : ac.RolesRequired,
+						//PermissionsRequired = rps != null && rps.Length > 0 ? rps.Select(rp => rp.Resource + ":" + rp.Operation).ToArray() : ac.PermissionsRequired
 					}),
 					HeavyParameter = BuildRule.DetectHeavyParameter(method)?.Name
 				},
@@ -215,8 +215,8 @@ namespace SF.Sys.NetworkService
 		
 		static Type[] IgnoreAttributeTypes { get; } = BaseMetadataBuilder.DefaultIgnoreAttributeTypes.Concat(
 			new[]{
-				typeof(AuthorizeAttribute),
-				typeof(RequirePermissionAttribute),
+				typeof(DefaultAuthorizeAttribute),
+				//typeof(RequirePermissionAttribute),
                 //typeof(CommentAttribute)
             }).ToArray();
 
