@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.Threading.Tasks;
@@ -51,7 +52,7 @@ namespace SF.Common.Documents
 	/// <typeparam name="TDocument"></typeparam>
 	/// <typeparam name="TCategory"></typeparam>
 	[NetworkService]
-	[AnonymouseAllowed]
+	[AnonymousAllowed]
 	public interface IDocumentService<TDocument, TCategory>
 		where TDocument : Document
 		where TCategory : Category

@@ -523,6 +523,15 @@ namespace SF.Sys.Reflection
 			for (var t = type.BaseType; t != null; t = t.BaseType)
 				yield return t;
 		}
+		public static bool IsAnyRelatedTypeDefined(this Type type,Type AttributeType)
+		{
+			if (type.IsInterface)
+				return type.AllInterfaces().Any(i => i.IsDefined(AttributeType, true));
+			else if (type.IsDefined(AttributeType, true))
+				return true;
+			else
+				return type.AllInterfaces().Any(i => i.IsDefined(AttributeType, true));
+		}
 		public static IEnumerable<Type> AllRelatedTypes(this Type type)
 		{
 			if (type.IsInterface) return type.AllInterfaces();

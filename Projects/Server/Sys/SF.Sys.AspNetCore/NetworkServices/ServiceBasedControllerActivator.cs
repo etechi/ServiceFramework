@@ -46,7 +46,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 			{
 				if (long.TryParse((string)sid, out var svcId))
 				{
-					if(svcId > 0)
+					if (svcId > 0)
 						svc = services.Resolver().ResolveServiceByIdent(svcId, serviceType);
 					else
 						svc = services.GetService(serviceType);
@@ -55,7 +55,12 @@ namespace SF.Sys.AspNetCore.NetworkServices
 					svc = services.Resolver().ResolveServiceByType(null, serviceType, (string)sid);
 			}
 			else
+			{
+				var accessor = services.GetService(typeof(Microsoft.AspNetCore.Http.IHttpContextAccessor));
+				if (accessor == null)
+					throw new Exception("找不到IHttpContextAccessor服务 ");
 				svc = services.GetService(serviceType);
+			}
 
 			if (svc == null)
 			{

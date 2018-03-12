@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SF.Sys.AspNetCore.Auth;
@@ -98,7 +99,7 @@ namespace SF.Sys.Services
 				});
 
 			//services.AddAspNetCoreCommonAuthorization();
-
+			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddAspNetCoreCommonAuthorization(
 				new TokenProviderOptions
 				{

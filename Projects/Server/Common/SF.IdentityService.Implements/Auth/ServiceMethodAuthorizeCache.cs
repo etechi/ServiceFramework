@@ -43,12 +43,17 @@ namespace SF.Auth.IdentityServices
 		public Dictionary<(string,string), ServiceMethodAuthorizeType> Methods { get; }
 		public ServiceMethodAuthorizeCache(IServiceMetadata meta)
 		{
+			//var str = (from s in meta.Services.Values
+			//		   where s.ServiceType.IsAnyRelatedTypeDefined(typeof(NetworkServiceAttribute))
+			//		   select s.ServiceType.GetFullName()
+			//		 ).Join("\n");
+
 			Methods = (
 				from s in meta.Services.Values
-				where s.ServiceType.IsDefined(typeof(NetworkServiceAttribute), true)
+				where s.ServiceType.IsAnyRelatedTypeDefined(typeof(NetworkServiceAttribute))
 				let svcId = s.ServiceType.GetFullName()
 				let aas= s.ServiceType.GetCustomAttributes<DefaultAuthorizeAttribute>(true)
-				let svcType = s.ServiceType.IsDefined(typeof(AnonymousAllowedAttribute), true) ? ServiceMethodAuthorizeType.Anonymouse :
+				let svcType = s.ServiceType.IsAnyRelatedTypeDefined(typeof(AnonymousAllowedAttribute)) ? ServiceMethodAuthorizeType.Anonymouse :
 						aas.Any(a=>a.RoleIdent==null)? ServiceMethodAuthorizeType.User:
 						aas.Any(a => a.RoleIdent != null) ? ServiceMethodAuthorizeType.UserWithRoles :
 						ServiceMethodAuthorizeType.SuperAdmin
@@ -67,7 +72,10 @@ namespace SF.Auth.IdentityServices
 		}
 		public ServiceMethodAuthorizeType GetAuthorizeType(string Service,string Method)
 		{
-			return Methods.TryGetValue((Service,Method),out var type)?type: ServiceMethodAuthorizeType.SuperAdmin;
+			if (Methods.TryGetValue((Service, Method), out var type))
+				return type;
+			else
+				return ServiceMethodAuthorizeType.SuperAdmin;
 		}
 	}
 }

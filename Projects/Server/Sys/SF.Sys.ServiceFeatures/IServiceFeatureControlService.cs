@@ -24,6 +24,7 @@ using System.Threading.Tasks;
 namespace SF.Sys.ServiceFeatures
 {	
 	[NetworkService]
+	[AnonymousAllowed]
 	public interface IServiceFeatureControlService
 	{
 		Task<string> Init(string Id=null);

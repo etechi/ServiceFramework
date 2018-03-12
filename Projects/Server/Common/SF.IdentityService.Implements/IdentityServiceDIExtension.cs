@@ -503,7 +503,7 @@ namespace SF.Sys.Services
 			foreach (var svc in svcs.Services.Values)
 			{
 				//仅处理网络接口
-				if (!svc.ServiceType.IsDefined(typeof(NetworkServiceAttribute), true))
+				if (!svc.ServiceType.IsAnyRelatedTypeDefined(typeof(NetworkServiceAttribute)))
 					continue;
 				//服务上的默认授权
 				var daas = svc.ServiceType.GetCustomAttributes<DefaultAuthorizeAttribute>(true);
