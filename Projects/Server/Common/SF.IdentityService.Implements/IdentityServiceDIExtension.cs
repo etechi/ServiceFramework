@@ -156,10 +156,10 @@ namespace SF.Sys.Services
 					DefaultCredentialProvider
 					), 
 				null,
-				100000
+				1000
 				);
 
-
+			sc.AddInitializer("data", "初始化基础数据", DataInit);
 
 			return sc;
 		}
@@ -236,6 +236,29 @@ namespace SF.Sys.Services
 			await sim.DefaultServiceWithIdent<IUserCredentialProvider, PhoneNumberUserCredentialProvider>(PredefinedClaimTypes.Phone, null)
 				.Ensure(ServiceProvider, ScopeId);
 
+			
+			//var allGrants = (from r in resPermissions
+			//				 from o in r.AvailableOperations
+			//				 select new Grant
+			//				 {
+			//					 OperationId = o,
+			//					 ResourceId = r.Id
+			//				 }
+			//	 ).ToArray();
+
+
+			
+			
+
+			await sim.Service<IExternalAuthorizationProvider, TestOAuth2Provider>(new { })
+				.WithIdent("test")
+				.Ensure(ServiceProvider, ScopeId);
+
+		
+		}
+		static async Task DataInit(IServiceProvider ServiceProvider)
+		{
+			
 			//初始化默认申明类型
 			var ClaimTypeManager = ServiceProvider.Resolve<IClaimTypeManager>();
 			var predefinedClaimTypes = new[] {
@@ -410,6 +433,7 @@ namespace SF.Sys.Services
 					e.SlidingRefreshTokenLifetime = 1296000;
 				}
 				);
+
 			var ClientManager = ServiceProvider.Resolve<IClientManager>();
 			await ClientManager.ClientEnsure("local.internal", "内部系统", allResConfig.Id, "pass");
 			await ClientManager.ClientEnsure("admin.console", "管理控制台", allResConfig.Id, "pass");
@@ -422,31 +446,18 @@ namespace SF.Sys.Services
 			await ClientManager.ClientEnsure("app.other", "其他浏览器", customerConfig.Id, "pass");
 
 
-			//var allGrants = (from r in resPermissions
-			//				 from o in r.AvailableOperations
-			//				 select new Grant
-			//				 {
-			//					 OperationId = o,
-			//					 ResourceId = r.Id
-			//				 }
-			//	 ).ToArray();
-
-
 			var RoleManager = ServiceProvider.Resolve<IRoleManager>();
 
-			//await RoleManager.RoleEnsure(
-			//	"superadmin",
-			//	"超级管理员",
-			//	true,
-			//	allGrants
-			//);
-			//await RoleManager.RoleEnsure(
-			//	"admin",
-			//	"管理员",
-			//	true,
-			//	allGrants
-			//);
-
+			await RoleManager.RoleEnsure(
+				"superadmin",
+				"超级管理员",
+				true
+			);
+			await RoleManager.RoleEnsure(
+				"admin",
+				"管理员",
+				true
+			);
 
 
 			var UserManager = ServiceProvider.Resolve<IUserManager>();
@@ -458,12 +469,25 @@ namespace SF.Sys.Services
 				new[] { "superadmin", "admin" }
 				);
 
-
-			await sim.Service<IExternalAuthorizationProvider, TestOAuth2Provider>(new { })
-				.WithIdent("test")
-				.Ensure(ServiceProvider, ScopeId);
-
 			await InitGrantAndRoles(ServiceProvider);
+			foreach (var role in PredefinedRoles.Items)
+			{
+				if (!await RoleManager.ExistsAsync(
+					new RoleQueryArgument { Id = ObjectKey.From(role) })
+					)
+					continue;
+
+				for (var i = 0; i < 5; i++)
+				{
+					await UserManager.UserEnsure(
+						PredefinedClaimTypes.AdminAccount,
+						role + (i+1),
+						"system",
+						role,
+						new[] { "admin", role }
+						);
+				}
+			}
 
 		}
 
@@ -642,6 +666,7 @@ namespace SF.Sys.Services
 				dic[key] = l = new NamedItems<T>();
 			l.Add(item);
 		}
+
 	}
 }
 

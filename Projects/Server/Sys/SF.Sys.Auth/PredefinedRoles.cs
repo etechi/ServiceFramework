@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SF.Sys.Auth
 {
@@ -25,5 +26,15 @@ namespace SF.Sys.Auth
 		public const string 客服专员 = nameof(客服专员);
 		public const string 财务专员 = nameof(财务专员);
 		public const string 销售专员= nameof(销售专员);
+
+		public static IReadOnlyList<string> Items { get; } =
+			typeof(PredefinedRoles).
+			GetFields(
+				System.Reflection.BindingFlags.Static |
+				System.Reflection.BindingFlags.Public |
+				System.Reflection.BindingFlags.GetField
+				)
+			.Select(f=> (string)f.GetValue(null)).ToArray()
+			;
 	}
 }

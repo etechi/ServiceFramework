@@ -54,7 +54,7 @@ namespace SF.Sys.Services
 			sc.InitServices("管理员管理", async (sp, sim, parent) =>
 			{
 				await sim.NewAdminService().Ensure(sp, parent);
-			});
+			},null,1010);
 			return sc;
 		}
 
