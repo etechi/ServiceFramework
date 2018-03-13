@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
     <ProjectReference Include="..\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
+    <ProjectReference Include="..\SF.Sys.Reflection.TypeBuilder\SF.Sys.Reflection.TypeBuilder.csproj" />
     <ProjectReference Include="..\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
   </ItemGroup>
 

@@ -31,6 +31,7 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IServiceDeclarationTypeResolver, DefaultServiceDeclarationTypeResolver>();
 			sc.AddSingleton<IServiceImplementTypeResolver, DefaultServiceImplementTypeResolver>();
 			sc.AddSingleton<NetworkService.IExtraServiceTypeSource, ImplementConfigTypeSource>();
+			sc.AddSingleton<IServiceInvoker, ServiceInvoker>();
 			return sc;
 		}
 		

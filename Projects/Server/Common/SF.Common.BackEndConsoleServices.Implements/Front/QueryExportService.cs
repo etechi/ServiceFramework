@@ -10,17 +10,24 @@ using System.ComponentModel.DataAnnotations;
 using SF.Sys.Entities;
 using SF.Sys.Services;
 using SF.Sys.Collections.Generic;
+using SF.Sys.Reflection;
 
 namespace SF.Sys.BackEndConsole.Front
 {
 	public class QueryExportService : IQueryExportService
 	{
-		IServiceMetadata ServiceMetadata { get; set; }
+		IServiceMetadata ServiceMetadata { get; }
+		IServiceInvokerProvider ServiceInvokerProvider { get; }
+		IServiceProvider ServiceProvider { get; }
 		public QueryExportService(
-			IServiceMetadata ServiceMetadata
+			IServiceProvider ServiceProvider,
+			IServiceMetadata ServiceMetadata,
+			IServiceInvokerProvider ServiceInvokerProvider
 			)
 		{
+			this.ServiceProvider = ServiceProvider;
 			this.ServiceMetadata = ServiceMetadata;
+			this.ServiceInvokerProvider = ServiceInvokerProvider;
 		}
 
 		class ExportContext
@@ -48,13 +55,30 @@ namespace SF.Sys.BackEndConsole.Front
 			string Title = null
 			)
 		{
+			var invoker = ServiceInvokerProvider.Resolve(Service, Method);
 
+			var args = invoker.Method.GetParameters();
+			if (args.Length != 1 || !typeof(QueryArgument).IsAssignableFrom(args[0].ParameterType))
+				throw new PublicNotSupportedException("接口方法不支持导出,参数必须为QueryArgument的子类");
+
+			var resultType=invoker.Method.ReturnType.GetGenericArgumentTypeAsTask() ?? invoker.Method.ReturnType;
+			if (!resultType.IsGeneric() || resultType.GetGenericTypeDefinition()!=typeof(QueryResult<>))
+				throw new PublicNotSupportedException("接口方法不支持导出,返回类型不是QueryResult<>类型");
+
+			var arg = (QueryArgument)Json.DefaultSerializer.Deserialize(Argument, args[0].ParameterType);
+
+			var re = await invoker.InvokeAsync(ServiceProvider, new[] { arg });
+
+			invoker.me
 			var desc=GetServiceNames(Service).Select(
 				s => ServiceMetadata.ServicesByTypeName.Get(s)
 				).Where(d => d != null).FirstOrDefault();
+			if (desc == null)
+				throw new PublicArgumentException("找不到指定的服务:" + Service);
 
-
-
+			var methodInfo = desc.ServiceType.AllPublicInstanceMethods().FirstOrDefault(m => m.Name == Method);
+			if (methodInfo == null)
+				throw new PublicArgumentException("服务不支持");
 
 			var controller = Library.Controllers.Where(c => c.Name == Controller).SingleOrDefault();
 			UIEnsure.NotNull(controller, "找不到控制器:" + Controller);

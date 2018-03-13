@@ -14,15 +14,41 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
+using System.Collections.Concurrent;
 
 namespace System.Threading.Tasks
 {
 	public static class TaskHelpersExtensions
 	{
+		abstract class TaskResultGetter
+		{
+			public abstract Task<object> GetResult(Task task);
+		}
+		class TaskResultGetter<T> : TaskResultGetter
+		{
+			public override async Task<object> GetResult(Task task)
+			{
+				return await (Task<T>)task;
+			}
+		}
+		static ConcurrentDictionary<Type, TaskResultGetter> Getters { get; } = new ConcurrentDictionary<Type, TaskResultGetter>();
+
 		public static async Task<object> CastToObject(this Task task)
 		{
-			await task;
-			return null;
+			var type = task.GetType();
+			if(type==typeof(Task))
+			{
+				await task;
+				return null;
+			}
+			if (!Getters.TryGetValue(type, out var getter))
+				getter = Getters.GetOrAdd(
+					type,
+					(TaskResultGetter)Activator.CreateInstance(
+						typeof(TaskResultGetter<>).MakeGenericType(type.GetGenericArguments())
+						)
+					);
+			return await getter.GetResult(task);
 		}
 
 		public static async Task<object> CastToObject<T>(this Task<T> task)
