@@ -13,6 +13,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System.Collections.Generic;
+
 namespace SF.Sys.Metadata.Models
 {
 	public class AttributeValue
@@ -69,6 +71,10 @@ namespace SF.Sys.Metadata.Models
 	}
 	public class Library
 	{
-		public Type[] Types { get; set; }
+		public Library(Type[] Types)
+		{
+			this.Types = Types;
+		}
+		public IReadOnlyList<Type> Types { get; set; }
 	}
 }

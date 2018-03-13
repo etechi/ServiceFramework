@@ -14,6 +14,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Metadata.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SF.Sys.NetworkService.Metadata
 {
@@ -59,6 +61,21 @@ namespace SF.Sys.NetworkService.Metadata
 	}
 	public class Library: SF.Sys.Metadata.Models.Library
 	{
-		public Service[] Services { get; set; }
+		public IReadOnlyList<Service> Services { get; }
+		Dictionary<(string,string),(Service,Method)> Methods { get; }
+		public Library(Type[] Types, Service[] Services) : base(Types)
+		{
+			this.Services = Services;
+			Methods = (from s in Services
+					   from m in s.Methods
+					   select (s, m)
+					).ToDictionary(i => (i.s.Name, i.m.Name));
+		}
+		
+		public (Service,Method) FindMethod(string Service,string Method)
+		{
+			Methods.TryGetValue((Service, Method), out var re);
+			return re;
+		}
 	}
 }

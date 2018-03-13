@@ -14,8 +14,10 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.AspNetCore.Auth
 {
+	
 	public class CustomJwtDataFormat : ISecureDataFormat<AuthenticationTicket>
 	{
+		
 		private readonly string algorithm;
 		private readonly TokenValidationParameters validationParameters;
 

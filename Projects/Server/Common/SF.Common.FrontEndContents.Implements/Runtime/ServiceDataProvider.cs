@@ -23,19 +23,27 @@ using SF.Sys.NetworkService;
 using SF.Sys.Reflection;
 using SF.Sys.Linq.Expressions;
 using SF.Sys;
+using SF.Sys.Services;
 
 namespace SF.Common.FrontEndContents.Runtime
 {
 	public class ServiceDataProvider : IDataProvider
 	{
-		public ILogger<ServiceDataProvider> Logger { get; }
-		public IServiceInvoker ServiceInvoker { get; }
+		public ILogger Logger { get; }
+		public IServiceInvokerProvider ServiceInvokerProvider { get; }
 		public IServiceProvider ServiceProvider { get; }
-		public ServiceDataProvider(IServiceProvider ServiceProvider,ILogger<ServiceDataProvider> Logger, IServiceInvoker ServiceInvoker)
+		public SF.Sys.NetworkService.Metadata.Library NetLibrary { get; }
+		public ServiceDataProvider(
+			IServiceProvider ServiceProvider,
+			ILogger<ServiceDataProvider> Logger, 
+			IServiceInvokerProvider ServiceInvokerProvider,
+			SF.Sys.NetworkService.Metadata.Library NetLibrary
+			)
 		{
 			this.ServiceProvider = ServiceProvider;
 			this.Logger = Logger;
-			this.ServiceInvoker = ServiceInvoker;
+			this.NetLibrary = NetLibrary;
+			this.ServiceInvokerProvider = ServiceInvokerProvider;
 		}
 
 		public Task<object> Load(IContent content, string contentConfig)
@@ -109,19 +117,16 @@ namespace SF.Common.FrontEndContents.Runtime
 				sid = argSid.ToString().ToInt64();
 
 			var arg = argToken.ToString();
-			var re=ServiceInvoker.Invoke(
+
+			var (svcType, mthd) = NetLibrary.FindMethod(svc, method);
+			if (svcType == null || mthd == null)
+				throw new PublicArgumentException($"找不到服务{svc}或方法{method}");
+
+			var re=await ServiceInvokerProvider.Resolve(svcType.GetSysType(), mthd.GetSysMethod()).InvokeAsync(
 				ServiceProvider,
-				sid,
-				svc,
-				method,
 				arg
 				);
-
-			if (re is Task t)
-			{
-				await t;
-				return ExtractTaskResult(t);
-			}
+			
 			//var cfgs = Json.Parse<Dictionary<string, string>>(contentConfig);
 			//if (!string.IsNullOrWhiteSpace(blockConfig))
 			//{

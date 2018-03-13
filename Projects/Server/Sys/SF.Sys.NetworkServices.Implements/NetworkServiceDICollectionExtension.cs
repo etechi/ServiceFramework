@@ -88,7 +88,6 @@ namespace SF.Sys.Services
 				return new ServiceTypeCollection(ServiceTypes);
 			});
 
-			sc.AddSingleton<IServiceInvoker, ServiceInvoker>();
 			return sc;
 		}
 	}

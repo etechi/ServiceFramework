@@ -53,7 +53,7 @@ namespace SF.Sys.Metadata
 
 		public virtual Models.Library Build()
 		{
-			return new Models.Library { Types = TypeCollection.GetTypes().ToArray() };
+			return new Models.Library( TypeCollection.GetTypes().ToArray() );
 		}
 		protected virtual Models.Parameter[] GenerateMethodParameters(MethodInfo method)
 		{

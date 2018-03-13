@@ -131,18 +131,10 @@ namespace SF.Sys.Services
 					argArgs
 					).Compile();
 			}
-			public Invoker(IDynamicTypeBuilder DynamicTypeBuilder,IServiceDeclaration decl,string MethodName)
+			public Invoker(IDynamicTypeBuilder DynamicTypeBuilder,IServiceDeclaration decl,MethodInfo method)
 			{
-				var methods = decl.ServiceType
-					.AllPublicInstanceMethods()
-					.Where(m => m.Name == MethodName)
-					.ToArray();
-				if (methods.Length==0)
-					throw new PublicArgumentException($"{decl.ServiceName}服务不支持指定的方法:" + Method);
-				if(methods.Length>1)
-					throw new PublicArgumentException($"{decl.ServiceName}服务支持多个名为{Method}的方法");
 				ServiceDeclaration = decl;
-				Method = methods[0];
+				Method = method;
 
 				LazyFuncByStrArgument = new Lazy<Func<object, string, object>>(() => CompileStrArg(DynamicTypeBuilder));
 				LazyFuncByObjArguments= new Lazy<Func<object, object[], object>>(() => CompileObjArg());
@@ -158,44 +150,27 @@ namespace SF.Sys.Services
 				return LazyFuncByObjArguments.Value.Invoke(svc, Arguments);
 			}
 		}
-		ConcurrentDictionary<(string,string), Lazy<Invoker>> Invokers { get; } 
-			= new ConcurrentDictionary<(string, string), Lazy<Invoker>>();
-
-		ConcurrentDictionary<string, string> ServiceNameMap { get; }
-			= new ConcurrentDictionary<string, string>();
+		ConcurrentDictionary<(Type Service, MethodInfo Method), Lazy<Invoker>> Invokers { get; } 
+			= new ConcurrentDictionary<(Type Service, MethodInfo Method), Lazy<Invoker>>();
 
 		public ServiceInvokerProvider(IServiceMetadata ServiceMetadata, IDynamicTypeBuilder DynamicTypeBuilder)
 		{
 			this.ServiceMetadata = ServiceMetadata;
 			this.DynamicTypeBuilder = DynamicTypeBuilder;
 		}
-		IEnumerable<string> GetServiceNames(string Name)
-		{
-			yield return Name;
-			yield return "I" + Name;
-			yield return "I" + Name + "Service";
-		}
-
-		public IServiceInvoker Resolve(string Service, string Method)
+		
+		public IServiceInvoker Resolve(Type Service, MethodInfo Method)
 		{
 			IServiceDeclaration decl=null;
-			if(!ServiceNameMap.TryGetValue(Service,out var svcName))
-			{
-				decl = GetServiceNames(Service).Select(
-					s => ServiceMetadata.ServicesByTypeName.Get(s)
-					).Where(d => d != null).FirstOrDefault();
-				if (decl == null)
-					throw new PublicArgumentException("找不到指定的服务:" + Service);
-				svcName = ServiceNameMap.GetOrAdd(Service, decl.ServiceType.GetFullName());
-			}
-			var invokerKey = (svcName, Method);
+			
+			var invokerKey = (Service, Method);
 			if (!Invokers.TryGetValue(invokerKey,out var invoker))
 			{
 				if (decl == null)
 				{
-					decl = ServiceMetadata.ServicesByTypeName.Get(svcName);
+					decl = ServiceMetadata.Services.Get(Service);
 					if (decl == null)
-						throw new PublicArgumentException("找不到指定的服务:" + svcName);
+						throw new PublicArgumentException("找不到指定的服务:" + Service);
 				}
 
 				invoker = Invokers.GetOrAdd(

@@ -30,7 +30,7 @@ namespace SF.Sys.Services
 	}
 	public interface IServiceInvokerProvider
 	{
-		IServiceInvoker Resolve(string Service, string Method);
+		IServiceInvoker Resolve(Type Service, MethodInfo Method);
 	}
 	public static class ServiceInvokerExtension
 	{

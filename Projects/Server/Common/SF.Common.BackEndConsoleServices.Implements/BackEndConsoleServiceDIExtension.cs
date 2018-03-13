@@ -53,7 +53,7 @@ namespace SF.Sys.Services
 				>(
 				TablePrefix ?? "BackEndAdmin"
 				);
-
+			sc.AddScoped<IBackEndConsoleExportService, BackEndConsoleExportService>();
 			sc.AddSingleton<IBackEndConsoleBuilderCollection, BackEndConsoleBuilderCollection>();
 			sc.AddManagedScoped<IBackEndAdminConsoleService, ConsoleService>();
 			sc.EntityServices(

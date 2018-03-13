@@ -14,16 +14,37 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace SF.Sys.BackEndConsole.Front
 {
-	[NetworkService]
-	public interface IQueryExportService
+	public enum ExportMode
 	{
+		/// <summary>
+		/// 表格方式
+		/// </summary>
+		Table
+	}
+	
+	[NetworkService]
+	[AnonymousAllowed]
+	public interface IBackEndConsoleExportService
+	{
+		Task<HttpResponseMessage> Export(
+			ExportMode Mode,
+			string Service,
+			string Method,
+			string Format,
+			string Argument,
+			string Title,
+			string Token
+		);
 	}
 
 }

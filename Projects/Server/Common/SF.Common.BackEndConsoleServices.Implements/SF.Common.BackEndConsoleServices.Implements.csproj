@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\ServiceFramework\Projects\Server\Utils\SF.Utils.TableExports\SF.Utils.TableExports.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.BackEndConsole\SF.Sys.BackEndConsole.csproj" />
     <ProjectReference Include="..\SF.Common.BackEndConsoleServices\SF.Common.BackEndConsoleServices.csproj" />
   </ItemGroup>
