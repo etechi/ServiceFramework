@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\KDL\Backend\srcs\SF.Server\Sys\SF.Sys.Comments\SF.Sys.Comments.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Comments\SF.Sys.Comments.csproj" />
   </ItemGroup>
 
 </Project>

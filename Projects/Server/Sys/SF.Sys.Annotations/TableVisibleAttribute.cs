@@ -18,7 +18,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace SF.Sys.Annotations
-{
+{  
+	/// <summary>
+	/// 指定属性需要在列表视图中显示
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class TableVisibleAttribute : Attribute
 	{

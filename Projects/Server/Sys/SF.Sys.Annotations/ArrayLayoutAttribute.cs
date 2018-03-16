@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 指定数组布局模式是纵向布局还是横向布局，默认为纵向
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class ArrayLayoutAttribute : Attribute
 	{

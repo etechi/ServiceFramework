@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 未使用
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public class EntityRelatedAttribute : Attribute
 	{

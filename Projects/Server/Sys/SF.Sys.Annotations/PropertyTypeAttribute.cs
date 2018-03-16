@@ -19,11 +19,16 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+
 	public enum PropertyTypeSourceType
 	{
 		Internal,
 		External
 	}
+
+	/// <summary>
+	/// 指定属性实体类型字段
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 	public class PropertyTypeAttribute : Attribute
 	{

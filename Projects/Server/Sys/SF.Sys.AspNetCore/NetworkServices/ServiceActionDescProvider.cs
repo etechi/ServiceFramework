@@ -112,9 +112,13 @@ namespace SF.Sys.AspNetCore.NetworkServices
 				FilterDescriptors = new List<FilterDescriptor>
 				{
 					new FilterDescriptor(
-						new NetworkServiceResultFilter(LogService),
+						new NetworkServiceResultFilter(),
 						0
 						),
+					//new FilterDescriptor(
+					//	new NetworkServiceErrorFilter(),
+					//	0
+					//	),
 					new FilterDescriptor(
 						new TokenAuthorizationFilter(),
 						0

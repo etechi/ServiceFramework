@@ -17,6 +17,9 @@ using System;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 指定当属性为默认值时(一般为空或0)，不更新数据库，如密码字段
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class SkipWhenDefaultAttribute:Attribute
 	{	

@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 未使用
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 	public class IsValueOfAttribute : Attribute
 	{

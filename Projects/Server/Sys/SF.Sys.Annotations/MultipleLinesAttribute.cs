@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 指定属性为多行文本
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class MultipleLinesAttribute : Attribute
 	{

@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace SF.Sys.Annotations
-{
+{   
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method)]
 	public class HiddenAttribute : Attribute
 	{

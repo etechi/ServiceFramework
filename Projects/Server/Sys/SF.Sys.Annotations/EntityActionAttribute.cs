@@ -38,6 +38,9 @@ namespace SF.Sys.Annotations
 		/// </summary>
 		Query
 	}
+	/// <summary>
+	/// 指定实体方法
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Method)]
 	public class EntityActionAttribute : Attribute
 	{

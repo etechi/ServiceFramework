@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 指定集合属性使用树形方式显示
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class TreeNodesAttribute : Attribute
 	{

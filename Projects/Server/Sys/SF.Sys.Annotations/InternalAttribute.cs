@@ -17,7 +17,10 @@ using System;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Annotations
-{
+{   
+	/// <summary>
+	/// 指定属性为内部使用，不向普通用户公开
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class InternalAttribute:Attribute
 	{	

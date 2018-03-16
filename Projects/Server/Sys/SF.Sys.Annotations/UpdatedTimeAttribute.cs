@@ -17,6 +17,9 @@ using System;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 指定属性更新时间
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class UpdatedTimeAttribute:Attribute
 	{	

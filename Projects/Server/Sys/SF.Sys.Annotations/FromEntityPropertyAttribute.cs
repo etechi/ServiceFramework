@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 指定当前属性来源为指定实体标识字段所指属性的特定属性
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
 	public class FromEntityPropertyAttribute : Attribute
 	{

@@ -18,7 +18,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace SF.Sys.Annotations
-{
+{  
+	/// <summary>
+	/// 指定属性为密码类型
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class PasswordAttribute : MediaAttribute
 	{

@@ -29,6 +29,10 @@ namespace SF.Sys.Logging
 			=> logger.Write(logLevel, EventId.None, exception, format,args);
 		public static void Write<TState>(this ILogger logger, LogLevel logLevel, TState state, Exception exception, Func<TState, Exception, string> formatter)
 			=> logger.Write(logLevel, EventId.None, state, exception, formatter);
+		public static void Write(this ILogger logger, LogLevel logLevel, Exception exception, Func<string> formatter)
+			=> logger.Write(logLevel, EventId.None, 0, exception, (state,err)=>formatter());
+		public static void Write(this ILogger logger, LogLevel logLevel, Func<string> formatter)
+			=> logger.Write(logLevel, EventId.None, 0, null, (state, err) => formatter());
 
 		[Conditional("DEBUG")]
 		public static void Debug(this ILogger Logger, string Message)
@@ -50,6 +54,17 @@ namespace SF.Sys.Logging
 		{
 			Logger.Write( LogLevel.Debug, exception, Format, args);
 		}
+		[Conditional("DEBUG")]
+		public static void Debug(this ILogger Logger, Exception exception, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Debug, exception, Message);
+		}
+		[Conditional("DEBUG")]
+		public static void Debug(this ILogger Logger, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Debug,  Message);
+		}
+
 
 		public static void Trace(this ILogger Logger, string Message)
 		{
@@ -67,6 +82,15 @@ namespace SF.Sys.Logging
 		{
 			Logger.Write( LogLevel.Trace, exception, Format, args);
 		}
+		public static void Trace(this ILogger Logger, Exception exception, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Trace, exception, Message);
+		}
+		public static void Trace(this ILogger Logger, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Trace, Message);
+		}
+
 		public static void Info(this ILogger Logger, string Message)
 		{
 			Logger.Write( LogLevel.Info, null, Message);
@@ -83,6 +107,15 @@ namespace SF.Sys.Logging
 		{
 			Logger.Write( LogLevel.Info, exception, Format, args);
 		}
+		public static void Info(this ILogger Logger, Exception exception, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Info, exception, Message);
+		}
+		public static void Info(this ILogger Logger, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Info, Message);
+		}
+
 		public static void Warn(this ILogger Logger, string Message)
 		{
 			Logger.Write( LogLevel.Warn, null, Message);
@@ -99,6 +132,15 @@ namespace SF.Sys.Logging
 		{
 			Logger.Write( LogLevel.Warn, exception, Format, args);
 		}
+		public static void Warn(this ILogger Logger, Exception exception, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Warn, exception, Message);
+		}
+		public static void Warn(this ILogger Logger, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Warn, Message);
+		}
+
 
 		public static void Critical(this ILogger Logger, string Message)
 		{
@@ -116,6 +158,15 @@ namespace SF.Sys.Logging
 		{
 			Logger.Write( LogLevel.Critical, exception, Format, args);
 		}
+		public static void Critical(this ILogger Logger, Exception exception, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Critical, exception, Message);
+		}
+		public static void Critical(this ILogger Logger, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Critical, Message);
+		}
+
 
 		public static void Error(this ILogger Logger, string Message)
 		{
@@ -133,5 +184,15 @@ namespace SF.Sys.Logging
 		{
 			Logger.Write( LogLevel.Error, exception, Format, args);
 		}
+		public static void Error(this ILogger Logger, Exception exception, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Error, exception, Message);
+		}
+		public static void Error(this ILogger Logger, Func<string> Message)
+		{
+			Logger.Write(LogLevel.Error, Message);
+		}
+
+
 	}
 }

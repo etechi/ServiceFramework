@@ -25,13 +25,16 @@ using System.Text;
 
 namespace SF.Sys.AspNetCore.NetworkServices
 {
+
+	//class NetworkServiceErrorFilter: IExceptionFilter
+	//{
+	//	public void OnException(ExceptionContext context)
+	//	{
+	//		context.HttpContext.Items[HttpContextResponseItemKey.Error] = context.Exception;
+	//	}
+	//}
 	class NetworkServiceResultFilter : IResultFilter
 	{
-		ILogger Logger { get; }
-		public NetworkServiceResultFilter(ILogService LogService)
-		{
-			this.Logger = LogService.GetLogger("api");
-		}
 		public void OnResultExecuted(ResultExecutedContext context)
 		{
 		}
@@ -44,7 +47,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 					ContentType = sctn.Headers.ContentType.MediaType,
 				};
 
-			if(ctn is System.Net.Http.StreamContent ssctn)
+			if (ctn is System.Net.Http.StreamContent ssctn)
 				return new FileStreamResult(
 					ssctn.ReadAsStreamAsync().Result,
 					new MediaTypeHeaderValue(
@@ -55,7 +58,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 					}
 					);
 
-			if(ctn is HttpResponse.FileContent fctn)
+			if (ctn is HttpResponse.FileContent fctn)
 				return new PhysicalFileResult(
 					fctn.FilePath,
 					new MediaTypeHeaderValue(
@@ -115,19 +118,19 @@ namespace SF.Sys.AspNetCore.NetworkServices
 					}
 					);
 		}
-		void ProcessHttpResponseMessage(ResultExecutingContext context,HttpResponseMessage res)
+		void ProcessHttpResponseMessage(ResultExecutingContext context, HttpResponseMessage res)
 		{
 			var cres = context.HttpContext.Response;
 			cres.StatusCode = (int)res.StatusCode;
 			foreach (var h in res.Headers)
 				cres.Headers.Add(h.Key, h.Value.ToArray());
-			if(res.Content!=null)
-				context.Result=MapHttpContent(res.Content);
+			if (res.Content != null)
+				context.Result = MapHttpContent(res.Content);
 		}
 
 		public void OnResultExecuting(ResultExecutingContext context)
 		{
-			string logMsg = null;			
+			string logMsg = null;
 			var or = context.Result as ObjectResult;
 			if (or != null)
 			{
@@ -151,16 +154,8 @@ namespace SF.Sys.AspNetCore.NetworkServices
 					logMsg = "Json:" + Json.Stringify(or.Value);
 			}
 			var ctx = context.HttpContext;
-			var req = ctx.Request;
-			var reqBody = ctx.Items["sf-req-body"] as byte[];
-			Logger.Info(
-				"{0} {1} {2} 请求:{3} 应答:{4}",
-				ctx.User.GetUserIdent(),
-				req.Method,
-				req.Uri(),
-				reqBody==null?"":Encoding.UTF8.GetString(reqBody),
-				logMsg
-				);
+			ctx.Items[HttpContextResponseItemKey.Result] = logMsg;
 		}
+		
 	}
 }

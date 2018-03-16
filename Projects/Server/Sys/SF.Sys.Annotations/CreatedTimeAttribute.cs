@@ -18,6 +18,9 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 标识属性为创建时间，在新建时自动设置为当前时间
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class CreatedTimeAttribute:Attribute
 	{	

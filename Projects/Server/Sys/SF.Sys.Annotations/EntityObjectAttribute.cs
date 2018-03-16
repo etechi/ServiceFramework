@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 标识类型为实体类型
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Class)]
 	public class EntityObjectAttribute : Attribute
 	{

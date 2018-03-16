@@ -18,7 +18,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace SF.Sys.Annotations
-{
+{  
+	/// <summary>
+	/// 指定属性可选
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
 	public class OptionalAttribute : Attribute
 	{

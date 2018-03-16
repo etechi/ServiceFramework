@@ -18,7 +18,11 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace SF.Sys.Annotations
-{
+{   
+	/// <summary>
+	/// 指定属性为图片
+	/// </summary>
+
 	[AttributeUsage(AttributeTargets.Property)]
 	public class ImageAttribute : MediaAttribute
 	{

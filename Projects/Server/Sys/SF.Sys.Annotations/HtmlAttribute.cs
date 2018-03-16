@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 指定属性存储数据为Html
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class HtmlAttribute : Attribute
 	{

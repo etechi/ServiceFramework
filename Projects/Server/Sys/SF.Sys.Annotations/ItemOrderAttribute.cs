@@ -17,6 +17,9 @@ using System;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 指定属性为列表序号
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class ItemOrderAttribute : Attribute
 	{	

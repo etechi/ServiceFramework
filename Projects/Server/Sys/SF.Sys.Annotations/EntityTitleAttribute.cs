@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 标识属性为实体标题
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
 	public class EntityTitleAttribute : Attribute
 	{

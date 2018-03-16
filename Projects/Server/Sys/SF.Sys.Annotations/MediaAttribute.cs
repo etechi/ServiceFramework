@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 媒体类型属性基类
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class MediaAttribute : Attribute
 	{

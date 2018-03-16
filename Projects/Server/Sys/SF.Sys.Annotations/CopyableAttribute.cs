@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 设置属性是否可以复制，显示复制按钮
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class CopyableAttribute : Attribute
 	{

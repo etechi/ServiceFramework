@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 指定属性为时间类型
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class TimeSpanAttribute : Attribute
 	{

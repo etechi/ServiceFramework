@@ -18,7 +18,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace SF.Sys.Annotations
-{
+{ 
+	/// <summary>
+	/// 指定属性值为Json对象，序列化后存入数据库
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class JsonDataAttribute : Attribute
 	{

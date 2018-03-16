@@ -20,7 +20,7 @@ using System.Text;
 namespace SF.Sys.Annotations
 {
 	/// <summary>
-	/// 不能编辑，创建时可输入
+	/// 指定属性不能编辑，创建时可输入
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
 	public class UneditableAttribute : Attribute

@@ -18,7 +18,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace SF.Sys.Annotations
-{
+{  
+	/// <summary>
+	/// 指定属性在详细页面的布局次序
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class LayoutAttribute : Attribute
 	{

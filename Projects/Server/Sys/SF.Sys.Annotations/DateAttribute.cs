@@ -19,6 +19,9 @@ using System.Text;
 
 namespace SF.Sys.Annotations
 {
+	/// <summary>
+	/// 标识属性为日期格式，可以指定是否为时间段的结尾
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class DateAttribute : Attribute
 	{

@@ -13,23 +13,15 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace SF.Sys.Annotations
+namespace SF.Sys.AspNetCore
 {
-	/// <summary>
-	/// 设置分类
-	/// </summary>
-	[AttributeUsage(AttributeTargets.All)]
-	public class CategoryAttribute : Attribute
+	public  class HttpContextResponseItemKey
 	{
-		public string[] Names { get; }
-		public CategoryAttribute(params string[] Names)
-		{
-			this.Names = Names;
-		}
+		HttpContextResponseItemKey() { }
+		public static object Result { get; } = new HttpContextResponseItemKey();
+		public static object Error { get; } = new HttpContextResponseItemKey();
 	}
-	
 }

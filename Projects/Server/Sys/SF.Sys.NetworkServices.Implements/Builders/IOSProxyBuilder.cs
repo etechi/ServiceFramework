@@ -201,7 +201,7 @@ namespace SF.Sys.NetworkService
 				case "object":
 				case "unknown": return (null, arg);
 				default:
-					return (null, $"[[{to_ios_type(type, false)} alloc] initWithDictionary:(NSDictionary*){arg} error:nil]");
+					return (null, $"[{to_ios_type(type, false)} mj_objectWithKeyValues:(NSDictionary *){arg}]");
 			}
 		}
 		static string EscName(string name)
@@ -377,7 +377,7 @@ namespace SF.Sys.NetworkService
 						sb.AppendLine($" : JSONModel");
 					}
 
-				
+
 
 					foreach (var p in props)
 					{
@@ -386,7 +386,7 @@ namespace SF.Sys.NetworkService
 						sb.AppendLine($"\t* {p.prop.Description}");
 						sb.AppendLine($"\t* 类型:{p.prop.Type}");
 						sb.AppendLine($"\t*/");
-						sb.AppendLine($"\t@property ({getPropType(p.prop.Type)},nonatomic) {to_ios_type(p.prop.Type,true)} {p.prop.Name};");
+						sb.AppendLine($"\t@property ({getPropType(p.prop.Type)},nonatomic) {to_ios_type(p.prop.Type, true)} {p.prop.Name};");
 					}
 					sb.AppendLine("@end");
 				});
@@ -402,6 +402,17 @@ namespace SF.Sys.NetworkService
 {{
 	return YES;
 }}
+{(props.Any(p=>p.prop.Type.Contains('['))?$@"
++ (NSDictionary *)objectClassInArray
+{{
+    // 数组名 : 模型名
+    return @{{
+		{props
+			.Where(p=>p.prop.Type.Contains('['))
+			.Select(p=> $"@\"{p.prop.Name}\": @\"{to_ios_type(p.prop.Type.Split2('[').Item1,false,true,true)}\"").Join(",")}
+	}};
+}}":""
+)}
 @end
 ");
 			});

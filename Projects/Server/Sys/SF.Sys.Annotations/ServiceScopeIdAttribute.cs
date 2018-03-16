@@ -16,7 +16,10 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System;
 
 namespace SF.Sys.Annotations
-{
+{   
+	/// <summary>
+	/// 服务区域，未使用
+	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class ServiceScopeIdAttribute:Attribute
 	{	

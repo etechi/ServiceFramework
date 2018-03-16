@@ -39,7 +39,12 @@ namespace SF.Sys.Data
 			DataContextFlag Flags=DataContextFlag.None
 			)
 		{
-			return scope.Use(Action,ctx => Callback(ctx).ContinueWith(FuncTaskCompleted),Flags);
+			return scope.Use(Action,async ctx =>
+				{
+					await Callback(ctx);
+					return true;
+				},
+				Flags);
 		}
 
 		public static Task<T> Retry<T>(
