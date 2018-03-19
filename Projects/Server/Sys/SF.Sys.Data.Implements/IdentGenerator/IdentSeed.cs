@@ -25,7 +25,7 @@ namespace SF.Sys.Data.IdentGenerator.DataModels
 		/// 类型
 		/// </summary>
 		[Key]
-		[MaxLength(100)]
+		[MaxLength(200)]
 		public string Type { get; set; }
 
 

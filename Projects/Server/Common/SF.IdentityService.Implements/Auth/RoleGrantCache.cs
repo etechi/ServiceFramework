@@ -35,8 +35,8 @@ namespace SF.Auth.IdentityServices
 		Dictionary<(string,string), HashSet<string>> _GrantRoles;
 		public RoleGrantCache(
 			IScoped<IDataScope> DataScope,
-			IEventSubscriber<EntityChanged<DataModels.DataRole>> OnRoleModified,
-			IEventSubscriber<EntityChanged<DataModels.DataGrant>> OnGrantModified
+			IEventSubscriber<EntityChanged<ObjectKey<string>,DataModels.DataRole>> OnRoleModified,
+			IEventSubscriber<EntityChanged<ObjectKey<long>, DataModels.DataGrant>> OnGrantModified
 			)
 		{
 			OnRoleModified.Wait(e =>

@@ -13,43 +13,43 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Data;
 using SF.Sys.Events;
-using SF.Sys.Entities;
+using SF.Sys.TaskServices;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
-using SF.Sys.ActionPlans.Runtime;
-using SF.Sys.ActionPlans.DataModels;
 
 namespace SF.Sys.Services
 {
-	public static class ActionPlanDIServiceCollectionExtension
+	public static class EventHandlerDIServiceCollectionExtension
 	{
-		public static IServiceCollection AddActionPlans(this IServiceCollection sc,string TablePrefix=null)
+		public static IServiceCollection AddEventHandler<TEvent>(
+			this IServiceCollection sc,
+			string Name,
+			Func<IServiceProvider, IEvent<TEvent>, Task> Callback,
+			EventDeliveryPolicy EventDeliveryPolicy=EventDeliveryPolicy.SameTranscation
+			)
 		{
-			sc.AddDataModules<
-				   SF.Sys.ActionPlans.DataModels.ActionPlan,
-				   SF.Sys.ActionPlans.DataModels.DataActionPlanAction,
-				   SF.Sys.ActionPlans.DataModels.ActionPlanExecutor
-				   >(
-				   TablePrefix ?? "Sys"
-				   );
-			sc.AddEntityLocalCache(
-				async (IDataScope scope, long Id) =>
+			return sc.AddTaskService(
+				Name,
+				null,
+				(sp, state, ct) =>
 				{
-					var re=await RuntimePlan.Load(scope, Id);
-					return re;
-				},
-				(IEventSubscriber<EntityChanged<ObjectKey<long>,ActionPlan>> OnPlanModified, IEntityCacheRemover<long> remover) =>
-				{
-					OnPlanModified.Wait(e =>
-					{
-						remover.Remove(e.Payload.EntityId.Id);
-						return Task.CompletedTask;
-					});
+					var ssf = sp.Resolve<IServiceScopeFactory>();
+					return sp.Resolve<IEventSubscribeService>()
+						.AddEventHandler<TEvent>(
+						e =>
+							ssf.WithScope(
+								isp =>
+									Callback(isp, e)
+							)
+						,
+						EventDeliveryPolicy.SameTranscation,
+						ct
+						);
 				}
-			);
-			return sc;
+				);
 		}
-		
 	}
 }
+

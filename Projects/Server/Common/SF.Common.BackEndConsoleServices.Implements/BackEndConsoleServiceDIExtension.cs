@@ -116,7 +116,7 @@ namespace SF.Sys.Services
 					};
 				},
 				(IServiceProvider isp,
-				IEventSubscriber<EntityChanged<DataConsole>> OnConsoleModified, 
+				IEventSubscriber<EntityChanged<ObjectKey<long>,DataConsole>> OnConsoleModified, 
 				IEntityCacheRemover<string> remover
 				) =>
 				{
@@ -126,7 +126,7 @@ namespace SF.Sys.Services
 						var re = await dss.Use(ds => 
 							ds.Use("查询控制台ID", ctx =>
 								ctx.Queryable<DataConsole>()
-									.Where(c => c.Id == e.Id)
+									.Where(c => c.Id == e.Payload.EntityId.Id)
 									.Select(c => c.Ident)
 									.SingleOrDefaultAsync()
 							)

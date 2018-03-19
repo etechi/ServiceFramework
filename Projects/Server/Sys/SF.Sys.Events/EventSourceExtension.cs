@@ -24,22 +24,31 @@ namespace SF.Sys.Events
 	public static class TypeTopic<TPayload>
 	{
 		public static string Name { get; }
-		static string GetTypeTopic(Type type)
+		
+		static void GetTypeTopic(StringBuilder sb,Type type,bool top)
 		{
-			var topic = type.Namespace;
+			sb.Append(type.Namespace);
+			sb.Append(top ? '/' : '.');
 			if (type.IsGenericType)
 			{
-				topic += "/" + type.GetGenericTypeDefinition().Name;
+				sb.Append(type.GetGenericTypeDefinition().Name);
+				sb.Append('<');
 				foreach (var d in type.GetGenericArguments())
-					topic += "/" + GetTypeTopic(d);
+				{
+					GetTypeTopic(sb, d, false);
+					sb.Append(',');
+				}
+				sb.Length--;
+				sb.Append('>');
 			}
 			else
-				topic += "/" + type.Name;
-			return topic;
+				sb.Append(type.Name);
 		}
 		static TypeTopic()
 		{
-			Name = GetTypeTopic(typeof(TPayload));
+			var sb = new StringBuilder();
+			GetTypeTopic(sb,typeof(TPayload),true);
+			Name = sb.ToString();
 		}
 	}
 	public static class EventSourceExtension

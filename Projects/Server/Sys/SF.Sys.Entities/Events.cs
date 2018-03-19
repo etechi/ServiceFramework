@@ -18,10 +18,12 @@ using System;
 
 namespace SF.Sys.Entities
 {
-	public class EntityChanged<TEntity> 
+	public class EntityChanged<TKey,TEntity> 
 	{
+		public Type KeyType => typeof(TKey);
 		public Type EventType => typeof(TEntity);
-		public string Target { get; set; }
+		public string EntityType { get; set; }
+		public TKey EntityId { get; set; }
 		public Exception Exception { get; set; }
 		public long? ServiceId { get; set; }
 

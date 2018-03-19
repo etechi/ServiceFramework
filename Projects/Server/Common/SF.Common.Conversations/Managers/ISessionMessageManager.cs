@@ -24,6 +24,6 @@ namespace SF.Common.Conversations.Managers
 		IEntitySource<ObjectKey<long>, SessionMessage, SessionMessageQueryArgument>,
 		IEntityManager<ObjectKey<long>, SessionMessage>
 	{
-
+		Task<SessionMessageDetail> GetMessageDetail(long Id);
 	}
 }

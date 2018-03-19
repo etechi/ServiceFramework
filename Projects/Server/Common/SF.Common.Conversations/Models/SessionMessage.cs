@@ -62,4 +62,15 @@ namespace SF.Common.Conversations.Models
 		public string PosterName { get; set; }
 
 	}
+
+	public class SessionMessageDetail : SessionMessage
+	{
+		public long? SessionOwnerId { get; set; }
+
+		public string SessionBizType { get; set; }
+		public long SessionBizIdent { get; set; }
+
+		public string MemberBizType { get; set; }
+		public string MemberBizIdent { get; set; }
+	}
 }

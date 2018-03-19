@@ -527,9 +527,10 @@ namespace SF.Sys.Entities
 		#region Events
 
 
-		public static void PostChangedEvents<TEntity>(
+		public static void PostChangedEvents<TKey,TEntity>(
 			this IEntityServiceContext Manager,
 			IDataContext DataContext,
+			TKey Id,
 			TEntity Entity,
 			DataActionType DataActionType,
 			IEntityMetadata meta=null
@@ -553,11 +554,12 @@ namespace SF.Sys.Entities
 					{
 						case TransactionCommitNotifyType.BeforeCommit:
 							ee=await Manager.EventEmitService.Create(
-								new EntityChanged<TEntity>(Entity)
+								new EntityChanged<TKey,TEntity>(Entity)
 								{
 									ServiceId = Manager.ServiceInstanceDescroptor?.InstanceId,
 									//Source=meta.Ident,
-									Target= Entity<TEntity>.GetStrIdent(meta.Ident, Entity),
+									EntityType=meta.Ident,
+									EntityId= Id,//Entity<TEntity>.GetStrIdent(meta.Ident, Entity),
 									Time=Manager.Now,
 									Exception = e,
 									Action= DataActionType
@@ -691,9 +693,10 @@ namespace SF.Sys.Entities
 					if (UpdateModel != null)
 						await UpdateModel(Context);
 
-					ServiceContext.PostChangedEvents<TEditable>(ctx,Context.Editable,DataActionType.Create);
+					var id = Entity<TModel>.GetKey<TKey>(Context.Model);
+					ServiceContext.PostChangedEvents<TKey,TEditable>(ctx,id,Context.Editable,DataActionType.Create);
 					await ctx.SaveChangesAsync();
-					return Entity<TModel>.GetKey<TKey>(Context.Model);
+					return id;
 				},
 				UseLightContext?DataContextFlag.LightMode:DataContextFlag.None
 				);
@@ -796,11 +799,11 @@ namespace SF.Sys.Entities
 
 					if (UpdateModel != null)
 						await UpdateModel(Context);
-
-					ServiceContext.PostChangedEvents<TEditable>(ctx,Context.Editable, DataActionType.Create);
+					var id = Entity<TModel>.GetKey<TKey>(Context.Model);
+					ServiceContext.PostChangedEvents<TKey,TEditable>(ctx,id,Context.Editable, DataActionType.Create);
 					if(AutoSaveChange)
 						await ctx.SaveChangesAsync();
-					return Entity<TModel>.GetKey<TKey>(Context.Model);
+					return id;
 				},
 				AutoSaveChange?DataContextFlag.None:DataContextFlag.LightMode
 				);
@@ -864,7 +867,12 @@ namespace SF.Sys.Entities
 
 					ctx.Update(Context.Model);
 
-					ServiceContext.PostChangedEvents<TEditable>(ctx,Context.Editable, DataActionType.Update);
+					ServiceContext.PostChangedEvents<TKey,TEditable>(
+						ctx, 
+						Entity<TModel>.GetKey<TKey>(Context.Model), 
+						Context.Editable, 
+						DataActionType.Update
+						);
 
 					await ctx.SaveChangesAsync();
 					return true;
@@ -914,7 +922,12 @@ namespace SF.Sys.Entities
 						await RemoveModel(Context);
 					ctx.Remove(Context.Model);
 
-					ServiceContext.PostChangedEvents<TEditable>(ctx,Context.Editable, DataActionType.Delete);
+					ServiceContext.PostChangedEvents<TKey,TEditable>(
+						ctx,
+						Entity<TModel>.GetKey<TKey>(Context.Model),
+						Context.Editable, 
+						DataActionType.Delete
+						);
 
 					await ctx.SaveChangesAsync();
 					return true;

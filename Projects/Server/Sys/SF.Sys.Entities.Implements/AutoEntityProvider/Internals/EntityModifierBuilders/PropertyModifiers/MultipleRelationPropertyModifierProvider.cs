@@ -24,6 +24,8 @@ using SF.Sys.Reflection;
 using SF.Sys.Linq.Expressions;
 using SF.Sys.Annotations;
 using SF.Sys.Data;
+using System.ComponentModel.DataAnnotations;
+using SF.Sys.Linq;
 
 namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 {
@@ -36,7 +38,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 		{
 			this.EntityModifierCache = EntityModifierCache;
 		}
-		class EntityPropertyModifier<TParentKey, TEntity,TModel, TChildEntity,TChildModel> : 
+		class EntityPropertyModifier<TParentKey, TEntity,TModel,TChildKey, TChildEntity,TChildModel> : 
 			IAsyncEntityPropertyModifier<IEnumerable<TChildEntity>, ICollection<TChildModel>>
 			where TChildModel:class,new()
 			where TModel:class
@@ -113,7 +115,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 
 			public class Merger : IEntityChildMerger<TChildEntity, TChildModel> 
 			{
-				public EntityPropertyModifier<TParentKey, TEntity, TModel, TChildEntity, TChildModel> Modifier { get; set; }
+				public EntityPropertyModifier<TParentKey, TEntity, TModel, TChildKey, TChildEntity, TChildModel> Modifier { get; set; }
 				public IEntityServiceContext ServiceContext{ get; set; }
 				public IEntityModifyContext ModifyContext{get; set; }
 				public TParentKey ParentKey { get; set; }
@@ -148,7 +150,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 
 							Modifier.FuncSetParentKey(ctx.Model, ParentKey);
 							Modifier.FuncSetItemOrder?.Invoke(ctx.Model, e.i);
-							ServiceContext.PostChangedEvents(ModifyContext.DataContext, ctx.Editable, DataActionType.Create, childMeta);
+							ServiceContext.PostChangedEvents(
+								ModifyContext.DataContext, 
+								Entity<TChildModel>.GetKey<TChildKey>(ctx.Model),
+								ctx.Editable, 
+								DataActionType.Create, 
+								childMeta
+								);
 							return ctx.Model;
 						},
 						async (d, e) =>
@@ -160,7 +168,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 								await ModifyHandler(ctx, ModifyAction.Update);
 
 							await update.Execute(ServiceContext, ctx);
-							ServiceContext.PostChangedEvents(ModifyContext.DataContext, ctx.Editable, DataActionType.Update, childMeta);
+							ServiceContext.PostChangedEvents(
+								ModifyContext.DataContext,
+								Entity<TChildModel>.GetKey<TChildKey>(ctx.Model), 
+								ctx.Editable, 
+								DataActionType.Update, 
+								childMeta
+								);
 						},
 						async d =>
 						{
@@ -170,7 +184,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 								await ModifyHandler(ctx, ModifyAction.Update);
 
 							await remove.Execute(ServiceContext, ctx);
-							ServiceContext.PostChangedEvents(ModifyContext.DataContext, ctx.Editable, DataActionType.Delete, childMeta);
+							ServiceContext.PostChangedEvents(
+								ModifyContext.DataContext,
+								Entity<TChildModel>.GetKey<TChildKey>(ctx.Model),
+								ctx.Editable, 
+								DataActionType.Delete, 
+								childMeta
+								);
 						}
 						);
 					return OrgValue;
@@ -261,11 +281,22 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					);
 			}
 
+			var childKeyProps = (from p in childModelType.AllPublicInstanceProperties().Select((prop, idx) => (prop, idx))
+								 where p.prop.IsDefined(typeof(KeyAttribute))
+								 let col = p.prop.GetCustomAttribute<ColumnAttribute>()?.Order ?? p.idx
+								 orderby col
+								 select p.prop
+							   ).ToArray();
+			if (childKeyProps.Length < 1 && childKeyProps.Length > 4)
+				throw new NotSupportedException($"子项主键个数必须是1-3个，类型{childModelType.FullName}的主键为:{childKeyProps.Select(p => p.PropertyType.ShortName() + " " + p.Name).Join(",")}");
+			var childKeyType = ObjectKey.CreateKeyType(childKeyProps.Select(p => p.PropertyType).ToArray());
+
 			return (IEntityPropertyModifier)Activator.CreateInstance(
-				typeof(EntityPropertyModifier<,,,,>).MakeGenericType(
+				typeof(EntityPropertyModifier<,,,,,>).MakeGenericType(
 					ForeignKeyProp.PropertyType,
 					EntityType,
 					DataModelType,
+					childKeyType,
 					childEntityType,
 					childModelType
 					),

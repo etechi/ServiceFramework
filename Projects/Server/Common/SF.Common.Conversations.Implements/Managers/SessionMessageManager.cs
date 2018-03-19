@@ -10,6 +10,7 @@ using SF.Sys.Entities;
 
 namespace SF.Common.Conversations.Managers
 {
+
 	public class SessionMessageManager :
 		AutoModifiableEntityManager<
 			ObjectKey<long>,
@@ -34,6 +35,32 @@ namespace SF.Common.Conversations.Managers
 			this.SessionMemberStatusManager = SessionMemberStatusManager;
 			this.SessionStatusManager = SessionStatusManager;
 
+		}
+
+		public Task<SessionMessageDetail> GetMessageDetail(long Id)
+		{
+			return DataScope.Use("查找消息详情", ctx =>
+				 (from m in ctx.Queryable<DataModels.DataSessionMessage>()
+				  where m.Id == Id
+				  select new SessionMessageDetail
+				  {
+					  Id = m.Id,
+					  Argument=m.Argument,
+					  MemberBizIdent=null,
+					  MemberBizType=null,
+					  PosterId=m.PosterId,
+					  SessionBizIdent=m.Session.BizIdent,
+					  SessionBizType=m.Session.BizIdentType,
+					  SessionId=m.SessionId,
+					  SessionName=m.Session.Name,
+					  SessionOwnerId=m.Session.OwnerId,
+					  PosterName=m.Poster.Name,
+					  Text=m.Text,
+					  Time=m.Time,
+					  Type=m.Type,
+					  UserId=m.UserId
+				  }).SingleOrDefaultAsync()
+				);
 		}
 		private async Task<DataModels.DataSessionStatus> UpdateSessionStatus(IDataContext DataContext, SessionMessage editable, DataModels.DataSessionMessage model)
 		{

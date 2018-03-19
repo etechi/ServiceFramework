@@ -47,7 +47,7 @@ namespace SF.Sys.Entities
 				var kks = Entity<K>.KeyProperties;
 				HasSameKeys = KeyProperties.Count == kks.Count && 
 					KeyProperties
-					.Zip(kks, (x, y) => x.Name == y.Name && x.PropertyType == y.PropertyType)
+					.Zip(kks, (x, y) => x.PropertyType == y.PropertyType)
 					.All(a => a);
 			}
 		}
@@ -130,23 +130,31 @@ namespace SF.Sys.Entities
 			{
 				if(Validate)
 					EnsureSameKeys<TKey>();
+				var KeyKeyProperties = Entity<TKey>.KeyProperties;
 
 				return Expression.Lambda<Func<T, TKey>>(
 					Expression.MemberInit(
 						Expression.New(typeof(TKey)),
-						KeyProperties
-						.Where(p=>Validate || typeof(TKey).GetProperty(p.Name)!=null)
-						.Select(p =>
+						Validate?
+						KeyProperties.Zip(KeyKeyProperties,(pl,pr)=>
 							Expression.Bind(
-								typeof(TKey).GetProperty(p.Name)
-									.IsNotNull(() => $"{typeof(TKey)}中找不到实体{typeof(T)}的主键字段{p.Name}")
-									.Assert(
-										np => np.PropertyType == p.PropertyType,
-										np => $"{typeof(TKey)}的字段{np.Name}的类型为{np.PropertyType}和实体{typeof(T)}主键字段{p.Name}的类型{p.PropertyType}不同"
-									),
-								Expression.Property(ArgModel, p)
+								pr,
+								Expression.Property(ArgModel, pl)
 								)
-							)
+							):
+						KeyProperties
+							.Where(p=>typeof(TKey).GetProperty(p.Name)!=null)
+							.Select(p =>
+								Expression.Bind(
+									typeof(TKey).GetProperty(p.Name)
+										.IsNotNull(() => $"{typeof(TKey)}中找不到实体{typeof(T)}的主键字段{p.Name}")
+										.Assert(
+											np => np.PropertyType == p.PropertyType,
+											np => $"{typeof(TKey)}的字段{np.Name}的类型为{np.PropertyType}和实体{typeof(T)}主键字段{p.Name}的类型{p.PropertyType}不同"
+										),
+									Expression.Property(ArgModel, p)
+									)
+								)
 					),
 					ArgModel
 				);
