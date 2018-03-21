@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SF.Sys.Extensions\SF.Sys.Extensions.csproj" />
-    <ProjectReference Include="..\SF.Sys.Validation\SF.Sys.Validation.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Extensions\SF.Sys.Extensions.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Validation\SF.Sys.Validation.csproj" />
   </ItemGroup>
 
 </Project>

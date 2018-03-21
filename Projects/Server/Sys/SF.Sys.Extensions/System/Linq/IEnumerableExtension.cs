@@ -189,5 +189,9 @@ namespace SF.Sys.Linq
 				.Select(i => i == null ? null : i.Trim())
 				.Where(i => !string.IsNullOrEmpty(i));
 		}
+		public static IEnumerable<IEnumerable<T>> SplitToGroups<T>(this IEnumerable<T> s,int Count)
+		{
+			return s.Select((i, idx) => (i, idx / Count)).GroupBy(i => i.Item2).Select(g => g.Select(i => i.i));
+		}
 	}
 }
