@@ -25,15 +25,22 @@ namespace SF.Sys.Data.IdentGenerator
 	/// 默认对象标识生成器
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public class StorageIdentGenerator<T> : StorageIdentGenerator,IIdentGenerator<T>
+	public class StorageIdentGenerator<T> : IIdentGenerator<T>
 	{
-		public StorageIdentGenerator(IDataScope DataScope) : base(DataScope)
+		public IIdentGenerator IdentGenerator { get; }
+		public StorageIdentGenerator(IIdentGenerator IdentGenerator)
 		{
+			this.IdentGenerator = IdentGenerator;
 		}
 
-		public Task<long[]> GenerateAsync(int Section,int Count=1)
+		public Task<long[]> GenerateAsync(int Count, int Section=0)
 		{
-			return GenerateAsync(typeof(T).FullName, Section,Count);
+			return IdentGenerator.GenerateAsync(typeof(T).FullName,Count, Section);
+		}
+
+		public Task<long[]> GenerateAsync(string Type, int Count, int Section = 0)
+		{
+			return IdentGenerator.GenerateAsync(Type, Count, Section);
 		}
 	}
 	/// <summary>
@@ -85,6 +92,7 @@ namespace SF.Sys.Data.IdentGenerator
 							s.NextValue = 1 + CountPerBatch;
 							s.Section = Section;
 						}
+
 						return Task.CompletedTask;
 					});
 				return re.NextValue - CountPerBatch;

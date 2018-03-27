@@ -118,40 +118,51 @@ namespace SF.Auth.IdentityServices.Externals
 		
 		public async Task<HttpResponseMessage> Callback(string Id)
 		{
-			var p = Resolver(Id);
-			var re = await p.ProcessPageCallback();
-			if (re == null)
+			try
 			{
-				await OnSignin(0);
-				return HttpResponse.Redirect(new Uri(HttpSetting.HttpRoot));
+				var p = Resolver(Id);
+				var re = await p.ProcessPageCallback();
+				if (re == null)
+				{
+					await OnSignin(0);
+					Logger.Warn(() => $"外部认证回调失败, 没有回调结果:{Id}");
+					return HttpResponse.Redirect(new Uri(HttpSetting.HttpRoot));
+				}
+				var sessStr = InvokeContext.Request.GetCookie(ExtAuthCookieHead + Id);
+				if (sessStr == null)
+				{
+					await OnSignin(0);
+					Logger.Warn(() => $"外部认证回调失败, 找不到外部认证Cookie{Id}");
+					return HttpResponse.Redirect(new Uri(HttpSetting.HttpRoot));
+				}
+
+				var now = TimeService.Value.UtcNow;
+				var sess = await Decrypt<ExtAuthSession>(sessStr);
+				if (sess.State + ":" + sess.ClientState != re.State)
+					throw new ExternalServiceException($"外部认证返回验证状态错误");
+
+				var uid = await Signin(Id, p, re);
+
+				//清除外部认证Cookie
+				InvokeContext.Response.SetCookie(
+					new System.Net.Cookie
+					{
+						Name = ExtAuthCookieHead + Id
+					});
+
+				//ClientService.Value.SignInAsync();
+				var access_token = await AccessTokenGenerator.Value.Generate(uid, sess.ClientId, null, null);
+
+				return HttpResponse.Redirect(
+					new Uri(new Uri(InvokeContext.Request.Uri), sess.Callback)
+						.WithFragment($"state={Uri.EscapeDataString(sess.ClientState)}&access_token=" + Uri.EscapeDataString(access_token.Token))
+						);
 			}
-			var sessStr = InvokeContext.Request.GetCookie(ExtAuthCookieHead + Id);
-			if(sessStr==null)
+			catch (Exception ex)
 			{
-				await OnSignin(0);
-				return HttpResponse.Redirect(new Uri(HttpSetting.HttpRoot));
+				Logger.Error(ex, () => $"外部认证回调失败：{Id} {ex}");
+				throw;
 			}
-
-			var now = TimeService.Value.UtcNow;
-			var sess =await Decrypt<ExtAuthSession>(sessStr);
-			if (sess.State+":"+sess.ClientState != re.State)
-				throw new ExternalServiceException($"外部认证返回验证状态错误");
-
-			var uid=await Signin(Id, p, re);
-			
-			//清除外部认证Cookie
-			InvokeContext.Response.SetCookie(
-				new System.Net.Cookie {
-					Name = ExtAuthCookieHead + Id
-				});
-
-			//ClientService.Value.SignInAsync();
-			var access_token = await AccessTokenGenerator.Value.Generate(uid, sess.ClientId, null, null);
-
-			return HttpResponse.Redirect(
-				new Uri(new Uri(InvokeContext.Request.Uri), sess.Callback)
-					.WithFragment($"state={Uri.EscapeDataString(sess.ClientState)}&access_token=" + Uri.EscapeDataString(access_token.Token))
-					);
 		}
 		
 	
