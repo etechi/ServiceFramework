@@ -49,7 +49,7 @@ namespace SF.Sys.Entities
 		/// 名称
 		/// </summary>
 		[MaxLength(100)]
-		[StringContains]
+		//[StringContains]
 		public virtual string Name { get; set; }
 
 		/// <summary>
