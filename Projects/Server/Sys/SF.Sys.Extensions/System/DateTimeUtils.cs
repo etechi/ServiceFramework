@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 namespace SF.Sys
 {
-	public static class DateTimeExtension
+	public static class DateTimeUtils
 	{
-		public static DateTime JSDateOffset { get; } = new DateTime(1970, 1, 1).AddHours(8);
+		public static DateTime JSDateOffset { get; } = new DateTime(1970, 1, 1,0,0,0,DateTimeKind.Local).AddHours(8);
 		/// <summary>
 		/// 转换成JS格式时间，当前时间必须是UTC格式
 		/// </summary>
@@ -24,6 +24,10 @@ namespace SF.Sys
 		public static DateTime FromJsTime(long time)
 		{
 			return JSDateOffset.AddMilliseconds(time);
+		}
+		public static DateTime FromUnixTime(long time)
+		{
+			return JSDateOffset.AddMilliseconds(time*1000);
 		}
 		public static DateTime FloorToSecond(this DateTime Time)
 		{
