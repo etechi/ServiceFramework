@@ -31,11 +31,11 @@ namespace SF.Sys.Linq
 				return false;
 			return true;
 		}
-		public static T At<T>(this IEnumerable<T> enumerable,int Index)
+		public static T At<T>(this IEnumerable<T> enumerable, int Index)
 		{
 			if (Index < 0)
 				throw new IndexOutOfRangeException();
-			foreach(var e in enumerable)
+			foreach (var e in enumerable)
 			{
 				if (Index == 0)
 					return e;
@@ -53,10 +53,10 @@ namespace SF.Sys.Linq
 		{
 			return enumerable.Skip(Index).First();
 		}
-		public static T FindPeak<T>(this IEnumerable<T> enumerable, Func<T,T,int> Comparer) 
+		public static T FindPeak<T>(this IEnumerable<T> enumerable, Func<T, T, int> Comparer)
 		{
 			return enumerable.Aggregate((x, y) => Comparer(x, y) >= 0 ? x : y);
-		} 
+		}
 		public static int IndexOf<T>(this IEnumerable<T> enumerable, Func<T, bool> Predicate)
 		{
 			var idx = 0;
@@ -103,9 +103,9 @@ namespace SF.Sys.Linq
 				items.Select(pair => Selector(pair)).ToArray()
 				);
 		}
-		public static IEnumerable<T> WithFirst<T>(this IEnumerable<T> items,params T[] firsts)
+		public static IEnumerable<T> WithFirst<T>(this IEnumerable<T> items, params T[] firsts)
 		{
-			foreach(var f in firsts)
+			foreach (var f in firsts)
 				yield return f;
 			foreach (var i in items)
 				yield return i;
@@ -114,12 +114,12 @@ namespace SF.Sys.Linq
 		{
 			foreach (var i in items)
 				yield return i;
-			foreach(var l in lasts)
+			foreach (var l in lasts)
 				yield return l;
 		}
 
 		public static bool AllEquals<T>(this IEnumerable<T> items, IEnumerable<T> other) where T : class
-			=> items.Zip(other, (l, r) => l==r).All(r => r);
+			=> items.Zip(other, (l, r) => l == r).All(r => r);
 
 		public static IEnumerable<T> From<T>(T value)
 		{
@@ -135,14 +135,14 @@ namespace SF.Sys.Linq
 		   Func<X, K> KeySelector,
 		   Func<X, X, X> Merger
 		   ) where K : IEquatable<K>
-			=> Merge(xs,KeySelector, ys, KeySelector, Merger);
+			=> Merge(xs, KeySelector, ys, KeySelector, Merger);
 
-		public static IEnumerable<Z> Merge<X,Y,Z,K>(
+		public static IEnumerable<Z> Merge<X, Y, Z, K>(
 			this IEnumerable<X> xs,
-			Func<X,K> XKeySelector,
+			Func<X, K> XKeySelector,
 			IEnumerable<Y> ys,
 			Func<Y, K> YKeySelector,
-			Func<X,Y,Z> Merger
+			Func<X, Y, Z> Merger
 			) where K : IEquatable<K>
 		{
 			xs = xs ?? Enumerable.Empty<X>();
@@ -151,19 +151,19 @@ namespace SF.Sys.Linq
 			var ydic = ys.ToDictionary(YKeySelector);
 			return xs.Select(
 				xi =>
-					ydic.TryGetValue(XKeySelector(xi), out var yi)?
-					Merger(xi, yi):
-					Merger(xi,default(Y)
+					ydic.TryGetValue(XKeySelector(xi), out var yi) ?
+					Merger(xi, yi) :
+					Merger(xi, default(Y)
 					)
 				).Concat(
 					ys
-					.Where(yi=>!xdic.ContainsKey(YKeySelector(yi)))
-					.Select(yi=>Merger(default(X),yi))
+					.Where(yi => !xdic.ContainsKey(YKeySelector(yi)))
+					.Select(yi => Merger(default(X), yi))
 				);
 		}
 		public static string Join(this IEnumerable<string> Enumerable, string separator = "")
 		{
-			return string.Join(separator, Enumerable.Where(s=>!s.IsNullOrEmpty()));
+			return string.Join(separator, Enumerable.Where(s => !s.IsNullOrEmpty()));
 		}
 		public static string Join<T>(this IEnumerable<T> Enumerable, string separator = "")
 		{
@@ -189,9 +189,13 @@ namespace SF.Sys.Linq
 				.Select(i => i == null ? null : i.Trim())
 				.Where(i => !string.IsNullOrEmpty(i));
 		}
-		public static IEnumerable<IEnumerable<T>> SplitToGroups<T>(this IEnumerable<T> s,int Count)
+		public static IEnumerable<IEnumerable<T>> SplitToGroups<T>(this IEnumerable<T> s, int GroupCount)
 		{
-			return s.Select((i, idx) => (i, idx / Count)).GroupBy(i => i.Item2).Select(g => g.Select(i => i.i));
+			return s.Select((i, idx) => (i, idx % GroupCount)).GroupBy(i => i.Item2).Select(g => g.Select(i => i.i));
+		}
+		public static IEnumerable<IEnumerable<T>> SplitWithBatchCount<T>(this IEnumerable<T> s, int BatchCount)
+		{
+			return s.Select((i, idx) => (i, idx / BatchCount)).GroupBy(i => i.Item2).Select(g => g.Select(i => i.i));
 		}
 	}
 }
