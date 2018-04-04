@@ -143,7 +143,7 @@ namespace SF.Sys.AspNetCore.NetworkServices
 							{
 								{"controller", controllerName},
 								{"action",ActionName},
-								{"scope","api" }
+								{"mvc_scope","api" }
 							},
 			};
 		}

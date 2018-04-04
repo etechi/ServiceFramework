@@ -314,7 +314,7 @@ namespace SF.Common.Notifications.Front
 							 )
 						 let n = nt.Notification
 						 where n.LogicState == EntityLogicState.Enabled &&
-							 n.Time <= now && n.Expires > now
+							 n.Time <= now //&& n.Expires > now 个人消息不会超时
 						 select n;
 				 }
 				 var re = await Select(q, uid, false)

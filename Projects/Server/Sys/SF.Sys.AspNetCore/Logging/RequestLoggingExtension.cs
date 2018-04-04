@@ -61,13 +61,14 @@ namespace SF.Sys.AspNetCore
 			else
 				logger.Error(
 					error,
-					"User:{0} {1} {2} {3}ms REQ:{4} RESP:{5}",
+					"User:{0} {1} {2} {3}ms REQ:{4} RESP:{5} ERR:{6}",
 					context.User.GetUserIdent(),
 					req.Method,
 					req.Uri(),
 					time,
 					reqData == null ? "" : Encoding.UTF8.GetString(reqData),
-					respMessage ?? ""
+					respMessage ?? "",
+					error.Message
 					);
 		}
 		static async Task<byte[]> GetRequestData(Microsoft.AspNetCore.Http.HttpContext context)

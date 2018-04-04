@@ -66,18 +66,18 @@ namespace SF.Sys.AspNetCore
 				routes.MapRoute(
 					name: "Media",
 					template: "r/{id?}",
-					defaults: new { scope = "api", controller = "media", action = "get" }
+					defaults: new { mvc_scope = "api", controller = "media", action = "get" }
 				);
 				routes.MapRoute(
 					name: "ServiceApi",
 					template: "api/{controller}/{service}/{action}/{id?}",
-					defaults: new { scope = "api" }
+					defaults: new { mvc_scope = "api" }
 				);
 
 				routes.MapRoute(
 					name: "DefaultApi",
 					template: "api/{controller}/{action}/{id?}",
-					defaults: new { scope = "api" }
+					defaults: new { mvc_scope = "api" }
 					);
 
 			});

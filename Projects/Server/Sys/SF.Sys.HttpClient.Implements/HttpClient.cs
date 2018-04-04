@@ -36,15 +36,15 @@ namespace SF.Sys.HttpClients
 		
 		public async Task<T> Request<T>(HttpRequestMessage Request,Func<HttpResponseMessage,Task<T>> GetResult)
 		{
-			var handler = new HttpClientHandler
-			{
-				UseDefaultCredentials = false,
-				Proxy = new WebProxy("http://101.132.131.224:13002", false, new string[] { }),
-				UseProxy = true,
-			};
+			//var handler = new HttpClientHandler
+			//{
+			//	UseDefaultCredentials = false,
+			//	Proxy = new WebProxy("http://101.132.131.224:13002", false, new string[] { }),
+			//	UseProxy = true,
+			//};
 
-			var cli = new System.Net.Http.HttpClient(handler);
-			//var cli = new System.Net.Http.HttpClient();
+			//var cli = new System.Net.Http.HttpClient(handler);
+			var cli = new System.Net.Http.HttpClient();
 
 			string respData=null;
 			string reqData=null;

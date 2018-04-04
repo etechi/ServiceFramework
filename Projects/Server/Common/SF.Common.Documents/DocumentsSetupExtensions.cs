@@ -87,6 +87,7 @@ namespace SF.Common.Documents
 					s.ItemOrder = order;
 					s.PublishDate = DateTime.Now;
 					s.ScopeId = scope ?? "default";
+					
 				});
 		}
 
@@ -132,7 +133,6 @@ namespace SF.Common.Documents
 			IDocumentCategoryManager<TCategoryInternal> CatManager,
 			long? catId,
 			string folder,
-			Dictionary<string, string> idents=null,
 			string scope=null
 			)
 			where TDocInternal:DocumentInternal
@@ -149,22 +149,30 @@ namespace SF.Common.Documents
 				   int order = 0;
 				   if (i != -1 && int.TryParse(name.Substring(0, i), out order))
 					   name = name.Substring(i + 1);
+				   i = name.IndexOf('@');
+				   string ident = null;
+				   if (i != -1)
+				   {
+					   ident = name.Substring(i + 1);
+					   name = name.Substring(0, i);
+				   }
 				   return new
 				   {
 					   order = order,
 					   name = name,
+					   ident=ident,
 					   file = f
 				   };
 			   })
 				.OrderBy(p => p.order)
-				.Select((p, i) => new { index = i, name = p.name, file = p.file });
+				.Select((p, i) => new { index = i, p.name, p.file,p.ident });
 
 			foreach (var f in files)
 			{
 				var html = System.IO.File.ReadAllText(f.file);
 				var re = await DocManager.DocumentEnsure(
 					catId,
-					idents?.Get(f.name),
+					f.ident,
 					f.index,
 					f.name,
 					html,
@@ -193,7 +201,7 @@ namespace SF.Common.Documents
 			foreach (var d in dirs)
 			{
 				var pcat = await CatManager.CategoryEnsure(catId, d.index, d.name, scope: scope);
-				var chds = await DocEnsureFromFiles(DocManager,CatManager, pcat.Id, d.file, idents);
+				var chds = await DocEnsureFromFiles(DocManager,CatManager, pcat.Id, d.file);
 				items.Add(new Item { Id = pcat.Id, Name = pcat.Name, Children = chds });
 			}
 			return items.ToArray();

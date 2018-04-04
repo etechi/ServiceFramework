@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Auth.IdentityServices.Internals;
 using SF.Services.Security;
+using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Caching;
 using SF.Sys.Clients;
@@ -32,7 +33,11 @@ namespace SF.Auth.IdentityServices
 		/// 跳过验证码检查
 		/// </summary>
 		public bool VerifyCodeDisabled { get; set; }
-
+		/// <summary>
+		/// 默认图标
+		/// </summary>
+		[Image]
+		public string DefaultIcon { get; set; }
 		public Lazy<ILocalCache<VerifyCode>> VerifyCodeCache { get; set; }
 		public Lazy<IUserStorage> IdentStorage { get; set; }
 		public Lazy<IUserCredentialStorage> CredentialStorage { get; set; }
@@ -46,6 +51,7 @@ namespace SF.Auth.IdentityServices
 
 		public NamedServiceResolver<IUserCredentialProvider> CredentialProviderResolver { get; set; }
 		public string DefaultIdentityCredentialProvider { get; set; }
+		
 		public IEnumerable<IUserCredentialProvider> IdentityCredentialProviders { get; set; }
 		public Lazy<IAccessTokenValidator> AccessTokenValidator { get; set; }
 		public Lazy<IAccessTokenGenerator> AccessTokenGenerator { get; set; }

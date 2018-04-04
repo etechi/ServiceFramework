@@ -68,7 +68,8 @@ namespace SF.Sys.Services
 			this IServiceCollection sc,
 			string TablePrefix=null,
 			bool VerifyCodeDisabled=false,
-			string DefaultCredentialProvider=null
+			string DefaultCredentialProvider=null,
+			string DefaultUserIcon=null
 			)
 		{
 			//文章
@@ -153,7 +154,8 @@ namespace SF.Sys.Services
 					sim,
 					scope, 
 					VerifyCodeDisabled,
-					DefaultCredentialProvider
+					DefaultCredentialProvider,
+					DefaultUserIcon
 					), 
 				null,
 				1000
@@ -169,7 +171,8 @@ namespace SF.Sys.Services
 			IServiceInstanceManager sim, 
 			long? ScopeId,
 			bool VerifyCodeDisabled,
-			string DefaultCredentialProvider
+			string DefaultCredentialProvider,
+			string DefaultUserIcon
 			)
 		{
 			await sim.DefaultService<IUserService, UserService>(
@@ -178,7 +181,8 @@ namespace SF.Sys.Services
 					Setting = new UserServiceSetting
 					{
 						VerifyCodeDisabled = VerifyCodeDisabled,
-						DefaultIdentityCredentialProvider = DefaultCredentialProvider
+						DefaultIdentityCredentialProvider = DefaultCredentialProvider,
+						DefaultIcon= DefaultUserIcon
 					}
 				}
 				)

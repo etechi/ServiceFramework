@@ -16,8 +16,10 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SF.Utils
 {
@@ -141,7 +143,40 @@ namespace SF.Utils
 					yield return _LineParser.Current;
 			}
 		}
-
+		static char[] EscChars { get; } = new[] { ' ', '\n', '\r' };
+		public static async Task Write(System.IO.TextWriter writer,IEnumerable<string> Row)
+		{
+			var first = true;
+			foreach (var v in Row)
+			{
+				if (v == null)
+				{ }
+				else if (v.IndexOfAny(EscChars) == -1)
+					await writer.WriteAsync(v);
+				else
+				{
+					await writer.WriteAsync('\"');
+					var i = 0;
+					for (; ; )
+					{
+						var t = v.IndexOf('"');
+						var l = t == -1 ? v.Length - i : t - i;
+						await writer.WriteAsync(v.Substring(i, l));
+						if (t == -1) break;
+						await writer.WriteAsync("\"\"");
+						i = t + 1;
+					}
+					await writer.WriteAsync('\"');
+				}
+				if (first)
+					first = false;
+				else
+					await writer.WriteAsync(',');
+			}
+			await writer.WriteLineAsync();
+		}
+		
+					
 	}
 }
 

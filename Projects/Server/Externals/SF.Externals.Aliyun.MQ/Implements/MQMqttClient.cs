@@ -1,19 +1,12 @@
 ﻿using SF.Net;
 using SF.Net.Mqtt.Clients;
 using SF.Net.Mqtt.Core;
-using SF.Sys;
-using SF.Sys.HttpClients;
-using SF.Sys.Linq;
 using SF.Sys.Logging;
 using SF.Sys.Services;
-using SF.Sys.TimeServices;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace SF.Externals.Aliyun.Implements
 {

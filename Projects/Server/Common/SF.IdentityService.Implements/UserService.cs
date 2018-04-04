@@ -50,7 +50,7 @@ namespace SF.Auth.IdentityServices
 			return data == null ? null : new User
 			{
 				Id = data.Id,
-				Icon = data.Icon,
+				Icon = data.Icon ??Setting.DefaultIcon,
 				Name = data.Name,
 				Roles=data.Roles
 				//OwnerId = data.Entity

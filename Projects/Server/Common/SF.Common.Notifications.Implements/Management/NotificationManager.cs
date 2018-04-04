@@ -65,7 +65,7 @@ namespace SF.Common.Notifications.Management
 				switch (Arg.State.Value)
 				{
 					case NotificationState.Available:
-						Query = Query.Where(n => n.Time <= now && n.Expires > now);
+						Query = Query.Where(n => n.Time <= now &&  n.Expires > now);
 						break;
 					case NotificationState.Expired:
 						Query = Query.Where(n => n.Expires <= now);
