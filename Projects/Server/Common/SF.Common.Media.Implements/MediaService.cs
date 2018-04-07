@@ -325,7 +325,7 @@ namespace SF.Common.Media
 				!Setting.SupportedFormats.Contains(format))
 				return HttpResponse.NotFound;
 
-			var etag = "\""+id + ":" + format+"\"";
+			var etag = $"\"{$"{id}:{format}".UTF8Bytes().MD5().Base64()}\"";
 			var Request = InvokeContext.Value.Request;
 			if (Request.Headers.Get("If-None-Match")?.SingleOrDefault()?.Contains(etag) ?? false)
 				return HttpResponse.NotModified;
