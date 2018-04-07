@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Logging;
 using SF.Sys.Services;
 using System;
 using System.Collections.Generic;
@@ -107,7 +108,7 @@ namespace SF.Sys.Data
 				await Provider.SaveChangesAsync();
 			}
 		}
-		public async Task EndUse(Exception error)
+		public async Task EndUse(Exception error,ILogger Logger)
 		{
 			if (_TopChildContext != null)
 				throw new InvalidOperationException("仍有内部数据上下文未释放");
@@ -136,6 +137,10 @@ namespace SF.Sys.Data
 				try
 				{
 					Transaction.Rollback();
+				}
+				catch(Exception ex)
+				{
+					Logger.Warn(ex, () => $"事务回滚时发生异常:{ex.Message}");
 				}
 				finally
 				{

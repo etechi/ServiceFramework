@@ -25,432 +25,1660 @@ using SF.Sys.Data;
 
 namespace SF.Sys.Data.EntityFrameworkCore
 {
-	public class AsyncQueryableProvider : System.Linq.IAsyncQueryableProvider,IEntityQueryableProvider
+	public class AsyncQueryableProvider : System.Linq.IAsyncQueryableProvider, IEntityQueryableProvider
 	{
 		AsyncQueryableProvider() { }
 		public static AsyncQueryableProvider Instance { get; } = new AsyncQueryableProvider();
 
-		public Task<bool> AllAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate)
-			=> source.Queryable.AllAsync(predicate);
-
-		public Task<bool> AllAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
-			=> source.Queryable.AllAsync(predicate,cancellationToken);
-
-		public Task<bool> AnyAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.AnyAsync();
-
-		public Task<bool> AnyAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.AnyAsync(cancellationToken);
-
-		public Task<bool> AnyAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate)
-			=> source.Queryable.AnyAsync(predicate);
-
-		public Task<bool> AnyAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
-			=> source.Queryable.AnyAsync(predicate,cancellationToken);
-
-
-		public Task<decimal> AverageAsync(IContextQueryable< decimal> source)
-			=> source.Queryable.AverageAsync();
-
-		public Task<double> AverageAsync(IContextQueryable< long> source)
-			=> source.Queryable.AverageAsync();
-
-		public Task<double?> AverageAsync(IContextQueryable< int?> source)
-			=> source.Queryable.AverageAsync();
-
-		public Task<float?> AverageAsync(IContextQueryable< float?> source)
-			=> source.Queryable.AverageAsync();
-
-		public Task<double> AverageAsync(IContextQueryable< int> source)
-			=> source.Queryable.AverageAsync();
-
-		public Task<decimal?> AverageAsync(IContextQueryable< decimal?> source)
-			=> source.Queryable.AverageAsync();
-
-		public Task<double> AverageAsync(IContextQueryable< double> source)
-			=> source.Queryable.AverageAsync();
-
-		public Task<double?> AverageAsync(IContextQueryable< double?> source)
-			=> source.Queryable.AverageAsync();
-
-		public Task<float> AverageAsync(IContextQueryable< float> source)
-			=> source.Queryable.AverageAsync();
-
-		public Task<double?> AverageAsync(IContextQueryable< long?> source)
-			=> source.Queryable.AverageAsync();
-
-		public Task<double> AverageAsync(IContextQueryable< int> source, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(cancellationToken);
-
-		public Task<double> AverageAsync(IContextQueryable< double> source, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(cancellationToken);
-
-		public Task<double?> AverageAsync(IContextQueryable< long?> source, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(cancellationToken);
-
-		public Task<double?> AverageAsync(IContextQueryable< double?> source, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(cancellationToken);
-
-		public Task<decimal> AverageAsync(IContextQueryable< decimal> source, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(cancellationToken);
-
-		public Task<double> AverageAsync(IContextQueryable< long> source, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(cancellationToken);
-
-		public Task<float?> AverageAsync(IContextQueryable< float?> source, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(cancellationToken);
-
-		public Task<float> AverageAsync(IContextQueryable< float> source, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(cancellationToken);
-
-		public Task<double?> AverageAsync(IContextQueryable< int?> source, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(cancellationToken);
-
-		public Task<decimal?> AverageAsync(IContextQueryable< decimal?> source, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(cancellationToken);
-
-		public Task<decimal?> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, decimal?>> selector)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<decimal> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, decimal>> selector)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, double>> selector)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double?> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, long?>> selector)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double?> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, double?>> selector)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, long>> selector)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<float?> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, float?>> selector)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double?> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, int?>> selector)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<float> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, float>> selector)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, int>> selector)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, long>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<float> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, float>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double?> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, long?>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<float?> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, float?>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double?> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, int?>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<decimal> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, decimal>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double?> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, double?>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, int>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<decimal?> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, decimal?>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<double> AverageAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, double>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.AverageAsync(selector);
-
-		public Task<bool> ContainsAsync< TSource>(IContextQueryable< TSource> source, TSource item)
-			=> source.Queryable.ContainsAsync(item);
-
-		public Task<bool> ContainsAsync< TSource>(IContextQueryable< TSource> source, TSource item, CancellationToken cancellationToken)
-			=> source.Queryable.ContainsAsync(item,cancellationToken);
-
-		public Task<int> CountAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.CountAsync();
-
-		public Task<int> CountAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate)
-			=> source.Queryable.CountAsync(predicate);
-
-		public Task<int> CountAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.CountAsync(cancellationToken);
-
-		public Task<int> CountAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
-			=> source.Queryable.CountAsync(predicate,cancellationToken);
-
-		public Task<TSource> FirstAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.FirstAsync();
-
-		public Task<TSource> FirstAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate)
-			=> source.Queryable.FirstAsync(predicate);
-
-		public Task<TSource> FirstAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.FirstAsync(cancellationToken);
-
-		public Task<TSource> FirstAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
-			=> source.Queryable.FirstAsync(predicate,cancellationToken);
-
-		public Task<TSource> FirstOrDefaultAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.FirstOrDefaultAsync();
-
-		public Task<TSource> FirstOrDefaultAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate)
-			=> source.Queryable.FirstAsync(predicate);
-
-		public Task<TSource> FirstOrDefaultAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.FirstOrDefaultAsync(cancellationToken);
-
-		public Task<TSource> FirstOrDefaultAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
-			=> source.Queryable.FirstOrDefaultAsync(predicate, cancellationToken);
-
-		public Task ForEachAsync< T>(IContextQueryable< T> source, Action<T> action)
-			=> source.Queryable.ForEachAsync(action);
-
-		public Task ForEachAsync< T>(IContextQueryable< T> source, Action<T> action, CancellationToken cancellationToken)
-			=> source.Queryable.ForEachAsync(action,cancellationToken);
-
-		public Task<long> LongCountAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.LongCountAsync();
-
-		public Task<long> LongCountAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate)
-			=> source.Queryable.LongCountAsync(predicate);
-
-		public Task<long> LongCountAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.LongCountAsync(cancellationToken);
-
-		public Task<long> LongCountAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
-			=> source.Queryable.LongCountAsync(predicate, cancellationToken);
-
-		public Task<TSource> MaxAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.MaxAsync();
-
-		public Task<TSource> MaxAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.MaxAsync(cancellationToken);
-
-		public Task<TResult> MaxAsync< TSource, TResult>(IContextQueryable< TSource> source, Expression<Func<TSource, TResult>> selector)
-			=> source.Queryable.MaxAsync(selector);
-
-		public Task<TResult> MaxAsync< TSource, TResult>(IContextQueryable< TSource> source, Expression<Func<TSource, TResult>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.MaxAsync(selector,cancellationToken);
-
-		public Task<TSource> MinAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.MinAsync();
-
-		public Task<TSource> MinAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.MinAsync(cancellationToken);
-
-		public Task<TResult> MinAsync< TSource, TResult>(IContextQueryable< TSource> source, Expression<Func<TSource, TResult>> selector)
-			=> source.Queryable.MinAsync(selector);
-
-		public Task<TResult> MinAsync< TSource, TResult>(IContextQueryable< TSource> source, Expression<Func<TSource, TResult>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.MinAsync(selector,cancellationToken);
-
-		public Task<TSource> SingleAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.SingleAsync();
-
-		public Task<TSource> SingleAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.SingleAsync(cancellationToken);
-
-		public Task<TSource> SingleAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate)
-			=> source.Queryable.SingleAsync(predicate);
-
-		public Task<TSource> SingleAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
-			=> source.Queryable.SingleAsync(predicate,cancellationToken);
-
-		public Task<TSource> SingleOrDefaultAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.SingleOrDefaultAsync();
-
-		public Task<TSource> SingleOrDefaultAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate)
-			=> source.Queryable.SingleOrDefaultAsync(predicate);
-
-		public Task<TSource> SingleOrDefaultAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.SingleOrDefaultAsync(cancellationToken);
-
-		public Task<TSource> SingleOrDefaultAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
-			=> source.Queryable.SingleOrDefaultAsync(predicate, cancellationToken);
+		public async Task<bool> AllAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		{
+			try
+			{
+				return await source.Queryable.AllAsync(predicate);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<bool> AllAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AllAsync(predicate, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<bool> AnyAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.AnyAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<bool> AnyAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AnyAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<bool> AnyAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		{
+			try
+			{
+				return await source.Queryable.AnyAsync(predicate);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<bool> AnyAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AnyAsync(predicate, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+
+		public async Task<decimal> AverageAsync(IContextQueryable<decimal> source)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync(IContextQueryable<long> source)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync(IContextQueryable<int?> source)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<float?> AverageAsync(IContextQueryable<float?> source)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync(IContextQueryable<int> source)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<decimal?> AverageAsync(IContextQueryable<decimal?> source)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync(IContextQueryable<double> source)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync(IContextQueryable<double?> source)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<float> AverageAsync(IContextQueryable<float> source)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync(IContextQueryable<long?> source)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync(IContextQueryable<int> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync(IContextQueryable<double> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync(IContextQueryable<long?> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync(IContextQueryable<double?> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<decimal> AverageAsync(IContextQueryable<decimal> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync(IContextQueryable<long> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<float?> AverageAsync(IContextQueryable<float?> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<float> AverageAsync(IContextQueryable<float> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync(IContextQueryable<int?> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<decimal?> AverageAsync(IContextQueryable<decimal?> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<decimal?> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, decimal?>> selector)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<decimal> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, decimal>> selector)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, double>> selector)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, long?>> selector)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, double?>> selector)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, long>> selector)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<float?> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, float?>> selector)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, int?>> selector)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<float> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, float>> selector)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, int>> selector)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, long>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<float> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, float>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, long?>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<float?> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, float?>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, int?>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<decimal> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, decimal>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double?> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, double?>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, int>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<decimal?> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, decimal?>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<double> AverageAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, double>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.AverageAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<bool> ContainsAsync<TSource>(IContextQueryable<TSource> source, TSource item)
+		{
+			try
+			{
+				return await source.Queryable.ContainsAsync(item);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<bool> ContainsAsync<TSource>(IContextQueryable<TSource> source, TSource item, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.ContainsAsync(item, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<int> CountAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.CountAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<int> CountAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		{
+			try
+			{
+				return await source.Queryable.CountAsync(predicate);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<int> CountAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.CountAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<int> CountAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.CountAsync(predicate, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> FirstAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.FirstAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> FirstAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		{
+			try
+			{
+				return await source.Queryable.FirstAsync(predicate);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> FirstAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.FirstAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> FirstAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.FirstAsync(predicate, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> FirstOrDefaultAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.FirstOrDefaultAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> FirstOrDefaultAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		{
+			try
+			{
+				return await source.Queryable.FirstAsync(predicate);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> FirstOrDefaultAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.FirstOrDefaultAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> FirstOrDefaultAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.FirstOrDefaultAsync(predicate, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task ForEachAsync<T>(IContextQueryable<T> source, Action<T> action)
+		{
+			try
+			{
+				await source.Queryable.ForEachAsync(action);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task ForEachAsync<T>(IContextQueryable<T> source, Action<T> action, CancellationToken cancellationToken)
+		{
+			try
+			{
+				await source.Queryable.ForEachAsync(action, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<long> LongCountAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.LongCountAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<long> LongCountAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		{
+			try
+			{
+				return await source.Queryable.LongCountAsync(predicate);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<long> LongCountAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.LongCountAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<long> LongCountAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.LongCountAsync(predicate, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> MaxAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.MaxAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> MaxAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.MaxAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TResult> MaxAsync<TSource, TResult>(IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
+		{
+			try
+			{
+				return await source.Queryable.MaxAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TResult> MaxAsync<TSource, TResult>(IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.MaxAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> MinAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.MinAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> MinAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.MinAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TResult> MinAsync<TSource, TResult>(IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector)
+		{
+			try
+			{
+				return await source.Queryable.MinAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TResult> MinAsync<TSource, TResult>(IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.MinAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> SingleAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.SingleAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> SingleAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SingleAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> SingleAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		{
+			try
+			{
+				return await source.Queryable.SingleAsync(predicate);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> SingleAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SingleAsync(predicate, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> SingleOrDefaultAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.SingleOrDefaultAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> SingleOrDefaultAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate)
+		{
+			try
+			{
+				return await source.Queryable.SingleOrDefaultAsync(predicate);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> SingleOrDefaultAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SingleOrDefaultAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+
+		public async Task<TSource> SingleOrDefaultAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, bool>> predicate, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SingleOrDefaultAsync(predicate, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
 		public IContextQueryable<TSource> Skip<TSource>(IContextQueryable<TSource> source, Expression<Func<int>> countAccessor)
 		{
 			throw new NotSupportedException();
-			//=> source.New(source.Queryable.Skip(countAccessor));
+			//{
+			//	try
+			//	{
+			//		return await source.New(source.Queryable.Skip(countAccessor));
+			//	}
+			//	catch (Exception ex)
+			//	{
+			//		throw EFException.MapException(ex);
+			//	}
+			//}
 		}
 
-		public Task<double?> SumAsync(IContextQueryable< double?> source)
-			=> source.Queryable.SumAsync();
+		public async Task<double?> SumAsync(IContextQueryable<double?> source)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<float> SumAsync(IContextQueryable< float> source)
-			=> source.Queryable.SumAsync();
+		public async Task<float> SumAsync(IContextQueryable<float> source)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<float?> SumAsync(IContextQueryable< float?> source)
-			=> source.Queryable.SumAsync();
+		public async Task<float?> SumAsync(IContextQueryable<float?> source)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<decimal?> SumAsync(IContextQueryable< decimal?> source)
-			=> source.Queryable.SumAsync();
+		public async Task<decimal?> SumAsync(IContextQueryable<decimal?> source)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<int?> SumAsync(IContextQueryable< int?> source)
-			=> source.Queryable.SumAsync();
+		public async Task<int?> SumAsync(IContextQueryable<int?> source)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<decimal> SumAsync(IContextQueryable< decimal> source)
-			=> source.Queryable.SumAsync();
+		public async Task<decimal> SumAsync(IContextQueryable<decimal> source)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<long> SumAsync(IContextQueryable< long> source)
-			=> source.Queryable.SumAsync();
+		public async Task<long> SumAsync(IContextQueryable<long> source)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<int> SumAsync(IContextQueryable< int> source)
-			=> source.Queryable.SumAsync();
+		public async Task<int> SumAsync(IContextQueryable<int> source)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<double> SumAsync(IContextQueryable< double> source)
-			=> source.Queryable.SumAsync();
+		public async Task<double> SumAsync(IContextQueryable<double> source)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<long?> SumAsync(IContextQueryable< long?> source)
-			=> source.Queryable.SumAsync();
+		public async Task<long?> SumAsync(IContextQueryable<long?> source)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<int> SumAsync(IContextQueryable< int> source, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(cancellationToken);
+		public async Task<int> SumAsync(IContextQueryable<int> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<float?> SumAsync(IContextQueryable< float?> source, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(cancellationToken);
+		public async Task<float?> SumAsync(IContextQueryable<float?> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<decimal?> SumAsync(IContextQueryable< decimal?> source, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(cancellationToken);
+		public async Task<decimal?> SumAsync(IContextQueryable<decimal?> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<long?> SumAsync(IContextQueryable< long?> source, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(cancellationToken);
+		public async Task<long?> SumAsync(IContextQueryable<long?> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<long> SumAsync(IContextQueryable< long> source, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(cancellationToken);
+		public async Task<long> SumAsync(IContextQueryable<long> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<int?> SumAsync(IContextQueryable< int?> source, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(cancellationToken);
+		public async Task<int?> SumAsync(IContextQueryable<int?> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<double> SumAsync(IContextQueryable< double> source, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(cancellationToken);
+		public async Task<double> SumAsync(IContextQueryable<double> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<float> SumAsync(IContextQueryable< float> source, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(cancellationToken);
+		public async Task<float> SumAsync(IContextQueryable<float> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<double?> SumAsync(IContextQueryable< double?> source, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(cancellationToken);
+		public async Task<double?> SumAsync(IContextQueryable<double?> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<decimal> SumAsync(IContextQueryable< decimal> source, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(cancellationToken);
+		public async Task<decimal> SumAsync(IContextQueryable<decimal> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<decimal> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, decimal>> selector)
-			=> source.Queryable.SumAsync(selector);
+		public async Task<decimal> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, decimal>> selector)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<double?> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, double?>> selector)
-			=> source.Queryable.SumAsync(selector);
+		public async Task<double?> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, double?>> selector)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<int> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, int>> selector)
-			=> source.Queryable.SumAsync(selector);
+		public async Task<int> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, int>> selector)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<long?> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, long?>> selector)
-			=> source.Queryable.SumAsync(selector);
+		public async Task<long?> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, long?>> selector)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<double> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, double>> selector)
-			=> source.Queryable.SumAsync(selector);
+		public async Task<double> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, double>> selector)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<decimal?> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, decimal?>> selector)
-			=> source.Queryable.SumAsync(selector);
+		public async Task<decimal?> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, decimal?>> selector)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<int?> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, int?>> selector)
-			=> source.Queryable.SumAsync(selector);
+		public async Task<int?> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, int?>> selector)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<long> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, long>> selector)
-			=> source.Queryable.SumAsync(selector);
+		public async Task<long> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, long>> selector)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<float?> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, float?>> selector)
-			=> source.Queryable.SumAsync(selector);
+		public async Task<float?> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, float?>> selector)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<float> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, float>> selector)
-			=> source.Queryable.SumAsync(selector);
+		public async Task<float> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, float>> selector)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<int?> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, int?>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(selector,cancellationToken);
+		public async Task<int?> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, int?>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<double?> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, double?>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(selector, cancellationToken);
+		public async Task<double?> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, double?>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<decimal> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, decimal>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(selector, cancellationToken);
+		public async Task<decimal> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, decimal>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<decimal?> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, decimal?>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(selector, cancellationToken);
+		public async Task<decimal?> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, decimal?>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<long?> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, long?>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(selector, cancellationToken);
+		public async Task<long?> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, long?>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<long> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, long>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(selector, cancellationToken);
+		public async Task<long> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, long>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<double> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, double>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(selector, cancellationToken);
+		public async Task<double> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, double>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<int> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, int>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(selector, cancellationToken);
+		public async Task<int> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, int>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<float?> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, float?>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(selector, cancellationToken);
+		public async Task<float?> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, float?>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<float> SumAsync< TSource>(IContextQueryable< TSource> source, Expression<Func<TSource, float>> selector, CancellationToken cancellationToken)
-			=> source.Queryable.SumAsync(selector, cancellationToken);
+		public async Task<float> SumAsync<TSource>(IContextQueryable<TSource> source, Expression<Func<TSource, float>> selector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.SumAsync(selector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
 		public IContextQueryable<TSource> Take<TSource>(IContextQueryable<TSource> source, Expression<Func<int>> countAccessor)
 		{
 			throw new NotSupportedException();
-			//=> source.New(source.Queryable.Take(countAccessor));
+			//{
+			//	try
+			//	{
+			//		return await source.New(source.Queryable.Take(countAccessor));
+			//	}
+			//	catch (Exception ex)
+			//	{
+			//		throw EFException.MapException(ex);
+			//	}
+			//}
 		}
 
-		public Task<TSource[]> ToArrayAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.ToArrayAsync();
+		public async Task<TSource[]> ToArrayAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.ToArrayAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<TSource[]> ToArrayAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.ToArrayAsync(cancellationToken);
+		public async Task<TSource[]> ToArrayAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.ToArrayAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<Dictionary<TKey, TSource>> ToDictionaryAsync< TSource, TKey>(IContextQueryable< TSource> source, Func<TSource, TKey> keySelector)
-			=> source.Queryable.ToDictionaryAsync(keySelector);
+		public async Task<Dictionary<TKey, TSource>> ToDictionaryAsync<TSource, TKey>(IContextQueryable<TSource> source, Func<TSource, TKey> keySelector)
+		{
+			try
+			{
+				return await source.Queryable.ToDictionaryAsync(keySelector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<Dictionary<TKey, TSource>> ToDictionaryAsync< TSource, TKey>(IContextQueryable< TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
-			=> source.Queryable.ToDictionaryAsync(keySelector,comparer);
+		public async Task<Dictionary<TKey, TSource>> ToDictionaryAsync<TSource, TKey>(IContextQueryable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
+		{
+			try
+			{
+				return await source.Queryable.ToDictionaryAsync(keySelector, comparer);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<Dictionary<TKey, TSource>> ToDictionaryAsync< TSource, TKey>(IContextQueryable< TSource> source, Func<TSource, TKey> keySelector, CancellationToken cancellationToken)
-			=> source.Queryable.ToDictionaryAsync(keySelector, cancellationToken);
+		public async Task<Dictionary<TKey, TSource>> ToDictionaryAsync<TSource, TKey>(IContextQueryable<TSource> source, Func<TSource, TKey> keySelector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.ToDictionaryAsync(keySelector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<Dictionary<TKey, TSource>> ToDictionaryAsync< TSource, TKey>(IContextQueryable< TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer, CancellationToken cancellationToken)
-			=> source.Queryable.ToDictionaryAsync(keySelector, comparer, cancellationToken);
+		public async Task<Dictionary<TKey, TSource>> ToDictionaryAsync<TSource, TKey>(IContextQueryable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.ToDictionaryAsync(keySelector, comparer, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<Dictionary<TKey, TElement>> ToDictionaryAsync< TSource, TKey, TElement>(IContextQueryable< TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
-			=> source.Queryable.ToDictionaryAsync(keySelector, elementSelector);
+		public async Task<Dictionary<TKey, TElement>> ToDictionaryAsync<TSource, TKey, TElement>(IContextQueryable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
+		{
+			try
+			{
+				return await source.Queryable.ToDictionaryAsync(keySelector, elementSelector);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
 
-		public Task<Dictionary<TKey, TElement>> ToDictionaryAsync< TSource, TKey, TElement>(IContextQueryable< TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
-			=> source.Queryable.ToDictionaryAsync(keySelector, elementSelector,comparer);
-		public Task<Dictionary<TKey, TElement>> ToDictionaryAsync< TSource, TKey, TElement>(IContextQueryable< TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, CancellationToken cancellationToken)
-			=> source.Queryable.ToDictionaryAsync(keySelector, elementSelector, cancellationToken);
+		public async Task<Dictionary<TKey, TElement>> ToDictionaryAsync<TSource, TKey, TElement>(IContextQueryable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
+		{
+			try
+			{
+				return await source.Queryable.ToDictionaryAsync(keySelector, elementSelector, comparer);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
+		public async Task<Dictionary<TKey, TElement>> ToDictionaryAsync<TSource, TKey, TElement>(IContextQueryable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.ToDictionaryAsync(keySelector, elementSelector, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<Dictionary<TKey, TElement>> ToDictionaryAsync< TSource, TKey, TElement>(IContextQueryable< TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer, CancellationToken cancellationToken)
-			=> source.Queryable.ToDictionaryAsync(keySelector, elementSelector,comparer, cancellationToken);
+		public async Task<Dictionary<TKey, TElement>> ToDictionaryAsync<TSource, TKey, TElement>(IContextQueryable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.ToDictionaryAsync(keySelector, elementSelector, comparer, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<List<TSource>> ToListAsync< TSource>(IContextQueryable< TSource> source)
-			=> source.Queryable.ToListAsync();
+		public async Task<List<TSource>> ToListAsync<TSource>(IContextQueryable<TSource> source)
+		{
+			try
+			{
+				return await source.Queryable.ToListAsync();
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
-		public Task<List<TSource>> ToListAsync< TSource>(IContextQueryable< TSource> source, CancellationToken cancellationToken)
-			=> source.Queryable.ToListAsync(cancellationToken);
+		public async Task<List<TSource>> ToListAsync<TSource>(IContextQueryable<TSource> source, CancellationToken cancellationToken)
+		{
+			try
+			{
+				return await source.Queryable.ToListAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				throw EFException.MapException(ex);
+			}
+		}
 
 
 
-		public IContextQueryable<T> Include<T>(IContextQueryable<T> source, string path) where T:class
-			=> source.New(source.Queryable.Include(path));
+		public IContextQueryable<T> Include<T>(IContextQueryable<T> source, string path) where T : class
+		{
+				return source.New(source.Queryable.Include(path));
+		}
 
 		public IContextQueryable<T> Include<T, TProperty>(IContextQueryable<T> source, Expression<Func<T, TProperty>> path) where T : class
-			=>source.New(source.Queryable.Include(path));
+		{
+			return source.New(source.Queryable.Include(path));
+		}
 	}
 }

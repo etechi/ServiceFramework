@@ -40,10 +40,15 @@ namespace SF.Sys.Services
 		}
 		void AddType(Type ServiceType)
 		{
-			if (!Add(ServiceType))
-				throw new InvalidOperationException($"服务{ServiceType}已经在获取中");
+			//if (!Add(ServiceType))
+			//	throw new InvalidOperationException($"服务{ServiceType}已经在获取中");
 		}
-		
+		void RemoveType(Type ServiceType)
+		{
+			//Remove(ServiceType);
+		}
+
+
 		public IServiceInstanceDescriptor ResolveDescriptorByIdent(long ServiceId, Type ServiceType)
 		{
 			//AddType(ServiceType);
@@ -116,7 +121,7 @@ namespace SF.Sys.Services
 			}
 			finally
 			{
-				Remove(ServiceType);
+				RemoveType(ServiceType);
 			}
 		}
 		public object ResolveServiceByIdent(long ServiceId)
@@ -151,7 +156,7 @@ namespace SF.Sys.Services
 			}
 			finally
 			{
-				Remove(ServiceType);
+				RemoveType(ServiceType);
 			}
 		}
 
@@ -182,7 +187,7 @@ namespace SF.Sys.Services
 			}
 			finally
 			{
-				Remove(ChildServiceType);
+				RemoveType(ChildServiceType);
 			}
 		}
 
@@ -203,7 +208,7 @@ namespace SF.Sys.Services
 			}
 			finally
 			{
-				Remove(ChildServiceType);
+				RemoveType(ChildServiceType);
 			}
 		}
 		object GetService(IServiceFactory factory, Type ServiceType) =>

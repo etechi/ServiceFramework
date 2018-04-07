@@ -184,20 +184,15 @@ namespace SF.Auth.IdentityServices
 				var user=await (
 				from u in ctx.Set<DataModels.DataUser>().AsQueryable()
 				where u.Id == UserId && u.LogicState == EntityLogicState.Enabled
-				let roles= from r in u.Roles
-						   let rid = r.RoleId
-						   select rid
 				select new User
 				{
 					Id = u.Id,
 					Icon = u.Icon,
 					Name = u.Name,
-					Roles=roles
+					Roles= u.Roles.Select(r=>r.RoleId).ToArray()
 				}
 				)
 				.SingleOrDefaultAsync();
-				if(user!=null)
-					user.Roles = user.Roles.ToArray();
 				return user;
 			}
 			);

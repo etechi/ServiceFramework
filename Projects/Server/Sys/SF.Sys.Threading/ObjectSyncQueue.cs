@@ -79,6 +79,15 @@ namespace SF.Sys.Threading
 			}
 		}
 		ConcurrentDictionary<K, Item> Dict { get; } = new ConcurrentDictionary<K, Item>();
+		public Task Queue(K key, Func<Task> callback)
+		{
+			return Queue(key, async () =>
+			{
+				await callback();
+				return 0;
+			});
+
+		}
 		public Task<T> Queue<T>(K key, Func<Task<T>> callback)
 		{
 

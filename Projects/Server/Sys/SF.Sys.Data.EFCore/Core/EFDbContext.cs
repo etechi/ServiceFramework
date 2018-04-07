@@ -97,77 +97,8 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		//	modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
 		//	modelBuilder.Conventions.Add(new ServiceProtocolDataIndexAttributeConvention());
 		//}
-		//string FormatEntityValidationException(Microsoft.EntityFrameworkCore ValidationException e)
-		//{
-		//	return string.Join(";",
-		//				from eve in e.EntityValidationErrors
-		//				let type_name = eve.Entry.Entity.GetType().FullName
-		//				from ve in eve.ValidationErrors
-		//				select type_name + "." + ve.PropertyName + ":" + ve.ErrorMessage
-		//			);
-		//}
-		//string FormatDbUpdateException(System.Data.Entity.Infrastructure.DbUpdateException e)
-		//{
-		//	return (from ee in e.Entries
-		//			let type = ee.Entity.GetType()
-		//			let ctn = ee.Entity.ToString()
-		//			select type.FullName + ":" + ctn
-		//			).Join(";");
-		//}
-		string FormatDbUpdateConcurrencyException(Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException e)
-		{
-			//var ie = e.InnerException as System.Data.Entity.Core.OptimisticConcurrencyException;
-			//if (ie != null)
-			//	return (from ee in ie.StateEntries
-			//			let type = ee.Entity.GetType()
-			//			let id = ee.EntityKey.EntityKeyValues.Select(kv => kv.Key + "=" + kv.Value).Join(",")
-			//			let ctn = ee.Entity.ToString()
-			//			select type.FullName + ":" + id + ":" + ctn
-			//		).Join(";");
-
-			return (from ee in e.Entries
-					let type = ee.Entity.GetType()
-					let ctn = ee.Entity.ToString()
-					select type.FullName + ":" + ctn
-					).Join(";");
-		}
-		Exception MapException(System.Exception e)
-		{
-			if(e is Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException uce)
-			{
-				return new DbUpdateConcurrencyException(
-					"数据并发更新错误：" + FormatDbUpdateConcurrencyException(uce),
-					uce);
-			}
-			//var ve = e as DbEntityValidationException;
-			//if(ve!=null)
-			//	return new DbValidateException(
-			//		"数据实体验证失败：" + FormatEntityValidationException(ve),
-			//		ve
-			//		);
-			//var ce = e as System.Data.Entity.Infrastructure.DbUpdateConcurrencyException;
-			//if (ce != null)
-			//	return new DbUpdateConcurrencyException(
-			//		"数据并发更新错误：" + FormatDbUpdateConcurrencyException(ce),
-			//		ce);
-
-			//var ue = e as System.Data.Entity.Infrastructure.DbUpdateException;
-			//if (ue != null)
-			//{
-			//	if(ue.Entries.All(s=>s.State==EntityState.Added))
-			//		return new DbDuplicatedKeyException(
-			//			"主键或约束冲突：" + e.GetInnerExceptionMessage() + "：" + FormatDbUpdateException(ue),
-			//			ue);
-			//	else
-			//		return new DbUpdateException(
-			//			"数据更新失败：" + e.GetInnerExceptionMessage() + "：" + FormatDbUpdateException(ue),
-			//			ue);
-			//}
-
-
-			//return new DbException("数据操作失败：" + e.GetInnerExceptionMessage(),e);
-			return e;
-		}
+		
+		
 		public int SaveChanges()
 		{
 			if(IsChanged)
@@ -179,7 +110,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 				}
 				catch (Exception e)
 				{
-					throw MapException(e);
+					throw EFException.MapException(e);
 				}
 			return 0;
 		}
@@ -194,7 +125,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 				}
 				catch (Exception e)
 				{
-					throw MapException(e);
+					throw EFException.MapException(e);
 				}
 			return 0;
 		}

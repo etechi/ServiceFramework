@@ -71,7 +71,7 @@ namespace SF.Sys.Data
 							finally
 							{
 								_TopRootContext = _TopRootContext.PrevRootContext;
-								await ctx.EndUse(error);
+								await ctx.EndUse(error,Logger);
 							}
 						}
 					}

@@ -190,6 +190,8 @@ namespace SF.Sys.Reminders
 					BizType=entity.BizType
 				};
 				var remindable = def.CreateRemindable(sp,null);
+				Logger.Value.Trace(()=>$"提醒开始:{entity.Id} {entity.BizType} {entity.BizIdentType} {entity.BizIdent}");
+
 				await remindable.Remind(ctx);
 				entity.Data = ctx.Data;
 				if (ctx.NextRemindTime.HasValue)

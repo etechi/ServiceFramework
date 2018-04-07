@@ -37,8 +37,16 @@ namespace SF.Sys.Data
 	{
 		public DbUpdateException(string message, Exception ie) : base(message, ie) { }
 	}
-	public class DbUpdateConcurrencyException : DbException
+	public class DbConcurrencyException : DbException
+	{
+		public DbConcurrencyException(string message, Exception ie) : base(message, ie) { }
+	}
+	public class DbUpdateConcurrencyException : DbConcurrencyException
 	{
 		public DbUpdateConcurrencyException(string message, Exception ie) : base(message, ie) { }
+	}
+	public class DbDeadLockException: DbConcurrencyException
+	{
+		public DbDeadLockException(string message, Exception ie) : base(message, ie) { }
 	}
 }
