@@ -24,7 +24,10 @@ using System.Threading.Tasks;
 namespace SF.Sys.Data
 {
     public class DataContext : IDataContext,IDataContextExtension
-    {
+	{
+		public int ScopeId { get; }
+		public int ContextId { get; }
+
 		public string Name { get; }
         public IDataContextProvider Provider { get; }
 		bool _Disposed;
@@ -38,12 +41,17 @@ namespace SF.Sys.Data
 		}
 
 		public DataContext(
+			int ScopeId,
+			int ContextId,
 			string Name,
 			IDataContextProvider Provider,
 			RootDataContext RootContext,
 			DataContext PrevContext
 			)
-        {
+		{
+			this.ScopeId = ScopeId;
+			this.ContextId = ContextId;
+
 			this.Name = Name;
 			this.Provider = Provider;
 			this.RootContext = RootContext;

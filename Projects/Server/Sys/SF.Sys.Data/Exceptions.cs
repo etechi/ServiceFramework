@@ -29,13 +29,14 @@ namespace SF.Sys.Data
 	{
 		public DbValidateException(string message, Exception ie) : base(message, ie) { }
 	}
-	public class DbDuplicatedKeyException : DbException
-	{
-		public DbDuplicatedKeyException(string message, Exception ie) : base(message, ie) { }
-	}
+	
 	public class DbUpdateException : DbException
 	{
 		public DbUpdateException(string message, Exception ie) : base(message, ie) { }
+	}
+	public class DbDuplicatedKeyException : DbUpdateException
+	{
+		public DbDuplicatedKeyException(string message, Exception ie) : base(message, ie) { }
 	}
 	public class DbConcurrencyException : DbException
 	{
@@ -49,4 +50,5 @@ namespace SF.Sys.Data
 	{
 		public DbDeadLockException(string message, Exception ie) : base(message, ie) { }
 	}
+	
 }

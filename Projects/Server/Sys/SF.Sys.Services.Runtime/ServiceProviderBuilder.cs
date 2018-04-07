@@ -171,15 +171,15 @@ namespace SF.Sys.Services
 				ScopeFactory = ServiceProvider.Resolve<IServiceScopeFactory>();
 				CurScopeId = ServiceProvider.Resolver().CurrentServiceId;
 			}
-			public Task<T> Use<T>(Func<S, Task<T>> Callback)
+			public async Task<T> Use<T>(Func<S, Task<T>> Callback)
 			{
-				return ScopeFactory.WithScope(async sp =>
+				using (var ss = ScopeFactory.CreateServiceScope())
 				{
-					var isr = sp.Resolver();
+					var isp = ss.ServiceProvider;
+					var isr = isp.Resolver();
 					using (isr.WithScopeService(CurScopeId))
-						return await sp.WithServices<S, Task<T>>(Callback);
+						return await isp.WithServices<S, Task<T>>(Callback);
 				}
-				);
 			}
 		}
 

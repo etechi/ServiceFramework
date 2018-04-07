@@ -191,10 +191,16 @@ namespace SF.Sys.Linq
 		}
 		public static IEnumerable<IEnumerable<T>> SplitToGroups<T>(this IEnumerable<T> s, int GroupCount)
 		{
+			if (GroupCount <= 0)
+				throw new ArgumentException();
+			if (GroupCount == 1)
+				return EnumerableEx.From(s);
 			return s.Select((i, idx) => (i, idx % GroupCount)).GroupBy(i => i.Item2).Select(g => g.Select(i => i.i));
 		}
 		public static IEnumerable<IEnumerable<T>> SplitWithBatchCount<T>(this IEnumerable<T> s, int BatchCount)
 		{
+			if (BatchCount <= 0)
+				throw new ArgumentException();
 			return s.Select((i, idx) => (i, idx / BatchCount)).GroupBy(i => i.Item2).Select(g => g.Select(i => i.i));
 		}
 	}

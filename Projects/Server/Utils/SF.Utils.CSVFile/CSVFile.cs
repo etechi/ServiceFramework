@@ -149,6 +149,10 @@ namespace SF.Utils
 			var first = true;
 			foreach (var v in Row)
 			{
+				if (first)
+					first = false;
+				else
+					await writer.WriteAsync(',');
 				if (v == null)
 				{ }
 				else if (v.IndexOfAny(EscChars) == -1)
@@ -168,10 +172,7 @@ namespace SF.Utils
 					}
 					await writer.WriteAsync('\"');
 				}
-				if (first)
-					first = false;
-				else
-					await writer.WriteAsync(',');
+				
 			}
 			await writer.WriteLineAsync();
 		}

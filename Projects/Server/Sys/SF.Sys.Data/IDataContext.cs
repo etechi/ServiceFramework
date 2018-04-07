@@ -57,6 +57,8 @@ namespace SF.Sys.Data
 			System.Data.IsolationLevel TransactionLevel=System.Data.IsolationLevel.Unspecified
 			);
 	}
+	
+
 	public interface IDataContext :IDisposable
 	{
 		IDataSet<T> Set<T>() where T : class;

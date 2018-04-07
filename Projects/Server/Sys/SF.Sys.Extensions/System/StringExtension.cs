@@ -136,6 +136,12 @@ namespace SF.Sys
 			}
 			return sb.ToString();
 		}
+		public static string WithDefault(this string s,string Default)
+		{
+			if (s.HasContent())
+				return s;
+			return Default;
+		}
 		public static string Limit(this string s,int length)
 		{
 			if (s == null)

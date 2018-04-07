@@ -32,21 +32,24 @@ namespace SF.Sys.Data
 		static Task<bool> TaskCompletedResult { get; } = Task.FromResult(true);
 		static Func<Task, Task<bool>> FuncTaskCompleted { get; } = task => TaskCompletedResult;
 
+	
 		public static Task Use(
 			this IDataScope scope,
 			string Action,
-			Func<IDataContext,Task> Callback,
-			DataContextFlag Flags=DataContextFlag.None
+			Func<IDataContext, Task> Callback,
+			DataContextFlag Flags = DataContextFlag.None,
+			System.Data.IsolationLevel TransactionLevel = System.Data.IsolationLevel.Unspecified
 			)
-		{
-			return scope.Use(Action,async ctx =>
+			=> scope.Use(
+				Action,
+				async ctx =>
 				{
 					await Callback(ctx);
-					return true;
+					return 0;
 				},
-				Flags);
-		}
-
+				Flags,
+				TransactionLevel
+				);
 		public static Task<T> Retry<T>(
 			this IDataScope scope,
 			string Action,

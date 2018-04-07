@@ -28,32 +28,36 @@ namespace SF.Sys.Data
 	{
 		public RootDataContext PrevRootContext { get; }
 		public DataContextFlag Flags { get; }
-
-		DataContext _TopChildContext;
+		DataContext _TopLightContext;
 		IDataContextTransaction Transaction { get; }
 		public RootDataContext(
+			int ScopeId,
+			int ContextId,
 			string Name,
 			DataContextFlag Flags,
 			IDataContextTransaction Transaction,
 			IDataContextProvider Provider,
 			RootDataContext PrevRootContext
-			):base(Name,Provider,null,null)
+			):base(ScopeId,ContextId,Name,Provider,null,null)
         {
-			
 			this.PrevRootContext = PrevRootContext;
 			this.Flags = Flags;
 			this.Transaction = Transaction;
 		}
 		
-		public DataContext PushChildContext(string Action)
+		public DataContext PushLightContext(
+			int ScopeId,
+			int ContextId,
+			string Action
+			)
 		{
-			return _TopChildContext = new DataContext(Action, Provider, this, _TopChildContext);
+			return _TopLightContext = new DataContext(ScopeId,ContextId,Action, Provider, this, _TopLightContext);
 		}
-		public void PopChildContext(DataContext ctx)
+		public void PopLightContext(DataContext ctx)
 		{
-			if (ctx != _TopChildContext)
+			if (ctx != _TopLightContext)
 				throw new ArgumentException("指定的数据上下文不是顶层数据上下文");
-			_TopChildContext = ctx.PrevContext;
+			_TopLightContext = ctx.PrevContext;
 		}
 
 		protected override void OnDisposed()
@@ -94,6 +98,7 @@ namespace SF.Sys.Data
 				{
 					await TraceCommitAsync(trackers,TransactionCommitNotifyType.BeforeCommit, null);
 					await Provider.SaveChangesAsync();
+					Provider.ClearTrackingEntities();
 					await TraceCommitAsync(trackers, TransactionCommitNotifyType.AfterCommit, null);
 				}
 				catch (Exception ex)
@@ -110,7 +115,7 @@ namespace SF.Sys.Data
 		}
 		public async Task EndUse(Exception error,ILogger Logger)
 		{
-			if (_TopChildContext != null)
+			if (_TopLightContext != null)
 				throw new InvalidOperationException("仍有内部数据上下文未释放");
 
 			if (Transaction == null)

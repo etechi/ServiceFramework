@@ -54,14 +54,14 @@ namespace SF.Sys.Data.IdentGenerator
 			public long End { get; set; }
 			public int Section { get; set; }
 		}
-		static ConcurrentDictionary<string, IdentBatch> Cache { get; } = new ConcurrentDictionary<string, IdentBatch>();
-		static ObjectSyncQueue<string> SyncQueue { get; } = new ObjectSyncQueue<string>();
+		ConcurrentDictionary<string, IdentBatch> Cache { get; } = new ConcurrentDictionary<string, IdentBatch>();
+		ObjectSyncQueue<string> SyncQueue { get; } = new ObjectSyncQueue<string>();
 
-		public IDataScope DataScope { get; }
+		public IScoped<IDataScope> DataScope { get; }
 		const int CountPerBatch = 100;
 
 		public StorageIdentGenerator(
-			IDataScope DataScope
+			IScoped<IDataScope> DataScope
 			)
 		{
 			this.DataScope = DataScope;
@@ -69,7 +69,7 @@ namespace SF.Sys.Data.IdentGenerator
 		Task<long> GetNextBatchStartAsync(string Scope, int Section)
 		{
 			var type = Scope;
-			return DataScope.Retry(
+			return DataScope.Use(ds=>ds.Retry(
 				"批量生成标识",
 				async ctx =>
 			{
@@ -96,7 +96,7 @@ namespace SF.Sys.Data.IdentGenerator
 						return Task.CompletedTask;
 					});
 				return re.NextValue - CountPerBatch;
-			});
+			}));
 		}
 		
 		public async Task<long[]> GenerateAsync(string Type, int Count, int Section)

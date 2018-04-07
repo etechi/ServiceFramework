@@ -21,6 +21,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using SF.Sys.Reflection;
 using SF.Sys.Linq.Expressions;
+using SF.Sys.Linq;
 
 namespace SF.Sys.Services
 {
@@ -99,7 +100,55 @@ namespace SF.Sys.Services
 		{
 			sp.Resolve<IServiceScopeFactory>().WithScope(action);
 		}
-
+		public static Task ExecConcurrentTasks<T,X>(
+			this IServiceProvider sp,
+			IEnumerable<T> Items,
+			Func<IServiceProvider, Func<X, Task>, Task> Scope,
+			Func<IServiceProvider,X,T,int,Task> Callback,
+			int BatchCount=100,
+			int ThreadCount= 0,
+			Func<Exception, int, bool> Retry = null,
+			int RetryDelay=3000
+			)
+		{
+			var ssf = sp.Resolve<IServiceScopeFactory>();
+			return Task.WhenAll(
+				Items.Select((r, i) => (item:r, index:i)).SplitToGroups(ThreadCount==0? Environment.ProcessorCount*2:ThreadCount)
+				.Select(
+					async grps =>
+					{
+						Random rand = null;
+						for (var r = 0; r < 10000; r++)
+						{
+							try
+							{
+								await ssf.WithScope(async isp =>
+								{
+									foreach (var grp in grps.SplitWithBatchCount(BatchCount))
+										await Scope(
+											isp,
+											async ctx =>
+											{
+												foreach (var item in grp)
+													await Callback(isp, ctx, item.item, item.index);
+											}
+										);
+								});
+								break;
+							}
+							catch (Exception ex)
+							{
+								if (r==9999 || Retry == null || !Retry(ex, r))
+									throw;
+								if (rand == null)
+									rand = RandomFactory.Create();
+								await Task.Delay(RetryDelay / 2 + rand.Next(RetryDelay));
+							}
+						}
+					}
+				)
+			);
+		}
 		public static async Task WithScope(this IServiceScopeFactory ScopeFactory, Func<IServiceProvider, Task> action)
 		{
 			using (var s = ScopeFactory.CreateServiceScope())

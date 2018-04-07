@@ -89,7 +89,7 @@ namespace SF.Sys.Data.EntityFrameworkCore
 
 			return (from ee in e.Entries
 					let type = ee.Entity.GetType()
-					let ctn = ee.Entity.ToString()
+					let ctn = Json.Stringify(ee.Entity)
 					select type.FullName + ":" + ctn
 					).Join(";");
 		}
@@ -112,8 +112,10 @@ namespace SF.Sys.Data.EntityFrameworkCore
 			}
 			if(re is SqlException se)
 			{
-				if(se.Number== 1205)
-					return new DbDeadLockException("数据库事务发生死锁",se);
+				if (se.Number == 1205)
+					return new DbDeadLockException("数据库事务发生死锁", se);
+				else if (se.Number == 2601)
+					throw new DbDuplicatedKeyException("键值冲突", e);
 			}
 			//var ve = e as DbEntityValidationException;
 			//if(ve!=null)

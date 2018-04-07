@@ -30,11 +30,15 @@ namespace SF.Sys.Data
 		IDataContextProviderFactory ProviderFactory { get; }
 		RootDataContext _TopRootContext;
 		ILogger Logger { get; }
-		
+		public int Id { get;  }
+		volatile int _ContextIdSeed;
+		static volatile int _IdSeed;
+
 		public DataScope(IDataContextProviderFactory ProviderFactory, ILogger<DataScope> Logger)
 		{
 			this.ProviderFactory = ProviderFactory;
 			this.Logger = Logger;
+			this.Id = Interlocked.Increment(ref _IdSeed);
 		}
 		
 		public async Task<T> Use<T>(
@@ -55,7 +59,16 @@ namespace SF.Sys.Data
 						await ((IDataContextProviderExtension)provider).BeginTransaction(TransactionIsolationLevel, CancellationToken.None);
 					try
 					{
-						using (var ctx = _TopRootContext = new RootDataContext(Action, Flags, trans, provider, _TopRootContext))
+						var prevRootContext = _TopRootContext;
+						using (var ctx = _TopRootContext = new RootDataContext(
+							Id,
+							Interlocked.Increment(ref _ContextIdSeed),
+							Action, 
+							Flags, 
+							trans, 
+							provider, 
+							_TopRootContext
+							))
 						{
 							Exception error = null;
 							try
@@ -70,7 +83,11 @@ namespace SF.Sys.Data
 							}
 							finally
 							{
-								_TopRootContext = _TopRootContext.PrevRootContext;
+								if (ctx != _TopRootContext)
+									throw new InvalidOperationException("TopRootContext 异常");
+								if (_TopRootContext.PrevRootContext != prevRootContext)
+									throw new InvalidOperationException("PrevRootContext 异常");
+								_TopRootContext = prevRootContext;
 								await ctx.EndUse(error,Logger);
 							}
 						}
@@ -87,14 +104,17 @@ namespace SF.Sys.Data
 			{
 				if (TransactionIsolationLevel != System.Data.IsolationLevel.Unspecified)
 					throw new ArgumentException("LightMode数据上下文不支持下层事务");
-				using (var ctx = _TopRootContext.PushChildContext(Action))
+				using (var ctx = _TopRootContext.PushLightContext(
+						Id,
+						Interlocked.Increment(ref _ContextIdSeed), 
+						Action))
 					try
 					{
 						result= await Callback(ctx);
 					}
 					finally
 					{
-						_TopRootContext.PopChildContext(ctx);
+						_TopRootContext.PopLightContext(ctx);
 					}
 			}
 			//Logger.Debug($"数据区域结束 {Action} {Flags} {TransactionIsolationLevel}");

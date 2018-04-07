@@ -28,8 +28,8 @@ namespace SF.Sys.Services
 			)
 		{
 			sc.AddDataModules<SF.Sys.Data.IdentGenerator.DataModels.IdentSeed>(TablePrefix ?? "Sys");
-			sc.Add(typeof(SF.Sys.Data.IIdentGenerator<>),typeof(SF.Sys.Data.IdentGenerator.StorageIdentGenerator<>),ServiceImplementLifetime.Scoped);
-			sc.AddScoped<SF.Sys.Data.IIdentGenerator, SF.Sys.Data.IdentGenerator.StorageIdentGenerator>();
+			sc.Add(typeof(SF.Sys.Data.IIdentGenerator<>),typeof(SF.Sys.Data.IdentGenerator.StorageIdentGenerator<>),ServiceImplementLifetime.Singleton);
+			sc.AddSingleton<SF.Sys.Data.IIdentGenerator, SF.Sys.Data.IdentGenerator.StorageIdentGenerator>();
 			return sc;
 		}
 	}
