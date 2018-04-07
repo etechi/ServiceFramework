@@ -84,9 +84,9 @@ namespace SF.Sys.Data
 							finally
 							{
 								if (ctx != _TopRootContext)
-									throw new InvalidOperationException("TopRootContext 异常");
+									throw new InvalidOperationException($"TopRootContext 异常: MaxScope:{_IdSeed} Scope:{Id} maxContext:{_ContextIdSeed} ctx:{ctx.ScopeId}.{ctx.ContextId} TopRootContext:{_TopRootContext.ScopeId}.{_TopRootContext.ContextId}");
 								if (_TopRootContext.PrevRootContext != prevRootContext)
-									throw new InvalidOperationException("PrevRootContext 异常");
+									throw new InvalidOperationException($"PrevRootContext 异常: MaxScope:{_IdSeed} Scope:{Id} maxContext:{_ContextIdSeed} ctx:{ctx.ScopeId}.{ctx.ContextId} TopRootContext:{_TopRootContext.ScopeId}.{_TopRootContext.ContextId}");
 								_TopRootContext = prevRootContext;
 								await ctx.EndUse(error,Logger);
 							}
