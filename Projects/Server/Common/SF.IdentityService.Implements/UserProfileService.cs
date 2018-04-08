@@ -30,8 +30,8 @@ namespace SF.Auth.IdentityServices
 {
 	public class UserProfileService : IUserProfileService
 	{
-		public IDataScope DataScope { get; }
-		public UserProfileService(IDataScope DataScope)
+		public IScoped<IDataScope> DataScope { get; }
+		public UserProfileService(IScoped<IDataScope> DataScope)
 		{
 			this.DataScope= DataScope;
 		}
@@ -56,7 +56,7 @@ namespace SF.Auth.IdentityServices
 
 		public async Task<Claim[]> GetClaims(long id, string[] ClaimTypes,IEnumerable<Claim> ExtraClaims)
 		{
-			return await DataScope.Use("获取凭证",async ctx =>
+			return await DataScope.Use(ds=>ds.Use("获取凭证",async ctx =>
 			{
 				var Users = ctx.Set<DataModels.DataUser>();
 				var desc = await (
@@ -163,23 +163,23 @@ namespace SF.Auth.IdentityServices
 						claims.Add(new Claim("role", roles.Join(" ")));
 				}
 				return claims.ToArray();
-			});
+			}));
 		}
 
 		public async Task<bool> IsValid(long Id)
 		{
-			return await DataScope.Use("检查ID是否有效",async ctx=>
+			return await DataScope.Use(ds=>ds.Use("检查ID是否有效",async ctx=>
 			{
 				return await ctx.Set<DataModels.DataUser>().AsQueryable()
 					.Where(u => u.Id == Id && u.LogicState == EntityLogicState.Enabled)
 					.Select(u => true)
 					.SingleOrDefaultAsync();
-			});
+			}));
 		}
 
 		public async Task<User> GetUser(long UserId)
 		{
-			return await DataScope.Use("查找用户", async ctx =>
+			return await DataScope.Use(ds=>ds.Use("查找用户", async ctx =>
 			{
 				var user=await (
 				from u in ctx.Set<DataModels.DataUser>().AsQueryable()
@@ -195,7 +195,7 @@ namespace SF.Auth.IdentityServices
 				.SingleOrDefaultAsync();
 				return user;
 			}
-			);
+			));
 		}
 	}
 

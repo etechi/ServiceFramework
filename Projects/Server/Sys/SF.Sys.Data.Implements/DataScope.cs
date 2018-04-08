@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Linq;
 using SF.Sys.Logging;
 using System;
 using System.Collections.Generic;
@@ -59,6 +60,9 @@ namespace SF.Sys.Data
 						await ((IDataContextProviderExtension)provider).BeginTransaction(TransactionIsolationLevel, CancellationToken.None);
 					try
 					{
+						string ctxDump(RootDataContext x) =>
+							x==null?"null":ADT.Link.ToEnumerable(x, c => c.PrevRootContext).Reverse().Select(c => c.ScopeId + "." + c.ContextId).Join("/");
+
 						var prevRootContext = _TopRootContext;
 						using (var ctx = _TopRootContext = new RootDataContext(
 							Id,
@@ -70,6 +74,7 @@ namespace SF.Sys.Data
 							_TopRootContext
 							))
 						{
+							//Logger.Info($"{Id} push {ctxDump(ctx)}");
 							Exception error = null;
 							try
 							{
@@ -83,11 +88,13 @@ namespace SF.Sys.Data
 							}
 							finally
 							{
-								if (ctx != _TopRootContext)
-									throw new InvalidOperationException($"TopRootContext 异常: MaxScope:{_IdSeed} Scope:{Id} maxContext:{_ContextIdSeed} ctx:{ctx.ScopeId}.{ctx.ContextId} TopRootContext:{_TopRootContext.ScopeId}.{_TopRootContext.ContextId}");
-								if (_TopRootContext.PrevRootContext != prevRootContext)
-									throw new InvalidOperationException($"PrevRootContext 异常: MaxScope:{_IdSeed} Scope:{Id} maxContext:{_ContextIdSeed} ctx:{ctx.ScopeId}.{ctx.ContextId} TopRootContext:{_TopRootContext.ScopeId}.{_TopRootContext.ContextId}");
+								//Logger.Info($"{Id} pop {ctxDump(ctx)} {ctxDump(_TopRootContext)}");
+
+								if (ctx != _TopRootContext || _TopRootContext.PrevRootContext != prevRootContext)
+									throw new InvalidOperationException($"TopRootContext 异常: {Action} {(ctx != _TopRootContext?"ctx!=top": _TopRootContext.PrevRootContext != prevRootContext?"top.prev!=prev":"")} MaxScope:{_IdSeed} Scope:{Id} maxContext:{_ContextIdSeed} ctx:{ctxDump(ctx)} top:{ctxDump(_TopRootContext)} prev:{ctxDump(prevRootContext)}");
+
 								_TopRootContext = prevRootContext;
+								
 								await ctx.EndUse(error,Logger);
 							}
 						}

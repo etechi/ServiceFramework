@@ -174,6 +174,9 @@ namespace SF.Sys.Services
 					task.TaskState = AtLeastOnceTaskState.Failed;
 					task.TaskMessage = error.Message;
 				}
+				else
+					task.TaskMessage = null;
+
 				if (task.TaskState == AtLeastOnceTaskState.Waiting)
 				{
 					if (!task.TaskNextExecTime.HasValue)
