@@ -132,7 +132,7 @@ namespace SF.Auth.IdentityServices.Externals
 				if (sessStr == null)
 				{
 					await OnSignin(0);
-					Logger.Warn(() => $"外部认证回调失败, 找不到外部认证Cookie{Id}");
+					Logger.Warn(() => $"外部认证回调失败, 找不到外部认证Cookie {Id}");
 					return HttpResponse.Redirect(new Uri(HttpSetting.HttpRoot));
 				}
 
@@ -152,11 +152,12 @@ namespace SF.Auth.IdentityServices.Externals
 
 				//ClientService.Value.SignInAsync();
 				var access_token = await AccessTokenGenerator.Value.Generate(uid, sess.ClientId, null, null);
-
-				return HttpResponse.Redirect(
-					new Uri(new Uri(InvokeContext.Request.Uri), sess.Callback)
-						.WithFragment($"state={Uri.EscapeDataString(sess.ClientState)}&access_token=" + Uri.EscapeDataString(access_token.Token))
-						);
+				var uri = new Uri(new Uri(InvokeContext.Request.Uri), sess.Callback)
+						.WithFragment(
+							$"state={Uri.EscapeDataString(sess.ClientState)}&access_token=" + Uri.EscapeDataString(access_token.Token)
+							);
+				Logger.Info(() => $"第三方({Id})登录成功 uid:{uid} 凭证:{re.Credentials.Select(c=>c.TypeId+"="+c.Value).Join(",")} 跳转目标:{uri} ");
+				return HttpResponse.Redirect(uri);
 			}
 			catch (Exception ex)
 			{

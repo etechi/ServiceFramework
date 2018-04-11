@@ -72,16 +72,16 @@ namespace SF.Sys.Settings
 			=> setting.HttpRoot ?? $"{(setting.HttpsMode ? "https" : "http")}://{setting.Domain}";
 
 		public static string GetH5AppUrlBase(this HttpSetting setting)
-			=> setting.H5AppBase ?? setting.GetUrlBase() + "/h5";
+			=> setting.H5AppBase ?? setting.GetUrlBase() + "/h5/";
 
 		public static string GetResUrlBase(this HttpSetting setting)
-			=> setting.ResBase ?? setting.GetUrlBase() + "/r";
+			=> setting.ResBase ?? setting.GetUrlBase() + "/r/";
 
 		public static string GetImageUrlBase(this HttpSetting setting)
-			=> setting.ImageBase ?? setting.GetUrlBase() + "/r";
+			=> setting.ImageBase ?? setting.GetUrlBase() + "/r/";
 
 		public static string GetApiUrlBase(this HttpSetting setting)
-			=> setting.ApiBase ?? setting.GetUrlBase() + "/api";
+			=> setting.ApiBase ?? setting.GetUrlBase() + "/api/";
 
 	}
 
