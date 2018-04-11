@@ -42,6 +42,7 @@ namespace SF.Sys.NetworkService
 			 bool all = true,
 			 bool mergeBaseType=true
 			 );
+		IContent CSharp(string Namespace, bool all = true);
 		IContent Html();
 		IContent Script();
 		IContent Angular();

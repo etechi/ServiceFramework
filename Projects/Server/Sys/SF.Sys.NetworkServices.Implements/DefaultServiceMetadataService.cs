@@ -45,6 +45,20 @@ namespace SF.Sys.NetworkService
 				ContentType = "text/javascript",
 			};
 		}
+		public IContent CSharp(string Namespace, bool all = true)
+		{
+			var tb = new CSProxyBuilder(
+				Namespace,
+				GetFilter(all),
+				GetTypeFilter(all)
+				);
+			var code = tb.Build(Library);
+			return new StringContent
+			{
+				Content = code,
+				ContentType = "text/plain",
+			};
+		}
 		public IContent TSD(string ApiName, string ResultFieldName=null,bool all = true)
 		{
 			var tb = new TSDBuilder(
@@ -95,7 +109,15 @@ namespace SF.Sys.NetworkService
 				m.Type == typeof(IContent).FullName
 					)
 					return false;
-				return All ? true : !s.Name.EndsWith("Manager");
+				
+				return All ? true : !s.Name.EndsWith("Manager") && !s.Name.EndsWith("SettingType");
+			};
+		}
+		Func<SF.Sys.Metadata.Models.Type, bool> GetTypeFilter(bool All)
+		{
+			return (type) =>
+			{
+				return true;
 			};
 		}
 		public IContent iOS(

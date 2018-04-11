@@ -165,11 +165,11 @@ namespace SF.Sys
                 return Enumerable.Empty<string>();
             return s.Split(c).Select(i => i.Trim()).Where(i => i.Length > 0).Distinct();
         }
-		public static (string, string) LastSplit2(this string s, char c)
+		public static (string, string) LastSplit2(this string s, char c,int? start=null)
 		{
 			if (s == null)
 				return ((string)null, (string)null);
-			var i = s.LastIndexOf(c);
+			var i = start.HasValue ? s.LastIndexOf(c, start.Value) : s.LastIndexOf(c);
 			if (i == -1)
 				return ((string)null,s);
 			return (s.Substring(0, i), s.Substring(i + 1));

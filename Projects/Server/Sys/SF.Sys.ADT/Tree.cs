@@ -106,9 +106,14 @@ namespace SF.Sys.ADT
 			Func<T, IEnumerable<T>> GetChildren
 			)
 			=> Nodes.SelectMany(n => AsLastEnumerable(n, GetChildren));
-		public class Node<T> : List<Node<T>>
+
+		public class Node<C,T> : List<C>
+			where C:Node<C,T>
 		{
 			public T Value { get; set; }
+		}
+		public class Node<T> : Node<Node<T>,T>
+		{
 		}
 
 		public static IEnumerable<Node<T>> Build<T>(
@@ -183,7 +188,55 @@ namespace SF.Sys.ADT
 				AddChildItem
 				);
 		}
+		public class NamedNode<T> : Node<NamedNode<T>,T>
+		{
+			public string Name { get; set; }
 
+		}
+
+		public static IEnumerable<NamedNode<I>> BuildByLeafPath<I>(
+			IEnumerable<I> nodes,
+			Func<I, string[]> GetPath
+			)
+			=> BuildByLeafPath(
+				nodes,
+				GetPath,
+				(i, n) => new NamedNode<I> { Value = i, Name = n },
+				(n, c) => n.Add(c),
+				n => n.Name,
+				n => (IEnumerable<NamedNode<I>>)n
+				);
+
+		public static IEnumerable<T> BuildByLeafPath<I, T>(
+			IEnumerable<I> nodes,
+			Func<I, string[]> GetPath,
+			Func<I, string, T> NewTreeItem,
+			Action<T, T> AddChildItem,
+			Func<T, string> GetName, 
+			Func<T,IEnumerable<T>> GetChildren
+			)
+		{
+			var root = NewTreeItem(default, "");
+			foreach (var n in nodes)
+			{
+				T c = root;
+				var ps = GetPath(n);
+				for(var i=0;i<ps.Length;i++)
+				{
+					var p = ps[i];
+					var nc = GetChildren(c).FirstOrDefault(r=>GetName(r)==p);
+					if (nc == null)
+					{
+						nc = NewTreeItem(i == ps.Length - 1 ? n : default, p);
+						AddChildItem(c, nc);
+					}
+					else if (i == ps.Length - 1)
+						throw new InvalidOperationException("节点集中存在重复的路径:" + ps.Join("/"));
+					c = nc;
+				}
+			}
+			return GetChildren(root);
+		}
 		public static IEnumerable<T> BuildByParentPath<I, T>(
 			IEnumerable<I> nodes,
 			Func<I[], T> NewTreeItem,

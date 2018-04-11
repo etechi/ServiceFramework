@@ -7,11 +7,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.ADT.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.ADT.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
