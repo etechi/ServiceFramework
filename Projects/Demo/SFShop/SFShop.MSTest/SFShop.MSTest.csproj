@@ -14,6 +14,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appsettings.Development.json" />
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.Development.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="appsettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="Moq" Version="4.7.145" />
     <PackageReference Include="MSTest.TestAdapter" Version="1.2.0" />
@@ -22,11 +37,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
+    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.ServiceFeatures.Implements\SF.Sys.ServiceFeatures.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.ServiceFeatures\SF.Sys.ServiceFeatures.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Services\SF.Sys.Services.csproj" />
+    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.UnitTest\SF.Sys.UnitTest.csproj" />
     <ProjectReference Include="..\SFShop.Backend\SFShop.Backend.csproj" />
   </ItemGroup>
-
 
 </Project>

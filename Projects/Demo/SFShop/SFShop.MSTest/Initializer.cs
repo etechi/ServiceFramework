@@ -18,6 +18,10 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SF.Sys.Services;
 using SF.Sys.ServiceFeatures;
+using SF.Sys.UnitTest;
+using System.Collections.Generic;
+using SF.Sys.Tests;
+
 namespace SFShop.UT
 {
 	[TestClass]
@@ -26,30 +30,53 @@ namespace SFShop.UT
 		[TestMethod]
 		public async Task InitServices()
 		{
-			await Scope(async (IServiceProvider sp) =>
-				{
-					await sp.InitServices("service");
-					return 0;
-				}
-				);
-		}
-		[TestMethod]
-		public async Task InitProducts()
-		{
-			await Scope(async (IServiceProvider sp) =>
+			await NewServiceScope().Use(async (sp, ct) =>
 			{
-				await sp.InitServices("product");
-				return 0;
+				await sp.InitServices("service");
 			}
 				);
 		}
 		[TestMethod]
+		public async Task 导入_产品()
+		{
+			await NewServiceScope().Use(async (sp, ct) =>
+			{
+				await sp.InitServices("product");
+			}
+			);
+		}
+		[TestMethod]
 		public async Task InitData()
 		{
-			await Scope(async (IServiceProvider sp) =>
+			await NewServiceScope().Use(async (sp, ct) =>
 			{
-				await sp.InitServices("data");
-				return 0;
+				await sp.InitServices(
+					"data",
+					new Dictionary<string, string> {
+						{ "host", "localhost:5000" },
+						{ "ext-ident-postfix", "00" },
+					});
+			}
+			);
+		}
+
+		[TestMethod]
+		public async Task AutoEntityTest()
+		{
+			await NewServiceScope().Use(async (sp, ct) =>
+			{
+				var tcp = sp.Resolve<ITestCaseProvider>();
+				var cases = tcp.GetTestCases();
+				foreach (var c in cases)
+					await tcp.Execute(c);
+			});
+		}
+		[TestMethod]
+		public async Task InitProducts()
+		{
+			await NewServiceScope().Use(async (sp, ct) =>
+			{
+				await sp.InitServices("product");
 			}
 				);
 		}

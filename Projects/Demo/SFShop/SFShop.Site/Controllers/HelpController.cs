@@ -41,8 +41,8 @@ namespace SFShop.Site.Controllers
 		}
         async Task<IEnumerable<Category>> LoadCategories(long? CurrentDocId)
         {
-            var cats = (await DocService.ListChildContainersAsync(null, new Paging { Count = 1000 })).Items;
-            var docs = (await DocService.ListItemsAsync(null, new Paging { Count = 1000 })).Items;
+            var cats = (await DocService.ListCategories(new ListArgument { Paging = new Paging { Count = 1000 } })).Items;
+            var docs = (await DocService.ListDocuments(new ListArgument { Paging = new Paging { Count = 1000 } })).Items;
             var docgrps = docs.Where(d => d.ContainerId != null).GroupBy(d => d.Container.Id).ToDictionary(g => g.Key);
             foreach (var c in cats)
             {
@@ -59,7 +59,7 @@ namespace SFShop.Site.Controllers
 		{
 			long nid;
 
-			var doc = long.TryParse(id, out nid)?await DocService.GetAsync(ObjectKey.From(nid)):await DocService.GetByKeyAsync(id);
+			var doc = long.TryParse(id, out nid)?await DocService.GetDocument(nid):await DocService.GetDocumentByKey(id);
 			if (doc == null)
 				return NotFound();
 

@@ -65,7 +65,7 @@ namespace SF.Biz.Products.Entity
 						ProductCount = c.ProductCount
 					};
 		}
-        protected override Task<TEditable> OnMapModelToEditable(IContextQueryable<TProductType> Query)
+        protected override Task<TEditable> OnMapModelToEditable(IDataContext ctx,IContextQueryable<TProductType> Query)
 		{
 			return (from c in Query
 					select new TEditable
@@ -108,7 +108,7 @@ namespace SF.Biz.Products.Entity
 				//.Include(s => s.Items)
 				.SingleOrDefaultAsync();
 		}
-		protected override IContextQueryable<TProductType> OnBuildQuery(IContextQueryable<TProductType> Query, ProductTypeQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TProductType> OnBuildQuery(IContextQueryable<TProductType> Query, ProductTypeQueryArgument Arg)
 		{
 			return Query
 				.Filter(Arg.ObjectState, p => p.ObjectState)

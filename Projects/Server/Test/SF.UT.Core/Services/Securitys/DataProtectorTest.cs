@@ -14,20 +14,8 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.Reflection;
-using System.Linq.Expressions;
-using System.Collections.Generic;
-
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using SF.Data;
 using Xunit;
-using SF.Applications;
-using SF.Core.Hosting;
-using SF.Core.ServiceManagement;
-using SF.Core.ServiceFeatures;
 using System.Threading.Tasks;
-using SF.Entities;
 
 namespace SF.UT.Services.Securitys
 {

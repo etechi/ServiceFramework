@@ -54,7 +54,7 @@ namespace SF.Biz.Products.Entity
 		{
 			this.Notifier = Notifier;
 		}
-        protected override async Task<TEditable> OnMapModelToEditable(IContextQueryable<TCategory> query)
+        protected override async Task<TEditable> OnMapModelToEditable(IDataContext ctx, IContextQueryable<TCategory> query)
 		{
 			return await BatchMapModelToEditable(query).SingleOrDefaultAsync();
 		}
@@ -81,7 +81,7 @@ namespace SF.Biz.Products.Entity
 					ParentName=c.ParentId.HasValue?c.Parent.Name:null
 				};
 		}
-		protected override IContextQueryable<TCategory> OnBuildQuery(IContextQueryable<TCategory> Query, CategoryQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TCategory> OnBuildQuery(IContextQueryable<TCategory> Query, CategoryQueryArgument Arg)
 		{
 			return Query.Filter(Arg.SellerId, c => c.OwnerUserId)
 				.Filter(Arg.ParentId,c=>c.ParentId)
@@ -130,9 +130,10 @@ namespace SF.Biz.Products.Entity
 			Model.ObjectState = Editable.ObjectState;
 			
 		}
-		async Task UpdateChildren(TCategory Parent, CategoryInternal[] Items)
+		async Task UpdateChildren(IDataContext ctx,TCategory Parent, CategoryInternal[] Items)
 		{
-			var org_items = await DataSet.LoadTreeChildren(
+			var dataSet = ctx.Set<TCategory>();
+			var org_items = await dataSet.LoadTreeChildren(
 				Parent,
 				false,
 				(q, c) => q.Where(i => i.ParentId == c.Id)
@@ -144,7 +145,7 @@ namespace SF.Biz.Products.Entity
 			foreach (var n in Tree.AsEnumerable(Items, ii => ii.Children).Where(n => n.Id == 0))
 				n.Id = await IdentGenerator.GenerateAsync<TCategory>();
 
-			var re= DataSet.MergeTree(
+			var re= dataSet.MergeTree(
 				Parent,
 				org_items,
 				Items,
@@ -174,8 +175,8 @@ namespace SF.Biz.Products.Entity
 				);
 
 			foreach(var c in Removed)
-				await DataSet.Context.Set< TCategoryItem>().RemoveRangeAsync(i => i.CategoryId == c.Id);
-			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				await ctx.Set< TCategoryItem>().RemoveRangeAsync(i => i.CategoryId == c.Id);
+			ctx.AddCommitTracker(
 				TransactionCommitNotifyType.AfterCommit,
 				(t, ex) =>
 				{
@@ -194,21 +195,21 @@ namespace SF.Biz.Products.Entity
 			);
 			//return BatchMapModelToEditable(re.AsQueryable(DataSet.Context.Provider)).ToArray();
 		}
-        public async Task<long[]> LoadItems(long CategoryId)
+        public Task<long[]> LoadItems(long CategoryId)
         {
-            var items = await (
-                from ci in DataContext.Set<TCategoryItem>().AsQueryable()
-                where ci.CategoryId == CategoryId
-                let item = ci.Item
-                orderby ci.Order ascending
-                select item.Id
-                ).ToArrayAsync();
-            return items;
+			return DataScope.Use("载入项目", ctx =>
+				 (from ci in ctx.Set<TCategoryItem>().AsQueryable()
+				  where ci.CategoryId == CategoryId
+				  let item = ci.Item
+				  orderby ci.Order ascending
+				  select item.Id
+				 ).ToArrayAsync()
+				 );
         }
-        async Task UpdateItems(TCategory Category, long[] Items)
+        async Task UpdateItems(IDataContext ctx,TCategory Category, long[] Items)
 		{
 			Items = Items.Distinct().ToArray();
-			var itemSet = DataContext.Set<TCategoryItem>();
+			var itemSet = ctx.Set<TCategoryItem>();
 			var cur_items = await itemSet
 				.AsQueryable(false)
 				.Where(ci => ci.CategoryId == Category.Id)
@@ -231,7 +232,7 @@ namespace SF.Biz.Products.Entity
 			Category.ItemCount = Items.Length;
 			//DataSet.Update(c);
 			//await DataContext.SaveChangesAsync();
-			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+			ctx.AddCommitTracker(
 				TransactionCommitNotifyType.AfterCommit,
 				(t, ex) =>
 				{
@@ -278,7 +279,7 @@ namespace SF.Biz.Products.Entity
             var orgTags = Model.Tag;
             var newTags = ctx.Editable.Tag;
 
-			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+			ctx.DataContext.AddCommitTracker(
 				TransactionCommitNotifyType.AfterCommit,
 				(t, ex) =>
 				{
@@ -287,16 +288,17 @@ namespace SF.Biz.Products.Entity
 				});
 			if (npid != opid)
 			{
-				await DataSet.ValidateTreeParent(
+				var cat = ctx.DataContext.Set<TCategory>();
+				await cat.ValidateTreeParent(
 					"商品分类", 
 					Model.Id,
 					npid,
-					pnt => DataSet.AsQueryable()
+					pnt => cat.AsQueryable()
 						.Where(c => c.Id == pnt)
 						.Select(c => c.ParentId.HasValue?c.ParentId.Value:0)
 					);
 
-				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				ctx.DataContext.AddCommitTracker(
 					TransactionCommitNotifyType.AfterCommit,
 					(t, ex) =>
 					{
@@ -308,7 +310,7 @@ namespace SF.Biz.Products.Entity
 					);
 			}
 			if(Model.Id!=0)
-				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				ctx.DataContext.AddCommitTracker(
 					TransactionCommitNotifyType.AfterCommit,
 					(t, ex) =>
 					{
@@ -318,10 +320,10 @@ namespace SF.Biz.Products.Entity
 			OnUpdateModel(Model, obj, ServiceContext.Now);
 
 			if(obj.Children!=null)
-				await UpdateChildren(Model, obj.Children);
+				await UpdateChildren(ctx.DataContext, Model, obj.Children);
 
 			if (obj.Items != null)
-				await UpdateItems(Model, obj.Items);
+				await UpdateItems(ctx.DataContext, Model, obj.Items);
 
 
 
@@ -333,10 +335,12 @@ namespace SF.Biz.Products.Entity
 			Model.CreatedTime = Now;
 			Model.Id = await IdentGenerator.GenerateAsync<TCategory>();
 		}
+		
 		protected override Task<TCategory> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TCategory> ctx)
 		{
-			return DataSet.AsQueryable(false)
-				.Where(s => s.Id.Equals(Id.Id))
+			//DataSet.AsQueryable(false)
+			//	.Where(s => s.Id.Equals(Id.Id))
+			return ctx
 				.Include(s => s.Items)
 				.SingleOrDefaultAsync();
 		}
@@ -345,9 +349,9 @@ namespace SF.Biz.Products.Entity
         protected override Task OnRemoveModel(IModifyContext ctx)
 		{
 			var Model = ctx.Model;
-			DataContext.Set<TCategoryItem>().RemoveRange(Model.Items);
+			ctx.DataContext.Set<TCategoryItem>().RemoveRange(Model.Items);
             var tags = Model.Tag;
-			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+			ctx.DataContext.AddCommitTracker(
 				TransactionCommitNotifyType.AfterCommit,
 				(t, ex) =>
 				{

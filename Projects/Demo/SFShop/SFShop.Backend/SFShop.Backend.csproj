@@ -12,6 +12,9 @@
   <ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
+		<PackageReference Include="microsoft.extensions.configuration" Version="2.0.1" />
+		<PackageReference Include="microsoft.extensions.configuration.fileextensions" Version="2.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.1" />
   </ItemGroup>
 	
   <ItemGroup>
@@ -19,15 +22,16 @@
     <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.MemberSources.Implements\SF.Biz.MemberSources.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Products.Implements\SF.Biz.Products.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Admins.Implements\SF.Common.Admins.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.Common.BackEndConsoleServices.Implements\SF.Common.BackEndConsoleServices.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Documents.Implements\SF.Common.Documents.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Documents\SF.Common.Documents.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.FrontEndContents.Implements\SF.Common.FrontEndContents.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Media.Implements\SF.Common.Media.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Members.Implements\SF.Common.Members.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Common\SF.Common.Notifications.Implements\SF.Common.Notifications.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.PhoneNumberValidator.Implements\SF.Common.PhoneNumberValidator.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Common\SF.Common.TextMessages.Implements\SF.Common.TextMessages.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Caching.Implements\SF.Sys.Caching.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.CallPlans.Implements\SF.Sys.CallPlans.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Client.Implements\SF.Sys.Client.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Data.EFCore\SF.Sys.Data.EFCore.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Data.Implements\SF.Sys.Data.Implements.csproj" />
@@ -35,10 +39,11 @@
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Entities.Implements\SF.Sys.Entities.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Events.Implements\SF.Sys.Events.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Hosting.Implements\SF.Sys.Hosting.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.HttpClient.Implements\SF.Sys.HttpClient.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Logging.Implements\SF.Sys.Logging.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.MenuServices.Implements\SF.Sys.MenuServices.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Mime.Implements\SF.Sys.Mime.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.NetworkServices.Implements\SF.Sys.NetworkServices.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Plans.Implements\SF.Sys.Plans.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Reflection.TypeBuilder\SF.Sys.Reflection.TypeBuilder.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Security.Implements\SF.Sys.Security.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.ServiceFeatures.Implements\SF.Sys.ServiceFeatures.Implements.csproj" />
@@ -50,6 +55,7 @@
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Settings.Supports\SF.Sys.Settings.Supports.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Settings\SF.Sys.Settings.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Test.Implements\SF.Sys.Test.Implements.csproj" />
+    <ProjectReference Include="..\..\..\Server\Utils\SF.Utils.TableExports.Excel\SF.Utils.TableExports.Excel.csproj" />
     <ProjectReference Include="..\SFShop.Bizness.Implements\SFShop.Bizness.Implements.csproj" />
     <ProjectReference Include="..\SFShop.Bizness\SFShop.Bizness.csproj" />
   </ItemGroup>

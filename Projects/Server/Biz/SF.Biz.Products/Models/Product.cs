@@ -320,14 +320,8 @@ namespace SF.Biz.Products
 		public string ProductTypeName { get; set; }
 	}
 
-	public class ProductInternalQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class ProductInternalQueryArgument : QueryArgument<ObjectKey<long>>
 	{
-
-		/// <summary>
-		/// 产品ID
-		/// </summary>
-		public ObjectKey<long> Id { get; set; }
-
 		/// <summary>
 		/// 产品类型
 		/// </summary>

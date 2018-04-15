@@ -25,7 +25,9 @@ using SF.Sys.AspNetCore;
 using SF.Sys.Hosting;
 using SF.Sys.Services;
 using SF.Auth.IdentityServices;
-using IdentityServer4.Stores;
+using SF.Sys.Data;
+using System.Threading.Tasks;
+using SF.Sys.ServiceFeatures;
 
 namespace SFShop
 {
@@ -40,7 +42,9 @@ namespace SFShop
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(Microsoft.Extensions.DependencyInjection.IServiceCollection services)
-        {
+		{
+			services.AddSingleton(sp => new DataSourceConfig { ConnectionString = Configuration["ConnectionStrings:Default"] });
+
 			services.AddAspNetCoreSystemServices();
 			services.AddMvc()
 				.AddJsonOptions(
@@ -53,7 +57,7 @@ namespace SFShop
 						})
 				);
 
-			var ins = AppBuilder.Build(SF.Sys.Hosting.EnvironmentType.Production, services)
+			var ins = AppBuilder.Init(SF.Sys.Hosting.EnvironmentType.Production, services)
 				.With((SF.Sys.Services.IServiceCollection sc) =>
 					sc.AddAspNetCoreSupport()
 					//.AddAccessTokenHandler(
@@ -70,15 +74,12 @@ namespace SFShop
 						sc.AddFrontSideMvcContentRenderProvider();
 						sc.AddNetworkService();
 						sc.AddAspNetCoreServiceInterface();
-						sc.AddIdentityServer4Support();
-						var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("system"));
-						sc.AddSingleton<ISigningCredentialStore>(
-							new DefaultSigningCredentialsStore(
-								new Microsoft.IdentityModel.Tokens.SigningCredentials(
-									key,
-									SecurityAlgorithms.HmacSha256
-									)
-							));
+						sc.AddJwtAuthSupports(new JwtAuthSettings
+						{
+							SecurityKey = "1234567890123456",
+							Issuer = "issuer",
+							Audience = "audience"
+						});
 					}
 					)
 				.Build();
@@ -87,8 +88,9 @@ namespace SFShop
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
-        {
-			app.UseIdentityServer();
+		{
+			//StartServices(app, applicationLifetime);
+
 			app.ApplicationCommonConfigure(env);
 			var mvc=app.UseMvc(routes =>
 			{
@@ -181,5 +183,20 @@ namespace SFShop
 			});
 			
 		}
-    }
+
+		private static void StartServices(IApplicationBuilder app, IApplicationLifetime applicationLifetime)
+		{
+			var ins = app.ApplicationServices.Resolve<IAppInstance>();
+			if (ins.EnvType != EnvironmentType.Utils)
+			{
+				var disposable = Task.Run(() =>
+					  app.ApplicationServices.BootServices()
+					).Result;
+				applicationLifetime.ApplicationStopping.Register(() =>
+				{
+					disposable.Dispose();
+				});
+			}
+		}
+	}
 }

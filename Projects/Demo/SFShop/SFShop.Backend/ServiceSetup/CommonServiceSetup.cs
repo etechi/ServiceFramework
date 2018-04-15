@@ -25,11 +25,18 @@ namespace SFShop.ServiceSetup
 	{
 		public static IServiceCollection AddCommonServices(this IServiceCollection Services, EnvironmentType EnvType)
 		{
-			Services.AddTextMessageServices();
+			Services.AddIdentityServices(
+				null,
+				EnvType == EnvironmentType.Development,
+				"acc",
+				DefaultUserIcon: StaticRes.File + "-ef-identity-user-png"
+				);
+
+			Services.AddNotificationServices();
 
 
 			//Services.AddAuthUserServices();
-			Services.AddMemberServices();
+			//Services.AddMemberServices();
 
 			Services.AddAdminServices();
 			//Services.AddBizAdminServices();
@@ -38,16 +45,20 @@ namespace SFShop.ServiceSetup
 
 			Services.AddDefaultPhoneNumberValidator();
 			Services.AddDocumentServices();
+			//Services.AddConversationServices();
+
+			Services.AddBackEndConsoleServices("SFShop管理控制台");
+
 
 			Services.InitServices("系统服务", InitServices);
 			return Services;
 		}
 		static async Task InitServices(IServiceProvider sp, IServiceInstanceManager sim, long? ParentId)
 		{
-			var SysAdminService = await sim.NewAdminService().Ensure(sp, ParentId);
+			//var SysAdminService = await sim.NewAdminService().Ensure(sp, ParentId);
 			//var BizAdminService = await sim.NewBizAdminService().Ensure(sp, ParentId);
 			var MenuService = await sim.NewMenuService().Ensure(sp, ParentId);
-			var MemberService = await sim.NewMemberService().Ensure(sp, ParentId);
+			//var MemberService = await sim.NewMemberService().Ensure(sp, ParentId);
 
 		}
 

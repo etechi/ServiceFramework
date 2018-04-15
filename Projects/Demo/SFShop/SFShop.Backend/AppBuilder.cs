@@ -25,6 +25,7 @@ using SF.Sys.Services;
 using SFShop.ServiceSetup;
 using System;
 using SFShop.Setup;
+using SF.Sys.Data;
 
 namespace SFShop
 {
@@ -37,7 +38,7 @@ namespace SFShop
 			ls.AddDebug();
 			return ls;
 		}
-		public static IAppInstanceBuilder Build(
+		public static IAppInstanceBuilder Init(
 			EnvironmentType EnvType,
 			Microsoft.Extensions.DependencyInjection.IServiceCollection MSServices=null, 
 			ILogService logService=null
@@ -46,13 +47,7 @@ namespace SFShop
 			if (MSServices == null)
 				MSServices = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
-			MSServices.AddEFCoreDbContext<SFShopDbContext>(
-				(IServiceProvider isp, DbContextOptionsBuilder options) =>
-					options.UseSqlServer(isp.Resolve<DbConnection>())
-				);
-
 			var svcs = new SF.Sys.Services.ServiceCollection();
-			svcs.AddServices(MSServices);
 
 			var ls = logService ?? LogService();
 
@@ -67,11 +62,11 @@ namespace SFShop
 				.With((sc, envType) => sc.AddCommonServices(EnvType))
 				.With((sc, envType) => sc.AddBizServices(EnvType))
 				.With((sc, envType) => sc.AddSFShopServices(EnvType))
-				.With((sc, envType) => sc.AddIdentityService())
 				.With((sc,envType) =>
 				{
-					sc.AddInitializer("data", "初始化Hygou数据", sp => SystemInitializer.Initialize(sp, envType));
-					sc.AddInitializer("product", "初始化Hygou产品", sp => SampleImporter.ImportSamples(sp));
+					sc.AddInitializer("service", "初始化动态服务", sp => SystemInitializer.ServiceInitialize(sp, envType), 100);
+					sc.AddInitializer("data", "初始化数据", (sp, args) => SystemInitializer.DataInitialize(sp, envType, args), 100);
+					sc.AddInitializer("product", "初始化产品", sp => SampleImporter.ImportSamples(sp));
 
 				})
 				.OnEnvType(e => e != EnvironmentType.Utils, (sp)=>
@@ -83,6 +78,14 @@ namespace SFShop
 					}).Wait();
 					return null;
 				});
+
+			MSServices.AddEFCoreDbContext<SFShopDbContext>(
+				(IServiceProvider isp, DbContextOptionsBuilder options) =>
+					options
+						//.UseLoggerFactory(ls.AsMSLoggerFactory())
+						.UseSqlServer(isp.Resolve<IDataSource>().ConnectionString)
+				);
+			svcs.AddServices(MSServices);
 			return builder;
 		}
 	}

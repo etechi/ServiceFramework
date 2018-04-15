@@ -17,7 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.MemberInvitations.Implements\SF.Biz.MemberInvitations.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.MemberSources.Implements\SF.Biz.MemberSources.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Biz\SF.Biz.Products.Implements\SF.Biz.Products.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Admins.Implements\SF.Common.Admins.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.Documents.Implements\SF.Common.Documents.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Common\SF.Common.FrontEndContents.Implements\SF.Common.FrontEndContents.Implements.csproj" />
@@ -36,7 +35,6 @@
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Events.Implements\SF.Sys.Events.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Hosting.Implements\SF.Sys.Hosting.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Logging.Implements\SF.Sys.Logging.Implements.csproj" />
-    <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.BackEndConsoleServices.Implements\SF.Sys.BackEndConsoleServices.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Mime.Implements\SF.Sys.Mime.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.NetworkServices.Implements\SF.Sys.NetworkServices.Implements.csproj" />
     <ProjectReference Include="..\..\..\Server\Sys\SF.Sys.Reflection.TypeBuilder\SF.Sys.Reflection.TypeBuilder.csproj" />

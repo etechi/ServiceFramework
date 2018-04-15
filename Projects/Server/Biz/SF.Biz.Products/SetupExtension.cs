@@ -113,8 +113,9 @@ namespace SF.Biz.Products
 			var re=await Manager.QueryIdentsAsync(new ItemQueryArgument
 			{
 				ProductId = ProductId,
-				SellerId = SellerId
-			}, Paging.Single
+				SellerId = SellerId,
+				Paging=Paging.One
+			}
 			);
 			var id = re.Items.SingleOrDefault();
 			if (id== null)

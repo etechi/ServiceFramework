@@ -24,7 +24,15 @@ namespace SFShop.Data
 {
 	public class SFShopDbContextFactory : IDesignTimeDbContextFactory<SFShopDbContext>
 	{
-		IAppInstance Instance { get; } = AppBuilder.Build(EnvironmentType.Utils).Build();
+		IAppInstance Instance { get; } = AppBuilder
+			.Init(EnvironmentType.Utils)
+			.With((sc, env) =>
+			{
+				sc.AddAppSettingDefaultDataSourceConfig();
+				sc.AddLocalInvokeContext();
+				sc.AddLocalClientService();
+				sc.AddNotImplementedAccessTokenHandler();
+			}).Build();
 
 		public SFShopDbContext CreateDbContext(string[] args)
 		{

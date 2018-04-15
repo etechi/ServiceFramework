@@ -23,24 +23,15 @@ using SF.Sys.NetworkService;
 
 namespace SF.Biz.MemberSources
 {
-	public class MemberSourceQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class MemberSourceQueryArgument : ObjectQueryArgument<ObjectKey<long>>
 	{
-		/// <summary>
-		/// Id
-		/// </summary>
-		public ObjectKey<long> Id { get; set; }
-
-		/// <summary>
-		/// 名称
-		/// </summary>
-		public string Name { get; set; }
 	}
 
 	/// <summary>
 	/// 会员渠道
 	/// </summary>
 	[EntityManager]
-	[Authorize("admin")]
+	//[Authorize("admin")]
 	[NetworkService]
 	[Category("用户管理", "会员渠道管理")]
 	public interface IMemberSourceManagementService : 

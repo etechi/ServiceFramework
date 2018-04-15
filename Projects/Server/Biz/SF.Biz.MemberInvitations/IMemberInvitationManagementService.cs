@@ -22,24 +22,16 @@ using SF.Sys.NetworkService;
 
 namespace SF.Biz.MemberInvitations
 {
-	public class MemberInvitationQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class MemberInvitationQueryArgument : ObjectQueryArgument<ObjectKey<long>>
 	{
-		/// <summary>
-		/// Id
-		/// </summary>
-		public ObjectKey<long> Id { get; set; }
 
-		/// <summary>
-		/// 名称
-		/// </summary>
-		public string Name { get; set; }
 	}
 
 	/// <summary>
 	/// 会员邀请
 	/// </summary>
 	[EntityManager]
-	[Authorize("admin")]
+	//[Authorize("admin")]
 	[NetworkService]
 	[Category("用户管理", "会员邀请管理")]
 

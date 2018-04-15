@@ -58,7 +58,7 @@ namespace SF.Biz.Products.Entity
 			"time",
 			b => b.Add("time", i => i.UpdatedTime)
 			);
-		protected override IContextQueryable<TItem> OnBuildQuery(IContextQueryable<TItem> Query, ItemQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TItem> OnBuildQuery(IContextQueryable<TItem> Query, ItemQueryArgument Arg)
 		{
 			if (Arg == null)
 				return Query;
@@ -89,7 +89,7 @@ namespace SF.Biz.Products.Entity
 						Image=c.Image
 					};
 		}
-        protected override Task<TEditable> OnMapModelToEditable(IContextQueryable<TItem> Query)
+		protected override Task<TEditable> OnMapModelToEditable(IDataContext Context, IContextQueryable<TItem> Query)
 		{
 			return (from c in Query
 				   select new TEditable
@@ -129,7 +129,7 @@ namespace SF.Biz.Products.Entity
 			Model.SourceItemId = obj.SourceItemId;
 			if (Model.SourceItemId.HasValue)
 			{
-				var level = await DataSet.AsQueryable()
+				var level = await ctx.DataContext.Queryable<TItem>()
 					.Where(i => i.Id == Model.SourceItemId)
 					.Select(i => i.SourceLevel)
 					.SingleOrDefaultAsync();

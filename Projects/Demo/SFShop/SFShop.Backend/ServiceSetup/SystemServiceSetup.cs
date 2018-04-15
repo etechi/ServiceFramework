@@ -13,8 +13,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Data;
 using SF.Sys.Hosting;
 using SF.Sys.Services;
+using SF.Utils.TableExports;
+using SF.Utils.TableExports.Excel;
 using SFShop.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -28,11 +31,14 @@ namespace SFShop.ServiceSetup
 			if (EnvType == EnvironmentType.Utils)
 				Services.AddConsoleDefaultFilePathStructure();
 
+			Services.AddSingleton<ITableExporterFactory, ExcelExporterFactory>("excel");
+
 			Services.AddNewtonsoftJson();
 			Services.AddSystemTimeService();
-
+			Services.AddHttpClientService();
 			Services.AddTaskServiceManager();
-
+			Services.AddTimerService();
+			Services.AddTimedTaskRunnerService(new TimedTaskRunnerSetting());
 			//Services.AddDataContext();
 
 			Services.AddDataEntityProviders();
@@ -46,8 +52,8 @@ namespace SFShop.ServiceSetup
 			Services.AddAutoEntityService();
 			Services.AddEventServices();
 
-			Services.AddCallPlans();
-			Services.AddDefaultCallPlanStorage();
+			//Services.AddCallPlans();
+			//Services.AddDefaultCallPlanStorage();
 
 			Services.AddManagedService();
 			Services.AddManagedServiceAdminServices();
@@ -61,7 +67,7 @@ namespace SFShop.ServiceSetup
 
 			Services.AddTestServices();
 			Services.AddEntityTestServices();
-
+			Services.AddReminderServices();
 
 			Services.AddSystemDrawing();
 			Services.AddMediaService(
@@ -74,14 +80,16 @@ namespace SFShop.ServiceSetup
 				});
 			Services.AddMicrosoftMemoryCacheAsLocalCache();
 
-			Services.AddMenuService();
+			Services.AddMenuServices();
 
-			Services.AddEFCoreDataEntity((sp, conn) => sp.Resolve<SFShopDbContext>());
-			Services.AddDataContext(new SF.Sys.Data.DataSourceConfig
-			{
-				//ConnectionString = "data source=.\\SQLEXPRESS;initial catalog=sf-demo-hygou;user id=sa;pwd=system;MultipleActiveResultSets=True;App=EntityFramework"
-				ConnectionString = "Data Source=127.0.0.1,1433;User ID=sa;pwd=system;initial catalog=sf-demo-site;MultipleActiveResultSets=True;App=EntityFramework"
-			});
+			Services.AddEFCorePoolDataContextFactory<SFShopDbContext>();
+			Services.AddDataScope(sp => sp.Resolve<DataSourceConfig>());
+
+			//Services.AddDataContext(new SF.Sys.Data.DataSourceConfig
+			//{
+			//	//ConnectionString = "data source=.\\SQLEXPRESS;initial catalog=sf-demo-hygou;user id=sa;pwd=system;MultipleActiveResultSets=True;App=EntityFramework"
+			//	ConnectionString = "Data Source=127.0.0.1,1433;User ID=sa;pwd=system;initial catalog=sf-demo-site;MultipleActiveResultSets=True;App=EntityFramework"
+			//});
 
 
 			Services.InitServices("系统服务", async (sp, sim, ParentId) =>

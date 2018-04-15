@@ -20,9 +20,8 @@ using SF.Sys.NetworkService;
 
 namespace SF.Biz.Products
 {
-	public class CategoryQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class CategoryQueryArgument : QueryArgument<ObjectKey<long>>
     {
-		public ObjectKey<long> Id { get; set; }
 
 		/// <summary>
 		/// 卖家

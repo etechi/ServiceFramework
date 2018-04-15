@@ -137,7 +137,7 @@ namespace SFShop.Setup
 			//var cnew = cats.Where(c => c.Name == "新手").Single();
 
 			//var standard = cats.Where(c => c.Name == "标准分类").Single();
-			var ctypes = (await CategoryManager.QueryAsync(new CategoryQueryArgument { ParentId = standard.Id },Paging.All)).Items.ToArray();
+			var ctypes = (await CategoryManager.QueryAsync(new CategoryQueryArgument { ParentId = standard.Id,Paging= Paging.All })).Items.ToArray();
 				
 
 			//var ctx = scope.Resolve<IDataContext>();
@@ -146,7 +146,7 @@ namespace SFShop.Setup
             {
                 var type = ctypes.First(c => c.Name == cat);
                 var ptype = types.Types.Where(t => t.Name == typeName).Single();
-				var ids = await ItemManager.QueryIdentsAsync(new ItemQueryArgument { TypeId = ptype.Id }, Paging.All);
+				var ids = await ItemManager.QueryIdentsAsync(new ItemQueryArgument { TypeId = ptype.Id });
 				//await ctx.ReadOnly<DataModels.ProductItem>()
     //                .Where(i => i.SourceItemId == null && i.Product.TypeId == ptype.Id)
     //                .Select(i => i.Id).ToArrayAsync();

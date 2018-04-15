@@ -21,9 +21,8 @@ using System.Threading.Tasks;
 
 namespace SF.Biz.Products
 {
-	public class ItemQueryArgument : IQueryArgument<ObjectKey<long>>
+	public class ItemQueryArgument : QueryArgument<ObjectKey<long>>
     {
-		public ObjectKey<long> Id { get; set; }
 
 		/// <summary>
 		/// 产品

@@ -61,16 +61,18 @@ namespace SF.Biz.MemberSources
 			//		m.MemberSourceId = PntSourceId;
 			//	}
 			//}
-
-			DataContext.Set<TSourceMember>().Add(new TSourceMember
+			await DataScope.Use("添加成员", async ctx =>
 			{
-				Id = MemberId,
-				ContainerId = SourceId
+				ctx.Set<TSourceMember>().Add(new TSourceMember
+				{
+					Id = MemberId,
+					ContainerId = SourceId
+				});
+				await ctx.SaveChangesAsync();
 			});
-			await DataContext.SaveChangesAsync();
 		}
 		
-		protected override IContextQueryable<TMemberSource> OnBuildQuery(IContextQueryable<TMemberSource> Query, MemberSourceQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TMemberSource> OnBuildQuery(IContextQueryable<TMemberSource> Query, MemberSourceQueryArgument Arg)
 		{
 			var q = Query.Filter(Arg.Id, r => r.Id)
 				.FilterContains(Arg.Name, r => r.Name)

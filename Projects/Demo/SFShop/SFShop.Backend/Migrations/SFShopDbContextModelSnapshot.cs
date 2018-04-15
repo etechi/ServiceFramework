@@ -5,9 +5,10 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
-using SF.Common.TextMessages.Management;
+using SF.Common.Notifications;
+using SF.Common.Notifications.Models;
+using SF.Sys.AtLeastOnceTasks;
 using SF.Sys.Entities;
-using SF.Sys.MenuServices;
 using SFShop.Data;
 using System;
 
@@ -23,7 +24,7 @@ namespace SFShop.Backend.Migrations
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClaimType", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataClaimType", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(100);
@@ -38,7 +39,7 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<long?>("ServiceDataScopeId");
 
@@ -48,7 +49,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -63,10 +64,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("UpdatorId");
 
-                    b.ToTable("SysAuthClaimType");
+                    b.ToTable("AuthClaimType");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Client", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataClient", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(100);
@@ -103,7 +104,7 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<string>("PostLogoutRedirectUris");
 
@@ -127,7 +128,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -143,10 +144,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("UpdatorId");
 
-                    b.ToTable("SysAuthClient");
+                    b.ToTable("AuthClient");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClientClaimValue", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataClientClaimValue", b =>
                 {
                     b.Property<long>("Id");
 
@@ -170,10 +171,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("SysAuthClientClaimValue");
+                    b.ToTable("AuthClientClaimValue");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClientConfig", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataClientConfig", b =>
                 {
                     b.Property<long>("Id");
 
@@ -215,7 +216,7 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<bool>("RequireClientSecret");
 
@@ -231,7 +232,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -245,10 +246,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("UpdatorId");
 
-                    b.ToTable("SysAuthClientConfig");
+                    b.ToTable("AuthClientConfig");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClientScope", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataClientScope", b =>
                 {
                     b.Property<long>("ClientConfigId");
 
@@ -259,10 +260,68 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("ScopeId");
 
-                    b.ToTable("SysAuthClientScope");
+                    b.ToTable("AuthClientScope");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Operation", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataGrant", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasMaxLength(100);
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("InternalRemarks");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("OwnerId");
+
+                    b.Property<long?>("ServiceDataScopeId");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long?>("UpdatorId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedTime");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ServiceDataScopeId");
+
+                    b.HasIndex("UpdatorId");
+
+                    b.ToTable("AuthGrant");
+                });
+
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataGrantItem", b =>
+                {
+                    b.Property<long>("GrantId");
+
+                    b.Property<string>("ServiceId")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("ServiceMethodId")
+                        .HasMaxLength(200);
+
+                    b.HasKey("GrantId", "ServiceId", "ServiceMethodId");
+
+                    b.ToTable("AuthGrantItem");
+                });
+
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataOperation", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(100);
@@ -289,7 +348,7 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
@@ -309,7 +368,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -323,10 +382,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("UpdatorId");
 
-                    b.ToTable("SysAuthOperation");
+                    b.ToTable("AuthOperation");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.OperationRequiredClaim", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataOperationRequiredClaim", b =>
                 {
                     b.Property<string>("OperationId");
 
@@ -336,10 +395,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("ClaimTypeId");
 
-                    b.ToTable("SysAuthOperationRequiredClaim");
+                    b.ToTable("AuthOperationRequiredClaim");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Resource", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataResource", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(100);
@@ -368,7 +427,7 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
@@ -388,7 +447,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -402,10 +461,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("UpdatorId");
 
-                    b.ToTable("SysAuthResource");
+                    b.ToTable("AuthResource");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ResourceRequiredClaim", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataResourceRequiredClaim", b =>
                 {
                     b.Property<string>("ResourceId");
 
@@ -415,10 +474,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("ClaimTypeId");
 
-                    b.ToTable("SysAuthResourceRequiredClaim");
+                    b.ToTable("AuthResourceRequiredClaim");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ResourceSupportedOperation", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataResourceSupportedOperation", b =>
                 {
                     b.Property<string>("ResourceId");
 
@@ -428,10 +487,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("OperationId");
 
-                    b.ToTable("SysAuthResourceSupportedOperation");
+                    b.ToTable("AuthResourceSupportedOperation");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Role", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(100);
@@ -440,13 +499,15 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<string>("InternalRemarks");
 
+                    b.Property<bool>("IsSysRole");
+
                     b.Property<byte>("LogicState");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<long?>("ServiceDataScopeId");
 
@@ -456,7 +517,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -471,10 +532,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("UpdatorId");
 
-                    b.ToTable("SysAuthRole");
+                    b.ToTable("AuthRole");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.RoleClaimValue", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataRoleClaimValue", b =>
                 {
                     b.Property<long>("Id");
 
@@ -496,29 +557,24 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("SysAuthRoleClaimValue");
+                    b.ToTable("AuthRoleClaimValue");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.RoleGrant", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataRoleGrant", b =>
                 {
                     b.Property<string>("RoleId");
 
-                    b.Property<string>("ResourceId")
+                    b.Property<long>("DstGrantId")
                         .HasMaxLength(100);
 
-                    b.Property<string>("OperationId")
-                        .HasMaxLength(100);
+                    b.HasKey("RoleId", "DstGrantId");
 
-                    b.HasKey("RoleId", "ResourceId", "OperationId");
+                    b.HasIndex("DstGrantId");
 
-                    b.HasIndex("OperationId");
-
-                    b.HasIndex("ResourceId");
-
-                    b.ToTable("SysAuthRoleGrant");
+                    b.ToTable("AuthRoleGrant");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Scope", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataScope", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(100);
@@ -533,7 +589,7 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<long?>("ServiceDataScopeId");
 
@@ -543,7 +599,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -557,10 +613,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("UpdatorId");
 
-                    b.ToTable("SysAuthScope");
+                    b.ToTable("AuthScope");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ScopeResource", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataScopeResource", b =>
                 {
                     b.Property<string>("ScopeId");
 
@@ -571,10 +627,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("ResourceId");
 
-                    b.ToTable("SysAuthScopeResource");
+                    b.ToTable("AuthDataScopeResource");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.User", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataUser", b =>
                 {
                     b.Property<long>("Id");
 
@@ -602,14 +658,10 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasMaxLength(100);
-
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(30);
 
                     b.Property<string>("SecurityStamp")
                         .IsRequired()
@@ -629,7 +681,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -648,10 +700,10 @@ namespace SFShop.Backend.Migrations
                     b.HasIndex("MainClaimTypeId", "MainCredential")
                         .IsUnique();
 
-                    b.ToTable("SysAuthUser");
+                    b.ToTable("AuthUser");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.UserClaimValue", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataUserClaimValue", b =>
                 {
                     b.Property<long>("Id");
 
@@ -673,16 +725,16 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SysAuthUserClaimValue");
+                    b.ToTable("AuthUserClaimValue");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.UserCredential", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataUserCredential", b =>
                 {
                     b.Property<string>("ClaimTypeId")
                         .HasMaxLength(100);
 
                     b.Property<string>("Credential")
-                        .HasMaxLength(100);
+                        .HasMaxLength(200);
 
                     b.Property<DateTime?>("ConfirmedTime");
 
@@ -696,10 +748,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("SysAuthUserCredential");
+                    b.ToTable("AuthUserCredential");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.UserRole", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataUserRole", b =>
                 {
                     b.Property<long>("UserId");
 
@@ -709,7 +761,7 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("SysAuthUserRole");
+                    b.ToTable("AuthUserRole");
                 });
 
             modelBuilder.Entity("SF.Biz.Products.Entity.DataModels.Category", b =>
@@ -1072,48 +1124,7 @@ namespace SFShop.Backend.Migrations
                     b.ToTable("BizProductPropertyScope");
                 });
 
-            modelBuilder.Entity("SF.Common.Admins.DataModels.Admin", b =>
-                {
-                    b.Property<long>("Id");
-
-                    b.Property<DateTime>("CreatedTime");
-
-                    b.Property<string>("InternalRemarks");
-
-                    b.Property<byte>("LogicState");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
-                    b.Property<long>("OwnerId");
-
-                    b.Property<long?>("ServiceDataScopeId");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<DateTime>("UpdatedTime");
-
-                    b.Property<long>("UpdatorId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedTime");
-
-                    b.HasIndex("Name");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ServiceDataScopeId");
-
-                    b.HasIndex("UpdatorId");
-
-                    b.ToTable("MgrAdmin");
-                });
-
-            modelBuilder.Entity("SF.Common.Documents.DataModels.Document", b =>
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocument", b =>
                 {
                     b.Property<long>("Id");
 
@@ -1150,11 +1161,15 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<DateTime?>("PublishDate");
 
                     b.Property<string>("Remarks")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("ScopeId")
+                        .IsRequired()
                         .HasMaxLength(100);
 
                     b.Property<long?>("ServiceDataScopeId");
@@ -1172,7 +1187,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -1188,6 +1203,8 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("PublishDate");
 
+                    b.HasIndex("ScopeId");
+
                     b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
@@ -1199,7 +1216,7 @@ namespace SFShop.Backend.Migrations
                     b.ToTable("CommonDocument");
                 });
 
-            modelBuilder.Entity("SF.Common.Documents.DataModels.DocumentAuthor", b =>
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocumentAuthor", b =>
                 {
                     b.Property<long>("Id");
 
@@ -1225,9 +1242,13 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<string>("Remarks")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("ScopeId")
+                        .IsRequired()
                         .HasMaxLength(100);
 
                     b.Property<long?>("ServiceDataScopeId");
@@ -1245,7 +1266,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -1255,6 +1276,8 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("OwnerId");
 
+                    b.HasIndex("ScopeId");
+
                     b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
@@ -1262,7 +1285,7 @@ namespace SFShop.Backend.Migrations
                     b.ToTable("CommonDocumentAuthor");
                 });
 
-            modelBuilder.Entity("SF.Common.Documents.DataModels.DocumentCategory", b =>
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocumentCategory", b =>
                 {
                     b.Property<long>("Id");
 
@@ -1292,9 +1315,13 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<string>("Remarks")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("ScopeId")
+                        .IsRequired()
                         .HasMaxLength(100);
 
                     b.Property<long?>("ServiceDataScopeId");
@@ -1312,7 +1339,53 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedTime");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ScopeId");
+
+                    b.HasIndex("ServiceDataScopeId");
+
+                    b.HasIndex("UpdatorId");
+
+                    b.HasIndex("ContainerId", "ItemOrder");
+
+                    b.ToTable("CommonDocumentCategory");
+                });
+
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocumentScope", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(100);
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("InternalRemarks");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("OwnerId");
+
+                    b.Property<long?>("ServiceDataScopeId");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -1326,12 +1399,10 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("UpdatorId");
 
-                    b.HasIndex("ContainerId", "ItemOrder");
-
-                    b.ToTable("CommonDocumentCategory");
+                    b.ToTable("CommonDocumentScope");
                 });
 
-            modelBuilder.Entity("SF.Common.Documents.DataModels.DocumentTag", b =>
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocumentTag", b =>
                 {
                     b.Property<long>("Id");
 
@@ -1345,7 +1416,11 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
+
+                    b.Property<string>("ScopeId")
+                        .IsRequired()
+                        .HasMaxLength(100);
 
                     b.Property<long?>("ServiceDataScopeId");
 
@@ -1355,7 +1430,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -1364,6 +1439,8 @@ namespace SFShop.Backend.Migrations
                     b.HasIndex("Name");
 
                     b.HasIndex("OwnerId");
+
+                    b.HasIndex("ScopeId");
 
                     b.HasIndex("ServiceDataScopeId");
 
@@ -1376,7 +1453,7 @@ namespace SFShop.Backend.Migrations
                     b.ToTable("CommonDocumentTag");
                 });
 
-            modelBuilder.Entity("SF.Common.Documents.DataModels.DocumentTagReference", b =>
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocumentTagReference", b =>
                 {
                     b.Property<long>("DocumentId");
 
@@ -1439,7 +1516,7 @@ namespace SFShop.Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FrontContent");
+                    b.ToTable("CommonFrontContent");
                 });
 
             modelBuilder.Entity("SF.Common.FrontEndContents.DataModels.Site", b =>
@@ -1457,7 +1534,7 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("TemplateId");
 
-                    b.ToTable("FrontSite");
+                    b.ToTable("CommonFrontSite");
                 });
 
             modelBuilder.Entity("SF.Common.FrontEndContents.DataModels.SiteTemplate", b =>
@@ -1473,203 +1550,74 @@ namespace SFShop.Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FrontSiteTemplate");
+                    b.ToTable("CommonFrontSiteTemplate");
                 });
 
-            modelBuilder.Entity("SF.Common.Members.DataModels.Member", b =>
+            modelBuilder.Entity("SF.Common.Notifications.DataModels.DataNotification", b =>
                 {
                     b.Property<long>("Id");
 
-                    b.Property<DateTime>("CreatedTime");
+                    b.Property<int>("ActionCount");
 
-                    b.Property<string>("InternalRemarks");
+                    b.Property<string>("Args");
+
+                    b.Property<string>("BizIdent")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("CompletedActionCount");
+
+                    b.Property<string>("Content");
+
+                    b.Property<DateTime?>("EndTime");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(1000);
+
+                    b.Property<DateTime>("Expires");
+
+                    b.Property<string>("Image")
+                        .HasMaxLength(50);
+
+                    b.Property<string>("Link")
+                        .HasMaxLength(200);
 
                     b.Property<byte>("LogicState");
 
+                    b.Property<byte>("Mode");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100);
+                        .HasMaxLength(200);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("PolicyId");
 
-                    b.Property<long?>("ServiceDataScopeId");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<DateTime>("UpdatedTime");
-
-                    b.Property<long>("UpdatorId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedTime");
-
-                    b.HasIndex("Name");
-
-                    b.HasIndex("OwnerId");
-
-                    b.HasIndex("ServiceDataScopeId");
-
-                    b.HasIndex("UpdatorId");
-
-                    b.ToTable("Member");
-                });
-
-            modelBuilder.Entity("SF.Common.TextMessages.Management.DataModels.TextMessageRecord", b =>
-                {
-                    b.Property<long>("Id");
-
-                    b.Property<string>("Args")
-                        .HasMaxLength(1000);
-
-                    b.Property<string>("Body")
-                        .HasMaxLength(1000);
-
-                    b.Property<DateTime?>("CompletedTime");
-
-                    b.Property<string>("Error");
-
-                    b.Property<string>("Headers")
-                        .HasMaxLength(1000);
-
-                    b.Property<string>("Result");
-
-                    b.Property<long?>("ScopeId");
-
-                    b.Property<string>("Sender")
-                        .HasMaxLength(100);
-
-                    b.Property<long>("ServiceId");
+                    b.Property<long?>("SenderId");
 
                     b.Property<int>("Status");
 
-                    b.Property<string>("Target")
-                        .IsRequired();
-
                     b.Property<DateTime>("Time");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("TrackEntityId")
-                        .HasMaxLength(100);
-
-                    b.Property<long?>("UserId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ScopeId");
+                    b.HasIndex("BizIdent");
 
-                    b.HasIndex("Time");
+                    b.HasIndex("PolicyId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("SenderId");
 
-                    b.HasIndex("ServiceId", "Time");
+                    b.HasIndex("Expires", "Time");
 
-                    b.HasIndex("Status", "Time");
-
-                    b.HasIndex("UserId", "Time");
-
-                    b.ToTable("CommonTextMessageRecord");
+                    b.ToTable("CommonNotification");
                 });
 
-            modelBuilder.Entity("SF.Sys.CallPlans.Storage.DataModels.CallExpired", b =>
-                {
-                    b.Property<string>("Callable")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(200);
-
-                    b.Property<string>("CallArgument")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("CallError")
-                        .HasMaxLength(200);
-
-                    b.Property<DateTime>("CreateTime");
-
-                    b.Property<int>("ExecCount");
-
-                    b.Property<string>("ExecError")
-                        .HasMaxLength(200);
-
-                    b.Property<DateTime>("Expired");
-
-                    b.Property<DateTime?>("LastExecTime");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(100);
-
-                    b.HasKey("Callable");
-
-                    b.ToTable("SysCallExpired");
-                });
-
-            modelBuilder.Entity("SF.Sys.CallPlans.Storage.DataModels.CallInstance", b =>
-                {
-                    b.Property<string>("Callable")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(200);
-
-                    b.Property<string>("CallArgument")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("CallError")
-                        .HasMaxLength(200);
-
-                    b.Property<DateTime>("CallTime");
-
-                    b.Property<DateTime>("CreateTime");
-
-                    b.Property<int>("DelaySecondsOnError");
-
-                    b.Property<int>("ErrorCount");
-
-                    b.Property<string>("ExecError")
-                        .HasMaxLength(200);
-
-                    b.Property<DateTime>("Expire");
-
-                    b.Property<DateTime?>("LastExecTime");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
-                    b.HasKey("Callable");
-
-                    b.HasIndex("CallTime");
-
-                    b.ToTable("SysCallInstance");
-                });
-
-            modelBuilder.Entity("SF.Sys.Data.IdentGenerator.DataModels.IdentSeed", b =>
-                {
-                    b.Property<string>("Type")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(100);
-
-                    b.Property<long>("NextValue");
-
-                    b.Property<int>("Section");
-
-                    b.Property<byte[]>("TimeStamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
-
-                    b.HasKey("Type");
-
-                    b.ToTable("SysIdentSeed");
-                });
-
-            modelBuilder.Entity("SF.Sys.MenuServices.Entity.DataModels.Menu", b =>
+            modelBuilder.Entity("SF.Common.Notifications.DataModels.DataNotificationSendPolicy", b =>
                 {
                     b.Property<long>("Id");
+
+                    b.Property<string>("Actions");
+
+                    b.Property<string>("ContentTemplate")
+                        .HasMaxLength(1000);
 
                     b.Property<DateTime>("CreatedTime");
 
@@ -1685,7 +1633,10 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<string>("NameTemplate")
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("OwnerId");
 
                     b.Property<long?>("ServiceDataScopeId");
 
@@ -1695,7 +1646,366 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedTime");
+
+                    b.HasIndex("Ident");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ServiceDataScopeId");
+
+                    b.HasIndex("UpdatorId");
+
+                    b.ToTable("CommonNotificationSendPolicy");
+                });
+
+            modelBuilder.Entity("SF.Common.Notifications.DataModels.DataNotificationSendRecord", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<string>("Args");
+
+                    b.Property<string>("BizIdent")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Content");
+
+                    b.Property<string>("Error")
+                        .HasMaxLength(1000);
+
+                    b.Property<DateTime>("Expires");
+
+                    b.Property<DateTime?>("LastSendTime");
+
+                    b.Property<long>("NotificationId");
+
+                    b.Property<long>("ProviderId");
+
+                    b.Property<string>("Result")
+                        .HasMaxLength(1000);
+
+                    b.Property<int>("RetryInterval");
+
+                    b.Property<int>("RetryLimit");
+
+                    b.Property<long?>("ScopeId");
+
+                    b.Property<int>("SendCount");
+
+                    b.Property<DateTime>("SendTime");
+
+                    b.Property<int>("Status");
+
+                    b.Property<string>("Target");
+
+                    b.Property<long?>("TargetId");
+
+                    b.Property<string>("Template");
+
+                    b.Property<DateTime>("Time");
+
+                    b.Property<string>("Title");
+
+                    b.Property<long?>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BizIdent");
+
+                    b.HasIndex("NotificationId");
+
+                    b.HasIndex("ProviderId");
+
+                    b.HasIndex("ScopeId");
+
+                    b.HasIndex("TargetId");
+
+                    b.HasIndex("Time");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CommonNotificationSendRecord");
+                });
+
+            modelBuilder.Entity("SF.Common.Notifications.DataModels.DataNotificationTarget", b =>
+                {
+                    b.Property<long>("UserId");
+
+                    b.Property<long>("NotificationId");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<byte>("Mode");
+
+                    b.Property<DateTime?>("ReadTime");
+
+                    b.Property<DateTime>("Time");
+
+                    b.HasKey("UserId", "NotificationId");
+
+                    b.HasIndex("NotificationId");
+
+                    b.HasIndex("UserId", "LogicState", "Time");
+
+                    b.ToTable("CommonNotificationTarget");
+                });
+
+            modelBuilder.Entity("SF.Common.Notifications.DataModels.DataNotificationUserStatus", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<int>("Received");
+
+                    b.Property<int>("ReceivedUnreaded");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CommonNotificationUserStatus");
+                });
+
+            modelBuilder.Entity("SF.Sys.BackEndConsole.Entity.DataModels.DataConsole", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("Ident")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<string>("InternalRemarks");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Menus");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("OwnerId");
+
+                    b.Property<string>("Pages");
+
+                    b.Property<long?>("ServiceDataScopeId");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long?>("UpdatorId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedTime");
+
+                    b.HasIndex("Ident");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ServiceDataScopeId");
+
+                    b.HasIndex("UpdatorId");
+
+                    b.ToTable("BackEndAdminConsole");
+                });
+
+            modelBuilder.Entity("SF.Sys.BackEndConsole.Entity.DataModels.DataHotMenuCategory", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<long>("ConsoleId");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("FontIcon")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("InternalRemarks");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("OwnerId");
+
+                    b.Property<long?>("ServiceDataScopeId");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long?>("UpdatorId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConsoleId");
+
+                    b.HasIndex("CreatedTime");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ServiceDataScopeId");
+
+                    b.HasIndex("UpdatorId");
+
+                    b.ToTable("BackEndAdminHotMenuCategory");
+                });
+
+            modelBuilder.Entity("SF.Sys.BackEndConsole.Entity.DataModels.DataHotMenuItem", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<long>("CategoryId");
+
+                    b.Property<long>("ConsoleId");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("FontIcon")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("InternalRemarks");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("OwnerId");
+
+                    b.Property<long?>("ServiceDataScopeId");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long?>("UpdatorId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ConsoleId");
+
+                    b.HasIndex("CreatedTime");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ServiceDataScopeId");
+
+                    b.HasIndex("UpdatorId");
+
+                    b.ToTable("BackEndAdminHotMenuItem");
+                });
+
+            modelBuilder.Entity("SF.Sys.BackEndConsole.Entity.DataModels.DataHotQuery", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<long>("ConsoleId");
+
+                    b.Property<long>("ContentId");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("InternalRemarks");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("OwnerId");
+
+                    b.Property<long>("PageId");
+
+                    b.Property<string>("Query");
+
+                    b.Property<long?>("ServiceDataScopeId");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long?>("UpdatorId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConsoleId");
+
+                    b.HasIndex("CreatedTime");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ServiceDataScopeId");
+
+                    b.HasIndex("UpdatorId");
+
+                    b.ToTable("BackEndAdminHotQuery");
+                });
+
+            modelBuilder.Entity("SF.Sys.BackEndConsole.Entity.DataModels.DataMenu", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("Ident")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<string>("InternalRemarks");
+
+                    b.Property<string>("Items");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("OwnerId");
+
+                    b.Property<long?>("ServiceDataScopeId");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -1711,91 +2021,171 @@ namespace SFShop.Backend.Migrations
 
                     b.HasIndex("ServiceDataScopeId", "Ident");
 
-                    b.ToTable("MgrMenu");
+                    b.ToTable("SysMenu");
                 });
 
-            modelBuilder.Entity("SF.Sys.MenuServices.Entity.DataModels.MenuItem", b =>
+            modelBuilder.Entity("SF.Sys.Data.IdentGenerator.DataModels.IdentSeed", b =>
                 {
-                    b.Property<long>("Id");
-
-                    b.Property<int>("Action");
-
-                    b.Property<string>("ActionArgument")
+                    b.Property<string>("Type")
+                        .ValueGeneratedOnAdd()
                         .HasMaxLength(200);
 
-                    b.Property<DateTime>("CreatedTime");
+                    b.Property<long>("NextValue");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(200);
-
-                    b.Property<string>("FontIcon")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("Icon")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("Image")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("InternalRemarks");
-
-                    b.Property<byte>("LogicState");
-
-                    b.Property<string>("Memo")
-                        .HasMaxLength(200);
-
-                    b.Property<long>("MenuId");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
-                    b.Property<long>("OwnerId");
-
-                    b.Property<long?>("ParentId");
-
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(100);
-
-                    b.Property<long?>("ServiceDataScopeId");
-
-                    b.Property<long?>("ServiceId");
-
-                    b.Property<string>("SubTitle")
-                        .HasMaxLength(100);
+                    b.Property<int>("Section");
 
                     b.Property<byte[]>("TimeStamp")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
-                    b.Property<string>("Title")
+                    b.HasKey("Type");
+
+                    b.ToTable("SysIdentSeed");
+                });
+
+            modelBuilder.Entity("SF.Sys.Reminders.DataModels.DataReminder", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<long>("BizIdent");
+
+                    b.Property<string>("BizIdentType");
+
+                    b.Property<string>("BizType");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("Data")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("InternalRemarks");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100);
 
+                    b.Property<long?>("OwnerId");
+
+                    b.Property<string>("RemindableName")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("ServiceDataScopeId");
+
+                    b.Property<int>("TaskExecCount");
+
+                    b.Property<DateTime?>("TaskLastExecTime");
+
+                    b.Property<string>("TaskMessage");
+
+                    b.Property<DateTime?>("TaskNextExecTime");
+
+                    b.Property<DateTime?>("TaskStartTime");
+
+                    b.Property<int>("TaskState");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedTime");
 
-                    b.HasIndex("MenuId");
-
                     b.HasIndex("Name");
 
                     b.HasIndex("OwnerId");
-
-                    b.HasIndex("ParentId");
 
                     b.HasIndex("ServiceDataScopeId");
 
                     b.HasIndex("UpdatorId");
 
-                    b.ToTable("MgrMenuItem");
+                    b.HasIndex("TaskState", "TaskNextExecTime");
+
+                    b.HasIndex("BizType", "BizIdentType", "BizIdent")
+                        .IsUnique()
+                        .HasFilter("[BizType] IS NOT NULL AND [BizIdentType] IS NOT NULL");
+
+                    b.ToTable("SysReminder");
                 });
 
-            modelBuilder.Entity("SF.Sys.Services.Management.DataModels.ServiceInstance", b =>
+            modelBuilder.Entity("SF.Sys.Reminders.DataModels.DataRemindRecord", b =>
+                {
+                    b.Property<long>("Id");
+
+                    b.Property<long>("BizIdent");
+
+                    b.Property<string>("BizIdentType");
+
+                    b.Property<string>("BizType");
+
+                    b.Property<DateTime>("CreatedTime");
+
+                    b.Property<string>("Data")
+                        .HasMaxLength(1000);
+
+                    b.Property<string>("InternalRemarks");
+
+                    b.Property<byte>("LogicState");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("OwnerId");
+
+                    b.Property<string>("RemindableName")
+                        .IsRequired()
+                        .HasMaxLength(100);
+
+                    b.Property<long?>("ServiceDataScopeId");
+
+                    b.Property<int>("TaskExecCount");
+
+                    b.Property<DateTime?>("TaskLastExecTime");
+
+                    b.Property<string>("TaskMessage");
+
+                    b.Property<DateTime?>("TaskNextExecTime");
+
+                    b.Property<DateTime?>("TaskStartTime");
+
+                    b.Property<int>("TaskState");
+
+                    b.Property<byte[]>("TimeStamp")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<DateTime>("UpdatedTime");
+
+                    b.Property<long?>("UpdatorId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedTime");
+
+                    b.HasIndex("Name");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ServiceDataScopeId");
+
+                    b.HasIndex("UpdatorId");
+
+                    b.HasIndex("TaskState", "TaskNextExecTime");
+
+                    b.HasIndex("BizType", "BizIdentType", "BizIdent");
+
+                    b.ToTable("SysRemindRecord");
+                });
+
+            modelBuilder.Entity("SF.Sys.Services.Management.DataModels.DataServiceInstance", b =>
                 {
                     b.Property<long>("Id");
 
@@ -1832,7 +2222,7 @@ namespace SFShop.Backend.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
-                    b.Property<long>("OwnerId");
+                    b.Property<long?>("OwnerId");
 
                     b.Property<string>("Remarks")
                         .HasMaxLength(100);
@@ -1864,7 +2254,7 @@ namespace SFShop.Backend.Migrations
 
                     b.Property<DateTime>("UpdatedTime");
 
-                    b.Property<long>("UpdatorId");
+                    b.Property<long?>("UpdatorId");
 
                     b.HasKey("Id");
 
@@ -1889,165 +2279,168 @@ namespace SFShop.Backend.Migrations
                     b.ToTable("SysServiceInstance");
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.Client", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataClient", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.ClientConfig", "ClientConfig")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataClientConfig", "ClientConfig")
                         .WithMany()
                         .HasForeignKey("ClientConfigId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClientClaimValue", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataClientClaimValue", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Client", "Client")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataClient", "Client")
                         .WithMany("ClaimValues")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.ClaimType", "Type")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataClaimType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ClientScope", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataClientScope", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.ClientConfig", "ClientConfig")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataClientConfig", "ClientConfig")
                         .WithMany("Scopes")
                         .HasForeignKey("ClientConfigId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Scope", "Scope")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataScope", "Scope")
                         .WithMany()
                         .HasForeignKey("ScopeId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.OperationRequiredClaim", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataGrantItem", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.ClaimType", "ClaimType")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataGrant", "Grant")
+                        .WithMany("Items")
+                        .HasForeignKey("GrantId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataOperationRequiredClaim", b =>
+                {
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataClaimType", "ClaimType")
                         .WithMany()
                         .HasForeignKey("ClaimTypeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Resource", "Resource")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataResource", "Resource")
                         .WithMany()
                         .HasForeignKey("OperationId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ResourceRequiredClaim", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataResourceRequiredClaim", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.ClaimType", "ClaimType")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataClaimType", "ClaimType")
                         .WithMany()
                         .HasForeignKey("ClaimTypeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Resource", "Resource")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataResource", "Resource")
                         .WithMany("RequiredClaims")
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ResourceSupportedOperation", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataResourceSupportedOperation", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Operation", "Operation")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataOperation", "Operation")
                         .WithMany("Resources")
                         .HasForeignKey("OperationId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Resource", "Resource")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataResource", "Resource")
                         .WithMany("SupportedOperations")
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.RoleClaimValue", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataRoleClaimValue", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Role", "Role")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataRole", "Role")
                         .WithMany("ClaimValues")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.ClaimType", "Type")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataClaimType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.RoleGrant", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataRoleGrant", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Operation", "Operation")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataGrant", "DstGrant")
                         .WithMany()
-                        .HasForeignKey("OperationId")
+                        .HasForeignKey("DstGrantId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Role", "Role")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataRole", "Role")
                         .WithMany("Grants")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.ScopeResource", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataScopeResource", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Resource", "Resource")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataResource", "Resource")
                         .WithMany("Scopes")
                         .HasForeignKey("ResourceId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Scope", "Scope")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataScope", "Scope")
                         .WithMany("Resources")
                         .HasForeignKey("ScopeId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.User", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataUser", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Client", "SignupClient")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataClient", "SignupClient")
                         .WithMany()
                         .HasForeignKey("SignupClientId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.UserClaimValue", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataUserClaimValue", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.ClaimType", "Type")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataClaimType", "Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.User", "User")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataUser", "User")
                         .WithMany("ClaimValues")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.UserCredential", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataUserCredential", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.ClaimType", "ClaimType")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataClaimType", "ClaimType")
                         .WithMany()
                         .HasForeignKey("ClaimTypeId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.User", "User")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataUser", "User")
                         .WithMany("Credentials")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.UserRole", b =>
+            modelBuilder.Entity("SF.Auth.IdentityServices.DataModels.DataUserRole", b =>
                 {
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.Role", "Role")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataRole", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Auth.IdentityServices.DataModels.User", "User")
+                    b.HasOne("SF.Auth.IdentityServices.DataModels.DataUser", "User")
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2150,35 +2543,61 @@ namespace SFShop.Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Common.Documents.DataModels.Document", b =>
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocument", b =>
                 {
-                    b.HasOne("SF.Common.Documents.DataModels.DocumentAuthor", "Author")
+                    b.HasOne("SF.Common.Documents.DataModels.DataDocumentAuthor", "Author")
                         .WithMany("Documents")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Common.Documents.DataModels.DocumentCategory", "Container")
+                    b.HasOne("SF.Common.Documents.DataModels.DataDocumentCategory", "Container")
                         .WithMany("Items")
                         .HasForeignKey("ContainerId")
                         .OnDelete(DeleteBehavior.Restrict);
-                });
 
-            modelBuilder.Entity("SF.Common.Documents.DataModels.DocumentCategory", b =>
-                {
-                    b.HasOne("SF.Common.Documents.DataModels.DocumentCategory", "Container")
-                        .WithMany("Children")
-                        .HasForeignKey("ContainerId")
+                    b.HasOne("SF.Common.Documents.DataModels.DataDocumentScope", "Scope")
+                        .WithMany("Documents")
+                        .HasForeignKey("ScopeId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Common.Documents.DataModels.DocumentTagReference", b =>
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocumentAuthor", b =>
                 {
-                    b.HasOne("SF.Common.Documents.DataModels.Document", "Document")
+                    b.HasOne("SF.Common.Documents.DataModels.DataDocumentScope", "Scope")
+                        .WithMany("Authors")
+                        .HasForeignKey("ScopeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocumentCategory", b =>
+                {
+                    b.HasOne("SF.Common.Documents.DataModels.DataDocumentCategory", "Container")
+                        .WithMany("Children")
+                        .HasForeignKey("ContainerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SF.Common.Documents.DataModels.DataDocumentScope", "Scope")
+                        .WithMany("Categories")
+                        .HasForeignKey("ScopeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocumentTag", b =>
+                {
+                    b.HasOne("SF.Common.Documents.DataModels.DataDocumentScope", "Scope")
+                        .WithMany("Tags")
+                        .HasForeignKey("ScopeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Common.Documents.DataModels.DataDocumentTagReference", b =>
+                {
+                    b.HasOne("SF.Common.Documents.DataModels.DataDocument", "Document")
                         .WithMany("Tags")
                         .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("SF.Common.Documents.DataModels.DocumentTag", "Tag")
+                    b.HasOne("SF.Common.Documents.DataModels.DataDocumentTag", "Tag")
                         .WithMany()
                         .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -2192,22 +2611,62 @@ namespace SFShop.Backend.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Sys.MenuServices.Entity.DataModels.MenuItem", b =>
+            modelBuilder.Entity("SF.Common.Notifications.DataModels.DataNotification", b =>
                 {
-                    b.HasOne("SF.Sys.MenuServices.Entity.DataModels.Menu", "Menu")
-                        .WithMany("Items")
-                        .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("SF.Sys.MenuServices.Entity.DataModels.MenuItem", "Parent")
-                        .WithMany("Children")
-                        .HasForeignKey("ParentId")
+                    b.HasOne("SF.Common.Notifications.DataModels.DataNotificationSendPolicy", "Policy")
+                        .WithMany()
+                        .HasForeignKey("PolicyId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("SF.Sys.Services.Management.DataModels.ServiceInstance", b =>
+            modelBuilder.Entity("SF.Common.Notifications.DataModels.DataNotificationSendRecord", b =>
                 {
-                    b.HasOne("SF.Sys.Services.Management.DataModels.ServiceInstance", "Container")
+                    b.HasOne("SF.Common.Notifications.DataModels.DataNotification", "Notification")
+                        .WithMany("SendRecords")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Common.Notifications.DataModels.DataNotificationTarget", b =>
+                {
+                    b.HasOne("SF.Common.Notifications.DataModels.DataNotification", "Notification")
+                        .WithMany("Targets")
+                        .HasForeignKey("NotificationId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Sys.BackEndConsole.Entity.DataModels.DataHotMenuCategory", b =>
+                {
+                    b.HasOne("SF.Sys.BackEndConsole.Entity.DataModels.DataConsole", "Console")
+                        .WithMany()
+                        .HasForeignKey("ConsoleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Sys.BackEndConsole.Entity.DataModels.DataHotMenuItem", b =>
+                {
+                    b.HasOne("SF.Sys.BackEndConsole.Entity.DataModels.DataHotMenuCategory", "Category")
+                        .WithMany("Items")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SF.Sys.BackEndConsole.Entity.DataModels.DataConsole", "Console")
+                        .WithMany()
+                        .HasForeignKey("ConsoleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Sys.BackEndConsole.Entity.DataModels.DataHotQuery", b =>
+                {
+                    b.HasOne("SF.Sys.BackEndConsole.Entity.DataModels.DataConsole", "Console")
+                        .WithMany()
+                        .HasForeignKey("ConsoleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("SF.Sys.Services.Management.DataModels.DataServiceInstance", b =>
+                {
+                    b.HasOne("SF.Sys.Services.Management.DataModels.DataServiceInstance", "Container")
                         .WithMany("Children")
                         .HasForeignKey("ContainerId")
                         .OnDelete(DeleteBehavior.Restrict);

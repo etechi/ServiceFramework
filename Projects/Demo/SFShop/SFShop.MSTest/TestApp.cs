@@ -17,13 +17,17 @@ using SF.Sys.Hosting;
 using SF.Sys.NetworkService;
 using System;
 using SF.Sys.Services;
+using SF.Sys.Data;
+
+using System.Text;
+using SF.Sys.Auth;
+
 namespace SFShop.UT
 {
-	public static class TestApp
+	public static class TestAppBuilder
 	{
-		public static IAppInstanceBuilder Builder(EnvironmentType envType=EnvironmentType.Production)
-		{
-			return AppBuilder.Build(envType).
+		public static IAppInstanceBuilder Instance { get; } =
+			AppBuilder.Init(EnvironmentType.Development).
 				With(sc =>
 				{
 					var rootPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\..\\SFShop.Site\\");
@@ -32,14 +36,23 @@ namespace SFShop.UT
 						binPath,
 						rootPath
 						);
+					sc.AddAppSettingDefaultDataSourceConfig();
 					sc.AddSingleton(new Moq.Mock<IInvokeContext>().Object);
+					sc.AddSingleton(new Moq.Mock<IAccessTokenGenerator>().Object);
+					sc.AddSingleton(new Moq.Mock<IAccessTokenValidator>().Object);
 					sc.AddSingleton(new Moq.Mock<IUploadedFileCollection>().Object);
 					sc.AddNetworkService();
 					sc.AddLocalClientService();
+					//var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("1234567890123456"));
+					//sc.AddSingleton<ISigningCredentialStore>(
+					//	new DefaultSigningCredentialsStore(
+					//		new Microsoft.IdentityModel.Tokens.SigningCredentials(
+					//			key,
+					//			SecurityAlgorithms.HmacSha256
+					//			)
+					//	));
 				});
 			
-		}
 	}
-	
 
 }

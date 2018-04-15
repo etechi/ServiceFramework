@@ -44,7 +44,7 @@ namespace SFShop.Setup
 			IServiceProvider sp
 			)
 		{
-			return sp.Invoke((
+			return sp.WithServices((
 				(
 				IProductManager productManager,
 				IProductItemManager itemManager,

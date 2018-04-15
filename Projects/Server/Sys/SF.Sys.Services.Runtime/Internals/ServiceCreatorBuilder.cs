@@ -122,7 +122,7 @@ namespace SF.Sys.Services.Internals
 					null
 					);
 				if (instance == null && !MemberAttribute.Optional)
-					throw new NotSupportedException($"在当前服务下找不到服务类型为{InterfaceType}的服务, 当前服务:{ServiceInstanceDescriptor.InstanceId}，配置路径:{Path},实现:{ServiceInstanceDescriptor.ServiceImplement.ImplementType}");
+					throw new NotSupportedException($"在当前服务下找不到服务{InterfaceType}, 当前服务:{ServiceInstanceDescriptor.InstanceId},配置路径:{Path},实现类型:{ServiceInstanceDescriptor.ServiceImplement.ImplementType}");
 			}
 
 			return instance;

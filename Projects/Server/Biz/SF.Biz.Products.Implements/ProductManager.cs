@@ -81,7 +81,7 @@ namespace SF.Biz.Products.Entity
 		{
 			return Task.CompletedTask;
 		}
-        protected override async Task<TEditable> OnMapModelToEditable(IContextQueryable<TProduct> Query)
+        protected override async Task<TEditable> OnMapModelToEditable(IDataContext ctx, IContextQueryable<TProduct> Query)
 		{
 			var q = from m in Query
 					select new {
@@ -159,13 +159,13 @@ namespace SF.Biz.Products.Entity
 				if (Model.ObjectState == EntityLogicState.Enabled)
 				{
 					if(Model.TypeId!=0)
-						await UpdateTypeProductCount(Model.TypeId, -1);
-					await UpdateTypeProductCount(obj.TypeId, 1);
+						await UpdateTypeProductCount(ctx.DataContext,Model.TypeId, -1);
+					await UpdateTypeProductCount(ctx.DataContext, obj.TypeId, 1);
 
 				}
 				Model.TypeId = obj.TypeId;
 			}
-			DataContext.Set<TProductDetail>().Update(Model.Detail);
+			ctx.DataContext.Set<TProductDetail>().Update(Model.Detail);
 
 			if (obj.Specs != null)
             {
@@ -179,7 +179,7 @@ namespace SF.Biz.Products.Entity
                 }
             }
 
-            DataContext.Set<TProductSpec>().Merge(
+			ctx.DataContext.Set<TProductSpec>().Merge(
                 Model.Specs,
                 obj.Specs,
                 (m, e) => m.Id == e.Id,
@@ -210,7 +210,7 @@ namespace SF.Biz.Products.Entity
             if (Model.Id!=0)
 			{
 				var notifier = this.ItemNotifier.Value;
-				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				ctx.DataContext.AddCommitTracker(
 					TransactionCommitNotifyType.AfterCommit,
 					(t, ex) =>
 					{ 
@@ -219,21 +219,21 @@ namespace SF.Biz.Products.Entity
 					}
 					);
 
-				var defaultItemId = await DataContext
+				var defaultItemId = await ctx.DataContext
 					.Set<TItem>().AsQueryable()
 					.Where(i => i.ProductId == Model.Id && i.SellerId == Model.OwnerUserId)
 					.Select(i => i.Id)
 					.SingleOrDefaultAsync();
 				if (defaultItemId != 0)
 				{
-					var cats = await DataContext
+					var cats = await ctx.DataContext
 						.Set<TCategoryItem>().AsQueryable(false)
 						.Where(ci => ci.ItemId == defaultItemId)
 						.ToArrayAsync();
 
 					var Removed = new List<long>();
 					var Added = new List<long>();
-					DataContext.Set<TCategoryItem>().Merge(
+					ctx.DataContext.Set<TCategoryItem>().Merge(
 						cats,
 						obj.CategoryIds,
 						(m, e) => m.CategoryId == e,
@@ -246,10 +246,10 @@ namespace SF.Biz.Products.Entity
 						(e) =>
 						{
 							Removed.Add(e.CategoryId);
-                            DataContext.Remove(e);
+							ctx.DataContext.Remove(e);
 						}
 						);
-					ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+					ctx.DataContext.AddCommitTracker(
 						TransactionCommitNotifyType.AfterCommit,
 						(t, ex) =>
 						{ 
@@ -290,7 +290,7 @@ namespace SF.Biz.Products.Entity
 			};
             var notifier = this.ItemNotifier.Value;
             if(obj.CategoryIds!=null)
-				ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+				ctx.DataContext.AddCommitTracker(
 					TransactionCommitNotifyType.AfterCommit,
 					(t, ex) =>
 					{ 
@@ -304,7 +304,7 @@ namespace SF.Biz.Products.Entity
 		}
 		
 
-		async Task UpdateTypeProductCount(long type,int diff)
+		async Task UpdateTypeProductCount(IDataContext DataContext,long type,int diff)
 		{
 			var t = await DataContext.Set<TProductType>().FindAsync(type);
 			if (t == null)
@@ -315,7 +315,7 @@ namespace SF.Biz.Products.Entity
 		protected override async Task OnRemoveModel(IModifyContext ctx)
 		{
 			var Id = ctx.Editable.Id;
-			var prd = await DataSet.AsQueryable(false).Where(p => p.Id.Equals(Id))
+			var prd = await ctx.DataContext.Set<TProduct>().AsQueryable(false).Where(p => p.Id.Equals(Id))
 				.Include(p => p.Detail)
 				.Include(p => p.PropertyItems)
 				.Include(p => p.Specs)
@@ -328,19 +328,19 @@ namespace SF.Biz.Products.Entity
 
 
 			if (prd.ObjectState == EntityLogicState.Enabled)
-				await UpdateTypeProductCount(prd.TypeId, -1);
+				await UpdateTypeProductCount(ctx.DataContext,prd.TypeId, -1);
 
 			foreach (var item in prd.Items)
-				DataContext.RemoveRange(item.CategoryItems);
+				ctx.DataContext.RemoveRange(item.CategoryItems);
 
 
-			DataContext.RemoveRange(prd.Items);
-			DataContext.RemoveRange(prd.PropertyItems);
-			DataContext.RemoveRange(prd.Specs);
-			DataContext.Remove(prd.Detail);
+			ctx.DataContext.RemoveRange(prd.Items);
+			ctx.DataContext.RemoveRange(prd.PropertyItems);
+			ctx.DataContext.RemoveRange(prd.Specs);
+			ctx.DataContext.Remove(prd.Detail);
 
 			var notifier = this.ItemNotifier.Value;
-			ServiceContext.DataContext.TransactionScopeManager.AddCommitTracker(
+			ctx.DataContext.AddCommitTracker(
 				TransactionCommitNotifyType.AfterCommit,
 				(t, ex) =>
 				{
@@ -369,26 +369,30 @@ namespace SF.Biz.Products.Entity
 		}
 		public virtual async Task SetLogicState(long Id, EntityLogicState State)
 		{
-			var e = await DataSet.FindAsync(Id);
-			var orgState = e.ObjectState;
-			if (orgState == State)
-				return;
-			
-			e.ObjectState = State;
-			e.UpdatedTime = Now;
-			if (State == EntityLogicState.Enabled)
-				e.PublishedTime = e.UpdatedTime;
-			DataSet.Update(e);
-			await OnObjectStateChanged(e, orgState);
+			 await DataScope.Use("设置产品逻辑状态", async ctx =>
+			 {
+
+				 var e = await ctx.Set<TProduct>().FindAsync(Id);
+				 var orgState = e.ObjectState;
+				 if (orgState == State)
+					 return;
+
+				 e.ObjectState = State;
+				 e.UpdatedTime = Now;
+				 if (State == EntityLogicState.Enabled)
+					 e.PublishedTime = e.UpdatedTime;
+				 ctx.Update(e);
+				 await OnObjectStateChanged(e, orgState);
 
 
-			if (State == EntityLogicState.Enabled)
-				await UpdateTypeProductCount(e.TypeId, 1);
-			else if (orgState == EntityLogicState.Enabled)
-				await UpdateTypeProductCount(e.TypeId, -1);
+				 if (State == EntityLogicState.Enabled)
+					 await UpdateTypeProductCount(ctx, e.TypeId, 1);
+				 else if (orgState == EntityLogicState.Enabled)
+					 await UpdateTypeProductCount(ctx, e.TypeId, -1);
 
-			await DataContext.SaveChangesAsync();
-			await OnObjectStateChangeSaved(e, orgState);
+				 await ctx.SaveChangesAsync();
+				 await OnObjectStateChangeSaved(e, orgState);
+			 });
 		}
 
 		//public override async Task<int> CreateAsync(TEditable obj)
@@ -499,24 +503,29 @@ namespace SF.Biz.Products.Entity
             });
         }
 
-        public async Task<ProductSpec[]> ListSpec(long Id)
+        public Task<ProductSpec[]> ListSpec(long Id)
         {
-            return await MapSpec(
-                DataContext.Set<TProductSpec>().AsQueryable()
-                .Where(s => s.ProductId == Id && s.ObjectState == EntityLogicState.Enabled)
-                .OrderBy(s => s.Order)
-                ).ToArrayAsync();
+			return DataScope.Use("规格清单", ctx =>
+				MapSpec(
+				ctx.Set<TProductSpec>().AsQueryable()
+				.Where(s => s.ProductId == Id && s.ObjectState == EntityLogicState.Enabled)
+				.OrderBy(s => s.Order)
+				).ToArrayAsync()
+				);
         }
 
-        public async Task<ProductSpec> GetSpec(long Id)
+        public Task<ProductSpec> GetSpec(long Id)
         {
-            return await MapSpec(
-			   DataContext.Set<TProductSpec>().AsQueryable()
-				.Where(s => s.Id == Id && s.ObjectState == EntityLogicState.Enabled)
-                ).SingleOrDefaultAsync();
+			return DataScope.Use("获取规格", ctx =>
+				 MapSpec(
+				ctx.Set<TProductSpec>().AsQueryable()
+				 .Where(s => s.Id == Id && s.ObjectState == EntityLogicState.Enabled)
+				 ).SingleOrDefaultAsync()
+				);
+
         }
 		
-		protected override IContextQueryable<TProduct> OnBuildQuery(IContextQueryable<TProduct> Query, ProductInternalQueryArgument Arg, Paging paging)
+		protected override IContextQueryable<TProduct> OnBuildQuery(IContextQueryable<TProduct> Query, ProductInternalQueryArgument Arg)
 		{
 			Query = Query
 				   .Filter(Arg.State, p => p.ObjectState)

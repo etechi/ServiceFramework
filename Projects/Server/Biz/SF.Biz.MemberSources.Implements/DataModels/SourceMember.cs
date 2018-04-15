@@ -19,7 +19,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Biz.MemberSources.DataModels
 {
 	[Table("UserSourceMember")]
-	public class SourceMember<TMemberSource,TSourceMember> : ItemEntityBase<TMemberSource>
+	public class SourceMember<TMemberSource,TSourceMember> : DataItemEntityBase<TMemberSource>
 		where TMemberSource : MemberSource<TMemberSource,TSourceMember>,new()
 		where TSourceMember : SourceMember<TMemberSource, TSourceMember>,new()
 	{

@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Threading;
 using SF.Sys.Entities;
+using SF.Sys.Threading;
 
 namespace SF.Biz.Products
 {
@@ -216,15 +217,15 @@ namespace SF.Biz.Products
                 await ItemCollect(cid, aids);
             return await NewItemResult(aids.ToArray(), filter, paging);
         }
-        public async Task<QueryResult<TItem>> QueryAsync(ItemQueryArgument Args, Paging paging)
+        public async Task<QueryResult<TItem>> QueryAsync(ItemQueryArgument Args)
         {
             if (!Args.ProductId.HasValue)
             {
                 if (Args.CategoryId != null)
-                    return await ListCategoryItems(Args.CategoryId.Value, true, Args.Title, paging);
+                    return await ListCategoryItems(Args.CategoryId.Value, true, Args.Title,Args.Paging);
                 if (Args.CategoryTag != null)
-                    return await ListTaggedItems(Args.CategoryTag, true, Args.Title, paging);
-                return await ListCategoryItems(MainCategoryId, true, Args.Title, paging);
+                    return await ListTaggedItems(Args.CategoryTag, true, Args.Title, Args.Paging);
+                return await ListCategoryItems(MainCategoryId, true, Args.Title, Args.Paging);
             }
             var pi = await GetProducts(new[] { Args.ProductId.Value });
             if (pi.Length == 0)
@@ -241,9 +242,9 @@ namespace SF.Biz.Products
                 Total=1
             };
 		}
-		public async Task<QueryResult<long>> QueryIdentsAsync(ItemQueryArgument Args, Paging paging)
+		public async Task<QueryResult<long>> QueryIdentsAsync(ItemQueryArgument Args)
 		{
-			var re = await QueryAsync(Args, paging);
+			var re = await QueryAsync(Args);
 			return new QueryResult<long>
 			{
 				Items = re.Items.Select(i => i.ItemId).ToArray(),
