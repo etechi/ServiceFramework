@@ -76,6 +76,11 @@ namespace SF.Common.Documents.DataModels
 		[Index("PublishDate")]
         public DateTime? PublishDate { get; set; }
 
+		/// <summary>
+		/// 重定向
+		/// </summary>
+		public string Redirect { get; set; }
+
 
 		/// <summary>
 		/// 内容

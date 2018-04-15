@@ -27,6 +27,11 @@ namespace SF.Common.Documents
 	public class Document : UIItemEntityBase<Category>
 	{
 		/// <summary>
+		/// 重定向
+		/// </summary>
+		public string Redirect { get; set; }
+
+		/// <summary>
 		/// 文档内容,Html格式
 		/// </summary>
 		[Html]

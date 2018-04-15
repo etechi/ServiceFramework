@@ -58,7 +58,8 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 			if (DataModelProperty==null ||
 				EntityProperty==null||
 				DataModelProperty.PropertyType != typeof(string) || 
-				!DataModelProperty.IsDefined(typeof(JsonDataAttribute))
+				!DataModelProperty.IsDefined(typeof(JsonDataAttribute)) &&
+				!EntityProperty.IsDefined(typeof(JsonDataAttribute))
 				)
 				return null;
 			return (IEntityPropertyQueryConverter)Activator.CreateInstance(

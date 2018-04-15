@@ -33,13 +33,14 @@ namespace SF.Common.Documents
 			string image = null, 
 			string summary = null, 
 			long? author = null,
-			string scope=null
+			string scope=null,
+			string redirect=null
 
 			)
 			where TInternal:DocumentInternal
 			where TEditable:DocumentEditable, new()
 		{
-			return await Manager.DocumentEnsure( null, ident, 0, name, content, image, summary, author,scope);
+			return await Manager.DocumentEnsure( null, ident, 0, name, content, image, summary, author,scope, redirect);
 		}
 		public static async Task<TEditable> DocumentEnsure<TInternal, TEditable>(
 				this IDocumentManager<TInternal, TEditable> Manager,
@@ -50,12 +51,13 @@ namespace SF.Common.Documents
 				string image = null, 
 				string summary = null,
 				long? author = null,
-				string scope=null
+				string scope=null,
+				string redirect=null
 			)
 				where TInternal : DocumentInternal
 			where TEditable : DocumentEditable, new()
 		{
-			return await Manager.DocumentEnsure( cid, null, order, name, content, image, summary, author,scope);
+			return await Manager.DocumentEnsure( cid, null, order, name, content, image, summary, author,scope, redirect);
 		}
 		public static async Task<TEditable> DocumentEnsure<TInternal, TEditable>(
 				this IDocumentManager<TInternal, TEditable> Manager,
@@ -67,7 +69,8 @@ namespace SF.Common.Documents
 				string image = null, 
 				string summary = null,
 				long? author = null,
-				string scope=null
+				string scope=null,
+				string redirect=null
 			)
 			where TInternal : DocumentInternal
 			where TEditable : DocumentEditable,new()
@@ -87,7 +90,7 @@ namespace SF.Common.Documents
 					s.ItemOrder = order;
 					s.PublishDate = DateTime.Now;
 					s.ScopeId = scope ?? "default";
-					
+					s.Redirect = redirect;
 				});
 		}
 
@@ -141,7 +144,7 @@ namespace SF.Common.Documents
 		{
 			var items = new List<Item>();
 			var files = System.IO.Directory.GetFiles(folder)
-			   .Where(f => f.EndsWith(".htm"))
+			   .Where(f => f.EndsWith(".htm") || f.EndsWith(".uri"))
 			   .Select(f =>
 			   {
 				   var name = System.IO.Path.GetFileNameWithoutExtension(f);
@@ -169,14 +172,16 @@ namespace SF.Common.Documents
 
 			foreach (var f in files)
 			{
-				var html = System.IO.File.ReadAllText(f.file);
+				var html = f.file.EndsWith(".uri") ? null : System.IO.File.ReadAllText(f.file);
+				var redirect = f.file.EndsWith(".uri") ? System.IO.File.ReadAllText(f.file) : null;
 				var re = await DocManager.DocumentEnsure(
 					catId,
 					f.ident,
 					f.index,
 					f.name,
 					html,
-					scope:scope
+					scope:scope,
+					redirect:redirect
 					);
 				items.Add(new Item { Id = re.Id, Name = re.Name, IsFile = true });
 			}

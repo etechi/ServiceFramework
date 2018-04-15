@@ -93,6 +93,10 @@ namespace SF.Common.Documents.Management
 	public class DocumentEditable : DocumentBase
 	{
 		/// <summary>
+		/// 重定向URL
+		/// </summary>
+		public string Redirect { get; set; }
+		/// <summary>
 		/// 文档内容
 		/// </summary>
 		[Html]

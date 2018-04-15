@@ -59,6 +59,7 @@ namespace SF.Common.Documents
 				{
 					ContainerId=m.ContainerId,
 					Id = m.Id,
+					Redirect=m.Redirect,
 					Content = detail ? m.Content : null,
 					Container = m.ContainerId.HasValue ? new TCategoryPublic { Id = m.ContainerId.Value } : null,
 				});

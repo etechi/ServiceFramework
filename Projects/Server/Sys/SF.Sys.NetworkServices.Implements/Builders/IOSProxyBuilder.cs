@@ -386,7 +386,10 @@ namespace SF.Sys.NetworkService
 						sb.AppendLine($"\t* {p.prop.Description}");
 						sb.AppendLine($"\t* 类型:{p.prop.Type}");
 						sb.AppendLine($"\t*/");
-						sb.AppendLine($"\t@property ({getPropType(p.prop.Type)},nonatomic) {to_ios_type(p.prop.Type, true)} {p.prop.Name};");
+						var ptype = p.prop.Type;
+						if (p.prop.Optional && !ptype.EndsWith("?"))
+							ptype += "?";
+						sb.AppendLine($"\t@property ({getPropType(ptype)},nonatomic) {to_ios_type(ptype, true)} {p.prop.Name};");
 					}
 					sb.AppendLine("@end");
 				});
