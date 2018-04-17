@@ -39,23 +39,27 @@ namespace SF.Sys.AspNetCore
 				get
 				{
 					//Context.ChallengeAsync("Bearer").Wait();
-					return Context?.User;
-				}
+					return (_Users?.Count ?? 0) == 0 ? Operator : _Users.Peek();
 			}
-		Stack<ClaimsPrincipal> _Operators;
+			}
+		Stack<ClaimsPrincipal> _Users;
 
-		public ClaimsPrincipal Operator =>
-			(_Operators?.Count??0)==0 ? User : _Operators.Peek();
+		public ClaimsPrincipal Operator => Context?.User;
+		
 
-		public IDisposable UseOperator(ClaimsPrincipal NewOperator)
+		public async Task<T> UseUser<T>(ClaimsPrincipal NewUser,Func<Task<T>> Callback)
 		{
-			if (_Operators == null)
-				_Operators = new Stack<ClaimsPrincipal>();
-			_Operators.Push(NewOperator);
-			return Disposable.FromAction(() =>
+			if (_Users == null)
+				_Users = new Stack<ClaimsPrincipal>();
+			_Users.Push(NewUser);
+			try
 			{
-				_Operators.Pop();
-			});
+				return await Callback();
+			}
+			finally
+			{
+				_Users.Pop();
+			}
 		}
 	}
 	

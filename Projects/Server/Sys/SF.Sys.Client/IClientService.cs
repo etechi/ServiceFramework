@@ -24,7 +24,28 @@ namespace SF.Sys.Clients
 	{
 		ClaimsPrincipal User { get; }
 		ClaimsPrincipal Operator { get; }
-		IDisposable UseOperator(ClaimsPrincipal NewOperator);
+		Task<T> UseUser<T>(ClaimsPrincipal NewOperator,Func<Task<T>> Callback);
+	}
+	public static class AccessTokenExtension
+	{
+		public static Task<T> UseUser<T>(
+			this IAccessToken accToken,
+			long UserId, 
+			Func<Task<T>> Callback
+			)
+		{
+			return accToken.UseUser<T>(
+				new ClaimsPrincipal(
+					new ClaimsIdentity(
+						new[] {
+							new Claim("sub", UserId.ToString()),
+						},
+						"SFAuth"
+					)
+				),
+				Callback
+			);
+		}
 	}
 	public interface IDefaultAccessTokenProperties
 	{

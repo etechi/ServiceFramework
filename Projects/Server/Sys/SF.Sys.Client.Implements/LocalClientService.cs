@@ -40,32 +40,39 @@ namespace SF.Sys.Clients
 
 		ClientDeviceType IUserAgent.DeviceType => _ClientDeviceType;
 
+		Stack<ClaimsPrincipal> _Users;
 
-		ClaimsPrincipal _User;
-		public ClaimsPrincipal User => _User;
+		public ClaimsPrincipal User =>
+			(_Users?.Count ?? 0) == 0 ? _Operator : _Users.Peek();
 
-		Stack<ClaimsPrincipal> _OperatorStack;
-		public ClaimsPrincipal Operator =>
-			(_OperatorStack?.Count ?? 0) == 0 ? User : _OperatorStack.Peek();
+		ClaimsPrincipal _Operator;
+		public ClaimsPrincipal Operator => _Operator;		
 
 		
 		public Task SignInAsync(ClaimsPrincipal User,DateTime? Expires)
 		{
-			_User = User;
+			_Operator = User;
 			return Task.CompletedTask;
 		}
 
 		public Task SignOutAsync()
 		{
-			_User = null;
+			_Operator = null;
 			return Task.CompletedTask;
 		}
-		public IDisposable UseOperator(ClaimsPrincipal NewOperator)
+		public async Task<T> UseUser<T>(ClaimsPrincipal NewUser, Func<Task<T>> Callback)
 		{
-			if (_OperatorStack == null)
-				_OperatorStack = new Stack<ClaimsPrincipal>();
-			_OperatorStack.Push(NewOperator);
-			return Disposable.FromAction(() => _OperatorStack.Pop());
+			if (_Users == null)
+				_Users = new Stack<ClaimsPrincipal>();
+			_Users.Push(NewUser);
+			try
+			{
+				return await Callback();
+			}
+			finally
+			{
+				_Users.Pop();
+			}
 		}
 	}
 }
