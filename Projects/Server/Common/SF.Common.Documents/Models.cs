@@ -21,7 +21,7 @@ using System.Collections.Generic;
 namespace SF.Common.Documents
 {
 	/// <summary>
-	/// 文档实体
+	/// 文档
 	/// </summary>
 	[EntityObject]
 	public class Document : UIItemEntityBase<Category>
@@ -41,7 +41,7 @@ namespace SF.Common.Documents
 	}
 
 	/// <summary>
-	/// 文档目录实体
+	/// 文档目录
 	/// </summary>
 	[EntityObject]
 	public class Category : UITreeContainerEntityBase<Category,Document>

@@ -8,9 +8,15 @@ using SF.Sys.Auth;
 
 namespace SF.Common.Conversations.Managers
 {
-	public class SessionMessageQueryArgument : ObjectQueryArgument
+	public class SessionMessageQueryArgument : EventQueryArgument
 	{
-		
+
+		/// <summary>
+		/// 用户
+		/// </summary>
+		[EntityIdent(typeof(User))]
+		public virtual long? UserId { get; set; }
+
 	}
 
 	/// <summary>

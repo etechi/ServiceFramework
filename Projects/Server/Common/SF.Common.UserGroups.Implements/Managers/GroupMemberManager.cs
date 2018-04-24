@@ -170,7 +170,7 @@ namespace SF.Common.UserGroups.Managers
 				});
 			if (data == null)
 				throw new PublicArgumentException("指定的用户组已被删除");
-			if (data.Flags.HasFlag(SessionFlag.Public))
+			if (data.Flags.HasFlag(GroupFlag.Public))
 				GroupAccepted = true;
 			if (data.Member == null)
 			{

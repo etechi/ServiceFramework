@@ -21,6 +21,9 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.IdentityServices.UserCredentialProviders
 {
+	/// <summary>
+	/// 管理员账号提供者
+	/// </summary>
 	public class AdminAccountCredentialProvider :
 		IUserCredentialProvider
 	{

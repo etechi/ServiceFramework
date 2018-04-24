@@ -49,17 +49,17 @@ namespace SF.Sys.Services
 				 new MenuItemConfig
 				 {
 					 Path = "系统管理/系统服务/系统服务定义",
-					 Link = "/ap/entity/SysServiceDeclaration/list/0"
+					 Link = "/ap/entity/SysServiceDeclaration/"
 				 },
 				 new MenuItemConfig
 				 {
 					 Path = "系统管理/系统服务/系统服务实现",
-					 Link = "/ap/entity/SysServiceImplement/list/0"
+					 Link = "/ap/entity/SysServiceImplement/"
 				 },
 				 new MenuItemConfig
 				 {
 					 Path = "系统管理/系统服务/系统服务实例",
-					 Link = "/ap/entity/SysServiceInstance/list/0"
+					 Link = "/ap/entity/SysServiceInstance/"
 				 }
 				 );
 				return Task.CompletedTask;

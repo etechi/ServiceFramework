@@ -18,6 +18,9 @@ using SF.Sys.Annotations;
 
 namespace SF.Common.FrontEndContents.Friendly
 {
+	/// <summary>
+	/// 前端内容设置
+	/// </summary>
 	public class FriendlyContentSetting
 	{
 		/// <summary>

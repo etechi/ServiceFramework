@@ -106,6 +106,9 @@ namespace SF.Externals.Aliyun
 		{
 		}
 	}
+	/// <summary>
+	/// 阿里云IOT服务
+	/// </summary>
 	public interface IAliyunIOTService
 	{
 		/// <summary>

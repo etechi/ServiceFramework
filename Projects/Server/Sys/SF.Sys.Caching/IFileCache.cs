@@ -25,6 +25,9 @@ namespace SF.Sys.Caching
 	
 	public delegate Task<FileCacheContent> FileContentGenerator();
 
+	/// <summary>
+	/// 文件缓存
+	/// </summary>
 	public interface IFileCache
 	{
 		Task<string> Cache(

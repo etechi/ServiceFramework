@@ -19,6 +19,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Sys.BackEndConsole.Models
 {
+	/// <summary>
+	/// 控制台
+	/// </summary>
 	[EntityObject]
 	public class Console : ObjectEntityBase<long>
 	{
@@ -31,7 +34,6 @@ namespace SF.Sys.BackEndConsole.Models
 		public string Ident { get; set; }
 		
 	}
-	
 	[EntityObject]
 	public class ConsoleEditable : Console
 	{

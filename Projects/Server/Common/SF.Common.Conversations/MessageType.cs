@@ -5,16 +5,20 @@
 	/// </summary>
 	public enum MessageType
 	{
+		/// <title>文本</title>
 		/// <summary>
-		/// 文本, Name为文本内容
+		///  Name为文本内容
 		/// </summary>
 		Text,
+
+		/// <title>语音</title>
 		/// <summary>
-		/// 语音，Argument为语音ID
+		/// Argument为语音ID
 		/// </summary>
 		Voice,
+		/// <title>图片</title>
 		/// <summary>
-		/// 图片，Argument为图片ID
+		/// Argument为图片ID
 		/// </summary>
 		Image,
 		/// <summary>

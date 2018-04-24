@@ -30,7 +30,7 @@ namespace SF.Common.Notifications.DataModels
 	/// 通知记录
 	/// </summary>
 	[Table("Notification")]
-	public class DataNotification : 
+	public class DataNotification :
 		IEntityWithId<long>
 	{
 		/// <summary>
@@ -101,7 +101,12 @@ namespace SF.Common.Notifications.DataModels
 		[InverseProperty(nameof(DataNotificationTarget.Notification))]
 		public ICollection<DataNotificationTarget> Targets { get; set; }
 
-		
+		/// <summary>
+		/// 主要通知对象
+		/// </summary>
+		[Index]
+		public long? TargetId{get;set;}
+
 		/// <summary>
 		/// 策略Id
 		/// </summary>

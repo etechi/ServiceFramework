@@ -31,7 +31,7 @@ namespace SF.Common.UserGroups.DataModels
 		/// <summary>
 		/// 用户组标志
 		/// </summary>
-		public SessionFlag Flags { get; set; }
+		public GroupFlag Flags { get; set; }
 
 	
 		/// <summary>

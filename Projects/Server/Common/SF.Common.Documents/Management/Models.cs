@@ -20,6 +20,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Documents.Management
 {
+	/// <summary>
+	/// 文档分类
+	/// </summary>
 	[EntityObject]
 	public class CategoryInternal : UITreeContainerEntityBase<CategoryInternal,DocumentInternal>
 	{

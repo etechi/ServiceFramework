@@ -19,6 +19,9 @@ using System.Collections.Generic;
 
 namespace SF.Sys.ActionPlans.Models
 {
+	/// <summary>
+	/// 动作计划
+	/// </summary>
 	[EntityObject]
 	public class ActionPlan : DataObjectEntityBase
 	{	

@@ -62,4 +62,17 @@ namespace SF.Sys.Entities
 	{
 
 	}
+
+	public class EventQueryArgument<TKey> : QueryArgument<TKey>
+	{
+		/// <summary>
+		/// 时间
+		/// </summary>		
+		public DateQueryRange Time { get; set; }
+
+	}
+	public class EventQueryArgument : EventQueryArgument<ObjectKey<long>>
+	{
+
+	}
 }

@@ -32,6 +32,9 @@ namespace SF.Auth.IdentityServices.Managers
 		{
 		}
 	}
+	/// <summary>
+	/// 用户凭证存储器
+	/// </summary>
 	public class UserCredentialStorage<TUser, TUserCredential, TUserClaimValue,TUserRole> :
 		IUserCredentialStorage
 		where TUser:DataModels.DataUser<TUser, TUserCredential, TUserClaimValue, TUserRole>

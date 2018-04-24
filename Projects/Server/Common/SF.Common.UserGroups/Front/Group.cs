@@ -28,7 +28,7 @@ namespace SF.Common.UserGroups.Front
 		/// <summary>
 		/// 用户组标志
 		/// </summary>
-		public SessionFlag Flags { get; set; }
+		public GroupFlag Flags { get; set; }
 
 		/// <summary>
 		/// 最后活动时间

@@ -95,7 +95,7 @@ namespace SF.Sys.BackEndConsole.Front
 			AddMenuItems(new MenuItemConfig
 			{
 				Path = MenuPath + "/" + Entity.Name,
-				Link = $"/ap/entity/{EntityIdent}/list/{ServiceId}",
+				Link = $"/ap/entity/{EntityIdent}/",
 				Permission="@"+EntityIdent
 			});
 			//AddPage(new Page

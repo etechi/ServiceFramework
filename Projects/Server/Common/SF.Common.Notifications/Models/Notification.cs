@@ -26,6 +26,9 @@ using System.Threading.Tasks;
 
 namespace SF.Common.Notifications.Models
 {
+	/// <summary>
+	/// 通知
+	/// </summary>
 	[EntityObject]
 	public class Notification : IEntityWithId<long>
 	{
@@ -79,7 +82,7 @@ namespace SF.Common.Notifications.Models
 		/// 一般通知有效
 		/// </summary>
 		[EntityIdent(typeof(User), nameof(TargetName))]
-		[Uneditable]
+		[ReadOnly(true)]
 		public long? TargetId { get; set; }
 
 		/// <summary>
@@ -177,11 +180,11 @@ namespace SF.Common.Notifications.Models
 		[Uneditable]
 		public IEnumerable<long> Targets { get; set; }
 
-		/// <summary>
-		/// 通知记录
-		/// </summary>
-		[TableRows]
-		public IEnumerable<NotificationSendRecord> SendRecords { get; set; }
+		///// <summary>
+		///// 通知记录
+		///// </summary>
+		//[TableRows]
+		//public IEnumerable<NotificationSendRecord> SendRecords { get; set; }
 
 
 		/// <summary>

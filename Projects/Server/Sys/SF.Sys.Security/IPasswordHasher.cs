@@ -15,6 +15,9 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 namespace SF.Services.Security
 {
+	/// <summary>
+	/// 密码摘要服务
+	/// </summary>
 	public interface IPasswordHasher
 	{
 		string Hash(string Value,byte[] SecurityStamp);

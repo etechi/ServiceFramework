@@ -49,10 +49,12 @@ namespace SF.Common.UserGroups.Models
 		[Ignore]
 		public string OwnerName { get; set; }
 
+		///<title>用户组标志</title>
 		/// <summary>
-		/// 用户组标志
+		/// 公开用户组新成员加入时无需所有者确认
 		/// </summary>
-		public SessionFlag Flags { get; set; }
+		public GroupFlag Flags { get; set; }
+
 		/// <summary>
 		/// 所有人成员
 		/// </summary>

@@ -21,6 +21,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.FrontEndContents
 {
+	/// <summary>
+	/// 站点模板
+	/// </summary>
 	[EntityObject]
     public class SiteTemplate:IEntityWithId<long>
     {

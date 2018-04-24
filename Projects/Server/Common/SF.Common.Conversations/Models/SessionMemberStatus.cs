@@ -11,6 +11,7 @@ namespace SF.Common.Conversations.Models
 	/// <summary>
 	/// 会话成员
 	/// </summary>
+	[EntityObject]
 	public class SessionMemberStatus : ObjectEntityBase
 	{
 

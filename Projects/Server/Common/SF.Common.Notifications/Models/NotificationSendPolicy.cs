@@ -40,7 +40,7 @@ namespace SF.Common.Notifications.Models
 	public class MessageSendAction
 	{
 		/// <summary>
-		/// 发送多种名称
+		/// 发送动作名称
 		/// </summary>
 		public string Name { get; set; }
 
@@ -99,6 +99,9 @@ namespace SF.Common.Notifications.Models
 		public ExtTemplateArgument[] ExtTemplateArguments { get; set; }
 	}
 
+	/// <summary>
+	/// 通知策略
+	/// </summary>
 	[EntityObject]
 	public class NotificationSendPolicy : SF.Sys.Entities.Models.ObjectEntityBase
 	{

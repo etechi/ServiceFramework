@@ -18,6 +18,9 @@ using System.Threading.Tasks;
 
 namespace SF.Auth.IdentityServices.Internals
 {
+	/// <summary>
+	/// 用户凭证存储器
+	/// </summary>
 	public interface IUserCredentialStorage
 	{
 		Task<UserCredential> FindOrBind(

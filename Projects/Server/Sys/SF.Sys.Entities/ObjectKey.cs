@@ -37,6 +37,7 @@ namespace SF.Sys.Entities
 		/// </summary>
 		[Key]
 		[TableVisible]
+		[Optional]
 		public T Id { get; set; }
 
 		public int CompareTo(ObjectKey<T> other)

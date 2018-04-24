@@ -49,9 +49,11 @@ namespace SF.Sys.BackEndConsole.Front
 		public string ContentPath { get; set; }
 	}
 	
+	/// <summary>
+	/// 管理控制台服务
+	/// </summary>
 	[NetworkService]
 	[DefaultAuthorize]
-
 	public interface IBackEndAdminConsoleService
 	{
 		Task<Console> GetConsole(string ConsoleIdent);

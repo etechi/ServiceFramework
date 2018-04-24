@@ -393,6 +393,7 @@ namespace SF.Sys.Metadata
 				item.Title = comment.Title;
 				item.Description = comment.Summary;
 				item.Group = comment.Group;
+				item.Prompt = comment.Prompt;
 				item.ShortName = comment.ShortName;
 			}
 			var cat = attrs.FirstOrDefault(a => a is CategoryAttribute) as CategoryAttribute;

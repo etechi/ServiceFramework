@@ -9,6 +9,9 @@ using SF.Sys.Logging;
 
 namespace SF.Sys.Services
 {
+	/// <summary>
+	/// 阿里云消息队列Mqtt客户端设置
+	/// </summary>
 	public class AliyunMQMqttClientSetting
 	{
 		/// <summary>
