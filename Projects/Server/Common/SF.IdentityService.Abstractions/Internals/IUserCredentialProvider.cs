@@ -25,6 +25,9 @@ namespace SF.Auth.IdentityServices.Internals
 		验证,
 		绑定凭证
 	}
+	/// <summary>
+	/// 用户凭证提供者
+	/// </summary>
     public interface IUserCredentialProvider
     {
 		string Ident { get; }

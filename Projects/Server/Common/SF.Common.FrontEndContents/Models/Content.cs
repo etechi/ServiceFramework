@@ -113,6 +113,9 @@ namespace SF.Common.FrontEndContents
 		[TreeNodes]
 		public ContentItem[] Items { get; set; }
 	}
+	/// <summary>
+	/// 站点内容
+	/// </summary>
     [EntityObject]
     public class Content:ContentItem, IContent,IEntityWithId<long>
 	{

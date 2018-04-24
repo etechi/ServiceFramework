@@ -10,6 +10,7 @@ namespace SF.Common.Conversations.Models
 	/// <summary>
 	/// 会话消息
 	/// </summary>
+	[EntityObject]
 	public class SessionMessage : EventEntityBase
 	{
 		

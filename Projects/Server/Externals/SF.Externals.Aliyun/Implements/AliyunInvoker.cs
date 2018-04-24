@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace SF.Externals.Aliyun.Implements
 {
+	/// <summary>
+	/// 案例云调用实现
+	/// </summary>
 	public class AliyunInvoker : IAliyunInvoker
 	{
 		AliyunSetting Setting { get; }

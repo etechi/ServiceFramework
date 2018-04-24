@@ -28,6 +28,9 @@ namespace SF.Externals.Aliyun
 		public string RegionId { get; set; }
 	}
 	
+	/// <summary>
+	/// 阿里云调用服务
+	/// </summary>
 	public interface IAliyunInvoker
 	{
 		Task<string> Invoke(

@@ -123,6 +123,9 @@ namespace SF.Externals.WeiXin.Devices
 		/// </summary>
 		Binded
 	}
+	/// <summary>
+	/// 微信设备服务
+	/// </summary>
     public interface IWeiXinDeviceService
     {
 

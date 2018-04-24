@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 namespace SF.Common.Notifications.Senders
 {
 
+	/// <summary>
+	/// 测试提供者
+	/// </summary>
 	public class DebugNotificationSendProvider : IDebugNotificationSendProvider
 	{
 		static ISendArgument _LastArgument;

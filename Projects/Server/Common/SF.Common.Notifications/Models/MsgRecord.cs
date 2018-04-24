@@ -20,6 +20,9 @@ using System;
 
 namespace SF.Common.Notifications.Models
 {
+	/// <summary>
+	/// 消息记录
+	/// </summary>
 	[EntityObject]
 	public class MsgRecord : EventEntityBase
 	{

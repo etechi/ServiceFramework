@@ -22,25 +22,17 @@ namespace SF.Common.UserGroups.Managers
 		/// <summary>
 		/// 业务实体类型
 		/// </summary>
-		
-		public int BizType { get; set; }
-
-		/// <summary>
-		/// 业务实体类型
-		/// </summary>
 		[EntityType]
+		[Ignore]
 		public string BizIdentType { get; set; }
 
 		/// <summary>
 		/// 业务实体对象
 		/// </summary>
 		[EntityIdent(EntityTypeField =nameof(BizIdentType))]
+		[Ignore]
 		public long? BizIdent { get; set; }
 
-		/// <summary>
-		/// 业务分组
-		/// </summary>
-		public int BizGroup { get; set; }
 	}
 
 	/// <summary>

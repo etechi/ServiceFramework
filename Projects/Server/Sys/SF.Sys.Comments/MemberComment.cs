@@ -47,8 +47,8 @@ namespace SF.Sys.Comments
 			var type = Member as Type;
 			if (type != null)
 			{
-				if (type.IsGeneric())
-					type = type.GetGenericTypeDefinition();
+				//if (type.IsGeneric())
+					//type = type.GetGenericTypeDefinition();
 			}
 			else if(Member.DeclaringType.IsGeneric())
 			{
@@ -87,21 +87,21 @@ namespace SF.Sys.Comments
 			if(comment==null)
 				comment=new Comment(id, Member.Name, IsDefaultComment: true);
 
-			if (comment!=null && type != null && type.IsGeneric())
-			{
-				var gtd = type.GetGenericTypeDefinition();
-				var gta = type.GenericTypeArguments;
-				var baseName = comment.Title.TrimEndTo("<", true, true);
-				comment = new Comment(
-					null,
-					$"{gta.Select(a => a.Comment()?.Title).Join(" ")} {baseName}",
-					$"{gta.Select(a => a.Comment()?.Summary).Join(" ")} {comment.Summary}",
-					$"{gta.Select(a => a.Comment()?.Group).Join(" ")} {comment.Group}",
-					$"{gta.Select(a => a.Comment()?.Remarks).Join(" ")} {comment.Remarks}",
-					$"{gta.Select(a => a.Comment()?.Prompt).Join(" ")} {comment.Prompt}",
-					IsDefaultComment:comment.IsDefaultComment
-					);
-			}
+			//if (comment!=null && type != null && type.IsGeneric())
+			//{
+			//	var gtd = type.GetGenericTypeDefinition();
+			//	var gta = type.GenericTypeArguments;
+			//	var baseName = comment.Title.TrimEndTo("<", true, true);
+			//	comment = new Comment(
+			//		null,
+			//		$"{gta.Select(a => a.Comment()?.Title).Join(" ")} {baseName}",
+			//		$"{gta.Select(a => a.Comment()?.Summary).Join(" ")} {comment.Summary}",
+			//		$"{gta.Select(a => a.Comment()?.Group).Join(" ")} {comment.Group}",
+			//		$"{gta.Select(a => a.Comment()?.Remarks).Join(" ")} {comment.Remarks}",
+			//		$"{gta.Select(a => a.Comment()?.Prompt).Join(" ")} {comment.Prompt}",
+			//		IsDefaultComment:comment.IsDefaultComment
+			//		);
+			//}
 
 			comment= CommentDict.GetOrAdd(
 				Member,

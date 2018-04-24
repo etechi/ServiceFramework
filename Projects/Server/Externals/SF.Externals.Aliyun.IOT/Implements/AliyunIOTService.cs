@@ -30,6 +30,9 @@ namespace SF.Externals.Aliyun.Implements
 		/// </summary>
 		public string ApiVersion { get; set; } = "2017-04-20";
 	}
+	/// <summary>
+	/// 阿里云IOT服务
+	/// </summary>
 	public class AliyunIOTService : IAliyunIOTService
 	{
 		public IAliyunInvoker AliyunInvoker { get; }

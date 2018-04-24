@@ -3,12 +3,13 @@
 	/// <summary>
 	/// 用户组标志
 	/// </summary>
-	public enum SessionFlag
+	public enum GroupFlag
 	{
-		/// <summary>
-		/// 是否未公开用户组，无须所有者确认即可加入
-		/// </summary>
-		Public
+		/// <title>公开用户组</title>
+		Public,
+		/// <title>非公开用户组</title>
+		Unpublic,
+		
 
 	}
 }

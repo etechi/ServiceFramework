@@ -20,6 +20,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.FrontEndContents
 {
+	/// <summary>
+	/// 站点
+	/// </summary>
 	[EntityObject]
     public class Site : IEntityWithId<string>
 	{

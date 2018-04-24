@@ -122,12 +122,35 @@ namespace SF.Sys.Entities
 				FillFields = (from setting in settings
 							  select BlockExpression.Block(
 									  setting.ValueProps.Select(ep =>
-										  argItem.SetProperty(
-											  ep.dstProp,
-											  argEntity.GetMember(
-												  ep.srcProp
-											  )
-										  )
+									  {
+										  Expression exp = argEntity.GetMember(ep.srcProp);
+										  if (!ep.dstProp.PropertyType.IsAssignableFrom(ep.srcProp.PropertyType))
+										  {
+											  var convert = typeof(Convert).GetMethod(
+														"ToString",
+														BindingFlags.Public | BindingFlags.Static,
+														null,
+														new[] { ep.srcProp.PropertyType },
+														null
+														);
+											  if (convert != null)
+												  exp = Expression.Call(convert, exp);
+											  else
+												  exp = Expression.Call(
+													  typeof(Convert).GetMethod(
+														"ToString",
+														BindingFlags.Public | BindingFlags.Static,
+														null,
+														new[] { typeof(object) },
+														null
+														),
+													  ep.srcProp.PropertyType.IsValueType ?
+													  Expression.Convert(exp, typeof(object)) :
+													  exp
+													  );
+										  }
+										  return argItem.SetProperty(ep.dstProp, exp);
+									  }
 									  )
 								  ).Compile<Action<TItem, TEntity>>(
 								  argItem,
@@ -207,6 +230,16 @@ namespace SF.Sys.Entities
 			{
 				var AllProps = typeof(TItem).AllPublicInstanceProperties();
 
+
+				PropertyInfo findSrcProp(Type type,string name,PropertyInfo dstProp)
+				{
+					var re = type.GetProperty(name);
+					if (re == null) throw new NotSupportedException($"实体类型{type}中找不到属性{name}");
+					if (!dstProp.PropertyType.IsAssignableFrom(re.PropertyType) && dstProp.PropertyType!=typeof(string))
+						throw new InvalidOperationException($"源属性{re.DeclaringType.ShortName()}.{re.Name}类型{re.PropertyType.ShortName()}和目标属性{dstProp.DeclaringType.ShortName()}.{dstProp.Name}类型{dstProp.PropertyType.ShortName()}不兼容");
+					return re;
+				}
+
 				var settings = (from prop in AllProps
 								let ei = prop.GetCustomAttribute<EntityIdentAttribute>()
 								where ei != null && ei.EntityType!=null
@@ -218,11 +251,8 @@ namespace SF.Sys.Entities
 															prop.Name,
 															GetEntityTitleField(ei.EntityType)
 															):null)
-											  where pa != null && pa.IdentField == prop.Name
-											  
-											 let srcProp=meta.EntityDetailType.GetProperty(pa.Property)?? 
-															throw new NotSupportedException($"实体类型{meta.EntityDetailType}中找不到属性{pa.Property}")
-
+											  where pa != null && pa.IdentField == prop.Name											  
+											 let srcProp=findSrcProp(meta.EntityDetailType,pa.Property, p)
 											select (dstProp: p, srcProp: srcProp)
 											).ToArray()
 								where eprops.Length > 0

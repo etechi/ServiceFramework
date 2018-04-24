@@ -24,7 +24,7 @@ using SF.Sys.Auth;
 namespace SF.Common.Comments
 {
 	/// <summary>
-	/// 文档实体
+	/// 文档
 	/// </summary>
 	[EntityObject]
 	public class Comment : IEntityWithId<long>

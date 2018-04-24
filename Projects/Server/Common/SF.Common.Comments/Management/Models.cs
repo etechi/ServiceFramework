@@ -20,7 +20,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Documents.Management
 {
-	
+	/// <summary>
+	/// 评论
+	/// </summary>
 	[EntityObject]
 	public class Comment : TreeNodeEntityBase<Comment>
 	{

@@ -114,8 +114,9 @@ namespace SF.Common.Notifications.Management
 			var editable = ctx.Editable;
 			var model = ctx.Model;
 
-			if (editable.Targets != null)
+			if (editable.Targets != null && editable.Targets.Count()>0)
 			{
+				model.TargetId = editable.Targets.First();
 				var users = new HashSet<long>(editable.Targets);
 				
 				var statuses = await ctx.DataContext
@@ -194,7 +195,7 @@ namespace SF.Common.Notifications.Management
 			if ((sas?.Actions?.Length??0) == 0)
 				return;
 
-			if (editable.Targets == null)
+			if (editable.Targets == null || editable.Targets.Count()==0)
 				await AddSendRecord(ctx.DataContext,model.Id, sas, editable, null);
 			else
 				foreach (var target in editable.Targets)

@@ -19,6 +19,10 @@ using SF.Services.Security;
 
 namespace SF.Sys.Security
 {
+	/// <summary>
+	/// 密码摘要服务
+	/// </summary>
+
 	public class PasswordHasher : IPasswordHasher
 	{
 		public byte[] GlobalPassword { get; }

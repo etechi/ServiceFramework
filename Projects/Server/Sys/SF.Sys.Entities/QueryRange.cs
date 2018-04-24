@@ -40,7 +40,10 @@ namespace SF.Sys.Entities
 		/// 开始(默认为最近31天)
 		/// </prompt>
         public override DateTime? Begin { get; set; }
-        [Date(EndTime=true)]
+		/// <prompt>
+		/// 结束
+		/// </prompt>
+		[Date(EndTime=true)]
         public override DateTime? End { get; set; }
     }
 

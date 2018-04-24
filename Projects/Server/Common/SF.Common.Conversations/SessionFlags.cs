@@ -5,6 +5,9 @@
 	/// </summary>
 	public enum SessionFlag
 	{
-
+		/// <summary>
+		/// 无
+		/// </summary>
+		None
 	}
 }

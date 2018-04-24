@@ -103,7 +103,9 @@ namespace SF.Sys.BackEndConsole.Front
 	{
 	
 	}
-
+	/// <summary>
+	/// 管理控制台服务
+	/// </summary>
 	public class ConsoleService : IBackEndAdminConsoleService
 	{
 		IAccessToken AccessToken { get; }

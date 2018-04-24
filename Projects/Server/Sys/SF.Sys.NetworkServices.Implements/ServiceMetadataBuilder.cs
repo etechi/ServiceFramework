@@ -99,6 +99,7 @@ namespace SF.Sys.NetworkService
 				//.Select(m => GenerateActionMetadata(m))
 				//.ToArray();
 			}
+			re.Sort((x, y) => x.Name.CompareTo(y.Name));
 			return re.ToArray();
 		}
 		//static Type[] HttpMethodAttributes { get; } = new[]

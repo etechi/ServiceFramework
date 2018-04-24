@@ -20,6 +20,9 @@ using System;
 
 namespace SF.Common.Notifications.Models
 {
+	/// <summary>
+	/// 通知发送记录
+	/// </summary>
 	[EntityObject]
 	public class NotificationSendRecord : EventEntityBase
 	{
@@ -38,20 +41,20 @@ namespace SF.Common.Notifications.Models
 		/// <summary>
 		/// 发送服务
 		/// </summary>
-		[EntityIdent(typeof(ServiceInstance), nameof(ServiceName))]
-		public long ServiceId { get; set; }
+		[EntityIdent(typeof(ServiceInstance), nameof(ProviderName))]
+		public long ProviderId { get; set; }
 
 		/// <summary>
 		/// 发送服务
 		/// </summary>
 		[Ignore]
 		[TableVisible]
-		public string ServiceName { get; set; }
+		public string ProviderName { get; set; }
 
-		/// <summary>
-		/// 发送方
-		/// </summary>
-		public string Sender { get; set; }
+		///// <summary>
+		///// 发送方
+		///// </summary>
+		//public string Sender { get; set; }
 
 		/// <summary>
 		/// 标题
