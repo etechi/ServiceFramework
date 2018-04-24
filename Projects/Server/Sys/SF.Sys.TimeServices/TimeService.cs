@@ -24,11 +24,15 @@ namespace SF.Sys.TimeServices
 	public class TimeService : ITimeService
 	{
 		TimeSpan Offset;
+		DateTime FloorToSeconds(DateTime time) =>
+			new DateTime((time.Ticks / 10000000) * 10000000, time.Kind);
+
 		public DateTime Now
 		{
 			get
 			{
-				return DateTime.Now.Add(Offset);
+				var time = FloorToSeconds(DateTime.Now).Add(Offset);
+				return time;
 			}
 		}
 
@@ -36,7 +40,7 @@ namespace SF.Sys.TimeServices
 		{
 			get
 			{
-				return DateTime.UtcNow.Add(Offset);
+				return FloorToSeconds(DateTime.UtcNow).Add(Offset);
 			}
 		}
 
@@ -47,7 +51,7 @@ namespace SF.Sys.TimeServices
 
 		public void SetTime(DateTime UtcNow)
 		{
-			Offset = UtcNow.Subtract(DateTime.UtcNow);
+			Offset = UtcNow.Subtract(FloorToSeconds(DateTime.UtcNow));
 		}
 	}
 }

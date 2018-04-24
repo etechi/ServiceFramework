@@ -25,5 +25,11 @@ namespace SF.Common.Conversations.Managers
 		IEntityManager<ObjectKey<long>, SessionMessage>
 	{
 		Task<SessionMessageDetail> GetMessageDetail(long Id);
+		Task<long> SendSystemMessage(
+			string BizIdentType,
+			long BizIdent,
+			string Message,
+			string Argument
+			);
 	}
 }

@@ -319,6 +319,9 @@ namespace SF.Common.Media
 
 		public async Task<HttpResponseMessage> Get(string id, string format=null)
 		{
+			if(string.IsNullOrWhiteSpace(id))
+				return HttpResponse.NotModified;
+
 			if (format == null)
 				format = "";
 			else if (!Setting.SupportedAllFormats &&

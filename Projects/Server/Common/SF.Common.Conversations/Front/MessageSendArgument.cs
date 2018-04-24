@@ -6,7 +6,7 @@
 	public class MessageSendArgument
 	{
 		/// <summary>
-		/// 业务标识类型
+		/// 会话业务标识类型
 		/// </summary>
 		public string BizIdentType { get; set; }
 

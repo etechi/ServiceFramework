@@ -22,5 +22,10 @@ namespace SF.Common.Conversations.Front
 		/// 若设置，则返回指定ID之后的记录,用于获取新增消息
 		/// </summary>
 		public long? StartId { get; set; }
+
+		/// <summary>
+		/// 若设置，则返回指定ID之前的记录,用于获取历史消息，不支持和StartId同时使用
+		/// </summary>
+		public long? EndId { get; set; }
 	}
 }

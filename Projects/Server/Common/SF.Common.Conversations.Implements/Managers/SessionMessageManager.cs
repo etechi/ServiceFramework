@@ -37,6 +37,30 @@ namespace SF.Common.Conversations.Managers
 
 		}
 
+		public async Task<long> SendSystemMessage(
+			string BizIdentType, 
+			long BizIdent, 
+			string Message,
+			string Argument
+			)
+		{
+			var sid = await SessionStatusManager.Value.GetOrCreateSession(
+				BizIdentType, 
+				BizIdent
+				);
+
+			var id = await CreateAsync(
+				new Models.SessionMessage
+				{
+					SessionId = sid,
+					Text = Message,
+					Argument=Argument,
+					Type = MessageType.System,
+				});
+
+			return id.Id;
+		}
+
 		public Task<SessionMessageDetail> GetMessageDetail(long Id)
 		{
 			return DataScope.Use("查找消息详情", ctx =>
@@ -164,6 +188,10 @@ namespace SF.Common.Conversations.Managers
 					if (editable.Text.IsNullOrEmpty())
 						editable.Text = "【图片】";
 
+					break;
+				case MessageType.System:
+					if (!editable.Text.HasContent())
+						throw new PublicArgumentException("未指定消息内容");
 					break;
 				default:
 					throw new ArgumentException("不支持指定的消息类型:" + editable.Type);

@@ -199,7 +199,7 @@ namespace SF.Common.Notifications.Front
 				Time=n.Time,
 				Name=n.Name,
 				ReadTime=n.Targets.Where(t=>t.UserId==user).Select(t=>t.ReadTime).FirstOrDefault()
-			});
+			}).OrderByDescending(n=>n.Time);
 		}
 		public async Task<UserNotification> Get(long Id)
 		{

@@ -87,32 +87,32 @@ namespace SF.Common.Conversations.Front
 			var ctx =await EnsureSessionMember(Arg.BizIdentType,Arg.BizIdent);
 			return await DataScope.Use("查询消息", async DataContext =>
 			 {
-				 var q = from s in DataContext.Set<DataModels.DataSessionStatus>().AsQueryable()
+				 var user = ctx.UserId;
+				 var rq = from s in DataContext.Set<DataModels.DataSessionStatus>().AsQueryable()
 						 where s.BizIdentType == Arg.BizIdentType &&
 								 s.BizIdent == Arg.BizIdent &&
 								 s.LogicState == EntityLogicState.Enabled
 						 from m in s.Messages
-						 select m;
-				 if (Arg.StartId.HasValue)
-					 q = q.Where(m => m.Id > Arg.StartId.Value);
+						 select new SessionMessage
+						 {
+							 Id = m.Id,
+							 Argument = m.Argument,
+							 SessionId = m.SessionId,
+							 Text = m.Text,
+							 Time = m.Time,
+							 Type = m.Type,
+							 UserId = m.UserId,
+							 Self = m.UserId.HasValue && m.UserId.Value == user
+						 };
 
-				 var user = ctx.UserId;
-				 var rq = from m in q
-						  orderby m.Id ascending
-						  select new SessionMessage
-						  {
-							  Id = m.Id,
-							  Argument = m.Argument,
-							  SessionId = m.SessionId,
-							  Text = m.Text,
-							  Time = m.Time,
-							  Type = m.Type,
-							  UserId = m.UserId,
-							  Self = m.UserId.HasValue && m.UserId.Value == user
-						  };
+				 if (Arg.StartId.HasValue)
+					 rq = rq.Where(m => m.Id > Arg.StartId.Value).OrderBy(m => m.Id);
+				 else if (Arg.EndId.HasValue)
+					 rq = rq.Where(m => m.Id < Arg.EndId.Value).OrderByDescending(m => m.Id);
+				 else
+					 rq = rq.OrderByDescending(m => m.Id);
 
 				 var re = await rq.ToQueryResultAsync(Arg.Paging);
-
 
 				 var uids = re.Items.Select(i => i.UserId).Where(i => i.HasValue).Select(i => i.Value).ToArray();
 				 var users = await ctx.Provider.GetMemberDesc(Arg.BizIdent, uids);
@@ -125,6 +125,10 @@ namespace SF.Common.Conversations.Front
 						 i.MemberBizIdent = u.BizIdent;
 						 i.MemberBizIdentType = u.BizIdentType;
 					 }
+
+				 if (!Arg.StartId.HasValue)
+					 re.Items = re.Items.OrderBy(i => i.Id).ToArray();
+
 				 return re;
 			 });
 		}

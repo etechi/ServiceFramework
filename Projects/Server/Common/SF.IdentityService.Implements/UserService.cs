@@ -222,7 +222,7 @@ namespace SF.Auth.IdentityServices
 				throw new PublicArgumentException("用户或密码错误！");
 			var idData = await GetIdentityData(ui.UserId);
 
-#if(!DEBUG)
+//#if(!DEBUG)
 
 			var passwordHash = idData.PasswordHash;
 			if (Setting.PasswordHasher.Value.Hash(Arg.Password, idData.SecurityStamp) != passwordHash)
@@ -236,7 +236,7 @@ namespace SF.Auth.IdentityServices
 
 				throw new PublicArgumentException("用户或密码错误!");
 			}
-#endif
+//#endif
 			if (!idData.IsEnabled)
 				throw new PublicDeniedException("用户已被禁止登录");
 
