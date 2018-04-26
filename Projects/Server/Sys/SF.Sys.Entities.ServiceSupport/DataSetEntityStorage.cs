@@ -392,7 +392,8 @@ namespace SF.Sys.Entities
 			   this IEntityServiceContext ServiceContext,
 			TQueryArgument QueryArgument,
 			Func<IContextQueryable<TModel>, TQueryArgument,  IContextQueryable<TModel>> BuildQuery=null,
-			IPagingQueryBuilder<TModel> PagingQueryBuilder=null
+			IPagingQueryBuilder<TModel> PagingQueryBuilder=null,
+			Expression<Func<IGrouping<int, TModel>, ISummaryWithCount>> Summary = null
 			)
 			where TModel : class
 			where TQueryArgument:IPagingArgument
@@ -402,11 +403,14 @@ namespace SF.Sys.Entities
 					GetFilter<TModel, TQueryArgument>().Filter(q, ServiceContext, QueryArgument);
 				if (BuildQuery != null)
 					q = BuildQuery(q, QueryArgument);
-				return await ServiceContext.QueryResultBuildHelperCache.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Summary)
+				return await ServiceContext
+					.QueryResultBuildHelperCache
+					.GetHelper<TModel, TReadOnlyEntity>(QueryMode.Summary)
 					.Query(
-					q,
-					PagingQueryBuilder??ServiceContext.PagingQueryBuilderCache.GetBuilder<TModel>(),
-					QueryArgument.Paging
+						q,
+						PagingQueryBuilder??ServiceContext.PagingQueryBuilderCache.GetBuilder<TModel>(),
+						QueryArgument.Paging,
+						Summary
 					);
 			});
 			await ServiceContext.EntityPropertyFiller.Fill(null, re.Items.ToArray());
