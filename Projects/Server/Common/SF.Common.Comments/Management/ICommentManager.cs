@@ -43,6 +43,7 @@ namespace SF.Common.Comments.Management
 	[EntityManager]
 	[DefaultAuthorize(PredefinedRoles.运营专员,true)]
 	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
+	[DefaultAuthorize(PredefinedRoles.系统管理员, true)]
 	public interface ICommentManager<TComment>:
 		IEntitySource<ObjectKey<long>, TComment, CommentQueryArguments>,
 		IEntityManager<ObjectKey<long>, TComment>

@@ -77,6 +77,8 @@ namespace SF.Auth.IdentityServices
 				_GrantRoles = gr =  LoadGrantRoles();
 			if (gr.TryGetValue((Service,Method), out var rs))
 				return Roles.Any(r => rs.Contains(r));
+			if (gr.TryGetValue((Service, "*"), out rs))
+				return Roles.Any(r => rs.Contains(r));
 			return false;
 		}
 	}

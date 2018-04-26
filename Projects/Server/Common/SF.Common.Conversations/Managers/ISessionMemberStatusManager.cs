@@ -30,6 +30,7 @@ namespace SF.Common.Conversations.Managers
 	[NetworkService]
 	[EntityManager]
 	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
+	[DefaultAuthorize(PredefinedRoles.系统管理员, true)]
 	public interface ISessionMemberStatusManager :
 		IEntitySource<ObjectKey<long>, SessionMemberStatus, SessionMemberQueryArgument>,
 		IEntityManager<ObjectKey<long>, SessionMemberStatus>

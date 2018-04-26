@@ -57,7 +57,7 @@ namespace SF.Common.Documents.Management
 
 	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
 	[DefaultAuthorize(PredefinedRoles.运营专员)]
-
+	[DefaultAuthorize(PredefinedRoles.系统管理员)]
 	public interface IDocumentManager<TInternal, TEditable> :
 		IEntitySource<ObjectKey<long>, TInternal, DocumentQueryArguments>,
 		IEntityManager<ObjectKey<long>, TEditable>

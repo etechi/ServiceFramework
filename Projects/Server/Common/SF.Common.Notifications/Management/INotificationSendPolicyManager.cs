@@ -29,6 +29,7 @@ namespace SF.Common.Notifications.Management
 	[EntityManager]
 	[NetworkService]
 	[DefaultAuthorize(PredefinedRoles.运营专员)]
+	[DefaultAuthorize(PredefinedRoles.系统管理员)]
 	public interface INotificationSendPolicyManager :
 		IEntitySource<ObjectKey<long>, NotificationSendPolicy, NotificationSendPolicyQueryArgument>,
 		IEntityManager<ObjectKey<long>, NotificationSendPolicy>

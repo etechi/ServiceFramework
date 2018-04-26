@@ -42,8 +42,8 @@ namespace SF.Sys.Auth
 	{
 		bool Authorize(
 			ClaimsPrincipal User,
-			string Resource,
-			string Operation,
+			string Service, 
+			string Method,
 			object Target
 			);
 	}

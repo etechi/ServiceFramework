@@ -19,6 +19,9 @@ using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace SF.Common.Admins
 {
@@ -37,6 +40,44 @@ namespace SF.Common.Admins
 	}
 
 	/// <summary>
+	/// 管理员设置
+	/// </summary>
+	public class AdminSetting
+	{
+		/// <summary>
+		/// ID
+		/// </summary>
+		[Key]
+		[ReadOnly(true)]
+		public long Id { get; set; }
+
+		/// <summary>
+		/// 称呼
+		/// </summary>
+		[Required]
+		[MaxLength(100)]
+		public string Name { get; set; }
+		///<title>密码</title>
+		/// <summary>
+		/// 设置后可修改密码
+		/// </summary>
+		[Password]
+		[MaxLength(100)]
+		public string Password { get; set; }
+		/// <summary>
+		/// 图标
+		/// </summary>
+		[Image]
+		[MaxLength(100)]
+		public string Icon { get; set; }
+		/// <summary>
+		/// 图片
+		/// </summary>
+		[Image]
+		[MaxLength(100)]
+		public string Image { get; set; }
+	}
+	/// <summary>
 	/// 系统管理员
 	/// </summary>
 	/// <typeparam name="TInternal"></typeparam>
@@ -45,8 +86,8 @@ namespace SF.Common.Admins
 	[EntityManager]
 	[NetworkService]
 	[DefaultAuthorize(PredefinedRoles.安全专员)]
-
-	[Category("系统管理", "系统管理员管理")]
+	[DefaultAuthorize(PredefinedRoles.系统管理员)]
+	//[Category("系统管理", "系统管理员管理")]
 	public interface IAdminManager<TInternal,TEditable,TQueryArgument> :
 		IEntitySource<ObjectKey<long>,TInternal,TQueryArgument>,
 		IEntityManager<ObjectKey<long>, TEditable>
@@ -54,7 +95,18 @@ namespace SF.Common.Admins
 		where TEditable:AdminEditable
 		where TQueryArgument:AdminQueryArgument
 	{
-
+		/// <summary>
+		/// 获取当前管理员信息
+		/// </summary>
+		/// <returns>管理员信息</returns>
+		[DefaultAuthorize]
+		Task<AdminSetting> GetSetting();
+		/// <summary>
+		/// 设置当前管理员信息
+		/// </summary>
+		/// <param name="Setting">设置</param>
+		[DefaultAuthorize]
+		Task SetSetting(AdminSetting Setting);
 	}
 	public interface IAdminManager:
 		IAdminManager<AdminInternal, AdminEditable, AdminQueryArgument>

@@ -40,7 +40,7 @@ namespace SF.Common.Documents.Management
 	[EntityManager]
 	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
 	[DefaultAuthorize(PredefinedRoles.运营专员)]
-
+	[DefaultAuthorize(PredefinedRoles.系统管理员)]
 	public interface IDocumentScopeManager<TInternal, TEditable> :
 		IEntitySource<ObjectKey<string>, TInternal, DocumentScopeQueryArguments>,
 		IEntityManager<ObjectKey<string>, TEditable>

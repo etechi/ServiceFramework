@@ -134,6 +134,8 @@ namespace SF.Common.Admins
 				UserName = re.MainCredential,
 				Roles = re.Roles.Select(r => r.RoleId).ToArray()
 			};
+			//if(editable.Roles.Contains("admin"))
+			//	throw new ArgumentException("指定用户不是管理员:" + Key.Id);
 			return editable;
 		}
 
@@ -201,6 +203,42 @@ namespace SF.Common.Admins
 			u.InternalRemarks = Entity.InternalRemarks;
 
 			await UserManager.UpdateAsync(u);
+		}
+
+		/// <summary>
+		/// 获取当前管理员信息
+		/// </summary>
+		/// <returns>管理员信息</returns>
+		public async Task<AdminSetting> GetSetting()
+		{
+			var id = ServiceContext.AccessToken.User.EnsureUserIdent();
+			var admin = await LoadForEdit(ObjectKey.From(id));
+			if (admin == null)
+				throw new PublicArgumentException("找不到指定的管理员");
+			return new AdminSetting
+			{
+				Id = admin.Id,
+				Icon = admin.Icon,
+				Image = admin.Image,
+				Name = admin.Name,
+			};
+		}
+
+		/// <summary>
+		/// 设置当前管理员信息
+		/// </summary>
+		/// <param name="Setting">设置</param>
+		public async Task SetSetting(AdminSetting Setting)
+		{
+			var id = ServiceContext.AccessToken.User.EnsureUserIdent();
+			var admin = await LoadForEdit(ObjectKey.From(id));
+			if (admin == null)
+				throw new PublicArgumentException("找不到指定的管理员");
+			admin.Icon = Setting.Icon;
+			admin.Image = Setting.Image;
+			admin.Name = Setting.Name;
+			admin.Password = Setting.Password;
+			await UpdateAsync(admin);
 		}
 	}
 

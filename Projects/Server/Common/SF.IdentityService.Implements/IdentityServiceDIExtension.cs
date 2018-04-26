@@ -557,7 +557,7 @@ namespace SF.Sys.Services
 				permissions.Add(ni);
 
 				foreach (var daa in daas.Where(d => d.RoleIdent != null))
-					AddItem(roles, daa.RoleIdent, daa.RoleName, managerPermissionName);
+					AddItem(roles, daa.RoleIdent, daa.RoleName,daa.ReadOnly? svcTitle+ "浏览": managerPermissionName);
 
 			}
 			var ds = ServiceProvider.Resolve<IDataScope>();
@@ -667,7 +667,7 @@ namespace SF.Sys.Services
 			)
 		{
 			if (!dic.TryGetValue(key, out var l))
-				dic[key] = l = new NamedItems<T>();
+				dic[key] = l = new NamedItems<T>() { Name = name };
 			l.Add(item);
 		}
 

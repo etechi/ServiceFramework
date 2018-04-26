@@ -40,7 +40,7 @@ namespace SF.Common.Media
 		Task<HttpResponseMessage> Get(string id, string format = null);
 
 
-		[DefaultAuthorizeAttribute]
+		[DefaultAuthorize]
 		[HeavyMethod]
 		Task<CopyResult> CopyImage(string uri);
 

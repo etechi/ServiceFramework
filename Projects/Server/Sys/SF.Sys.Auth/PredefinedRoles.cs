@@ -20,6 +20,7 @@ namespace SF.Sys.Auth
 {
 	public class PredefinedRoles
 	{
+		public const string 系统管理员 = nameof(系统管理员);
 		public const string 安全专员 = nameof(安全专员);
 		public const string 运营专员 = nameof(运营专员);
 		public const string 媒介专员= nameof(媒介专员);

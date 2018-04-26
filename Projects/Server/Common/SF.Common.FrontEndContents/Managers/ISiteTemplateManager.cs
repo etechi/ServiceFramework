@@ -35,6 +35,7 @@ namespace SF.Common.FrontEndContents
 	[EntityManager]
 	[NetworkService]
 	[DefaultAuthorize(PredefinedRoles.运营专员)]
+	[DefaultAuthorize(PredefinedRoles.系统管理员)]
 	public interface ISiteTemplateManager<TSiteTemplate> :
 		IEntityManager<ObjectKey<long>, TSiteTemplate>,
 		IEntitySource<ObjectKey<long>, TSiteTemplate, SiteTemplateQueryArgument>,

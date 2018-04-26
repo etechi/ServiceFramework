@@ -35,7 +35,7 @@ namespace SF.Common.FrontEndContents
 	[NetworkService]
 	[EntityManager]
 	[DefaultAuthorize(PredefinedRoles.运营专员)]
-
+	[DefaultAuthorize(PredefinedRoles.系统管理员)]
 	public interface IContentManager<TContent> :
 		IEntityManager<ObjectKey<long>, TContent>,
 		IEntitySource<ObjectKey<long>, TContent, ContentQueryArgument>,

@@ -22,7 +22,14 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.BackEndConsole.Front
 {
-
+	public enum EntityPermissionType
+	{
+		None,
+		ReadOnly,
+		Edit,
+		NewAndEdit,
+		Full
+	}
 	public class Console
 	{
 		public long Id { get; set; }
@@ -30,6 +37,7 @@ namespace SF.Sys.BackEndConsole.Front
 		public string Title { get; set; }
 		public string SystemVersion { get; set; }
 		public ConsoleMenuItem[] MenuItems { get; set; }
+		public Dictionary<string,EntityPermissionType> EntityPermissions { get; set; }
 
 	}
 	public class HotQuery
@@ -58,7 +66,7 @@ namespace SF.Sys.BackEndConsole.Front
 	{
 		Task<Console> GetConsole(string ConsoleIdent);
 		Task<Page> GetPage(string ConsoleIdent, string PagePath);
-
+		Task<bool[]> CheckPermissions(string[] Methods);
 		Task HotMenuUpdate(ConsoleMenuItem[] Items);
 		Task<ConsoleMenuItem[]> HotMenuList();
 

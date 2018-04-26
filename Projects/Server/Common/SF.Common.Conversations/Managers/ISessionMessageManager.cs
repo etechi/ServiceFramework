@@ -25,7 +25,7 @@ namespace SF.Common.Conversations.Managers
 	[NetworkService]
 	[EntityManager]
 	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
-
+	[DefaultAuthorize(PredefinedRoles.系统管理员, true)]
 	public interface ISessionMessageManager :
 		IEntitySource<ObjectKey<long>, SessionMessage, SessionMessageQueryArgument>,
 		IEntityManager<ObjectKey<long>, SessionMessage>

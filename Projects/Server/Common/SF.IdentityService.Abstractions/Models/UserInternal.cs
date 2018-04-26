@@ -20,6 +20,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Auth.IdentityServices.Models
 {
+	/// <summary>
+	/// 用户
+	/// </summary>
 	[EntityObject]
 	public class UserInternal : ObjectEntityBase
 	{
@@ -56,8 +59,6 @@ namespace SF.Auth.IdentityServices.Models
 
 	public class UserEditable : UserInternal
 	{
-		
-
 		/// <summary>
 		/// 头像
 		/// </summary>
@@ -65,8 +66,9 @@ namespace SF.Auth.IdentityServices.Models
 		[Image]
 		public string Image { get; set; }
 
+		///<title>密码</title>
 		/// <summary>
-		/// 密码
+		/// 输入新密码后可替换现有密码
 		/// </summary>
 		[SkipWhenDefault]
 		[MaxLength(100)]
@@ -106,13 +108,13 @@ namespace SF.Auth.IdentityServices.Models
 		public IEnumerable<UserRole> Roles { get; set; }
 
 		/// <summary>
-		/// 客户端
+		/// 注册客户端
 		/// </summary>
 		[EntityIdent(typeof(ClientInternal),nameof(SignupClientName))]
 		public long? SignupClientId { get; set; }
 
 		/// <summary>
-		/// 客户端
+		/// 注册客户端
 		/// </summary>
 		[Ignore]
 		[TableVisible]

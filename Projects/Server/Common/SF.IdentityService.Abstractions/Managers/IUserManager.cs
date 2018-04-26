@@ -67,6 +67,7 @@ namespace SF.Auth.IdentityServices.Managers
 	[DefaultAuthorize(PredefinedRoles.财务专员,true)]
 	[DefaultAuthorize(PredefinedRoles.媒介专员,true)]
 	[DefaultAuthorize(PredefinedRoles.销售专员,true)]
+	[DefaultAuthorize(PredefinedRoles.系统管理员)]
 	[NetworkService]
 	public interface IUserManager<TInternal,TEditable,TQueryArgument> :
 		IEntityManager<ObjectKey<long>,TEditable>,

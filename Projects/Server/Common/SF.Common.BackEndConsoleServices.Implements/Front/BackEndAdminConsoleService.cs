@@ -29,10 +29,12 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.BackEndConsole.Front
 {
+	
 	public class CachedConsole: Console
 	{
 		public Dictionary<string,Page> Pages { get; set; }
-
+		
+		
 		public ConsoleMenuItem[] GetUserMenuItems(
 			ClaimsPrincipal User,
 			IAuthService AuthService,
@@ -44,6 +46,7 @@ namespace SF.Sys.BackEndConsole.Front
 				if (Permission.IsNullOrEmpty())
 					return true;
 
+				//检查实体浏览权限
 				if (Permission.StartsWith("@"))
 				{
 					var em = EntityMetadataCollection.FindByTypeIdent(Permission.Substring(1));
@@ -51,15 +54,18 @@ namespace SF.Sys.BackEndConsole.Front
 						return false;
 					if (em.EntityManagerType == null)
 						return false;
+					var re = EntityPermissionType.None;
 					if (!em.EntityManagerCapability.HasFlag(EntityCapability.Queryable))
 						return false;
 					return AuthService.Authorize(
-						User,
-						em.EntityManagerType.GetFullName(),
-						"QueryAsync",
+						User, 
+						em.EntityManagerType.GetFullName(), 
+						nameof(Managers.IConsoleManager.QueryAsync), 
 						null
 						);
+
 				}
+				//普通权限
 				var pair = Permission.LastSplit2('.');
 				return AuthService.Authorize(
 					User,
@@ -128,6 +134,38 @@ namespace SF.Sys.BackEndConsole.Front
 		{
 			return EntityCache.Find(ConsoleIdent);
 		}
+		EntityPermissionType GetEntityPermission(string Entity)
+		{
+			var User = AccessToken.User;
+			var em = EntityMetadataCollection.FindByTypeIdent(Entity);
+			if (em == null)
+				return EntityPermissionType.None;
+			if (em.EntityManagerType == null)
+				return EntityPermissionType.None;
+			var re = EntityPermissionType.None;
+			var mname = em.EntityManagerType.GetFullName();
+
+			bool check(EntityCapability flag, string method) =>
+				em.EntityManagerCapability.HasFlag(EntityCapability.Queryable) &&
+				AuthService.Authorize(User, mname, method, null);
+
+			if (!check(EntityCapability.Queryable, nameof(Managers.IConsoleManager.QueryAsync)))
+				return re;
+			re = EntityPermissionType.ReadOnly;
+
+			if (!check(EntityCapability.Updatable, nameof(Managers.IConsoleManager.UpdateAsync)))
+				return re;
+			re = EntityPermissionType.Edit;
+
+			if (!check(EntityCapability.Creatable, nameof(Managers.IConsoleManager.CreateAsync)))
+				return re;
+			re = EntityPermissionType.NewAndEdit;
+
+			if (!check(EntityCapability.Removable, nameof(Managers.IConsoleManager.RemoveAsync)))
+				return re;
+			re = EntityPermissionType.Full;
+			return re;
+		}
 		public async Task<Console> GetConsole(string ConsoleIdent)
 		{
 			var c = await GetCachedConsole(ConsoleIdent);
@@ -136,8 +174,20 @@ namespace SF.Sys.BackEndConsole.Front
 			{
 				Title = c.Title,
 				SystemVersion = c.SystemVersion,
-				MenuItems = c.GetUserMenuItems(AccessToken.User, AuthService, EntityMetadataCollection)
+				MenuItems = c.GetUserMenuItems(AccessToken.User, AuthService, EntityMetadataCollection),
+				EntityPermissions= EntityMetadataCollection
+					.Select(e=>(id:e.Ident,p:GetEntityPermission(e.Ident)))
+					.Where(e=>e.p!=EntityPermissionType.None)
+					.ToDictionary(e=>e.id,e=>e.p)
 			};
+		}
+
+		public Task<bool[]> CheckPermissions(string[] Methods)
+		{
+			var re = Methods.Select(m => m.Split2('.')).Select(
+				m => AuthService.Authorize(AccessToken.User, m.Item1, m.Item2, null)
+				).ToArray();
+			return Task.FromResult(re);
 		}
 
 		public async Task<Page> GetPage(string ConsoleIdent, string PagePath)

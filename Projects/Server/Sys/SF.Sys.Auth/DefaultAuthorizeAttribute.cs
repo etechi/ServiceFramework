@@ -30,7 +30,7 @@ namespace SF.Sys.Auth
 		public string RoleIdent { get; set; }
 		public string RoleName { get; set; }
 		public bool ReadOnly { get; set; }
-		public DefaultAuthorizeAttribute():this(null,null)
+		public DefaultAuthorizeAttribute()
 		{
 
 		}
@@ -40,8 +40,10 @@ namespace SF.Sys.Auth
 		}
 		public DefaultAuthorizeAttribute(string RoleIdent,string RoleName=null,bool ReadOnly=false)
 		{
+			if (RoleIdent.IsNullOrWhiteSpace())
+				throw new ArgumentNullException(nameof(RoleIdent));
 			this.RoleIdent = RoleIdent;
-			this.RoleName = RoleName;
+			this.RoleName = RoleName ?? RoleIdent;
 			this.ReadOnly = ReadOnly;
 		}
 	}

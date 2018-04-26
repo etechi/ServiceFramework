@@ -32,6 +32,7 @@ namespace SF.Common.FrontEndContents
 	[NetworkService]
 	[EntityManager]
 	[DefaultAuthorize(PredefinedRoles.运营专员)]
+	[DefaultAuthorize(PredefinedRoles.系统管理员)]
 	public interface ISiteManager<TSite>:
 		IEntityManager<ObjectKey<string>, TSite>,
 		IEntitySource<ObjectKey<string>, TSite, QueryArgument<ObjectKey<string>>>,

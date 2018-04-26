@@ -35,6 +35,7 @@ namespace SF.Sys.Reminders
 	[NetworkService]
 	[EntityManager]
 	[DefaultAuthorize(PredefinedRoles.客服专员,true)]
+	[DefaultAuthorize(PredefinedRoles.系统管理员, true)]
 	public interface IReminderManager :
 		IEntitySource<ObjectKey<long>, Models.Reminder, ReminderQueryArgument>
 	{
