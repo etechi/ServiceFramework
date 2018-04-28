@@ -13,8 +13,10 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using SF.Sys.Linq;
 
@@ -42,13 +44,17 @@ namespace SF.Sys.Entities
 			return ServiceContext.AutoQueryIdentsAsync<TKey, TQueryArgument, TModel>(Arg, OnBuildQuery, PagingQueryBuilder);
 		}
 		//protected abstract Task<TEntitySummary[]> OnPrepareSummaries(TSummaryTemp[] Internals);
-
+		protected virtual Expression<Func<IGrouping<int, TModel>, ISummaryWithCount>> GetSummaryExpression()
+		{
+			return null;
+		}
 		public virtual Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg)
 		{
 			return ServiceContext.AutoQueryAsync<TEntitySummary, TQueryArgument, TModel>(
 				Arg,
 				OnBuildQuery,
-				PagingQueryBuilder
+				PagingQueryBuilder,
+				GetSummaryExpression()
 				);
 		}
 	}

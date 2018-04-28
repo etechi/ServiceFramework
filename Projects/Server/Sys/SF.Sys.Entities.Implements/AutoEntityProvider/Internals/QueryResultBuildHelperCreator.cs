@@ -94,7 +94,12 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 			return m.ResultMapper;
 		}
 
-		public Task<QueryResult<TResult>> Query(IContextQueryable<TDataModel> queryable,IPagingQueryBuilder<TDataModel> PagingQueryBuilder, Paging paging)
+		public Task<QueryResult<TResult>> Query(
+			IContextQueryable<TDataModel> queryable,
+			IPagingQueryBuilder<TDataModel> PagingQueryBuilder, 
+			Paging paging,
+			Expression<Func<IGrouping<int, TDataModel>, ISummaryWithCount>> Summary = null
+			)
 		{
 			var props = paging?.Properties;
 			var selector =PropertySelector.Get( props);
@@ -104,7 +109,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 				m.ResultMapper,
 				PagingQueryBuilder,
 				paging,
-				null
+				Summary
 				);
 		}
 

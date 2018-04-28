@@ -194,7 +194,7 @@ namespace SF.Sys.Entities
 			Func<T[], Task<R[]>> resultMapper,
 			IPagingQueryBuilder<E> pagingBuilder,
 			Paging paging,
-            System.Linq.Expressions.Expression<Func<IGrouping<int, E>, ISummaryWithCount>> Summary = null
+            Expression<Func<IGrouping<int, E>, ISummaryWithCount>> Summary = null
             )
             where E : class
 		{
