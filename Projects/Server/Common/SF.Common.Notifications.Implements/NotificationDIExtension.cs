@@ -24,6 +24,7 @@ using SF.Sys.Events;
 using System.Threading.Tasks;
 using SF.Common.Notifications.Models;
 using System;
+using SF.Sys.BackEndConsole;
 
 namespace SF.Sys.Services
 {
@@ -84,15 +85,15 @@ namespace SF.Sys.Services
 					 ).Ensure(sp, scope);
 
 				 await sim.DefaultService<INotificationManager, NotificationManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 				 await sim.DefaultService<INotificationSendRecordManager, NotificationSendRecordManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 				await sim.DefaultService<INotificationSendPolicyManager, NotificationSendPolicyManager>(null)
-				   .WithMenuItems(MenuPath)
+				   .WithConsolePages(MenuPath)
 				   .Ensure(sp, scope);
 
 

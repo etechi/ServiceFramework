@@ -17,6 +17,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Common.Admins;
 
 using SF.Common.Admins.Models;
+using SF.Sys.BackEndConsole;
 using SF.Sys.Services.Management;
 
 namespace SF.Sys.Services
@@ -68,13 +69,13 @@ namespace SF.Sys.Services
 			where TImplement : AdminManager<TInternal, TEditable, TQueryArgument>, TService
 			=> sim.DefaultService<TService, TImplement>(
 				new { }
-				).WithMenuItems("系统管理/身份和权限");
+				).WithConsolePages("系统管理/身份和权限");
 
 		public static IServiceInstanceInitializer<IAdminManager> NewAdminService(
 			this IServiceInstanceManager sim
 			)
 			=> sim.DefaultService<IAdminManager, AdminManager>(
 				new { }
-				).WithMenuItems("系统管理/身份和权限");
+				).WithConsolePages("系统管理/身份和权限");
 	}
 }

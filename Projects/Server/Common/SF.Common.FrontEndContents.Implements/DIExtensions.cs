@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Common.FrontEndContents;
 using SF.Common.FrontEndContents.Runtime;
+using SF.Sys.BackEndConsole;
 using SF.Sys.Hosting;
 using SF.Sys.Services;
 using SF.Sys.Services.Management;
@@ -55,21 +56,21 @@ namespace SF.Sys.Services
 		public static IServiceInstanceInitializer<ISiteManager> NewSiteManager(this IServiceInstanceManager sim)
 		{
 			return sim.DefaultService<ISiteManager, SiteManager>(new { })
-				.WithMenuItems(
+				.WithConsolePages(
 					"前端内容/页面管理"
 					);
 		}
 		public static IServiceInstanceInitializer<ISiteTemplateManager> NewSiteTemplateManager(this IServiceInstanceManager sim)
 		{
 			return sim.DefaultService<ISiteTemplateManager, SiteTemplateManager>(new { })
-				.WithMenuItems(
+				.WithConsolePages(
 					"前端内容/页面管理"
 					);
 		}
 		public static IServiceInstanceInitializer<IContentManager> NewSiteContentManager(this IServiceInstanceManager sim)
 		{
 			return sim.DefaultService<IContentManager, ContentManager>(new { })
-				.WithMenuItems(
+				.WithConsolePages(
 					"前端内容/页面管理"
 					);
 		}

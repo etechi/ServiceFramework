@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Common.Members;
 using SF.Common.Members.Models;
+using SF.Sys.BackEndConsole;
 using SF.Sys.Services;
 using SF.Sys.Services.Management;
 
@@ -69,13 +70,13 @@ namespace SF.Sys.Services
 			where TImplement : MemberManager<TInternal, TEditable, TQueryArgument, TMember>, TService
 			=> sim.DefaultService<TService, TImplement>(
 				new { }
-				).WithMenuItems("会员");
+				).WithConsolePages("会员");
 
 		public static IServiceInstanceInitializer<IMemberManager> NewMemberService(
 			this IServiceInstanceManager sim
 			)
 			=> sim.DefaultService<IMemberManager, MemberManager>(
 				new { }
-				).WithMenuItems("会员");
+				).WithConsolePages("会员");
 	}
 }

@@ -70,19 +70,19 @@ namespace SF.Sys.Services
 			{
 				var MenuPath = "系统管理/后台管理";
 				await sim.Service<IConsoleManager, ConsoleManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 				await sim.Service<IHotQueryManager, HotQueryManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 				await sim.Service<IHotMenuCategoryManager, HotMenuCategoryManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 				await sim.Service<IHotMenuItemManager, HotMenuItemManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 				await sim.Service<IBackEndAdminConsoleService, ConsoleService>(new{})

@@ -39,6 +39,7 @@ using SF.Sys.Comments;
 using SF.Auth.IdentityServices.DataModels;
 using SF.Sys.TimeServices;
 using SF.Sys.Collections.Generic;
+using SF.Sys.BackEndConsole;
 
 namespace SF.Sys.Services
 {
@@ -191,43 +192,43 @@ namespace SF.Sys.Services
 
 			await sim.DefaultService<IUserManager, UserManager>(null)
 				.WithDisplay("用户")
-				.WithMenuItems("系统管理/身份和权限")
+				.WithConsolePages("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 
 			await sim.DefaultService<IRoleManager, RoleManager>(null)
 				.WithDisplay("用户角色")
-				.WithMenuItems("系统管理/身份和权限")
+				.WithConsolePages("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 			await sim.DefaultService<IGrantManager, GrantManager>(null)
 				.WithDisplay("授权管理")
-				.WithMenuItems("系统管理/身份和权限")
+				.WithConsolePages("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 			await sim.DefaultService<IResourceManager, ResourceManager>(null)
 				.WithDisplay("资源")
-				.WithMenuItems("系统管理/身份和权限")
+				.WithConsolePages("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 			await sim.DefaultService<IOperationManager, OperationManager>(null)
 				.WithDisplay("操作")
-				.WithMenuItems("系统管理/身份和权限")
+				.WithConsolePages("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 
 			await sim.DefaultService<IScopeManager, ScopeManager>(null)
 				.WithDisplay("授权范围")
-				.WithMenuItems("系统管理/身份和权限")
+				.WithConsolePages("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 
 			await sim.DefaultService<IClientManager, ClientManager>(null)
 				.WithDisplay("客户端")
-				.WithMenuItems("系统管理/身份和权限")
+				.WithConsolePages("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 			await sim.DefaultService<IClientConfigManager, ClientConfigManager>(null)
 				.WithDisplay("客户端配置")
-				.WithMenuItems("系统管理/身份和权限")
+				.WithConsolePages("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 
 			await sim.DefaultService<IClaimTypeManager, ClaimTypeManager>(null)
 				.WithDisplay("凭证申明类型")
-				.WithMenuItems("系统管理/身份和权限")
+				.WithConsolePages("系统管理/身份和权限")
 				.Ensure(ServiceProvider, ScopeId);
 
 			await sim.DefaultService<IUserCredentialStorage, UserCredentialStorage>(null)
