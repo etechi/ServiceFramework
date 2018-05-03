@@ -13,62 +13,38 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+
 using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.ComponentModel.DataAnnotations;
 
-namespace SF.Common.Documents.Management
+namespace SF.Common.Tickets.Management
 {
-	public class DocumentQueryArguments : QueryArgument
+	public class TicketCategoryQueryArgument : ObjectQueryArgument
 	{
-		/// <summary>
-		/// 文档区域
-		/// </summary>
-		[EntityIdent(typeof(DocumentScope))]
-		public string ScopeId { get; set; }
 
-		/// <summary>
-		/// 文档分类
-		/// </summary>
-		[EntityIdent(typeof(Category))]
-		public long? CategoryId { get; set; }
-
-		/// <summary>
-		/// 标题
-		/// </summary>
-		[StringLength(50)]
-		public string Name { get; set; }
-
-		/// <summary>
-		/// 发布日期
-		/// </summary>
-		public NullableDateQueryRange PublishDate { get; set; }
 	}
 
 	/// <summary>
-	/// 文档管理
+	/// 分类管理
 	/// </summary>
 	/// <typeparam name="TInternal"></typeparam>
-	/// <typeparam name="TEditable"></typeparam>
 	[NetworkService]
 	[EntityManager]
-
-	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
+	[DefaultAuthorize(PredefinedRoles.客服专员)]
 	[DefaultAuthorize(PredefinedRoles.运营专员)]
 	[DefaultAuthorize(PredefinedRoles.系统管理员)]
-	public interface IDocumentManager<TInternal, TEditable> :
-		IEntitySource<ObjectKey<long>, TInternal, DocumentQueryArguments>,
-		IEntityManager<ObjectKey<long>, TEditable>
-		where TInternal : DocumentInternal
-		where TEditable : DocumentEditable
+	public interface ITicketCategoryManager<TInternal> :
+		IEntitySource<ObjectKey<long>, TInternal, TicketCategoryQueryArgument>,
+		IEntityManager<ObjectKey<long>, TInternal>
+		where TInternal : TicketCategory
 	{
 	}
-	public interface IDocumentManager:
-		IDocumentManager<DocumentInternal,DocumentEditable>
+	public interface ITicketCategoryManager :
+		ITicketCategoryManager<TicketCategory>
 	{
 
 	}
-
 }

@@ -19,54 +19,48 @@ using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.ComponentModel.DataAnnotations;
 
-namespace SF.Common.Documents.Management
+namespace SF.Common.Tickets.Management
 {
-	public class DocumentQueryArguments : QueryArgument
+	public class TicketReplyQueryArguments : ObjectQueryArgument
 	{
+	
 		/// <summary>
-		/// 文档区域
+		/// 工单
 		/// </summary>
-		[EntityIdent(typeof(DocumentScope))]
-		public string ScopeId { get; set; }
+		[EntityIdent(typeof(Ticket))]
+		public long? TicketId { get; set; }
 
 		/// <summary>
-		/// 文档分类
+		/// 回复人
 		/// </summary>
-		[EntityIdent(typeof(Category))]
-		public long? CategoryId { get; set; }
-
-		/// <summary>
-		/// 标题
-		/// </summary>
-		[StringLength(50)]
-		public string Name { get; set; }
+		[EntityIdent(typeof(User))]
+		public long? OwnerId { get; set; }
 
 		/// <summary>
 		/// 发布日期
 		/// </summary>
-		public NullableDateQueryRange PublishDate { get; set; }
+		public NullableDateQueryRange CreateDate { get; set; }
 	}
 
 	/// <summary>
-	/// 文档管理
+	/// 工单回复管理
 	/// </summary>
 	/// <typeparam name="TInternal"></typeparam>
 	/// <typeparam name="TEditable"></typeparam>
 	[NetworkService]
 	[EntityManager]
-
-	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
+	[DefaultAuthorize(PredefinedRoles.客服专员)]
 	[DefaultAuthorize(PredefinedRoles.运营专员)]
 	[DefaultAuthorize(PredefinedRoles.系统管理员)]
-	public interface IDocumentManager<TInternal, TEditable> :
-		IEntitySource<ObjectKey<long>, TInternal, DocumentQueryArguments>,
+	public interface ITicketReplyManager<TInternal, TEditable> :
+		IEntitySource<ObjectKey<long>, TInternal, TicketReplyQueryArguments>,
 		IEntityManager<ObjectKey<long>, TEditable>
-		where TInternal : DocumentInternal
-		where TEditable : DocumentEditable
+		where TInternal : TicketReply
+		where TEditable : TicketReply
 	{
 	}
-	public interface IDocumentManager:
-		IDocumentManager<DocumentInternal,DocumentEditable>
+	public interface ITicketReplyManager:
+		ITicketReplyManager<TicketReply, TicketReply>
 	{
 
 	}

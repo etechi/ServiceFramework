@@ -35,7 +35,7 @@ namespace SF.Common.Documents.Management
 		/// 父分类
 		/// </summary>
 		[EntityIdent(typeof(Category))]
-		public int? ParentId { get; set; }
+		public long? ParentId { get; set; }
 
 		/// <summary>
 		/// 名称
