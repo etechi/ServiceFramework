@@ -23,6 +23,7 @@ using SF.Sys.CallPlans;
 using SF.Sys.AtLeastOnceActions.Models;
 using SF.Sys.AtLeastOnceActions;
 using SF.Sys.Threading;
+using SF.Sys.BackEndConsole;
 
 namespace SF.Sys.Services
 {
@@ -53,7 +54,7 @@ namespace SF.Sys.Services
 			{
 				var MenuPath = "系统管理/至少一次调用";
 				await sim.Service<IAtLeastOnceActionManager, AtLeastOnceActionManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 			});

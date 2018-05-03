@@ -19,6 +19,7 @@ using SF.Sys.Services.Management;
 using SF.Sys.Entities.AutoTest;
 using SF.Sys.Entities.AutoEntityProvider;
 using SF.Sys.Entities;
+using SF.Sys.BackEndConsole;
 
 namespace SF.Sys.Services
 {
@@ -67,20 +68,20 @@ namespace SF.Sys.Services
 			sc.InitServices("Documents", async (sp, sim, parent) =>
 			 {
 				 await sim.DefaultService<IDocumentManager, DocumentManager>(null)
-					.WithMenuItems("前端内容/文档管理")
+					.WithConsolePages("前端内容/文档管理")
 					.Ensure(sp, parent);
 
 				 await sim.DefaultService<IDocumentCategoryManager, DocumentCategoryManager>(null)
-					.WithMenuItems("前端内容/文档管理")
+					.WithConsolePages("前端内容/文档管理")
 					.Ensure(sp, parent);
 
 				 await sim.DefaultService<IDocumentService, DocumentService>(
 					 null
 					 )
-					 .WithMenuItems("前端内容/文档管理")
+					 .WithConsolePages("前端内容/文档管理")
 					 .Ensure(sp, parent);
 				 await sim.DefaultService<IDocumentScopeManager, DocumentScopeManager>(null)
-					.WithMenuItems("前端内容/文档管理")
+					.WithConsolePages("前端内容/文档管理")
 					.Ensure(sp, parent);
 				 await sp.Resolve<IDocumentScopeManager>().EnsureEntity(
 					 ObjectKey.From("default"),

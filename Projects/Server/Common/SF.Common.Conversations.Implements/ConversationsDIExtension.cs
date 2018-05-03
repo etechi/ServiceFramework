@@ -4,6 +4,7 @@ using SF.Sys.Services.Management;
 using SF.Common.Conversations.Managers;
 using SF.Common.Conversations.Models;
 using SF.Sys.Settings;
+using SF.Sys.BackEndConsole;
 
 namespace SF.Sys.Services
 {
@@ -36,15 +37,15 @@ namespace SF.Sys.Services
 			{
 				var MenuPath = "用户内容/会话服务";
 				await sim.Service<ISessionStatusManager, SessionStatusManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 				await sim.Service<ISessionMemberStatusManager, SessionMemberStatusManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 				await sim.Service<ISessionMessageManager, SessionMessageManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 				await sim.Service<SF.Common.Conversations.Front.IConversationService, SF.Common.Conversations.Front.ConversationService>(null)

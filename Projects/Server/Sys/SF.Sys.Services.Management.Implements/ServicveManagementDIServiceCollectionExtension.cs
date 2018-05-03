@@ -49,43 +49,46 @@ namespace SF.Sys.Services
 				 new MenuItemConfig
 				 {
 					 Path = "系统管理/系统服务/系统服务定义",
-					 Link = "/ap/entity/SysServiceDeclaration/"
+					 Link = "/ap/entity/SysServiceDeclaration/",
+					 Permission= "@SysServiceDeclaration"
 				 },
 				 new MenuItemConfig
 				 {
 					 Path = "系统管理/系统服务/系统服务实现",
-					 Link = "/ap/entity/SysServiceImplement/"
+					 Link = "/ap/entity/SysServiceImplement/",
+					 Permission = "@SysServiceImplement"
 				 },
 				 new MenuItemConfig
 				 {
 					 Path = "系统管理/系统服务/系统服务实例",
-					 Link = "/ap/entity/SysServiceInstance/"
+					 Link = "/ap/entity/SysServiceInstance/",
+					 Permission = "@SysServiceInstance"
 				 }
 				 );
 				return Task.CompletedTask;
 			});
 
-			sc.AddDefaultMenuItems(
-				"default",
-				"系统管理/系统服务",
-				new SF.Sys.BackEndConsole.MenuItem {
-					Name = "系统服务定义",
-					Action = SF.Sys.BackEndConsole.MenuActionType.EntityManager,
-					ActionArgument = "SysServiceDeclaration"
-				},
-				new SF.Sys.BackEndConsole.MenuItem
-				{
-					Name = "系统服务实现",
-					Action = SF.Sys.BackEndConsole.MenuActionType.EntityManager,
-					ActionArgument = "SysServiceImplement"
-				},
-				new SF.Sys.BackEndConsole.MenuItem
-				{
-					Name = "系统服务实例",
-					Action = SF.Sys.BackEndConsole.MenuActionType.EntityManager,
-					ActionArgument = "SysServiceInstance"
-				}
-				);
+			//sc.AddDefaultMenuItems(
+			//	"default",
+			//	"系统管理/系统服务",
+			//	new SF.Sys.BackEndConsole.MenuItem {
+			//		Name = "系统服务定义",
+			//		Action = SF.Sys.BackEndConsole.MenuActionType.EntityManager,
+			//		ActionArgument = "SysServiceDeclaration"
+			//	},
+			//	new SF.Sys.BackEndConsole.MenuItem
+			//	{
+			//		Name = "系统服务实现",
+			//		Action = SF.Sys.BackEndConsole.MenuActionType.EntityManager,
+			//		ActionArgument = "SysServiceImplement"
+			//	},
+			//	new SF.Sys.BackEndConsole.MenuItem
+			//	{
+			//		Name = "系统服务实例",
+			//		Action = SF.Sys.BackEndConsole.MenuActionType.EntityManager,
+			//		ActionArgument = "SysServiceInstance"
+			//	}
+			//	);
 		}
 		public static IServiceProvider BuildServiceResolver(
 			this IServiceCollection sc,

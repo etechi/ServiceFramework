@@ -99,7 +99,7 @@ namespace SF.Sys.Services
 		}
 		public static IServiceInstanceInitializer<IMenuService> NewMenuService(this IServiceInstanceManager manager)
 			=>manager.Service<IMenuService, EntityMenuService>(null)
-			.WithMenuItems(
+			.WithConsolePages(
 				"系统管理/菜单管理"
 				);
 

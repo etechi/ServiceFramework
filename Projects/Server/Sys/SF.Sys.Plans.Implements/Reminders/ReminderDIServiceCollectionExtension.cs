@@ -23,6 +23,7 @@ using SF.Sys.CallPlans;
 using SF.Sys.Reminders.Models;
 using SF.Sys.Reminders;
 using SF.Sys.Threading;
+using SF.Sys.BackEndConsole;
 
 namespace SF.Sys.Services
 {
@@ -60,11 +61,11 @@ namespace SF.Sys.Services
 			{
 				var MenuPath = "系统管理/提醒管理";
 				await sim.Service<IReminderManager, ReminderManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
 				await sim.Service<IRemindRecordManager, RemindRecordManager>(null)
-					.WithMenuItems(MenuPath)
+					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 			});
 

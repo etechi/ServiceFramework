@@ -26,106 +26,106 @@ namespace SF.Sys.Services
 
 	public static class MenuServiceExtension
 	{
-		static async Task CollectMenuItem(
-			   Management.Models.ServiceInstanceInternal svc,
-			   IServiceInstanceManager sim,
-			   IServiceDeclarationTypeResolver svcTypeResolver,
-			   IEntityMetadataCollection EntityMetadataCollection,
-			   List<MenuItem> items
-			   )
-		{
-			var type = svcTypeResolver.Resolve(svc.ServiceType);
-			var entity = EntityMetadataCollection.FindByManagerType(type);
-			//var em = type.GetCustomAttribute<EntityManagerAttribute>();
-			if (entity != null)
-				items.Add(new MenuItem
-				{
-					Name = type.Comment().Title,//svcTypeResolver.GetTypeIdent(type),
-					Action = MenuActionType.EntityManager,
-					ActionArgument = entity.Ident,// svcTypeResolver.GetTypeIdent(type),
-					ServiceId = svc.Id
-				});
-			var re = await sim.QueryAsync(
-				new ServiceInstanceQueryArgument
-				{
-					ContainerId = svc.Id,
-					Paging= Paging.Default
-				}
-				);
-			foreach (var i in re.Items)
-				await CollectMenuItem(i, sim, svcTypeResolver, EntityMetadataCollection, items);
-		}
-		public static async Task<MenuItem[]> GetServiceMenuItems(this IServiceInstanceManager sim, IServiceProvider sp, long ServiceId)
-		{
-			var svcTypeResolver = sp.Resolve<IServiceDeclarationTypeResolver>();
-			var EntityMetadataCollection = sp.Resolve<IEntityMetadataCollection>();
-			var svc = await sim.GetAsync(ObjectKey.From(ServiceId));
-			var items = new List<MenuItem>();
-			await CollectMenuItem(svc, sim, svcTypeResolver, EntityMetadataCollection, items);
-			return items.ToArray();
-		}
-		public static IServiceCollection AddDefaultMenuItems(
-			this IServiceCollection sc,
-			string MenuIdent,
-			string Path,
-			params MenuItem[] MenuItems
-			)
-		{
-			if (MenuItems.Length == 0)
-				return sc;
-			sc.AddInitializer("service", "设置默认菜单项:"+Path, (isp) =>
-			  {
-				  var dmc = isp.Resolve<IDefaultMenuCollection>();
-				  dmc.AddMenuItems(
-					  MenuIdent,
-					  Path,
-					  MenuItems
-					  );
-				  return Task.CompletedTask;
-			  });
-			return sc;
+		//static async Task CollectMenuItem(
+		//	   Management.Models.ServiceInstanceInternal svc,
+		//	   IServiceInstanceManager sim,
+		//	   IServiceDeclarationTypeResolver svcTypeResolver,
+		//	   IEntityMetadataCollection EntityMetadataCollection,
+		//	   List<MenuItem> items
+		//	   )
+		//{
+		//	var type = svcTypeResolver.Resolve(svc.ServiceType);
+		//	var entity = EntityMetadataCollection.FindByManagerType(type);
+		//	//var em = type.GetCustomAttribute<EntityManagerAttribute>();
+		//	if (entity != null)
+		//		items.Add(new MenuItem
+		//		{
+		//			Name = type.Comment().Title,//svcTypeResolver.GetTypeIdent(type),
+		//			Action = MenuActionType.EntityManager,
+		//			ActionArgument = entity.Ident,// svcTypeResolver.GetTypeIdent(type),
+		//			ServiceId = svc.Id
+		//		});
+		//	var re = await sim.QueryAsync(
+		//		new ServiceInstanceQueryArgument
+		//		{
+		//			ContainerId = svc.Id,
+		//			Paging= Paging.Default
+		//		}
+		//		);
+		//	foreach (var i in re.Items)
+		//		await CollectMenuItem(i, sim, svcTypeResolver, EntityMetadataCollection, items);
+		//}
+		//public static async Task<MenuItem[]> GetServiceMenuItems(this IServiceInstanceManager sim, IServiceProvider sp, long ServiceId)
+		//{
+		//	var svcTypeResolver = sp.Resolve<IServiceDeclarationTypeResolver>();
+		//	var EntityMetadataCollection = sp.Resolve<IEntityMetadataCollection>();
+		//	var svc = await sim.GetAsync(ObjectKey.From(ServiceId));
+		//	var items = new List<MenuItem>();
+		//	await CollectMenuItem(svc, sim, svcTypeResolver, EntityMetadataCollection, items);
+		//	return items.ToArray();
+		//}
+		//public static IServiceCollection AddDefaultMenuItems(
+		//	this IServiceCollection sc,
+		//	string MenuIdent,
+		//	string Path,
+		//	params MenuItem[] MenuItems
+		//	)
+		//{
+		//	if (MenuItems.Length == 0)
+		//		return sc;
+		//	sc.AddInitializer("service", "设置默认菜单项:"+Path, (isp) =>
+		//	  {
+		//		  var dmc = isp.Resolve<IDefaultMenuCollection>();
+		//		  dmc.AddMenuItems(
+		//			  MenuIdent,
+		//			  Path,
+		//			  MenuItems
+		//			  );
+		//		  return Task.CompletedTask;
+		//	  });
+		//	return sc;
 
-		}
-		public static IServiceInstanceInitializer<T> WithMenuItems<T>(
-			this IServiceInstanceInitializer<T> sii,
-			string Path,
-			params MenuItem[] MenuItems
-			)
-			=> sii.WithMenuItems("default", Path, MenuItems);
+		//}
+		//public static IServiceInstanceInitializer<T> WithConsolePages<T>(
+		//	this IServiceInstanceInitializer<T> sii,
+		//	string Path,
+		//	params MenuItem[] MenuItems
+		//	)
+		//	=> sii.WithMenuItems("default", Path, MenuItems);
 		
 
-		public static IServiceInstanceInitializer<T> WithMenuItems<T>(
-			this IServiceInstanceInitializer<T> sii,
-			string MenuIdent,
-			string Path,
-			params MenuItem[] MenuItems
-			)
-		{
-			sii.WithConsolePages(Path);
+		//public static IServiceInstanceInitializer<T> WithMenuItems<T>(
+		//	this IServiceInstanceInitializer<T> sii,
+		//	string MenuIdent,
+		//	string Path,
+		//	params MenuItem[] MenuItems
+		//	)
+		//{
+		//	BackEndConsoleBuilderExtensions.WithConsolePages(sii, Path);
 
-			sii.AddAction(async (sp, sid) =>
-			{
-				var dmc=sp.Resolve<IDefaultMenuCollection>();
-				var sim = sp.Resolve<IServiceInstanceManager>();
-				dmc.AddMenuItems(
-					MenuIdent,
-					Path,
-					await sim.GetServiceMenuItems(sp, sid)
-					);
-				if (MenuItems.Length > 0)
-				{
-					foreach (var mi in MenuItems)
-						mi.ServiceId = sid;
+		//	sii.AddAction(async (sp, sid) =>
+		//	{
+		//		var dmc=sp.Resolve<IDefaultMenuCollection>();
+		//		var sim = sp.Resolve<IServiceInstanceManager>();
+		//		dmc.AddMenuItems(
+		//			MenuIdent,
+		//			Path,
+		//			await sim.GetServiceMenuItems(sp, sid)
+		//			);
+		//		if (MenuItems.Length > 0)
+		//		{
+		//			foreach (var mi in MenuItems)
+		//				mi.ServiceId = sid;
 
-					dmc.AddMenuItems(
-						MenuIdent,
-						Path,
-						MenuItems
-						);
-				}
-			});
-			return sii;
-		}
+		//			dmc.AddMenuItems(
+		//				MenuIdent,
+		//				Path,
+		//				MenuItems
+		//				);
+		//		}
+		//	});
+		//	return sii;
+		//}
 	}
 
 }
