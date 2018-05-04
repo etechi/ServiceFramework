@@ -22,7 +22,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Documents.Management
 {
-	public class DocumentCategoryQueryArgument : QueryArgument
+	public class DocumentCategoryQueryArgument : ObjectQueryArgument
 	{
 		/// <summary>
 		 /// 文档区域
@@ -37,15 +37,10 @@ namespace SF.Common.Documents.Management
 		[EntityIdent(typeof(Category))]
 		public long? ParentId { get; set; }
 
-		/// <summary>
-		/// 名称
-		/// </summary>
-		[MaxLength(100)]
-		public string Name { get; set; }
 	}
 
 	/// <summary>
-	/// 分类管理
+	/// 文档分类管理
 	/// </summary>
 	/// <typeparam name="TInternal"></typeparam>
 	[NetworkService]

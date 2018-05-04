@@ -17,9 +17,13 @@ using System;
 
 namespace SF.Sys.Entities.Annotations
 {
-	[AttributeUsage(AttributeTargets.Class)]
-	public class ServiceScopeEnabledAttribute : Attribute
+	[AttributeUsage(AttributeTargets.Property)]
+	public class FilterTargetProertyAttribute : Attribute
 	{
+		public string Name { get; }
+		public FilterTargetProertyAttribute(string Name)
+		{
+			this.Name = Name;
+		}
 	}
-
 }

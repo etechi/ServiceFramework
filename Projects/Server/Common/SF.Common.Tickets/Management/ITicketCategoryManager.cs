@@ -28,7 +28,7 @@ namespace SF.Common.Tickets.Management
 	}
 
 	/// <summary>
-	/// 分类管理
+	/// 工单分类管理
 	/// </summary>
 	/// <typeparam name="TInternal"></typeparam>
 	[NetworkService]

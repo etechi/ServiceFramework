@@ -35,7 +35,7 @@ namespace SF.Common.Tickets.Management
 	/// 工单
 	/// </summary>
 	[EntityObject]
-	public class TicketBase : ObjectEntityBase
+	public class Ticket : ObjectEntityBase
 	{
 	
 		/// <summary>
@@ -79,10 +79,10 @@ namespace SF.Common.Tickets.Management
 
 
 	}
-	public class TicketInternal : TicketBase
+	public class TicketInternal : Ticket
 	{
 	}
-	public class TicketEditable : TicketBase
+	public class TicketEditable : Ticket
 	{
 		/// <summary>
 		/// 内容

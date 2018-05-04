@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Annotations;
+using SF.Sys.Entities.Annotations;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -48,9 +49,17 @@ namespace SF.Sys.Entities
 		/// <summary>
 		/// 名称
 		/// </summary>
+		[Ignore]
 		[MaxLength(100)]
-		//[StringContains]
 		public virtual string Name { get; set; }
+
+		/// <summary>
+		/// 名称
+		/// </summary>
+		[MaxLength(100)]
+		[StringContains]
+		[FilterTargetProerty("Name")]
+		public virtual string NameContains { get; set; }
 
 		/// <summary>
 		/// 逻辑状态

@@ -21,7 +21,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Documents.Management
 {
-	public class DocumentQueryArguments : QueryArgument
+	public class DocumentQueryArguments : ObjectQueryArgument
 	{
 		/// <summary>
 		/// 文档区域
@@ -35,11 +35,6 @@ namespace SF.Common.Documents.Management
 		[EntityIdent(typeof(Category))]
 		public long? CategoryId { get; set; }
 
-		/// <summary>
-		/// 标题
-		/// </summary>
-		[StringLength(50)]
-		public string Name { get; set; }
 
 		/// <summary>
 		/// 发布日期

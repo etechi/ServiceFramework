@@ -21,13 +21,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Documents.Management
 {
-	public class DocumentScopeQueryArguments : QueryArgument
+	public class DocumentScopeQueryArguments : ObjectQueryArgument
 	{
-		/// <summary>
-		/// 标题
-		/// </summary>
-		[StringLength(50)]
-		public string Name { get; set; }
 
 	}
 

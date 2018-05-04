@@ -21,14 +21,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.Comments.Management
 {
-	public class CommentQueryArguments : QueryArgument
+	public class CommentQueryArguments : ObjectQueryArgument
 	{
-	
-		/// <summary>
-		/// 标题
-		/// </summary>
-		[StringLength(50)]
-		public string Name { get; set; }
 
 		/// <summary>
 		/// 创建日期

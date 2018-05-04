@@ -22,7 +22,7 @@ using SF.Sys.Services;
 using SF.Sys.Entities;
 using SF.Sys;
 
-namespace SF.Common.Tickets
+namespace SF.Common.Tickets.Front
 {
 
 	public class TicketService:

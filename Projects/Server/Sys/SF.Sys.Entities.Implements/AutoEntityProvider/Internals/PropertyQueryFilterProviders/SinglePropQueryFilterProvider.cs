@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System;
 using System.Reflection;
 using System.Linq.Expressions;
+using SF.Sys.Entities.Annotations;
 
 namespace SF.Sys.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 {
@@ -42,7 +43,9 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 		protected abstract IPropertyQueryFilter CreateFilter(PropertyInfo dataProp, PropertyInfo queryProp);
 		public IPropertyQueryFilter GetFilter<TDataModel, TQueryArgument>(PropertyInfo queryProp)
 		{
-			var dataProp = typeof(TDataModel).GetProperty(queryProp.Name);
+			
+			var name = queryProp.GetCustomAttribute<FilterTargetProertyAttribute>()?.Name ?? queryProp.Name;
+			var dataProp = typeof(TDataModel).GetProperty(name);
 			if (dataProp == null)
 				return null;
 			if (!MatchType(dataProp.PropertyType,queryProp.PropertyType))

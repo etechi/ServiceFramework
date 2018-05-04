@@ -91,7 +91,7 @@ namespace SF.Sys.Services
 		//	string Path,
 		//	params MenuItem[] MenuItems
 		//	)
-		//	=> sii.WithMenuItems("default", Path, MenuItems);
+		//	=> sii.WithConsolePages("default", Path, MenuItems);
 		
 
 		//public static IServiceInstanceInitializer<T> WithMenuItems<T>(

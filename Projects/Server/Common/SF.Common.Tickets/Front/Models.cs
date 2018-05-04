@@ -19,12 +19,11 @@ using SF.Sys.Annotations;
 using System.Collections.Generic;
 using System;
 
-namespace SF.Common.Tickets
+namespace SF.Common.Tickets.Front
 {
 	/// <summary>
 	/// 工单
 	/// </summary>
-	[EntityObject]
 	public class Ticket : ObjectEntityBase
 	{
 	

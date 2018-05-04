@@ -25,7 +25,7 @@ using SF.Sys.NetworkService;
 
 namespace SF.Sys.Reminders
 {
-	public class ReminderQueryArgument : QueryArgument
+	public class ReminderQueryArgument : ObjectQueryArgument
 	{
 		
 	}

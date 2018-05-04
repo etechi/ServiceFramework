@@ -19,7 +19,7 @@ using SF.Sys.Entities;
 using SF.Sys.NetworkService;
 using System.Threading.Tasks;
 
-namespace SF.Common.Tickets
+namespace SF.Common.Tickets.Front
 {
 	public class ListArgument : PagingArgument
 	{

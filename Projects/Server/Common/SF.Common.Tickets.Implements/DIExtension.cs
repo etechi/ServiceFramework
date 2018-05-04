@@ -19,6 +19,7 @@ using SF.Sys.Services.Management;
 using SF.Sys.Entities.AutoTest;
 using SF.Sys.Entities.AutoEntityProvider;
 using SF.Sys.Entities;
+using SF.Sys.BackEndConsole;
 
 namespace SF.Sys.Services
 {
@@ -37,7 +38,7 @@ namespace SF.Sys.Services
 				//.Add<ITicketService, TicketService>()
 				);
 
-			sc.AddManagedScoped<ITicketService, TicketService>(IsDataScope: true);
+			sc.AddManagedScoped<Common.Tickets.Front.ITicketService, Common.Tickets.Front.TicketService>(IsDataScope: true);
 
 			//sc.GenerateEntityManager("TicketCategory");
 			//sc.GenerateEntityManager("Ticket");
@@ -64,18 +65,18 @@ namespace SF.Sys.Services
 			sc.InitServices("Tickets", async (sp, sim, parent) =>
 			 {
 				 await sim.DefaultService<ITicketManager, TicketManager>(null)
-					.WithMenuItems("前端内容/工单管理")
+					.WithConsolePages("前端内容/工单管理")
 					.Ensure(sp, parent);
 
 				 await sim.DefaultService<ITicketCategoryManager, TicketCategoryManager>(null)
-					.WithMenuItems("前端内容/工单管理")
+					.WithConsolePages("前端内容/工单管理")
 					.Ensure(sp, parent);
 
 				 await sim.DefaultService<ITicketReplyManager, TicketReplyManager>(null)
-					.WithMenuItems("前端内容/工单管理")
+					.WithConsolePages("前端内容/工单管理")
 					.Ensure(sp, parent);
 
-				 await sim.DefaultService<ITicketService, TicketService>(null)
+				 await sim.DefaultService<Common.Tickets.Front.ITicketService, Common.Tickets.Front.TicketService>(null)
 					 .Ensure(sp, parent);
 			 });
 			sc.AddInitializer("data","工单分类数据",async sp=>{

@@ -17,6 +17,11 @@ namespace SF.Common.Conversations.Managers
 		[EntityIdent(typeof(User))]
 		public virtual long? UserId { get; set; }
 
+		/// <summary>
+		/// 会话
+		/// </summary>
+		[EntityIdent(typeof(SessionStatus))]
+		public long? SessionId { get; set; }
 	}
 
 	/// <summary>
