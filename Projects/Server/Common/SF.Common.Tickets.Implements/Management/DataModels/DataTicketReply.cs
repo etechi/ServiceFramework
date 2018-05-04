@@ -44,5 +44,6 @@ namespace SF.Common.Tickets.DataModels
 		/// </summary>
 		public string Images { get; set; }
 
+	
 	}
 }

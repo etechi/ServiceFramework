@@ -110,6 +110,19 @@ namespace SF.Common.Tickets.Management
 	public class TicketReply: ObjectEntityBase
 	{
 		/// <summary>
+		 /// 工单
+		 /// </summary>
+		[EntityIdent(typeof(Ticket),nameof(TicketName))]
+		public long TicketId { get; set; }
+
+		/// <summary>
+		/// 工单
+		/// </summary>
+		[TableVisible]
+		[Ignore]
+		public string TicketName { get; set; }
+
+		/// <summary>
 		/// 回复人
 		/// </summary>
 		[EntityIdent(typeof(User), nameof(OwnerName))]
@@ -122,10 +135,6 @@ namespace SF.Common.Tickets.Management
 		[Ignore]
 		public string OwnerName { get; set; }
 
-		/// <summary>
-		/// 管理员
-		/// </summary>
-		public bool IsAdmin { get; set; }
 
 		/// <summary>
 		/// 内容

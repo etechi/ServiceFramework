@@ -50,6 +50,11 @@ namespace SF.Common.Tickets.DataModels
 		/// </summary>
 		public string Images { get; set; }
 
+		/// <summary>
+		/// 状态
+		/// </summary>
+		public TicketState State { get; set; }
+
 		[InverseProperty(nameof(DataTicketReply.Ticket))]
 		public ICollection<DataTicketReply> Replies { get; set; }
 

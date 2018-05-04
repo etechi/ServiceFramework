@@ -24,7 +24,13 @@ namespace SF.Common.Tickets
 		/// <summary>
 		/// 处理中
 		/// </summary>
-		Open,
+		WaitReply,
+
+		/// <summary>
+		/// 已回复
+		/// </summary>
+		Replied,
+
 		/// <summary>
 		/// 关闭
 		/// </summary>

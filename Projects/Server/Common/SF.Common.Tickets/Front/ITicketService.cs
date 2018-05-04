@@ -26,7 +26,7 @@ namespace SF.Common.Tickets.Front
 		/// <summary>
 		/// 状态
 		/// </summary>
-		public TicketState State { get; set; }
+		public TicketState? State { get; set; }
 	}
 
 
@@ -66,14 +66,6 @@ namespace SF.Common.Tickets.Front
 		Task<ObjectKey<long>> CreateTicket(Ticket Ticket);
 
 		/// <summary>
-		/// 编辑工单
-		/// </summary>
-		/// <param name="Ticket">工单参数</param>
-		/// <returns></returns>
-		Task<ObjectKey<long>> UpdateTicket(Ticket Ticket);
-
-
-		/// <summary>
 		/// 删除工单
 		/// </summary>
 		/// <param name="TicketId">工单ID</param>
@@ -88,19 +80,11 @@ namespace SF.Common.Tickets.Front
 		Task<ObjectKey<long>> CreateReply(TicketReply Reply);
 
 		/// <summary>
-		/// 编辑回复
-		/// </summary>
-		/// <param name="Reply">工单参数</param>
-		/// <returns></returns>
-		Task<ObjectKey<long>> UpdateReply(TicketReply Reply);
-
-
-		/// <summary>
 		/// 删除回复
 		/// </summary>
 		/// <param name="ReplyId">回复ID</param>
 		/// <returns></returns>
-		Task ReplyTicket(long ReplyId);
+		Task RemoveReply(long ReplyId);
 	}
 
 }

@@ -27,6 +27,15 @@ namespace SF.Common.Tickets.Front
 	public class Ticket : ObjectEntityBase
 	{
 	
+		/// <summary>
+		/// 分类
+		/// </summary>
+		public long CategoryId { get; set; }
+
+		/// <summary>
+		/// 分类名
+		/// </summary>
+		public string CategoryName { get; set; }
 
 		/// <summary>
 		/// 工单内容,Html格式
@@ -38,6 +47,7 @@ namespace SF.Common.Tickets.Front
 		/// </summary>
 		public TicketImage[] Images { get; set; }
 
+		public string ImageStr { get; set; }
 		/// <summary>
 		/// 状态
 		/// </summary>
@@ -53,14 +63,13 @@ namespace SF.Common.Tickets.Front
 	public class TicketReply : ObjectEntityBase
 	{
 		/// <summary>
-		/// 是否为客服回复
+		/// 工单ID
 		/// </summary>
-		public bool IsAdmin { get; set; }
-
+		public long TicketId { get; set; }
 		/// <summary>
 		/// 回复人
 		/// </summary>
-		public long OwnerId { get; set; }
+		public long? OwnerId { get; set; }
 
 		/// <summary>
 		/// 回复人
@@ -76,6 +85,8 @@ namespace SF.Common.Tickets.Front
 		/// 回复图片
 		/// </summary>
 		public TicketImage[] Images { get; set; }
+
+		public string ImageStr { get; set; }
 	}
 	
 }
