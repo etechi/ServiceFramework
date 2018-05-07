@@ -172,6 +172,7 @@ namespace SF.Sys.BackEndConsole.Front
 
 			return new Console
 			{
+				Id=c.Id,
 				Title = c.Title,
 				SystemVersion = c.SystemVersion,
 				MenuItems = c.GetUserMenuItems(AccessToken.User, AuthService, EntityMetadataCollection),
@@ -206,20 +207,7 @@ namespace SF.Sys.BackEndConsole.Front
 			throw new System.NotImplementedException();
 		}
 
-		public Task<long> HotQueryCreateOrUpdate(HotQuery Query)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public Task HotQueryRemove(long Id)
-		{
-			throw new System.NotImplementedException();
-		}
-
-		public Task<HotQuery[]> HotQuerySearch(HotQueryListArgument Arg)
-		{
-			throw new System.NotImplementedException();
-		}
+	
 	}
 
 }

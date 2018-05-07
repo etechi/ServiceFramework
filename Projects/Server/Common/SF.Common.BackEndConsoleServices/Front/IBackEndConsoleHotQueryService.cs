@@ -13,42 +13,31 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Entities.DataModels;
-using SF.Sys.Data;
+using SF.Sys.Annotations;
+using SF.Sys.Auth;
+using SF.Sys.Entities;
+using SF.Sys.NetworkService;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Net.Http;
+using System.Threading.Tasks;
 
-namespace SF.Sys.BackEndConsole.Entity.DataModels
+namespace SF.Sys.BackEndConsole.Front
 {
-	[Table("HotQuery")]
-	public class DataHotQuery : DataObjectEntityBase
+	public class HotQuery
 	{
-		/// <summary>
-		/// 控制台ID
-		/// </summary>
-		[Index]
 		public long ConsoleId { get; set; }
-
-		[ForeignKey(nameof(ConsoleId))]
-		public DataConsole Console { get; set; }
-
-
-		/// <summary>
-		/// 页面
-		/// </summary>
-		[Required]
-		public string PageId { get; set; }
-
-		/// <summary>
-		/// 内容ID
-		/// </summary>
-		public string ContentId { get; set; }
-
-		/// <summary>
-		/// 查询
-		/// </summary>
+		public string Path { get; set; }
+		public string Content { get; set; }
+		public string Name { get; set; }
 		public string Query { get; set; }
 	}
+	[NetworkService]
+	public interface IBackEndConsoleHotQueryService
+	{
+		Task<HotQuery[]> List(long ConsoleId,string Page);
+		Task Update(HotQuery Query);
+	}
+
 }
 

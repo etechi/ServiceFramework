@@ -46,14 +46,14 @@ namespace SF.Sys.BackEndConsole.Models
 		public long ConsoleId { get; set; }
 
 		/// <summary>
-		/// 页面ID
+		/// 页面
 		/// </summary>
-		public long PageId { get; set; }
+		public string PageId { get; set; }
 
 		/// <summary>
-		/// 内容ID
+		/// 内容
 		/// </summary>
-		public long ContentId { get; set; }
+		public string ContentId { get; set; }
 
 		/// <summary>
 		/// 查询

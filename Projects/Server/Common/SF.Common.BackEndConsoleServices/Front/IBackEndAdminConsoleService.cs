@@ -40,22 +40,7 @@ namespace SF.Sys.BackEndConsole.Front
 		public Dictionary<string,EntityPermissionType> EntityPermissions { get; set; }
 
 	}
-	public class HotQuery
-	{
-		public long Id { get; set; }
-		public string ConsoleIdent { get; set; }
-		public string PagePath { get; set; }
-		public string ContentPath { get; set; }
-		public string Name { get; set; }
-		public string Config { get; set; }
-	}
-	public class HotQueryListArgument : QueryArgument<ObjectKey<long>>
-	{
-		public string Name { get; set; }
-		public string ConsoleIdent { get; set; }
-		public string PagePath { get; set; }
-		public string ContentPath { get; set; }
-	}
+
 	
 	/// <summary>
 	/// 管理控制台服务
@@ -70,9 +55,6 @@ namespace SF.Sys.BackEndConsole.Front
 		Task HotMenuUpdate(ConsoleMenuItem[] Items);
 		Task<ConsoleMenuItem[]> HotMenuList();
 
-		Task<long> HotQueryCreateOrUpdate(HotQuery Query);
-		Task HotQueryRemove(long Id);
-		Task<HotQuery[]> HotQuerySearch(HotQueryListArgument Arg);
 	}
 
 }

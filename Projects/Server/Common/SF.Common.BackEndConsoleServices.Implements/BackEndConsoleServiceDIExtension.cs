@@ -56,6 +56,9 @@ namespace SF.Sys.Services
 			sc.AddScoped<IBackEndConsoleExportService, BackEndConsoleExportService>();
 			sc.AddSingleton<IBackEndConsoleBuilderCollection, BackEndConsoleBuilderCollection>();
 			sc.AddManagedScoped<IBackEndAdminConsoleService, ConsoleService>();
+
+			sc.AddTransient(sp=>(IBackEndConsoleHotQueryService)sp.Resolve<IHotQueryManager>());
+
 			sc.EntityServices(
 				"BackEndAdmin",
 				"后台管理",

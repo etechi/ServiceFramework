@@ -21,12 +21,29 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.BackEndConsole.Managers
 {
-	public class HotQueryQueryArgument : Entities.QueryArgument<ObjectKey<long>>
+	public class HotQueryQueryArgument : Entities.ObjectQueryArgument
 	{
 		/// <summary>
-		/// 名称
+		/// 控制台
 		/// </summary>
-		public string Name { get; set; }
+		[EntityIdent(typeof(Models.Console))]
+		public long? ConsoleId { get; set; }
+
+		/// <summary>
+		/// 用户
+		/// </summary>
+		[EntityIdent(typeof(User))]
+		public long? OwnerId { get; set; }
+
+		/// <summary>
+		/// 页面
+		/// </summary>
+		public string PageId { get; set; }
+
+		/// <summary>
+		/// 内容
+		/// </summary>
+		public string ContentId { get; set; }
 	}
 	/// <summary>
 	/// 常用查询管理
