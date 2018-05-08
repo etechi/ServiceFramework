@@ -197,6 +197,7 @@ namespace SF.Sys.BackEndConsole.Front
 			if (!resultType.IsGeneric() || resultType.GetGenericTypeDefinition() != typeof(QueryResult<>))
 				throw new PublicNotSupportedException("接口方法不支持导出,返回类型不是QueryResult<>类型");
 
+			
 			var resultItemType = resultType.GetGenericArguments()[0];
 			return (Task < HttpResponseMessage > )ExportMethodInfo.MakeGenericMethod(resultItemType).Invoke(
 				this,
