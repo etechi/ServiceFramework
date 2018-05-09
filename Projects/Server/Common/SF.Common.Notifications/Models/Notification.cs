@@ -45,6 +45,7 @@ namespace SF.Common.Notifications.Models
 		/// 通知模式
 		/// </summary>
 		[Uneditable]
+		[TableVisible]
 		public NotificationMode Mode { get; set; }
 
 		///<title>通知时间</title>

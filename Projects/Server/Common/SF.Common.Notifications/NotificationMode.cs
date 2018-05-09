@@ -3,11 +3,15 @@
 namespace SF.Common.Notifications
 {
 	public enum NotificationMode : byte
-    {
-        [Display(Name ="普通通知")]
+	{
+		/// <summary>
+		/// 普通通知
+		/// </summary>
         Normal,
-        [Display(Name = "全体通知")]
-        Boardcast
-    }
+		/// <summary>
+		/// 全体通知
+		/// </summary>
+		Boardcast
+	}
 
 }

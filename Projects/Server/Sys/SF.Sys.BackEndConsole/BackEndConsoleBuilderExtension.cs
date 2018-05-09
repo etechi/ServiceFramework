@@ -58,5 +58,37 @@ namespace SF.Sys.BackEndConsole
 			});
 			return sii;
 		}
+
+		public static IServiceInstanceInitializer<T> WithConsoleSetting<T>(
+			this IServiceInstanceInitializer<T> sii,
+			string Path,
+			string Name,
+			string Value,
+			string ConsoleIdent=null
+			)
+		{
+			ConsoleIdent = ConsoleIdent ?? "default";
+			sii.AddAction((sp, sid) =>
+			{
+				var dmc = sp.Resolve<IBackEndConsoleBuilderCollection>();
+				dmc.AddBuilder((isp, ctx) => 
+					ctx.AddSetting(Path, Name, Value)
+				);
+				return Task.CompletedTask;
+			});
+			return sii;
+
+		}
+		public static IServiceInstanceInitializer<T> WithEntityQuery<T,Q>(
+			this IServiceInstanceInitializer<T> sii,
+			string Entity,
+			string Name,
+			Q Query,
+			string ConsoleIdent = null
+			)
+			where Q:IQueryArgument
+		{
+			return WithConsoleSetting(sii, $"entity/{Entity}/list/query", Name, Json.Stringify(Query), ConsoleIdent);
+		}
 	}
 }

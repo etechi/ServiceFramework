@@ -83,6 +83,7 @@ namespace SF.Sys.BackEndConsole
 	{
 		void AddPage(Page Page);
 		void AddMenuItems(params MenuItemConfig[] Items);
+		Task AddSetting(string Path, string Name, string Value);
 		Task AddEntityManager(string MenuPath, long EntityServiceId);
 	}
 	public interface IBackEndConsoleBuilderCollection

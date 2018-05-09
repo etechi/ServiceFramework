@@ -30,7 +30,7 @@ namespace SF.Sys.BackEndConsole.Front
 		public IServiceProvider ServiceProvider { get; }
 		List<ConsoleMenuItem> MenuItems { get;  } = new List<ConsoleMenuItem>();
 		Dictionary<string, Page> Pages { get; } = new Dictionary<string, Page>();
-
+		public Dictionary<(string Path, string Name), string> Settings { get; } = new Dictionary<(string Path, string Name), string>();
 		public BackEndConsoleBuildContext(string Title ,string Ident, IServiceProvider ServiceProvider)
 		{
 			this.Title = Title;
@@ -197,6 +197,12 @@ namespace SF.Sys.BackEndConsole.Front
 				svcTypeResolver,
 				EntityMetadataCollection
 				);
+		}
+
+		public Task AddSetting(string Path, string Name, string Value)
+		{
+			Settings[(Path, Name)] = Value;
+			return Task.CompletedTask;
 		}
 	}
 }

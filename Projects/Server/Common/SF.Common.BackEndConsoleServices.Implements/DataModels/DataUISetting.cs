@@ -13,55 +13,35 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Entities.Models;
-using SF.Sys.Annotations;
+using SF.Sys.Entities.DataModels;
+using SF.Sys.Data;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using SF.Sys.Auth;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace SF.Sys.BackEndConsole.Models
+namespace SF.Sys.BackEndConsole.Entity.DataModels
 {
-	/// <summary>
-	/// 常用查询
-	/// </summary>
-	[EntityObject]
-	public class HotQuery : ObjectEntityBase<long>
+	[Table("UISetting")]
+	public class DataUISetting : DataObjectEntityBase
 	{
-		/// <summary>
-		/// 所有人
-		/// </summary>
-		[EntityIdent(typeof(User),nameof(OwnerName))]
-		public long? OwnerId { get; set; }
-
-		/// <summary>
-		/// 所有人
-		/// </summary>
-		[TableVisible]
-		[Ignore]
-		public string OwnerName { get; set; }
-		
 		/// <summary>
 		/// 控制台ID
 		/// </summary>
-		[EntityIdent(typeof(Console))]
+		[Index]
 		public long ConsoleId { get; set; }
+		[ForeignKey(nameof(ConsoleId))]
+		public DataConsole Console { get; set; }
 
 		/// <summary>
-		/// 页面
+		/// 设置路径
 		/// </summary>
-		public string PageId { get; set; }
+		[Required]
+		public string Path { get; set; }
 
 		/// <summary>
-		/// 内容
+		/// 设置值
 		/// </summary>
-		public string ContentId { get; set; }
-
-		/// <summary>
-		/// 查询
-		/// </summary>
-		[MultipleLines]
-		public string Query { get; set; }
-
+		public string Value { get; set; }
 	}
-
 }
 

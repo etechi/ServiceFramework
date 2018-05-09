@@ -49,7 +49,7 @@ namespace SF.Sys.Services
 				DataConsole,
 				DataHotMenuCategory,
 				DataHotMenuItem,
-				DataHotQuery
+				DataUISetting
 				>(
 				TablePrefix ?? "BackEndAdmin"
 				);
@@ -57,14 +57,14 @@ namespace SF.Sys.Services
 			sc.AddSingleton<IBackEndConsoleBuilderCollection, BackEndConsoleBuilderCollection>();
 			sc.AddManagedScoped<IBackEndAdminConsoleService, ConsoleService>();
 
-			sc.AddTransient(sp=>(IBackEndConsoleHotQueryService)sp.Resolve<IHotQueryManager>());
+			sc.AddTransient(sp=>(IBackEndConsoleUISettingService)sp.Resolve<IUISettingManager>());
 
 			sc.EntityServices(
 				"BackEndAdmin",
 				"后台管理",
 				d =>
 					d.Add<IConsoleManager, ConsoleManager>("BackEndAdminConsole", "管理控制台")
-					.Add<IHotQueryManager, HotQueryManager>("BackEndAdminHotQuery", "常用查询")
+					.Add<IUISettingManager, UISettingManager>("BackEndAdminUISetting", "控制台设置")
 					.Add<IHotMenuCategoryManager, HotMenuCategoryManager>("BackEndAdminHotMenuCategory", "常用菜单分类")
 					.Add<IHotMenuItemManager, HotMenuItemManager>("BackEndAdminHotMenuItem", "常用菜单项")
 				);
@@ -76,7 +76,7 @@ namespace SF.Sys.Services
 					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
-				await sim.Service<IHotQueryManager, HotQueryManager>(null)
+				await sim.Service<IUISettingManager, UISettingManager>(null)
 					.WithConsolePages(MenuPath)
 					.Ensure(sp, scope);
 
@@ -148,6 +148,8 @@ namespace SF.Sys.Services
 			var ctxDict = new Dictionary<string, BackEndConsoleBuildContext>();
 			var coll = (BackEndConsoleBuilderCollection)
 				sp.Resolve<IBackEndConsoleBuilderCollection>();
+			var usm = sp.Resolve<IUISettingManager>();
+
 			foreach (var (i, b) in coll.Builders)
 			{
 				if (!ctxDict.TryGetValue(i, out var ctx))
@@ -157,7 +159,7 @@ namespace SF.Sys.Services
 			foreach (var ctx in ctxDict.Values)
 			{
 				var c = ctx.Create();
-				await cm.EnsureEntity(
+				var console=await cm.EnsureEntity(
 					await cm.QuerySingleEntityIdent(new ConsoleQueryArgument { Ident = c.Ident }),
 					e =>
 					{
@@ -166,6 +168,23 @@ namespace SF.Sys.Services
 						e.Pages = c.Pages.Values.ToArray();
 						e.Menus = c.MenuItems;
 					});
+				foreach (var s in ctx.Settings)
+					await usm.EnsureEntity(
+						await usm.QuerySingleEntityIdent(new UISettingQueryArgument
+						{
+							ConsoleId = console.Id,
+							Name = s.Key.Name,
+							OwnerId = 0,
+							Path = s.Key.Path,
+						}), 
+						e =>
+						{
+							e.ConsoleId = console.Id;
+							e.Name = s.Key.Name;
+							e.Path = s.Key.Path;
+							e.Value = s.Value;
+						}
+						);
 			}
 		}
 	}

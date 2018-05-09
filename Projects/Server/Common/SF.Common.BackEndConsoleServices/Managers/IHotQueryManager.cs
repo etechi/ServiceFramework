@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.BackEndConsole.Managers
 {
-	public class HotQueryQueryArgument : Entities.ObjectQueryArgument
+	public class UISettingQueryArgument : Entities.ObjectQueryArgument
 	{
 		/// <summary>
 		/// 控制台
@@ -36,14 +36,10 @@ namespace SF.Sys.BackEndConsole.Managers
 		public long? OwnerId { get; set; }
 
 		/// <summary>
-		/// 页面
+		/// 路径
 		/// </summary>
-		public string PageId { get; set; }
+		public string Path { get; set; }
 
-		/// <summary>
-		/// 内容
-		/// </summary>
-		public string ContentId { get; set; }
 	}
 	/// <summary>
 	/// 常用查询管理
@@ -51,9 +47,9 @@ namespace SF.Sys.BackEndConsole.Managers
 	[NetworkService]
 	[EntityManager]
 	[DefaultAuthorize]
-	public interface IHotQueryManager:
-		Entities.IEntitySource<ObjectKey<long>, Models.HotQuery, HotQueryQueryArgument>,
-		Entities.IEntityManager<ObjectKey<long>, Models.HotQuery>
+	public interface IUISettingManager:
+		Entities.IEntitySource<ObjectKey<long>, Models.UISetting, UISettingQueryArgument>,
+		Entities.IEntityManager<ObjectKey<long>, Models.UISetting>
 	{
 	}
 

@@ -86,6 +86,10 @@ namespace SF.Sys.Services
 
 				 await sim.DefaultService<INotificationManager, NotificationManager>(null)
 					.WithConsolePages(MenuPath)
+					.WithEntityQuery("Notification", "全体未开始通知", new SF.Common.Notifications.Management.NotificationQueryArgument { State=NotificationState.NotStart,Mode=NotificationMode.Boardcast})
+					.WithEntityQuery("Notification", "全体发布中通知", new SF.Common.Notifications.Management.NotificationQueryArgument { State = NotificationState.Available, Mode = NotificationMode.Boardcast })
+					.WithEntityQuery("Notification", "个人发布中通知", new SF.Common.Notifications.Management.NotificationQueryArgument { State = NotificationState.Available, Mode = NotificationMode.Normal})
+					.WithEntityQuery("Notification", "个人已过期通知", new SF.Common.Notifications.Management.NotificationQueryArgument { State = NotificationState.Expired, Mode = NotificationMode.Normal })
 					.Ensure(sp, scope);
 
 				 await sim.DefaultService<INotificationSendRecordManager, NotificationSendRecordManager>(null)

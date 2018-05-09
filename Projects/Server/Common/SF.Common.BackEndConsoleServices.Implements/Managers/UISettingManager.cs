@@ -28,86 +28,83 @@ using SF.Sys.Auth;
 
 namespace SF.Sys.BackEndConsole.Managers
 {
-	public class HotQueryManager :
-		AutoModifiableEntityManager<ObjectKey<long>,HotQuery,HotQuery,HotQueryQueryArgument,HotQuery,DataHotQuery>,
-		IHotQueryManager,
-		Front.IBackEndConsoleHotQueryService
+	public class UISettingManager :
+		AutoModifiableEntityManager<ObjectKey<long>,UISetting,UISetting,UISettingQueryArgument,UISetting,DataUISetting>,
+		IUISettingManager,
+		Front.IBackEndConsoleUISettingService
 	{
-		public HotQueryManager(
+		public UISettingManager(
 			IEntityServiceContext ServiceContext
 			) : base(ServiceContext)
 		{
 
 		}
 
-		public async Task<Front.HotQuery[]> List(long ConsoleId,string Page)
+		public async Task<Front.UISetting[]> List(long ConsoleId,string Path)
 		{
 			var uid=ServiceContext.AccessToken.User.EnsureUserIdent();
 			var re=await DataScope.Use("获取查询", ctx =>
-				 (from q in ctx.Queryable<DataHotQuery>()
+				 (from q in ctx.Queryable<DataUISetting>()
 				  where (!q.OwnerId.HasValue || q.OwnerId.Value == uid) && 
 						q.ConsoleId==ConsoleId &&
-						q.PageId == Page && 
+						q.Path == Path && 
 						q.LogicState == EntityLogicState.Enabled
 				  orderby q.OwnerId.HasValue?0:1
-				  select new Front.HotQuery
+				  select new Front.UISetting
 				  {
 					  ConsoleId=q.ConsoleId,
-					  Content = q.ContentId,
 					  Name = q.Name,
-					  Path = q.PageId,
-					  Query = q.Query
+					  Path = q.Path,
+					  Value = q.Value
 				  }).ToArrayAsync()
 			);
 
 			return re
-				.GroupBy(q => q.Content + "/" + q.Name)
+				.GroupBy(q => q.Name)
 				.Select(g => g.First())
-				.Where(q=>q.Query.HasContent())
+				.Where(q=>q.Value.HasContent())
+				.OrderBy(q=>q.Name)
 				.ToArray();
 
 		}
 
-		public async Task Update(Front.HotQuery Query)
+		public async Task Update(Front.UISetting Query)
 		{
 			var uid = ServiceContext.AccessToken.User.EnsureUserIdent();
-			var id = await this.QuerySingleEntityIdent(new HotQueryQueryArgument
+			var id = await this.QuerySingleEntityIdent(new UISettingQueryArgument
 				{
 					ConsoleId = Query.ConsoleId,
 					Name = Query.Name,
 					OwnerId = uid,
-					PageId = Query.Path,
-					ContentId = Query.Content
+					Path = Query.Path,
 				});
 
-			if (Query.Query.HasContent())
+			if (Query.Value.HasContent())
 			{
 				if (id == null)
-					await CreateAsync(new HotQuery
+					await CreateAsync(new UISetting
 					{
 						Name = Query.Name,
-						ContentId = Query.Content,
-						PageId = Query.Path,
-						Query = Query.Query,
+						Path = Query.Path,
+						Value = Query.Value,
 						OwnerId = uid,
-						ConsoleId = Query.ConsoleId
+						ConsoleId = Query.ConsoleId,
 					});
 				else
 				{
 					var e = await LoadForEdit(id);
-					e.Query = Query.Query;
+					e.Value = Query.Value;
 					await UpdateAsync(e);
 				}
 			}
 			else
 			{
 				var gid = await DataScope.Use("查找全局查询", ctx =>
-					   (from q in ctx.Queryable<DataHotQuery>()
+					   (from q in ctx.Queryable<DataUISetting>()
 						where q.ConsoleId == Query.ConsoleId &&
 						 q.Name == Query.Name &&
 						 !q.OwnerId.HasValue &&
-						 q.PageId == Query.Path &&
-						 q.ContentId == Query.Content
+						 q.Path == Query.Path 
 						select q.Id
 					   ).SingleOrDefaultAsync()
 					);
@@ -118,12 +115,11 @@ namespace SF.Sys.BackEndConsole.Managers
 				}
 				else if (id == null)
 				{
-					await CreateAsync(new HotQuery
+					await CreateAsync(new UISetting
 					{
 						Name = Query.Name,
-						ContentId = Query.Content,
-						PageId = Query.Path,
-						Query = null,
+						Path = Query.Path,
+						Value = null,
 						OwnerId = uid,
 						ConsoleId = Query.ConsoleId
 					});
@@ -131,7 +127,7 @@ namespace SF.Sys.BackEndConsole.Managers
 				else
 				{ 
 					var e = await LoadForEdit(id);
-					e.Query = null;
+					e.Value = null;
 					await UpdateAsync(e);
 				}
 			}
