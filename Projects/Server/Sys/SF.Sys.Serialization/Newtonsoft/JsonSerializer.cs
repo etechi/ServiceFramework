@@ -46,7 +46,7 @@ namespace SF.Sys.Serialization.Newtonsoft
 			//DateFormatString = "yyyy-MM-ddTHH:mm:dd",
 			JsonSerializerSettings.DefaultValueHandling = Setting?.IgnoreDefaultValue ?? true ? DefaultValueHandling.IgnoreAndPopulate : DefaultValueHandling.Populate;
 			JsonSerializerSettings.DateParseHandling = global::Newtonsoft.Json.DateParseHandling.DateTime;
-			JsonSerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
+			JsonSerializerSettings.DateTimeZoneHandling =Setting?.UseUtcTime ?? false ? DateTimeZoneHandling.Utc: DateTimeZoneHandling.Local;
 			JsonSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
 			JsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
 			JsonSerializerSettings.TypeNameHandling = Setting?.WithType ?? false ? TypeNameHandling.Objects : TypeNameHandling.None;

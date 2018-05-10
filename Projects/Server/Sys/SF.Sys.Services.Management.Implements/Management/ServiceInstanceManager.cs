@@ -124,7 +124,7 @@ namespace SF.Sys.Services.Management
 					defService = null;
 
 				Query = Query
-					.Filter(Arg.Name, i => i.Name)
+					.FilterContains(Arg.Name, i => i.Name)
 					.Filter(Arg.ServiceId, i => i.ServiceId)
 					.FilterContains(Arg.ServiceType, i => i.ServiceType)
 					.Filter(Arg.ServiceIdent, i => i.ServiceIdent)
