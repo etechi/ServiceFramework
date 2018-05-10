@@ -52,7 +52,7 @@ namespace SF.Auth.IdentityServices
 				from s in meta.Services.Values
 				where s.ServiceType.IsAnyRelatedTypeDefined(typeof(NetworkServiceAttribute))
 				let svcId = s.ServiceType.GetFullName()
-				let aas= s.ServiceType.GetCustomAttributes<DefaultAuthorizeAttribute>(true)
+				let aas= s.ServiceType.AllRelatedTypes().SelectMany(t=>t.GetCustomAttributes<DefaultAuthorizeAttribute>(true)).Distinct().ToArray()
 				let svcType = s.ServiceType.IsAnyRelatedTypeDefined(typeof(AnonymousAllowedAttribute)) ? ServiceMethodAuthorizeType.Anonymouse :
 						aas.Any(a=>a.RoleIdent==null)? ServiceMethodAuthorizeType.User:
 						aas.Any(a => a.RoleIdent != null) ? ServiceMethodAuthorizeType.UserWithRoles :

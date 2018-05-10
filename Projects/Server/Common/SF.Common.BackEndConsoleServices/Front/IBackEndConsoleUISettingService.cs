@@ -32,6 +32,7 @@ namespace SF.Sys.BackEndConsole.Front
 		public string Value { get; set; }
 	}
 	[NetworkService]
+	[DefaultAuthorize(RoleIdent ="admin")]
 	public interface IBackEndConsoleUISettingService
 	{
 		Task<UISetting[]> List(long ConsoleId,string Path);

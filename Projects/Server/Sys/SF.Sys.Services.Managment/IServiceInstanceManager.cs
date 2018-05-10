@@ -79,6 +79,7 @@ namespace SF.Sys.Services.Management
 	[EntityManager]
 	[NetworkService]
 	[Category("系统管理","系统服务管理")]
+	[DefaultAuthorize(PredefinedRoles.系统管理员)]
 	public interface IServiceInstanceManager :
 		IEntityManager<ObjectKey<long>, Models.ServiceInstanceEditable>,
 		IEntitySource<ObjectKey<long>, Models.ServiceInstanceInternal, ServiceInstanceQueryArgument>

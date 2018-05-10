@@ -511,7 +511,12 @@ namespace SF.Sys.Services
 				if (!svc.ServiceType.IsAnyRelatedTypeDefined(typeof(NetworkServiceAttribute)))
 					continue;
 				//服务上的默认授权
-				var daas = svc.ServiceType.GetCustomAttributes<DefaultAuthorizeAttribute>(true);
+				var daas = svc.ServiceType
+					.AllRelatedTypes()
+					.SelectMany(t => t.GetCustomAttributes<DefaultAuthorizeAttribute>(true))
+					.GroupBy(aa => aa.RoleIdent)
+					.Select(g => g.First())
+					.ToArray();
 
 				var methods = new Dictionary<string, NamedItems<(string svc, string method)>>();
 

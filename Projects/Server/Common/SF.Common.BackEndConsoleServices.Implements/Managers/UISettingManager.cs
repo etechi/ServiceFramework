@@ -43,6 +43,7 @@ namespace SF.Sys.BackEndConsole.Managers
 		public async Task<Front.UISetting[]> List(long ConsoleId,string Path)
 		{
 			var uid=ServiceContext.AccessToken.User.EnsureUserIdent();
+
 			var re=await DataScope.Use("获取查询", ctx =>
 				 (from q in ctx.Queryable<DataUISetting>()
 				  where (!q.OwnerId.HasValue || q.OwnerId.Value == uid) && 
