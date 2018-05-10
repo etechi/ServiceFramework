@@ -13,33 +13,34 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System.DrawingCore;
-using System.IO;
-using SF.Maths;
+using SF.Sys.Auth;
+using SF.Sys.NetworkService;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SF.Sys.Drawing.dotNetFramework
+namespace SF.Services.Security
 {
-	public class ImageProcessor : IImageProvider
+	public class CaptchaImage
 	{
-		public IImage Load(Stream Stream)
-		{
-			return new Image(
-				Bitmap.FromStream(Stream)
-				);
-		}
+		public string CodePrefix { get; set; }
+		public string Image { get; set; }
+	}
+	public class CaptchaImageCreateArgument
+	{
+		public int Width { get; set; }
+		public int Height { get; set; }
+		public string Target { get; set; }
+		public string BgColor { get; set; }
+		public string ForeColor { get; set; }
+	}
+	[NetworkService]
+	public interface ICaptchaImageService
+	{
+		[AnonymousAllowed]
+		Task<CaptchaImage> CreateImage(CaptchaImageCreateArgument Arg);
 
-	
-		public IDrawContext NewDrawContext(IImageBuffer Image,IResourceCache Cache)
-		{
-			return new DrawContext(Image, Cache);
-
-		}
-
-		public IImageBuffer NewImageBuffer(Maths.Size Size)
-		{
-			return new Image(
-				new Bitmap(Size.Width, Size.Height)
-				);
-		}
+		Task<bool> Validate(string Target,string Code);
 	}
 }

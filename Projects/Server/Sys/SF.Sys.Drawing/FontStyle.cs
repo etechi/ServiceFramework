@@ -13,33 +13,23 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System.DrawingCore;
-using System.IO;
 using SF.Maths;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace SF.Sys.Drawing.dotNetFramework
+namespace SF.Sys.Drawing
 {
-	public class ImageProcessor : IImageProvider
+	[Flags]
+	public enum FontStyle
 	{
-		public IImage Load(Stream Stream)
-		{
-			return new Image(
-				Bitmap.FromStream(Stream)
-				);
-		}
-
-	
-		public IDrawContext NewDrawContext(IImageBuffer Image,IResourceCache Cache)
-		{
-			return new DrawContext(Image, Cache);
-
-		}
-
-		public IImageBuffer NewImageBuffer(Maths.Size Size)
-		{
-			return new Image(
-				new Bitmap(Size.Width, Size.Height)
-				);
-		}
+		Regular = 0,
+		Bold = 1,
+		Italic = 2,
+		Underline = 4,
+		Strikeout = 8
 	}
 }

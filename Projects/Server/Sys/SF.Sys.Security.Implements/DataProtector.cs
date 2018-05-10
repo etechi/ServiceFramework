@@ -22,7 +22,7 @@ namespace SF.Sys.Security
 	public class DataProtector : IDataProtector
 	{
 		public byte[] GlobalPassword { get; }
-		static DateTime DataOffset = new DateTime(2017, 1, 1);
+		static DateTime TimeOffset = new DateTime(2017, 1, 1);
 		public DataProtector(string GlobalPassword)
 		{
 			this.GlobalPassword = (GlobalPassword ?? "&*!@%#(121kjsgd").UTF8Bytes().CalcHash(Hash.MD5());
@@ -33,7 +33,7 @@ namespace SF.Sys.Security
 			if (Data.Length < Hash.Sha1SignedDataOffset + 4)
 				throw new ArgumentException();
 
-			var exp = DataOffset.AddMinutes(BitConverter.ToInt32(Data, Hash.Sha1SignedDataOffset));
+			var exp = TimeOffset.AddMinutes(BitConverter.ToInt32(Data, Hash.Sha1SignedDataOffset));
 			if (exp < Now)
 				throw new PublicArgumentException("令牌已超时");
 			var dataDecrypted = Data.Des3Decrypt(GlobalPassword, Hash.Sha1SignedDataOffset + 4);
@@ -50,7 +50,7 @@ namespace SF.Sys.Security
 			var pwd = Name.UTF8Bytes();
 			if (Password != null)
 				pwd = pwd.Concat(Password);
-			var exp = BitConverter.GetBytes((int)Expires.Subtract(DataOffset).TotalMinutes);
+			var exp = BitConverter.GetBytes((int)Expires.Subtract(TimeOffset).TotalMinutes);
 			var buf= new[] { exp, Data.Des3Encrypt(GlobalPassword) };
 			return Task.FromResult(buf.Sign(pwd,Hash.Sha1()));
 		}

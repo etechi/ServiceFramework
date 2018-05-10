@@ -23,13 +23,33 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Drawing
 {
+	public interface IBrush{ }
+	public interface IFont{ }
 	public interface IDrawContext : IDisposable
     {
 		IImageBuffer Buffer { get; }
 		Maths.Matrix2DD Transform { get; set; }
 		Maths.RectD ClipRect { get; set; }
+		IBrush GetSolidBrush(Color color);
+		IFont GetFont(string FontFamily, int FontSize, FontStyle fontStyle);
+		void Clear(Color color);
 		void DrawImage(IImage Image, RectD SourceRect, RectD DestRect);
-		void DrawString(string Text, RectD Rect);
-		void FillRect(RectD Rect, Color Color);
+		void DrawString(string Text, RectD Rect, IFont Font, IBrush Brush);
+		void FillRect(RectD Rect, IBrush Brush);
+
+		void ResetTransform();
+		void TranslateTransform(float x, float y);
+		void RotateTransform(float deg);
+	}
+	public static class DrawContextExtensions
+	{
+		public static void FillRect(this IDrawContext Context, RectD Rect, Color color)
+			=> Context.FillRect(Rect, Context.GetSolidBrush(color));
+		public static void FillRect(this IDrawContext Context, RectD Rect, string color)
+			=> Context.FillRect(Rect, Color.Parse(color));
+
+		public static void Clear(this IDrawContext Context, string color)
+			=> Context.Clear(Color.Parse(color));
+
 	}
 }

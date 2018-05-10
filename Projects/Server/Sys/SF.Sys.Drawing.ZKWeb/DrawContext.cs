@@ -19,15 +19,43 @@ using SF.Maths;
 
 namespace SF.Sys.Drawing.dotNetFramework
 {
+	public class Brush : IBrush,IDisposable
+	{
+		public System.DrawingCore.Brush SysBrush { get;  }
+		public Brush(System.DrawingCore.Brush SysBrush)
+		{
+			this.SysBrush = SysBrush;
+		}
+		public void Dispose()
+		{
+			SysBrush.Dispose();
+		}
+	}
+	public class Font : IFont,IDisposable {
+		public System.DrawingCore.Font SysFont{ get; set; }
+		public Font(System.DrawingCore.Font SysFont)
+		{
+			this.SysFont = SysFont;
+		}
+		public void Dispose()
+		{
+			SysFont.Dispose();
+		}
+	}
+
 	public class DrawContext : IDrawContext
 	{
 		Graphics g { get; }
 		Bitmap Image { get; }
-		public DrawContext(IImageBuffer Buffer)
+		IResourceCache Cache { get; }
+		public DrawContext(IImageBuffer Buffer, IResourceCache Cache)
 		{
 			this.Buffer = Buffer;
+			this.Cache = Cache;
 			Image = (Bitmap)((Image)Buffer).RawImage;
 			g = Graphics.FromImage(Image);
+			g.TextRenderingHint = System.DrawingCore.Text.TextRenderingHint.AntiAlias;
+			
 		}
 		public RectD ClipRect
 		{
@@ -40,6 +68,18 @@ namespace SF.Sys.Drawing.dotNetFramework
 			{
 				throw new NotImplementedException();
 			}
+		}
+		public void ResetTransform()
+		{
+			g.ResetTransform();
+		}
+		public void TranslateTransform(float x, float y)
+		{
+			g.TranslateTransform(x, y);
+		}
+		public void RotateTransform(float deg)
+		{ 
+			g.RotateTransform(deg);
 		}
 
 		public Matrix2DD Transform
@@ -64,6 +104,10 @@ namespace SF.Sys.Drawing.dotNetFramework
 		System.DrawingCore.Rectangle FromRectD(RectD rc) =>
 				new System.DrawingCore.Rectangle((int)rc.Left, (int)rc.Top, (int)rc.Width, (int)rc.Height);
 
+		public void Clear(Color color)
+		{
+			g.Clear(ToSysColor(color));
+		}
 		public void DrawImage(IImage Image, RectD SourceRect, RectD DestRect)
 		{
 			g.DrawImage(
@@ -74,15 +118,32 @@ namespace SF.Sys.Drawing.dotNetFramework
 				);
 		}
 
-		public void DrawString(string Text, RectD Rect)
+		public void DrawString(string text, RectD rect, IFont font,IBrush brush)
 		{
-			throw new NotImplementedException();
+			g.DrawString(text, ((Font)font).SysFont, ((Brush)brush).SysBrush, FromRectD(rect));
 		}
-
-		public void FillRect(RectD Rect, Color Color)
+		public IFont GetFont(string fontFamily,int fontSize, FontStyle fontStyle)
 		{
-			using (var b = new SolidBrush(System.DrawingCore.Color.FromArgb(Color.Alpha, Color.Red, Color.Green, Color.Blue)))
-				g.FillRectangle(b, (System.DrawingCore.Rectangle)FromRectD(Rect));
+			var key = "font:" + fontFamily+"/"+fontSize+"/"+fontSize;
+			var f = (Font)Cache.GetResource(key);
+			if (f == null)
+				Cache.SetResource(key, f = new Font(new System.DrawingCore.Font(fontFamily,fontSize, (System.DrawingCore.FontStyle)fontStyle)));
+			return f;
+		}
+		static System.DrawingCore.Color ToSysColor(Color color)
+			=> System.DrawingCore.Color.FromArgb(color.Alpha, color.Red, color.Green, color.Blue);
+
+		public IBrush GetSolidBrush(Color Color)
+		{
+			var key = "brush:" + Color.ToString();
+			var b = (Brush)Cache.GetResource(key);
+			if (b == null)
+				Cache.SetResource(key, b =new Brush(new SolidBrush(System.DrawingCore.Color.FromArgb(Color.Alpha, Color.Red, Color.Green, Color.Blue))));
+			return b;
+		}
+		public void FillRect(RectD Rect, IBrush brush)
+		{
+			g.FillRectangle(((Brush)brush).SysBrush, FromRectD(Rect));
 		}
 
 		public IImageBuffer Buffer { get; }

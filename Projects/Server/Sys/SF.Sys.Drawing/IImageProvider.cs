@@ -22,10 +22,16 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Drawing
 {
+	public interface IResourceCache
+	{
+		IDisposable GetResource(string Key);
+		void SetResource(string Key, IDisposable Resource);
+	}
+
 	public interface IImageProvider
     {
 		IImage Load(Stream Stream);
 		IImageBuffer NewImageBuffer(SF.Maths.Size Size);
-		IDrawContext NewDrawContext(IImageBuffer Size);
+		IDrawContext NewDrawContext(IImageBuffer Size, IResourceCache Cache);
 	}
 }

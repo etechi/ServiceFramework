@@ -22,14 +22,15 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Drawing
 {
-
-	class TransformContext :ITransformContext, IDisposable
+	
+	class TransformContext :ITransformContext, IDisposable, IResourceCache
 	{
 		IImageBuffer _buffer1;
 		IImageBuffer _buffer2;
 		int _level;
 		Stack<ExecuteFlag> _flags = new Stack<ExecuteFlag>();
 		IImageProvider Provider { get; }
+		Dictionary<string, IDisposable> _Resources;
 		public TransformContext(IImageProvider Provider)
 		{
 			this.Provider = Provider;
@@ -40,6 +41,9 @@ namespace SF.Sys.Drawing
 				_buffer1.Dispose();
 			if (_buffer2 != null)
 				_buffer2.Dispose();
+			if (_Resources != null)
+				foreach (var p in _Resources)
+					p.Value.Dispose();
 		}
 		public T Execute<T>(Transform<T> Transform, ImageContext src,ExecuteFlag flags= ExecuteFlag.None)
 		{
@@ -75,8 +79,24 @@ namespace SF.Sys.Drawing
 
 		public IDrawContext NewGraphics(IImageBuffer image)
 		{
-			var g=Provider.NewDrawContext(image);
+			var g=Provider.NewDrawContext(image,this);
 			return g;
+		}
+
+		IDisposable IResourceCache.GetResource(string Key)
+		{
+			IDisposable value = null;
+			_Resources?.TryGetValue(Key, out value);
+			return value;
+		}
+
+		void IResourceCache.SetResource(string Key, IDisposable Resource)
+		{
+			if (_Resources == null)
+				_Resources = new Dictionary<string, IDisposable>();
+			if (_Resources.TryGetValue(Key, out var res))
+				res.Dispose();
+			_Resources[Key] = Resource;
 		}
 	}
 

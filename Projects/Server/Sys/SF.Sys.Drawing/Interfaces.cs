@@ -42,6 +42,7 @@ namespace SF.Sys.Drawing
 		public string Mime { get; set; }
 		public Size Size { get; set; }
 	}
+	
 	public class ImageContext
 	{
 		public IImage Image { get; set; }

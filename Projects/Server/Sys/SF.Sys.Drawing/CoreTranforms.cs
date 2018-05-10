@@ -65,6 +65,20 @@ namespace SF.Sys.Drawing
 				return new ImageContext { Image = dst, Size = re.DstSize };
 			};
 		}
+		public static Transform<ImageContext> Draw(this Transform<ImageContext> transform,Size DstSize, Action<IDrawContext,IImage> Drawer)
+		{
+			return (src, ctx) =>
+			{
+				var nimg = ctx.Execute(transform, src);
+				var img = nimg.Image;
+				var dst = ctx.GetTarget(DstSize);
+				using (var g = ctx.NewGraphics(dst))
+				{
+					Drawer(g,img);
+				}
+				return new ImageContext { Image = dst, Size = DstSize };
+			};
+		}
 		public static Transform<ImageContext> Filter(this Transform<ImageContext> transform, Transform<ImageContext> filter)
 		{
 			return (img, ctx) =>
@@ -107,6 +121,14 @@ namespace SF.Sys.Drawing
 			return (img, ctx) =>
 				ToMemoryBuffer(src, mime, outputQuality)(img, ctx).Data;
 		}
+		public static Transform<string> ToImageUrl(this Transform<ImageContext> src, string mime = null, int outputQuality = 0)
+		{
+			return (img, ctx) =>
+				{
+					var re = ToMemoryBuffer(src, mime, outputQuality)(img, ctx);
+					return "data:" + re.Mime + ";base64," + Convert.ToBase64String(re.Data);
+				};
+		}
 		public static T ApplyTo<T>(this Transform<T> transform, IImage image, IImageProvider Provider)
 		{
 			using (var ctx = new TransformContext(Provider))
@@ -114,6 +136,17 @@ namespace SF.Sys.Drawing
 				return ctx.Execute(
 					transform,
 					new ImageContext { Image = image, Size = image.Size },
+					ExecuteFlag.StrictSize
+					);
+			}
+		}
+		public static T ApplyTo<T>(this Transform<T> transform,  IImageProvider Provider)
+		{
+			using (var ctx = new TransformContext(Provider))
+			{
+				return ctx.Execute(
+					transform,
+					new ImageContext { },
 					ExecuteFlag.StrictSize
 					);
 			}

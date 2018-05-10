@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
   </ItemGroup>
 

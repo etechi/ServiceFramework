@@ -204,6 +204,8 @@ namespace SF.Auth.IdentityServices
 			if(Arg.ClientId.IsNullOrEmpty())
 				throw new PublicArgumentException("缺少客户端ID");
 
+			
+
 			UserCredential ui = null;
 			IUserCredentialProvider identProvider = null;
 			var credentialStorage = Setting.CredentialStorage.Value;

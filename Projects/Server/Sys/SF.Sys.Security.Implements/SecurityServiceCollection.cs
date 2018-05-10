@@ -28,6 +28,13 @@ namespace SF.Sys.Services
 			sc.AddManagedScoped<IDataProtector, DataProtector>();
 			return sc;
 		}
+		public static IServiceCollection AddDefaultCaptchaImageService(
+			this IServiceCollection sc
+			)
+		{
+			sc.AddManagedScoped<ICaptchaImageService, CaptchaImageService>();
+			return sc;
+		}
 		public static IServiceCollection AddDefaultPasswordHasher(
 		   this IServiceCollection sc
 		   )
@@ -39,6 +46,7 @@ namespace SF.Sys.Services
 		{
 			sc.AddDefaultDataProtector();
 			sc.AddDefaultPasswordHasher();
+			sc.AddDefaultCaptchaImageService();
 			return sc;
 		}
 		public static IServiceInstanceInitializer<IDataProtector> NewDataProtectorService(
@@ -62,6 +70,23 @@ namespace SF.Sys.Services
 				new
 				{
 					GlobalPassword = GlobalPassword
+				}
+				);
+		}
+		public static IServiceInstanceInitializer<ICaptchaImageService> NewCaptchaImageService(
+		   this IServiceInstanceManager manager,
+		   int CharCount=6,
+		   int ExpireMinutes=10
+		   )
+		{
+			return manager.DefaultService<ICaptchaImageService, CaptchaImageService>(
+				new
+				{
+					Setting=new CaptchaImageSetting
+					{
+						CodeChars=CharCount,
+						Expires=ExpireMinutes
+					}
 				}
 				);
 		}

@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SF.Sys.Drawing\SF.Sys.Drawing.csproj" />
     <ProjectReference Include="..\SF.Sys.Security\SF.Sys.Security.csproj" />
     <ProjectReference Include="..\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
