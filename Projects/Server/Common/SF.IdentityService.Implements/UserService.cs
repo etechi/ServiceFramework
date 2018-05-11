@@ -223,8 +223,19 @@ namespace SF.Auth.IdentityServices
 			if (ui == null)
 				throw new PublicArgumentException("用户或密码错误！");
 			var idData = await GetIdentityData(ui.UserId);
+			if(idData==null)
+				throw new PublicArgumentException("找不到指定的用户！");
 
-//#if(!DEBUG)
+			if (idData.Roles.Contains("admin"))
+			{
+				if(Arg.CaptchaCode.IsNullOrEmpty())
+					throw new PublicArgumentException("需要输入验证码！");
+				if(!await Setting.CaptchaImageService.Value.Validate("User.Signin", Arg.CaptchaCode))
+					throw new PublicArgumentException("验证码错误！");
+			}
+
+
+			//#if(!DEBUG)
 
 			var passwordHash = idData.PasswordHash;
 			if (Setting.PasswordHasher.Value.Hash(Arg.Password, idData.SecurityStamp) != passwordHash)

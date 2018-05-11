@@ -103,7 +103,7 @@ namespace SF.Sys.Drawing
 		{
 			return (img, ctx) =>
 			{
-				var rawFormat = img.Image.Format;
+				var rawFormat = img.Image?.Format ?? "image/png";
 				img = ctx.Execute(src, img, ExecuteFlag.StrictSize);
 				var ms = new System.IO.MemoryStream();
 				mime= mime ?? rawFormat;

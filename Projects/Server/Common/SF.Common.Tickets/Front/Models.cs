@@ -66,6 +66,7 @@ namespace SF.Common.Tickets.Front
 		/// 工单ID
 		/// </summary>
 		public long TicketId { get; set; }
+
 		/// <summary>
 		/// 回复人
 		/// </summary>

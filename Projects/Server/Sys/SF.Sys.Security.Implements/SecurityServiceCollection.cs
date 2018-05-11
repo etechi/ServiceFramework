@@ -76,7 +76,7 @@ namespace SF.Sys.Services
 		public static IServiceInstanceInitializer<ICaptchaImageService> NewCaptchaImageService(
 		   this IServiceInstanceManager manager,
 		   int CharCount=6,
-		   int ExpireMinutes=10
+		   int ExpireMinutes=3
 		   )
 		{
 			return manager.DefaultService<ICaptchaImageService, CaptchaImageService>(

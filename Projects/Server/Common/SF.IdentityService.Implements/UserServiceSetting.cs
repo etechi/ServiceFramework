@@ -56,6 +56,8 @@ namespace SF.Auth.IdentityServices
 		public Lazy<IAccessTokenValidator> AccessTokenValidator { get; set; }
 		public Lazy<IAccessTokenGenerator> AccessTokenGenerator { get; set; }
 
+		public Lazy<ICaptchaImageService> CaptchaImageService { get; set; }
+
 	}
 
 }

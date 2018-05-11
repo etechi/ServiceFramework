@@ -30,9 +30,7 @@ namespace SF.Services.Security
 	public class CaptchaImageCreateArgument
 	{
 		public int Width { get; set; }
-		public int Height { get; set; }
 		public string Target { get; set; }
-		public string BgColor { get; set; }
 		public string ForeColor { get; set; }
 	}
 	[NetworkService]

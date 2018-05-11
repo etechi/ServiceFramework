@@ -81,6 +81,10 @@ namespace SF.Sys.Drawing.dotNetFramework
 		{ 
 			g.RotateTransform(deg);
 		}
+		public void ScaleTransform(float sx, float sy)
+		{
+			g.ScaleTransform(sx,sy);
+		}
 
 		public Matrix2DD Transform
 		{

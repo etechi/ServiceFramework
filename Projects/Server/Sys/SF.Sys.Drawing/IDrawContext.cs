@@ -40,6 +40,7 @@ namespace SF.Sys.Drawing
 		void ResetTransform();
 		void TranslateTransform(float x, float y);
 		void RotateTransform(float deg);
+		void ScaleTransform(float sx, float sy);
 	}
 	public static class DrawContextExtensions
 	{

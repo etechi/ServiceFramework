@@ -44,31 +44,35 @@ namespace SF.Services.Security
 		ITimeService TimeService { get; }
 		CaptchaImageSetting Setting { get; }
 
-		public CaptchaImageService(Lazy<IImageProvider> ImageProvider, IDataProtector DataProtector, CaptchaImageSetting Setting)
+		public CaptchaImageService(
+			Lazy<IImageProvider> ImageProvider, 
+			IDataProtector DataProtector, 
+			CaptchaImageSetting Setting,
+			ITimeService TimeService)
 		{
 			this.ImageProvider = ImageProvider;
 			this.DataProtector = DataProtector;
 			this.Setting = Setting;
+			this.TimeService = TimeService;
 		}
 
-		string CreateImageUrl(string code,Random r,int Width,int Height,string ForeColor,string BgColor)
+		string CreateImageUrl(string code,Random r,int Width,int Height,string ForeColor)
 		{
 			var url = Transforms.Source.Draw(
 				new Maths.Size(Width, Height),
 				(ctx, img) =>
 				{
-					if (BgColor.HasContent())
-						ctx.Clear(BgColor);
-					var f = ctx.GetFont("Arial", Height / 2, FontStyle.Bold);
-					var b = ctx.GetSolidBrush(Color.Parse(ForeColor ?? "#333"));
+					var f = ctx.GetFont("Arial", Height / 3, FontStyle.Bold);
+					var b = ctx.GetSolidBrush(Color.Parse(ForeColor ?? "#33333333"));
 					int count = code.Length;
-					int wi = Width / (count + 1);
+					int wi = Width / (count + 2);
 					var rect = new Maths.RectD(0, 0, Width, Height);
 					for (int i = 0; i < count; i++)
 					{
 						ctx.ResetTransform();
-						ctx.TranslateTransform((i + 0.5f) * wi, Height / 6);
+						ctx.TranslateTransform((i + 1f) * wi, Height / 6);
 						ctx.RotateTransform(r.Next(60) - 30);
+						ctx.ScaleTransform(1+(float)((r.NextDouble()-0.5)*0.5), 1+(float)((r.NextDouble() - 0.5) * 0.5));
 						ctx.DrawString(code.Substring(i, 1), rect, f, b);
 					}
 				})
@@ -76,14 +80,19 @@ namespace SF.Services.Security
 				.ApplyTo(ImageProvider.Value);
 			return url;
 		}
-		
+
+		const string chars = "1234567890ABCDEFGHJKLMNPQRSTUVWXYZ";
 		public async Task<CaptchaImage> CreateImage(CaptchaImageCreateArgument Arg)
 		{
 			var r = RandomFactory.Create();
-			var code = SF.Sys.Strings.NumberAndUpperChars.Random(Setting.CodeChars, r);
-			var url = CreateImageUrl(code, r, Arg.Width, Arg.Height, Arg.ForeColor, Arg.BgColor);
+			var code = chars.Random(Setting.CodeChars, r);
+			var url = CreateImageUrl(code, r, Arg.Width, Arg.Width/2, Arg.ForeColor);
 
-			var prefix = await DataProtector.Encrypt(Arg.Target, "captcha".UTF8Bytes(), TimeService.Now.AddMinutes(Setting.Expires), code.UTF8Bytes());
+			var prefix = await DataProtector.Encrypt(
+				Arg.Target, 
+				"captcha".UTF8Bytes(),
+				TimeService.Now.AddMinutes(Setting.Expires), 
+				code.ToLower().UTF8Bytes());
 
 			return new CaptchaImage
 				{
@@ -98,7 +107,7 @@ namespace SF.Services.Security
 			if (i == -1)
 				throw new ArgumentException();
 			var data = Code.Substring(0, i);
-			Code = Code.Substring(i + 1);
+			Code = Code.Substring(i + 1).ToLower();
 
 			var result = await DataProtector.Decrypt(
 				Target,

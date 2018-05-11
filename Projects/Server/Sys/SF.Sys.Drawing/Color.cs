@@ -57,7 +57,7 @@ namespace SF.Sys.Drawing
 			var a = 0xff;
 			if(l==9 && !int.TryParse(str.Substring(l - 8, 2), System.Globalization.NumberStyles.HexNumber, null, out a))
 				return false;
-			color = new Color(a, r, g, b);
+			color = new Color(r, g, b, a);
 			return true;
 		}
 		public static Color Parse(string str)

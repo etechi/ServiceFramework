@@ -19,6 +19,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using SF.Sys.Auth;
+using System.ComponentModel;
 
 namespace SF.Common.Tickets.Management
 {
@@ -43,12 +44,13 @@ namespace SF.Common.Tickets.Management
 		/// </summary>
 		[EntityIdent(typeof(TicketCategory), nameof(CategoryName))]
 		[Layout(1, 2)]
-		public long? CategoryId { get; set; }
+		public long CategoryId { get; set; }
 
 		/// <summary>
 		/// 分类名称
 		/// </summary>
 		[TableVisible]
+		[Ignore]
 		public string CategoryName { get; set; }
 
 	
@@ -56,6 +58,7 @@ namespace SF.Common.Tickets.Management
 		/// 发布时间
 		/// </summary>
 		[TableVisible]
+		[ReadOnly(true)]
 		public DateTime? CreateTime{ get; set; }
 
 		/// <summary>
@@ -68,7 +71,8 @@ namespace SF.Common.Tickets.Management
 		/// 用户
 		/// </summary>
 		[EntityIdent(typeof(User), nameof(OwnerName))]
-		public long OwnerId { get; set; }
+		[Uneditable]
+		public long? OwnerId { get; set; }
 
 		/// <summary>
 		/// 用户
@@ -113,6 +117,7 @@ namespace SF.Common.Tickets.Management
 		 /// 工单
 		 /// </summary>
 		[EntityIdent(typeof(Ticket),nameof(TicketName))]
+		[ReadOnly(true)]
 		public long TicketId { get; set; }
 
 		/// <summary>
@@ -126,7 +131,7 @@ namespace SF.Common.Tickets.Management
 		/// 回复人
 		/// </summary>
 		[EntityIdent(typeof(User), nameof(OwnerName))]
-		public long OwnerId { get; set; }
+		public long? OwnerId { get; set; }
 
 		/// <summary>
 		/// 回复人
