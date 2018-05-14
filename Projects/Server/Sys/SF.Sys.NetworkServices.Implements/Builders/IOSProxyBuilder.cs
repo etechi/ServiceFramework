@@ -132,17 +132,17 @@ namespace SF.Sys.NetworkService
 			}
 		}
 
-		(string name,string format,string value) argFormat(string type,string arg)
+		(string name,string format,string value,string nil) argFormat(string type,string arg)
 		{
 			switch (type)
 			{
 				case "string":
 				case "datetime":
 				case "timespan":
-					return (arg,"%@", $"[{arg} stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]");
+					return (arg,"%@", $"[{arg} stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]",nil:"nil");
 				case "long":
 				case "ulong":
-					return (arg, "%ld", arg);
+					return (arg, "%ld", arg,"0");
 				case "int":
 				case "short":
 				case "sbyte":
@@ -150,29 +150,29 @@ namespace SF.Sys.NetworkService
 				case "ushort":
 				case "byte":
 				case "char":
-					return (arg,"%d", arg);
+					return (arg,"%d", arg, "0");
 				case "decimal":
 				case "float":
 				case "double":
-					return (arg, "%f", arg);
+					return (arg, "%f", arg, "0");
 				case "bool":
-					return (arg, "%@", $"{arg}==0?@\"true\":@\"false\"");
+					return (arg, "%@", $"{arg}==0?@\"true\":@\"false\"", "0");
 				case "void":
 				case "object":
 				case "unknown":
 				default:
-					return (arg, "%@",$"[[NSString stringWithFormat:@\"%@\",{arg}] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]");
+					return (arg, "%@",$"[[NSString stringWithFormat:@\"%@\",{arg}] stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLQueryAllowedCharacterSet]]", "0");
 			}
 		}
-		(string process,string result) resolveResult(string type,string arg)
+		(string process,string result) resolveResult(string type,string arg,bool objectMode=false)
 		{
 			if (type.EndsWith("[]"))
 			{
 				var eleType = type.Substring(0, type.Length - 2);
-				var eleCode = resolveResult(eleType, "are[i]");
+				var eleCode = resolveResult(eleType, "are[i]", true);
 				return ($@"
 	NSArray *are = (NSArray*)re;
-    NSMutableArray<{to_ios_type(eleType, true)}> *arr = [NSMutableArray new];
+    NSMutableArray<{to_ios_type(eleType, true,objectMode:true)}> *arr = [NSMutableArray new];
     for (int i = 0; i<are.count; i++) {{
 		{eleCode.process??""}
 		[arr addObject: {eleCode.result}];
@@ -185,18 +185,18 @@ namespace SF.Sys.NetworkService
 				case "datetime": 
 				case "timespan": return (null,$"(NSString *){arg}");
 				case "long":
-				case "ulong": return (null, $"[((NSNumber*){arg}) longValue]");
+				case "ulong": return (null,objectMode?$"(NSNumber*){arg}":$"[((NSNumber*){arg}) longValue]");
 				case "int":
 				case "short":
 				case "sbyte":
 				case "uint":
 				case "ushort":
 				case "byte":
-				case "char": return (null, $"[((NSNumber*){arg}) intValue]");
-				case "decimal": return (null, $"[((NSNumber*){arg}) doubleValue]");
-				case "float": return (null, $"[((NSNumber*){arg}) floatValue]");
-				case "double": return (null, $"[((NSNumber*){arg}) doubleValue]");
-				case "bool": return (null, $"[((NSNumber*){arg}) intValue]!=0");
+				case "char": return (null, objectMode ? $"(NSNumber*){arg}" : $"[((NSNumber*){arg}) intValue]");
+				case "decimal": return (null, objectMode ? $"(NSNumber*){arg}" : $"[((NSNumber*){arg}) doubleValue]");
+				case "float": return (null, objectMode ? $"(NSNumber*){arg}" : $"[((NSNumber*){arg}) floatValue]");
+				case "double": return (null, objectMode ? $"(NSNumber*){arg}" : $"[((NSNumber*){arg}) doubleValue]");
+				case "bool": return (null, objectMode ? $"(NSNumber*){arg}" : $"[((NSNumber*){arg}) intValue]!=0");
 				case "void": return (null, "");
 				case "object":
 				case "unknown": return (null, arg);
@@ -538,13 +538,28 @@ namespace SF.Sys.NetworkService
 					 sb.AppendLine("{");
 					if ((a.Parameters?.Length ?? 0) > (a.HeavyParameter == null ? 0 : 1))
 					{
-						var pairs = a.Parameters.Where(p => p.Name != a.HeavyParameter).Select(p => argFormat(p.Type, EscName(p.Name))).ToArray();
 
-						sb.Append($"	NSString *url = [NSString stringWithFormat:@\"{service.Name}/{a.Name}?");
-						sb.Append(pairs.Select(p=>$"{p.name}={p.format}").Join("&"));
-						sb.Append("\"");
-						sb.Append(pairs.Select(p => $"\n		,{p.value}").Join(""));
-						sb.AppendLine("\t];");
+						sb.AppendLine($"	NSString *url = @\"{service.Name}/{a.Name}?\";");
+						foreach (var p in a.Parameters.Where(p => p.Name != a.HeavyParameter))
+						{
+							var arg = argFormat(p.Type, EscName(p.Name));
+							if (p.Optional)
+								sb.AppendLine($"	if({arg.name}!={arg.nil}){{");
+							sb.AppendLine($"		url=[url stringByAppendingFormat: @\"{arg.name}={arg.format}&\", {arg.value}];");
+							if(p.Optional)
+								sb.AppendLine("	}");
+
+						}
+
+
+
+						//var pairs = a.Parameters.Where(p => p.Name != a.HeavyParameter).Select(p => argFormat(p.Type, EscName(p.Name))).ToArray();
+
+						//sb.Append($"	NSString *url = [NSString stringWithFormat:@\"{service.Name}/{a.Name}?");
+						//sb.Append(pairs.Select(p=>$"{p.name}={p.format}").Join("&"));
+						//sb.Append("\"");
+						//sb.Append(pairs.Select(p => $"\n		,{p.value}").Join(""));
+						//sb.AppendLine("\t];");
 					}
 					else
 						sb.AppendLine($"	NSString *url = @\"{service.Name}/{a.Name}\";");
@@ -552,9 +567,9 @@ namespace SF.Sys.NetworkService
 						sb.AppendLine($"	NSDictionary *dict = [self dictionaryWithModel: {a.HeavyParameter}];");
 
 					if (a.HeavyParameter == null)
-						sb.AppendLine($"[self getUrlPath:url success:^(NSObject *re) {{");
+						sb.AppendLine($"	[self getUrlPath:url success:^(NSObject *re) {{");
 					else
-						sb.AppendLine($"[self postUrlPath:url withParamers:dict success:^(NSObject *re) {{");
+						sb.AppendLine($"	[self postUrlPath:url withParamers:dict success:^(NSObject *re) {{");
 
 					var code = resolveResult(a.Type, "re");
 					sb.AppendLine(
