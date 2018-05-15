@@ -92,12 +92,14 @@ namespace SF.Sys.BackEndConsole.Front
 				ServiceId = 0;
 
 			var EntityIdent = Entity.Ident;
-			AddMenuItems(new MenuItemConfig
-			{
-				Path = MenuPath + "/" + Entity.Name,
-				Link = $"/ap/entity/{EntityIdent}/",
-				Permission="@"+EntityIdent
-			});
+
+			if(MenuPath.HasContent())
+				AddMenuItems(new MenuItemConfig
+				{
+					Path = MenuPath + "/" + Entity.Name,
+					Link = $"/ap/entity/{EntityIdent}/",
+					Permission="@"+EntityIdent
+				});
 			//AddPage(new Page
 			//{
 			//	Path = $"svc/{ServiceId}/entity/{EntityIdent}/list",

@@ -24,7 +24,11 @@ namespace SF.Sys.Services
 {
 	public static class FrontEndServicesDIExtensions
 	{
-		public static IServiceCollection AddFrontEndServices(this IServiceCollection sc, EnvironmentType EnvType, string TablePrefix=null)
+		public static IServiceCollection AddFrontEndServices(
+			this IServiceCollection sc, 
+			EnvironmentType EnvType, 
+			string TablePrefix=null
+			)
 		{
 			sc.AddScoped<ISiteResolver>(sp=>sp.Resolve<ISiteManager>());
 			sc.AddScoped<ISiteConfigLoader>(sp=>sp.Resolve<ISiteTemplateManager>());
@@ -53,25 +57,25 @@ namespace SF.Sys.Services
 			return sc;
 		}
 		
-		public static IServiceInstanceInitializer<ISiteManager> NewSiteManager(this IServiceInstanceManager sim)
+		public static IServiceInstanceInitializer<ISiteManager> NewSiteManager(this IServiceInstanceManager sim,bool HideMenuItem = false)
 		{
 			return sim.DefaultService<ISiteManager, SiteManager>(new { })
 				.WithConsolePages(
-					"前端内容/页面管理"
+					HideMenuItem?null:"前端内容/页面管理"
 					);
 		}
-		public static IServiceInstanceInitializer<ISiteTemplateManager> NewSiteTemplateManager(this IServiceInstanceManager sim)
+		public static IServiceInstanceInitializer<ISiteTemplateManager> NewSiteTemplateManager(this IServiceInstanceManager sim, bool HideMenuItem = false)
 		{
 			return sim.DefaultService<ISiteTemplateManager, SiteTemplateManager>(new { })
 				.WithConsolePages(
-					"前端内容/页面管理"
+					HideMenuItem ? null : "前端内容/页面管理"
 					);
 		}
-		public static IServiceInstanceInitializer<IContentManager> NewSiteContentManager(this IServiceInstanceManager sim)
+		public static IServiceInstanceInitializer<IContentManager> NewSiteContentManager(this IServiceInstanceManager sim, bool HideMenuItem = false)
 		{
 			return sim.DefaultService<IContentManager, ContentManager>(new { })
 				.WithConsolePages(
-					"前端内容/页面管理"
+					HideMenuItem ? null : "前端内容/页面管理"
 					);
 		}
 	}
