@@ -25,7 +25,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SF.Sys.Entities.Models
 {
 
-
+	public abstract class EntityBase<K> : IEntityWithId<K>
+		where K : IEquatable<K>
+	{
+		/// <summary>
+		/// Id
+		/// </summary>
+		[Key]
+		[ReadOnly(true)]
+		[TableVisible]
+		public virtual K Id { get; set; }
+	}
 	public abstract class ObjectEntityBase<K> : IEntityWithId<K>, IObjectEntity
 		where K:IEquatable<K>
 	{
