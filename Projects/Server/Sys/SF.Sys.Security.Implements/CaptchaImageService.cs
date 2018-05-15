@@ -109,13 +109,19 @@ namespace SF.Services.Security
 			var data = Code.Substring(0, i);
 			Code = Code.Substring(i + 1).ToLower();
 
-			var result = await DataProtector.Decrypt(
-				Target,
-				data.Base64(),
-				 TimeService.Now,
-				(buf, len) => Task.FromResult(Code.UTF8Bytes())
-				);
-			return result?.UTF8String() == "captcha";
+			try
+			{
+				var result = await DataProtector.Decrypt(
+					Target,
+					data.Base64(),
+					 TimeService.Now,
+					(buf, len) => Task.FromResult(Code.UTF8Bytes())
+					);
+				return result?.UTF8String() == "captcha";
+			}catch(Exception e)
+			{
+				return false;
+			}
 		}
 
 	}

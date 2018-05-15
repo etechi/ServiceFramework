@@ -231,7 +231,7 @@ namespace SF.Auth.IdentityServices
 				if(Arg.CaptchaCode.IsNullOrEmpty())
 					throw new PublicArgumentException("需要输入验证码！");
 				if(!await Setting.CaptchaImageService.Value.Validate("User.Signin", Arg.CaptchaCode))
-					throw new PublicArgumentException("验证码错误！");
+					throw new PublicArgumentException("验证码错误或已过期！");
 			}
 
 
