@@ -61,7 +61,8 @@ namespace SF.Sys.Entities
 		public IContextQueryable<TModel> GetQueryable(SF.Sys.Data.IDataContext ctx, TQueryArgument Arg)
 		{
 			var q = ctx.Queryable<TModel>();
-			q = ServiceContext.QueryFilterCache.GetFilter<TModel, TQueryArgument>()
+			if (Arg!=null)
+				q = ServiceContext.QueryFilterCache.GetFilter<TModel, TQueryArgument>()
 					.Filter(q, ServiceContext, Arg);
 			q = OnBuildQuery(q, Arg);
 			return q;

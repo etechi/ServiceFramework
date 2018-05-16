@@ -184,7 +184,8 @@ namespace SF.Sys.BackEndConsole.Front
 				nameof(ExportQueryResultTyped),
 				BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.InvokeMethod,				
 				typeof(ExportContext), 
-				typeof(Type)
+				typeof(Type),
+				typeof(bool)
 				).IsNotNull();
 		Task<HttpResponseMessage> ExportQueryResult(ExportContext ctx)
 		{
@@ -194,20 +195,28 @@ namespace SF.Sys.BackEndConsole.Front
 				throw new PublicNotSupportedException("接口方法不支持导出,参数必须为QueryArgument的子类");
 
 			var resultType = invoker.Method.ReturnType.GetGenericArgumentTypeAsTask() ?? invoker.Method.ReturnType;
-			if (!resultType.IsGeneric() || resultType.GetGenericTypeDefinition() != typeof(QueryResult<>))
-				throw new PublicNotSupportedException("接口方法不支持导出,返回类型不是QueryResult<>类型");
+			Type resultItemType;
+			bool isEnumerable = false;
+			if (resultType.IsGeneric() && resultType.GetGenericTypeDefinition() == typeof(QueryResult<>))
+				resultItemType = resultType.GetGenericArguments()[0];
+			else
+			{
+				resultItemType = resultType.AllInterfaces().Select(i => i.GetGenericArgumentTypeAsEnumerable()).FirstOrDefault(i => i != null);
+				isEnumerable = true;
+			}
+			if (resultItemType==null)
+				throw new PublicNotSupportedException("接口方法不支持导出,返回类型不是QueryResult<>或IEnumerable<>类型");
 
-			
-			var resultItemType = resultType.GetGenericArguments()[0];
 			return (Task < HttpResponseMessage > )ExportMethodInfo.MakeGenericMethod(resultItemType).Invoke(
 				this,
 				new object[] {
 				ctx,
-				resultItemType
+				resultItemType,
+				isEnumerable
 				}
 				);
 		}
-		async Task<HttpResponseMessage> ExportQueryResultTyped<T>(ExportContext ctx, Type type)
+		async Task<HttpResponseMessage> ExportQueryResultTyped<T>(ExportContext ctx, Type type,bool isEnumerable)
 		{
 
 			var parameter = ctx.Invoker.Method.GetParameters()[0];
@@ -219,49 +228,59 @@ namespace SF.Sys.BackEndConsole.Front
 
 			var title = ctx.Title = ctx.Title ?? type.Comment().Title;
 
-			var pageCount = 1000;
-			
-			var offset = 0;
 			var props = (
-						from t in ADT.Link.ToEnumerable(type, t => t.BaseType).Reverse()
-						from prop in t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty).Where(p=>p.DeclaringType==t)
-						 let tablevisible = prop.GetCustomAttribute<TableVisibleAttribute>(true) as TableVisibleAttribute
-						 where tablevisible != null
-						 orderby tablevisible.Order
-						 select new
-						 {
-							 col = new Column
-							 {
-								 Name = prop.Comment().Title ?? prop.Name,
-								 Type = prop.PropertyType
-							 },
-							 prop = prop
-						 }
-						).ToArray();
+				from t in ADT.Link.ToEnumerable(type, t => t.BaseType).Reverse()
+				from prop in t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetProperty).Where(p=>p.DeclaringType==t)
+					let tablevisible = prop.GetCustomAttribute<TableVisibleAttribute>(true) as TableVisibleAttribute
+					where tablevisible != null
+					orderby tablevisible.Order
+					select new
+					{
+						col = new Column
+						{
+							Name = prop.Comment().Title ?? prop.Name,
+							Type = prop.PropertyType
+						},
+						prop = prop
+					}
+				).ToArray();
 
 
 			using (var exporter = CreateExporter(ctx, props.Select(p => p.col).ToArray()))
 			{
-				for (; ; )
+				if (isEnumerable)
 				{
-					arg.Paging = new Paging
-					{
-						Count = pageCount,
-						Offset = offset
-					};
-					var re =(QueryResult<T>) await ctx.Invoker.InvokeAsync(ServiceProvider, new[] { arg });
-
-					var count = 0;
-					foreach (var item in re.Items)
-					{
+					var re = (IEnumerable<T>)await ctx.Invoker.InvokeAsync(ServiceProvider, new[] { arg });
+					foreach (var item in re)
 						exporter.AddRow(props.Select(p => p.prop.GetValue(item)).ToArray());
-						count++;
-					}
-					if (count < pageCount)
-						break;
-					offset += count;
 				}
+				else
+				{
+					var pageCount = 1000;
 
+					var offset = 0;
+
+					for (; ; )
+					{
+
+						arg.Paging = new Paging
+						{
+							Count = pageCount,
+							Offset = offset
+						};
+						var re = (QueryResult<T>)await ctx.Invoker.InvokeAsync(ServiceProvider, new[] { arg });
+
+						var count = 0;
+						foreach (var item in re.Items)
+						{
+							exporter.AddRow(props.Select(p => p.prop.GetValue(item)).ToArray());
+							count++;
+						}
+						if (count < pageCount)
+							break;
+						offset += count;
+					}
+				}
 				var ctn = new System.Net.Http.ByteArrayContent(
 						exporter.GetBytes()
 						);

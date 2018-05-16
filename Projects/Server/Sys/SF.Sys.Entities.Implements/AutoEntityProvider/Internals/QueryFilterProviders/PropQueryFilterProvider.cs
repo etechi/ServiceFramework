@@ -35,7 +35,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 			}
 			public IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, IEntityServiceContext ServiceContext, TQueryArgument Arg)
 			{
-				var cond = GetFilter.Value(Arg); 
+				var cond =  GetFilter.Value(Arg); 
 				if (cond == null) return Query;
 				return Query.Where(cond);
 			}

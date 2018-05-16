@@ -54,18 +54,20 @@ namespace SF.Auth.IdentityServices
 		Dictionary<(string,string), HashSet<string>> LoadGrantRoles()
 		{
 			var re = Task.Run(
-				() =>
-					 DataScope.Use(ds => ds.Use("获取权限角色", ctx =>
-					  (from r in ctx.Queryable<DataModels.DataRole>()
-					   where r.LogicState == EntityLogicState.Enabled
-					   from rg in r.Grants
-					   let g = rg.DstGrant
-					   where g.LogicState == EntityLogicState.Enabled
-					   from gi in g.Items
-					   select new { gi.ServiceId, gi.ServiceMethodId, rg.RoleId }
-					  ).ToArrayAsync()
-				))
-				).Result;
+				async () =>
+				{
+					var items = await DataScope.Use(ds => ds.Use("获取权限角色", ctx =>
+						(from r in ctx.Queryable<DataModels.DataRole>()
+						 where r.LogicState == EntityLogicState.Enabled
+						 from rg in r.Grants
+						 let g = rg.DstGrant
+						 where g.LogicState == EntityLogicState.Enabled
+						 from gi in g.Items
+						 select new { gi.ServiceId, gi.ServiceMethodId, rg.RoleId }
+						).ToArrayAsync()
+						));
+					return items;
+				}).Result;
 			return re
 				.GroupBy(r => (r.ServiceId, r.ServiceMethodId), r => r.RoleId)
 				.ToDictionary(g => g.Key, g => g.ToHashSet());
