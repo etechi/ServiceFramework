@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using SF.Sys.Data;
 using SF.Sys.Linq;
 
 namespace SF.Sys.Entities
@@ -27,7 +28,7 @@ namespace SF.Sys.Entities
 			  IEntitySource<TKey, TEntitySummary, TEntityDetail, TQueryArgument>
 			  where TEntityDetail : class
 			   where TEntitySummary : class
-			   where TQueryArgument :class, IPagingArgument
+			   where TQueryArgument : class, IPagingArgument
 			  where TModel : class
 	{
 		public AutoQueryableEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
@@ -56,6 +57,14 @@ namespace SF.Sys.Entities
 				PagingQueryBuilder,
 				GetSummaryExpression()
 				);
+		}
+		public IContextQueryable<TModel> GetQueryable(SF.Sys.Data.IDataContext ctx, TQueryArgument Arg)
+		{
+			var q = ctx.Queryable<TModel>();
+			q = ServiceContext.QueryFilterCache.GetFilter<TModel, TQueryArgument>()
+					.Filter(q, ServiceContext, Arg);
+			q = OnBuildQuery(q, Arg);
+			return q;
 		}
 	}
 	public abstract class QuerableEntitySource<TKey,TEntityDetail, TDetailTemp, TEntitySummary, TSummaryTemp, TQueryArgument, TModel> :

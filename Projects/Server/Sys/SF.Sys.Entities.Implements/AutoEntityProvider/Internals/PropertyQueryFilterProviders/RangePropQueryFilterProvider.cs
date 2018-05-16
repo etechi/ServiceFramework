@@ -17,18 +17,22 @@ using System;
 using System.Reflection;
 using System.Linq.Expressions;
 using SF.Sys.Reflection;
+using SF.Sys.Linq;
+using System.Linq;
 
 namespace SF.Sys.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 {
 	public class RangePropQueryFilterProvider : SinglePropQueryFilterProvider
 	{
-		class Filter<T> : PropQueryFilter<QueryRange<T>> where T: struct, IComparable<T>
+		class Filter<T,I> : PropQueryFilter<T> 
+			where T: QueryRange<I>
+			where I : struct, IComparable<I>
 		{
 			public Filter(PropertyInfo Property) : base(Property)
 			{
 			}
 
-			public override Expression OnGetFilterExpression(Expression prop, QueryRange<T> value)
+			public override Expression OnGetFilterExpression(Expression prop, T value)
 			{
 				return ContextQueryableFilters.GetFilterExpression(value, prop);
 			}
@@ -39,9 +43,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 
 		protected override bool MatchType(Type DataValueType, Type PropValueType)
 		{
-			if (!PropValueType.IsGenericTypeOf(typeof(QueryRange<>)))
+			var rangeType = PropValueType
+				.BaseTypes()
+				.WithFirst(PropValueType)
+				.FirstOrDefault(t => t.IsGenericTypeOf(typeof(QueryRange<>)));
+			if(rangeType==null)
 				return false;
-			if (DataValueType != PropValueType.GenericTypeArguments[0])
+			if (DataValueType != rangeType.GenericTypeArguments[0])
 				return false;
 			return true;
 		}
@@ -49,7 +57,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 		protected override IPropertyQueryFilter CreateFilter(PropertyInfo dataProp, PropertyInfo queryProp)
 		{
 			return (IPropertyQueryFilter )Activator.CreateInstance(
-				typeof(Filter<>).MakeGenericType(dataProp.PropertyType), 
+				typeof(Filter<,>).MakeGenericType(queryProp.PropertyType,dataProp.PropertyType), 
 				dataProp
 				);
 		}

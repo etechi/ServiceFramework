@@ -37,7 +37,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 
 		protected override bool MatchType(Type DataValueType1, Type DataValueType2, Type PropValueType)
 		{
-			if (PropValueType!=typeof(QueryRange<DateTime>))
+			if (PropValueType!=typeof(QueryRange<DateTime>) || PropValueType != typeof(DateQueryRange))
 				return false;
 			if (DataValueType1 != typeof(DateTime))
 				return false;

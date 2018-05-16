@@ -63,7 +63,12 @@ namespace SF.Sys.Entities
     public class NullableDateQueryRange :
        NullableQueryRange<DateTime>
     {
-        [Date(EndTime = true)]
+		/// <prompt>
+		/// 开始(默认为最近31天)
+		/// </prompt>
+		public override DateTime? Begin { get; set; }
+
+		[Date(EndTime = true)]
         public override DateTime? End { get; set; }
     }
     public enum QueryableBoolean
