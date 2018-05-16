@@ -52,14 +52,21 @@ namespace SF.Externals.WeiXin.Mp.TextMessages
 			{
 				touser = message.Targets.Single(),
 				template_id = message.Template,
-				url = args.Get("MobileLink"),
-                data = args.ToDictionary(
-                    p => p.Key, 
-                    p => new DataItem { value = p.Value }
-                    )
+				url = args.Get("@url"),
+                data = args
+						.Where(a=>!a.Key.StartsWith("@"))
+						.Select(a=>new { Key = a.Key.Split2('.'), a.Value })
+						.GroupBy(a=>a.Key.Item1)
+						.ToDictionary(
+							p => p.Key, 
+							p => new DataItem {
+								value = p.FirstOrDefault(i=>i.Key.Item2==null || i.Key.Item2=="text")?.Value,
+								color= p.FirstOrDefault(i => i.Key.Item2 == "color")?.Value ?? Setting.TextColor,
+							}
+						)
             };
             var re = await TaskUtils.Retry(() => AccessTokenManager.Json(
-                new Uri("message/template/send"),
+               "message/template/send",
                 req
                 ));
             var resp = SF.Sys.Json.Parse<Response>(re);
@@ -71,7 +78,7 @@ namespace SF.Externals.WeiXin.Mp.TextMessages
 		
 		public async Task<IEnumerable<string>> TargetResolve(IEnumerable<long> TargetIds)
 		{
-			var re = await UserProfileService.GetClaims(TargetIds.First(), new[] { PredefinedClaimTypes.WeiXinOpenPlatformId }, null);
+			var re = await UserProfileService.GetClaims(TargetIds.First(), new[] { PredefinedClaimTypes.WeiXinMPId }, null);
 			var id = re.FirstOrDefault();
 			return id == null ? Enumerable.Empty<string>() : EnumerableEx.From(id.Value);
 		}

@@ -65,7 +65,7 @@ namespace SF.Externals.WeiXin.Mp.InstantMessages
 			//}
 			var re = await TaskUtils.Retry(
 				() => AccessTokenManager.Json(
-				new Uri("message/custom/send"),
+				"message/custom/send",
 				req
 				));
 			var resp = Json.Parse<Response>(re);

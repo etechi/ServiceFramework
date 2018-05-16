@@ -111,6 +111,7 @@ namespace SF.Sys.Services
 							ctx =>
 							ctx.Queryable<TEntity>()
 							.Where(e =>
+								
 								e.TaskState == AtLeastOnceTaskState.Waiting &&
 								e.TaskNextExecTime < EndTargetTime
 								)
