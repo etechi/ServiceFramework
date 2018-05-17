@@ -62,7 +62,7 @@ namespace SF.Common.Notifications.Senders
 				  return irecs.Where(r => r.Status == Models.SendStatus.Sending);
 			  });
 
-
+			string LastError = null;
 			foreach (var SendRecord in recs.Where(r=>r.SendTime<=Context.Time))
 			{
 				try
@@ -81,9 +81,16 @@ namespace SF.Common.Notifications.Senders
 				{
 					Logger.Warn(ex,$"[{TimeService.Now}]发送通知失败:{Context.Time} Id:{SendRecord.Id} 提供者:{SendRecord.ProviderId} BizIdent:{SendRecord.BizIdent} Targets:{SendRecord.Target} {SendRecord.Title} 第{SendRecord.SendCount}次");
 					SendRecord.Error = ex.Message.Limit(1000);
+
 					var nextTime = Context.Time.AddSeconds(SendRecord.RetryInterval);
-					if (nextTime < SendRecord.Expires && (SendRecord.RetryLimit == 0 || SendRecord.SendCount < SendRecord.RetryLimit))
+					if (ex is ExternalServiceException ese && ese.Retryable &&
+						nextTime < SendRecord.Expires && 
+						(SendRecord.RetryLimit == 0 || SendRecord.SendCount < SendRecord.RetryLimit)
+						)
+					{
 						SendRecord.SendTime = nextTime;
+						LastError = ex.Message;
+					}
 					else
 						SendRecord.Status = Models.SendStatus.Failed;
 				}
@@ -104,7 +111,10 @@ namespace SF.Common.Notifications.Senders
 				.DefaultIfEmpty()
 				.Min();
 			if (nextRemindTime != DateTime.MinValue)
+			{
+				Context.Message = LastError;
 				Context.NextRemindTime = nextRemindTime;
+			}
 		}
 	}
 }

@@ -31,9 +31,11 @@ namespace SF.Sys.Reminders
 		string BizIdentType { get; }
 		long BizIdent { get; }
 		object Argument { get; }
+		string Message { get; set; }
 		string RemindableName { get; }
 		string Data { get; set; }
 		DateTime? NextRemindTime { get; set; }
+		
 		DateTime Time { get;  }
 	}
 

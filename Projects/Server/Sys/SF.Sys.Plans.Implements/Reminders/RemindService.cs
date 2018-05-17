@@ -170,6 +170,7 @@ namespace SF.Sys.Reminders
 			public string Data { get; set; }
 			public object Argument { get; set; }
 			public string RemindableName { get; set; }
+			public string Message { get; set; }
 			public DateTime? NextRemindTime { get; set; }
 			public DateTime Time { get; set; }
 		}
@@ -194,6 +195,7 @@ namespace SF.Sys.Reminders
 
 				await remindable.Remind(ctx);
 				entity.Data = ctx.Data;
+				entity.TaskMessage = ctx.Message;
 				if (ctx.NextRemindTime.HasValue)
 				{
 					entity.TaskNextExecTime = ctx.NextRemindTime.Value;

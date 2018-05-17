@@ -98,7 +98,7 @@ namespace SF.Externals.JPush
 			var resp = SF.Sys.Json.Parse<Response>(re);
 			//忽略找不到用户的错误
 			if (resp.error != null && resp.error.code!=1011) 
-				throw new InvalidOperationException("JPush调用失败:" + re+" 请求:"+reqstr);
+				throw new ExternalServiceException("JPush调用失败:" + re+" 请求:"+reqstr);
 			return resp.msg_id;
 		}
 

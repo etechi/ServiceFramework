@@ -23,6 +23,7 @@ namespace SF.Sys
 {
 	public class ExternalServiceException : Exception
 	{
+		public bool Retryable { get; set; }
 		public ExternalServiceException(string message) : base(message) { }
 		public ExternalServiceException(string message,Exception innerException) : base(message, innerException) { }
 	}
