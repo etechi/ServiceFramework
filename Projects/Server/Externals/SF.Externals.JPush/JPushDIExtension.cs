@@ -10,17 +10,23 @@ namespace SF.Sys.Services
     {
         public static IServiceCollection AddJPushServices(this IServiceCollection sc,JPushSetting setting)
         {
+
 			sc.AddManagedScoped<INotificationSendProvider, NotificationSendProvider>();
-			if (setting.Uri == null)
-				setting.Uri = "https://api.jpush.cn/v3/push";
-			sc.InitService("JPush", (sp, sim) =>
+			sc.InitServices("JPush", async (sp, sim, parent) =>
 			{
-				return sim.Service<INotificationSendProvider, NotificationSendProvider>(
+				setting=await sp.LoadServiceSetupSetting(
+					setting,
+					new JPushSetting
+					{
+						Uri = "https://api.jpush.cn/v3/push"
+					});
+
+				await sim.Service<INotificationSendProvider, NotificationSendProvider>(
 						new
 						{
 							Setting = setting
 						}
-					).WithIdent("jpush");
+					).WithIdent("jpush").Ensure(sp,parent);
 			});
 			return sc;
 		}
