@@ -37,7 +37,7 @@ namespace SF.Sys.Services
 			if (System.IO.File.Exists(path))
 				setting = Json.Parse<T>(System.IO.File.ReadAllText(path));
 			else
-				setting = Poco.Clone(setting);
+				setting = setting.IsDefault() ? new T() : Poco.Clone(setting);
 
 			if(!defaultSetting.IsDefault())
 				foreach(var p in type.AllPublicInstanceProperties())
