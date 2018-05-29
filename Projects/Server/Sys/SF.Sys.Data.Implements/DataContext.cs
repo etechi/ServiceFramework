@@ -68,6 +68,9 @@ namespace SF.Sys.Data
 			OnDisposed();
         }
 		Dictionary<Type, IDataSet> Sets { get; } = new Dictionary<Type, IDataSet>();
+
+		public virtual IDataContextTransaction Transaction => RootContext.Transaction;
+
 		public IDataSet<T> Set<T>() where T : class
 		{
 			CheckDispose();

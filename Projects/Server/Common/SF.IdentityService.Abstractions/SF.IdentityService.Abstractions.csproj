@@ -1,19 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.2</Version>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;1705;1591</NoWarn>
     <DocumentationFile>bin\Debug\netstandard2.0\SF.IdentityService.Abstractions.xml</DocumentationFile>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\SF.IdentityService.Abstractions.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Auth\Users1\**" />
     <Compile Remove="Bizness\**" />
@@ -25,15 +23,12 @@
     <None Remove="Bizness\**" />
     <None Remove="Common\**" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\Sys\SF.Sys.Annotations\SF.Sys.Annotations.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Auth\SF.Sys.Auth.csproj" />
@@ -42,11 +37,9 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Entities\SF.Sys.Entities.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="System.ComponentModel.Annotations">
       <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 </Project>

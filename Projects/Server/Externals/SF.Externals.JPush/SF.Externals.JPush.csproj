@@ -1,23 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.2</Version>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Externals.JPush.xml</DocumentationFile>
-		<NoWarn>1701;1702;1705;1591</NoWarn>
-	</PropertyGroup>
-
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\SF.Externals.JPush.xml</DocumentationFile>
-		<NoWarn>1701;1702;1705;1591</NoWarn>
-	</PropertyGroup>
-
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <None Remove=".licenseheader" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\Common\SF.Common.Notifications\SF.Common.Notifications.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Auth\SF.Sys.Auth.csproj" />
@@ -25,11 +22,9 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Logging\SF.Sys.Logging.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="System.ComponentModel.Annotations">
       <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\system.componentmodel.annotations\4.4.0\ref\netstandard2.0\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 </Project>

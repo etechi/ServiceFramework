@@ -28,6 +28,7 @@ namespace SF.Sys.Data
 	{
 		void Commit();
 		void Rollback();
+		object RawTransaction { get; }
 	}
 	public interface IDataContextProvider :IDisposable, IQueryableContext,IAsyncQueryableContext
 	{

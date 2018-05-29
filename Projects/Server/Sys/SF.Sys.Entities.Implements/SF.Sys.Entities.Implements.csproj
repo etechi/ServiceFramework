@@ -1,31 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.2</Version>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Entities.Implements.xml</DocumentationFile>
-		<NoWarn>1701;1702;1705;1591</NoWarn>
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\SF.Sys.Entities.Implements.xml</DocumentationFile>
-		<NoWarn>1701;1702;1705;1591</NoWarn>
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="AutoEntityProvider\DataSetAutoEntityProvider.cs" />
     <Compile Remove="AutoEntityProvider\DataSetAutoEntityProviderFactory.cs" />
     <Compile Remove="AutoEntityProvider\DataSetAutoEntityProviderSetting.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <None Remove=".licenseheader" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Client\SF.Sys.Client.csproj" />
     <ProjectReference Include="..\SF.Sys.Entities.AutoTest\SF.Sys.Entities.AutoTest.csproj" />
@@ -33,9 +29,7 @@
     <ProjectReference Include="..\SF.Sys.Reflection.TypeBuilder\SF.Sys.Reflection.TypeBuilder.csproj" />
     <ProjectReference Include="..\SF.Sys.Test\SF.Sys.Test.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
   </ItemGroup>
-
 </Project>
