@@ -34,7 +34,7 @@ namespace SF.Common.Notifications.Management
 		/// 目标用户
 		/// </summary>
 		[EntityIdent(typeof(User))]
-		public long? TargeUserId { get; set; }
+		public long? TargetId { get; set; }
 
 		/// <summary>
 		/// 发送服务

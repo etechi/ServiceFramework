@@ -59,7 +59,7 @@ namespace SF.Common.Notifications.Senders
 				  }
 				  if (hasExpired)
 					  await DataContext.SaveChangesAsync();
-				  return irecs.Where(r => r.Status == Models.SendStatus.Sending);
+				  return irecs.Where(r => r.Status == Models.SendStatus.Sending).ToArray();
 			  });
 
 			string LastError = null;

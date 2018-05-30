@@ -572,7 +572,10 @@ namespace SF.Sys.Entities
 							break;
 						case TransactionCommitNotifyType.AfterCommit:
 							if(ee!=null)
-								await ee.Commit();
+								if(e==null)
+									await ee.Commit();
+								else
+									await ee.Cancel(e);
 							break;
 						case TransactionCommitNotifyType.Rollback:
 							if(ee!=null)
