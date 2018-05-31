@@ -1,31 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Version>1.0.2</Version>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Common.Notifications.Implements.xml</DocumentationFile>
-		<NoWarn>1701;1702;1705;1591</NoWarn>
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netstandard2.0\SF.Common.Notifications.Implements.xml</DocumentationFile>
-		<NoWarn>1701;1702;1705;1591</NoWarn>
-		<LangVersion>latest</LangVersion>
-	</PropertyGroup>
-
+    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="DefaultMsgLogger.cs" />
     <Compile Remove="Management\EntityMsgLogger.cs" />
     <Compile Remove="Senders\NotificationSendActionSource.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <None Remove=".licenseheader" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\Sys\SF.Sys.BackEndConsole\SF.Sys.BackEndConsole.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Data\SF.Sys.Data.csproj" />
@@ -33,11 +29,9 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Plans\SF.Sys.Plans.csproj" />
     <ProjectReference Include="..\SF.Common.Notifications\SF.Common.Notifications.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="System.ComponentModel.Annotations">
       <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 </Project>

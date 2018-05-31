@@ -90,6 +90,30 @@ namespace SF.IdentityService.UnitTest
 			return Value;
 		}
 
+		public static async Task<User> UserUpdateNameAndIcon(
+			this IServiceProvider svc,
+			string NewName=null,
+			string NewIcon=null
+			)
+		{
+			var us = svc.Resolve<IUserService>();
+			var user = await us.GetCurUser();
+			NewName = NewName ?? user.Name + "123";
+			NewIcon = NewIcon ?? user.Icon + "123";
+
+			await us.Update(new Sys.Auth.User
+			{
+				Id = user.Id,
+				Name = NewName,
+				Icon = NewIcon,
+			});
+			var nre = await us.GetCurUser();
+
+			Assert.AreEqual(user.Id, nre.Id);
+			Assert.AreEqual(NewName, nre.Name);
+			Assert.AreEqual(NewIcon, nre.Icon);
+			return nre;
+		}
 		public static async Task<UserInfo> UserCreate(
 			this IServiceProvider sp,
 			string prefix=null,

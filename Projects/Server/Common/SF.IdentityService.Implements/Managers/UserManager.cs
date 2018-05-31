@@ -335,11 +335,18 @@ namespace SF.Auth.IdentityServices.Managers
 		{
 			return DataScope.Use(
 				"更新用户描述",
-				ctx => ctx.Set<TUser>().Update(Identity.Id, r =>
-					  {
-						  r.Name = Identity.Name;
-						  r.Icon = Identity.Icon;
-					  })
+				ctx =>
+				{
+					ServiceContext.PostChangedEvents(ctx, Identity.Id, Identity, DataActionType.Update);
+					return ctx.Set<TUser>().Update(
+						Identity.Id,
+						r =>
+						  {
+							  r.Name = Identity.Name;
+							  r.Icon = Identity.Icon;
+						  });
+
+				}
 				);
 		}
 

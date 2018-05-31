@@ -63,7 +63,7 @@ namespace SF.Sys.Data
 	{
 		IDataSet<T> Set<T>() where T : class;
 		void AddCommitTracker(ITransactionCommitTracker Tracker);
-
+		
 		//int SaveChanges();
 		void ClearTrackingEntities();
 		Task SaveChangesAsync();
@@ -74,6 +74,7 @@ namespace SF.Sys.Data
 		object GetEntityOriginalValue(object Entity, string Field);
         string GetEntitySetName<T>() where T : class;
 		IEnumerable<string> GetUnderlingCommandTexts<T>(IContextQueryable<T> Queryable) where T: class;
+		IDataContextTransaction Transaction { get; }
 		DbConnection GetDbConnection();
     }
 	public interface IDbDataContextState

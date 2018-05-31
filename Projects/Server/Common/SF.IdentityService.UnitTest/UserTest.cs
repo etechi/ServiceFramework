@@ -95,6 +95,16 @@ namespace SF.IdentityService.UnitTest
 				});
 		}
 		[TestMethod]
+		public async Task 修改昵称头像()
+		{
+			await NewServiceScope().Use(async (svc, ct) =>
+			{
+				var re = await svc.UserCreate();
+				await svc.UserUpdateNameAndIcon();
+				return 0;
+			});
+		}
+		[TestMethod]
 		public async Task 修改密码()
 		{
 			await NewServiceScope().Use(async (osp, ct) =>

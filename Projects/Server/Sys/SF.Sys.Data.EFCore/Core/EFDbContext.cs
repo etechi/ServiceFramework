@@ -258,6 +258,9 @@ namespace SF.Sys.Data.EntityFrameworkCore
 			{
 				_Transaction = Transaction;
 			}
+
+			public object RawTransaction => _Transaction.GetDbTransaction();
+
 			public void Commit()
 			{
 				_Transaction.Commit();

@@ -25,8 +25,7 @@ namespace SF.Sys.IO
 	{
 		public static void EnsureDirectory(string Path)
 		{
-			if (!Directory.Exists(Path))
-				Directory.CreateDirectory(Path);
+			Directory.CreateDirectory(Path);
 		}
 		public static async Task UseWriteStream(string Path, Func<Stream, Task> Callback)
 		{

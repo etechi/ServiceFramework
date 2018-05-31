@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "csproj-tools": {
+      "commandName": "Project",
+      "commandLineArgs": "list -d -n -s ..\\..\\..\\..\\..\\ServiceFramework.sln"
+    }
+  }
+}

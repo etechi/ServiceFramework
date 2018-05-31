@@ -29,7 +29,7 @@ namespace SF.Sys.Data
 		public RootDataContext PrevRootContext { get; }
 		public DataContextFlag Flags { get; }
 		DataContext _TopLightContext;
-		IDataContextTransaction Transaction { get; }
+		public override IDataContextTransaction Transaction { get; }
 		public RootDataContext(
 			int ScopeId,
 			int ContextId,
