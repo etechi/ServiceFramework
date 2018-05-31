@@ -44,7 +44,7 @@ namespace SF.Externals.JPush
 	}
 
 	/// <summary>
-	/// 微信公共号模板消息服务
+	/// JPush模板消息服务
 	/// </summary>
 	public class NotificationSendProvider : INotificationSendProvider, Sys.NetworkService.IClientSettingProvider
 	{
