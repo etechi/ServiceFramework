@@ -3,7 +3,6 @@
 
 
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using SF.Sys.Auth;
 using SF.Sys.TimeServices;
@@ -12,7 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SF.Sys.AspNetCore.Auth
+namespace SF.Sys.Auth
 {
 	public class AccessTokenValidatorArguments
 	{
@@ -23,12 +22,12 @@ namespace SF.Sys.AspNetCore.Auth
 	/// <summary>
 	/// Default token service
 	/// </summary>
-	public class DefaultAccessTokenValidator : IAccessTokenValidator
+	public class JwtAccessTokenValidator : IAccessTokenValidator
 	{
 		AccessTokenValidatorArguments Parameters { get; }
 		ITimeService TimeService { get; }
 
-		public DefaultAccessTokenValidator(
+		public JwtAccessTokenValidator(
 			ITimeService TimeService,
 			AccessTokenValidatorArguments Parameters
 			)

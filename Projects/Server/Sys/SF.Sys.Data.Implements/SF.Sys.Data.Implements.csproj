@@ -23,7 +23,7 @@
     <None Remove=".licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="system.data.sqlclient" Version="4.4.3" />
+    <PackageReference Include="system.data.sqlclient" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
@@ -31,6 +31,6 @@
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
   </ItemGroup>
 </Project>

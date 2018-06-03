@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SF.Sys.AspNetCore.Auth;
+using SF.Sys.Auth;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -64,39 +65,39 @@ namespace SF.Sys.Services
 				
 				
 			})
-				.AddJwtBearer(options =>
+			.AddJwtBearer(options =>
+			{
+				options.TokenValidationParameters = tokenValidationParameters;
+					
+				options.RequireHttpsMetadata = false;
+				//// base-address of your identityserver
+				//options.Authority = "http://localost:5000/";
+
+				//// name of the API resource
+				//options.Audience = "Document";
+				options.Events = new JwtBearerEvents
 				{
-					options.TokenValidationParameters = tokenValidationParameters;
-					
-					options.RequireHttpsMetadata = false;
-					//// base-address of your identityserver
-					//options.Authority = "http://localost:5000/";
-
-					//// name of the API resource
-					//options.Audience = "Document";
-					options.Events = new JwtBearerEvents
+					OnMessageReceived = (e) =>
 					{
-						OnMessageReceived = (e) =>
-						{
 
-							return Task.CompletedTask;
-						},
-						OnTokenValidated = (e) =>
-						{
-							return Task.CompletedTask;
-						},
-						OnAuthenticationFailed = (e) =>
-						{
-							return Task.CompletedTask;
-						},
-						OnChallenge = (e) =>
-						{
+						return Task.CompletedTask;
+					},
+					OnTokenValidated = (e) =>
+					{
+						return Task.CompletedTask;
+					},
+					OnAuthenticationFailed = (e) =>
+					{
+						return Task.CompletedTask;
+					},
+					OnChallenge = (e) =>
+					{
 
-							return Task.CompletedTask;
-						}
-					};
+						return Task.CompletedTask;
+					}
+				};
 					
-				});
+			});
 
 			//services.AddAspNetCoreCommonAuthorization();
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

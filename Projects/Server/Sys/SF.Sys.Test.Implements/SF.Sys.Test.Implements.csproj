@@ -23,6 +23,6 @@
     <ProjectReference Include="..\SF.Sys.TimeServices\SF.Sys.TimeServices.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
   </ItemGroup>
 </Project>

@@ -45,7 +45,7 @@ namespace SF.Sys.Reflection
 			{typeof(string),System.TypeCode.String }
 		};
 
-		static System.Collections.Concurrent.ConcurrentDictionary<(Type,bool), string> TypeFullNames { get; } = new ConcurrentDictionary<(Type,bool), string>();
+		static System.Collections.Concurrent.ConcurrentDictionary<(Type,bool), string> TypeNames { get; } = new ConcurrentDictionary<(Type,bool), string>();
 
 		public static string GetTypeNamePostfix(this Type type,bool withNamespace)
 		{
@@ -67,9 +67,9 @@ namespace SF.Sys.Reflection
 		public static string GetTypeName(this Type type,bool withNamespace=false)
 		{
 			var key = (type, withNamespace);
-			if (TypeFullNames.TryGetValue(key, out var name))
+			if (TypeNames.TryGetValue(key, out var name))
 				return name;
-			return TypeFullNames.GetOrAdd(key, k =>
+			return TypeNames.GetOrAdd(key, k =>
 			{
 				var (t, ns) = k;
 				if (t.IsArray)
@@ -94,28 +94,33 @@ namespace SF.Sys.Reflection
 					case TypeCode.UInt16: return "ushort";
 					case TypeCode.UInt32: return "uint";
 					case TypeCode.UInt64: return "ulong";
-					
 				}
 				if (t == typeof(object)) return "object";
 
+				string tn;
 				if (t.IsGenericDefinition())
 				{
-					var p = (ns?t.FullName:t.Name).LastSplit2('`');
-					return $"{p.Item1}<{Enumerable.Repeat("", p.Item2.ToInt32()).Join(",")}>";
+					var p = t.Name.LastSplit2('`');
+					tn = $"{p.Item1}<{Enumerable.Repeat("", p.Item2.ToInt32()).Join(",")}>";
 				}
-				if (t.IsGeneric())
+				else if (t.IsGeneric())
 				{
 					var gtd = t.GetGenericTypeDefinition();
 					var gas = t.GetGenericArguments();
 					if (gtd == typeof(Nullable<>))
 						return gas[0].GetTypeName(ns) + "?";
 
-					var fn = (ns?gtd.FullName:gtd.Name).TrimEndTo("`");
-					return fn + "<" +
+					var p = t.Name.LastSplit2('`');
+					tn=p.Item1 + "<" +
 						gas.Select(at => at.GetTypeName(ns)).Join(",") +
 						">";
 				}
-				return (ns?t.FullName:t.Name);
+				else
+					tn = t.Name;
+				if (ns)
+					return (t.DeclaringType == null ? t.Namespace : t.DeclaringType.GetFullName()) + "." + tn;
+				else
+					return tn;
 			});
 			
 		}

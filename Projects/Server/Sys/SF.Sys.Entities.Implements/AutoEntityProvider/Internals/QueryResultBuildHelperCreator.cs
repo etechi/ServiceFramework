@@ -98,7 +98,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 			IContextQueryable<TDataModel> queryable,
 			IPagingQueryBuilder<TDataModel> PagingQueryBuilder, 
 			Paging paging,
-			Expression<Func<IGrouping<int, TDataModel>, ISummaryWithCount>> Summary = null
+			Func<IContextQueryable<TDataModel>, Task<ISummaryWithCount>> Summary=null
 			)
 		{
 			var props = paging?.Properties;

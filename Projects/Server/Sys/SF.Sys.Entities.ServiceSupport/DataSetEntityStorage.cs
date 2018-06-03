@@ -393,7 +393,7 @@ namespace SF.Sys.Entities
 			TQueryArgument QueryArgument,
 			Func<IContextQueryable<TModel>, TQueryArgument,  IContextQueryable<TModel>> BuildQuery=null,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder=null,
-			Expression<Func<IGrouping<int, TModel>, ISummaryWithCount>> Summary = null
+			Func<IContextQueryable<TModel>, Task<ISummaryWithCount>> Summary=null
 			)
 			where TModel : class
 			where TQueryArgument:IPagingArgument

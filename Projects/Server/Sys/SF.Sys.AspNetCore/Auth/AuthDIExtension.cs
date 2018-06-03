@@ -30,14 +30,14 @@ namespace SF.Sys.Services
 		{
 			services.AddScoped<IAccessTokenGenerator>(
 				sp =>
-				new DefaultAccessTokenGenerator(
+				new JwtAccessTokenGenerator(
 						sp.Resolve<ITimeService>(),
 						sp.Resolve<IUserProfileService>(),
 						TokenProviderOptions
 						)
 				);
 			services.AddSingleton<IAccessTokenValidator>(
-				sp => new DefaultAccessTokenValidator(
+				sp => new JwtAccessTokenValidator(
 					sp.Resolve<ITimeService>(),
 					TokenValidatorArguments
 					));

@@ -49,13 +49,21 @@ namespace SF.Sys.Entities
 		{
 			return null;
 		}
+		protected virtual Func<IContextQueryable<TModel>,Task<ISummaryWithCount>> GetSummaryBuilder()
+		{
+			var e = GetSummaryExpression();
+			return e == null ? 
+				(Func<IContextQueryable<TModel>, Task<ISummaryWithCount>>)null : 
+				q => q.GroupBy(r => 1).Select(e).SingleOrDefaultAsync();
+		}
 		public virtual Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg)
 		{
+			var summary = GetSummaryBuilder();
 			return ServiceContext.AutoQueryAsync<TEntitySummary, TQueryArgument, TModel>(
 				Arg,
 				OnBuildQuery,
 				PagingQueryBuilder,
-				GetSummaryExpression()
+				GetSummaryBuilder()
 				);
 		}
 		public IContextQueryable<TModel> GetQueryable(SF.Sys.Data.IDataContext ctx, TQueryArgument Arg)

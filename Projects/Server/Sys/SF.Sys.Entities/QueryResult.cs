@@ -161,7 +161,7 @@ namespace SF.Sys.Entities
 			IContextQueryable<E> queryable, 
 			IPagingQueryBuilder<E> PagingQueryBuilder,
 			Paging Paging,
-			Expression<Func<IGrouping<int, E>, ISummaryWithCount>> Summary=null
+			Func<IContextQueryable<E>, Task<ISummaryWithCount>> Summary=null
 			);
 		Task<R> QuerySingleOrDefault(IContextQueryable<E> queryable,int Level, IPropertySelector PropSelector);
 		Expression BuildEntityMapper(Expression src,int Level, IPropertySelector PropSelector);

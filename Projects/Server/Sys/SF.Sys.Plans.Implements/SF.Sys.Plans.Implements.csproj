@@ -29,6 +29,6 @@
     <ProjectReference Include="..\SF.Sys.Plans\SF.Sys.Plans.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
   </ItemGroup>
 </Project>

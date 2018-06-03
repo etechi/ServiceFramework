@@ -144,7 +144,7 @@ namespace SF.Sys.Entities
 			Func<T, R> resultMapper,
 			IPagingQueryBuilder<E> pagingBuilder,
 			Paging paging,
-			System.Linq.Expressions.Expression<Func<IGrouping<int,E>,ISummaryWithCount>> Summary=null
+			Func<IContextQueryable<E>,Task<ISummaryWithCount>> Summary=null
 			)
 			where E : class
 		{
@@ -152,7 +152,7 @@ namespace SF.Sys.Entities
             ISummaryWithCount swc = null;
             if(Summary!=null && (paging?.SummaryRequired ?? false))
             {
-                swc = await query.GroupBy(i=>1).Select(Summary).SingleOrDefaultAsync();
+                swc = await Summary(query);
                 total = swc?.Count ?? 0;
             }
             else if (paging?.TotalRequired ?? false)
@@ -194,15 +194,15 @@ namespace SF.Sys.Entities
 			Func<T[], Task<R[]>> resultMapper,
 			IPagingQueryBuilder<E> pagingBuilder,
 			Paging paging,
-            Expression<Func<IGrouping<int, E>, ISummaryWithCount>> Summary = null
-            )
-            where E : class
+			Func<IContextQueryable<E>, Task<ISummaryWithCount>> Summary = null
+			)
+			where E : class
 		{
             int? total = null;
             ISummaryWithCount swc = null;
             if (Summary != null && (paging?.SummaryRequired ?? false))
             {
-                swc = await query.GroupBy(i => 1).Select(Summary).SingleOrDefaultAsync();
+				swc = await Summary(query);
                 total = swc?.Count ?? 0;
             }
             else if (paging?.TotalRequired ?? false)

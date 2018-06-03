@@ -27,7 +27,7 @@
     <None Remove=".licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Utils\SF.Utils.TableExports\SF.Utils.TableExports.csproj" />

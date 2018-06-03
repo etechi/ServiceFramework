@@ -22,8 +22,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Entities\SF.Sys.Entities.csproj" />
+    <ProjectReference Include="..\SF.Sys.TimeServices\SF.Sys.TimeServices.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.2" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
+    <PackageReference Include="system.identitymodel.tokens.jwt" Version="5.2.2" />
   </ItemGroup>
 </Project>

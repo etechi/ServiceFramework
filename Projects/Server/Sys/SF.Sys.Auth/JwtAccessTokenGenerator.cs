@@ -14,7 +14,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace SF.Sys.AspNetCore.Auth
+namespace SF.Sys.Auth
 {
 	public class TokenProviderOptions
 	{
@@ -28,13 +28,13 @@ namespace SF.Sys.AspNetCore.Auth
 		public SigningCredentials SigningCredentials { get; set; }
 	}
 	
-	public class DefaultAccessTokenGenerator : IAccessTokenGenerator
+	public class JwtAccessTokenGenerator : IAccessTokenGenerator
 	{
 		ITimeService TimeService { get; }
 		IUserProfileService UserProfileService { get; }
 		TokenProviderOptions Options { get; }
 		
-		public DefaultAccessTokenGenerator(
+		public JwtAccessTokenGenerator(
 			ITimeService TimeService,
 			IUserProfileService UserProfileService,
 			TokenProviderOptions Options
