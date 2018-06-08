@@ -48,107 +48,67 @@ namespace SF.Sys.Threading
 	}
 	public class ObjectSyncQueue<K> : ISyncQueue<K>
 	{
-		abstract class Item
+		class Item : SemaphoreSlim
 		{
-			static int seed = 0;
-			int id;
-			public Item() {
-				Next = Prev = this;
-				id = Interlocked.Increment(ref seed);
-			}
-			public Item Next;
-			public Item Prev;
-			public abstract Task Execute();
+			public Item() : base(1) { }
+			public int WaitCount;
 		}
-		class Item<T> : Item
-		{
-			public Func<Task<T>> Callback;
-			public TaskCompletionSource<T> TCS;
-			public override async Task Execute()
-			{
-				try
-				{
-					var re = await Callback();
-					TCS.TrySetResult(re);
-				}
-				catch(Exception ex)
-				{
-					TCS.TrySetException(ex);
-				}
-				Callback = null;
-			}
-		}
-		ConcurrentDictionary<K, Item> Dict { get; } = new ConcurrentDictionary<K, Item>();
+		static Stack<Item> ItemCache { get; } = new Stack<Item>();
+		static Dictionary<K, Item> Dicts { get; } = new Dictionary<K, Item>();
+
 		public Task Queue(K key, Func<Task> callback)
 		{
-			return Queue(key, async () =>
-			{
-				await callback();
-				return 0;
-			});
-
+			return Queue<bool>(key, async () => { await callback(); return true; });
 		}
-		public Task<T> Queue<T>(K key, Func<Task<T>> callback)
+		public async Task<T> Queue<T>(K key, Func<Task<T>> callback)
 		{
-
-			TaskCompletionSource<T> tcs = null;
-			Item head = null;
-			for (; ; )
+			Item item = null;
+			try
 			{
-				if (!Dict.TryGetValue(key, out head))
-					head = Dict.GetOrAdd(key, new Item<T>() {Callback= callback });
-
-				lock (head)
+				lock (Dicts)
 				{
-					if (head.Next == null)
-						continue;
-
-					var curItem = head as Item<T>;
-					if (curItem==null || curItem.Callback!=callback)
+					if (Dicts.TryGetValue(key, out item))
+						item.WaitCount++;
+					else
 					{
-						var item = new Item<T> { Callback = callback };
-						var tail = head.Prev;
-						item.Next = head;
-						item.Prev = tail;
-						tail.Next = item;
-						head.Prev = item;
-						item.TCS = tcs = new TaskCompletionSource<T>();
+						item = ItemCache.Count > 0 ? ItemCache.Pop() : new Item();
+						item.WaitCount = 1;
+						Dicts.Add(key, item);
 					}
-					break;
+
+				}
+				await item.WaitAsync();
+				try
+				{
+					return await callback();
+				}
+				finally
+				{
+					item.Release();
 				}
 			}
-			if (tcs != null)
-				return tcs.Task;
-			
-			var re = callback();
-			re.ContinueWith(async t =>
+			finally
 			{
-				for (; ; )
-				{
-					Item item;
-					lock (head)
+				if (item != null)
+					lock (Dicts)
 					{
-						item = head.Next;
-						if (item == head)
+						item.WaitCount--;
+						if (item.WaitCount == 0)
 						{
-							head.Next = null;
-							Dict.TryRemove(key, out item);
-							if (item != head)
-								throw new InvalidOperationException();
-							break;
+							Dicts.Remove(key);
+							ItemCache.Push(item);
 						}
-						head.Next = item.Next;
-						item.Next.Prev = head;
 					}
-					try
-					{
-						await item.Execute();
-					}
-					catch { }
-				}
-				
-			});
-			return re;
+			}
+		}
+
+		public void Dispose()
+		{
+			var items = Dicts.Values;
+			Dicts.Clear();
+			foreach (var it in items)
+				it.Dispose();
+
 		}
 
 	}

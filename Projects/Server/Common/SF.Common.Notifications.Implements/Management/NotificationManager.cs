@@ -104,12 +104,12 @@ namespace SF.Common.Notifications.Management
 		protected override async Task OnUpdateModel(IModifyContext ctx)
 		{
 			if(ctx.Editable.Mode==NotificationMode.Normal)
-				await UpdateUserStatus(ctx);
+				await UpdateUserStatus(ctx,ServiceContext.DataScope);
 			await base.OnUpdateModel(ctx);
 		}
 		
 
-		private static async Task UpdateUserStatus(IModifyContext ctx)
+		private static async Task UpdateUserStatus(IModifyContext ctx,IDataScope DataScope)
 		{
 			var editable = ctx.Editable;
 			var model = ctx.Model;
@@ -118,10 +118,36 @@ namespace SF.Common.Notifications.Management
 			{
 				model.TargetId = editable.Targets.First();
 				var users = new HashSet<long>(editable.Targets);
-				
-				var statuses = await ctx.DataContext
+
+				Dictionary<long, DataNotificationUserStatus> statuses=null;
+				for (var i = 0; i < 3; i++)
+				{
+					statuses=await ctx.DataContext
 					.Queryable<DataModels.DataNotificationUserStatus>()
 					.Where(s => users.Contains(s.Id)).ToDictionaryAsync(s => s.Id);
+					if (users.Count == statuses.Count)
+						break;
+					try
+					{
+						await DataScope.Use("生成用户通知状态", async dctx =>
+						{
+							foreach (var u in users.Where(u => !statuses.ContainsKey(u)))
+								dctx.Add(new DataNotificationUserStatus
+								{
+									Id = u
+								});
+							await dctx.SaveChangesAsync();
+						});
+					}
+					catch
+					{
+						if (i == 2)
+							throw;
+						await Task.Delay(100);
+					}
+				}
+
+
 				if (model.Targets == null && ctx.Action == ModifyAction.Update)
 					model.Targets = await ctx.DataContext
 					.Queryable<DataModels.DataNotificationTarget>()

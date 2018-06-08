@@ -133,7 +133,8 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 					var OrgValue = await set.MergeAsync(
 						ChildModels,
 						newItems,
-						(d, e) => Modifier.FuncChildEqual(d, e.v),
+						(d, e) => 
+							Modifier.FuncChildEqual(d, e.v),
 						async e =>
 						{
 							var ctx = ModifyContext.CreateChildModifyContext<TChildEntity, TChildModel>();
@@ -181,7 +182,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyModifiers
 							var ctx = ModifyContext.CreateChildModifyContext<TChildEntity, TChildModel>();
 							ctx.InitRemove(ModifyContext.DataContext, d, Entity<TChildModel>.GetKeyWithoutValidate<TChildEntity>(d), null);
 							if (ModifyHandler != null)
-								await ModifyHandler(ctx, ModifyAction.Update);
+								await ModifyHandler(ctx, ModifyAction.Delete);
 
 							await remove.Execute(ServiceContext, ctx);
 							ServiceContext.PostChangedEvents(

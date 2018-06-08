@@ -235,7 +235,8 @@ namespace SF.Sys.Entities
 		IEntityChildMergeHandler<TChildEditable,TChildModel> IEntityModifyHandlerProvider.FindMergeHandler<TChildEditable, TChildModel>()
 		{
 			if (_ChildMergeHandlers == null) return null;
-			_ChildMergeHandlers.TryGetValue((typeof(TChildEditable), typeof(TChildModel)), out var h);
+			var key = (typeof(TChildEditable), typeof(TChildModel));
+			_ChildMergeHandlers.TryGetValue(key, out var h);
 			return (IEntityChildMergeHandler<TChildEditable, TChildModel>)h;
 		}
 		class ModifyContext : RootEntityModifyContext<TEditable, TModel>, IModifyContext
