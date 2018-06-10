@@ -43,6 +43,12 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 					typeof(IEnumerable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
 					typeof(Func<,>).MakeGenericType<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>()
 				);
+			static MethodInfo MethodToArray { get; } = typeof(Enumerable)
+				.GetMethodExt(
+					nameof(Enumerable.ToArray),
+					BindingFlags.Public | BindingFlags.Static,
+					typeof(IEnumerable<>).MakeGenericType<TypeExtension.GenericTypeArgument>()
+				);
 			static MethodInfo MethodOrderBy { get; } = typeof(Enumerable)
 				.GetMethodExt(
 					nameof(Enumerable.OrderBy),
@@ -51,11 +57,13 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 					typeof(Func<,>).MakeGenericType<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>()
 				);
 			MethodInfo MethodSelectSpec { get; }
+			MethodInfo MethodToArraySpec { get; }
 			MethodInfo MethodOrderBySpec { get; }
 			PropertyInfo SrcOrderItemProperty { get; }
 			public MultipleRelationConverter(IQueryResultBuildHelper<E, R> QueryResultBuildHelper, PropertyInfo SrcOrderItemProperty)
 			{
 				MethodSelectSpec = MethodSelect.MakeGenericMethod(typeof(E),typeof(T));
+				MethodToArraySpec = MethodToArray.MakeGenericMethod(typeof(T));
 				MethodOrderBySpec = SrcOrderItemProperty == null ? null : MethodOrderBy.MakeGenericMethod(SrcOrderItemProperty.ReflectedType, SrcOrderItemProperty.PropertyType);
 
 				this.QueryResultBuildHelper = (IQueryResultBuildHelper < E, T, R > )QueryResultBuildHelper;
@@ -78,13 +86,17 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.PropertyQueryConveters
 						parameters: ArgItem
 						)
 					);
-				exp= Expression.Call(
+				exp = Expression.Call(
 					null,
-					MethodSelectSpec,
-					exp,
-					Expression.Lambda<Func<E, T>>(
-						QueryResultBuildHelper.BuildEntityMapper(ArgItem, Level - 1, PropertySelector),
-						ArgItem
+					MethodToArraySpec,
+					Expression.Call(
+						null,
+						MethodSelectSpec,
+						exp,
+						Expression.Lambda<Func<E, T>>(
+							QueryResultBuildHelper.BuildEntityMapper(ArgItem, Level - 1, PropertySelector),
+							ArgItem
+						)
 					)
 				);
 				
