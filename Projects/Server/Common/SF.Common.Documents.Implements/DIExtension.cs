@@ -20,19 +20,20 @@ using SF.Sys.Entities.AutoTest;
 using SF.Sys.Entities.AutoEntityProvider;
 using SF.Sys.Entities;
 using SF.Sys.BackEndConsole;
+using SF.Sys.Hosting;
 
 namespace SF.Sys.Services
 {
 	public static class DocumentDIExtension
 		
 	{
-		public static IServiceCollection AddDocumentServices(this IServiceCollection sc,string TablePrefix=null)
+		public static IServiceCollection AddDocumentServices(this IServiceCollection sc, string TablePrefix = null)
 		{
 			//文章
 			sc.EntityServices(
 				"Document",
 				"文档管理",
-				d => d.Add<IDocumentCategoryManager, DocumentCategoryManager>("DocumentCategory","文档分类",typeof(Category))
+				d => d.Add<IDocumentCategoryManager, DocumentCategoryManager>("DocumentCategory", "文档分类", typeof(Category))
 					.Add<IDocumentManager, DocumentManager>("Document", "文档", typeof(Document))
 					.Add<IDocumentScopeManager, DocumentScopeManager>("DocumentScope", "文档区域", typeof(DocumentScope))
 				//.Add<IDocumentService, DocumentService>()
@@ -55,7 +56,7 @@ namespace SF.Sys.Services
 
 
 			sc.AddDataModules<
-				SF.Common.Documents.DataModels.DataDocumentScope, 
+				SF.Common.Documents.DataModels.DataDocumentScope,
 				SF.Common.Documents.DataModels.DataDocument,
 				SF.Common.Documents.DataModels.DataDocumentCategory,
 				SF.Common.Documents.DataModels.DataDocumentAuthor,
@@ -107,7 +108,27 @@ namespace SF.Sys.Services
 						  s.Name = "帮助文档";
 					  });
 			 });
-			
+
+
+			sc.AddInitializer("data", "初始化文档数据", async (sp, args) => {
+				var DocManager = sp.Resolve<IDocumentManager>();
+				var CatManager = sp.Resolve<IDocumentCategoryManager>();
+				var FilePathResolver = sp.Resolve<IFilePathResolver>();
+
+				await DocManager.DocEnsureFromFiles(
+					CatManager,
+					null,
+					FilePathResolver.Resolve($"config://setup/帮助文档/特殊文档"),
+					"sys"
+					);
+
+				await DocManager.DocEnsureFromFiles(
+					CatManager,
+					null,
+					FilePathResolver.Resolve($"config://setup/帮助文档/默认文档")
+					);
+			});
+
 			return sc;
 		}
 	}

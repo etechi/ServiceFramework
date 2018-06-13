@@ -8,17 +8,18 @@ namespace SF.Sys.Services
 	
 	public static class AliyunSMSDIExtension
     {
-        public static IServiceCollection AddAliyunSMSServices(this IServiceCollection sc,AliyunSMSSetting setting)
+        public static IServiceCollection AddAliyunSMSServices(this IServiceCollection sc,AliyunSMSSetting setting=null)
         {
 			sc.AddManagedScoped<INotificationSendProvider, SMSSendProvider>();
-			sc.InitService("AliyunSMS", (sp, sim) =>
+			sc.InitServices("AliyunSMS", async (sp, sim,parent) =>
 			{
-				return sim.Service<INotificationSendProvider, SMSSendProvider>(
+				setting = await sp.LoadServiceSetupSetting(setting);
+				await sim.Service<INotificationSendProvider, SMSSendProvider>(
 						new
 						{
 							Setting = setting
 						}
-					).WithIdent("aliyun-sms");
+					).WithIdent("aliyun-sms").Ensure(sp,parent);
 			});
 			return sc;
 		}

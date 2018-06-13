@@ -32,6 +32,8 @@ using SF.Sys.BackEndConsole.Front;
 using System.Collections.Generic;
 using SF.Sys.Data;
 using SF.Sys.Events;
+using SF.Utils.TableExports.Excel;
+using SF.Utils.TableExports;
 
 namespace SF.Sys.Services
 {
@@ -138,6 +140,8 @@ namespace SF.Sys.Services
 					});
 				}
 			);
+
+			sc.AddSingleton<ITableExporterFactory, ExcelExporterFactory>("excel");
 			return sc;
 		}
 

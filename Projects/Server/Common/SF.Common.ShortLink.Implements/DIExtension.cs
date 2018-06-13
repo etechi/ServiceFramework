@@ -14,7 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Entities.AutoEntityProvider;
-using SF.Utils.ShortLinks;
+using SF.Common.ShortLinks;
 
 namespace SF.Sys.Services
 {

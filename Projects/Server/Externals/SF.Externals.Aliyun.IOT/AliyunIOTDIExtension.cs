@@ -8,13 +8,14 @@ namespace SF.Sys.Services
     {
         public static IServiceCollection AddAliyunIOTServices(
 			this IServiceCollection sc,
-			AliyunIOTSetting IOTSetting
+			AliyunIOTSetting IOTSetting=null
 			)
         {
 			sc.AddManagedScoped<IAliyunIOTService, AliyunIOTService>();
 
 			sc.InitServices("阿里云IOT服务",async (sp, sm, ParentId) =>
 			{
+				IOTSetting = await sp.LoadServiceSetupSetting(IOTSetting);
 				await sm.DefaultService<IAliyunIOTService, AliyunIOTService>(new { Setting= IOTSetting }).Ensure(sp, ParentId);
 
 			});

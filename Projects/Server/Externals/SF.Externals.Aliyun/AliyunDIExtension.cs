@@ -8,13 +8,14 @@ namespace SF.Sys.Services
     {
         public static IServiceCollection AddAliyunServices(
 			this IServiceCollection sc,
-			AliyunSetting Setting
+			AliyunSetting Setting=null
 			)
         {
 			sc.AddManagedScoped<IAliyunInvoker, AliyunInvoker>();
 			
 			sc.InitServices("阿里云服务",async (sp, sm, ParentId) =>
 			{
+				Setting = await sp.LoadServiceSetupSetting(Setting);
 				await sm.DefaultService<IAliyunInvoker, AliyunInvoker>(new { Setting }).Ensure(sp,ParentId);
 			
 			});

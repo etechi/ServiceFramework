@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Sys\SF.Sys.Services.MSDI\SF.Sys.Services.MSDI.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Services.MSExtensions\SF.Sys.Services.MSExtensions.csproj" />
     <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
     <ProjectReference Include="..\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
   </ItemGroup>

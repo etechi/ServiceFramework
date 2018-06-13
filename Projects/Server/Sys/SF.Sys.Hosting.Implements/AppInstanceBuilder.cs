@@ -33,14 +33,23 @@ namespace SF.Sys.Hosting
 		}
 		public AppInstanceBuilder(
 			string Name,
-			EnvironmentType EnvType, 
-			IServiceCollection Services, 
-			ILogService LogService
+			EnvironmentType EnvType=EnvironmentType.Production, 
+			IServiceCollection Services=null, 
+			ILogService LogService=null
 			)
 		{
+			if (LogService == null)
+			{
+				LogService = new LogService(new SF.Sys.Logging.MicrosoftExtensions.MSLogMessageFactory());
+				//ls.AddDebug(SF.Sys.Logging.LogLevel.Debug );
+				//ls.AddConsole(SF.Sys.Logging.LogLevel.Debug);
+				LogService.AddNLog();
+			}
+
 			this.EnvType = EnvType;
 			this.LogService = LogService;
-			this.Services= Services;
+
+			this.Services= Services ?? new SF.Sys.Services.ServiceCollection();
 			this.Name = Name;
 		}
 		public class AppInstance : IAppInstance

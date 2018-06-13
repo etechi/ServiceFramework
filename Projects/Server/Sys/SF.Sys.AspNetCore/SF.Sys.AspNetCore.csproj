@@ -28,7 +28,7 @@
     <ProjectReference Include="..\SF.Sys.Client\SF.Sys.Client.csproj" />
     <ProjectReference Include="..\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
     <ProjectReference Include="..\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
-    <ProjectReference Include="..\SF.Sys.Services.MSDI\SF.Sys.Services.MSDI.csproj" />
+    <ProjectReference Include="..\SF.Sys.Services.MSExtensions\SF.Sys.Services.MSExtensions.csproj" />
     <ProjectReference Include="..\SF.Sys.TimeServices\SF.Sys.TimeServices.csproj" />
   </ItemGroup>
 </Project>

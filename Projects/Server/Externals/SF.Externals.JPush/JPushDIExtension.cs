@@ -8,7 +8,7 @@ namespace SF.Sys.Services
 	
 	public static class JPushDIExtension
     {
-        public static IServiceCollection AddJPushServices(this IServiceCollection sc,JPushSetting setting)
+        public static IServiceCollection AddJPushServices(this IServiceCollection sc,JPushSetting setting=null)
         {
 
 			sc.AddManagedScoped<INotificationSendProvider, NotificationSendProvider>();

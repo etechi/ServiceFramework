@@ -274,7 +274,10 @@ namespace SF.Sys.Reflection
 			if (type.IsEnumType())
 				return true;
 
-			return ConstTypes.Contains(type);
+			if (ConstTypes.Contains(type))
+				return true;
+
+			return false;
 		}
 
 		public static Assembly GetAssembly(this Type type)

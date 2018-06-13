@@ -13,20 +13,33 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Entities.Models;
+using SF.Sys.Annotations;
 using System;
-using SF.Sys.Logging;
-using Microsoft.Extensions.Logging;
-using SF.Sys.Logging.MicrosoftExtensions;
-using SF.Sys.Logging.Providors.NLog;
-namespace SF.Sys.Logging
-{
-	public static class NLogDIExtensions
-	{
+using System.ComponentModel.DataAnnotations;
 
-		public static ILogService AddNLog(this ILogService svc)
-		{
-			svc.AddProvider(new NLogProvider());
-			return svc;
-		}
+namespace SF.Common.ShortLinks
+{
+	[EntityObject]
+	public class ShortLink : ObjectEntityBase<string>
+	{
+		/// <summary>
+		/// 目标
+		/// </summary>
+		[TableVisible]
+		public string Target { get; set; }
+
+		/// <summary>
+		/// Post数据
+		/// </summary>
+		[MultipleLines]
+		public string PostData { get; set; }
+
+		/// <summary>
+		/// 过期时间
+		/// </summary>
+		[TableVisible]
+		public DateTime ExpireTime { get; set; }
+
 	}
 }

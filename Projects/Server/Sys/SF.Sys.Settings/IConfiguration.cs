@@ -13,38 +13,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Annotations;
-using SF.Sys.Auth;
-using SF.Sys.Entities;
-using SF.Sys.NetworkService;
-using System.ComponentModel.DataAnnotations;
 
-namespace SF.Utils.ShortLinks
+using System;
+using System.Threading.Tasks;
+
+namespace SF.Sys.Settings
 {
-	public class ShortLinkQueryArguments : QueryArgument<string>
+	public interface IConfiguration
 	{
-		/// <summary>
-		/// 标题
-		/// </summary>
-		[StringLength(50)]
-		public string Name { get; set; }
-
-		/// <summary>
-		/// 创建日期
-		/// </summary>
-		public DateQueryRange CreateDate { get; set; }
+		string GetValue(string Path);
 	}
-
-	/// <summary>
-	/// 短链接管理
-	/// </summary>
-	[NetworkService]
-	[EntityManager]
-	public interface IShortLinkManager:
-		IEntitySource<ObjectKey<string>, ShortLink, ShortLinkQueryArguments>,
-		IEntityManager<ObjectKey<string>, ShortLink>
-	{
-
-	}
-
 }

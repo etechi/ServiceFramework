@@ -312,9 +312,10 @@ namespace SF.Sys.Services
 		
 		public static IServiceCollection AddTimedTaskRunnerService(
 			this IServiceCollection sc,
-			TimedTaskRunnerSetting Setting
+			TimedTaskRunnerSetting Setting=null
 			)
 		{
+			Setting = Setting ?? new TimedTaskRunnerSetting();
 			sc.AddSingleton<ITimedTaskService>(sp => 
 				new TimedTaskService(
 				sp.Resolve<ITimerService>(),

@@ -23,7 +23,7 @@ using System.Linq;
 using SF.Sys.Settings;
 using System;
 
-namespace SF.Utils.ShortLinks
+namespace SF.Common.ShortLinks
 {
 	public class ShortLinkManager :
 		AutoModifiableEntityManager<ObjectKey<string>, ShortLink, ShortLink, ShortLinkQueryArguments, ShortLink, DataShortLink>,

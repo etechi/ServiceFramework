@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Data;
 using SF.Sys.Services;
+using SF.Sys.Settings;
 using System;
 
 namespace SF.Sys.Services
@@ -22,11 +23,25 @@ namespace SF.Sys.Services
 
 	public static class DataContextCollectionExtension
 	{
-		public static IServiceCollection AddDataScope(this IServiceCollection sc, string ConnectionString)
-			=> sc.AddDataScope(sp => new DataSourceConfig { ConnectionString = ConnectionString });
+		public static IServiceCollection AddDataScope(this IServiceCollection sc, string Path= "ConnectionStrings:Default")
+			   => sc.AddDataScope(
+				   sp =>
+				   {
+					   var cfg = sp.Resolve<IConfiguration>();
+					   var connStr = cfg.GetValue(Path);
+					   return new DataSourceConfig
+					   {
+						   ConnectionString = connStr
+					   };
+				   }
+				   );
+
+		public static IServiceCollection AddDataScope(this IServiceCollection sc, string ConnectionString,string Provider)
+			=> sc.AddDataScope(sp => new DataSourceConfig { ConnectionString = ConnectionString , Provider = Provider });
 
 		public static IServiceCollection AddDataScope(this IServiceCollection sc,Func<IServiceProvider, DataSourceConfig> Config)
 		{
+			sc.AddSingleton(sp => (IDataSource)Config(sp));
 			sc.AddSingleton<IDataSource>(sp=>new DefaultDataSource(Config(sp)));
 			sc.AddScoped<IDataScope, DataScope>();
 			//sc.AddScoped(sp => sp.Resolve<IDataSource>().Connect());

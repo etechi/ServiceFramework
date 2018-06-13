@@ -21,6 +21,10 @@ using System;
 using SF.Sys.Logging;
 using SF.Sys.Auth;
 using System.Text;
+using SF.Sys.Hosting;
+using System.Threading.Tasks;
+using SF.Sys.ServiceFeatures;
+using SF.Sys.Services;
 
 namespace SF.Sys.AspNetCore
 {
@@ -30,15 +34,33 @@ namespace SF.Sys.AspNetCore
 	}
 	public static class ApplicationBuilderExtension
 	{
-		
+		public static void StartServices(this IApplicationBuilder app)
+		{
+			
+			var ins = app.ApplicationServices.Resolve<IAppInstance>();
+			if (ins.EnvType != EnvironmentType.Utils)
+			{
+				
+				var disposable = Task.Run(() =>
+					  app.ApplicationServices.BootServices()
+					).Result;
+
+				var applicationLifetime = app.ApplicationServices.Resolve<IApplicationLifetime>();
+				applicationLifetime.ApplicationStopping.Register(() =>
+				{
+					disposable.Dispose();
+				});
+			}
+		}
 		public static IApplicationBuilder ApplicationCommonConfigure(
 			this IApplicationBuilder app, 
-			IHostingEnvironment env,
+			//IHostingEnvironment env,
 			ApplicationConfigure cfg=null
 			)
 		{
 			if (cfg == null)
 				cfg = new ApplicationConfigure();
+			var env = app.ApplicationServices.Resolve<IHostingEnvironment>();
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();

@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Auth\Permissions\**" />
+    <Compile Remove="Auth\Sessions\**" />
+    <Compile Remove="Auth\Users1\**" />
+    <Compile Remove="Auth\Users\**" />
+    <Compile Remove="Bizness\**" />
+    <Compile Remove="Common\**" />
+    <EmbeddedResource Remove="Auth\Permissions\**" />
+    <EmbeddedResource Remove="Auth\Sessions\**" />
+    <EmbeddedResource Remove="Auth\Users1\**" />
+    <EmbeddedResource Remove="Auth\Users\**" />
+    <EmbeddedResource Remove="Bizness\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <None Remove="Auth\Permissions\**" />
+    <None Remove="Auth\Sessions\**" />
+    <None Remove="Auth\Users1\**" />
+    <None Remove="Auth\Users\**" />
+    <None Remove="Bizness\**" />
+    <None Remove="Common\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SF.Common.Admins.Implements\SF.Common.Admins.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.Admins\SF.Common.Admins.csproj" />
+    <ProjectReference Include="..\SF.Common.BackEndConsoleServices.Implements\SF.Common.BackEndConsoleServices.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.BackEndConsoleServices\SF.Common.BackEndConsoleServices.csproj" />
+    <ProjectReference Include="..\SF.Common.Comments.Implements\SF.Common.Comments.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.Comments\SF.Common.Comments.csproj" />
+    <ProjectReference Include="..\SF.Common.Conversations.Implements\SF.Common.Conversations.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.Conversations\SF.Common.Conversations.csproj" />
+    <ProjectReference Include="..\SF.Common.Documents.Implements\SF.Common.Documents.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.Documents\SF.Common.Documents.csproj" />
+    <ProjectReference Include="..\SF.Common.FrontEndContents.Implements\SF.Common.FrontEndContents.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.FrontEndContents\SF.Common.FrontEndContents.csproj" />
+    <ProjectReference Include="..\SF.Common.Media.Implements\SF.Common.Media.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.Media\SF.Common.Media.csproj" />
+    <ProjectReference Include="..\SF.Common.Members.Implements\SF.Common.Members.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.Members\SF.Common.Members.csproj" />
+    <ProjectReference Include="..\SF.Common.Notifications.Implements\SF.Common.Notifications.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.Notifications\SF.Common.Notifications.csproj" />
+    <ProjectReference Include="..\SF.Common.PhoneNumberValidator.Implements\SF.Common.PhoneNumberValidator.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.PhoneNumberValidator\SF.Common.PhoneNumberValidator.csproj" />
+    <ProjectReference Include="..\SF.Common.ShortLink.Implements\SF.Common.ShortLink.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.ShortLink\SF.Common.ShortLink.csproj" />
+    <ProjectReference Include="..\SF.Common.Tickets.Implements\SF.Common.Tickets.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.Tickets\SF.Common.Tickets.csproj" />
+    <ProjectReference Include="..\SF.Common.UserGroups.Implements\SF.Common.UserGroups.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.UserGroups\SF.Common.UserGroups.csproj" />
+    <ProjectReference Include="..\SF.Common.WebSiteSupport\SF.Common.WebSiteSupport.csproj" />
+    <ProjectReference Include="..\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
+    <ProjectReference Include="..\SF.IdentityService.Implements\SF.IdentityService.Implements.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>

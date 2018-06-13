@@ -98,78 +98,108 @@ namespace SF.Sys
 			return Updater<T>.Update(target, source);
 
 		}
-		
+		static C CopyCollection<C, S, I>(S source)
+				where C : ICollection<I>, new()
+				where S : IEnumerable<I>
+		{
+			if (EqualityComparer<S>.Default.Equals(source, default(S)))
+				return default(C);
+
+			var collection = new C();
+			foreach (var i in source)
+				collection.Add(Clone(i));
+			return collection;
+		}
+		static I[] CopyArray<I>(I[] source)
+		{
+			if (source == null)
+				return null;
+
+			var collection = new I[source.Length];
+			for(var i=0;i<source.Length;i++)
+				collection[i]=Clone(source[i]);
+			return collection;
+		}
+
+		static KeyValuePair<K,V> CopyKeyValuePair<K,V>(KeyValuePair<K,V> pair)
+		{
+			return new KeyValuePair<K, V>(pair.Key, pair.Value);
+		}
 		class Cloner<T>
 		{
 			public static Func<T,T> Clone { get; }
-			static C CopyCollection<C,S,I>(S source)
-				where C : ICollection<I>, new()
-				where S: IEnumerable<I>
-			{
-				if (EqualityComparer<S>.Default.Equals(source, default(S)))
-					return default(C);
-
-				var collection = new C();
-				foreach (var i in source)
-					collection.Add(i);
-				return collection;
-			}
+			
 			static MethodInfo MethodCopyCollection { get; } =
-				typeof(Cloner<T>).GetMethodExt(
+				typeof(Poco).GetMethodExt(
 					nameof(CopyCollection),
 					BindingFlags.Static | BindingFlags.NonPublic,
 					typeof(TypeExtension.GenericTypeArgument)
 					).IsNotNull();
-			static Cloner()
+
+			static MethodInfo MethodCopyKeyValuePair { get; } =
+				typeof(Poco).GetMethodExt(
+					nameof(CopyKeyValuePair),
+					BindingFlags.Static | BindingFlags.NonPublic,
+					typeof(KeyValuePair<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>)
+					).IsNotNull();
+
+			static MethodInfo MethodCopyArray { get; } =
+				typeof(Poco).GetMethodExt(
+					nameof(CopyArray),
+					BindingFlags.Static | BindingFlags.NonPublic,
+					typeof(TypeExtension.GenericTypeArgument).MakeArrayType()
+					).IsNotNull();
+
+			static Func<T,T> CreateCloner()
 			{
 				var type = typeof(T);
-				if (type.IsInterfaceType())
-				{
-					if (type.IsGenericTypeOf(typeof(IEnumerable<>)) ||
-						type.IsGenericTypeOf(typeof(ICollection<>)) ||
-						type.IsGenericTypeOf(typeof(IReadOnlyCollection<>)) ||
-						type.IsGenericTypeOf(typeof(IList<>)) ||
-						type.IsGenericTypeOf(typeof(IReadOnlyList<>))
-						)
-					{
-						Clone = MethodCopyCollection.MakeGenericMethod(
-							typeof(List<>).MakeGenericType(type.GenericTypeArguments[0]),
-							type,
-							type.GenericTypeArguments[0]
-							).CreateDelegate<Func<T, T>>();
-						return;
-					}
-					if (type.IsGenericTypeOf(typeof(IReadOnlyDictionary<,>)) ||
-						type.IsGenericTypeOf(typeof(IDictionary<,>))
-						)
-					{
-						Clone = MethodCopyCollection.MakeGenericMethod(
-							typeof(Dictionary<,>).MakeGenericType(
-								type.GenericTypeArguments[0],
-								type.GenericTypeArguments[1]
-								),
-							type,
-							typeof(KeyValuePair<,>).MakeGenericType(
-								type.GenericTypeArguments[0],
-								type.GenericTypeArguments[1]
-								)
-							).CreateDelegate<Func<T, T>>();
-						return;
-					}
+				if (type.IsArray)
+					return MethodCopyArray.MakeGenericMethod(
+						type.GetElementType()
+						).CreateDelegate<Func<T, T>>();
 
+				if (type.IsGenericTypeOf(typeof(List<>)) ||
+					type.IsGenericTypeOf(typeof(IEnumerable<>)) ||
+					type.IsGenericTypeOf(typeof(ICollection<>)) ||
+					type.IsGenericTypeOf(typeof(IReadOnlyCollection<>)) ||
+					type.IsGenericTypeOf(typeof(IList<>)) ||
+					type.IsGenericTypeOf(typeof(IReadOnlyList<>))
+					)
+					return MethodCopyCollection.MakeGenericMethod(
+						typeof(List<>).MakeGenericType(type.GenericTypeArguments[0]),
+						type,
+						type.GenericTypeArguments[0]
+						).CreateDelegate<Func<T, T>>();
+
+				if (type.IsGenericTypeOf(typeof(IReadOnlyDictionary<,>)) ||
+					type.IsGenericTypeOf(typeof(IDictionary<,>))
+					)
+					return MethodCopyCollection.MakeGenericMethod(
+						typeof(Dictionary<,>).MakeGenericType(
+							type.GenericTypeArguments[0],
+							type.GenericTypeArguments[1]
+							),
+						type,
+						typeof(KeyValuePair<,>).MakeGenericType(
+							type.GenericTypeArguments[0],
+							type.GenericTypeArguments[1]
+							)
+						).CreateDelegate<Func<T, T>>();
+				if (type.IsGenericTypeOf(typeof(KeyValuePair<,>)))
+					return MethodCopyKeyValuePair.MakeGenericMethod(
+							type.GenericTypeArguments[0],
+							type.GenericTypeArguments[1]
+						).CreateDelegate<Func<T, T>>();
+
+				if (type.IsInterface)
 					throw new NotSupportedException($"不支持克隆此接口:{type}");
-				}
 
-				if(type.IsConstType())
-				{
-					Clone = (s) => s;
-					return;
-				}
-				if(type.IsGenericTypeOf(typeof(Nullable<>)))
-				{
-					Clone = (s) => s;
-					return;
-				}
+				if (type.IsConstType())
+					return (s) => s;
+
+				if (type.IsGenericTypeOf(typeof(Nullable<>)))
+					return (s) => s;
+
 
 				var ctr = type.GetConstructor(
 						BindingFlags.Public | BindingFlags.CreateInstance | BindingFlags.Instance,
@@ -181,21 +211,23 @@ namespace SF.Sys
 					throw new NotSupportedException($"不支持克隆没有无参构造函数的对象:{type}");
 
 				var collType = type.AllInterfaces().FirstOrDefault(i => i.IsGenericTypeOf(typeof(ICollection<>)));
-				if (collType!=null)
-				{
-					Clone = MethodCopyCollection.MakeGenericMethod(
+				if (collType != null)
+					return MethodCopyCollection.MakeGenericMethod(
 						type,
 						type,
 						collType.GenericTypeArguments[0]
 						).CreateDelegate<Func<T, T>>();
-					return;
-				}
+
 				var ctrFunc = Expression.New(ctr).Compile<Func<T>>();
-				Clone = (s) =>
+				return (s) =>
 				{
 					var re = ctrFunc();
 					return Poco.Update(re, s);
 				};
+			}
+			static Cloner()
+			{
+				Clone = CreateCloner();
 			}
 		}
 		public static T Clone<T>(T obj) 

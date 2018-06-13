@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using SF.Sys.AspNetCore;
 using SF.Sys.AspNetCore.NetworkServices;
 using SF.Sys.Logging;
 using SF.Sys.NetworkService;
@@ -51,6 +52,8 @@ namespace SF.Core.ServiceManagement
 				));
 
 			sc.AddSingleton<IResultFactory, ResultFactory>();
+
+			
 		}
 	}
 }

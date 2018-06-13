@@ -10,6 +10,7 @@ namespace SF.Sys.Services
 			sc.AddManagedScoped<IExternalAuthorizationProvider, OAuth2Provider>();
 			sc.InitServices("微信开放平台", async (sp, sim, parent) =>
 			 {
+				 setting = await sp.LoadServiceSetupSetting(setting);
 				 await sim.Service<IExternalAuthorizationProvider, OAuth2Provider>(
 						 new
 						 {

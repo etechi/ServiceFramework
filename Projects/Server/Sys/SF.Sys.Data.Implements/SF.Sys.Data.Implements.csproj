@@ -29,6 +29,7 @@
     <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
     <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
+    <ProjectReference Include="..\SF.Sys.Settings\SF.Sys.Settings.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />

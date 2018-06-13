@@ -30,6 +30,7 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Utils\SF.Utils.TableExports.Excel\SF.Utils.TableExports.Excel.csproj" />
     <ProjectReference Include="..\..\Utils\SF.Utils.TableExports\SF.Utils.TableExports.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.BackEndConsole\SF.Sys.BackEndConsole.csproj" />
     <ProjectReference Include="..\SF.Common.BackEndConsoleServices\SF.Common.BackEndConsoleServices.csproj" />

@@ -10,6 +10,6 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Settings\SF.Sys.Settings.csproj" />
-    <ProjectReference Include="..\SF.Utils.ShortLink\SF.Utils.ShortLink.csproj" />
+    <ProjectReference Include="..\SF.Common.ShortLink\SF.Common.ShortLink.csproj" />
   </ItemGroup>
 </Project>

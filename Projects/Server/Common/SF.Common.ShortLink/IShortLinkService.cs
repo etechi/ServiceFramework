@@ -3,7 +3,7 @@ using SF.Sys.NetworkService;
 using System;
 using System.Threading.Tasks;
 
-namespace SF.Utils.ShortLinks
+namespace SF.Common.ShortLinks
 {
 	public class ShortLinkCreateArgument
 	{

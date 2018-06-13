@@ -169,12 +169,24 @@ namespace SF.Sys.Services
 { 
 	public static class DbContextOptionBuilderExtension
 	{
-		public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddEFCoreDbContext<TDbContext>(
-			this Microsoft.Extensions.DependencyInjection.IServiceCollection Services,
+		public static IServiceCollection AddEFCoreDbContext<TDbContext>(
+			this IServiceCollection Services
+			) where TDbContext:DbContext
+		{
+			Services.AddEFCoreDbContext<TDbContext>(
+				(IServiceProvider isp, DbContextOptionsBuilder options) =>
+					options
+						//.UseLoggerFactory(ls.AsMSLoggerFactory())
+						.UseSqlServer(isp.Resolve<IDataSource>().ConnectionString)
+				);
+			return Services;
+		}
+		public static IServiceCollection AddEFCoreDbContext<TDbContext>(
+			this IServiceCollection Services,
 			Action<IServiceProvider, DbContextOptionsBuilder> config
 			) where TDbContext:DbContext
 		{
-			Services.AddDbContextPool<TDbContext>(
+			Services.AsMicrosoftServiceCollection().AddDbContextPool<TDbContext>(
 				(IServiceProvider isp, DbContextOptionsBuilder options) =>
 					{
 						LoadDataModels(options, isp);
@@ -182,6 +194,8 @@ namespace SF.Sys.Services
 					}
 				//ServiceLifetime.Transient
 				);
+			Services.AddEFCorePoolDataContextFactory<TDbContext>();
+
 			return Services;
 		}
 		public static DbContextOptionsBuilder LoadDataModels(this DbContextOptionsBuilder Builder,IServiceProvider sp)

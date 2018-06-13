@@ -10,7 +10,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Utils.ShortLinks
+namespace SF.Common.ShortLinks
 {
 	[Table("ShortLink")]
 	public class DataShortLink : DataObjectEntityBase<string>

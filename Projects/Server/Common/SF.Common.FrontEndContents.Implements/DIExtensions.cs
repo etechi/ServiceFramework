@@ -53,6 +53,13 @@ namespace SF.Sys.Services
 			if(EnvType!=EnvironmentType.Utils)
 				sc.AddTransient<IDataProvider, ServiceDataProvider>("service");
 
+			sc.InitServices("前端内容管理", async (sp, sim, ParentId) =>
+			{
+
+				await sim.NewSiteManager(true).Ensure(sp, ParentId);
+				await sim.NewSiteTemplateManager(true).Ensure(sp, ParentId);
+				await sim.NewSiteContentManager(true).Ensure(sp, ParentId);
+			});
 			//sc.AddSingleton<IRenderProvider, RazorRender>("razor");
 			return sc;
 		}

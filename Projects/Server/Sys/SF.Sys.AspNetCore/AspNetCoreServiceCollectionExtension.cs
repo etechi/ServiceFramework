@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using SF.Sys.AspNetCore;
 using SF.Sys.AspNetCore.Auth;
 using SF.Sys.Auth;
 using System;
@@ -38,7 +39,23 @@ namespace SF.Sys.Services
 	{
 		public static IServiceCollection AddAspNetCoreSupport(this IServiceCollection sc)
 		{
-			return sc.AddAspNetCoreHostingService();
+			sc.AddAspNetCoreHostingService();
+			var services = sc.AsMicrosoftServiceCollection();
+			services.AddAspNetCoreSystemServices();
+
+			var mvcbuilder = Microsoft.Extensions.DependencyInjection.MvcServiceCollectionExtensions.AddMvc(services);
+			Microsoft.Extensions.DependencyInjection.MvcJsonMvcBuilderExtensions.AddJsonOptions(
+				mvcbuilder,
+				s =>
+					SF.Sys.Serialization.Newtonsoft.JsonSerializer.ApplySetting(
+						s.SerializerSettings,
+						new SF.Sys.Serialization.JsonSetting
+						{
+							IgnoreDefaultValue = true,
+							WithType = false
+						})
+				);
+			return sc;
 		}
 		public static IServiceCollection AddJwtAuthSupports(
 			this IServiceCollection services,

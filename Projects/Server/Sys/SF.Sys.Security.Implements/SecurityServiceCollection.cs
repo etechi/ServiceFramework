@@ -22,24 +22,52 @@ namespace SF.Sys.Services
 	public static class SecurityServiceCollectionExtension
 	{
 		public static IServiceCollection AddDefaultDataProtector(
-			this IServiceCollection sc
+			this IServiceCollection sc,
+			string GlobalPassword= "qw1%^(01e23"
 			)
 		{
 			sc.AddManagedScoped<IDataProtector, DataProtector>();
+			sc.InitService("数据保护服务", (sp, sim) =>
+				sim.DefaultService<IDataProtector, DataProtector>(new{
+					GlobalPassword
+				})
+			);
 			return sc;
 		}
 		public static IServiceCollection AddDefaultCaptchaImageService(
-			this IServiceCollection sc
+			this IServiceCollection sc,
+		   int CharCount = 6,
+		   int ExpireMinutes = 3
 			)
 		{
 			sc.AddManagedScoped<ICaptchaImageService, CaptchaImageService>();
+			sc.InitService("验证图片服务", (sp, sim) =>
+				sim.DefaultService<ICaptchaImageService, CaptchaImageService>(
+				new
+				{
+					Setting = new CaptchaImageSetting
+					{
+						CodeChars = CharCount,
+						Expires = ExpireMinutes
+					}
+				})
+			);
 			return sc;
 		}
 		public static IServiceCollection AddDefaultPasswordHasher(
-		   this IServiceCollection sc
+		   this IServiceCollection sc,
+			string GlobalPassword = "qw1%^(01e23"
 		   )
 		{
 			sc.AddManagedScoped<IPasswordHasher, PasswordHasher>();
+			sc.InitService("密码摘要服务", (sp, sim) =>
+				sim.DefaultService<IPasswordHasher, PasswordHasher>(
+				new
+				{
+					GlobalPassword
+				}
+				)
+			);
 			return sc;
 		}
 		public static IServiceCollection AddDefaultSecurityServices(this IServiceCollection sc)
@@ -49,46 +77,6 @@ namespace SF.Sys.Services
 			sc.AddDefaultCaptchaImageService();
 			return sc;
 		}
-		public static IServiceInstanceInitializer<IDataProtector> NewDataProtectorService(
-			this IServiceInstanceManager manager,
-			string GlobalPassword="qw1%^(01e23"
-			)
-		{
-			return manager.DefaultService<IDataProtector, DataProtector>(
-				new
-				{
-					GlobalPassword = GlobalPassword
-				}
-				);
-		}
-		public static IServiceInstanceInitializer<IPasswordHasher> NewPasswordHasherService(
-			this IServiceInstanceManager manager,
-			string GlobalPassword = "qw1%^(01e23"
-			)
-		{
-			return manager.DefaultService<IPasswordHasher, PasswordHasher>(
-				new
-				{
-					GlobalPassword = GlobalPassword
-				}
-				);
-		}
-		public static IServiceInstanceInitializer<ICaptchaImageService> NewCaptchaImageService(
-		   this IServiceInstanceManager manager,
-		   int CharCount=6,
-		   int ExpireMinutes=3
-		   )
-		{
-			return manager.DefaultService<ICaptchaImageService, CaptchaImageService>(
-				new
-				{
-					Setting=new CaptchaImageSetting
-					{
-						CodeChars=CharCount,
-						Expires=ExpireMinutes
-					}
-				}
-				);
-		}
+		
 	}
 }
