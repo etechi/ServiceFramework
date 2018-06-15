@@ -43,20 +43,7 @@ using SF.Sys.BackEndConsole;
 
 namespace SF.Sys.Services
 {
-	class NotImplementedIAccessTokenGenerator : IAccessTokenGenerator
-	{
-		public Task<AccessTokenGenerateResult> Generate(long UserId, string ClientId, string[] Scopes, DateTime? Expires)
-		{
-			throw new NotImplementedException();
-		}
-	}
-	class NotImplementedIAccessTokenValidator : IAccessTokenValidator
-	{
-		public Task<ClaimsPrincipal> Validate(string Token)
-		{
-			throw new NotImplementedException();
-		}
-	}
+	
 	public static class IdentityServiceDIExtension 
 	{
 		public static IServiceCollection AddNotImplementedAccessTokenHandler(this IServiceCollection sc)

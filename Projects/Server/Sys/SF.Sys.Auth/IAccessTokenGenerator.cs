@@ -34,5 +34,14 @@ namespace SF.Sys.Auth
 			DateTime? Expires
 			);
 	}
+
+
+	public class NotImplementedIAccessTokenGenerator : IAccessTokenGenerator
+	{
+		public Task<AccessTokenGenerateResult> Generate(long UserId, string ClientId, string[] Scopes, DateTime? Expires)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
 

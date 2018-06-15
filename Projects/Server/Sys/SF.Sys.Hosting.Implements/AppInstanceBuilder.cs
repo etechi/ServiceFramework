@@ -85,9 +85,10 @@ namespace SF.Sys.Hosting
 			ai = new AppInstance(Name, EnvType, sp);
 
 			var disposables = new List<IDisposable>();
-			foreach(var act in StartupActions)
+
+			foreach(var sa in sp.Resolve<IEnumerable<IAppStartupAction>>())
 			{
-				var d = act(ai);
+				var d = sa.Execute(ai);
 				if(d!=null)
 					disposables.Add(d);
 			}

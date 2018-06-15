@@ -25,5 +25,13 @@ namespace SF.Sys.Auth
 	{
 		Task<ClaimsPrincipal> Validate(string Token);
 	}
+
+	public class NotImplementedIAccessTokenValidator : IAccessTokenValidator
+	{
+		public Task<ClaimsPrincipal> Validate(string Token)
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
 

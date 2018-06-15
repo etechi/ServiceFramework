@@ -27,6 +27,8 @@ using SF.Sys.Reflection;
 using SF.Sys.Data.EntityFrameworkCore;
 using SF.Sys.Data;
 using System.Diagnostics;
+using SF.Sys.Hosting;
+using System.Threading.Tasks;
 
 namespace SF.Sys.Data.EntityFrameworkCore
 {
@@ -170,7 +172,8 @@ namespace SF.Sys.Services
 	public static class DbContextOptionBuilderExtension
 	{
 		public static IServiceCollection AddEFCoreDbContext<TDbContext>(
-			this IServiceCollection Services
+			this IServiceCollection Services,
+			bool AutoMigrate=true
 			) where TDbContext:DbContext
 		{
 			Services.AddEFCoreDbContext<TDbContext>(
@@ -179,6 +182,18 @@ namespace SF.Sys.Services
 						//.UseLoggerFactory(ls.AsMSLoggerFactory())
 						.UseSqlServer(isp.Resolve<IDataSource>().ConnectionString)
 				);
+
+			if(AutoMigrate)
+				Services.AddStartupAction(isp =>
+				 {
+					 var ctx = isp.Resolve<TDbContext>();
+					 Task.Run(async () =>
+					 {
+						 await ctx.Database.MigrateAsync();
+					 }).Wait();
+					 return null;
+				 });
+
 			return Services;
 		}
 		public static IServiceCollection AddEFCoreDbContext<TDbContext>(

@@ -20,6 +20,7 @@ using System.Collections;
 using System.Linq;
 using SF.Sys.Services;
 using SF.Sys.Hosting;
+using SF.Sys.Auth;
 
 namespace SF.Sys
 {
@@ -31,7 +32,14 @@ namespace SF.Sys
 			)
 		{
 			if (EnvType == EnvironmentType.Utils)
+			{
 				Services.AddConsoleDefaultFilePathStructure();
+				Services.AddLocalClientService();
+				Services.AddSingleton<IAccessTokenGenerator, NotImplementedIAccessTokenGenerator>();
+				Services.AddSingleton<IAccessTokenValidator, NotImplementedIAccessTokenValidator>();
+				Services.AddLocalInvokeContext();
+			}
+
 
 			Services.AddConfiguration();
 

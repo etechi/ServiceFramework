@@ -29,7 +29,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace SF.Sys.AspNetCore
 {
-	public class ApplicationConfigure
+	public class CommonFeatureConfigure
 	{
 		public string ExceptionHandler { get; set; } = "/Home/Error";
 		public Action<IRouteBuilder> RouteConfig { get; set; }
@@ -54,23 +54,23 @@ namespace SF.Sys.AspNetCore
 				});
 			}
 		}
-		public static IApplicationBuilder ApplicationCommonConfigure(
+		public static IApplicationBuilder UseCommonFeatures(
 		   this IApplicationBuilder app,
 		   //IHostingEnvironment env,
 		   Action<IRouteBuilder> RouteConfig
 		   )
-			=> app.ApplicationCommonConfigure(new ApplicationConfigure
+			=> app.UseCommonFeatures(new CommonFeatureConfigure
 			{
 				RouteConfig=RouteConfig
 			});
-		public static IApplicationBuilder ApplicationCommonConfigure(
+		public static IApplicationBuilder UseCommonFeatures(
 			this IApplicationBuilder app, 
 			//IHostingEnvironment env,
-			ApplicationConfigure cfg=null
+			CommonFeatureConfigure cfg=null
 			)
 		{
 			if (cfg == null)
-				cfg = new ApplicationConfigure();
+				cfg = new CommonFeatureConfigure();
 			var env = app.ApplicationServices.Resolve<IHostingEnvironment>();
 			if (env.IsDevelopment())
 			{
@@ -89,7 +89,6 @@ namespace SF.Sys.AspNetCore
 				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 			});
 			app.UseAuthentication();
-			//app.UseCookiePolicy(cookiePolicyOptions);
 
 			app.UseRequestLogging();
 

@@ -22,10 +22,27 @@ namespace SF.Sys.Hosting
 {
 	public static class IAppInstanceBuilderExtension
 	{
-		
+		class StartupAction : IAppStartupAction
+		{
+			Func<IServiceProvider, IDisposable> action { get; }
+			public StartupAction(Func<IServiceProvider, IDisposable> action)
+			{
+				this.action = action;
+			}
+			public IDisposable Execute(IAppInstance App)
+			{
+				return action(App.ServiceProvider);
+			}
+		}
+
+		public static IServiceCollection AddStartupAction(this IServiceCollection Services, Func<IServiceProvider, IDisposable> action)
+		{
+			return Services.AddSingleton((IAppStartupAction)new StartupAction(action));
+		}
+
 		public static IAppInstanceBuilder With(this IAppInstanceBuilder builder, Func<IServiceProvider, IDisposable> action)
 		{
-			builder.AddStartupAction(ai => action(ai.ServiceProvider));
+			builder.Services.AddStartupAction(action);
 			return builder;
 		}
 		public static IAppInstanceBuilder OnEnvType(this IAppInstanceBuilder builder, Predicate<EnvironmentType> EnvType, Func<IServiceProvider, IDisposable> action)

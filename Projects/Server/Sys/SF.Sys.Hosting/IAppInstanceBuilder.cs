@@ -23,12 +23,15 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Hosting
 {
+	public interface IAppStartupAction
+	{
+		IDisposable Execute(IAppInstance Instance);
+	}
 	public interface IAppInstanceBuilder
     {
 		EnvironmentType EnvType { get; }
 		IServiceCollection Services { get; }
 		ILogService LogService { get; }
 		IAppInstance Build(Func<IServiceCollection, IServiceProvider> BuildServiceProvider);
-		void AddStartupAction(Func<IAppInstance, IDisposable> action);
 	}
 }
