@@ -152,6 +152,8 @@ namespace SF.Sys.Services
 		}
 		static IEnumerable<I> NewEnumerableReal<I>(IServiceProvider sp,long? scopeId) where I : class
 		{
+			if (typeof(I).FullName.Contains("ActionDescriptorProvider"))
+				scopeId = scopeId;
 			var resolver = sp.Resolver();
 			//var desc = (IServiceInstanceDescriptor)resolver.ResolveServiceByType(resolver.CurrentServiceId,typeof(IServiceInstanceDescriptor),null);
 			foreach (var i in resolver.ResolveServices(scopeId, typeof(I), null))

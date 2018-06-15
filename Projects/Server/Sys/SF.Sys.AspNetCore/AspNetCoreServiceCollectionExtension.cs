@@ -18,12 +18,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SF.Sys.AspNetCore;
 using SF.Sys.AspNetCore.Auth;
 using SF.Sys.Auth;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,6 +43,10 @@ namespace SF.Sys.Services
 		{
 			sc.AddAspNetCoreHostingService();
 			var services = sc.AsMicrosoftServiceCollection();
+
+			if (!sc.Any(s => s.InterfaceType == typeof(Microsoft.AspNetCore.Hosting.IHostingEnvironment)))
+				throw new InvalidOperationException("服务集合中找不到AspNetCore主机环境服务 IHostingEnvironment, 请确保在初始化AspNetCore服务之前，主机服务已加入到服务集合中");
+
 			services.AddAspNetCoreSystemServices();
 
 			var mvcbuilder = Microsoft.Extensions.DependencyInjection.MvcServiceCollectionExtensions.AddMvc(services);
@@ -59,79 +65,98 @@ namespace SF.Sys.Services
 		}
 		public static IServiceCollection AddJwtAuthSupports(
 			this IServiceCollection services,
-			JwtAuthSettings Settings
+			JwtAuthSettings Settings=null
 			)
 		{
-			var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Settings.SecurityKey));
-			var tokenValidationParameters = new TokenValidationParameters
-			{
-				ValidateIssuerSigningKey = true,
-				IssuerSigningKey = key,
-				ValidateIssuer = false,
-				ValidIssuer = Settings.Issuer,
-				ValidateAudience = false,
-				ValidAudience = Settings.Audience,
-				ValidateLifetime = false,
-				ClockSkew = TimeSpan.Zero
-			};
 			JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-			services.AsMicrosoftServiceCollection().AddAuthentication(options =>
+			services.AddSingleton(sp =>
 			{
-				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-				options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-				
-				
-			})
-			.AddJwtBearer(options =>
-			{
-				options.TokenValidationParameters = tokenValidationParameters;
-					
-				options.RequireHttpsMetadata = false;
-				//// base-address of your identityserver
-				//options.Authority = "http://localost:5000/";
-
-				//// name of the API resource
-				//options.Audience = "Document";
-				options.Events = new JwtBearerEvents
+				Settings = sp.LoadServiceConfigSetting(Settings).Result;
+				var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Settings.SecurityKey));
+				var tokenValidationParameters = new TokenValidationParameters
 				{
-					OnMessageReceived = (e) =>
-					{
-
-						return Task.CompletedTask;
-					},
-					OnTokenValidated = (e) =>
-					{
-						return Task.CompletedTask;
-					},
-					OnAuthenticationFailed = (e) =>
-					{
-						return Task.CompletedTask;
-					},
-					OnChallenge = (e) =>
-					{
-
-						return Task.CompletedTask;
-					}
+					ValidateIssuerSigningKey = true,
+					IssuerSigningKey = key,
+					ValidateIssuer = false,
+					ValidIssuer = Settings.Issuer,
+					ValidateAudience = false,
+					ValidAudience = Settings.Audience,
+					ValidateLifetime = false,
+					ClockSkew = TimeSpan.Zero
 				};
-					
+				return tokenValidationParameters;
 			});
 
-			//services.AddAspNetCoreCommonAuthorization();
+			var mssc = services.AsMicrosoftServiceCollection();
+			mssc.AddAuthentication(options =>
+				{
+					options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+					options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+				})
+				.AddJwtBearer();
+
+			mssc.AddOptions();
+			mssc.AddSingleton(sp=>
+			{
+				var parameter = sp.Resolve<TokenValidationParameters>();
+				return (IConfigureOptions<JwtBearerOptions>)new ConfigureNamedOptions<JwtBearerOptions>(
+					JwtBearerDefaults.AuthenticationScheme, 
+					options => {
+						options.TokenValidationParameters = parameter;
+						options.RequireHttpsMetadata = false;
+						//// base-address of your identityserver
+						//options.Authority = "http://localost:5000/";
+
+						//// name of the API resource
+						//options.Audience = "Document";
+						options.Events = new JwtBearerEvents
+						{
+							OnMessageReceived = (e) =>
+							{
+								return Task.CompletedTask;
+							},
+							OnTokenValidated = (e) =>
+							{
+								return Task.CompletedTask;
+							},
+							OnAuthenticationFailed = (e) =>
+							{
+								return Task.CompletedTask;
+							},
+							OnChallenge = (e) =>
+							{
+
+								return Task.CompletedTask;
+							}
+						};
+
+					});
+			});
+
+
 			services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 			services.AddAspNetCoreCommonAuthorization(
-				new TokenProviderOptions
+				sp=>
 				{
-					Issuer = Settings.Issuer,
-					Audience = Settings.Audience,
-					SigningCredentials = new SigningCredentials(
-						key,
-						SecurityAlgorithms.HmacSha256
-						)
+					var parameter = sp.Resolve<TokenValidationParameters>();
+					return new TokenProviderOptions
+					{
+						Issuer = Settings.Issuer,
+						Audience = Settings.Audience,
+						SigningCredentials = new SigningCredentials(
+							parameter.IssuerSigningKey,
+							SecurityAlgorithms.HmacSha256
+							)
+					};
 				},
-				new AccessTokenValidatorArguments
+				sp =>
 				{
-					Algorithm = SecurityAlgorithms.HmacSha256,
-					ValidationParameters = tokenValidationParameters
+					var parameter = sp.Resolve<TokenValidationParameters>();
+					return new AccessTokenValidatorArguments
+					{
+						Algorithm = SecurityAlgorithms.HmacSha256,
+						ValidationParameters = parameter
+					};
 				}
 			);
 

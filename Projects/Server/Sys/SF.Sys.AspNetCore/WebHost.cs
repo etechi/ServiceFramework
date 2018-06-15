@@ -13,29 +13,13 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using SF.Sys.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Linq;
 
-namespace SF.Sys
+namespace SF.Sys.AspNetCore
 {
-
-	public static class EnvironmentTypeDetector
-	{
-		public static EnvironmentType DetectEnvType(this IHostingEnvironment env)
-		{
-			if (env.IsDevelopment())
-				return EnvironmentType.Development;
-			else if (env.IsProduction())
-				return EnvironmentType.Production;
-			else if (env.IsStaging())
-				return EnvironmentType.Staging;
-			else if (env.EnvironmentName == "utils")
-				return EnvironmentType.Utils;
-			throw new NotSupportedException("不支持执行环境类型:" + env.EnvironmentName);
-			//			return (EnvironmentType)Enum.Parse(typeof(EnvironmentType), System.Configuration.ConfigurationManager.AppSettings["EnvType"]);
-		}
-	}
+	
 }

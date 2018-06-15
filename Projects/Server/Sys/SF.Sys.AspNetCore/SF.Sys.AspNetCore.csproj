@@ -19,6 +19,7 @@
     <PackageReference Include="microsoft.aspnetcore.authentication.cookies" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.0" />
     <PackageReference Include="microsoft.aspnetcore.diagnostics" Version="2.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.1.0" />
     <PackageReference Include="microsoft.aspnetcore.httpoverrides" Version="2.1.0" />
     <PackageReference Include="microsoft.aspnetcore.mvc" Version="2.1.0" />
     <PackageReference Include="microsoft.aspnetcore.StaticFiles" Version="2.1.0" />

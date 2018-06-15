@@ -119,8 +119,10 @@ namespace SF.Sys.Services
 					throw new NotSupportedException();
 			}
 		}
-		public static IServiceCollection AddServices(this IServiceCollection Services, Microsoft.Extensions.DependencyInjection.IServiceCollection MSServices)
+		public static IServiceCollection AddMSServices(this IServiceCollection Services, Microsoft.Extensions.DependencyInjection.IServiceCollection MSServices)
 		{
+			if (MSServices == null)
+				return Services;
 			Services.Remove(typeof(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory));
 			Services.AddTransient< Microsoft.Extensions.DependencyInjection.IServiceScopeFactory, MSScopeFactory>();
 			return Services.AddRange(MSServices.Select(MapServiceDescriptor));
@@ -216,5 +218,7 @@ namespace SF.Sys.Services
 		{
 			return new MicrosoftServiceCollectionAdapter(sc);
 		}
+
+		
 	}
 }

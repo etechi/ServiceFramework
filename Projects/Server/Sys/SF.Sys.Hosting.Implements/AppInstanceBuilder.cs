@@ -51,6 +51,7 @@ namespace SF.Sys.Hosting
 
 			this.Services= Services ?? new SF.Sys.Services.ServiceCollection();
 			this.Name = Name;
+			this.Services.AddLogService(LogService);
 		}
 		public class AppInstance : IAppInstance
 		{

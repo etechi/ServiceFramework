@@ -17,6 +17,7 @@ using SF.Sys.AspNetCore.Auth;
 using SF.Sys.Auth;
 using SF.Sys.Services;
 using SF.Sys.TimeServices;
+using System;
 
 namespace SF.Sys.Services
 {
@@ -24,22 +25,22 @@ namespace SF.Sys.Services
 	{
 		public static IServiceCollection AddAspNetCoreCommonAuthorization(
 			this IServiceCollection services,
-			TokenProviderOptions TokenProviderOptions,
-			AccessTokenValidatorArguments TokenValidatorArguments
+			Func<IServiceProvider,TokenProviderOptions> TokenProviderOptions,
+			Func<IServiceProvider, AccessTokenValidatorArguments> TokenValidatorArguments
 			)
 		{
-			services.AddScoped<IAccessTokenGenerator>(
+			services.AddSingleton<IAccessTokenGenerator>(
 				sp =>
-				new JwtAccessTokenGenerator(
+					new JwtAccessTokenGenerator(
 						sp.Resolve<ITimeService>(),
 						sp.Resolve<IUserProfileService>(),
-						TokenProviderOptions
+						TokenProviderOptions(sp)
 						)
 				);
 			services.AddSingleton<IAccessTokenValidator>(
 				sp => new JwtAccessTokenValidator(
 					sp.Resolve<ITimeService>(),
-					TokenValidatorArguments
+					TokenValidatorArguments(sp)
 					));
 			//services.AddAuthentication(
 			//	CookieAuthenticationDefaults.AuthenticationScheme

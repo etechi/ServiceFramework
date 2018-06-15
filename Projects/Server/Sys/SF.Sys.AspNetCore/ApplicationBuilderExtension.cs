@@ -25,12 +25,14 @@ using SF.Sys.Hosting;
 using System.Threading.Tasks;
 using SF.Sys.ServiceFeatures;
 using SF.Sys.Services;
+using Microsoft.AspNetCore.Routing;
 
 namespace SF.Sys.AspNetCore
 {
 	public class ApplicationConfigure
 	{
 		public string ExceptionHandler { get; set; } = "/Home/Error";
+		public Action<IRouteBuilder> RouteConfig { get; set; }
 	}
 	public static class ApplicationBuilderExtension
 	{
@@ -52,6 +54,15 @@ namespace SF.Sys.AspNetCore
 				});
 			}
 		}
+		public static IApplicationBuilder ApplicationCommonConfigure(
+		   this IApplicationBuilder app,
+		   //IHostingEnvironment env,
+		   Action<IRouteBuilder> RouteConfig
+		   )
+			=> app.ApplicationCommonConfigure(new ApplicationConfigure
+			{
+				RouteConfig=RouteConfig
+			});
 		public static IApplicationBuilder ApplicationCommonConfigure(
 			this IApplicationBuilder app, 
 			//IHostingEnvironment env,
@@ -82,7 +93,7 @@ namespace SF.Sys.AspNetCore
 
 			app.UseRequestLogging();
 
-			var mvc = app.UseMvc(routes =>
+			return app.UseMvc(routes =>
 			{
 
 				routes.MapRoute(
@@ -101,10 +112,8 @@ namespace SF.Sys.AspNetCore
 					template: "api/{controller}/{action}/{id?}",
 					defaults: new { mvc_scope = "api" }
 					);
-
+				cfg?.RouteConfig?.Invoke(routes);
 			});
-
-			return app;
 		}
 	}
 }

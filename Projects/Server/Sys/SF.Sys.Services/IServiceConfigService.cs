@@ -20,11 +20,11 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Services
 {
-	public interface IServiceSetupService
+	public interface IServiceConfigService
 	{
-		Task<T> LoadSetupSetting<T>(T setting, T defaultSetting) where T:new();
+		Task<T> LoadSetting<T>(T setting, T defaultSetting,bool setup) where T:new();
 	}
-	public static class SeviceSetupServiceExtension
+	public static class SeviceConfigServiceExtension
 	{
 		public static Task<T> LoadServiceSetupSetting<T>(
 			this IServiceProvider sp, 
@@ -32,7 +32,15 @@ namespace SF.Sys.Services
 			T defaultSetting = default
 			) where T:new()
 		{
-			return sp.Resolve<IServiceSetupService>().LoadSetupSetting(setting, defaultSetting);
+			return sp.Resolve<IServiceConfigService>().LoadSetting(setting, defaultSetting, true);
+		}
+		public static Task<T> LoadServiceConfigSetting<T>(
+		   this IServiceProvider sp,
+		   T setting,
+		   T defaultSetting = default
+		   ) where T : new()
+		{
+			return sp.Resolve<IServiceConfigService>().LoadSetting(setting, defaultSetting, false);
 		}
 	}
 }

@@ -23,17 +23,17 @@ using SF.Sys.Reflection;
 
 namespace SF.Sys.Services
 {
-	public class ServiceSetupService : IServiceSetupService
+	public class ServiceSetupService : IServiceConfigService
 	{
 		IFilePathResolver PathResolver { get; }
 		public ServiceSetupService(IFilePathResolver PathResolver)
 		{
 			this.PathResolver = PathResolver;
 		}
-		public Task<T> LoadSetupSetting<T>(T setting, T defaultSetting) where T:new()
+		public Task<T> LoadSetting<T>(T setting, T defaultSetting,bool setup) where T:new()
 		{
 			var type = typeof(T);
-			var path = PathResolver.Resolve($"config://setup/{type.FullName}.json");
+			var path = PathResolver.Resolve($"config://{(setup?"setup/":"")}{type.FullName}.json");
 			if (System.IO.File.Exists(path))
 				setting = Json.Parse<T>(System.IO.File.ReadAllText(path));
 			else
