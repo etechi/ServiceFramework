@@ -108,14 +108,25 @@ namespace SF.Auth.IdentityServices.Managers
 
 		public Task Unbind(string ClaimTypeId, string Credential, long UserId)
 		{
-			return DataScope.Use("解绑", ctx =>
-				ctx.Set<TUserCredential>().RemoveRangeAsync(
-					i => 
-					i.ClaimTypeId == ClaimTypeId && 
-					i.Credential == Credential && 
+			return DataScope.Use("解绑", async ctx =>
+			{
+				var isMainCredential = await ctx
+					.Queryable<TUser>()
+					.AnyAsync(u => 
+						u.MainClaimTypeId == ClaimTypeId && 
+						u.MainCredential == Credential && 
+						u.Id == UserId
+						);
+				if (isMainCredential)
+					throw new PublicInvalidOperationException("不能解绑主凭证");
+
+				await ctx.Set<TUserCredential>().RemoveRangeAsync(
+					i =>
+					i.ClaimTypeId == ClaimTypeId &&
+					i.Credential == Credential &&
 					i.UserId == UserId
-					)
-				);
+					);
+			});
 		}
 
 		public Task SetConfirmed(string ClaimTypeId, string Credential, bool Confirmed)
