@@ -469,6 +469,16 @@ namespace SF.Auth.IdentityServices
 				uid
 				);
 		}
+
+		public async Task UnbindCredential(UnbindCredentialArgument Argument)
+		{
+			var uid = await EnsureCurUserId();
+			await Setting.CredentialStorage.Value.Unbind(
+				Argument.CredentialProvider,
+				Argument.Credential,
+				uid
+				);
+		}
 	}
 
 }

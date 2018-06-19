@@ -181,7 +181,7 @@ namespace SF.Auth.IdentityServices
 		public string CredentialProvider { get; set; }
 
 		/// <summary>
-		/// 用户
+		/// 用户凭证
 		/// </summary>
 		public string Credential { get; set; }
 
@@ -196,7 +196,29 @@ namespace SF.Auth.IdentityServices
 		public string VerifyCode { get; set; }
 
 	}
+	public class UnbindCredentialArgument
+	{
+		/// <summary>
+		/// 身份验证服务ID
+		/// </summary>
+		public string CredentialProvider { get; set; }
 
+		/// <summary>
+		/// 用户凭证
+		/// </summary>
+		public string Credential { get; set; }
+
+		/// <summary>
+		/// 人工操作验证码
+		/// </summary>
+		public string CaptchaCode { get; set; }
+
+		/// <summary>
+		/// 验证码
+		/// </summary>
+		public string VerifyCode { get; set; }
+
+	}
 	public class SendBindCredentialVerifyCodeArgument
 	{
 		/// <summary>
@@ -379,7 +401,13 @@ namespace SF.Auth.IdentityServices
 		/// <param name="Argument">绑定参数</param>
 		/// <returns></returns>
 		Task BindCredential(BindCredentialArgument Argument);
-
+		
+		/// <summary>
+		/// 解绑凭证
+		/// </summary>
+		/// <param name="Argument">解绑参数</param>
+		/// <returns></returns>
+		Task UnbindCredential(UnbindCredentialArgument Argument);
 	}
 
 }
