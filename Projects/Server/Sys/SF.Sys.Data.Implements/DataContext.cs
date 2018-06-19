@@ -107,13 +107,13 @@ namespace SF.Sys.Data
         public object GetEntityOriginalValue(object Entity, string Field)
         {
 			CheckDispose();
-			return ((IDataContextExtension)Provider).GetEntityOriginalValue(Entity, Field);
+			return ((IDataContextProviderExtension)Provider).GetEntityOriginalValue(Entity, Field);
         }
 
         public string GetEntitySetName<T>() where T : class
         {
 			CheckDispose();
-			return ((IDataContextExtension)Provider).GetEntitySetName<T>();
+			return ((IDataContextProviderExtension)Provider).GetEntitySetName<T>();
         }
 
 		public void ClearTrackingEntities()
@@ -125,13 +125,13 @@ namespace SF.Sys.Data
 		public IEnumerable<string> GetUnderlingCommandTexts<T>(IContextQueryable<T> Queryable) where T : class
 		{
 			CheckDispose();
-			return ((IDataContextExtension)Provider).GetUnderlingCommandTexts(Queryable);
+			return ((IDataContextProviderExtension)Provider).GetUnderlingCommandTexts(Queryable);
 		}
 
 		public DbConnection GetDbConnection()
 		{
 			CheckDispose();
-			return ((IDataContextExtension)Provider).GetDbConnection();
+			return ((IDataContextProviderExtension)Provider).GetDbConnection();
 		}
 	}
 }

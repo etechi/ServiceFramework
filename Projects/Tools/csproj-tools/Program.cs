@@ -173,14 +173,44 @@ namespace csproj_tools
 		[Option('l',Default =3,HelpText ="增加版本号级别，1-主版本，2-子版本，3-补丁")]
 		public int Level { get; set; }
 
+		[Option('v', Default = 0, HelpText = "指定版本")]
+		public int Version { get; set; }
+
+		void AddVersion(ProjectFile f)
+		{
+			f.OpenProject(doc =>
+			{
+				var v = doc.Descendants("Version").FirstOrDefault();
+				if (v == null)
+				{
+					var pg = doc.Descendants("PropertyGroup").First();
+					pg.Add(v = new XElement("Version", "1.0.0"));
+				}
+
+				var vs = string.Join(
+					".",
+					v.Value.Split(".").Select((vi, i) =>  i == Level - 1 ?(Version==0?int.Parse(vi)+ 1:Version) : int.Parse(vi))
+					);
+				Console.WriteLine($"{f.Name} {v.Value}=>{vs}");
+				v.Value = vs;
+				return true;
+			});
+		}
 		public int Execute()
 		{
 			var prjs = ParseSolution();
 			LoadReferences(prjs);
 
+			if(Project=="*")
+			{
+				foreach (var p in prjs)
+					AddVersion(p);
+				return 0;
+			}
+
 			var target = prjs.Single(p => p.Name == Project);
 
-
+			
 			var q = new Queue<ProjectFile>();
 			q.Enqueue(target);
 			var processed = new HashSet<string>();
@@ -189,25 +219,9 @@ namespace csproj_tools
 			{
 				var f = q.Dequeue();
 
-				f.OpenProject(doc =>
-				{
-					var v = doc.Descendants("Version").FirstOrDefault();
-					if (v == null)
-					{
-						var pg = doc.Descendants("PropertyGroup").First();
-						pg.Add(v=new XElement("Version", "1.0.0"));
-					}
+				AddVersion(f);
 
-					var vs = string.Join(
-						".",
-						v.Value.Split(".").Select((vi, i) => int.Parse(vi) + (i == Level - 1 ? 1 : 0))
-						);
-					Console.WriteLine($"{f.Name} {v.Value}=>{vs}");
-					v.Value = vs;
-					return true;
-				});
-
-				if(f.UserProjects!=null)
+				if (f.UserProjects!=null)
 					foreach(var u in f.UserProjects.Where(p=>!processed.Contains(p.FilePath)))
 					{
 						processed.Add(u.FilePath);

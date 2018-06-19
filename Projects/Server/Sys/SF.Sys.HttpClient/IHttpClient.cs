@@ -37,13 +37,13 @@ namespace SF.Sys.HttpClients
 			public HttpContent Content { get; set; }
 			public bool EnsureSuccess { get; set; }
 			public List<Action<HttpResponseMessage>> OnReturns { get; set; }
-			public IEnumerable<(string Name,string Value)> Headers { get; set; }
+			public IEnumerable<(string Name, string Value)> Headers { get; set; }
 		}
 		public static HttpRequestMessage GetRequestMessage(this Request request)
 		{
 			var req = new HttpRequestMessage(
-				request.Method ?? 
-					(request.Content==null?HttpMethod.Get:HttpMethod.Post), 
+				request.Method ??
+					(request.Content == null ? HttpMethod.Get : HttpMethod.Post),
 				request.Uri
 				);
 			if (request.Content != null)
@@ -61,15 +61,15 @@ namespace SF.Sys.HttpClients
 			{
 				Uri = Uri,
 				HttpClient = Client,
-				EnsureSuccess=true
+				EnsureSuccess = true
 			};
 		}
-		public static Request WithMethod(this Request Request,HttpMethod Method)
+		public static Request WithMethod(this Request Request, HttpMethod Method)
 		{
 			Request.Method = Method;
 			return Request;
 		}
-		public static Request WithContent(this Request Request, string Content,string mime=null,Encoding Encoding=null)
+		public static Request WithContent(this Request Request, string Content, string mime = null, Encoding Encoding = null)
 		{
 			Request.Content = new StringContent(Content, Encoding ?? Encoding.UTF8, mime ?? "application/json");
 			return Request;
@@ -90,19 +90,19 @@ namespace SF.Sys.HttpClients
 			=> Request.WithHeaders((Name, Value));
 
 		public static Request WithHeaders(this Request Request, params (string Name, string Value)[] Headers)
-			=>Request.WithHeaders((IEnumerable<(string Name,string Value)>)Headers);
+			=> Request.WithHeaders((IEnumerable<(string Name, string Value)>)Headers);
 
-		public static Request WithHeaders(this Request Request,IEnumerable<(string Name,string Value)> Headers)
+		public static Request WithHeaders(this Request Request, IEnumerable<(string Name, string Value)> Headers)
 		{
 			Request.Headers = Request.Headers == null ? Headers : Request.Headers.Concat(Headers);
 			return Request;
 		}
-		public static Request EnsureSuccess(this Request Request,bool ThrowError)
+		public static Request EnsureSuccess(this Request Request, bool ThrowError)
 		{
 			Request.EnsureSuccess = ThrowError;
 			return Request;
 		}
-		public static Task<T> Execute<T>(this Request Request,Func<HttpResponseMessage,Task<T>> GetResult)
+		public static Task<T> Execute<T>(this Request Request, Func<HttpResponseMessage, Task<T>> GetResult)
 		{
 			return Request.HttpClient.Request(
 				Request.GetRequestMessage(),
@@ -110,17 +110,17 @@ namespace SF.Sys.HttpClients
 				{
 					if (Request.EnsureSuccess)
 						re.EnsureSuccessStatusCode();
-					if (Request.OnReturns!=null)
+					if (Request.OnReturns != null)
 						foreach (var r in Request.OnReturns)
 							r(re);
 					return await GetResult(re);
 				}
 				);
 		}
-		public static Task<string> GetString(this Request Request)
+		public static Task<string> GetString(this Request Request, Encoding Encoding = null)
 		{
 			return Request.Execute(
-				re => re.GetString()
+				re => re.GetString(Encoding)
 				);
 		}
 		public static Task<byte[]> GetBytes(this Request Request)
@@ -143,8 +143,13 @@ namespace SF.Sys.HttpClients
 		//public static Task<T> Post<T>(this IHttpClient client, Uri uri, HttpContent Content,Func<HttpResponseMessage, Task<T>> GetResult, IEnumerable<(string Name, string Value)> Headers = null)
 		//	=> client.Request(new HttpRequestMessage(HttpMethod.Post, uri) { Content = Content }.WithHeaders(Headers), GetResult);
 
-		public static Task<string> GetString(this HttpResponseMessage response)
-			=> response.Content.ReadAsStringAsync();
+		public static async Task<string> GetString(this HttpResponseMessage response, Encoding Encoding)
+		{
+			if(Encoding==null)
+				return await response.Content.ReadAsStringAsync();
+			var buf = await response.Content.ReadAsByteArrayAsync();
+			return Encoding.GetString(buf);
+		}
 
 		public static Task<byte[]> GetBytes(this HttpResponseMessage response)
 			=> response.Content.ReadAsByteArrayAsync();
