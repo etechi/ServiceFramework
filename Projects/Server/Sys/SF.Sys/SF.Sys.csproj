@@ -2,12 +2,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.21</Version>
+    <Version>1.0.22</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.ADT\SF.Sys.ADT.csproj" />
     <ProjectReference Include="..\SF.Sys.Annotations\SF.Sys.Annotations.csproj" />
-    <ProjectReference Include="..\SF.Sys.AspNetCore\SF.Sys.AspNetCore.csproj" />
     <ProjectReference Include="..\SF.Sys.AtLeastOnceTasks\SF.Sys.AtLeastOnceTasks.csproj" />
     <ProjectReference Include="..\SF.Sys.Auth\SF.Sys.Auth.csproj" />
     <ProjectReference Include="..\SF.Sys.BackEndConsole\SF.Sys.BackEndConsole.csproj" />

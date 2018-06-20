@@ -25,7 +25,7 @@ namespace SF.Utils.Patterns
 				};
 			return new MatchResult
 			{
-				Matchs = new[] { new Matchs.MultipleItemsMatch<TItem>(Input.Items.Skip(Input.Begin).Take(Input.End-Input.Begin).ToArray()) },
+				Matchs = new[] { new Matchs.MultipleItemsMatch<TItem>(Input.Path,Input.Items.Skip(Input.Begin).Take(Input.End-Input.Begin).ToArray()) },
 				EvalEnd = Input.End,
 				Success = true
 			};

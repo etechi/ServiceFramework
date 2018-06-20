@@ -509,7 +509,7 @@ namespace SF.Sys.Services
 
 				//服务名称
 				var svcName = svc.ServiceName;
-				var svcTitle = svc.ServiceType.Comment().Title.TrimEndTo("管理");
+				var svcTitle = svc.ServiceType.Comment().Title.LeftBefore("管理");
 				//处理服务上方法默认授权
 				foreach (var method in
 					svc.ServiceType.AllRelatedTypes().SelectMany(it => it.AllPublicInstanceMethods())

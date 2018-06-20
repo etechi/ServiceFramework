@@ -135,7 +135,7 @@ namespace SF.Sys.Reflection
 			}
 			else if (method.IsGenericMethod)
 			{
-				return method.Name.TrimEndTo("`") + "<" +
+				return method.Name.LeftBefore("`") + "<" +
 					method.GetGenericArguments().Select(t => t.GetFullName()).Join(",") +
 					">";
 			}

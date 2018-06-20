@@ -1,1 +1,1 @@
-dotnet ..\utils\csproj-tools\csproj-tools.dll add-version -p * -v 21
+dotnet ..\utils\csproj-tools\csproj-tools.dll add-version -p * -v 22
