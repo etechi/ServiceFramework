@@ -45,7 +45,7 @@ namespace System.Threading.Tasks
 				getter = Getters.GetOrAdd(
 					type,
 					(TaskResultGetter)Activator.CreateInstance(
-						typeof(TaskResultGetter<>).MakeGenericType(type.GetGenericArguments())
+						typeof(TaskResultGetter<>).MakeGenericType(type.GetGenericArguments()[0])
 						)
 					);
 			return await getter.GetResult(task);

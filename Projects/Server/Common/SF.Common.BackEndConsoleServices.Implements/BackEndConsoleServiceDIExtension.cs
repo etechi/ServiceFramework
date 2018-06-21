@@ -121,7 +121,7 @@ namespace SF.Sys.Services
 					};
 				},
 				(IServiceProvider isp,
-				IEventSubscriber<EntityChanged<ObjectKey<long>,DataConsole>> OnConsoleModified, 
+				IEventSubscriber<EntityChanged<ObjectKey<long>, ConsoleEditable>> OnConsoleModified, 
 				IEntityCacheRemover<string> remover
 				) =>
 				{

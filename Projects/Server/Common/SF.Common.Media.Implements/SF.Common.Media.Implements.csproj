@@ -23,9 +23,5 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Services\SF.Sys.Services.csproj" />
     <ProjectReference Include="..\SF.Common.Media\SF.Common.Media.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.ComponentModel.Annotations">
-      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.ComponentModel.Annotations.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+
 </Project>

@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,29 +26,32 @@ namespace SF.Sys.Events
 	{
 		public static string Name { get; }
 		
-		static void GetTypeTopic(StringBuilder sb,Type type,bool top)
-		{
-			sb.Append(type.Namespace);
-			sb.Append(top ? '/' : '.');
-			if (type.IsGenericType)
-			{
-				sb.Append(type.GetGenericTypeDefinition().Name);
-				sb.Append('<');
-				foreach (var d in type.GetGenericArguments())
-				{
-					GetTypeTopic(sb, d, false);
-					sb.Append(',');
-				}
-				sb.Length--;
-				sb.Append('>');
-			}
-			else
-				sb.Append(type.Name);
-		}
 		static TypeTopic()
 		{
-			var sb = new StringBuilder();
-			GetTypeTopic(sb,typeof(TPayload),true);
+			var t= typeof(TPayload).GetTypeName(true);
+
+			var sb = new StringBuilder(t.Length);
+			var l = 0;
+			foreach(var c in t)
+			{
+				switch (c)
+				{
+					case '.':
+						sb.Append(l==0?'/':'.');
+						break;
+					case '<':
+						sb.Append(c);
+						l++;
+						break;
+					case '>':
+						sb.Append(c);
+						l--;
+						break;
+					default:
+						sb.Append(c);
+						break;
+				}
+			}
 			Name = sb.ToString();
 		}
 	}

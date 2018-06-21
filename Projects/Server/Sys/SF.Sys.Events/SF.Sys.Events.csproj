@@ -17,5 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Extensions\SF.Sys.Extensions.csproj" />
+    <ProjectReference Include="..\SF.Sys.Reflection\SF.Sys.Reflection.csproj" />
   </ItemGroup>
 </Project>

@@ -21,9 +21,8 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Events
 {
-	public class EventSubscriber<TPayload> : IEventSubscriber<TPayload>,IDisposable 
+	public class EventSubscriber<TPayload> : IEventSubscriber<TPayload>
 	{
-		IDisposable _Disposable;
 		IEventSubscribeService SubscribeService { get; }
 		object EventHandler;
 		public EventSubscriber(
@@ -33,24 +32,18 @@ namespace SF.Sys.Events
 			this.SubscribeService = SubscribeService;
 		}
 
-		public void Dispose()
-		{
-			Disposable.Release(ref _Disposable);
-		}
 
-		public void Wait(
+		public IDisposable Wait(
 			Func<IEvent<TPayload>, Task> Callback,
 			EventDeliveryPolicy Policy=EventDeliveryPolicy.NoGuarantee,
 			string EventTopic=null,
 			string SubscriberIdent = null
 			)
 		{
-			if (_Disposable != null)
-				throw new InvalidOperationException();
 
 			if (EventTopic == null)
 				EventTopic = TypeTopic<TPayload>.Name;
-			_Disposable=SubscribeService.Subscribe(EventTopic,
+			return SubscribeService.Subscribe(EventTopic,
 				SubscriberIdent,
 				Policy,
 				new DelegateEventObserver<TPayload>(

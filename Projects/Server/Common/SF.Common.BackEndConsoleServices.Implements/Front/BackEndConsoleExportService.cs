@@ -220,10 +220,10 @@ namespace SF.Sys.BackEndConsole.Front
 		{
 
 			var parameter = ctx.Invoker.Method.GetParameters()[0];
-			var arg = (IPagingArgument)Json.DefaultSerializer.Deserialize(
+			var arg = (IPagingArgument)(Json.DefaultSerializer.Deserialize(
 				ctx.Argument, 
 				parameter.ParameterType
-				);
+				) ?? Activator.CreateInstance(parameter.ParameterType));
 
 
 			var title = ctx.Title = ctx.Title ?? type.Comment().Title;

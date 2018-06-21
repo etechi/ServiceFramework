@@ -67,7 +67,11 @@ namespace SF.Sys.Services
 					var re = await nspm.GetAsync(ObjectKey.From(Id));
 					return re;
 				},
-				(IServiceProvider isp,IEventSubscriber<EntityChanged<ObjectKey<long>, SF.Common.Notifications.DataModels.DataNotificationSendPolicy>> OnPolicyModified, IEntityCacheRemover<long> remover) =>
+				(
+					IServiceProvider isp,
+					IEventSubscriber<EntityChanged<ObjectKey<long>, NotificationSendPolicy>> OnPolicyModified, 
+					IEntityCacheRemover<long> remover
+					) =>
 				{
 					OnPolicyModified.Wait(e =>
 					{

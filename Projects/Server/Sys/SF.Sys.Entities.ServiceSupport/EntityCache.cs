@@ -147,9 +147,9 @@ namespace SF.Sys.Services
 					sp.Resolve<IServiceScopeFactory>(),
 					Loader
 					);
+				var svc = sp.Resolve<TInitRemoveServices>();
 				sp.WithScope((IServiceProvider isp) =>
 				{
-					var svc = isp.Resolve<TInitRemoveServices>();
 					InitRemover(isp, svc, cache);
 					return 0;
 				});

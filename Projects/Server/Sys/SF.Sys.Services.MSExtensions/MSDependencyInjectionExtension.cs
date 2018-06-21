@@ -19,6 +19,7 @@ using System.Linq;
 using System.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using SF.Sys.Linq;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace SF.Sys.Services
 {

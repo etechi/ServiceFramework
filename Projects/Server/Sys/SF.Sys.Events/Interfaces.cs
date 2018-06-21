@@ -58,7 +58,7 @@ namespace SF.Sys.Events
 
 	public interface IEventSubscriber<TPayload> 
 	{
-		void Wait(
+		IDisposable Wait(
 			Func<IEvent<TPayload>,Task> Callback,
 			EventDeliveryPolicy Policy = EventDeliveryPolicy.NoGuarantee,
 			string Topic = null,

@@ -20,9 +20,4 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.ComponentModel.Annotations">
-      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.netcore.app\2.0.0\ref\netcoreapp2.0\System.ComponentModel.Annotations.dll</HintPath>
-    </Reference>
-  </ItemGroup>
 </Project>
