@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.22</Version>
+    <Version>1.0.23</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Entities.ServiceSupport.xml</DocumentationFile>
@@ -19,10 +19,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Auth\SF.Sys.Auth.csproj" />
-    <ProjectReference Include="..\SF.Sys.Comments\SF.Sys.Comments.csproj" />
     <ProjectReference Include="..\SF.Sys.Entities\SF.Sys.Entities.csproj" />
     <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />
-    <ProjectReference Include="..\SF.Sys.Poco\SF.Sys.Poco.csproj" />
     <ProjectReference Include="..\SF.Sys.Serialization\SF.Sys.Serialization.csproj" />
     <ProjectReference Include="..\SF.Sys.TimeServices\SF.Sys.TimeServices.csproj" />
   </ItemGroup>

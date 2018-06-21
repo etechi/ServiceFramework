@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.22</Version>
+    <Version>1.0.23</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <LangVersion>latest</LangVersion>
@@ -20,13 +20,10 @@
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.Annotations\SF.Sys.Annotations.csproj" />
     <ProjectReference Include="..\SF.Sys.Client\SF.Sys.Client.csproj" />
-    <ProjectReference Include="..\SF.Sys.Comments\SF.Sys.Comments.csproj" />
     <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
     <ProjectReference Include="..\SF.Sys.Linq.ContextQueryable\SF.Sys.Linq.ContextQueryable.csproj" />
-    <ProjectReference Include="..\SF.Sys.Linq.Expressions\SF.Sys.Linq.Expressions.csproj" />
     <ProjectReference Include="..\SF.Sys.Serialization\SF.Sys.Serialization.csproj" />
     <ProjectReference Include="..\SF.Sys.Test\SF.Sys.Test.csproj" />
-    <ProjectReference Include="..\SF.Sys.Validation\SF.Sys.Validation.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />

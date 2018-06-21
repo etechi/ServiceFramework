@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 using System.Linq.Expressions;
 using SF.Sys.Reflection;
 
-namespace System.Reflection
+namespace SF.Sys.Reflection
 {
 	public delegate Expression ExpressionCopyMapper(Expression Src, Expression Dst);
 	public delegate Expression ExpressionCloneMapper(Expression Src);

@@ -19,7 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF
+namespace SF.Sys
 {
 	public static class Ensure
 

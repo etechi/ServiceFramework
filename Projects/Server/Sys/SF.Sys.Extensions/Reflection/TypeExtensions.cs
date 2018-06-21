@@ -545,12 +545,21 @@ namespace SF.Sys.Reflection
 			if (type.IsInterface) return type.AllInterfaces();
 			return EnumerableEx.From(type).Concat(type.BaseTypes()).Concat(type.AllInterfaces());
 		}
+
+
 		public static IEnumerable<Type> AllInterfaces(this Type type)
 		{
-			if(type.IsInterface)
-				return SF.Sys.ADT.Tree.AsEnumerable(type,t=>t.GetInterfaces()).Distinct();
+			IEnumerable<Type> eval(Type t)
+			{
+				yield return t;
+				foreach (var i in t.GetInterfaces())
+					foreach (var ii in eval(i))
+						yield return ii;
+			}
+			if (type.IsInterface)
+				return eval(type).Distinct();
 			else
-				return SF.Sys.ADT.Tree.AsEnumerable(type.GetInterfaces(), t => t.GetInterfaces()).Distinct();
+				return type.GetInterfaces().SelectMany(t => eval(t)).Distinct();
 		}
 		public static IEnumerable<Attribute> GetInterfaceAttributes(this Type type)
 			=> from i in type.AllInterfaces()

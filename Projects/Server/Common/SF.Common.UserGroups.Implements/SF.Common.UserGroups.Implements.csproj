@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.22</Version>
+    <Version>1.0.23</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Common.Conversations.Implements.xml</DocumentationFile>
@@ -26,5 +26,4 @@
     <ProjectReference Include="..\SF.Common.Conversations\SF.Common.Conversations.csproj" />
     <ProjectReference Include="..\SF.Common.UserGroups\SF.Common.UserGroups.csproj" />
   </ItemGroup>
-
 </Project>

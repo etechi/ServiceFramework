@@ -13,28 +13,28 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace System.Reflection
+namespace SF.Sys
 {
-	public static class MethodInfoExtension
+	public struct Option<T>
 	{
-		public static T CreateDelegate<T>(this MethodInfo method,object target)
+		public T Value { get; set; }
+		public bool HasValue { get; set; }
+
+		public static implicit operator Option<T>(T value)
 		{
-			return (T)(object)method.CreateDelegate(
-						typeof(T),
-						target
-						);
-		}
-		public static T CreateDelegate<T>(this MethodInfo method)
-		{
-			return (T)(object)method.CreateDelegate(
-						typeof(T)
-						);
+			return new Option<T>
+			{
+				Value = value,
+				HasValue = true
+			};
 		}
 	}
+	public static class OptionExtension
+	{
+		public static T ValueOrDefault<T>(this Option<T> value)
+		{
+			return value.HasValue ? value.Value : default(T);
+		}
+	}
+
 }

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <IsPackable>false</IsPackable>
-    <Version>1.0.22</Version>
+    <Version>1.0.23</Version>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
@@ -22,7 +22,6 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Security\SF.Sys.Security.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Services\SF.Sys.Services.csproj" />
-    <ProjectReference Include="..\..\Sys\SF.Sys.Validation\SF.Sys.Validation.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.UnitTest\SF.Sys.UnitTest.csproj" />
   </ItemGroup>
 </Project>

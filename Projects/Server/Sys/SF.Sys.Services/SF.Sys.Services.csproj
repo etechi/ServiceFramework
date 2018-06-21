@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.22</Version>
+    <Version>1.0.23</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\SF.Sys.Services.xml</DocumentationFile>
@@ -21,8 +21,6 @@
     <ProjectReference Include="..\SF.Sys.Caching\SF.Sys.Caching.csproj" />
     <ProjectReference Include="..\SF.Sys.Events\SF.Sys.Events.csproj" />
     <ProjectReference Include="..\SF.Sys.Extensions\SF.Sys.Extensions.csproj" />
-    <ProjectReference Include="..\SF.Sys.Linq.Expressions\SF.Sys.Linq.Expressions.csproj" />
-    <ProjectReference Include="..\SF.Sys.Reflection\SF.Sys.Reflection.csproj" />
     <ProjectReference Include="..\SF.Sys.Threading\SF.Sys.Threading.csproj" />
   </ItemGroup>
 </Project>

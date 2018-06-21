@@ -24,7 +24,7 @@ using System.Reflection;
 using SF.Sys.Reflection;
 using SF.Sys.Linq.Expressions;
 using System.Collections.Concurrent;
-
+using SF.Sys;
 namespace SF.Sys
 {
 	public interface IComparerCollection

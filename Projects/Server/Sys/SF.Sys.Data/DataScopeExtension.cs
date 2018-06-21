@@ -14,14 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
-using SF.Sys.Services;
-using SF.Sys.Linq.Expressions;
-using SF.Sys.Collections.Generic;
-using SF.Sys.ADT;
 using SF.Sys.Threading;
 
 namespace SF.Sys.Data

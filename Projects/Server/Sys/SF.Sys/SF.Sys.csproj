@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.22</Version>
+    <Version>1.0.23</Version>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.ADT\SF.Sys.ADT.csproj" />
@@ -14,7 +14,6 @@
     <ProjectReference Include="..\SF.Sys.Caching\SF.Sys.Caching.csproj" />
     <ProjectReference Include="..\SF.Sys.Client.Implements\SF.Sys.Client.Implements.csproj" />
     <ProjectReference Include="..\SF.Sys.Client\SF.Sys.Client.csproj" />
-    <ProjectReference Include="..\SF.Sys.Comments\SF.Sys.Comments.csproj" />
     <ProjectReference Include="..\SF.Sys.Data.EFCore\SF.Sys.Data.EFCore.csproj" />
     <ProjectReference Include="..\SF.Sys.Data.Implements\SF.Sys.Data.Implements.csproj" />
     <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
@@ -31,7 +30,6 @@
     <ProjectReference Include="..\SF.Sys.HttpClient.Implements\SF.Sys.HttpClient.Implements.csproj" />
     <ProjectReference Include="..\SF.Sys.HttpClient\SF.Sys.HttpClient.csproj" />
     <ProjectReference Include="..\SF.Sys.Linq.ContextQueryable\SF.Sys.Linq.ContextQueryable.csproj" />
-    <ProjectReference Include="..\SF.Sys.Linq.Expressions\SF.Sys.Linq.Expressions.csproj" />
     <ProjectReference Include="..\SF.Sys.Logging.Implements\SF.Sys.Logging.Implements.csproj" />
     <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />
     <ProjectReference Include="..\SF.Sys.Maths\SF.Sys.Maths.csproj" />
@@ -42,9 +40,7 @@
     <ProjectReference Include="..\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
     <ProjectReference Include="..\SF.Sys.Plans.Implements\SF.Sys.Plans.Implements.csproj" />
     <ProjectReference Include="..\SF.Sys.Plans\SF.Sys.Plans.csproj" />
-    <ProjectReference Include="..\SF.Sys.Poco\SF.Sys.Poco.csproj" />
     <ProjectReference Include="..\SF.Sys.Reflection.TypeBuilder\SF.Sys.Reflection.TypeBuilder.csproj" />
-    <ProjectReference Include="..\SF.Sys.Reflection\SF.Sys.Reflection.csproj" />
     <ProjectReference Include="..\SF.Sys.Security.Implements\SF.Sys.Security.Implements.csproj" />
     <ProjectReference Include="..\SF.Sys.Security\SF.Sys.Security.csproj" />
     <ProjectReference Include="..\SF.Sys.Serialization\SF.Sys.Serialization.csproj" />
@@ -62,6 +58,5 @@
     <ProjectReference Include="..\SF.Sys.Test\SF.Sys.Test.csproj" />
     <ProjectReference Include="..\SF.Sys.Threading\SF.Sys.Threading.csproj" />
     <ProjectReference Include="..\SF.Sys.TimeServices\SF.Sys.TimeServices.csproj" />
-    <ProjectReference Include="..\SF.Sys.Validation\SF.Sys.Validation.csproj" />
   </ItemGroup>
 </Project>
