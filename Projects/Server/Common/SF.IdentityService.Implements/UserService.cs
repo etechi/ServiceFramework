@@ -390,6 +390,7 @@ namespace SF.Auth.IdentityServices
 					CredentialValue=Arg.Credential,
 					ClaimTypeId= CredentialProvider.Ident,
 					ExtraArgument=Arg.ExtraArgument,
+					ClientId=Arg.ClientId,
 					User =new User
 					{
 					//	OwnerId = Arg.User.OwnerId,

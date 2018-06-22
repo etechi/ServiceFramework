@@ -30,6 +30,13 @@ namespace SF.Auth.IdentityServices.Managers
 	/// </summary>
 	[EntityManager]
 	[NetworkService]
+	[DefaultAuthorize(PredefinedRoles.客服专员, true)]
+	[DefaultAuthorize(PredefinedRoles.安全专员, true)]
+	[DefaultAuthorize(PredefinedRoles.运营专员, true)]
+	[DefaultAuthorize(PredefinedRoles.财务专员, true)]
+	[DefaultAuthorize(PredefinedRoles.媒介专员, true)]
+	[DefaultAuthorize(PredefinedRoles.销售专员, true)]
+	[DefaultAuthorize(PredefinedRoles.系统管理员, true)]
 	public interface IClaimTypeManager :
 		IEntityManager<ObjectKey<string>,Models.ClaimType>,
 		IEntitySource<ObjectKey<string>, Models.ClaimType, ClaimTypeQueryArgument>

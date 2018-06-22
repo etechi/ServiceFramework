@@ -111,7 +111,7 @@ namespace SF.Auth.IdentityServices.Models
 		/// 注册客户端
 		/// </summary>
 		[EntityIdent(typeof(ClientInternal),nameof(SignupClientName))]
-		public long? SignupClientId { get; set; }
+		public string SignupClientId { get; set; }
 
 		/// <summary>
 		/// 注册客户端

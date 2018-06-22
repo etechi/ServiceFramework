@@ -66,6 +66,11 @@ namespace SF.Auth.IdentityServices.Internals
 		public string[] Roles { get; set; }
 
 		/// <summary>
+		/// 客户端ID
+		/// </summary>
+		public string ClientId { get; set; }
+
+		/// <summary>
 		/// 用户申明
 		/// </summary>
 		public ClaimValue[] ClaimValues { get; set; }

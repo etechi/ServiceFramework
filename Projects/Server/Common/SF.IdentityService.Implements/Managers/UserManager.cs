@@ -80,6 +80,8 @@ namespace SF.Auth.IdentityServices.Managers
 
 				Roles= roles,
 				Claims=Arg.ClaimValues,
+
+				SignupClientId=Arg.ClientId,
 				//OwnerId = Arg.Identity.OwnerId,
 				Credentials =new List<Models.UserCredential>
 				{

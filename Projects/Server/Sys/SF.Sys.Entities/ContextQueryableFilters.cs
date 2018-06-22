@@ -240,7 +240,9 @@ namespace SF.Sys.Entities
 				   );
 		}
 
-        readonly static MethodInfo StringContains = typeof(string).GetMethod("Contains", BindingFlags.Instance | BindingFlags.Public );
+        static MethodInfo StringContains { get; } = typeof(string)
+			.GetMethod("Contains", BindingFlags.Instance | BindingFlags.Public,null,new[] { typeof(string) },null)
+			.IsNotNull();
 
 		public static Expression GetContainFilterExpression(
 			string value,
