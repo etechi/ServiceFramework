@@ -62,7 +62,7 @@ namespace SF.Sys
 
 			Services.AddDefaultPhoneNumberValidator();
 			Services.AddDocumentServices();
-			Services.AddTicketServices();
+			//Services.AddTicketServices();
 			Services.AddConversationServices();
 
 			Services.AddBackEndConsoleServices(Setting.BackendConsoleName);

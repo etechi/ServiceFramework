@@ -54,7 +54,6 @@ namespace SF.Sys.BackEndConsole.Front
 						return false;
 					if (em.EntityManagerType == null)
 						return false;
-					var re = EntityPermissionType.None;
 					if (!em.EntityManagerCapability.HasFlag(EntityCapability.Queryable))
 						return false;
 					return AuthService.Authorize(
@@ -79,6 +78,8 @@ namespace SF.Sys.BackEndConsole.Front
 			{
 				foreach(var i in items)
 				{
+					if (i.Hidden)
+						continue;
 					var re = PermissionCheck(i.Permission);
 					if (!re)
 						continue;

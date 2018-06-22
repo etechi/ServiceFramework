@@ -23,9 +23,11 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove=".licenseheader" />
+    <Compile Remove="Serialization\**" />
+    <EmbeddedResource Remove="Serialization\**" />
+    <None Remove="Serialization\**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Serialization\" />
+    <None Remove=".licenseheader" />
   </ItemGroup>
 </Project>

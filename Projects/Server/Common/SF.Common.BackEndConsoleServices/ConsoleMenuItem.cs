@@ -38,6 +38,11 @@ namespace SF.Sys.BackEndConsole
 		public string Permission { get; set; }
 
 		/// <summary>
+		/// 是否隐藏
+		/// </summary>
+		public bool Hidden { get; set; }
+
+		/// <summary>
 		/// 子菜单
 		/// </summary>
 		public List<ConsoleMenuItem> Children { get; set; }
