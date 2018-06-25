@@ -1,5 +1,4 @@
 SF.Sys.Extensions
-SF.Sys.Linq.ContextQueryable
 SF.Sys.Threading
 SF.Sys.ADT
 SF.Sys.Caching
