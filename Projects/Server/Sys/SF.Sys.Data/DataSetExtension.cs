@@ -225,7 +225,8 @@ namespace SF.Sys.Data
 		public static async Task<T> EnsureAsync<T>(
 			this IDataSet<T> set,
 			T item,
-			bool UpdateRequired = false
+			bool UpdateRequired = false,
+			bool AutoSave=true
 			)where T:class
 		{
 			var id = set.GetIdent(item);
@@ -236,7 +237,8 @@ namespace SF.Sys.Data
 				return e;
 			else
 				set.Update(item);
-			await set.Context.SaveChangesAsync();
+			if(AutoSave)
+				await set.Context.SaveChangesAsync();
 			return item;
 		}
 		public static Task<T> EnsureAsync<T>(
