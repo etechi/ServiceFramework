@@ -23,7 +23,7 @@ namespace SF.Sys.Entities
 {
 	public static class EntityQueryableExtension
 	{
-		public static IContextQueryable<T> WithScope<T>(this IContextQueryable<T> q, IServiceInstanceDescriptor ServiceInstanceDescriptor)
+		public static IQueryable<T> WithScope<T>(this IQueryable<T> q, IServiceInstanceDescriptor ServiceInstanceDescriptor)
 			where T : IEntityWithScope
 		{
 			var sid = ServiceInstanceDescriptor?.DataScopeId;
@@ -31,19 +31,19 @@ namespace SF.Sys.Entities
 		}
 
 		
-		public static IContextQueryable<T> IsEnabled<T>(this IContextQueryable<T> q)
+		public static IQueryable<T> IsEnabled<T>(this IQueryable<T> q)
 			where T : IEntityWithLogicState
 		{
 			return q.Where(i => i.LogicState == EntityLogicState.Enabled);
 		}
-		public static IContextQueryable<T> WithId<T,TKey>(this IContextQueryable<T> q,TKey Id)
+		public static IQueryable<T> WithId<T,TKey>(this IQueryable<T> q,TKey Id)
 			where T : IEntityWithId<TKey>
 			where TKey:IEquatable<TKey>
 		{
 			return q.Where(i => i.Id.Equals(Id));
 		}
-		public static IContextQueryable<T> EnabledScopedById<T, TKey>(
-			this IContextQueryable<T> q, 
+		public static IQueryable<T> EnabledScopedById<T, TKey>(
+			this IQueryable<T> q, 
 			TKey Id, 
 			IServiceInstanceDescriptor ServiceInstanceDescriptor
 			)

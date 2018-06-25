@@ -68,7 +68,7 @@ namespace SF.Sys.Entities
 	public interface IQueryFilter<TDataModel, TQueryArgument>
 	{
 		int Priority { get; }
-		IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, IEntityServiceContext Context, TQueryArgument Arg);
+		IQueryable<TDataModel> Filter(IQueryable<TDataModel> Query, IEntityServiceContext Context, TQueryArgument Arg);
 	}
 	public interface IQueryFilterProvider
 	{
@@ -80,7 +80,7 @@ namespace SF.Sys.Entities
 
 	public interface IPagingQueryBuilder<T>
 	{
-		IContextQueryable<T> Build(IContextQueryable<T> query, Paging paging);
+		IQueryable<T> Build(IQueryable<T> query, Paging paging);
 	}
 	public interface IPagingQueryBuilderCache
 	{
@@ -158,12 +158,12 @@ namespace SF.Sys.Entities
 	public interface IQueryResultBuildHelper<E, R>
 	{
 		Task<QueryResult<R>> Query(
-			IContextQueryable<E> queryable, 
+			IQueryable<E> queryable, 
 			IPagingQueryBuilder<E> PagingQueryBuilder,
 			Paging Paging,
-			Func<IContextQueryable<E>, Task<ISummaryWithCount>> Summary=null
+			Func<IQueryable<E>, Task<ISummaryWithCount>> Summary=null
 			);
-		Task<R> QuerySingleOrDefault(IContextQueryable<E> queryable,int Level, IPropertySelector PropSelector);
+		Task<R> QuerySingleOrDefault(IQueryable<E> queryable,int Level, IPropertySelector PropSelector);
 		Expression BuildEntityMapper(Expression src,int Level, IPropertySelector PropSelector);
 	}
 	public interface IQueryResultBuildHelper<E, T, R> : IQueryResultBuildHelper<E, R>

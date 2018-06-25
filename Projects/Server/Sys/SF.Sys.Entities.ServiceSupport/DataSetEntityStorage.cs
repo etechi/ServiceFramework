@@ -125,7 +125,7 @@ namespace SF.Sys.Entities
 		(
 			this IEntityServiceContext ServiceContext,
 			TKey Id,
-			Func<IContextQueryable<TModel>, Task<TReadOnlyEntity >> MapModelToReadOnly
+			Func<IQueryable<TModel>, Task<TReadOnlyEntity >> MapModelToReadOnly
 		)
 			where TModel : class
 		{
@@ -171,7 +171,7 @@ namespace SF.Sys.Entities
 		(
 			this IEntityServiceContext ServiceContext,
 			TKey Id,
-			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
+			Func<IQueryable<TModel>, IQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
 			where TModel : class
@@ -193,7 +193,7 @@ namespace SF.Sys.Entities
 		(
 			this IEntityServiceContext ServiceContext,
 			TKey Id,
-			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly,
+			Func<IQueryable<TModel>, IQueryable<TReadOnlyEntity>> MapModelToReadOnly,
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
 			where TModel : class
@@ -208,7 +208,7 @@ namespace SF.Sys.Entities
 		(
 			this IEntityServiceContext ServiceContext,
 			TKey Id,
-			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
+			Func<IQueryable<TModel>, IQueryable<TReadOnlyEntity>> MapModelToReadOnly
 		)
 			where TModel : class
 			=> GetAsync<TKey,TReadOnlyEntity, TReadOnlyEntity, TModel>(
@@ -224,7 +224,7 @@ namespace SF.Sys.Entities
 		(
 			this IEntityServiceContext ServiceContext,
 			TKey[] Ids,
-			Func<IContextQueryable<TModel>, Task<TReadOnlyEntity[]>> Query
+			Func<IQueryable<TModel>, Task<TReadOnlyEntity[]>> Query
 		)
 			where TModel : class
 		{
@@ -268,7 +268,7 @@ namespace SF.Sys.Entities
 		(
 			this IEntityServiceContext ServiceContext,
 			TKey[] Ids,
-			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
+			Func<IQueryable<TModel>, IQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
 			where TModel : class
@@ -288,7 +288,7 @@ namespace SF.Sys.Entities
 		(
 			this IEntityServiceContext ServiceContext,
 			TKey[] Ids,
-			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly,
+			Func<IQueryable<TModel>, IQueryable<TReadOnlyEntity>> MapModelToReadOnly,
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 		)
 			where TModel : class
@@ -303,7 +303,7 @@ namespace SF.Sys.Entities
 		(
 			this IEntityServiceContext ServiceContext,
 			TKey[] Ids,
-			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
+			Func<IQueryable<TModel>, IQueryable<TReadOnlyEntity>> MapModelToReadOnly
 		)
 			where TModel : class
 			where TReadOnlyEntity : class
@@ -321,7 +321,7 @@ namespace SF.Sys.Entities
 		public static async Task<QueryResult<TKey>> QueryIdentsAsync<TKey, TQueryArgument, TModel>(
 			this IEntityServiceContext ServiceContext,
 			TQueryArgument Arg,
-			Func<IContextQueryable<TModel>, TQueryArgument, IContextQueryable<TModel>> BuildQuery,
+			Func<IQueryable<TModel>, TQueryArgument, IQueryable<TModel>> BuildQuery,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder
 			)
 			where TModel : class
@@ -347,7 +347,7 @@ namespace SF.Sys.Entities
 		public static async Task<QueryResult<TKey>> AutoQueryIdentsAsync<TKey, TQueryArgument, TModel>(
 			   this IEntityServiceContext ServiceContext,
 			TQueryArgument Arg,
-			Func<IContextQueryable<TModel>, TQueryArgument, IContextQueryable<TModel>> BuildQuery = null,
+			Func<IQueryable<TModel>, TQueryArgument, IQueryable<TModel>> BuildQuery = null,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder = null
 			)
 			where TModel : class
@@ -377,7 +377,7 @@ namespace SF.Sys.Entities
 		#region Query
 		public static async Task<QueryResult<TReadOnlyEntity>> QueryAsync<TReadOnlyEntity, TModel>(
 			   this IEntityServiceContext ServiceContext,
-			Func<IContextQueryable<TModel>,Task< QueryResult<TReadOnlyEntity>>> Query
+			Func<IQueryable<TModel>,Task< QueryResult<TReadOnlyEntity>>> Query
 			)
 			where TModel : class
 		{
@@ -391,9 +391,9 @@ namespace SF.Sys.Entities
 		public static async Task<QueryResult<TReadOnlyEntity>> AutoQueryAsync< TReadOnlyEntity, TQueryArgument, TModel>(
 			   this IEntityServiceContext ServiceContext,
 			TQueryArgument QueryArgument,
-			Func<IContextQueryable<TModel>, TQueryArgument,  IContextQueryable<TModel>> BuildQuery=null,
+			Func<IQueryable<TModel>, TQueryArgument,  IQueryable<TModel>> BuildQuery=null,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder=null,
-			Func<IContextQueryable<TModel>, Task<ISummaryWithCount>> Summary=null
+			Func<IQueryable<TModel>, Task<ISummaryWithCount>> Summary=null
 			)
 			where TModel : class
 			where TQueryArgument:IPagingArgument
@@ -419,9 +419,9 @@ namespace SF.Sys.Entities
 		public static async Task<QueryResult<TReadOnlyEntity>> QueryAsync<TTempReadOnlyEntity, TReadOnlyEntity, TQueryArgument, TModel>(
 			   this IEntityServiceContext ServiceContext,
 			TQueryArgument Arg,
-			Func<IContextQueryable<TModel>, TQueryArgument, IContextQueryable<TModel>> BuildQuery,
+			Func<IQueryable<TModel>, TQueryArgument, IQueryable<TModel>> BuildQuery,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder,
-			Func<IContextQueryable<TModel>, IContextQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
+			Func<IQueryable<TModel>, IQueryable<TTempReadOnlyEntity>> MapModelToReadOnly,
 			Func<TTempReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 			)
 			where TModel : class
@@ -445,9 +445,9 @@ namespace SF.Sys.Entities
 		public static Task<QueryResult<TReadOnlyEntity>> QueryAsync<TReadOnlyEntity, TQueryArgument, TModel>(
 			   this IEntityServiceContext ServiceContext,
 			TQueryArgument Arg,
-			Func<IContextQueryable<TModel>, TQueryArgument, IContextQueryable<TModel>> BuildQuery,
+			Func<IQueryable<TModel>, TQueryArgument, IQueryable<TModel>> BuildQuery,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder,
-			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly,
+			Func<IQueryable<TModel>, IQueryable<TReadOnlyEntity>> MapModelToReadOnly,
 			Func<TReadOnlyEntity[], Task<TReadOnlyEntity[]>> PrepareReadOnly
 			)
 			where TModel : class
@@ -465,9 +465,9 @@ namespace SF.Sys.Entities
 		public static Task<QueryResult<TReadOnlyEntity>> QueryAsync<TReadOnlyEntity, TQueryArgument, TModel>(
 			   this IEntityServiceContext ServiceContext,
 			TQueryArgument Arg,
-			Func<IContextQueryable<TModel>, TQueryArgument, IContextQueryable<TModel>> BuildQuery,
+			Func<IQueryable<TModel>, TQueryArgument, IQueryable<TModel>> BuildQuery,
 			IPagingQueryBuilder<TModel> PagingQueryBuilder,
-			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyEntity>> MapModelToReadOnly
+			Func<IQueryable<TModel>, IQueryable<TReadOnlyEntity>> MapModelToReadOnly
 			)
 			where TModel : class
 			where TQueryArgument:IPagingArgument
@@ -486,7 +486,7 @@ namespace SF.Sys.Entities
 		public static async Task<TEditable> LoadForEdit<TKey,TEditable, TModel>(
 			this IEntityServiceContext ServiceContext,
 			TKey Key,
-			Func<IDataContext,IContextQueryable<TModel>, Task<TEditable>> MapModelToEditable
+			Func<IDataContext,IQueryable<TModel>, Task<TEditable>> MapModelToEditable
 			)
 			where TModel:class
 		{
@@ -846,7 +846,7 @@ namespace SF.Sys.Entities
 			TModifyContext Context,
 			TEditable Entity,
 			Func<TModifyContext, Task> UpdateModel,
-			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
+			Func<TKey, IQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
 			)
 			where TModel : class
 			where TModifyContext:IEntityModifyContext<TEditable, TModel>
@@ -889,7 +889,7 @@ namespace SF.Sys.Entities
 		//	this IEntityServiceContext ServiceContext,
 		//	TEditable Entity,
 		//	Func<IEntityModifyContext<TEditable, TModel>, Task> UpdateModel=null,
-		//	Func<TKey,IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+		//	Func<TKey,IQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
 		//	)
 		//	where TModel : class
 		//{
@@ -905,7 +905,7 @@ namespace SF.Sys.Entities
 			TModifyContext Context,
 			TKey Id,
 			Func<TModifyContext, Task> RemoveModel = null,
-			Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
+			Func<TKey, IQueryable<TModel>, Task<TModel>> LoadModelForEdit = null
 			)
 			where TModel : class
 			where TModifyContext: IEntityModifyContext<TEditable,TModel>
@@ -944,7 +944,7 @@ namespace SF.Sys.Entities
 		//	this IEntityServiceContext ServiceContext,
 		//	TKey Id,
 		//	Func<IEntityModifyContext<TEditable, TModel>, Task> RemoveModel=null,
-		//	Func<TKey, IContextQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
+		//	Func<TKey, IQueryable<TModel>, Task<TModel>> LoadModelForEdit=null
 		//	)
 		//	where TModel : class
 		//{
@@ -1011,26 +1011,26 @@ namespace SF.Sys.Entities
 	{
 		Task<TReadOnly> GetAsync(
 			TKey Key,
-			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyTemp>> MapModelToReadOnly,
+			Func<IQueryable<TModel>, IQueryable<TReadOnlyTemp>> MapModelToReadOnly,
 			Func<TReadOnlyTemp[], Task<TReadOnly[]>> PrepareReadOnly
 		);
 
 		Task<TReadOnly[]> GetAsync(
 			TKey[] Key,
-			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyTemp>> MapModelToReadOnly,
+			Func<IQueryable<TModel>, IQueryable<TReadOnlyTemp>> MapModelToReadOnly,
 			Func<TReadOnlyTemp[], Task<TReadOnly[]>> PrepareReadOnly
 			);
 
 		Task<QueryResult<TReadOnly>> QueryIdentsAsync(
 			TQueryArgument Arg,
 			Paging paging,
-			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyTemp>> MapModelToReadOnly,
+			Func<IQueryable<TModel>, IQueryable<TReadOnlyTemp>> MapModelToReadOnly,
 			Func<TReadOnlyTemp[], Task<TReadOnly[]>> PrepareReadOnly
 			);
 		Task<QueryResult<TReadOnly>> QueryAsync(
 			TQueryArgument Arg,
 			Paging paging,
-			Func<IContextQueryable<TModel>, IContextQueryable<TReadOnlyTemp>> MapModelToReadOnly,
+			Func<IQueryable<TModel>, IQueryable<TReadOnlyTemp>> MapModelToReadOnly,
 			Func<TReadOnlyTemp[], Task<TReadOnly[]>> PrepareReadOnly
 			);
 	}
@@ -1041,7 +1041,7 @@ namespace SF.Sys.Entities
 	{
 		Task<TEditable> LoadForEdit(
 			TKey Id, 
-			Func<IContextQueryable<TModel>, Task<TEditable>> MapModelToEditable
+			Func<IQueryable<TModel>, Task<TEditable>> MapModelToEditable
 			);
 
 		Task<TKey> CreateAsync(

@@ -37,7 +37,7 @@ namespace SF.Common.FrontEndContents
 		where TSiteTemplate : DataModels.SiteTemplate<TSite,TSiteTemplate>, new()
 	{
 
-        protected override async Task<TSiteTemplatePublic> OnMapModelToEditable(IDataContext DataContext, IContextQueryable<TSiteTemplate> Query)
+        protected override async Task<TSiteTemplatePublic> OnMapModelToEditable(IDataContext DataContext, IQueryable<TSiteTemplate> Query)
 		{
 			var re=await Query.Select(s =>
 				new
@@ -55,7 +55,7 @@ namespace SF.Common.FrontEndContents
 			return re.tmpl;
 		}
 
-        protected override IContextQueryable<TSiteTemplatePublic> OnMapModelToDetail(IContextQueryable<TSiteTemplate> Query)
+        protected override IQueryable<TSiteTemplatePublic> OnMapModelToDetail(IQueryable<TSiteTemplate> Query)
 		{
 			return Query.Select(s => new TSiteTemplatePublic
 			{
@@ -65,7 +65,7 @@ namespace SF.Common.FrontEndContents
 			});
 		}
 
-		protected override IContextQueryable<TSiteTemplate> OnBuildQuery(IContextQueryable<TSiteTemplate> Query, SiteTemplateQueryArgument Arg)
+		protected override IQueryable<TSiteTemplate> OnBuildQuery(IQueryable<TSiteTemplate> Query, SiteTemplateQueryArgument Arg)
 		{
 			return Query.Filter(Arg.Name, c => c.Name);
 			

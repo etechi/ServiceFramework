@@ -68,7 +68,7 @@ namespace SF.Sys.Services.Management
 
 		public Task<QueryResult<ServiceDeclaration>> QueryAsync(ServiceDeclarationQueryArgument Arg)
 		{
-			var q = Items.Values.AsContextQueryable();
+			var q = Items.Values.AsQueryable();
 			if (Arg.Id!=null)
 				q = q.Where(i => i.Id == Arg.Id.Id);
 			else

@@ -22,22 +22,23 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Data
 {
-	public interface IEntityQueryableProvider
+	public interface IEntityQueryProvider 
 	{
-		IContextQueryable<T> Include<T>(IContextQueryable<T> source, string path) where T:class;
-		IContextQueryable<T> Include<T, TProperty>(IContextQueryable<T> source, Expression<Func<T, TProperty>> path) where T:class;
+		IDataContext DataContext { get; }
+		IQueryable<T> Include<T>(IQueryable<T> source, string path) where T:class;
+		IQueryable<T> Include<T, TProperty>(IQueryable<T> source, Expression<Func<T, TProperty>> path) where T:class;
 	}
 
 	public static class ContextQueryableExtension
 	{
 		
-		public static IContextQueryable<T> Include<T>(this IContextQueryable<T> source, string path) where T : class
+		public static IQueryable<T> Include<T>(this IQueryable<T> source, string path) where T : class
 		{
-			return ((IDataContextProvider)source.Context).EntityQueryableProvider.Include(source, path);
+			return ((IEntityQueryProvider)source.Provider).Include(source, path);
 		}
-		public static IContextQueryable<T> Include<T, TProperty>(this IContextQueryable<T> source, Expression<Func<T, TProperty>> path) where T : class
+		public static IQueryable<T> Include<T, TProperty>(this IQueryable<T> source, Expression<Func<T, TProperty>> path) where T : class
 		{
-			return ((IDataContextProvider)source.Context).EntityQueryableProvider.Include(source, path);
+			return ((IEntityQueryProvider)source.Provider).Include(source, path);
 		}
 
 	}

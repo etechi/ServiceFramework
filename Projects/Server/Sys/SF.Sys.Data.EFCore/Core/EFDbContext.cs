@@ -31,30 +31,6 @@ using System.Threading;
 namespace SF.Sys.Data.EntityFrameworkCore
 {
 
-	//public class ServiceProtocolDataIndexAttributeConvention : AttributeToColumnAnnotationConvention<ServiceProtocol.Entities.IndexAttribute, IndexAnnotation>
-	//{
-	//	public ServiceProtocolDataIndexAttributeConvention() :
-	//		base("Index",
-	//			(p, a) => new IndexAnnotation(
-	//				a.Select(i =>
-	//					i.Name==null?
-	//					new System.ComponentModel.DataAnnotations.Schema.IndexAttribute
-	//					{
-	//						IsClustered = i.IsClustered,
-	//						IsUnique = i.IsUnique,
-	//						Order = i.Order
-	//					}:new System.ComponentModel.DataAnnotations.Schema.IndexAttribute(i.Name)
-	//					  {
-	//						  IsClustered=i.IsClustered,
-	//						  IsUnique=i.IsUnique,
-	//						  Order=i.Order
-	//					  }
-	//					)
-	//			)
-	//			)
-	//	{ }
-	//}
-
 	
 	public class EFDbContext :
 		IDataContextProvider,
@@ -73,30 +49,6 @@ namespace SF.Sys.Data.EntityFrameworkCore
 			this.DbContext = DbContext;
 			DbContext.ChangeTracker.AutoDetectChangesEnabled = false;
 		}
-		public IAsyncQueryableProvider AsyncQueryableProvider
-		{
-			get
-			{
-				return EntityFrameworkCore.AsyncQueryableProvider.Instance;
-			}
-		}
-
-		public IEntityQueryableProvider EntityQueryableProvider
-		{
-			get
-			{
-				return EntityFrameworkCore.AsyncQueryableProvider.Instance;
-			}
-		}
-
-
-
-		//protected override void OnModelCreating(DbModelBuilder modelBuilder)
-		//{
-		//	base.OnModelCreating(modelBuilder);
-		//	modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
-		//	modelBuilder.Conventions.Add(new ServiceProtocolDataIndexAttributeConvention());
-		//}
 		
 		
 		public int SaveChanges()
@@ -134,17 +86,6 @@ namespace SF.Sys.Data.EntityFrameworkCore
 			return new EFDataSet<T>(DataContext,this);
 		}
 	
-
-
-		public IContextQueryable<T> CreateQueryable<T>(IQueryable<T> Query)
-		{
-			return new DbQueryable<T>(this, Query);
-		}
-
-		public IOrderedContextQueryable<T> CreateOrderedQueryable<T>(IOrderedQueryable<T> Query)
-		{
-			return new DbOrderedQueryable<T>(this, Query);
-		}
 
 
 		
@@ -211,39 +152,40 @@ namespace SF.Sys.Data.EntityFrameworkCore
 				DbContext.Entry(entity.Entity).State = EntityState.Detached;
 			}
 		}
-		private static readonly TypeInfo QueryCompilerTypeInfo = typeof(QueryCompiler).GetTypeInfo();
+		//private static readonly TypeInfo QueryCompilerTypeInfo = typeof(QueryCompiler).GetTypeInfo();
 
-		private static readonly FieldInfo QueryCompilerField = typeof(EntityQueryProvider).GetTypeInfo().DeclaredFields.First(x => x.Name == "_queryCompiler");
+		//private static readonly FieldInfo QueryCompilerField = typeof(EntityQueryProvider).GetTypeInfo().DeclaredFields.First(x => x.Name == "_queryCompiler");
 
-		private static readonly PropertyInfo NodeTypeProviderField = QueryCompilerTypeInfo.DeclaredProperties.Single(x => x.Name == "NodeTypeProvider");
+		//private static readonly PropertyInfo NodeTypeProviderField = QueryCompilerTypeInfo.DeclaredProperties.Single(x => x.Name == "NodeTypeProvider");
 
-		private static readonly MethodInfo CreateQueryParserMethod = QueryCompilerTypeInfo.DeclaredMethods.First(x => x.Name == "CreateQueryParser");
+		//private static readonly MethodInfo CreateQueryParserMethod = QueryCompilerTypeInfo.DeclaredMethods.First(x => x.Name == "CreateQueryParser");
 
-		private static readonly FieldInfo DataBaseField = QueryCompilerTypeInfo.DeclaredFields.Single(x => x.Name == "_database");
+		//private static readonly FieldInfo DataBaseField = QueryCompilerTypeInfo.DeclaredFields.Single(x => x.Name == "_database");
 
-		private static readonly PropertyInfo DatabaseDependenciesField = typeof(Database).GetTypeInfo().DeclaredProperties.Single(x => x.Name == "Dependencies");
+		//private static readonly PropertyInfo DatabaseDependenciesField = typeof(Database).GetTypeInfo().DeclaredProperties.Single(x => x.Name == "Dependencies");
 
-		public IEnumerable<string> GetUnderlingCommandTexts<TEntity>(IContextQueryable<TEntity> Queryable) where TEntity:class
+		public IEnumerable<string> GetUnderlingCommandTexts<TEntity>(IQueryable<TEntity> Queryable) where TEntity:class
 		{
-			var dbq = Queryable as DbQueryable<TEntity>;
-			if (dbq == null)
-				return Enumerable.Empty<string>();
-			var query = dbq.Queryable;
-			//if (!(query is EntityQueryable<TEntity>) && !(query is InternalDbSet<TEntity>))
-			//{
-			//	throw new ArgumentException("Invalid query");
-			//}
+			return Enumerable.Empty<string>();
+			//var dbq = Queryable as DbQueryable<TEntity>;
+			//if (dbq == null)
+			//	return Enumerable.Empty<string>();
+			//var query = dbq.InnerQueryable;
+			////if (!(query is EntityQueryable<TEntity>) && !(query is InternalDbSet<TEntity>))
+			////{
+			////	throw new ArgumentException("Invalid query");
+			////}
 
-			var queryCompiler = (QueryCompiler)QueryCompilerField.GetValue(query.Provider);
-			var nodeTypeProvider = (INodeTypeProvider)NodeTypeProviderField.GetValue(queryCompiler);
-			var parser = (IQueryParser)CreateQueryParserMethod.Invoke(queryCompiler, new object[] { nodeTypeProvider });
-			var queryModel = parser.GetParsedQuery(query.Expression);
-			var database = DataBaseField.GetValue(queryCompiler);
-			var databaseDependencies = (DatabaseDependencies)DatabaseDependenciesField.GetValue(database);
-			var queryCompilationContext = databaseDependencies.QueryCompilationContextFactory.Create(false);
-			var modelVisitor = (RelationalQueryModelVisitor)queryCompilationContext.CreateQueryModelVisitor();
-			modelVisitor.CreateQueryExecutor<TEntity>(queryModel);
-			return modelVisitor.Queries.Select(q => q.ToString());
+			//var queryCompiler = (QueryCompiler)QueryCompilerField.GetValue(query.Provider);
+			//var nodeTypeProvider = (INodeTypeProvider)NodeTypeProviderField.GetValue(queryCompiler);
+			//var parser = (IQueryParser)CreateQueryParserMethod.Invoke(queryCompiler, new object[] { nodeTypeProvider });
+			//var queryModel = parser.GetParsedQuery(query.Expression);
+			//var database = DataBaseField.GetValue(queryCompiler);
+			//var databaseDependencies = (DatabaseDependencies)DatabaseDependenciesField.GetValue(database);
+			//var queryCompilationContext = databaseDependencies.QueryCompilationContextFactory.Create(false);
+			//var modelVisitor = (RelationalQueryModelVisitor)queryCompilationContext.CreateQueryModelVisitor();
+			//modelVisitor.CreateQueryExecutor<TEntity>(queryModel);
+			//return modelVisitor.Queries.Select(q => q.ToString());
 		}
 
 		public DbConnection GetDbConnection()

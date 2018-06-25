@@ -21,7 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SF.Sys.ADT\SF.Sys.ADT.csproj" />
-    <ProjectReference Include="..\SF.Sys.Linq.ContextQueryable\SF.Sys.Linq.ContextQueryable.csproj" />
     <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
     <ProjectReference Include="..\SF.Sys.Threading\SF.Sys.Threading.csproj" />
   </ItemGroup>

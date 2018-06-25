@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys;
 using SF.Sys.Data;
 using SF.Sys.Entities;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace SF.Common.FrontEndContents
 		where TSiteTemplate : DataModels.SiteTemplate<TSite,TSiteTemplate>
 	{
 
-        protected override async Task<TSitePublic> OnMapModelToEditable(IDataContext DataContext ,IContextQueryable<TSite> Query)
+        protected override async Task<TSitePublic> OnMapModelToEditable(IDataContext DataContext ,IQueryable<TSite> Query)
 		{
 			return await Query.Select(s => new TSitePublic
 				{
@@ -47,7 +48,7 @@ namespace SF.Common.FrontEndContents
 				}).SingleOrDefaultAsync();
 		}
 
-        protected override IContextQueryable<TSitePublic> OnMapModelToDetail(IContextQueryable<TSite> Query)
+        protected override IQueryable<TSitePublic> OnMapModelToDetail(IQueryable<TSite> Query)
 		{
 			return Query.Select(s => new TSitePublic
 			{

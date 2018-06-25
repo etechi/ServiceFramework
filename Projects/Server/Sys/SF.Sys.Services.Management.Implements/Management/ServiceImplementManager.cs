@@ -78,7 +78,7 @@ namespace SF.Sys.Services.Management
 			);
 		public Task<QueryResult<ServiceImplement>> QueryAsync(ServiceImplementQueryArgument Arg)
 		{
-			var q = Items.Values.AsContextQueryable();
+			var q = Items.Values.AsQueryable();
 			if (Arg.Id!=null)
 				q = q.Where(i => i.Id == Arg.Id.Id);
 			else

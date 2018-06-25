@@ -173,7 +173,7 @@ namespace SF.Auth.IdentityServices.Managers
 			
 			await base.OnNewModel(ctx);
 		}
-		protected override IContextQueryable<TUser> OnBuildQuery(IContextQueryable<TUser> Query, TQueryArgument Arg)
+		protected override IQueryable<TUser> OnBuildQuery(IQueryable<TUser> Query, TQueryArgument Arg)
 		{
 			if(Arg.IsAdmin ?? false)
 				Query = Query.Where(u => u.MainClaimTypeId==PredefinedClaimTypes.AdminAccount);

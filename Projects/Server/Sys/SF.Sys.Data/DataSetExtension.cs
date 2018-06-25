@@ -22,6 +22,7 @@ using SF.Sys.Services;
 using SF.Sys.Linq.Expressions;
 using SF.Sys.Collections.Generic;
 using SF.Sys.ADT;
+using SF.Sys.Linq;
 
 namespace SF.Sys.Data
 {
@@ -279,7 +280,7 @@ namespace SF.Sys.Data
 			string Title,
 			TKey Id,
 			TKey NewParentId,
-			Func<TKey ,IContextQueryable<TKey>> GetParentId
+			Func<TKey ,IQueryable<TKey>> GetParentId
 			)
 			where TKey:IEquatable<TKey>
 			where T:class
@@ -484,7 +485,7 @@ namespace SF.Sys.Data
 			this IDataSet<M> set,
 			M cur,
 			bool ReadOnly,
-			Func<IContextQueryable<M>, M, IContextQueryable<M>> Query
+			Func<IQueryable<M>, M, IQueryable<M>> Query
 			)where M:class
 
 			=> Tree.LoadAllChildren(
@@ -721,7 +722,7 @@ namespace SF.Sys.Data
 			string Title,
 			TKey Id,
 			TKey NewParentId,
-			Func<TKey, IContextQueryable<TKey>> GetParentId
+			Func<TKey, IQueryable<TKey>> GetParentId
 			) where TKey : IEquatable<TKey>
 		{
 			return Tree.ValidateTreeParent(

@@ -122,7 +122,7 @@ namespace SF.Sys.Data
 			Provider.ClearTrackingEntities();
 		}
 
-		public IEnumerable<string> GetUnderlingCommandTexts<T>(IContextQueryable<T> Queryable) where T : class
+		public IEnumerable<string> GetUnderlingCommandTexts<T>(IQueryable<T> Queryable) where T : class
 		{
 			CheckDispose();
 			return ((IDataContextProviderExtension)Provider).GetUnderlingCommandTexts(Queryable);

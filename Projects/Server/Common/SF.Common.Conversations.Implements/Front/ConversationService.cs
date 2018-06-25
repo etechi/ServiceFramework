@@ -9,6 +9,7 @@ using SF.Sys.Clients;
 using SF.Sys;
 using SF.Sys.TimeServices;
 using System.Collections.Generic;
+using SF.Sys.Linq;
 
 namespace SF.Common.Conversations.Front
 {

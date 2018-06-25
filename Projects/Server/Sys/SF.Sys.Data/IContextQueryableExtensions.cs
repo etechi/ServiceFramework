@@ -25,11 +25,11 @@ namespace SF.Data
 	//public static class ContextQueryableExtension
 	//{
 		
-	//	public static IContextQueryable<T> Include<T>(this IContextQueryable<T> source, string path) where T : class
+	//	public static IQueryable<T> Include<T>(this IQueryable<T> source, string path) where T : class
 	//	{
 	//		return ((IDataContextProvider)source.Context).EntityQueryableProvider.Include(source, path);
 	//	}
-	//	public static IContextQueryable<T> Include<T, TProperty>(this IContextQueryable<T> source, Expression<Func<T, TProperty>> path) where T : class
+	//	public static IQueryable<T> Include<T, TProperty>(this IQueryable<T> source, Expression<Func<T, TProperty>> path) where T : class
 	//	{
 	//		return ((IDataContextProvider)source.Context).EntityQueryableProvider.Include(source, path);
 	//	}

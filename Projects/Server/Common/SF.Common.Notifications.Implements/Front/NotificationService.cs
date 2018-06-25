@@ -183,8 +183,8 @@ namespace SF.Common.Notifications.Front
 			 });
 		}
 
-		IContextQueryable<UserNotification> Select(
-			IContextQueryable<DataModels.DataNotification> q,long user,bool WithContent)
+		IQueryable<UserNotification> Select(
+			IQueryable<DataModels.DataNotification> q,long user,bool WithContent)
 		{
 			return q.Select(n => new UserNotification
 			{
@@ -284,7 +284,7 @@ namespace SF.Common.Notifications.Front
 
 			return await DataScope.Value.Use("查询通知", async DataContext =>
 			 {
-				 IContextQueryable<DataModels.DataNotification> q;
+				 IQueryable<DataModels.DataNotification> q;
 				 if (Arg.Mode == NotificationMode.Boardcast)
 				 {
 					 q = from n in DataContext.Set<DataModels.DataNotification>().AsQueryable()

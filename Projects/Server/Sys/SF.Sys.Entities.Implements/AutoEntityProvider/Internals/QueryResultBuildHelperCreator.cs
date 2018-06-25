@@ -95,10 +95,10 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 		}
 
 		public Task<QueryResult<TResult>> Query(
-			IContextQueryable<TDataModel> queryable,
+			IQueryable<TDataModel> queryable,
 			IPagingQueryBuilder<TDataModel> PagingQueryBuilder, 
 			Paging paging,
-			Func<IContextQueryable<TDataModel>, Task<ISummaryWithCount>> Summary=null
+			Func<IQueryable<TDataModel>, Task<ISummaryWithCount>> Summary=null
 			)
 		{
 			var props = paging?.Properties;
@@ -113,7 +113,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 				);
 		}
 
-		public async Task<TResult> QuerySingleOrDefault(IContextQueryable<TDataModel> queryable,int Level,IPropertySelector PropertySelector)
+		public async Task<TResult> QuerySingleOrDefault(IQueryable<TDataModel> queryable,int Level,IPropertySelector PropertySelector)
 		{
 			var m = GetMapper(PropertySelector, Level);
 			var re = await queryable.Select(m.EntityMapper).SingleOrDefaultAsync();
@@ -148,14 +148,14 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 		{
 			//var methods = typeof(QueryResultBuildHelperCreator).GetMethods(BindingFlags.Static | BindingFlags.NonPublic);
 
-			MethodOrderByDescending = typeof(ContextQueryable).GetMethodExt(
+			MethodOrderByDescending = typeof(Queryable).GetMethodExt(
 				  "OrderByDescending",
-				  typeof(IContextQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
+				  typeof(IQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
 				  typeof(Expression<>).MakeGenericType<Func<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>>()
 				  ).IsNotNull();
-			MethodOrderBy = typeof(ContextQueryable).GetMethodExt(
+			MethodOrderBy = typeof(Queryable).GetMethodExt(
 				"OrderBy",
-				typeof(IContextQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
+				typeof(IQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
 				typeof(Expression<>).MakeGenericType<Func<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>>()
 				).IsNotNull();
 			MethodCreateQueryResultBuildHelper3 = typeof(QueryResultBuildHelperCreator).GetMethodExt(

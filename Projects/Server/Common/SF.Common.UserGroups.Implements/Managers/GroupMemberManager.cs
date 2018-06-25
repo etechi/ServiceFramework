@@ -84,7 +84,7 @@ namespace SF.Common.UserGroups.Managers
 			return JoinStateDetector.Detect(SessionAccepted, MemberAccepted);
 
 		}
-		protected override IContextQueryable<TDataMember> OnBuildQuery(IContextQueryable<TDataMember> Query, TQueryArument Arg)
+		protected override IQueryable<TDataMember> OnBuildQuery(IQueryable<TDataMember> Query, TQueryArument Arg)
 		{
 			if (Arg.GroupOwnerId.HasValue)
 			{

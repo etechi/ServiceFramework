@@ -14,6 +14,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 
+using SF.Sys.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,26 +30,9 @@ namespace SF.Sys.Entities
 	public static class QueryResultExtension
 	{
 
-		public static QueryResult<R> ToQueryResult<E, T, R>(
-			   this IQueryable<E> query,
-			   Func<IQueryable<E>, IQueryable<T>> mapper,
-			   Func<T, R> resultMapper,
-			   IPagingQueryBuilder<E> pagingBuilder,
-			   Paging paging,
-			   bool? totalRequired = null
-			   )
-		{
-			return ToQueryResult(
-				new NullContextQueryable<E>(query),
-				e => new NullContextQueryable<T>(mapper(e.Queryable)),
-				resultMapper,
-				pagingBuilder,
-				paging,
-				totalRequired
-				);
-		}
+		
 		public static QueryResult<E> ToQueryResult<E>(
-			this IContextQueryable<E> query,
+			this IQueryable<E> query,
 			Paging paging,
 			bool? totalRequired = null
 			)
@@ -61,8 +45,8 @@ namespace SF.Sys.Entities
 				);
 
 		public static QueryResult<R> ToQueryResult<E, T, R>(
-			this IContextQueryable<E> query,
-			Func<IContextQueryable<E>, IContextQueryable<T>> mapper,
+			this IQueryable<E> query,
+			Func<IQueryable<E>, IQueryable<T>> mapper,
 			Func<T, R> resultMapper,
 			IPagingQueryBuilder<E> pagingBuilder,
 			Paging paging,
@@ -88,7 +72,7 @@ namespace SF.Sys.Entities
 			};
 		}
 		public static Task<QueryResult<E>> ToQueryResultAsync<E>(
-			this IContextQueryable<E> query,
+			this IQueryable<E> query,
 			Paging paging,
 			bool? totalRequired = null
 			)
@@ -99,8 +83,8 @@ namespace SF.Sys.Entities
 				paging,
 				totalRequired
 				);
-		public static IContextQueryable<T> ApplyPaging<T>(
-			this IContextQueryable<T> query,
+		public static IQueryable<T> ApplyPaging<T>(
+			this IQueryable<T> query,
 			IPagingQueryBuilder<T> pagingBuilder,
 			Paging paging
 			) {
@@ -111,8 +95,8 @@ namespace SF.Sys.Entities
 			return query.Skip(paging.Offset).Take(paging.Count);
 		}
 		public static async Task<QueryResult<T>> ToQueryResultAsync<E, T>(
-            this IContextQueryable<E> query,
-            Func<IContextQueryable<E>, IContextQueryable<T>> mapper,
+            this IQueryable<E> query,
+            Func<IQueryable<E>, IQueryable<T>> mapper,
 			IPagingQueryBuilder<E> pagingBuilder,
             Paging paging,
             bool? totalRequired = null
@@ -139,12 +123,12 @@ namespace SF.Sys.Entities
 		
 
 		public static async Task<QueryResult<R>> ToQueryResultAsync<E, T, R>(
-			this IContextQueryable<E> query,
-			Func<IContextQueryable<E>, IContextQueryable<T>> mapper,
+			this IQueryable<E> query,
+			Func<IQueryable<E>, IQueryable<T>> mapper,
 			Func<T, R> resultMapper,
 			IPagingQueryBuilder<E> pagingBuilder,
 			Paging paging,
-			Func<IContextQueryable<E>,Task<ISummaryWithCount>> Summary=null
+			Func<IQueryable<E>,Task<ISummaryWithCount>> Summary=null
 			)
 			where E : class
 		{
@@ -175,7 +159,7 @@ namespace SF.Sys.Entities
 		}
 
 		//public static Task<QueryResult<R>> ToQueryResultAsync<E, T, R>(
-		//	this IContextQueryable<E> query,
+		//	this IQueryable<E> query,
 		//	IQueryResultBuildHelper<E, T, R> mapper,
 		//	Paging paging
 		//	)
@@ -189,12 +173,12 @@ namespace SF.Sys.Entities
 		//		);
 
 		public static async Task<QueryResult<R>> ToQueryResultAsync<E, T, R>(
-			this IContextQueryable<E> query,
-			Func<IContextQueryable<E>, IContextQueryable<T>> mapper,
+			this IQueryable<E> query,
+			Func<IQueryable<E>, IQueryable<T>> mapper,
 			Func<T[], Task<R[]>> resultMapper,
 			IPagingQueryBuilder<E> pagingBuilder,
 			Paging paging,
-			Func<IContextQueryable<E>, Task<ISummaryWithCount>> Summary = null
+			Func<IQueryable<E>, Task<ISummaryWithCount>> Summary = null
 			)
 			where E : class
 		{

@@ -70,7 +70,7 @@ namespace SF.Sys.Data
 		//{
 
 		//}
-		//public static Task<T> Query<TSet, T>(this IDataScope scope, Func<IContextQueryable<TSet>, Task<T>> Callback, string Action, DataContextFlag Flags=DataContextFlag.None) where TSet : class
+		//public static Task<T> Query<TSet, T>(this IDataScope scope, Func<IQueryable<TSet>, Task<T>> Callback, string Action, DataContextFlag Flags=DataContextFlag.None) where TSet : class
 		//	=> scope.Use(Action??$"查询{typeof(TSet).FullName}", ctx =>
 		//		  Callback(ctx.Set<TSet>().AsQueryable()),Flags);
 	}

@@ -52,7 +52,7 @@ namespace SF.Common.Documents
 			this.DataScope = DataScope;
 			this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 		}
-		protected virtual IContextQueryable<TDocumentPublic> MapModelToPublic(IContextQueryable<TDocument> query, bool detail)
+		protected virtual IQueryable<TDocumentPublic> MapModelToPublic(IQueryable<TDocument> query, bool detail)
 		{
 			return query.SelectUIObjectEntity(
 				m => new TDocumentPublic
@@ -65,7 +65,7 @@ namespace SF.Common.Documents
 				});
 
 		}
-		protected virtual IContextQueryable<TCategoryPublic> MapModelToPublic(IContextQueryable<TCategory> query, bool detail)
+		protected virtual IQueryable<TCategoryPublic> MapModelToPublic(IQueryable<TCategory> query, bool detail)
 		{
 			return query.SelectUIObjectEntity(
 				m => new TCategoryPublic
@@ -85,11 +85,11 @@ namespace SF.Common.Documents
 			i => i.Add("order", d => d.ItemOrder));
 
 
-		IContextQueryable<TDocument> LimitedDocuments(IDataContext ctx) => ctx.Set<TDocument>().AsQueryable()
+		IQueryable<TDocument> LimitedDocuments(IDataContext ctx) => ctx.Set<TDocument>().AsQueryable()
 				//.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 
-		IContextQueryable<TCategory> LimitedCategories(IDataContext ctx) => ctx.Set<TCategory>().AsQueryable()
+		IQueryable<TCategory> LimitedCategories(IDataContext ctx) => ctx.Set<TCategory>().AsQueryable()
 				//.WithScope(ServiceInstanceDescriptor)
 				.IsEnabled();
 

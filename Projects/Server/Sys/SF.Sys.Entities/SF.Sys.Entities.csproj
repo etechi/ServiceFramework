@@ -21,7 +21,6 @@
     <ProjectReference Include="..\SF.Sys.Annotations\SF.Sys.Annotations.csproj" />
     <ProjectReference Include="..\SF.Sys.Client\SF.Sys.Client.csproj" />
     <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
-    <ProjectReference Include="..\SF.Sys.Linq.ContextQueryable\SF.Sys.Linq.ContextQueryable.csproj" />
     <ProjectReference Include="..\SF.Sys.Serialization\SF.Sys.Serialization.csproj" />
     <ProjectReference Include="..\SF.Sys.Test\SF.Sys.Test.csproj" />
   </ItemGroup>

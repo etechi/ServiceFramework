@@ -86,7 +86,7 @@ namespace SF.Sys.Entities
 		public EntitySource(IEntityServiceContext ServiceContext) :base(ServiceContext)
 		{
 		}
-		protected virtual IContextQueryable<TDetailTemp> OnMapModelToDetail(IContextQueryable<TModel> Query)
+		protected virtual IQueryable<TDetailTemp> OnMapModelToDetail(IQueryable<TModel> Query)
 		{
 			return Query.Select(Poco.MapExpression<TModel, TDetailTemp>());
 		}
@@ -130,7 +130,7 @@ namespace SF.Sys.Entities
 		{
 		}
 
-		protected override IContextQueryable<TEntityDetail> OnMapModelToInternal(IContextQueryable<TEntityDetail> Query)
+		protected override IQueryable<TEntityDetail> OnMapModelToInternal(IQueryable<TEntityDetail> Query)
 		{
 			return Query;
 		}
@@ -162,7 +162,7 @@ namespace SF.Sys.Entities
 		{
 			this.Models = Models;
 		}
-		protected virtual IContextQueryable<TTemp> OnMapModelToInternal(IContextQueryable<TModel> Query)
+		protected virtual IQueryable<TTemp> OnMapModelToInternal(IQueryable<TModel> Query)
 		{
 			return Query.Select(Poco.MapExpression<TModel, TTemp>());
 		}
@@ -171,7 +171,7 @@ namespace SF.Sys.Entities
 		{
 			if (Models.TryGetValue(Id, out var m))
 			{
-				var re = await OnPrepareInternals(OnMapModelToInternal(new[] { m }.AsContextQueryable()).ToArray());
+				var re = await OnPrepareInternals(OnMapModelToInternal(new[] { m }.AsQueryable()).ToArray());
 				if (re == null || re.Length == 0)
 					return default(TEntityDetail);
 				return re[0];
@@ -186,7 +186,7 @@ namespace SF.Sys.Entities
 				OnMapModelToInternal(
 					Ids.Select(id => Models.Get(id))
 					.Where(m => m != null)
-					.AsContextQueryable()
+					.AsQueryable()
 					).ToArray());
 			return re;
 		}

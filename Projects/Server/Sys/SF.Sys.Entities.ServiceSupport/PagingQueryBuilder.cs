@@ -25,7 +25,7 @@ namespace SF.Sys.Entities
 {
 	public interface IPagingQueryBuilderInitializer<T>
 	{
-		IPagingQueryBuilderInitializer<T> Add(string name, Func<IContextQueryable<T>, bool, IContextQueryable<T>> expr, bool defaultOrderDesc = false);
+		IPagingQueryBuilderInitializer<T> Add(string name, Func<IQueryable<T>, bool, IQueryable<T>> expr, bool defaultOrderDesc = false);
 	}
 	public static class IPagingQueryBuilderInitializerExtension
 	{
@@ -44,16 +44,16 @@ namespace SF.Sys.Entities
 		class SortField
 		{
 			public bool defaultOrderDesc;
-			public Func<IContextQueryable<T>, bool, IContextQueryable<T>> query;
+			public Func<IQueryable<T>, bool, IQueryable<T>> query;
         }
 		
 		string DefaultSortMethod { get; }
 		Dictionary<string, SortField> Fields { get; } = new Dictionary<string, SortField>();
 		class PagingQueryBuilderInitializer : IPagingQueryBuilderInitializer<T>
         {
-            public Func<IOrderedContextQueryable<T>, bool, IOrderedContextQueryable<T>> tailSort;
+            public Func<IOrderedQueryable<T>, bool, IOrderedQueryable<T>> tailSort;
             public PagingQueryBuilder<T> builder;
-			public IPagingQueryBuilderInitializer<T> Add(string name, Func<IContextQueryable<T>, bool, IContextQueryable<T>> query, bool defaultOrderDesc = false)
+			public IPagingQueryBuilderInitializer<T> Add(string name, Func<IQueryable<T>, bool, IQueryable<T>> query, bool defaultOrderDesc = false)
 			{
 
 				builder.Fields.Add(
@@ -62,7 +62,7 @@ namespace SF.Sys.Entities
                         query = tailSort==null? query:(ctx,o)=>
                         {
                             var r = query(ctx, o);
-                            var oa = r as IOrderedContextQueryable<T>;
+                            var oa = r as IOrderedQueryable<T>;
                             if (oa == null) return r;
                             return tailSort(oa, false);
                         },
@@ -83,7 +83,7 @@ namespace SF.Sys.Entities
         public PagingQueryBuilder(
             string defaultSortMethod,
             Func<IPagingQueryBuilderInitializer<T>, IPagingQueryBuilderInitializer<T>> initializer,
-             Func<IOrderedContextQueryable<T>, bool, IOrderedContextQueryable<T>> tailSort
+             Func<IOrderedQueryable<T>, bool, IOrderedQueryable<T>> tailSort
             )
         {
             this.DefaultSortMethod = defaultSortMethod;
@@ -91,7 +91,7 @@ namespace SF.Sys.Entities
             initializer(i);
 
         }
-        public IContextQueryable<T> Build(IContextQueryable<T> query, Paging paging)
+        public IQueryable<T> Build(IQueryable<T> query, Paging paging)
 		{
 			if (paging == null)
 				return query;

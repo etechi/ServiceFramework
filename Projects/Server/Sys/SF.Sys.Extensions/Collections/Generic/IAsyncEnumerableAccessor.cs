@@ -13,26 +13,19 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System.Linq;
+using System.Collections.Generic;
 
-namespace SF.Sys.Data.EntityFrameworkCore
+namespace SF.Sys.Collections.Generic
 {
-	class DbOrderedQueryable<T> :
-		DbQueryable<T>,
-		IOrderedContextQueryable<T>
+	public interface IAsyncEnumerableAccessor<out T>
 	{
-
-		public DbOrderedQueryable(EFDbContext Context, IQueryable<T> query):base(Context,query)
+		/// <summary>
+		///     This API supports the Entity Framework Core infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		IAsyncEnumerable<T> AsyncEnumerable
 		{
-		}
-
-		IOrderedQueryable<T> IOrderedContextQueryable<T>.Queryable
-		{
-			get
-			{
-				return (IOrderedQueryable<T>)Queryable;
-			}
+			get;
 		}
 	}
-	
 }

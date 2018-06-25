@@ -346,10 +346,10 @@ namespace SF.Sys.Entities
 				ArgModel
 				);
 
-		static MethodInfo MethodWhere { get; } = typeof(ContextQueryable).GetMethodExt(
-			nameof(ContextQueryable.Where),
+		static MethodInfo MethodWhere { get; } = typeof(Queryable).GetMethodExt(
+			nameof(Queryable.Where),
 			BindingFlags.Static | BindingFlags.Public,
-			typeof(IContextQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
+			typeof(IQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
 			typeof(Expression<>).MakeGenericType(
 				typeof(Func<,>).MakeGenericType(
 					typeof(TypeExtension.GenericTypeArgument),
@@ -382,14 +382,14 @@ namespace SF.Sys.Entities
 				 return re.Length == 1 ? re[0] : re.FirstOrDefault(ip => ip.Name == "Id") ?? re[0];
 			 });
 
-			public static Lazy<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>> Func = new Lazy<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>>(() =>
+			public static Lazy<Func<IQueryable<T>, QueryArgument, IQueryable<T>>> Func = new Lazy<Func<IQueryable<T>, QueryArgument, IQueryable<T>>>(() =>
 			{
 				var p = IdentProperty.Value;
 				if (p == null)
 					return (q, a) => q; 
-				var ArgQueryable = Expression.Parameter(typeof(IContextQueryable<T>));
+				var ArgQueryable = Expression.Parameter(typeof(IQueryable<T>));
 				var ArgQA = Expression.Parameter(typeof(QueryArgument));
-				return Expression.Lambda<Func<IContextQueryable<T>, QueryArgument, IContextQueryable<T>>>(
+				return Expression.Lambda<Func<IQueryable<T>, QueryArgument, IQueryable<T>>>(
 					Expression.Condition(
 						ArgQA.GetMember(p).Equal(Expression.Constant(null, p.PropertyType)),
 						ArgQueryable,
@@ -409,7 +409,7 @@ namespace SF.Sys.Entities
 					).Compile();
 			});
 		}
-		public static IContextQueryable<T> QueryIdentFilter<TQueryArgument>(IContextQueryable<T> q,TQueryArgument a)
+		public static IQueryable<T> QueryIdentFilter<TQueryArgument>(IQueryable<T> q,TQueryArgument a)
 		{
 			return QueryArgumentIdent<TQueryArgument>.Func.Value(q, a);
 		}
@@ -418,8 +418,8 @@ namespace SF.Sys.Entities
 
 		//static class IdentFilter<TQueryArgument>
 		//{
-		//	public static Lazy<Func<IContextQueryable<T>, TQueryArgument, IContextQueryable<T>>> Instance { get; } = 
-		//		new Lazy<Func<IContextQueryable<T>, TQueryArgument, IContextQueryable<T>>>(
+		//	public static Lazy<Func<IQueryable<T>, TQueryArgument, IQueryable<T>>> Instance { get; } = 
+		//		new Lazy<Func<IQueryable<T>, TQueryArgument, IQueryable<T>>>(
 		//		() =>
 		//		{
 		//			var iqa = typeof(TQueryArgument)
@@ -431,11 +431,11 @@ namespace SF.Sys.Entities
 		//				throw new InvalidOperationException($"指定查询参数{typeof(TQueryArgument)}的主键类型{iqa.GenericTypeArguments[0]}和模型{typeof(T)}主键{KeyProperties[0].Name}字段类型{KeyProperties[0].PropertyType}不符");
 		//			var func = MethodQueryIdentFilter
 		//				.MakeGenericMethod(iqa.GenericTypeArguments[0], typeof(TQueryArgument))
-		//				.CreateDelegate<Func<IContextQueryable<T>, TQueryArgument, IContextQueryable<T>>>();
+		//				.CreateDelegate<Func<IQueryable<T>, TQueryArgument, IQueryable<T>>>();
 		//			return func;
 		//		});
 		//}
-		//public static IContextQueryable<T> TryFilterIdent<TQueryArgument>(IContextQueryable<T> q,TQueryArgument arg)
+		//public static IQueryable<T> TryFilterIdent<TQueryArgument>(IQueryable<T> q,TQueryArgument arg)
 		//{
 		//	return IdentFilter<TQueryArgument>.Instance.Value(q, arg);
 		//}

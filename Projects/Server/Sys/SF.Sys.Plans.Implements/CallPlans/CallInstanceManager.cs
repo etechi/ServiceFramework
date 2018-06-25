@@ -34,7 +34,7 @@ namespace SF.Sys.CallPlans
 
 		protected override PagingQueryBuilder<DataModels.CallInstance> PagingQueryBuilder => throw new NotImplementedException();
 
-		protected override IContextQueryable<DataModels.CallInstance> OnBuildQuery(IContextQueryable<DataModels.CallInstance> Query, CallInstanceQueryArgument Arg)
+		protected override IQueryable<DataModels.CallInstance> OnBuildQuery(IQueryable<DataModels.CallInstance> Query, CallInstanceQueryArgument Arg)
 		{
 			throw new NotImplementedException();
 		}

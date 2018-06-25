@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Linq;
 using SF.Sys.Threading;
 using System;
 using System.Collections.Generic;
@@ -67,7 +68,7 @@ namespace SF.Sys.Data
 			);
 		}
 
-		public static IContextQueryable<TModel> Queryable<TModel>(this IDataContext Context,bool ReadOnly=true) where TModel:class
+		public static IQueryable<TModel> Queryable<TModel>(this IDataContext Context,bool ReadOnly=true) where TModel:class
 			=> Context.Set<TModel>().AsQueryable(ReadOnly);
 
 		
@@ -143,10 +144,10 @@ namespace SF.Sys.Data
 		}
 
 		public static IEnumerable<string> GetUnderlingCommandTexts<T>(
-			this IContextQueryable<T> Queryable
+			this IQueryable<T> Queryable
 			) where T : class
 		{
-			var ext=Queryable.Context as IDataContextExtension;
+			var ext=((IEntityQueryProvider) Queryable.Provider).DataContext as IDataContextExtension;
 			if (ext == null)
 				return Enumerable.Empty<string>();
 			return ext.GetUnderlingCommandTexts(Queryable);

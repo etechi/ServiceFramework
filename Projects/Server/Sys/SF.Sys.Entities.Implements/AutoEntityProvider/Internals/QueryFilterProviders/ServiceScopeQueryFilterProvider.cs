@@ -35,8 +35,8 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals.QueryFilterProviders
 				PropertyGetter = Expression.Property(ArgModel, prop);
 				IsNullable = prop.PropertyType.IsGenericTypeOf(typeof(Nullable<>));
 			}
-			public IContextQueryable<TDataModel> Filter(
-				IContextQueryable<TDataModel> Query,
+			public IQueryable<TDataModel> Filter(
+				IQueryable<TDataModel> Query,
 				IEntityServiceContext ServiceContext,
 				TQueryArgument Arg
 				)

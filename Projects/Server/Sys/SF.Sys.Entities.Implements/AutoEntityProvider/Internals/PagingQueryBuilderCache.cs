@@ -32,14 +32,14 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 		{
 			//var methods = typeof(QueryResultBuildHelperCreator).GetMethods(BindingFlags.Static | BindingFlags.NonPublic);
 
-			MethodOrderByDescending = typeof(ContextQueryable).GetMethodExt(
+			MethodOrderByDescending = typeof(Queryable).GetMethodExt(
 				  "OrderByDescending",
-				  typeof(IContextQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
+				  typeof(IQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
 				  typeof(Expression<>).MakeGenericType<Func<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>>()
 				  ).IsNotNull();
-			MethodOrderBy = typeof(ContextQueryable).GetMethodExt(
+			MethodOrderBy = typeof(Queryable).GetMethodExt(
 				"OrderBy",
-				typeof(IContextQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
+				typeof(IQueryable<>).MakeGenericType<TypeExtension.GenericTypeArgument>(),
 				typeof(Expression<>).MakeGenericType<Func<TypeExtension.GenericTypeArgument, TypeExtension.GenericTypeArgument>>()
 				).IsNotNull();
 
@@ -49,7 +49,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 		IPagingQueryBuilder<T> BuildPagingQueryBuilder<T>()
 		{
 			var id = typeof(T).AllPublicInstanceProperties().Where(p => p.IsDefined(typeof(KeyAttribute))).FirstOrDefault();
-			var argQueryable = Expression.Parameter(typeof(IContextQueryable<T>));
+			var argQueryable = Expression.Parameter(typeof(IQueryable<T>));
 			var argDesc = Expression.Parameter(typeof(bool));
 			var argEntity = Expression.Parameter(typeof(T));
 			var IdMapper = Expression.Lambda(
@@ -58,7 +58,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 				);
 			var KeySelectorType = typeof(Expression<>).MakeGenericType(typeof(Func<,>).MakeGenericType(typeof(T), id.PropertyType));
 
-			var expr = Expression.Lambda<Func<IContextQueryable<T>,bool, IContextQueryable<T>>>(
+			var expr = Expression.Lambda<Func<IQueryable<T>,bool, IQueryable<T>>>(
 				Expression.Condition(
 					argDesc,
 					Expression.Call(

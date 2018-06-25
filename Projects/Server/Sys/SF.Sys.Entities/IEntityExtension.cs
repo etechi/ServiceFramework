@@ -69,7 +69,7 @@ namespace SF.Sys.Entities
 
 		//}
 
-		//public static IContextQueryable<TResult> SelectWithProperties<TSource, TResult>(this IContextQueryable<TSource> source, Expression<Func<TSource, TResult>> selector, string[] Properties)
+		//public static IQueryable<TResult> SelectWithProperties<TSource, TResult>(this IQueryable<TSource> source, Expression<Func<TSource, TResult>> selector, string[] Properties)
 		//{
 		//	var expr = selector.Body as MemberInitExpression;
 		//	if (expr != null)
@@ -177,7 +177,7 @@ namespace SF.Sys.Entities
 		//		}
 		//		);
 
-		//static Expression<Func<TSource, TResult>> GetUIObjectEntityMapper<TSource, TResult>(this IContextQueryable<TSource> source)
+		//static Expression<Func<TSource, TResult>> GetUIObjectEntityMapper<TSource, TResult>(this IQueryable<TSource> source)
 		//	where TSource : IUIObjectEntity
 		//	where TResult : IUIObjectEntity, new()
 		//	=> 
@@ -194,7 +194,7 @@ namespace SF.Sys.Entities
 		//				}
 		//			);
 
-		//static Expression<Func<TSource, TResult>> GetContainerItemEntityMapper<TSource, TResult>(this IContextQueryable<TSource> source)
+		//static Expression<Func<TSource, TResult>> GetContainerItemEntityMapper<TSource, TResult>(this IQueryable<TSource> source)
 		//	where TSource : IItemEntity
 		//	where TResult : IItemEntity, new()
 		//	=> Lambda<TSource, TResult>(
@@ -203,8 +203,8 @@ namespace SF.Sys.Entities
 		//			ContainerId=s.ContainerId
 		//		}
 		//	);
-		public static IContextQueryable<TResult> SelectObjectEntity<TSource, TResult>(
-			this IContextQueryable<TSource> source,
+		public static IQueryable<TResult> SelectObjectEntity<TSource, TResult>(
+			this IQueryable<TSource> source,
 			Expression<Func<TSource, TResult>> selector
 			)
 			where TSource : IObjectEntity
@@ -222,8 +222,8 @@ namespace SF.Sys.Entities
 				selector
 				));
 		}
-		public static IContextQueryable<TResult> SelectUIObjectEntity<TSource, TResult>(
-			this IContextQueryable<TSource> source,
+		public static IQueryable<TResult> SelectUIObjectEntity<TSource, TResult>(
+			this IQueryable<TSource> source,
 			Expression<Func<TSource, TResult>> selector
 			)
 			where TSource : IUIObjectEntity
@@ -247,8 +247,8 @@ namespace SF.Sys.Entities
 				selector
 				));
 		}
-		public static IContextQueryable<TResult> SelectEventEntity<TSource, TResult>(
-			this IContextQueryable<TSource> source,
+		public static IQueryable<TResult> SelectEventEntity<TSource, TResult>(
+			this IQueryable<TSource> source,
 			Expression<Func<TSource, TResult>> selector
 			)
 			where TSource : IEventEntity
@@ -264,8 +264,8 @@ namespace SF.Sys.Entities
 				selector
 				));
 		}
-		//public static IContextQueryable<TResult> SelectObjectEntity<TSource, TResult>(
-		//	this IContextQueryable<TSource> source,
+		//public static IQueryable<TResult> SelectObjectEntity<TSource, TResult>(
+		//	this IQueryable<TSource> source,
 		//	Expression<Func<TSource, TResult>> selector
 		//	)
 		//	where TSource : IObjectEntity
@@ -276,8 +276,8 @@ namespace SF.Sys.Entities
 		//		TypePropertyNames<IObjectEntity>.Values
 		//		);
 		//}
-		//public static IContextQueryable<TResult> SelectUIObjectEntity<TSource, TResult>(
-		//	this IContextQueryable<TSource> source,
+		//public static IQueryable<TResult> SelectUIObjectEntity<TSource, TResult>(
+		//	this IQueryable<TSource> source,
 		//	Expression<Func<TSource, TResult>> selector
 		//	)
 		//	where TResult : IUIObjectEntity, new()
@@ -288,8 +288,8 @@ namespace SF.Sys.Entities
 		//		TypePropertyNames<IUIObjectEntity>.Values
 		//		);
 		//}
-		//public static IContextQueryable<TResult> SelectEventEntity<TSource, TResult>(
-		//	this IContextQueryable<TSource> source, 
+		//public static IQueryable<TResult> SelectEventEntity<TSource, TResult>(
+		//	this IQueryable<TSource> source, 
 		//	Expression<Func<TSource, TResult>> selector
 		//	)
 		//{

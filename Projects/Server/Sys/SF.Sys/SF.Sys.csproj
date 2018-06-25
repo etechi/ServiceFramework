@@ -29,7 +29,6 @@
     <ProjectReference Include="..\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
     <ProjectReference Include="..\SF.Sys.HttpClient.Implements\SF.Sys.HttpClient.Implements.csproj" />
     <ProjectReference Include="..\SF.Sys.HttpClient\SF.Sys.HttpClient.csproj" />
-    <ProjectReference Include="..\SF.Sys.Linq.ContextQueryable\SF.Sys.Linq.ContextQueryable.csproj" />
     <ProjectReference Include="..\SF.Sys.Logging.Implements\SF.Sys.Logging.Implements.csproj" />
     <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />
     <ProjectReference Include="..\SF.Sys.Maths\SF.Sys.Maths.csproj" />

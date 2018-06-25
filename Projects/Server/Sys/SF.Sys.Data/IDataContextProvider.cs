@@ -30,9 +30,9 @@ namespace SF.Sys.Data
 		void Rollback();
 		object RawTransaction { get; }
 	}
-	public interface IDataContextProvider :IDisposable, IQueryableContext,IAsyncQueryableContext
+	public interface IDataContextProvider :IDisposable//, IQueryableContext,IAsyncQueryableContext
 	{
-		IEntityQueryableProvider EntityQueryableProvider { get; }
+		//IEntityQueryableProvider EntityQueryableProvider { get; }
 		IDataSet<T> CreateDataSet<T>(IDataContext DataContext) where T:class;
 		void ClearTrackingEntities();
 		Task<int> SaveChangesAsync();
@@ -44,7 +44,7 @@ namespace SF.Sys.Data
 		object GetEntityOriginalValue(object Entity, string Field);
         string GetEntitySetName<T>() where T : class;
 		DbConnection GetDbConnection();
-		IEnumerable<string> GetUnderlingCommandTexts<T>(IContextQueryable<T> Queryable) where T : class;
+		IEnumerable<string> GetUnderlingCommandTexts<T>(IQueryable<T> Queryable) where T : class;
 		Task<IDataContextTransaction> BeginTransaction(
 			System.Data.IsolationLevel IsolationLevel,
 			CancellationToken cancellationToken

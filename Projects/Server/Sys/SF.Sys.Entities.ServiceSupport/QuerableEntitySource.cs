@@ -36,7 +36,7 @@ namespace SF.Sys.Entities
 		}
 
 		protected virtual IPagingQueryBuilder<TModel> PagingQueryBuilder => null;
-		protected virtual IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, TQueryArgument Arg)
+		protected virtual IQueryable<TModel> OnBuildQuery(IQueryable<TModel> Query, TQueryArgument Arg)
 		{
 			return Query;
 		}
@@ -49,11 +49,11 @@ namespace SF.Sys.Entities
 		{
 			return null;
 		}
-		protected virtual Func<IContextQueryable<TModel>,Task<ISummaryWithCount>> GetSummaryBuilder()
+		protected virtual Func<IQueryable<TModel>,Task<ISummaryWithCount>> GetSummaryBuilder()
 		{
 			var e = GetSummaryExpression();
 			return e == null ? 
-				(Func<IContextQueryable<TModel>, Task<ISummaryWithCount>>)null : 
+				(Func<IQueryable<TModel>, Task<ISummaryWithCount>>)null : 
 				q => q.GroupBy(r => 1).Select(e).SingleOrDefaultAsync();
 		}
 		public virtual Task<QueryResult<TEntitySummary>> QueryAsync(TQueryArgument Arg)
@@ -66,7 +66,7 @@ namespace SF.Sys.Entities
 				GetSummaryBuilder()
 				);
 		}
-		public IContextQueryable<TModel> GetQueryable(SF.Sys.Data.IDataContext ctx, TQueryArgument Arg)
+		public IQueryable<TModel> GetQueryable(SF.Sys.Data.IDataContext ctx, TQueryArgument Arg)
 		{
 			var q = ctx.Queryable<TModel>();
 			if (Arg!=null)
@@ -88,14 +88,14 @@ namespace SF.Sys.Entities
 		{
 		}
 
-		abstract protected IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, TQueryArgument Arg);
+		abstract protected IQueryable<TModel> OnBuildQuery(IQueryable<TModel> Query, TQueryArgument Arg);
 		abstract protected PagingQueryBuilder<TModel> PagingQueryBuilder { get; }
 
 		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg)
 		{
 			return ServiceContext.QueryIdentsAsync<TKey, TQueryArgument, TModel>(Arg, OnBuildQuery, PagingQueryBuilder);
 		}
-		protected virtual IContextQueryable<TSummaryTemp> OnMapModelToSummary(IContextQueryable<TModel> Query)
+		protected virtual IQueryable<TSummaryTemp> OnMapModelToSummary(IQueryable<TModel> Query)
 		{
 			return Query.Select(Poco.MapExpression<TModel, TSummaryTemp>());
 		}
@@ -122,7 +122,7 @@ namespace SF.Sys.Entities
 		public QuerableEntitySource(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
-		protected override IContextQueryable<TDetailTemp> OnMapModelToSummary(IContextQueryable<TModel> Query)
+		protected override IQueryable<TDetailTemp> OnMapModelToSummary(IQueryable<TModel> Query)
 			=> OnMapModelToDetail(Query);
 
 		protected override Task<TEntityDetail[]> OnPrepareSummaries(TDetailTemp[] Internals)
@@ -154,7 +154,7 @@ namespace SF.Sys.Entities
 		{
 		}
 
-		protected override IContextQueryable<TInternal> OnMapModelToInternal(IContextQueryable<TInternal> Query)
+		protected override IQueryable<TInternal> OnMapModelToInternal(IQueryable<TInternal> Query)
 		{
 			return Query;
 		}
@@ -162,7 +162,7 @@ namespace SF.Sys.Entities
 			//new PagingQueryBuilder<TInternal>(
 			//"id", b => b.Add("id", m => m.Id)
 			//);
-		protected override IContextQueryable<TInternal> OnBuildQuery(IContextQueryable<TInternal> Query, QueryArgument<TKey> Arg)
+		protected override IQueryable<TInternal> OnBuildQuery(IQueryable<TInternal> Query, QueryArgument<TKey> Arg)
 		{
 			return Query;
 		}
@@ -176,7 +176,7 @@ namespace SF.Sys.Entities
 		{
 		}
 
-		protected override IContextQueryable<TInternal> OnMapModelToInternal(IContextQueryable<TInternal> Query)
+		protected override IQueryable<TInternal> OnMapModelToInternal(IQueryable<TInternal> Query)
 		{
 			return Query;
 		}
@@ -187,7 +187,7 @@ namespace SF.Sys.Entities
 		protected override PagingQueryBuilder<TInternal> PagingQueryBuilder => new PagingQueryBuilder<TInternal>(
 			"name", b => b.Add("name", m => m.Name)
 			);
-		protected override IContextQueryable<TInternal> OnBuildQuery(IContextQueryable<TInternal> Query, ObjectQueryArgument<TKey> Arg)
+		protected override IQueryable<TInternal> OnBuildQuery(IQueryable<TInternal> Query, ObjectQueryArgument<TKey> Arg)
 		{
 			return Query.Filter(Arg.Name, m => m.Name)
 				.Filter(Arg.LogicState, m => m.LogicState);
@@ -202,7 +202,7 @@ namespace SF.Sys.Entities
 		{
 		}
 
-		protected override IContextQueryable<TInternal> OnMapModelToInternal(IContextQueryable<TInternal> Query)
+		protected override IQueryable<TInternal> OnMapModelToInternal(IQueryable<TInternal> Query)
 		{
 			return Query;
 		}
@@ -231,12 +231,12 @@ namespace SF.Sys.Entities
 		{
 		}
 
-		abstract protected IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, TQueryArgument Arg);
+		abstract protected IQueryable<TModel> OnBuildQuery(IQueryable<TModel> Query, TQueryArgument Arg);
 		abstract protected PagingQueryBuilder<TModel> PagingQueryBuilder { get; }
 
 		public Task<QueryResult<TKey>> QueryIdentsAsync(TQueryArgument Arg)
 		{
-			var q = Models.Values.AsContextQueryable();
+			var q = Models.Values.AsQueryable();
 			q = Entity<TModel>.QueryIdentFilter(q, Arg);
 			q = OnBuildQuery(q, Arg);
 			return q
@@ -249,7 +249,7 @@ namespace SF.Sys.Entities
 		}
 		public Task<QueryResult<TInternal>> QueryAsync(TQueryArgument Arg)
 		{
-			var q = Models.Values.AsContextQueryable();
+			var q = Models.Values.AsQueryable();
 			q = Entity<TModel>.QueryIdentFilter(q, Arg);
 			q = OnBuildQuery(q, Arg);
 			return q

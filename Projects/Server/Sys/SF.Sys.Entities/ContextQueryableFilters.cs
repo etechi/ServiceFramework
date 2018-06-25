@@ -24,8 +24,8 @@ namespace SF.Sys.Entities
 	public static class ContextQueryableFilters
 	{
 		
-		public static IContextQueryable<O> BuildFilter<O>(
-			this IContextQueryable<O> q,
+		public static IQueryable<O> BuildFilter<O>(
+			this IQueryable<O> q,
 			Expression Body,
 			ParameterExpression Arg
 			)
@@ -38,8 +38,8 @@ namespace SF.Sys.Entities
 				   Arg
 				));
 		}
-		public static IContextQueryable<O> BuildFilter<O, T>(
-			this IContextQueryable<O> q,
+		public static IQueryable<O> BuildFilter<O, T>(
+			this IQueryable<O> q,
 			Expression<Func<O, T>> beginPropExpr,
 			Expression<Func<O, T>> endPropExpr,
 			Func<Expression, Expression, Expression> GetFilterExpression
@@ -71,8 +71,8 @@ namespace SF.Sys.Entities
 			return Expression.Equal(prop, Expression.Constant(state.Id));
 		}
 
-		public static IContextQueryable<O> Filter<O, V>(
-			   this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O, V>(
+			   this IQueryable<O> q,
 			   ObjectKey<V> state,
 			   System.Linq.Expressions.Expression<Func<O, V>> propExpr
 			   )
@@ -94,8 +94,8 @@ namespace SF.Sys.Entities
 				return null;
 			return Expression.Equal(prop, Expression.Constant(state.Value));
 		}
-		public static IContextQueryable<O> Filter<O,V>(
-			   this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O,V>(
+			   this IQueryable<O> q,
 			   Option<V> state,
 			   System.Linq.Expressions.Expression<Func<O, V>> propExpr
 			   )
@@ -117,8 +117,8 @@ namespace SF.Sys.Entities
 				return null;
 			return Expression.Equal(prop, Expression.Constant(state.Value == QueryableBoolean.True));
 		}
-		public static IContextQueryable<O> Filter<O>(
-             this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O>(
+             this IQueryable<O> q,
              QueryableBoolean? state,
              System.Linq.Expressions.Expression<Func<O, bool>> propExpr
              )
@@ -138,8 +138,8 @@ namespace SF.Sys.Entities
 				return Expression.NotEqual(prop, Expression.Constant(EntityLogicState.Deleted));
 			return Expression.Equal(prop, Expression.Constant(state.Value));
 		}
-		public static IContextQueryable<O> Filter<O>(
-             this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O>(
+             this IQueryable<O> q,
              EntityLogicState? state,
              System.Linq.Expressions.Expression<Func<O, EntityLogicState>> propExpr
              )
@@ -159,8 +159,8 @@ namespace SF.Sys.Entities
 				return null;
 			return Expression.Equal(prop, Expression.Constant(value.Trim()));
 		}
-		public static IContextQueryable<O> Filter<O>(
-           this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O>(
+           this IQueryable<O> q,
            string value,
            System.Linq.Expressions.Expression<Func<O, string>> propExpr
            )
@@ -181,8 +181,8 @@ namespace SF.Sys.Entities
 			return Expression.Equal(prop, Expression.Constant(state.Value));
 		}
 
-		public static IContextQueryable<O> Filter<O,T>(
-            this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O,T>(
+            this IQueryable<O> q,
             T? value,
             System.Linq.Expressions.Expression<Func<O, T>> propExpr
             )
@@ -225,8 +225,8 @@ namespace SF.Sys.Entities
 					);
 		}
 
-		public static IContextQueryable<O> Filter<O, T>(
-            this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O, T>(
+            this IQueryable<O> q,
             T? value,
             System.Linq.Expressions.Expression<Func<O, T?>> propExpr,
 			bool UseDefaultValueForNoValue=true
@@ -258,8 +258,8 @@ namespace SF.Sys.Entities
 					   );
 		}
 
-		public static IContextQueryable<O> FilterContains<O>(
-            this IContextQueryable<O> q,
+		public static IQueryable<O> FilterContains<O>(
+            this IQueryable<O> q,
             string value,
             System.Linq.Expressions.Expression<Func<O, string>> propExpr
             )
@@ -299,8 +299,8 @@ namespace SF.Sys.Entities
 					);
 		}
 
-		public static IContextQueryable<O> Filter<O,T>(
-            this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O,T>(
+            this IQueryable<O> q,
             QueryRange<T> range,
             System.Linq.Expressions.Expression<Func<O, T>> propExpr,
             T? DefaultBeginValue = null
@@ -356,8 +356,8 @@ namespace SF.Sys.Entities
 					 );
 		}
 
-		public static IContextQueryable<O> Filter<O,T>(
-            this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O,T>(
+            this IQueryable<O> q,
             NullableQueryRange<T> range,
             System.Linq.Expressions.Expression<Func<O, T?>> propExpr
             )
@@ -401,8 +401,8 @@ namespace SF.Sys.Entities
 		
 
 
-		public static IContextQueryable<O> Filter<O,T>(
-            this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O,T>(
+            this IQueryable<O> q,
             QueryRange<T> range,
             System.Linq.Expressions.Expression<Func<O, T>> beginPropExpr,
             System.Linq.Expressions.Expression<Func<O, T>> endPropExpr,
@@ -463,8 +463,8 @@ namespace SF.Sys.Entities
 		}
 
 
-		public static IContextQueryable<O> Filter<O,T>(
-           this IContextQueryable<O> q,
+		public static IQueryable<O> Filter<O,T>(
+           this IQueryable<O> q,
            QueryRange<T> range,
            System.Linq.Expressions.Expression<Func<O, T?>> beginPropExpr,
            System.Linq.Expressions.Expression<Func<O, T?>> endPropExpr
@@ -481,8 +481,8 @@ namespace SF.Sys.Entities
 		}
 
 
-        public static IContextQueryable<O> Filter<O,T>(
-              this IContextQueryable<O> q,
+        public static IQueryable<O> Filter<O,T>(
+              this IQueryable<O> q,
               QueryRange<T> range,
               System.Linq.Expressions.Expression<Func<O, T>> propExpr
               )
@@ -491,8 +491,8 @@ namespace SF.Sys.Entities
         {
             return q.Filter(range, propExpr, null);
         }
-        public static IContextQueryable<O> Filter<O>(
-            this IContextQueryable<O> q,
+        public static IQueryable<O> Filter<O>(
+            this IQueryable<O> q,
             QueryRange<DateTime> range,
             System.Linq.Expressions.Expression<Func<O, DateTime>> propExpr
             )
@@ -504,8 +504,8 @@ namespace SF.Sys.Entities
                 DateTime.Now.Date.AddDays(-31)
                 );
         }
-        public static IContextQueryable<O> Filter<O>(
-            this IContextQueryable<O> q,
+        public static IQueryable<O> Filter<O>(
+            this IQueryable<O> q,
             NullableQueryRange<DateTime> range,
             System.Linq.Expressions.Expression<Func<O, DateTime?>> propExpr
             )
@@ -517,8 +517,8 @@ namespace SF.Sys.Entities
                 );
         }
 		
-        public static IContextQueryable<O> Filter<O>(
-            this IContextQueryable<O> q,
+        public static IQueryable<O> Filter<O>(
+            this IQueryable<O> q,
             QueryRange<DateTime> range,
             System.Linq.Expressions.Expression<Func<O, DateTime>> beginPropExpr,
             System.Linq.Expressions.Expression<Func<O, DateTime>> endPropExpr
@@ -534,8 +534,8 @@ namespace SF.Sys.Entities
         }
 
 
-        public static IContextQueryable<O> Filter<O>(
-           this IContextQueryable<O> q,
+        public static IQueryable<O> Filter<O>(
+           this IQueryable<O> q,
            QueryRange<DateTime> range,
            System.Linq.Expressions.Expression<Func<O, DateTime?>> beginPropExpr,
            System.Linq.Expressions.Expression<Func<O, DateTime?>> endPropExpr

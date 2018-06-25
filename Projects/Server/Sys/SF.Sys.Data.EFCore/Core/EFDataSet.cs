@@ -140,13 +140,16 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		}
 
 		
-		public IContextQueryable<T> AsQueryable(bool ReadOnly)
+		public IQueryable<T> AsQueryable(bool ReadOnly)
 		{
 
 			IQueryable<T> query = Set;
 			if (ReadOnly)
 				query = query.AsNoTracking();
-			return new DbQueryable<T>(Context, query);
+			return new DbQueryable<T>(
+				new DbQueryProvider(DataContext, (Microsoft.EntityFrameworkCore.Query.Internal.IAsyncQueryProvider)query.Provider), 
+				query
+				);
 		}
 
 		public Task<T> FindAsync(params object[] Idents)

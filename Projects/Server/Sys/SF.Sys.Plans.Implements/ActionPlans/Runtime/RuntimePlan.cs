@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SF.Sys.Entities;
+using SF.Sys.Linq;
 
 namespace SF.Sys.ActionPlans.Runtime
 {

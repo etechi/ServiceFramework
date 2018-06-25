@@ -41,7 +41,7 @@ namespace SF.Common.FrontEndContents
 		where TContent: DataModels.Content, new() 
 	{
 
-        protected override async Task<TContentPublic> OnMapModelToEditable(IDataContext DataContext, IContextQueryable<TContent> Query)
+        protected override async Task<TContentPublic> OnMapModelToEditable(IDataContext DataContext, IQueryable<TContent> Query)
 		{
 			var re = await Query.Select(m => new
 			{
@@ -72,7 +72,7 @@ namespace SF.Common.FrontEndContents
 			return re.content;
 		}
 
-        protected override IContextQueryable<TContentPublic> OnMapModelToDetail(IContextQueryable<TContent> Query)
+        protected override IQueryable<TContentPublic> OnMapModelToDetail(IQueryable<TContent> Query)
 		{
 			return Query.Select(m => new TContentPublic
 			{
@@ -121,7 +121,7 @@ namespace SF.Common.FrontEndContents
 			new PagingQueryBuilder<TContent>(
 				"name",
 				i => i.Add("name", m => m.Name));
-		protected override IContextQueryable<TContent> OnBuildQuery(IContextQueryable<TContent> Query, ContentQueryArgument Arg)
+		protected override IQueryable<TContent> OnBuildQuery(IQueryable<TContent> Query, ContentQueryArgument Arg)
 		{
 			return Query.Filter(Arg.Category,c=>c.Category).Filter(Arg.Name,c=>c.Name);
 		}

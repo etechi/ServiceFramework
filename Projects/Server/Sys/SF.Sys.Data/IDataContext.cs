@@ -73,7 +73,7 @@ namespace SF.Sys.Data
 		void UpdateFields<T>(T item, Func<IFieldUpdater<T>, IFieldUpdater<T>> updater) where T : class;
 		object GetEntityOriginalValue(object Entity, string Field);
         string GetEntitySetName<T>() where T : class;
-		IEnumerable<string> GetUnderlingCommandTexts<T>(IContextQueryable<T> Queryable) where T: class;
+		IEnumerable<string> GetUnderlingCommandTexts<T>(IQueryable<T> Queryable) where T: class;
 		IDataContextTransaction Transaction { get; }
 		DbConnection GetDbConnection();
     }

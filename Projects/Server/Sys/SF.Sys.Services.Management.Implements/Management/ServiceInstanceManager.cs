@@ -56,7 +56,7 @@ namespace SF.Sys.Services.Management
 				b => b.Add("name", i => i.Name));
 
 
-		protected override async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IDataContext DataContext, IContextQueryable<DataModels.DataServiceInstance> Query)
+		protected override async Task<Models.ServiceInstanceEditable> OnMapModelToEditable(IDataContext DataContext, IQueryable<DataModels.DataServiceInstance> Query)
 		{
 			var re= await Query.SelectUIObjectEntity(i => new Models.ServiceInstanceEditable
 			{
@@ -94,7 +94,7 @@ namespace SF.Sys.Services.Management
 			return re;
 		}
 
-		protected override IContextQueryable<Models.ServiceInstanceInternal> OnMapModelToDetail(IContextQueryable<DataModels.DataServiceInstance> Query)
+		protected override IQueryable<Models.ServiceInstanceInternal> OnMapModelToDetail(IQueryable<DataModels.DataServiceInstance> Query)
 		{
 			return Query.SelectUIObjectEntity(i => new Models.ServiceInstanceInternal
 			{
@@ -113,7 +113,7 @@ namespace SF.Sys.Services.Management
 			});
 		}
 
-		protected override IContextQueryable<DataModels.DataServiceInstance> OnBuildQuery(IContextQueryable<DataModels.DataServiceInstance> Query, ServiceInstanceQueryArgument Arg)
+		protected override IQueryable<DataModels.DataServiceInstance> OnBuildQuery(IQueryable<DataModels.DataServiceInstance> Query, ServiceInstanceQueryArgument Arg)
 		{
 			if (Arg.Id != null)
 				return Query.Filter(Arg.Id, i => i.Id);

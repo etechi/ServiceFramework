@@ -20,6 +20,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using SF.Sys.Comments;
 using SF.Sys.Data;
+using SF.Sys.Linq;
 
 namespace SF.Sys.Entities
 {
@@ -43,7 +44,7 @@ namespace SF.Sys.Entities
 			"id",
 			b => b.Add("id",Entity<TModel>.SingleKeySelector<TKey>())
 			);
-		protected override IContextQueryable<TModel> OnBuildQuery(IContextQueryable<TModel> Query, QueryArgument<ObjectKey<TKey>> Arg)
+		protected override IQueryable<TModel> OnBuildQuery(IQueryable<TModel> Query, QueryArgument<ObjectKey<TKey>> Arg)
 		{
 			return Query;
 		}
@@ -176,16 +177,16 @@ namespace SF.Sys.Entities
 
         #endregion
 
-        protected virtual IContextQueryable<TModel> OnLoadChildObjectsForUpdate(TKey Id,IContextQueryable<TModel> query)
+        protected virtual IQueryable<TModel> OnLoadChildObjectsForUpdate(TKey Id,IQueryable<TModel> query)
 		{
 			return query;
 		}
-		protected virtual Task<TModel> OnLoadModelForUpdate(TKey Id,IContextQueryable<TModel> ctx)
+		protected virtual Task<TModel> OnLoadModelForUpdate(TKey Id,IQueryable<TModel> ctx)
 		{
 			return OnLoadChildObjectsForUpdate(Id,ctx).SingleOrDefaultAsync();
 		}
 
-		protected virtual Task<TEditable> OnMapModelToEditable(IDataContext Context,IContextQueryable<TModel> Query)
+		protected virtual Task<TEditable> OnMapModelToEditable(IDataContext Context,IQueryable<TModel> Query)
 		{
 			return Query.Select(Poco.MapExpression<TModel, TEditable>()).SingleOrDefaultAsync();
 		}
@@ -474,11 +475,11 @@ namespace SF.Sys.Entities
 
 		#endregion
 
-		protected virtual IContextQueryable<TModel> OnLoadChildObjectsForUpdate(TKey Id, IContextQueryable<TModel> query)
+		protected virtual IQueryable<TModel> OnLoadChildObjectsForUpdate(TKey Id, IQueryable<TModel> query)
 		{
 			return query;
 		}
-		protected virtual Task<TModel> OnLoadModelForUpdate(TKey Id, IContextQueryable<TModel> ctx)
+		protected virtual Task<TModel> OnLoadModelForUpdate(TKey Id, IQueryable<TModel> ctx)
 		{
 			return OnLoadChildObjectsForUpdate(Id, ctx).SingleOrDefaultAsync();
 		}

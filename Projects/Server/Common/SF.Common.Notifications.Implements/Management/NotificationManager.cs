@@ -57,7 +57,7 @@ namespace SF.Common.Notifications.Management
 			this.NotificationSendProviderResolver = NotificationSendProviderResolver;
 		}
 
-		protected override IContextQueryable<DataModels.DataNotification> OnBuildQuery(IContextQueryable<DataModels.DataNotification> Query, NotificationQueryArgument Arg)
+		protected override IQueryable<DataModels.DataNotification> OnBuildQuery(IQueryable<DataModels.DataNotification> Query, NotificationQueryArgument Arg)
 		{
 			if (Arg.State.HasValue)
 			{

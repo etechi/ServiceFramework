@@ -42,7 +42,7 @@ namespace SF.Sys.Entities.AutoEntityProvider.Internals
 			{
 				this.filters = filters;
 			}
-			public IContextQueryable<TDataModel> Filter(IContextQueryable<TDataModel> Query, IEntityServiceContext ServiceContext, TQueryArgument Arg)
+			public IQueryable<TDataModel> Filter(IQueryable<TDataModel> Query, IEntityServiceContext ServiceContext, TQueryArgument Arg)
 			{
 				foreach (var f in filters)
 					Query=f.Filter(Query, ServiceContext, Arg);

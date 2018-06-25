@@ -34,7 +34,7 @@ namespace SF.Sys.Data
 
 		T Update(T Model);
 
-		IContextQueryable<T> AsQueryable(bool ReadOnly=true);
+		IQueryable<T> AsQueryable(bool ReadOnly=true);
 
 		IDataSetMetadata Metadata { get; }
 	}

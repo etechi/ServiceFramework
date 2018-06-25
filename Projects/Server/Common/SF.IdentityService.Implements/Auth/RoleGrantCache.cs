@@ -20,6 +20,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using SF.Auth.IdentityServices.Internals;
+using SF.Sys;
 using SF.Sys.Auth;
 using SF.Sys.Data;
 using SF.Sys.Entities;

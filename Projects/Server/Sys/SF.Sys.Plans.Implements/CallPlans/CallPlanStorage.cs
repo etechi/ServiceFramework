@@ -19,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SF.Sys.Data;
+using SF.Sys.Linq;
 
 namespace SF.Sys.CallPlans
 {
