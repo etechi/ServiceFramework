@@ -57,7 +57,7 @@ namespace SF.Sys.Services
 						s.SerializerSettings,
 						new SF.Sys.Serialization.JsonSetting
 						{
-							IgnoreDefaultValue = true,
+							//IgnoreDefaultValue = true,
 							WithType = false
 						})
 				);

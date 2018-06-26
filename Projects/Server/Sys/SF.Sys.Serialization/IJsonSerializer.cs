@@ -22,7 +22,7 @@ namespace SF.Sys.Serialization
 	public class JsonSetting
 	{
 		public bool WithType { get; set; }
-		public bool IgnoreDefaultValue { get; set; }
+		//public bool IgnoreDefaultValue { get; set; }
 		public bool UseUtcTime { get; set; }
 	}
 	public interface IJsonSerializer

@@ -25,7 +25,7 @@ namespace SF.Sys
 			= new SF.Sys.Serialization.Newtonsoft.JsonSerializer();
 		public static Serialization.JsonSetting DefaultSetting { get; set; } = new Serialization.JsonSetting
 		{
-			IgnoreDefaultValue = true,
+			//IgnoreDefaultValue = true,
 			WithType = false
 		};
 		public static string Stringify<T>(T obj)
