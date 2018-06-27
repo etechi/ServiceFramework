@@ -13,7 +13,7 @@ namespace SF.IdentityService.UnitTest
 	public static class UserTestAppBuilder
 	{
 		public static IAppInstanceBuilder Instance { get; } =
-			EmptyAppBuilder.Instance.With(sc =>
+			TestAppBuilder.Instance.With(sc =>
 			{
 
 				var ds = new DataSourceConfig

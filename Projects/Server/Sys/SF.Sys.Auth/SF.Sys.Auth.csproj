@@ -21,12 +21,10 @@
     <None Remove=".licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SF.Sys.Entities\SF.Sys.Entities.csproj" />
-    <ProjectReference Include="..\SF.Sys.TimeServices\SF.Sys.TimeServices.csproj" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.4" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.2" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.5.0" />
-    <PackageReference Include="system.identitymodel.tokens.jwt" Version="5.2.2" />
+    <ProjectReference Include="..\SF.Sys.Entities\SF.Sys.Entities.csproj" />
+    <ProjectReference Include="..\SF.Sys.TimeServices\SF.Sys.TimeServices.csproj" />
   </ItemGroup>
 </Project>

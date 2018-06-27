@@ -17,20 +17,21 @@ using SF.Sys.Services.Internals;
 using System;
 using System.Linq;
 using System.Data.Common;
-using Dapper;
 using SF.Sys.Collections.Generic;
 using SF.Sys.Reflection;
 using SF.Sys.Data;
+using SF.Sys.Services.Management.DataModels;
+using System.Threading.Tasks;
 
 namespace SF.Sys.Services.Storages
 {
-	public class DBServiceSource : IServiceConfigLoader, IServiceInstanceLister
+	public class EntityDbServiceSource : IServiceConfigLoader, IServiceInstanceLister
 	{
-		IDataSource DataSource { get; }
+		IScoped<IDataScope> ScopedDataScope { get; }
 		IServiceMetadata Metadata { get; }
-		public DBServiceSource(IDataSource DataSource, IServiceMetadata Metadata)
+		public EntityDbServiceSource(IScoped<IDataScope> ScopedDataScope, IServiceMetadata Metadata)
 		{
-			this.DataSource = DataSource;
+			this.ScopedDataScope= ScopedDataScope;
 			this.Metadata = Metadata;
 		}
 		class Config : IServiceConfig
@@ -48,14 +49,20 @@ namespace SF.Sys.Services.Storages
 		}
 		public IServiceConfig GetConfig(long Id)
 		{
-			using (var Connection = DataSource.Connect())
+			return ScopedDataScope.Use(scope => scope.Use("²éÑ¯ÅäÖÃ", ctx =>
 			{
-				var re = Connection.Query<Config>(
-					"select Id,ServiceType,ImplementType,Setting,ContainerId " +
-					"from SysServiceInstance " +
-					"where Id=@Id",
-					new { Id = Id }
-					).SingleOrDefault();
+				var re = (from ins in ctx.Queryable<DataServiceInstance>()
+							where ins.Id == Id
+							select new Config
+							{
+								Id = ins.Id,
+								ServiceType = ins.ServiceType,
+								ImplementType = ins.ImplementType,
+								Setting = ins.Setting,
+								ContainerId = ins.ContainerId
+							}
+						).SingleOrDefault();
+
 				if (re == null)
 					return null;
 				var svcDef = Metadata.ServicesByTypeName.Get(re.ServiceType);
@@ -69,36 +76,40 @@ namespace SF.Sys.Services.Storages
 				re.ImplementType = implType;
 
 				if (re.Setting == null) re.Setting = "{}";
-				return re;
-			}
+				return Task.FromResult((IServiceConfig) re);
+			})).Result;
 		}
 
 		ServiceReference[] IServiceInstanceLister.List(long? ScopeId, string ServiceType, int Limit)
 		{
-			using (var Connection = DataSource.Connect())
+			return ScopedDataScope.Use(scope => scope.Use("²éÑ¯ÅäÖÃ", ctx =>
 			{
 
 				if (ScopeId.HasValue)
 				{
-					var re = Connection.Query<ServiceReference>(
-					"select top " + Limit + " Id,ServiceIdent " +
-					"from SysServiceInstance " +
-					"where ContainerId=@ContainerId and ServiceType=@ServiceType " +
-					"order by ItemOrder", new { ContainerId = ScopeId, ServiceType = ServiceType }
-					).ToArray();
-					return re;
+					var re = (from ins in ctx.Queryable<DataServiceInstance>()
+							  where ins.ContainerId == ScopeId && ins.ServiceType == ServiceType
+							  orderby ins.ItemOrder
+							  select new ServiceReference
+							  {
+								  Id = ins.Id,
+								  ServiceIdent = ins.ServiceIdent
+							  }).Take(Limit).ToArray();
+					return Task.FromResult(re);
 				}
 				else
 				{
-					var re = Connection.Query<ServiceReference>(
-					"select top " + Limit + " Id,ServiceIdent " +
-					"from SysServiceInstance " +
-					"where ContainerId is null and ServiceType=@ServiceType " +
-					"order by ItemOrder", new { ServiceType = ServiceType }
-					).ToArray();
-					return re;
+					var re = (from ins in ctx.Queryable<DataServiceInstance>()
+							  where ins.ContainerId == null && ins.ServiceType == ServiceType
+							  orderby ins.ItemOrder
+							  select new ServiceReference
+							  {
+								  Id = ins.Id,
+								  ServiceIdent = ins.ServiceIdent
+							  }).Take(Limit).ToArray();
+					return Task.FromResult(re);
 				}
-			}
+			})).Result;
 			
 		}
 	}

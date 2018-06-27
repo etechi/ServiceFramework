@@ -41,8 +41,11 @@ namespace SF.Sys.Services
 					.AddUnmanaged<Management.IServiceInstanceManager, Management.ServiceInstanceManager>("SysServiceInstance", "系统服务实例")
 					);
 
-			sc.AddScoped<IServiceConfigLoader, Storages.DBServiceSource>();
-			sc.AddScoped<IServiceInstanceLister, Storages.DBServiceSource>();
+			//sc.AddScoped<IServiceConfigLoader, Storages.DapperDbServiceSource>();
+			//sc.AddScoped<IServiceInstanceLister, Storages.DapperDbServiceSource>();
+			sc.AddScoped<IServiceConfigLoader, Storages.EntityDbServiceSource>();
+			sc.AddScoped<IServiceInstanceLister, Storages.EntityDbServiceSource>();
+
 			sc.AddConsoleBuilder("系统服务", (sp, b) =>
 			{
 				b.AddMenuItems(

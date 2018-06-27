@@ -171,16 +171,37 @@ namespace SF.Sys.Services
 { 
 	public static class DbContextOptionBuilderExtension
 	{
+		public static IServiceCollection AddSqlServerEFCoreDbContext<TDbContext>(
+			   this IServiceCollection Services,
+			   bool AutoMigrate = true
+			   ) where TDbContext : DbContext
+			=> AddEFCoreDbContext<TDbContext>(
+				Services,
+				(options, isp) => options.UseSqlServer(isp.Resolve<IDataSource>().ConnectionString),
+				AutoMigrate
+				);
+
+		public static IServiceCollection AddInMemoryEFCoreDbContext<TDbContext>(
+			   this IServiceCollection Services,
+			   string databaseName
+			   ) where TDbContext : DbContext
+			=> AddEFCoreDbContext<TDbContext>(
+				Services,
+				(options, isp) => options.UseInMemoryDatabase(databaseName),
+				false
+				);
+
 		public static IServiceCollection AddEFCoreDbContext<TDbContext>(
 			this IServiceCollection Services,
+			Func<DbContextOptionsBuilder,IServiceProvider, DbContextOptionsBuilder> OptionBuilder,
 			bool AutoMigrate=true
 			) where TDbContext:DbContext
 		{
 			Services.AddEFCoreDbContext<TDbContext>(
 				(IServiceProvider isp, DbContextOptionsBuilder options) =>
-					options
+					OptionBuilder(options,isp)
 						//.UseLoggerFactory(ls.AsMSLoggerFactory())
-						.UseSqlServer(isp.Resolve<IDataSource>().ConnectionString)
+						//.UseSqlServer(isp.Resolve<IDataSource>().ConnectionString)
 				);
 
 			if(AutoMigrate)

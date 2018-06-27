@@ -27,7 +27,7 @@ namespace SF.Sys.ServiceFeatures
 		class ServiceInitializer
 		{
 			public static ServiceInitializer Instance { get; } = new ServiceInitializer();
-			public async Task InitServices(IServiceProvider sp,string Group, IReadOnlyDictionary<string, string> Args)
+			public async Task<bool> InitServices(IServiceProvider sp,string Group, IReadOnlyDictionary<string, string> Args)
 			{
 				var logger = sp.Resolve<ILogger<ServiceInitializer>>();
 				var bss = sp.Resolve<IEnumerable<IServiceInitializable>>()
@@ -41,11 +41,12 @@ namespace SF.Sys.ServiceFeatures
 					await bs.Init(sp, Args ?? new Dictionary<string,string>());
 					logger.Info("初始化结束:{0} {1}", Group, bs.Title);
 				}
+				return true;
 			}
 		}
-		public static async Task InitServices(this IServiceProvider sp,string Group, IReadOnlyDictionary<string, string> Args=null)
+		public static async Task<bool> InitServices(this IServiceProvider sp,string Group, IReadOnlyDictionary<string, string> Args=null)
 		{
-			await ServiceInitializer.Instance.InitServices(sp,Group, Args);
+			return await ServiceInitializer.Instance.InitServices(sp,Group, Args);
 		}
 
 	}

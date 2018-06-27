@@ -8,18 +8,39 @@
     <DocumentationFile></DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
-    <PackageReference Include="MSTest.TestAdapter" Version="1.3.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="1.3.1" />
+    <None Remove="appsettings.json" />
+    <None Remove="config\setup\SF.Sys.Settings.HttpSetting.json" />
+    <None Remove="config\setup\SF.Sys.Settings.SystemSetting.json" />
+    <None Remove="config\SF.Sys.Services.JwtAuthSettings.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SF.Sys.Auth\SF.Sys.Auth.csproj" />
-    <ProjectReference Include="..\SF.Sys.Data\SF.Sys.Data.csproj" />
-    <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />
-    <ProjectReference Include="..\SF.Sys.Hosting.Implements\SF.Sys.Hosting.Implements.csproj" />
-    <ProjectReference Include="..\SF.Sys.Hosting\SF.Sys.Hosting.csproj" />
-    <ProjectReference Include="..\SF.Sys.Logging.Implements\SF.Sys.Logging.Implements.csproj" />
-    <ProjectReference Include="..\SF.Sys.Services.Runtime\SF.Sys.Services.Runtime.csproj" />
-    <ProjectReference Include="..\SF.Sys.Services\SF.Sys.Services.csproj" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="config\setup\SF.Sys.Settings.HttpSetting.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="config\setup\SF.Sys.Settings.SystemSetting.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="config\SF.Sys.Services.JwtAuthSettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
+    <PackageReference Include="Moq" Version="4.8.3" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Utils\SF.Utils.Parsers\SF.Utils.Parsers.csproj" />
+    <ProjectReference Include="..\SF.Sys\SF.Sys.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

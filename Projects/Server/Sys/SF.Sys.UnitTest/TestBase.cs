@@ -28,7 +28,8 @@ namespace SF.Sys.UnitTest
 		//		AppInstanceBuilder.AppInstance(app =>
 		//			cb(app)
 		//		);
-
+		public TestBase() : this(TestAppBuilder.Instance)
+		{ }
 		public TestBase(IAppInstanceBuilder AppInstanceBuilder)
 		{
 			this.AppInstanceBuilder = AppInstanceBuilder;

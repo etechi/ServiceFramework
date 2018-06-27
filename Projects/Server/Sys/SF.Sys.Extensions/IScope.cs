@@ -28,7 +28,32 @@ namespace SF.Sys
 
 	public static class Scope
 	{
-
+		public static async Task<TResult> Use<TContext, TResult>(
+			this IScope<TContext> Scope,
+			Func<TContext,TResult> Callback,
+			CancellationToken cancellationToken = default(CancellationToken)
+			)
+		{
+			TResult re = default(TResult);
+			await Scope.Use((ctx, ct) =>
+			{
+				re = Callback(ctx);
+				return Task.CompletedTask;
+			}, cancellationToken);
+			return re;
+		}
+		public static async Task Use<TContext>(
+			this IScope<TContext> Scope,
+			Action<TContext> Callback,
+			CancellationToken cancellationToken = default(CancellationToken)
+			)
+		{
+			await Scope.Use((ctx, ct) =>
+			{
+				 Callback(ctx);
+				return Task.CompletedTask;
+			}, cancellationToken);
+		}
 		public static async Task<TResult> Use<TContext, TResult>(
 			this IScope<TContext> Scope,
 			Func<TContext, CancellationToken, Task<TResult>> Callback,
