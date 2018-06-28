@@ -21,33 +21,37 @@ using SF.Sys.Hosting;
 using SF.Auth.IdentityServices;
 using SF.Sys.Services;
 using SF.Sys;
+using SF.Common.UnitTest;
+using SF.UT;
 
-namespace SF.IdentityService.UnitTest
+namespace SF.Common.UT.用户
 {
 	
-	public abstract class UserTest : TestBase
+	[TestClass]
+	public class UserTest : TestBase
 	{
+		public UserTest() : base(UnitTest.TestAppBuilder.Instance) { }
 		public UserTest(IAppInstanceBuilder builder) : base(builder) { }
 	
 		[TestMethod]
 		[Ignore]
 		public async Task 创建_成功_令牌()
 		{
-			await NewServiceScope().Use(async (svc,ct) =>
+			await NewServiceScope().InitServices().Use(async (svc,ct) =>
 				await svc.UserCreate(ReturnToken: true)
 			);
 		}
 		[TestMethod]
 		public async Task 创建_成功_会话()
 		{
-			await NewServiceScope().Use(async (svc, ct) =>
+			await NewServiceScope().InitServices().Use(async (svc, ct) =>
 				await svc.UserCreate(ReturnToken: false)
 			);
 		}
 		[TestMethod]
 		public async Task 创建_账号重复()
 		{
-			await NewServiceScope().Use(async (svc, ct) =>
+			await NewServiceScope().InitServices().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
 				await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
@@ -62,7 +66,7 @@ namespace SF.IdentityService.UnitTest
 		[Ignore]
 		public async Task 登录_成功_令牌()
 		{
-			await NewServiceScope().Use(async (svc, ct) =>
+			await NewServiceScope().InitServices().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
 				var uid2 = await svc.UserSignin(re.Account, re.Password, returnToken: true);
@@ -73,7 +77,7 @@ namespace SF.IdentityService.UnitTest
 		[TestMethod]
 		public async Task 登录_成功_会话()
 		{
-			await NewServiceScope().Use(async (svc, ct) =>
+			await NewServiceScope().InitServices().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
 				var uid2 = await svc.UserSignin(re.Account, re.Password, returnToken: false);
@@ -84,7 +88,7 @@ namespace SF.IdentityService.UnitTest
 		[TestMethod]
 		public async Task 登录_密码错误()
 		{
-			await NewServiceScope().Use(async (svc, ct) =>
+			await NewServiceScope().InitServices().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
 					await Assert.ThrowsExceptionAsync<PublicArgumentException>(async () =>
@@ -97,7 +101,7 @@ namespace SF.IdentityService.UnitTest
 		[TestMethod]
 		public async Task 修改昵称头像()
 		{
-			await NewServiceScope().Use(async (svc, ct) =>
+			await NewServiceScope().InitServices().Use(async (svc, ct) =>
 			{
 				var re = await svc.UserCreate();
 				await svc.UserUpdateNameAndIcon();
@@ -107,7 +111,7 @@ namespace SF.IdentityService.UnitTest
 		[TestMethod]
 		public async Task 修改密码()
 		{
-			await NewServiceScope().Use(async (osp, ct) =>
+			await NewServiceScope().InitServices().Use(async (osp, ct) =>
 			{
 				var acc = await osp
 					.AsScope().NewServiceScope()

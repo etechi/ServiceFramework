@@ -24,6 +24,11 @@ namespace SF.Sys.UnitTest
 						);
 					sc.AddMSConfiguration();
 					sc.AddSystemServices(EnvironmentType.Development);
+					sc.AddLocalClientService();
+					//sc.AddSingleton<IAccessTokenGenerator, NotImplementedIAccessTokenGenerator>();
+					//sc.AddSingleton<IAccessTokenValidator, NotImplementedIAccessTokenValidator>();
+					sc.AddLocalInvokeContext();
+
 					sc.AddInMemoryEFCoreDbContext<TestDbContext>("test");
 					sc.AddSingleton(new Moq.Mock<IInvokeContext>().Object);
 					sc.AddSingleton(new Moq.Mock<IAccessTokenGenerator>().Object);

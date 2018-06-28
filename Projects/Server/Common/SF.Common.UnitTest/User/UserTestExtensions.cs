@@ -9,7 +9,7 @@ using SF.Sys.Clients;
 using SF.Sys.UnitTest;
 using SF.Sys;
 
-namespace SF.IdentityService.UnitTest
+namespace SF.Common.UnitTest
 {
 	public class UserInfo
 	{

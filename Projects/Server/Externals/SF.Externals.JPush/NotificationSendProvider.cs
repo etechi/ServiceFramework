@@ -79,11 +79,14 @@ namespace SF.Externals.JPush
 				audience = new
 				{
 					alias = message.Targets,
-					tag=(tag?.Length??0)==0?null:tag,
+					tag = (tag?.Length ?? 0) == 0 ? null : tag,
 				},
 				notification = new
 				{
 					alert = message.Title
+				},
+				options=new {
+					apns_production= true
 				}
 			};
 			var reqstr = Json.Stringify(req);

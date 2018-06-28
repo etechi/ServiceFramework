@@ -1,0 +1,5 @@
+﻿{
+  "SecurityKey":"1234567890123456",
+  "Issuer":"SF",
+  "Audience":"*"
+}

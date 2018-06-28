@@ -6,6 +6,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile></DocumentationFile>
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="appsettings.json" />
@@ -35,8 +39,10 @@
     <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Sys\SF.Sys.UnitTest\SF.Sys.UnitTest.csproj" />
     <ProjectReference Include="..\..\Utils\SF.Utils.Parsers\SF.Utils.Parsers.csproj" />
-    <ProjectReference Include="..\SF.Sys\SF.Sys.csproj" />
+    <ProjectReference Include="..\SF.Common\SF.Common.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys\SF.Sys.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="nlog.config">
