@@ -30,7 +30,7 @@ namespace SF.Sys.Auth
 	}
 
 	/// <summary>
-	/// 身份标识
+	/// 用户
 	/// </summary>
 	[EntityObject]
 	public class User : IEntityWithId<long>
