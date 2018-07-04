@@ -55,7 +55,6 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddIdentityServices(
 			this IServiceCollection sc,
 			string TablePrefix=null,
-			bool VerifyCodeDisabled=false,
 			string DefaultCredentialProvider=null,
 			string DefaultUserIcon=null
 			)
@@ -141,7 +140,6 @@ namespace SF.Sys.Services
 					sp,
 					sim,
 					scope, 
-					VerifyCodeDisabled,
 					DefaultCredentialProvider,
 					DefaultUserIcon
 					), 
@@ -158,20 +156,21 @@ namespace SF.Sys.Services
 			IServiceProvider ServiceProvider, 
 			IServiceInstanceManager sim, 
 			long? ScopeId,
-			bool VerifyCodeDisabled,
 			string DefaultCredentialProvider,
 			string DefaultUserIcon
 			)
 		{
+			var setting = await ServiceProvider.LoadServiceSetupSetting(
+				new UserServiceSetting
+				{
+					DefaultIdentityCredentialProvider = DefaultCredentialProvider,
+					DefaultIcon = DefaultUserIcon
+				});
+
 			await sim.DefaultService<IUserService, UserService>(
 				new
 				{
-					Setting = new UserServiceSetting
-					{
-						VerifyCodeDisabled = VerifyCodeDisabled,
-						DefaultIdentityCredentialProvider = DefaultCredentialProvider,
-						DefaultIcon= DefaultUserIcon
-					}
+					Setting = setting
 				}
 				)
 				.WithDisplay("用户服务")

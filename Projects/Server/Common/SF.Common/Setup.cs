@@ -48,7 +48,6 @@ namespace SF.Sys
 
 			Services.AddIdentityServices(
 				null,
-				Setting.EnvType == EnvironmentType.Development,
 				"acc",
 				DefaultUserIcon: Setting.StaticResIdent + "-ef-identity-user-png"
 				);

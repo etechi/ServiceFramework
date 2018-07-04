@@ -26,12 +26,11 @@ namespace SF.Auth.IdentityServices
 {
 	public class UserService :
 		IUserService,
-		IAuthSessionService,
-		IManagedServiceWithId
+		IAuthSessionService//,
+		//IManagedServiceWithId
 	{
 		UserServiceSetting Setting { get; }
 
-		public long? ServiceInstanceId => Setting.ServiceInstanceDescriptor.Value.InstanceId;
 		public UserService(UserServiceSetting Setting)
 		{
 			this.Setting = Setting;

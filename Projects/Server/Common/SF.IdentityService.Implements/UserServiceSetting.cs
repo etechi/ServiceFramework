@@ -26,7 +26,7 @@ using System.Collections.Generic;
 
 namespace SF.Auth.IdentityServices
 {
-
+	//用户设置
 	public class UserServiceSetting
 	{
 		/// <summary>
@@ -38,24 +38,69 @@ namespace SF.Auth.IdentityServices
 		/// </summary>
 		[Image]
 		public string DefaultIcon { get; set; }
+		/// <summary>
+		/// 验证码缓存
+		/// </summary>
 		public Lazy<ILocalCache<VerifyCode>> VerifyCodeCache { get; set; }
+		/// <summary>
+		/// 用户存储服务
+		/// </summary>
 		public Lazy<IUserStorage> IdentStorage { get; set; }
+		/// <summary>
+		/// 凭证存储服务
+		/// </summary>
 		public Lazy<IUserCredentialStorage> CredentialStorage { get; set; }
+		/// <summary>
+		/// 客户端服务
+		/// </summary>
 		public Lazy<IClientService> ClientService { get; set; }
+		/// <summary>
+		/// 访问凭证服务
+		/// </summary>
 		public Lazy<IAccessToken> AccessToken{ get; set; }
 		//public Lazy<IAccessTokenHandler> AccessTokenHandler { get; set; }
+		/// <summary>
+		/// 密码摘要服务
+		/// </summary>
 		public Lazy<IPasswordHasher> PasswordHasher { get; set; }
-		public Lazy<IServiceInstanceDescriptor> ServiceInstanceDescriptor { get; set; }
+
+		/// <summary>
+		/// 时间服务
+		/// </summary>
 		public Lazy<ITimeService> TimeService { get; set; }
+		
+		/// <summary>
+		/// 标识缓存
+		/// </summary>
 		public Lazy<ILocalCache<UserData>> IdentityDataCache { get; set; }
 
+		/// <summary>
+		/// 凭证服务
+		/// </summary>
 		public NamedServiceResolver<IUserCredentialProvider> CredentialProviderResolver { get; set; }
+
+		/// <summary>
+		/// 默认凭证提供者
+		/// </summary>
 		public string DefaultIdentityCredentialProvider { get; set; }
-		
+
+		/// <summary>
+		/// 凭证提供者
+		/// </summary>
 		public IEnumerable<IUserCredentialProvider> IdentityCredentialProviders { get; set; }
+
+		/// <summary>
+		/// 令牌验证服务
+		/// </summary>
 		public Lazy<IAccessTokenValidator> AccessTokenValidator { get; set; }
+		/// <summary>
+		/// 令牌生成服务
+		/// </summary>
 		public Lazy<IAccessTokenGenerator> AccessTokenGenerator { get; set; }
 
+		/// <summary>
+		/// 验证图片服务
+		/// </summary>
 		public Lazy<ICaptchaImageService> CaptchaImageService { get; set; }
 
 	}

@@ -44,7 +44,8 @@ namespace SF.Sys
 			{
 				if (type.IsConstType())
 					return value;
-
+				if (typeof(Delegate).IsAssignableFrom(type))
+					return value;
 				return Expression.Call(
 						MethodClone.MakeGenericMethod(type),
 						value
