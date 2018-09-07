@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Sys.Data;
 using SF.Sys.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -43,9 +44,15 @@ namespace SF.Sys.ServiceFeatures
 		{
 			return DataScope.Use("服务初始化:" + Id, async ctx =>
 			{
-				var u = new Uri(InvokeContext.Request.Uri);
-				var args = u.ParseQuery().ToDictionary(p => p.key, p => p.value);
-				await ServiceProvider.InitServices(Id, args);
+                Dictionary<string, string> args;
+                if (InvokeContext.Request?.Uri != null)
+                {
+                    var u = new Uri(InvokeContext.Request.Uri);
+                    args = u.ParseQuery().ToDictionary(p => p.key, p => p.value);
+                }
+                else
+                    args = new Dictionary<string, string>();
+                await ServiceProvider.InitServices(Id, args);
 				return "OK";
 			},
 			DataContextFlag.None,

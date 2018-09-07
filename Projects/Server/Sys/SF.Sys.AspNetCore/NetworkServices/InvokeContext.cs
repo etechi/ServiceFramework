@@ -39,9 +39,9 @@ namespace SF.Sys.AspNetCore.NetworkServices
 
 		public IInvokeResponse Response => this;
 
-		string IInvokeRequest.Method => Context.Request.Method;
+		string IInvokeRequest.Method => Context?.Request.Method ;
 
-		string IInvokeRequest.Uri => Context.Request.GetEncodedUrl();
+		string IInvokeRequest.Uri => Context?.Request.GetEncodedUrl();
 
 		HeaderSet RequestHeaders;
 		IReadOnlyDictionary<string, IEnumerable<string>> IInvokeRequest.Headers

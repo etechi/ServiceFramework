@@ -16,12 +16,12 @@
     <None Remove=".licenseheader" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="microsoft.aspnetcore.authentication.cookies" Version="2.1.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.1" />
+    <PackageReference Include="microsoft.aspnetcore.authentication.cookies" Version="2.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.1.2" />
     <PackageReference Include="microsoft.aspnetcore.diagnostics" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.1.1" />
     <PackageReference Include="microsoft.aspnetcore.httpoverrides" Version="2.1.1" />
-    <PackageReference Include="microsoft.aspnetcore.mvc" Version="2.1.1" />
+    <PackageReference Include="microsoft.aspnetcore.mvc" Version="2.1.2" />
     <PackageReference Include="microsoft.aspnetcore.StaticFiles" Version="2.1.1" />
     <PackageReference Include="microsoft.visualstudio.web.browserlink" Version="2.1.1" />
   </ItemGroup>
