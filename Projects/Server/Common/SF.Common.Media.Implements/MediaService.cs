@@ -18,6 +18,7 @@ using SF.Sys.Caching;
 using SF.Sys.Collections.Generic;
 using SF.Sys.Drawing;
 using SF.Sys.IO;
+using SF.Sys.Logging;
 using SF.Sys.Mime;
 using SF.Sys.NetworkService;
 using System;
@@ -103,7 +104,7 @@ namespace SF.Common.Media
 		public Lazy<IInvokeContext> InvokeContext { get; }
 		public Lazy<IImageProvider> ImageProvider { get; }
 		public Lazy<IFileCache> FileCache { get; }
-
+        public ILogger Logger { get; }
 
 
 		/// <summary>
@@ -123,8 +124,9 @@ namespace SF.Common.Media
 			Lazy<IUploadedFileCollection> FileCollection,
 			Lazy<IInvokeContext> InvokeContext,
 			Lazy<IImageProvider> ImageProvider,
-			Lazy<IFileCache> FileCache
-			)
+			Lazy<IFileCache> FileCache,
+            ILogger<IMediaService> Logger
+            )
 		{
 			this.Manager = Manager;
 			this.Setting = Setting;
@@ -133,7 +135,9 @@ namespace SF.Common.Media
 			this.InvokeContext = InvokeContext;
 			this.ImageProvider = ImageProvider;
 			this.FileCache = FileCache;
-		}
+            this.Logger = Logger;
+
+        }
 		public async Task<CopyResult> CopyImage(string uri)
 		{
 			var re=await Manager.TryCreateByImageUri(
@@ -152,6 +156,8 @@ namespace SF.Common.Media
                 if (Files.Length== 0)
                     throw new ArgumentException();
                 var file = Files[0];
+                Logger.Info($"文件上传:  key:{file.Key} file:{file.FileName} mime:{file.ContentType} size:{file.ContentLength}bytes");
+
                 if (file.ContentLength > Setting.MaxSize * 1024 * 1024)
                     throw new PublicNotSupportedException($"文件尺寸太大，不能超过{Setting.MaxSize}MB");
                 if (!Setting.Mimes.Contains(file.ContentType))

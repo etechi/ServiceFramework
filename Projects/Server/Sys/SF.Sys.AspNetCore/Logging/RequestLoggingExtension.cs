@@ -93,7 +93,14 @@ namespace SF.Sys.AspNetCore
 				req.Body = new System.IO.MemoryStream(buf);
 				return buf;
 			}
-			return Encoding.UTF8.GetBytes(req.ContentType+":"+req.ContentLength);
+            var ctn = $"{req.ContentType} {req.ContentLength}bytes";
+            if (req.ContentType?.StartsWith("multipart/form-data;") ??false)
+                for (var i = 0; i < req.Form.Files.Count; i++)
+                {
+                    var f = req.Form.Files[i];
+                    ctn += $" file{i}(key={f.Name} file={f.FileName} mime={f.ContentType} size={f.Length})";
+                }
+			return Encoding.UTF8.GetBytes(ctn);
 		}
 		public static IApplicationBuilder UseRequestLogging(this IApplicationBuilder app) {
 			return app.Use(async (context,next) =>

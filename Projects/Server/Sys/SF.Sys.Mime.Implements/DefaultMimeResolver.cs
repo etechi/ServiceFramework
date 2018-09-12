@@ -62,6 +62,7 @@ namespace SF.Sys.Mime
 		{".aiff", "audio/aiff"},
 		{".air", "application/vnd.adobe.air-application-installer-package+zip"},
 		{".amc", "application/x-mpeg"},
+        {".amr", "audio/amr" },
 		{".application", "application/x-ms-application"},
 		{".art", "image/x-jg"},
 		{".asa", "application/xml"},
