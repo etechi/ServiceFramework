@@ -264,7 +264,8 @@ namespace SF.Sys.Reflection
 			typeof(string),
 			typeof(DateTime),
 			typeof(TimeSpan),
-			typeof(Guid)
+			typeof(Guid),
+            typeof(decimal)
 		};
 		public static bool IsConstType(this Type type)
 		{
