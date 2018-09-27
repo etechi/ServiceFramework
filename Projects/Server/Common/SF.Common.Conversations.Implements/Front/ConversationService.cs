@@ -59,7 +59,7 @@ namespace SF.Common.Conversations.Front
 		}
 
 		
-		async Task<(Providers.ISessionProvider Provider,long UserId)> EnsureSessionMember(
+		async Task<(Providers.ISessionProvider Provider,long UserId,DateTime JoinTime)> EnsureSessionMember(
 			string BizIdentType,
 			long BizIdent
 			)
@@ -74,8 +74,8 @@ namespace SF.Common.Conversations.Front
 			var provider = SessionProviderResolver(BizIdentType);
 			if(provider==null)
 				throw new PublicDeniedException("找不到会话类型："+BizIdentType);
-			await provider.MemberRelationValidate(BizIdent, user);
-			return (provider, user);
+			var joinTime=await provider.MemberRelationValidate(BizIdent, user);
+			return (provider, user, joinTime);
 		}
 
 		/// <summary>
@@ -92,8 +92,9 @@ namespace SF.Common.Conversations.Front
 				 var rq = from s in DataContext.Set<DataModels.DataSessionStatus>().AsQueryable()
 						 where s.BizIdentType == Arg.BizIdentType &&
 								 s.BizIdent == Arg.BizIdent &&
-								 s.LogicState == EntityLogicState.Enabled
-						 from m in s.Messages
+								 s.LogicState == EntityLogicState.Enabled &&
+                                 s.CreatedTime>= ctx.JoinTime
+                          from m in s.Messages
 						 select new SessionMessage
 						 {
 							 Id = m.Id,

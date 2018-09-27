@@ -15,7 +15,7 @@ namespace SF.Common.Conversations.Providers
 	
 	public interface ISessionProvider 
 	{
-		Task MemberRelationValidate(long BizIdent, long UserId);
+		Task<DateTime> MemberRelationValidate(long BizIdent, long UserId);
 		Task<Dictionary<long, Front.SessionMember>> GetMemberDesc(long BizIdent, long[] Users);
 		Task<Front.SessionMember[]> QueryMembers(long BizIdent);
 		Task<Front.SessionGroup[]> QuerySessions(long UserId);
