@@ -10,6 +10,8 @@ using SF.Sys.Data;
 using SF.Sys.Entities;
 using SF.Sys.Settings;
 using SF.Sys.TimeServices;
+using SF.Sys.Services;
+using SF.Common.Notifications.Management;
 
 namespace SF.Common.Conversations.Managers
 {
@@ -25,15 +27,20 @@ namespace SF.Common.Conversations.Managers
 		ISessionStatusManager
 	{
 		Lazy<IUserProfileService > UserProfileService { get; }
+        Lazy<ISettingService<MessageNotifySetting>> MessageNotifySetting { get; }
+        SessionSyncScope SessionSyncScope { get; }
 
-		public SessionStatusManager(
+        public SessionStatusManager(
 			IEntityServiceContext ServiceContext,
 			Lazy<IUserProfileService> UserProfileService,
-			SessionSyncScope SessionSyncScope
+            Lazy<ISettingService<MessageNotifySetting>> MessageNotifySetting,
+            SessionSyncScope SessionSyncScope
 			) : base(ServiceContext)
 		{
-			this.UserProfileService = UserProfileService;
-			this.SetSyncQueue(SessionSyncScope, e => e.Id);
+            this.MessageNotifySetting = MessageNotifySetting;
+            this.UserProfileService = UserProfileService;
+            this.SessionSyncScope = SessionSyncScope;
+            this.SetSyncQueue(SessionSyncScope, e => e.Id);
 		}
 		protected override async Task OnNewModel(IModifyContext ctx)
 		{
@@ -87,6 +94,69 @@ namespace SF.Common.Conversations.Managers
 			});
 			return re.Id;
 		}
-	}
+
+        public Task UserMessageNotify(long Id)
+        {
+            return SessionSyncScope.Queue(Id, () =>
+             DataScope.Use("发送消息通知", async ctx =>
+             {
+                 var time = Now;
+                 var setting = MessageNotifySetting.Value.Value;
+                 var message_expire_time = time.AddHours(-setting.MaxMessageExpireHours);
+                 var sess = await (
+                     from s in ctx.Queryable<DataModels.DataSessionStatus>()
+                     where s.Id == Id && s.LastMessageId.HasValue
+                     select new
+                     {
+                         s.Id,
+                         LastMessageUserId = s.LastMessage.UserId,
+                         s.LastMemberId,
+                         s.LastMessageText,
+                         s.UpdatedTime
+                     }).SingleOrDefaultAsync();
+
+                 if (sess == null && sess.UpdatedTime < message_expire_time)
+                     return;
+
+                 var min_notify_interval = time.AddMinutes(-setting.MinNotifyIntervalMinutes);
+                 var members = await (
+                     from m in ctx.Queryable<DataModels.DataSessionMemberStatus>()
+                     where m.SessionId == sess.Id &&
+                        m.OwnerId.HasValue &&
+                         m.LastNotifyTime < min_notify_interval &&
+                         (!m.LastReadTime.HasValue || m.LastReadTime.Value < time) &&
+                         m.Id != sess.LastMemberId
+                     select m
+                     ).ToArrayAsync();
+                 if (members.Length == 0)
+                     return;
+
+                 var nm = ServiceContext.ServiceProvider.Resolve<INotificationManager>();
+                 var sender = await UserProfileService.Value.GetUser(sess.LastMessageUserId.Value);
+                 var args = new System.Collections.Generic.Dictionary<string, object>
+                 {
+                     {"用户",sender.Name },
+                     {"内容",sess.LastMessageText }
+                 };
+                 await nm.CreateNotification(
+                     Notifications.NotificationMode.Normal,
+                     members.Select(m => m.OwnerId.Value).ToArray(),
+                     "会话消息提醒",
+                     args,
+                     BizIdent: $"会话消息提醒-{sess.Id}-{sess.UpdatedTime.ToString("yyyyMMddHHmmss")}",
+                     Name: $"会话消息提醒:{sess.Id}:{sess.LastMessageText.Limit(50)}",
+                     Content: sess.LastMessageText
+                     ); 
+
+                 foreach (var member in members)
+                 {
+                     member.LastNotifyTime = time;
+                     ctx.Update(member);
+                 }
+                 await ctx.SaveChangesAsync();
+             })
+            );
+        }
+    }
 
 }

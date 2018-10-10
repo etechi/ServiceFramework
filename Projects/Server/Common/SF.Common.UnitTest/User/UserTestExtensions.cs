@@ -132,7 +132,7 @@ namespace SF.Common.UnitTest
 			var svc = sp.Resolve<IUserService>();
 			var ig = sp.Resolve<IIdentGenerator>();
 			var postfix = await ig.GenerateAsync("≤‚ ‘");
-			account = prefix +(account ?? "131" + postfix.ToString().PadLeft(8, '0'));
+			account = (account ?? "131" + postfix.ToString().PadLeft(8, '0'));
 			name = prefix + (name ?? "≤‚ ‘”√ªß" + postfix);
 			var icon = prefix + "icon" + postfix;
 

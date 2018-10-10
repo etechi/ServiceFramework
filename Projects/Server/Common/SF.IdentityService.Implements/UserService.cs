@@ -114,6 +114,9 @@ namespace SF.Auth.IdentityServices
 		}
 		VerifyCode CheckVerifyCode(ConfirmMessageType Type,string Ident,long? UserId,string Code)
 		{
+            if (Setting.VerifyCodeDisabled)
+                return null;
+
 			var verifyCode = Setting.VerifyCodeCache.Value.Get(
 				$"{Type}\n{Ident}\n{UserId}"
 				);

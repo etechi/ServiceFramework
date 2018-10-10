@@ -92,10 +92,11 @@ namespace SF.Common.Conversations.Front
 				 var rq = from s in DataContext.Set<DataModels.DataSessionStatus>().AsQueryable()
 						 where s.BizIdentType == Arg.BizIdentType &&
 								 s.BizIdent == Arg.BizIdent &&
-								 s.LogicState == EntityLogicState.Enabled &&
-                                 s.CreatedTime>= ctx.JoinTime
+								 s.LogicState == EntityLogicState.Enabled
                           from m in s.Messages
-						 select new SessionMessage
+                          where m.Time >= ctx.JoinTime
+
+                         select new SessionMessage
 						 {
 							 Id = m.Id,
 							 Argument = m.Argument,

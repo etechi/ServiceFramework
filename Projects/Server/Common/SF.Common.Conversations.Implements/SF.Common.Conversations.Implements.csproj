@@ -26,5 +26,6 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Services\SF.Sys.Services.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Settings.Supports\SF.Sys.Settings.Supports.csproj" />
     <ProjectReference Include="..\SF.Common.Conversations\SF.Common.Conversations.csproj" />
+    <ProjectReference Include="..\SF.Common.Notifications\SF.Common.Notifications.csproj" />
   </ItemGroup>
 </Project>

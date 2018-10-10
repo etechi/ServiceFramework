@@ -24,7 +24,6 @@ namespace SF.Common.Conversations.Managers
 		ISessionMemberStatusManager
 	{
 		Lazy<IUserProfileService> UserProfileService { get; }
-		SessionSyncScope SessionSyncScope { get; }
 		public SessionMemberStatusManager(
 			IEntityServiceContext ServiceContext,
 			SessionSyncScope SessionSyncScope,
@@ -33,7 +32,6 @@ namespace SF.Common.Conversations.Managers
 			Lazy<IUserProfileService> UserProfileService
 			) : base(ServiceContext)
 		{
-			this.SessionSyncScope = SessionSyncScope;
 			this.UserProfileService = UserProfileService;
 			SetSyncQueue(SessionSyncScope, e => e.SessionId);
 		}
@@ -108,22 +106,18 @@ namespace SF.Common.Conversations.Managers
 		}
 		public Task SetReadTime(long SessionId, long UserId)
 		{
-			return SessionSyncScope.Queue(SessionId, async () =>
-			{
-				await base.CreateOrUpdateAsync(
-					new SessionMemberStatus
-					{
-						SessionId = SessionId,
-						OwnerId = UserId
-					},
-					m => m.SessionId == SessionId && m.OwnerId.HasValue && m.OwnerId.Value == UserId,
-					ctx =>
-					{
-						ctx.Editable.LastReadTime = Now;
-					}
-					);
-				return 0;
-			});
+			return base.CreateOrUpdateAsync(
+				new SessionMemberStatus
+				{
+					SessionId = SessionId,
+					OwnerId = UserId
+				},
+				m => m.SessionId == SessionId && m.OwnerId.HasValue && m.OwnerId.Value == UserId,
+				ctx =>
+				{
+					ctx.Editable.LastReadTime = Now;
+				}
+				);
 		}
 
 	}
