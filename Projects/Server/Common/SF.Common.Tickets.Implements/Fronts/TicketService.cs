@@ -153,7 +153,7 @@ namespace SF.Common.Tickets.Front
 			return re;
 		}
 
-		public Task<ObjectKey<long>> CreateTicket(Ticket Ticket)
+		public Task<ObjectKey<long>> CreateTicket(TicketCreateArgument Ticket)
 		{
 			var uid = EnsureUserIdent();
 			return TicketManager.Value.CreateAsync(new TicketEditable
@@ -178,7 +178,7 @@ namespace SF.Common.Tickets.Front
 			await TicketManager.Value.UpdateAsync(t);
 		}
 
-		public Task<ObjectKey<long>> CreateReply(TicketReply Reply)
+		public Task<ObjectKey<long>> CreateReply(TicketReplyCreateArgument Reply)
 		{
 			var uid = EnsureUserIdent();
 			return TicketReplyManager.Value.CreateAsync(new Management.TicketReply

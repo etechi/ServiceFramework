@@ -26,7 +26,7 @@ namespace SF.Sys.HttpClients
 	{
 		Task<T> Request<T>(HttpRequestMessage Request, Func<HttpResponseMessage, Task<T>> GetResult);
 	}
-
+    
 	public static class HttpClientExtension
 	{
 		public class Request
@@ -74,6 +74,55 @@ namespace SF.Sys.HttpClients
 			Request.Content = new StringContent(Content, Encoding ?? Encoding.UTF8, mime ?? "application/json");
 			return Request;
 		}
+        public static HttpContent WithHeaders(this HttpContent content, string charset = null, string file = null, string name = null, string mime = null,string disposition=null)
+        {
+            if (mime != null || charset != null)
+            {
+                if (content.Headers.ContentType == null)
+                    content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(mime ?? "text/plain");
+                else if (mime != null)
+                    content.Headers.ContentType.MediaType = mime;
+            
+                if (charset != null)
+                    content.Headers.ContentType.CharSet = charset;
+            }
+            if (file != null || name != null)
+            {
+                if (content.Headers.ContentDisposition == null)
+                    content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue(disposition??"attachment");
+                if (file != null)
+                    content.Headers.ContentDisposition.FileName = file;
+                if (name != null)
+                    content.Headers.ContentDisposition.Name = name;
+
+            }
+            return content;
+        }
+
+        public static ByteArrayContent CreateContent(byte[] content, string mime,string charset=null, string file=null, string name=null)
+        {
+            var ctn = new ByteArrayContent(content);
+            ctn.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(mime);
+            if (charset != null)
+                ctn.Headers.ContentType.CharSet = charset;
+            if (file!=null || name!=null)
+                ctn.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = file,
+                    Size = content.Length,
+                    Name = name
+                };
+            return ctn;
+        }
+        public static Request WithMultipartFormDataContent(this Request Request, HttpContent[] Contents)
+        {
+            var mctn = new MultipartFormDataContent();
+            foreach(var ctn in Contents)
+                mctn.Add(ctn);
+            Request.Content = mctn;
+            
+            return Request;
+        }
 		public static Request OnReturn(this Request Request, Action<HttpResponseMessage> Callback)
 		{
 			if (Request.OnReturns == null)

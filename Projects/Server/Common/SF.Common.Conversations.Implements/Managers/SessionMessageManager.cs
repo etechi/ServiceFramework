@@ -101,37 +101,35 @@ namespace SF.Common.Conversations.Managers
 			Session.LastMessageText = editable.Text;
 			Session.LastMessageType = editable.Type;
 			Session.MessageCount++;
-
-			
 			DataContext.Update(Session);
 
-            DataContext.AddCommitTracker(
-                TransactionCommitNotifyType.AfterCommit, 
-                (type, e) =>
-                {
-                    var setting = ServiceContext.ServiceProvider.Resolve<ISettingService<MessageNotifySetting>>();
-                    var scoped_manager = ServiceContext.ServiceProvider.Resolve<IScoped<ISessionStatusManager>>();
-                    Debouncer.Start(Session.Id, (cancelled) =>
-                    {
-                        if (cancelled) return;
-                        Task.Run(async () =>
-                        {
-                            try
-                            {
-                                await scoped_manager.Use(async smm =>
-                                {
-                                    await smm.UserMessageNotify(Session.Id);
-                                    return 0;
-                                }
-                            );
-                            }
-                            catch (Exception ex)
-                            {
-                                Logger.Error(ex, "发送消息提醒时发生异常");
-                            }
-                        });
-                    }, setting.Value.MinMessageNotifyDelaySeconds*1000, setting.Value.MaxMessageNotifyDelaySeconds * 1000);
-                });
+            //DataContext.AddCommitTracker(
+            //    TransactionCommitNotifyType.AfterCommit, 
+            //    (type, e) =>
+            //    {
+            //        var setting = ServiceContext.ServiceProvider.Resolve<ISettingService<MessageNotifySetting>>();
+            //        var scoped_manager = ServiceContext.ServiceProvider.Resolve<IScoped<ISessionStatusManager>>();
+            //        Debouncer.Start(Session.Id, (cancelled) =>
+            //        {
+            //            if (cancelled) return;
+            //            Task.Run(async () =>
+            //            {
+            //                try
+            //                {
+            //                    await scoped_manager.Use(async smm =>
+            //                    {
+            //                        await smm.UserMessageNotify(Session.Id);
+            //                        return 0;
+            //                    }
+            //                );
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    Logger.Error(ex, "发送消息提醒时发生异常");
+            //                }
+            //            });
+            //        }, setting.Value.MinMessageNotifyDelaySeconds*1000, setting.Value.MaxMessageNotifyDelaySeconds * 1000);
+            //    });
 			return Session;
 		}
 		async Task UpdateSessionLastMember(IDataContext DataContext, DataModels.DataSessionStatus Session, long PosterId, DateTime Time)

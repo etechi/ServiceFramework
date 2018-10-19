@@ -21,6 +21,7 @@
     <ProjectReference Include="..\..\Common\SF.IdentityService.Abstractions\SF.IdentityService.Abstractions.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Caching\SF.Sys.Caching.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.HttpClient\SF.Sys.HttpClient.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Mime\SF.Sys.Mime.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Settings.Supports\SF.Sys.Settings.Supports.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Settings\SF.Sys.Settings.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Threading\SF.Sys.Threading.csproj" />

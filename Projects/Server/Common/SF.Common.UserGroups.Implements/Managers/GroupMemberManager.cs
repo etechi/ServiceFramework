@@ -101,7 +101,10 @@ namespace SF.Common.UserGroups.Managers
 			var newJoinState = DetectJoinState(editable.GroupAccepted, editable.MemberAccepted);
 			var newExists = editable.LogicState == EntityLogicState.Enabled && newJoinState == GroupJoinState.Joined ? 1 : 0;
 			var memberCountDiff = newExists - orgExists;
-			model.JoinState = newJoinState;
+            if (newJoinState == GroupJoinState.Joined && model.JoinState!=GroupJoinState.Joined)
+                model.LastJoinTime = Now;
+            model.JoinState = newJoinState;
+            
 
 			if (memberCountDiff != 0)
 				await UpdateMemberCount(ctx.DataContext,editable.GroupId, memberCountDiff);

@@ -117,7 +117,7 @@ namespace SF.Common.Tickets.Management
 		 /// 工单
 		 /// </summary>
 		[EntityIdent(typeof(Ticket),nameof(TicketName))]
-		[ReadOnly(true)]
+		[Uneditable]
 		public long TicketId { get; set; }
 
 		/// <summary>

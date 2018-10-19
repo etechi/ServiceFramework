@@ -94,11 +94,17 @@ namespace SF.Common.UserGroups.Managers
 
 			if (ctx.Editable.Members != null)
 			{
-				foreach (var m in ctx.Model.Members)
-					m.JoinState = JoinStateDetector.Detect(m.GroupAccepted, m.MemberAccepted);
+                foreach (var m in ctx.Model.Members)
+                {
+                    var newJoinState = JoinStateDetector.Detect(m.GroupAccepted, m.MemberAccepted);
+                    if (newJoinState == GroupJoinState.Joined && m.JoinState!= GroupJoinState.Joined)
+                        m.LastJoinTime = Now;
+                    m.JoinState = newJoinState;
+                    
+                }
 				ctx.Model.MemberCount =
 					ctx.Model.Members
-						.Count(m => m.LogicState == EntityLogicState.Enabled && m.JoinState==GroupJoinState.Joined );
+						.Count(mi => mi.LogicState == EntityLogicState.Enabled && mi.JoinState==GroupJoinState.Joined );
 			}
 
 			if (ctx.Action == ModifyAction.Create)

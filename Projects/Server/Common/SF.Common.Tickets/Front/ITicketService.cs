@@ -63,7 +63,7 @@ namespace SF.Common.Tickets.Front
 		/// </summary>
 		/// <param name="Ticket">工单参数</param>
 		/// <returns></returns>
-		Task<ObjectKey<long>> CreateTicket(Ticket Ticket);
+		Task<ObjectKey<long>> CreateTicket(TicketCreateArgument Ticket);
 
 		/// <summary>
 		/// 删除工单
@@ -77,7 +77,7 @@ namespace SF.Common.Tickets.Front
 		/// </summary>
 		/// <param name="Reply">回复参数</param>
 		/// <returns></returns>
-		Task<ObjectKey<long>> CreateReply(TicketReply Reply);
+		Task<ObjectKey<long>> CreateReply(TicketReplyCreateArgument Reply);
 
 		/// <summary>
 		/// 删除回复

@@ -216,8 +216,13 @@ namespace SF.Common.Conversations.Front
 						if (dics.TryGetValue((s.BizIdentType, s.BizIdent), out var ss))
 						{
 							s.Unread = ss.Unread;
-							s.Text = s.Text ?? ss.LastMessageText;
-							s.Time = s.Time ?? ss.UpdatedTime;
+
+                            //只有加入时间比消息时间早，才显示消息
+                            if (s.JoinTime <= ss.UpdatedTime)
+                            {
+                                s.Text = s.Text ?? ss.LastMessageText;
+                                s.Time = s.Time ?? ss.UpdatedTime;
+                            }
 						}
 				}
 

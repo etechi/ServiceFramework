@@ -21,16 +21,67 @@ using System;
 
 namespace SF.Common.Tickets.Front
 {
-	/// <summary>
-	/// 工单
-	/// </summary>
-	public class Ticket : ObjectEntityBase
+    /// <summary>
+    /// 工单创建参数
+    /// </summary>
+    public class TicketCreateArgument
+    {
+        
+        /// <summary>
+        /// 分类
+        /// </summary>
+        public long CategoryId { get; set; }
+
+        /// <summary>
+        /// 工单标题
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 工单内容,Html格式
+        /// </summary>
+        public string Content { get; set; }
+
+        /// <summary>
+        /// 工单图片
+        /// </summary>
+        public TicketImage[] Images { get; set; }
+
+    }
+    public class TicketReplyCreateArgument
+    {
+        /// <summary>
+        /// 工单ID
+        /// </summary>
+        public long TicketId { get; set; }
+
+        /// <summary>
+        /// 回复标题
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// 回复内容,Html格式
+        /// </summary>
+        public string Content { get; set; }
+
+        /// <summary>
+        /// 回复图片
+        /// </summary>
+        public TicketImage[] Images { get; set; }
+    }
+
+
+    /// <summary>
+    /// 工单
+    /// </summary>
+    public class Ticket : ObjectEntityBase
 	{
-	
-		/// <summary>
-		/// 分类
-		/// </summary>
-		public long CategoryId { get; set; }
+        
+        /// <summary>
+        /// 分类
+        /// </summary>
+        public long CategoryId { get; set; }
 
 		/// <summary>
 		/// 分类名

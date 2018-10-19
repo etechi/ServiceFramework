@@ -97,6 +97,7 @@ namespace SF.Common.Conversations.Managers
 
         public Task UserMessageNotify(long Id)
         {
+           
             return SessionSyncScope.Queue(Id, () =>
              DataScope.Use("发送消息通知", async ctx =>
              {
