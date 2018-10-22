@@ -12,6 +12,7 @@ using SF.Sys.Settings;
 using SF.Sys.TimeServices;
 using SF.Sys.Services;
 using SF.Common.Notifications.Management;
+using SF.Sys.Logging;
 
 namespace SF.Common.Conversations.Managers
 {
@@ -95,43 +96,48 @@ namespace SF.Common.Conversations.Managers
 			return re.Id;
 		}
 
-        public Task UserMessageNotify(long Id)
+        public Task UserMessageNotify(long SessionID)
         {
-           
-            return SessionSyncScope.Queue(Id, () =>
+            Logger.Info($"会话消息通知6 SessionID:{SessionID}");
+            return SessionSyncScope.Queue(SessionID, () =>
              DataScope.Use("发送消息通知", async ctx =>
              {
+                 Logger.Info($"会话消息通知7 SessionID{SessionID}");
                  var time = Now;
                  var setting = MessageNotifySetting.Value.Value;
                  var message_expire_time = time.AddHours(-setting.MaxMessageExpireHours);
                  var sess = await (
                      from s in ctx.Queryable<DataModels.DataSessionStatus>()
-                     where s.Id == Id && s.LastMessageId.HasValue
+                     where s.Id == SessionID && s.LastMessageId.HasValue
                      select new
                      {
-                         s.Id,
                          LastMessageUserId = s.LastMessage.UserId,
                          s.LastMemberId,
                          s.LastMessageText,
                          s.UpdatedTime
                      }).SingleOrDefaultAsync();
 
+                 Logger.Info($"会话消息通知7 sess: {sess.LastMemberId} {sess.LastMessageText} {sess.LastMessageUserId}");
                  if (sess == null && sess.UpdatedTime < message_expire_time)
                      return;
 
                  var min_notify_interval = time.AddMinutes(-setting.MinNotifyIntervalMinutes);
                  var members = await (
                      from m in ctx.Queryable<DataModels.DataSessionMemberStatus>()
-                     where m.SessionId == sess.Id &&
+                     where m.SessionId == SessionID &&
                         m.OwnerId.HasValue &&
                          m.LastNotifyTime < min_notify_interval &&
                          (!m.LastReadTime.HasValue || m.LastReadTime.Value < time) &&
                          m.Id != sess.LastMemberId
                      select m
                      ).ToArrayAsync();
+
+                 Logger.Info($"会话消息通知8 members: {members.Length}");
+
                  if (members.Length == 0)
                      return;
 
+                 Logger.Info($"会话消息通知9");
                  var nm = ServiceContext.ServiceProvider.Resolve<INotificationManager>();
                  var sender = await UserProfileService.Value.GetUser(sess.LastMessageUserId.Value);
                  var args = new System.Collections.Generic.Dictionary<string, object>
@@ -144,8 +150,8 @@ namespace SF.Common.Conversations.Managers
                      members.Select(m => m.OwnerId.Value).ToArray(),
                      "会话消息提醒",
                      args,
-                     BizIdent: $"会话消息提醒-{sess.Id}-{sess.UpdatedTime.ToString("yyyyMMddHHmmss")}",
-                     Name: $"会话消息提醒:{sess.Id}:{sess.LastMessageText.Limit(50)}",
+                     BizIdent: $"会话消息提醒-{SessionID}-{sess.UpdatedTime.ToString("yyyyMMddHHmmss")}",
+                     Name: $"会话消息提醒:{SessionID}:{sess.LastMessageText.Limit(50)}",
                      Content: sess.LastMessageText
                      ); 
 
@@ -155,6 +161,7 @@ namespace SF.Common.Conversations.Managers
                      ctx.Update(member);
                  }
                  await ctx.SaveChangesAsync();
+                 Logger.Info($"会话消息通知10");
              })
             );
         }
