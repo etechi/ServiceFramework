@@ -40,8 +40,8 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddAspNetCoreHostingService(this IServiceCollection sc)
 		{
 			sc.AddAspNetCoreClientService();
-			sc.AddAspNetCoreAccessToken();
-			sc.AddAspNetCoreFilePathStructure();
+            sc.AddAspNetCoreFilePathStructure();
+            sc.AddAspNetCoreAccessToken();
 			return sc;
 		}
 	}

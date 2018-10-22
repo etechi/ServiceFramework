@@ -25,16 +25,31 @@ namespace SF.Sys.Services
 {
 	public class ServiceSetupService : IServiceConfigService
 	{
-		IFilePathResolver PathResolver { get; }
-		public ServiceSetupService(IFilePathResolver PathResolver)
+        IServiceProvider ServiceProvider { get; }
+
+
+        public ServiceSetupService(IServiceProvider ServiceProvider)
 		{
-			this.PathResolver = PathResolver;
-		}
+            this.ServiceProvider = ServiceProvider;
+
+        }
+
+
 		public Task<T> LoadSetting<T>(T setting, T defaultSetting,bool setup) where T:new()
 		{
-			var type = typeof(T);
-			var path = PathResolver.Resolve($"config://{(setup?"setup/":"")}{type.FullName}.json");
-			if (System.IO.File.Exists(path))
+            var type = typeof(T);
+            
+            string path = null;
+            var PathResolver = ServiceProvider.TryResolve<IFilePathResolver>();
+            if (PathResolver!=null)
+			    path = PathResolver.Resolve($"config://{(setup?"setup/":"")}{type.FullName}.json");
+            else
+            {
+                var dfps = ServiceProvider.TryResolve<IDefaultFilePathStructure>();
+                if (dfps != null)
+                    path = $"{dfps.RootPath}\\config\\{(setup ? "setup\\" : "")}{type.FullName}.json";
+            }
+			if (path!=null && System.IO.File.Exists(path))
 				setting = Json.Parse<T>(System.IO.File.ReadAllText(path));
 			else
 				setting = setting.IsDefault() ? new T() : Poco.Clone(setting);
