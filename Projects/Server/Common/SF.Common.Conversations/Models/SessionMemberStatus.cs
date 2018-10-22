@@ -91,5 +91,10 @@ namespace SF.Common.Conversations.Models
 		/// 连续消息分段时间
 		/// </summary>
 		public int MessageSectionTotalTime { get; set; }
-	}
+
+        /// <summary>
+        /// 最后通知时间
+        /// </summary>
+        public DateTime? LastNotifyTime { get; set; }
+    }
 }

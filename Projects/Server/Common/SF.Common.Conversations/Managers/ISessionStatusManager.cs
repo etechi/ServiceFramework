@@ -65,6 +65,8 @@ namespace SF.Common.Conversations.Managers
 		IEntityManager<ObjectKey<long>, SessionEditable>
 	{
 		Task<long> GetOrCreateSession(string BizIdentType, long BizIdent);
+
+        Task UserMessageNotify(long Id);
 	}
 
 }

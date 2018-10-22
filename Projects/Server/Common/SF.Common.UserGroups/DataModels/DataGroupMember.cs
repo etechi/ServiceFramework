@@ -60,6 +60,10 @@ namespace SF.Common.UserGroups.DataModels
 		/// </summary>
 		public GroupJoinState JoinState { get; set; }
 
+        /// <summary>
+        /// 加入时间
+        /// </summary>
+        public DateTime? LastJoinTime { get; set; }
 		
 	}
 }

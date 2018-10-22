@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SF.Common.Conversations.Front
 {
@@ -15,6 +16,8 @@ namespace SF.Common.Conversations.Front
 		/// 文本
 		/// </summary>
 		public string Text { get; set; }
+
+       
 
 		/// <summary>
 		/// 会话

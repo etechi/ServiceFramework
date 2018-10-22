@@ -38,5 +38,9 @@ namespace SF.Common.Conversations.Front
 		/// 未读
 		/// </summary>
 		public int Unread { get; set; }
-	}
+        /// <summary>
+        /// 加入时间
+        /// </summary>
+        public DateTime JoinTime { get; set; }
+    }
 }

@@ -5,6 +5,8 @@ using SF.Common.Conversations.Managers;
 using SF.Common.Conversations.Models;
 using SF.Sys.Settings;
 using SF.Sys.BackEndConsole;
+using SF.Common.Notifications.Management;
+using SF.Common.Notifications.Senders;
 
 namespace SF.Sys.Services
 {
@@ -32,8 +34,16 @@ namespace SF.Sys.Services
 				SF.Common.Conversations.DataModels.DataSessionMessage
 				>(TablePrefix ?? "Conversation");
 
+            sc.AddSetting(new Common.Conversations.MessageNotifySetting
+            {
+                MaxMessageExpireHours=24,
+                MaxMessageNotifyDelaySeconds=5*60,
+                MinMessageNotifyDelaySeconds=3*60,
+                MinNotifyIntervalMinutes=60                
+            }
+            );
 
-			sc.InitServices("交谈", async (sp, sim, scope) =>
+            sc.InitServices("交谈", async (sp, sim, scope) =>
 			{
 				var MenuPath = "用户内容/会话服务";
 				await sim.Service<ISessionStatusManager, SessionStatusManager>(null)
@@ -52,9 +62,35 @@ namespace SF.Sys.Services
 					.Ensure(sp, scope);
 
 			});
-			
-			
-			return sc;
+
+            sc.AddInitializer("data", "初始化消息提醒设置", async sp =>
+            {
+
+                var mpm = sp.Resolve<INotificationSendPolicyManager>();
+                var sim = sp.Resolve<IServiceInstanceManager>();
+
+                var jpushProvider = await sim.GetService<INotificationSendProvider>("jpush");
+                var debugProvider = await sim.GetService<INotificationSendProvider>("debug");
+                await mpm.EnsurePolicy(
+                        "会话消息提醒",
+                        "会话消息提醒",
+                        "来自{用户}的新消息: {内容}",
+                        null,
+                        new Common.Notifications.Models.MessageSendAction
+                        {
+                            ProviderId = jpushProvider.Id,
+                            Name = "会话提醒",
+                            TitleTemplate = "{用户}: {内容}"
+                        },
+                        new Common.Notifications.Models.MessageSendAction
+                        {
+                            ProviderId = debugProvider.Id,
+                            Name = "会话提醒",
+                            TitleTemplate = "{用户}: {内容}"
+                        }
+                    );
+            });
+            return sc;
 		}
 
 		
