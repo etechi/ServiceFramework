@@ -104,7 +104,7 @@ namespace SF.Externals.WeiXin.Mp.Core
                     break;
                 case "audio/amr":
                 case "audio/mp3":
-                    type = "audio";
+                    type = "voice";
                     if (meta.Length > 2 * 1024 * 1024)
                         throw new PublicArgumentException("微信语言最大支持2M图片");
                     break;
@@ -138,11 +138,13 @@ namespace SF.Externals.WeiXin.Mp.Core
 
             var filename = meta.Name;
             if (filename.IndexOf('.')==-1)
-                filename += "." + MimeResolver.Value.MimeToFileExtension(meta.Mime);
+                filename += MimeResolver.Value.MimeToFileExtension(meta.Mime);
 
+            //var mime = "application/octet-stream";
+            var mime = meta.Mime;
             var head = System.Text.Encoding.UTF8.GetBytes("--------------------------0a75d91e4a10b2fe\r\n" +
                     $"Content-Disposition: form-data; name=\"media\"; filename=\"{filename}\"\r\n" +
-                    $"Content-Type: {meta.Mime}\r\n\r\n");
+                    $"Content-Type: {mime}\r\n\r\n");
             var tail =System.Text.Encoding.UTF8.GetBytes("\r\n--------------------------0a75d91e4a10b2fe--\r\n");
             var buf = head.Concat(bytes, tail);
             var nctn = new System.Net.Http.ByteArrayContent(buf);

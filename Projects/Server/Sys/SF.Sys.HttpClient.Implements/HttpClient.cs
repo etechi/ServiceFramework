@@ -45,8 +45,8 @@ namespace SF.Sys.HttpClients
                 UseProxy = false
             };
 
-            //var cli = new System.Net.Http.HttpClient(handler);
             var cli = new System.Net.Http.HttpClient(handler);
+            //var cli = new System.Net.Http.HttpClient(handler);
 
 			string respData=null;
 			string reqData=null;
