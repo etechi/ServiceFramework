@@ -43,6 +43,5 @@ namespace SF.Common.Media
 		[DefaultAuthorize]
 		[HeavyMethod]
 		Task<CopyResult> CopyImage(string uri);
-
 	}
 }

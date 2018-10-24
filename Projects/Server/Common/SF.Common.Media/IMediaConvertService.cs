@@ -13,34 +13,23 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
+using SF.Sys.Auth;
+using SF.Sys.NetworkService;
+using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace SF.Sys.Caching
+namespace SF.Common.Media
 {
-	public class FileCacheContent
-	{
-		public string FileExtension { get; set; }
-		public byte[] Content { get; set; }
-	}
-	
-	public delegate Task<FileCacheContent> FileContentGenerator();
-
     /// <summary>
-    /// 文件缓存
+    /// 媒体转换服务
     /// </summary>
-    public interface IFileCache
-	{
-		Task<string> Cache(
-		   string FileName,
-		   FileContentGenerator ContentGenerator,
-		   string FilePath = null
-		   );
-        Task<string> Cache(
-            string FileNameWithExtension,
-            Func<string, Task> CachedFileGenerator,
-            string FilePath = null
-            );
+    [NetworkService]
+    [AnonymousAllowed]
+    public interface IMediaConvertService
+    {
+        Task<HttpResponseMessage> Convert(string Id, string Target);
 
+        [LocalMethod]
+        Task FileConvert(string input, string output);
     }
 }

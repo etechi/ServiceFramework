@@ -105,7 +105,10 @@ namespace SF.Sys.HttpClients
 				var respHeader = resp.Content.Headers;
 
 				if (respHeader.ContentLength < 1000 * 100 &&
-					respHeader.ContentType.MediaType == "application/json")
+					respHeader.ContentType.MediaType == "application/json" ||
+                    respHeader.ContentType.MediaType == "text/json" ||
+                    respHeader.ContentType.MediaType == "text/plain"
+                    )
 				{
 					var respData=await resp.Content.ReadAsStringAsync();
 					resp.Content = new StringContent(respData);

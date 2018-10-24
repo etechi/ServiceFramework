@@ -13,34 +13,13 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Metadata.Models;
 using System;
-using System.Threading.Tasks;
-
-namespace SF.Sys.Caching
+namespace SF.Sys.NetworkService
 {
-	public class FileCacheContent
+	[AttributeUsage(AttributeTargets.Method)]
+	public class LocalMethodAttribute : System.Attribute
 	{
-		public string FileExtension { get; set; }
-		public byte[] Content { get; set; }
 	}
-	
-	public delegate Task<FileCacheContent> FileContentGenerator();
 
-    /// <summary>
-    /// 文件缓存
-    /// </summary>
-    public interface IFileCache
-	{
-		Task<string> Cache(
-		   string FileName,
-		   FileContentGenerator ContentGenerator,
-		   string FilePath = null
-		   );
-        Task<string> Cache(
-            string FileNameWithExtension,
-            Func<string, Task> CachedFileGenerator,
-            string FilePath = null
-            );
-
-    }
 }

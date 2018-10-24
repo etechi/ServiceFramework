@@ -14,33 +14,25 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Linq;
 using System.Threading.Tasks;
+using SF.Sys.Linq;
+using System.Collections.Concurrent;
 
-namespace SF.Sys.Caching
+namespace SF.Sys.Reflection
 {
-	public class FileCacheContent
+	public static class AssemblyExtension
 	{
-		public string FileExtension { get; set; }
-		public byte[] Content { get; set; }
+		public static string GetBasePath(this Assembly ass)
+        {
+            var assPath = ass.CodeBase.Substring(8);
+            if (System.IO.Path.DirectorySeparatorChar != '/')
+                assPath = assPath.Replace('/', System.IO.Path.DirectorySeparatorChar);
+            assPath = assPath.LeftBeforeLast(System.IO.Path.DirectorySeparatorChar);
+            return assPath;
+        }
+
 	}
-	
-	public delegate Task<FileCacheContent> FileContentGenerator();
-
-    /// <summary>
-    /// 文件缓存
-    /// </summary>
-    public interface IFileCache
-	{
-		Task<string> Cache(
-		   string FileName,
-		   FileContentGenerator ContentGenerator,
-		   string FilePath = null
-		   );
-        Task<string> Cache(
-            string FileNameWithExtension,
-            Func<string, Task> CachedFileGenerator,
-            string FilePath = null
-            );
-
-    }
 }

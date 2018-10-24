@@ -77,7 +77,8 @@ namespace SF.Sys.AspNetCore
 			if (req.ContentType!=null &&
 				(req.ContentType.StartsWith("application/json") ||
 				req.ContentType.StartsWith("text/json") ||
-				req.ContentType.StartsWith("application/x-www-form-urlencoded")
+                req.ContentType.StartsWith("text/plain") ||
+                req.ContentType.StartsWith("application/x-www-form-urlencoded")
 				)
 				&& req.ContentLength.HasValue &&
 				req.ContentLength.Value < 1024 * 1024)

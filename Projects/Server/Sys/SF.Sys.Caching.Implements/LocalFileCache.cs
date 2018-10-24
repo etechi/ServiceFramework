@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Hosting;
 using SF.Sys.Threading;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
@@ -51,37 +52,67 @@ namespace SF.Sys.Caching
 		static ObjectSyncQueue<string> SyncQueue { get; } = new ObjectSyncQueue<string>();
 
 		public async Task<string> Cache(
-			string FileName, 
-			FileContentGenerator ContentGenerator, 
+			string FileNameWithExtension, 
+			Func<string,Task> CachedFileGenerator, 
 			string FilePath = null
 			)
 		{
 			if (FilePath == null)
-				FilePath = (((uint)FileName.GetConsistencyHashCode()) % 1024).ToString();
+				FilePath = (((uint)FileNameWithExtension.GetConsistencyHashCode()) % 1024).ToString();
 
 			var file_path =Setting.PathResolver.Resolve(Setting.RootPath, FilePath);
-			var file = Directory.Exists(file_path) ? Directory.GetFiles(file_path, FileName + ".*").FirstOrDefault() : null;
-			if (file != null)
-				return file;
+            var file = Path.Combine(file_path, FileNameWithExtension);
 
-			return await SyncQueue.Queue(
-				file_path + "\\" + FileName,
-				async () =>
-				{
-					file = Directory.Exists(file_path) ? Directory.GetFiles(file_path, FileName + ".*").FirstOrDefault() : null;
-					if (file != null)
-						return file;
-					Directory.CreateDirectory(file_path);
-					var ctn = await ContentGenerator();
-					if (ctn==null || ctn.Content == null)
-						return null;
+            if (!Directory.Exists(file_path))
+                Directory.CreateDirectory(file_path);
+            else if(File.Exists(file))
+                return file;
 
-					file = Path.Combine(file_path, FileName + (ctn.FileExtension[0] == '.' ? ctn.FileExtension : "." + ctn.FileExtension));
-					using (var fs = new FileStream(file, FileMode.CreateNew, FileAccess.Write, FileShare.Read))
-						await fs.WriteAsync(ctn.Content, 0, ctn.Content.Length);
-
-					return file;
-				});
+            await SyncQueue.Queue(
+                file,
+                () => CachedFileGenerator(file)
+                );
+            return file;
 		}
-	}
+
+
+        public async Task<string> Cache(
+            string FileName,
+            FileContentGenerator ContentGenerator,
+            string FilePath = null
+            )
+        {
+            if (FilePath == null)
+                FilePath = (((uint)FileName.GetConsistencyHashCode()) % 1024).ToString();
+
+            var file_path = Setting.PathResolver.Resolve(Setting.RootPath, FilePath);
+            var file = Directory.Exists(file_path) ? Directory.GetFiles(file_path, FileName + ".*").FirstOrDefault() : null;
+            if (file != null)
+                return file;
+
+            return await SyncQueue.Queue(
+                Path.Combine(file_path , FileName),
+                async () =>
+                {
+                    if (!Directory.Exists(file_path))
+                        Directory.CreateDirectory(file_path);
+                    else
+                    {
+                        file = Directory.GetFiles(file_path, FileName + ".*").FirstOrDefault();
+                        if (file != null)
+                            return file;
+                    }
+                    
+                    var ctn = await ContentGenerator();
+                    if (ctn == null || ctn.Content == null)
+                        return null;
+
+                    file = Path.Combine(file_path, FileName + (ctn.FileExtension[0] == '.' ? ctn.FileExtension : "." + ctn.FileExtension));
+                    using (var fs = new FileStream(file, FileMode.CreateNew, FileAccess.Write, FileShare.Read))
+                        await fs.WriteAsync(ctn.Content, 0, ctn.Content.Length);
+
+                    return file;
+                });
+        }
+    }
 }
