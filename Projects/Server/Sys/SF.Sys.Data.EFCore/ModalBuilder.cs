@@ -173,11 +173,19 @@ namespace SF.Sys.Services
 	{
 		public static IServiceCollection AddSqlServerEFCoreDbContext<TDbContext>(
 			   this IServiceCollection Services,
-			   bool AutoMigrate = true
-			   ) where TDbContext : DbContext
+			   bool AutoMigrate = true,
+               bool UseRowNumberForPaging=true
+               ) where TDbContext : DbContext
 			=> AddEFCoreDbContext<TDbContext>(
 				Services,
-				(options, isp) => options.UseSqlServer(isp.Resolve<IDataSource>().ConnectionString),
+				(options, isp) => options.UseSqlServer(
+                    isp.Resolve<IDataSource>().ConnectionString,
+                    b=>
+                    {
+                        if(UseRowNumberForPaging)
+                            b.UseRowNumberForPaging();
+                    }
+                    ),
 				AutoMigrate
 				);
 
