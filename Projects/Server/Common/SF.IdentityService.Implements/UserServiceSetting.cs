@@ -33,10 +33,16 @@ namespace SF.Auth.IdentityServices
 		/// 跳过验证码检查
 		/// </summary>
 		public bool VerifyCodeDisabled { get; set; }
-		/// <summary>
-		/// 默认图标
+        
+        /// <summary>
+		/// 跳过人工输入检查
 		/// </summary>
-		[Image]
+		public bool CaptchaCodeDisabled { get; set; }
+
+        /// <summary>
+        /// 默认图标
+        /// </summary>
+        [Image]
 		public string DefaultIcon { get; set; }
 		/// <summary>
 		/// 验证码缓存

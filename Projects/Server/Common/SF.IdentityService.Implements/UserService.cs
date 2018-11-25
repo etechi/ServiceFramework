@@ -228,7 +228,7 @@ namespace SF.Auth.IdentityServices
 			if(idData==null)
 				throw new PublicArgumentException("找不到指定的用户！");
 
-			if (idData.Roles.Contains("admin"))
+			if (idData.Roles.Contains("admin") && !Setting.CaptchaCodeDisabled)
 			{
 				if(Arg.CaptchaCode.IsNullOrEmpty())
 					throw new PublicArgumentException("需要输入验证码！");
