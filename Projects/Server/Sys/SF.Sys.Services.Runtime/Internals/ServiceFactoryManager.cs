@@ -67,9 +67,9 @@ namespace SF.Sys.Services.Internals
 			OnServiceInstanceChanged.Wait(
 				sic =>
 				{
-					var types=ManagedServiceFactoryManager.TryRemoveEntry(sic.Id);
+					var types=ManagedServiceFactoryManager.TryRemoveEntry(sic.Payload.Id);
 					if (types != null)
-						_ServiceRemovable.RemoveService(sic.Id, types);
+						_ServiceRemovable.RemoveService(sic.Payload.Id, types);
 
 					return Task.CompletedTask;
 				});

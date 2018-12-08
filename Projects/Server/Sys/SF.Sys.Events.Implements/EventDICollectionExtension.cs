@@ -21,8 +21,8 @@ namespace SF.Sys.Services
 	{
 		public static IServiceCollection AddEventServices(this IServiceCollection sc)
 		{
-			sc.AddSingleton<IEventEmitService, EventManager>();
-			sc.AddSingleton<IEventSubscribeService>(sp => (IEventSubscribeService)sp.Resolve<IEventEmitService>());
+			sc.AddScoped<IEventEmitService, EventEmitService>();
+            sc.AddSingleton<IEventSubscribeService, EventManager>();
 			sc.AddSingleton<IEventQueueProvider, EventQueueProvider>();
 			sc.Add(typeof(IEventSubscriber<>), typeof(EventSubscriber<>), ServiceImplementLifetime.Singleton);
 			return sc;

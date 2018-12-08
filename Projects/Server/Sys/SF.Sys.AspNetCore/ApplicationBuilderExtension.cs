@@ -63,27 +63,35 @@ namespace SF.Sys.AspNetCore
 			{
 				RouteConfig=RouteConfig
 			});
-		public static IApplicationBuilder UseCommonFeatures(
-			this IApplicationBuilder app, 
-			//IHostingEnvironment env,
-			CommonFeatureConfigure cfg=null
-			)
-		{
-			if (cfg == null)
-				cfg = new CommonFeatureConfigure();
-			var env = app.ApplicationServices.Resolve<IHostingEnvironment>();
-			if (env.IsDevelopment())
-			{
-				app.UseDeveloperExceptionPage();
-				app.UseBrowserLink();
-			}
-			else
-			{
-				app.UseExceptionHandler(cfg.ExceptionHandler);
-				
-			}
+        public static IApplicationBuilder UseCommonFeatures(
+            this IApplicationBuilder app,
+            //IHostingEnvironment env,
+            CommonFeatureConfigure cfg = null
+            )
+        {
+            if (cfg == null)
+                cfg = new CommonFeatureConfigure();
+            var env = app.ApplicationServices.Resolve<IHostingEnvironment>();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseBrowserLink();
+            }
+            else
+            {
+                app.UseExceptionHandler(cfg.ExceptionHandler);
 
-			app.UseStaticFiles();
+            }
+
+            var fectp = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+            fectp.Mappings[".apk"]="application/vnd.android";
+            fectp.Mappings[".amr"]="audio/amr";
+
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ContentTypeProvider= fectp
+            });
 			app.UseForwardedHeaders(new ForwardedHeadersOptions
 			{
 				ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto

@@ -29,10 +29,12 @@ namespace SF.Sys.Services
 				   {
 					   var cfg = sp.Resolve<IConfiguration>();
 					   var connStr = cfg.GetValue(Path);
-					   return new DataSourceConfig
+                       var UseRowNumberForPaging = cfg.GetValue("DbConfigs:UseRowNumberForPaging");
+                       return new DataSourceConfig
 					   {
-						   ConnectionString = connStr
-					   };
+						   ConnectionString = connStr,
+                           UseRowNumberForPaging= UseRowNumberForPaging==null?(bool?)null: UseRowNumberForPaging == "true"
+                       };
 				   }
 				   );
 

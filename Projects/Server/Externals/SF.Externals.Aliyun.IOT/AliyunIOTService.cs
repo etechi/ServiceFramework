@@ -54,6 +54,8 @@ namespace SF.Externals.Aliyun.Implements
 			public string RequestId { get; set; }
 			public bool Success { get; set; }
 			public string ErrorMessage { get; set; }
+
+            public virtual string Code { get; } = null;
 		}
 		class QueryDeviceByNameResult : BaseResult
 		{	
@@ -61,7 +63,15 @@ namespace SF.Externals.Aliyun.Implements
 		}
 		AliyunIOTException IOTError(string Operation,string Message,string RequestId,string Code=null)
 		{
-			return new AliyunIOTException(
+            if(Operation=="RRpc")
+                return new RrpcException(
+                    Code ?? "RRPCERROR",
+                    $"{Operation}失败:{Message ?? "未知错误"}",
+                    RequestId,
+                    Setting.Uri
+                    );
+            else
+                return new AliyunIOTException(
 					Code??"IOTERROR",
 					$"{Operation}失败:{Message?? "未知错误"}",
 					RequestId,
@@ -74,7 +84,8 @@ namespace SF.Externals.Aliyun.Implements
 				throw IOTError( 
 					Operation,
 					Result.ErrorMessage,
-					Result.RequestId
+					Result.RequestId,
+                    Result.Code
 					);
 		}
 		public async Task<DeviceInfo> QueryDeviceByName(string ProductKey, string DeviceName)
@@ -188,7 +199,9 @@ namespace SF.Externals.Aliyun.Implements
 			public string MessageId { get; set; }
 			public RrpcCode RrpcCode { get; set; }
 			public string PayloadBase64Byte { get; set; }
-		}
+
+            public override string Code => RrpcCode.ToString();
+        }
 		public async Task<byte[]> RrpcCall(RrpcArgument Arg)
 		{
 			var re = await AliyunInvoker.Invoke(
