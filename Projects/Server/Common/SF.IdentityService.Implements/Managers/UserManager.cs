@@ -386,7 +386,10 @@ namespace SF.Auth.IdentityServices.Managers
 						set.Add(new TUserRole { UserId = UserId, RoleId = r });
 					}
 					await set.Context.SaveChangesAsync();
-				});
+				},
+                DataContextFlag.LightMode
+                
+                );
 		}
 		public  Task RoleRemove(long UserId, string[] Roles)
 		{
@@ -406,7 +409,9 @@ namespace SF.Auth.IdentityServices.Managers
 						throw new PublicArgumentException("找不到用户:" + UserId);
 					set.RemoveRange(exists);
 					await set.Context.SaveChangesAsync();
-				});					   
+				},
+                DataContextFlag.LightMode
+                );					   
 		}
 	}
 

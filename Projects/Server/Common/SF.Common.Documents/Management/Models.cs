@@ -17,6 +17,7 @@ using SF.Sys.Entities.Models;
 using SF.Sys.Annotations;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
 
 namespace SF.Common.Documents.Management
 {
@@ -106,8 +107,19 @@ namespace SF.Common.Documents.Management
 		public string Content { get; set; }
 	}
 
-	public class DocumentScope: ObjectEntityBase<string>
+    /// <summary>
+    /// 文档区域
+    /// </summary>
+    [EntityObject]
+    public class DocumentScope: ObjectEntityBase<string>
 	{
-		
-	}
+        ///<title>ID</title>
+        /// <summary>
+        /// 文档区域标识，必须唯一，不能修改
+        /// </summary>
+        [Key]
+        [ReadOnly(false)]
+        [TableVisible]
+        public override string Id { get; set; }
+    }
 }
