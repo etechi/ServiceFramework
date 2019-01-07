@@ -17,6 +17,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using SF.Sys.Entities.Models;
 using SF.Sys.Annotations;
 using System.Collections.Generic;
+using System;
 
 namespace SF.Common.Documents
 {
@@ -37,7 +38,10 @@ namespace SF.Common.Documents
 		[Html]
 		public string Content { get; set; }
 
-		
+        /// <summary>
+        /// 文档发布时间
+        /// </summary>
+		public DateTime? PublishDate { get; set; }
 	}
 
 	/// <summary>

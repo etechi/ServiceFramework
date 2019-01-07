@@ -93,7 +93,22 @@ namespace SF.Sys.Services
 					options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
 					options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 				})
-				.AddJwtBearer();
+				.AddJwtBearer(options=>
+                {
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = ctx =>
+                        {
+                            if(!ctx.Request.Headers.ContainsKey("Authorization"))
+                            {
+                                var token = ctx.Request.Query["access-token"].FirstOrDefault();
+                                if (token.HasContent())
+                                    ctx.Request.Headers["Authorization"] = "Bearer " + token;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
 
 			mssc.AddOptions();
 			mssc.AddSingleton(sp=>

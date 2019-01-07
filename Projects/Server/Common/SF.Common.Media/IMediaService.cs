@@ -32,7 +32,7 @@ namespace SF.Common.Media
     public interface IMediaService
     {
 		[HeavyMethod]
-		Task<HttpResponseMessage> Upload(bool returnJson = false);
+		Task<HttpResponseMessage> Upload();
 
 		Task<string> Clip(string src, double x, double y, double w, double h);
 

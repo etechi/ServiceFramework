@@ -60,6 +60,7 @@ namespace SF.Common.Documents
 					ContainerId=m.ContainerId,
 					Id = m.Id,
 					Redirect=m.Redirect,
+                    PublishDate=m.PublishDate,
 					Content = detail ? m.Content : null,
 					Container = m.ContainerId.HasValue ? new TCategoryPublic { Id = m.ContainerId.Value } : null,
 				});
@@ -148,8 +149,11 @@ namespace SF.Common.Documents
 						d.SubTitle.Contains(Arg.Key) ||
 						d.Remarks.Contains(Arg.Key)
 						);
-
-				return q.ToQueryResultAsync(
+                q = q
+                    .OrderBy(d => d.ItemOrder)
+                    .OrderByDescending(d => d.PublishDate)
+                    .OrderBy(d => d.Name);
+                return q.ToQueryResultAsync(
 					iq => MapModelToPublic(iq, false),
 					r => r,
 					docPageBuilder,
@@ -165,7 +169,11 @@ namespace SF.Common.Documents
 				var q = LimitedDocuments(ctx);
 				q = q.Where(d => d.ContainerId == Arg.Category );
 				var scope = Arg.Scope ?? "default";
-				q = q.Where(d => d.ScopeId == scope);
+				q = q.Where(d => d.ScopeId == scope)
+                    .OrderBy(d=>d.ItemOrder)
+                    .OrderByDescending(d=>d.PublishDate)
+                    .OrderBy(d=>d.Name);
+
 				return q.ToQueryResultAsync(
 					iq => MapModelToPublic(iq, false),
 					r => r,
@@ -183,7 +191,9 @@ namespace SF.Common.Documents
 					d.ContainerId == Arg.Category
 				);
 				var scope = Arg.Scope ?? "default";
-				q = q.Where(d => d.ScopeId == scope);
+				q = q.Where(d => d.ScopeId == scope)
+                    .OrderBy(d=>d.ItemOrder)
+                    .ThenBy(d=>d.Name);
 				return q.ToQueryResultAsync(
 					iq => MapModelToPublic(q, false),
 					r => r,

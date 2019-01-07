@@ -148,8 +148,10 @@ namespace SF.Common.Media
 			return new CopyResult { Id = re };
 		}
 		[HeavyMethod]
-        public async Task<HttpResponseMessage> Upload( bool returnJson = false)
+        public async Task<HttpResponseMessage> Upload( )
 		{
+            var uri = new Uri(InvokeContext.Value.Request.Uri);
+            var returnJson = uri.ParseQuery().FirstOrDefault(p => p.key.ToLower() == "returnjson").value == "true";
             try
             {
 				var Files = FileCollection.Value.Files;
