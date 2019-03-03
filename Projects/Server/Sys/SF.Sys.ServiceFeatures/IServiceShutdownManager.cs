@@ -13,25 +13,16 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Hosting;
 using System;
 using System.Threading.Tasks;
 
 namespace SF.Sys.ServiceFeatures
 {
-	public static class StartBootstrapServiceProviderExtension
-	{
-	
+    public interface IServiceShutdownManager
+    {
+        void Register(Func<Task> Callback);
+        void Register(IDisposable Disposable);
 
-		public static IAppInstanceBuilder BootServices(this IAppInstanceBuilder Builder)
-		{ 
-			if (Builder.EnvType == EnvironmentType.Utils)
-				return Builder;
-			return Builder.With(sp=>
-            {
-                Task.Run(() => sp.BootServices()).Wait();
-                return (IDisposable)null;
-            });
-		}
-	}
+        Task Shutdown();
+    }
 }

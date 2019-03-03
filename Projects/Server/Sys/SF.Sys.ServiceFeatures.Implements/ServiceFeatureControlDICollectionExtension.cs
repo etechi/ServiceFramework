@@ -26,7 +26,7 @@ namespace SF.Sys.Services
 					)
 		{
 			sc.AddScoped<IServiceFeatureControlService, ServiceFeatureControlService>();
-			
+            sc.AddSingleton<IServiceShutdownManager, SF.Sys.ServiceFeatures.ServiceShutdownManager>();
 		}
 	}
 

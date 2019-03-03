@@ -27,6 +27,7 @@ namespace SF.Sys.Hosting
 	{
 		IDisposable Execute(IAppInstance Instance);
 	}
+   
 	public interface IAppInstanceBuilder
     {
 		EnvironmentType EnvType { get; }

@@ -96,7 +96,8 @@ namespace SF.Sys.Data.IdentGenerator
 						return Task.CompletedTask;
 					});
 				return re.NextValue - CountPerBatch;
-			}));
+			},
+            Flags:DataContextFlag.RequireNewTransaction));
 		}
 		
 		public async Task<long[]> GenerateAsync(string Type, int Count, int Section)

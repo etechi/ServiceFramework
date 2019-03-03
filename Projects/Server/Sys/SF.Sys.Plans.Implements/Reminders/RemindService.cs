@@ -157,8 +157,7 @@ namespace SF.Sys.Reminders
 						});
 				await ctx.SaveChangesAsync();
 				return remind.Id;
-			},
-			DataContextFlag.LightMode
+			}
 			);
 		}
 		class RemindContext: IRemindContext

@@ -13,12 +13,14 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Logging;
 using SF.Sys.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SF.Sys.Data
@@ -29,34 +31,89 @@ namespace SF.Sys.Data
 		public int ContextId { get; }
 
 		public string Name { get; }
-        public IDataContextProvider Provider { get; }
 		bool _Disposed;
 
-		public RootDataContext RootContext { get; }
+        public DataContext TransContext => _TransContext;
+
 		public DataContext PrevContext { get; }
-		protected void CheckDispose()
+
+        DataContext _TransContext;
+        IDataContextTransaction _Transaction;
+
+        IDataContextProvider _Provider;
+        bool _ProviderOwner;
+        public bool IsTransContext => _TransContext == this;
+        Dictionary<Type, IDataSet> _Sets;
+        bool _AutoSaveChangedRequred;
+
+        public IDataContextTransaction Transaction => TransContext._Transaction;
+        public IDataContextProvider Provider => _Provider;
+        public IDataScope DataScope { get; }
+        protected void CheckDispose()
 		{
 			if (_Disposed)
 				throw new ObjectDisposedException(GetType().FullName);
 		}
-
-		public DataContext(
+        
+        DataContext(
 			int ScopeId,
 			int ContextId,
 			string Name,
-			IDataContextProvider Provider,
-			RootDataContext RootContext,
-			DataContext PrevContext
-			)
-		{
+			DataContext PrevContext,
+            IDataScope DataScope
+            )
+        {
 			this.ScopeId = ScopeId;
 			this.ContextId = ContextId;
-
 			this.Name = Name;
-			this.Provider = Provider;
-			this.RootContext = RootContext;
-			this.PrevContext = PrevContext;
-		}
+            this.PrevContext = PrevContext;
+            this.DataScope = DataScope;
+
+
+        }
+        public static async Task<DataContext> Create(
+            int ScopeId,
+            int ContextId,
+            string Name,
+            IDataScope DataScope,
+            DataContext PrevContext,
+            IDataContextProviderFactory ProviderFactory,
+            DataContextFlag Flags,
+            System.Data.IsolationLevel TransactionIsolationLevel
+            )
+        {
+            var ctx = new DataContext(ScopeId, ContextId, Name,PrevContext, DataScope);
+            System.Data.IsolationLevel prevTranIsolationLevel;
+            if (PrevContext == null ||
+                DataScope!=PrevContext.DataScope||
+                (Flags & DataContextFlag.RequireNewTransaction) == DataContextFlag.RequireNewTransaction && 
+                (PrevContext.Transaction != null || TransactionIsolationLevel==System.Data.IsolationLevel.Unspecified)
+                )
+            {
+                ctx._Provider = ProviderFactory.Create();
+                ctx._ProviderOwner = true;
+                ctx._TransContext = ctx;
+                prevTranIsolationLevel = System.Data.IsolationLevel.Unspecified;
+            }
+            else
+            {
+                prevTranIsolationLevel = PrevContext.Transaction?.IsolationLevel ?? System.Data.IsolationLevel.Unspecified;
+                ctx._TransContext = PrevContext.TransContext;
+                ctx._Provider = PrevContext.Provider;
+            }
+            if (TransactionIsolationLevel > prevTranIsolationLevel)
+            {
+                if (prevTranIsolationLevel != System.Data.IsolationLevel.Unspecified)
+                    throw new NotSupportedException("不支持事务隔离级别提升");
+                ctx._Transaction = await ((IDataContextProviderExtension)ctx.Provider).BeginTransaction(
+                    TransactionIsolationLevel, 
+                    CancellationToken.None
+                    );
+                ctx._TransContext = ctx;
+                
+            }
+            return ctx;
+        }
         protected virtual void OnDisposed()
 		{
 
@@ -66,36 +123,23 @@ namespace SF.Sys.Data
 			if (_Disposed) return;
 			_Disposed = true;
 			OnDisposed();
+            if (_Transaction != null)
+                _Transaction.Dispose();
+            if (_Provider != null && _ProviderOwner)
+                _Provider.Dispose();
         }
-		Dictionary<Type, IDataSet> Sets { get; } = new Dictionary<Type, IDataSet>();
-
-		public virtual IDataContextTransaction Transaction => RootContext.Transaction;
-
 		public IDataSet<T> Set<T>() where T : class
 		{
 			CheckDispose();
 			var type = typeof(T);
-			if (Sets.TryGetValue(type, out var re))
+            var sets = _Sets;
+            if (sets == null)
+                _Sets = sets = new Dictionary<Type, IDataSet>();
+			if (sets.TryGetValue(type, out var re))
 				return (IDataSet<T>)re;
 			re = Provider.CreateDataSet<T>(this);
-			Sets.Add(type, re);
+			sets.Add(type, re);
 			return (IDataSet<T>)re;
-		}
-
-		
-		public virtual Task SaveChangesAsync()
-        {
-			CheckDispose();
-			return Task.CompletedTask;
-			//return await Provider.SaveChangesAsync();
-        }
-
-		public virtual void AddCommitTracker(
-			ITransactionCommitTracker Tracker
-			)
-		{
-			CheckDispose();
-			RootContext.AddCommitTracker(Tracker);
 		}
 
 
@@ -133,5 +177,112 @@ namespace SF.Sys.Data
 			CheckDispose();
 			return ((IDataContextProviderExtension)Provider).GetDbConnection();
 		}
-	}
+
+
+        List<ITransactionCommitTracker> _CommitTrackers;
+
+        public virtual void AddCommitTracker(ITransactionCommitTracker Tracker)
+        {
+            CheckDispose();
+            var trackers = TransContext._CommitTrackers;
+            if (trackers == null)
+                TransContext._CommitTrackers = trackers=new List<ITransactionCommitTracker>();
+            trackers.Add(Tracker);
+        }
+
+        async Task TraceCommitAsync(
+            List<ITransactionCommitTracker> trackers,
+            TransactionCommitNotifyType Type,
+            Exception exception
+            )
+        {
+            if (trackers == null)
+                return;
+            foreach (var tracker in trackers)
+            {
+                if ((tracker.TrackNotifyTypes & Type) == Type)
+                    await tracker.Notify(Type, exception);
+            }
+        }
+        public virtual async Task SaveChangesAsync()
+        {
+            CheckDispose();
+            if (!IsTransContext)
+            {
+                if (Transaction == null)
+                    TransContext._AutoSaveChangedRequred = true;
+                else
+                {
+                    await Provider.SaveChangesAsync();
+                    Provider.ClearTrackingEntities();
+                }
+                return;
+            }
+
+            _AutoSaveChangedRequred = false;
+            if (Transaction == null)
+            {
+                var trackers = _CommitTrackers;
+                _CommitTrackers = null;
+                try
+                {
+                    await TraceCommitAsync(trackers, TransactionCommitNotifyType.BeforeCommit, null);
+                    await Provider.SaveChangesAsync();
+                    Provider.ClearTrackingEntities();
+                    await TraceCommitAsync(trackers, TransactionCommitNotifyType.AfterCommit, null);
+                }
+                catch (Exception ex)
+                {
+                    await TraceCommitAsync(trackers, TransactionCommitNotifyType.AfterCommit, ex);
+                    throw;
+                }
+
+            }
+            else
+            {
+                await Provider.SaveChangesAsync();
+            }
+        }
+        public async Task EndUsing(Exception error, ILogger Logger)
+        {
+            if (!IsTransContext)
+                return;
+            if (_AutoSaveChangedRequred)
+                await SaveChangesAsync();
+            if (Transaction == null)
+                return;
+            var trackers = _CommitTrackers;
+            _CommitTrackers = null;
+            if (error == null)
+            {
+                try
+                {
+                    await TraceCommitAsync(trackers, TransactionCommitNotifyType.BeforeCommit, null);
+                    Transaction.Commit();
+                    await TraceCommitAsync(trackers, TransactionCommitNotifyType.AfterCommit, null);
+                }
+                catch (Exception ex)
+                {
+                    await TraceCommitAsync(trackers, TransactionCommitNotifyType.AfterCommit, ex);
+                    throw;
+                }
+            }
+            //内部没有rollback，但顶级有异常
+            else
+            {
+                try
+                {
+                    Transaction.Rollback();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Warn(ex, () => $"事务回滚时发生异常:{ex.Message}");
+                }
+                finally
+                {
+                    await TraceCommitAsync(trackers, TransactionCommitNotifyType.Rollback, error);
+                }
+            }
+        }
+    }
 }

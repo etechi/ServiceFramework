@@ -203,7 +203,9 @@ namespace SF.Sys.Data.EntityFrameworkCore
 
 			public object RawTransaction => _Transaction.GetDbTransaction();
 
-			public void Commit()
+            public System.Data.IsolationLevel IsolationLevel => _Transaction.GetDbTransaction().IsolationLevel;
+
+            public void Commit()
 			{
 				_Transaction.Commit();
 			}

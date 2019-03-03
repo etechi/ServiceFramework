@@ -14,13 +14,16 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Sys.Logging;
+using SF.Sys.ServiceFeatures;
 using SF.Sys.Services;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SF.Sys.Hosting
 {
-	public class AppInstanceBuilder: IAppInstanceBuilder
+   
+    public class AppInstanceBuilder: IAppInstanceBuilder
 	{
 		public EnvironmentType EnvType { get; }
 		public ILogService LogService { get;  }
@@ -58,7 +61,6 @@ namespace SF.Sys.Hosting
 			public EnvironmentType EnvType { get; }
 			public string Name { get; }
 			public IServiceProvider ServiceProvider { get; }
-			internal IDisposable _Shutdown;
 			public AppInstance(string Name, EnvironmentType EnvType, IServiceProvider ServiceProvider)
 			{
 				this.Name = Name;
@@ -67,10 +69,14 @@ namespace SF.Sys.Hosting
 			}
 			public void Dispose()
 			{
-				var dsp = ServiceProvider as IDisposable;
+                var sum = ServiceProvider.TryResolve<IServiceShutdownManager>();
+                if(sum!=null)
+                    Task.Run(() =>
+                        sum.Shutdown()
+                        ).Wait();
+                var dsp = ServiceProvider as IDisposable;
 				if (dsp != null)
 					dsp.Dispose();
-				Disposable.Release(ref _Shutdown);
 			}
 		}
 		public IAppInstance Build(Func<IServiceCollection, IServiceProvider> BuildServiceProvider)
@@ -81,18 +87,18 @@ namespace SF.Sys.Hosting
 					throw new InvalidOperationException();
 				return ai;
 			});
+
 			var sp = BuildServiceProvider(Services);
 			ai = new AppInstance(Name, EnvType, sp);
 
-			var disposables = new List<IDisposable>();
+            var sum= sp.Resolve<IServiceShutdownManager>();
 
-			foreach(var sa in sp.Resolve<IEnumerable<IAppStartupAction>>())
+            foreach (var sa in sp.Resolve<IEnumerable<IAppStartupAction>>())
 			{
 				var d = sa.Execute(ai);
-				if(d!=null)
-					disposables.Add(d);
+                if (d != null)
+                    sum.Register(d);
 			}
-			ai._Shutdown = Disposable.Combine(disposables.ToArray());
 			return ai;
 		}
 		

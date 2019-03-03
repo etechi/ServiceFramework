@@ -13,25 +13,20 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using SF.Sys.Hosting;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Net.Http;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace SF.Sys.ServiceFeatures
+namespace SF.Sys
 {
-	public static class StartBootstrapServiceProviderExtension
+	public static class EnumExtension
 	{
-	
-
-		public static IAppInstanceBuilder BootServices(this IAppInstanceBuilder Builder)
-		{ 
-			if (Builder.EnvType == EnvironmentType.Utils)
-				return Builder;
-			return Builder.With(sp=>
-            {
-                Task.Run(() => sp.BootServices()).Wait();
-                return (IDisposable)null;
-            });
-		}
+		
 	}
 }

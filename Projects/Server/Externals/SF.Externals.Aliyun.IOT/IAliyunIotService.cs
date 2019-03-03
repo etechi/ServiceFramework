@@ -16,8 +16,9 @@ namespace SF.Externals.Aliyun
 		SUCCESS,
 		TIMEOUT,
 		OFFLINE,
-		HALFCONN
-	}
+		HALFCONN,
+        UNKONW //阿里云有时候返回这个错误码
+    }
 	public enum DeviceStatus
 	{
 		ONLINE,

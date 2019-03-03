@@ -675,8 +675,7 @@ namespace SF.Sys.Entities
 			TEditable Entity,
 			Func<TModifyContext, Task> UpdateModel,
 			Func<TModifyContext, Task> InitModel,
-			object ExtraArgument = null,
-			bool UseLightContext=false
+			object ExtraArgument = null
 			)
 			where TModel : class, new()
 			where TModifyContext: IEntityModifyContext<TEditable, TModel>
@@ -704,8 +703,7 @@ namespace SF.Sys.Entities
 					ServiceContext.PostChangedEvents<TKey,TEditable>(ctx,id,Context.Editable,DataActionType.Create);
 					await ctx.SaveChangesAsync();
 					return id;
-				},
-				UseLightContext?DataContextFlag.LightMode:DataContextFlag.None
+				}
 				);
 		}
 		//public static async Task<TKey> CreateAsync<TKey, TEditable,TModel>(
@@ -811,8 +809,7 @@ namespace SF.Sys.Entities
 					if(AutoSaveChange)
 						await ctx.SaveChangesAsync();
 					return id;
-				},
-				AutoSaveChange?DataContextFlag.None:DataContextFlag.LightMode
+				}
 				);
 		}
 		//public static async Task<TKey> CreateOrUpdateAsync<TKey, TEditable, TModel>(

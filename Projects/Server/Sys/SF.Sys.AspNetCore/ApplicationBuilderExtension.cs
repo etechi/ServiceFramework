@@ -43,15 +43,15 @@ namespace SF.Sys.AspNetCore
 			if (ins.EnvType != EnvironmentType.Utils)
 			{
 				
-				var disposable = Task.Run(() =>
+				Task.Run(() =>
 					  app.ApplicationServices.BootServices()
-					).Result;
+					).Wait();
 
-				var applicationLifetime = app.ApplicationServices.Resolve<IApplicationLifetime>();
-				applicationLifetime.ApplicationStopping.Register(() =>
-				{
-					disposable.Dispose();
-				});
+				//var applicationLifetime = app.ApplicationServices.Resolve<IApplicationLifetime>();
+				//applicationLifetime.ApplicationStopping.Register(() =>
+				//{
+				//	disposable.Dispose();
+				//});
 			}
 		}
 		public static IApplicationBuilder UseCommonFeatures(

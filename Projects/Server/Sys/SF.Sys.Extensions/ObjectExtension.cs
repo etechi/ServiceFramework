@@ -31,6 +31,7 @@ namespace SF.Sys
 		{
 			return EqualityComparer<T>.Default.Equals(value, default(T));
 		}
+
 		static MethodInfo IsDefaultMethodInfo { get; } = typeof(ObjectExtension).GetMethods(
 			BindingFlags.Static |
 			BindingFlags.InvokeMethod |

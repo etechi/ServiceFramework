@@ -287,19 +287,18 @@ namespace SF.Sys.Entities
 		protected Task<TKey> CreateAsync(IModifyContext ctx,TEditable obj, object ExtraArgument =null)
 		{
 			if (_SyncQueue == null)
-				return InternalCreateAsync(ctx, obj, ExtraArgument, false);
+				return InternalCreateAsync(ctx, obj, ExtraArgument);
 			else
-				return _SyncQueue.Queue(obj, () => InternalCreateAsync(ctx, obj, ExtraArgument, false));
+				return _SyncQueue.Queue(obj, () => InternalCreateAsync(ctx, obj, ExtraArgument));
 		}
-		protected virtual Task<TKey> InternalCreateAsync(IModifyContext Context, TEditable obj, object ExtraArgument,bool LightContextMode)
+		protected virtual Task<TKey> InternalCreateAsync(IModifyContext Context, TEditable obj, object ExtraArgument)
 		{
 			return ServiceContext.InternalCreateAsync<TKey, TEditable, TModel, IModifyContext>(
 				Context,
 				obj,
 				OnUpdateModel,
 				OnNewModel,
-				ExtraArgument,
-				LightContextMode
+				ExtraArgument
 				);
 		}
 		#endregion

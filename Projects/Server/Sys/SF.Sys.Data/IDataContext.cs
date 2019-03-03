@@ -45,8 +45,8 @@ namespace SF.Sys.Data
 	public enum DataContextFlag
 	{
 		None=0,
-		//优先使用当前数据上下文
-		LightMode=1
+        //需要新事务
+        RequireNewTransaction=2
 	}
 	public interface IDataScope
 	{

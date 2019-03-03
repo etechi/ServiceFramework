@@ -29,7 +29,9 @@ namespace SF.Sys.Data
 		void Commit();
 		void Rollback();
 		object RawTransaction { get; }
-	}
+
+        System.Data.IsolationLevel IsolationLevel { get; }
+    }
 	public interface IDataContextProvider :IDisposable//, IQueryableContext,IAsyncQueryableContext
 	{
 		//IEntityQueryableProvider EntityQueryableProvider { get; }

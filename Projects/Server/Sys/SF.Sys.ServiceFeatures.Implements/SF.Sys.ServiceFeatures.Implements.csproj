@@ -16,6 +16,7 @@
     <None Remove=".licenseheader" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SF.Sys.Logging\SF.Sys.Logging.csproj" />
     <ProjectReference Include="..\SF.Sys.ServiceFeatures\SF.Sys.ServiceFeatures.csproj" />
   </ItemGroup>
 </Project>

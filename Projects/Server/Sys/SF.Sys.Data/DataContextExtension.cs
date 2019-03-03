@@ -116,8 +116,7 @@ namespace SF.Sys.Data
 				ctx => ctx.Queryable<TModel>()
 					.Where(Filter)
 					.Select(KeySelector)
-					.SingleOrDefaultAsync(),
-				DataContextFlag.LightMode
+					.SingleOrDefaultAsync()
 				);
 			if (!id.IsDefault())
 				return id;
@@ -127,7 +126,8 @@ namespace SF.Sys.Data
 				ctx => ctx.AddOrUpdateAsync(
 					Filter,
 					Creator
-					)
+					),
+                Flags:DataContextFlag.RequireNewTransaction
 				);
 
 			id = await DataScope.Use(
@@ -135,8 +135,7 @@ namespace SF.Sys.Data
 				ctx => ctx.Queryable<TModel>()
 					.Where(Filter)
 					.Select(KeySelector)
-					.SingleOrDefaultAsync(),
-				DataContextFlag.LightMode
+					.SingleOrDefaultAsync()
 				);
 			if (!id.IsDefault())
 				return id;

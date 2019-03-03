@@ -22,13 +22,13 @@ namespace SF.Sys.ServiceFeatures
 {
 	public static class StartBootstrapServiceProviderExtension
 	{
-		public static async Task<IDisposable> BootServices(this IServiceProvider sp)
+		public static async Task BootServices(this IServiceProvider sp)
 		{
 			var ds = new List<IDisposable>();
 			var bss=sp.Resolve<IEnumerable<IServiceBootable>>();
-			foreach (var bs in bss)
-				ds.Add(await bs.Boot());
-			return Disposable.Combine(ds.ToArray());
+            var sum = sp.Resolve<IServiceShutdownManager>();
+            foreach (var bs in bss)
+				sum.Register(await bs.Boot());
 		}
 
 	}

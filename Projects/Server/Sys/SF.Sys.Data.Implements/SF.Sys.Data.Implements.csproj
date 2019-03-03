@@ -17,6 +17,7 @@
   <ItemGroup>
     <Compile Remove="DataContext1.cs" />
     <Compile Remove="DataSet.cs" />
+    <Compile Remove="RootDataContext.cs" />
     <Compile Remove="TransactionScopeManager.cs" />
   </ItemGroup>
   <ItemGroup>

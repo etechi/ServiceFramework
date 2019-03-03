@@ -30,6 +30,8 @@ namespace SF.Sys.Data
 		public DataContextFlag Flags { get; }
 		DataContext _TopLightContext;
 		public override IDataContextTransaction Transaction { get; }
+
+        public IDataScope DataScope { get; }
 		public RootDataContext(
 			int ScopeId,
 			int ContextId,
@@ -37,13 +39,16 @@ namespace SF.Sys.Data
 			DataContextFlag Flags,
 			IDataContextTransaction Transaction,
 			IDataContextProvider Provider,
-			RootDataContext PrevRootContext
+            IDataScope DataScope,
+            RootDataContext PrevRootContext
 			):base(ScopeId,ContextId,Name,Provider,null,null)
         {
 			this.PrevRootContext = PrevRootContext;
 			this.Flags = Flags;
 			this.Transaction = Transaction;
-		}
+            this.DataScope = DataScope;
+
+        }
 		
 		public DataContext PushLightContext(
 			int ScopeId,
@@ -113,7 +118,7 @@ namespace SF.Sys.Data
 				await Provider.SaveChangesAsync();
 			}
 		}
-		public async Task EndUse(Exception error,ILogger Logger)
+		public async Task EndUsing(Exception error,ILogger Logger)
 		{
 			if (_TopLightContext != null)
 				throw new InvalidOperationException("仍有内部数据上下文未释放");

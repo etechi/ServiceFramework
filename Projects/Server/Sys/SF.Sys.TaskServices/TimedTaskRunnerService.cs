@@ -339,7 +339,7 @@ namespace SF.Sys.Services
 
 					var reloadTarget = timeService.Now;
 					var now = reloadTarget;
-					for (; ; )
+					while(!cancelToken.IsCancellationRequested)
 					{
 						await Task.Delay(reloadTarget.Subtract(now), cancelToken);
 						await timedTaskService.LoadTasks( cancelToken);
