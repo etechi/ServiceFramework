@@ -208,7 +208,7 @@ namespace SF.Externals.WeiXin.Open.OAuth2
 				Claims = new[]
 				{
 					new ClaimValue(PredefinedClaimTypes.WeiXinUnionId, ui.unionid),
-					new ClaimValue(PredefinedClaimTypes.WeiXinMPId, ui.openid),
+					new ClaimValue(PredefinedClaimTypes.WeiXinOpenPlatformId, ui.openid),
 					new ClaimValue(PredefinedClaimTypes.Name,ui.nickname),
 					new ClaimValue(PredefinedClaimTypes.Country,ui.country),
 					new ClaimValue(PredefinedClaimTypes.Province,ui.province),
@@ -219,7 +219,7 @@ namespace SF.Externals.WeiXin.Open.OAuth2
 				Credentials = new[]
 				{
 					new ClaimValue(PredefinedClaimTypes.WeiXinUnionId, ui.unionid),
-					new ClaimValue(PredefinedClaimTypes.WeiXinMPId, ui.openid),
+					new ClaimValue(PredefinedClaimTypes.WeiXinOpenPlatformId, ui.openid),
 				}.Where(c => !c.Value.IsNullOrEmpty()).ToArray()
 			};
 		}

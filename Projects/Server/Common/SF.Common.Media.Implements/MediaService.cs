@@ -152,6 +152,15 @@ namespace SF.Common.Media
 		{
             var uri = new Uri(InvokeContext.Value.Request.Uri);
             var returnJson = uri.ParseQuery().FirstOrDefault(p => p.key.ToLower() == "returnjson").value == "true";
+
+            //安卓总是返回对象
+            if (!returnJson)
+            {
+                var userAgent = InvokeContext.Value.Request.Headers["User-Agent"].FirstOrDefault()?.ToLower();
+                if (userAgent!=null && userAgent.Contains("okhttp"))// || userAgent.Contains("android") && !userAgent.Contains("micromessenger"))
+                    returnJson = true;
+            }
+
             try
             {
 				var Files = FileCollection.Value.Files;
