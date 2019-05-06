@@ -162,11 +162,12 @@ namespace SF.Biz.Products
 				string name,
 				decimal marketPrice,
 				decimal price,
-				int priceUnit,
+				long priceUnit,
 				string image,
 				string[] images,
 				string[] contentImages,
-				bool isVirtual = false
+				bool isVirtual = false,
+                DateTime? publishTime=null
 			)where TProductManager:IEntityIdentQueryable<ObjectKey<long>,ProductInternalQueryArgument>,
 									IEntityEditableLoader<ObjectKey<long>,ProductEditable>,
 								IEntityUpdator<ProductEditable>,
@@ -190,7 +191,7 @@ namespace SF.Biz.Products
 						Images = images?.Select(i => new ProductImage { Image = i }) ?? null,
 						Descs = contentImages?.Select(i => new  ProductDescItem { Image = i }) ?? null
 					};
-					o.PublishedTime = DateTime.Now;
+					o.PublishedTime = publishTime ?? DateTime.Now;
 				}
 				);
 		}

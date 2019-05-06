@@ -178,7 +178,13 @@ namespace SF.Sys.HttpClients
 				re => re.GetBytes()
 				);
 		}
-		public static Task Send(this Request Request)
+        public static Task<(byte[],string)> GetBytesAndMime(this Request Request)
+        {
+            return Request.Execute(
+                re => re.GetBytesAndMime()
+                );
+        }
+        public static Task Send(this Request Request)
 		{
 			return Request.Execute(
 				re => {
@@ -203,14 +209,20 @@ namespace SF.Sys.HttpClients
 		public static Task<byte[]> GetBytes(this HttpResponseMessage response)
 			=> response.Content.ReadAsByteArrayAsync();
 
-		//public static Task<string> GetString(this IHttpClient client, Uri uri, IEnumerable<(string Name, string Value)> Headers = null)
-		//	=> client.Get(uri, r => r.GetString(), Headers);
+        public static async Task<(byte[], string)> GetBytesAndMime(this HttpResponseMessage response)
+        {
+            var mime = response.Content.Headers.ContentType.MediaType;
+            return (await response.Content.ReadAsByteArrayAsync(),mime);
+        }
 
-		//public static Task<byte[]> GetBytes(this IHttpClient client, Uri uri, IEnumerable<(string Name, string Value)> Headers = null)
-		//	=> client.Get(uri, r => r.GetBytes(), Headers);
+        //public static Task<string> GetString(this IHttpClient client, Uri uri, IEnumerable<(string Name, string Value)> Headers = null)
+        //	=> client.Get(uri, r => r.GetString(), Headers);
 
-		//public static Task<string> PostAndReturnString(this IHttpClient client, Uri uri, HttpContent Content, IEnumerable<(string Name, string Value)> Headers = null)
-		//	=> client.Post(uri,Content,r=>r.GetString(),Headers);
+        //public static Task<byte[]> GetBytes(this IHttpClient client, Uri uri, IEnumerable<(string Name, string Value)> Headers = null)
+        //	=> client.Get(uri, r => r.GetBytes(), Headers);
 
-	}
+        //public static Task<string> PostAndReturnString(this IHttpClient client, Uri uri, HttpContent Content, IEnumerable<(string Name, string Value)> Headers = null)
+        //	=> client.Post(uri,Content,r=>r.GetString(),Headers);
+
+    }
 }

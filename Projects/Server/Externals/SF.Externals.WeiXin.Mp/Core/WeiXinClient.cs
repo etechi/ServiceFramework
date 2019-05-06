@@ -62,10 +62,10 @@ namespace SF.Externals.WeiXin.Mp.Core
                     ("access_token", access_token),
                     ("media_id",serverId)
                 );
-            var bytes = await HttpClient.From(u).GetBytes();
+            var (bytes,mime) = await HttpClient.From(u).GetBytesAndMime();
             var mm = new MediaMeta
             {
-                Mime = "image/jpeg",
+                Mime = mime,
                 Name = "",
                 Type = "ms"
             };

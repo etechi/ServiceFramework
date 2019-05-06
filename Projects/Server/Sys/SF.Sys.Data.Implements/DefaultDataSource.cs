@@ -37,6 +37,7 @@ namespace SF.Sys.Data
 		public string ConnectionString { get; set; }
 
         public bool? UseRowNumberForPaging { get; set; }
+        public bool? UseSqlLog{ get; set; }
     }
 	
 	public class DefaultDataSource : IDataSource
@@ -74,6 +75,7 @@ namespace SF.Sys.Data
 		}
 		public string ConnectionString=> Config.ConnectionString;
         public bool? UseRowNumberForPaging => Config.UseRowNumberForPaging;
+        public bool? UseSqlLog => Config.UseSqlLog;
         public DbConnection Connect()
 		{
 			var connection = Factory.CreateConnection();

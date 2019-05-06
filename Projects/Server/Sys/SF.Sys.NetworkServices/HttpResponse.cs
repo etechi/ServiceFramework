@@ -37,8 +37,26 @@ namespace SF.Sys.NetworkService
 			m.Headers.Location = Uri;
 			return m;
 		}
+        public static HttpResponseMessage JSRedirectWithoutHistory(Uri uri)
+        {
+            var ctn = new System.Net.Http.StringContent(
+@"<html><body><script>
+try{
+    window.location.replace(""" + uri + @""");
+}catch(e){
+    window.location.href=""" + uri + @"""
+}
+</script></body></html>",
+                Encoding.UTF8,
+                "text/html"
+                );
 
-		public static HttpResponseMessage ByteArray(byte[] Bytes, string mediaType = "application/octet", System.Net.HttpStatusCode Status = System.Net.HttpStatusCode.OK)
+            var resp = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            resp.Content = ctn;
+            return resp;
+        }
+
+        public static HttpResponseMessage ByteArray(byte[] Bytes, string mediaType = "application/octet", System.Net.HttpStatusCode Status = System.Net.HttpStatusCode.OK)
 		{
 			var ctn = new System.Net.Http.ByteArrayContent(Bytes);
 			ctn.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(mediaType);

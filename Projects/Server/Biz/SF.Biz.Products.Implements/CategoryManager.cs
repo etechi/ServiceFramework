@@ -54,11 +54,11 @@ namespace SF.Biz.Products.Entity
 		{
 			this.Notifier = Notifier;
 		}
-        protected override async Task<TEditable> OnMapModelToEditable(IDataContext ctx, IContextQueryable<TCategory> query)
+        protected override async Task<TEditable> OnMapModelToEditable(IDataContext ctx, IQueryable<TCategory> query)
 		{
 			return await BatchMapModelToEditable(query).SingleOrDefaultAsync();
 		}
-		public  IContextQueryable<TEditable> BatchMapModelToEditable(IContextQueryable<TCategory> query)
+		public  IQueryable<TEditable> BatchMapModelToEditable(IQueryable<TCategory> query)
 		{
 			return from c in query
 				select new TEditable
@@ -81,7 +81,7 @@ namespace SF.Biz.Products.Entity
 					ParentName=c.ParentId.HasValue?c.Parent.Name:null
 				};
 		}
-		protected override IContextQueryable<TCategory> OnBuildQuery(IContextQueryable<TCategory> Query, CategoryQueryArgument Arg)
+		protected override IQueryable<TCategory> OnBuildQuery(IQueryable<TCategory> Query, CategoryQueryArgument Arg)
 		{
 			return Query.Filter(Arg.SellerId, c => c.OwnerUserId)
 				.Filter(Arg.ParentId,c=>c.ParentId)
@@ -239,11 +239,11 @@ namespace SF.Biz.Products.Entity
 					Notifier.NotifyCategoryItemsChanged(Category.Id);
 				});
 		}
-        protected override IContextQueryable<TEditable> OnMapModelToDetail(IContextQueryable<TCategory> Query)
+        protected override IQueryable<TEditable> OnMapModelToDetail(IQueryable<TCategory> Query)
 		{
 			return BatchMapModelToEditable(Query);
 		}
-		//public override Task<TEditable> MapModelToEditable(IContextQueryable<TCategory> Query)
+		//public override Task<TEditable> MapModelToEditable(IQueryable<TCategory> Query)
 		//{
 		//	return (from c in Query
 		//			select new TEditable
@@ -336,7 +336,7 @@ namespace SF.Biz.Products.Entity
 			Model.Id = await IdentGenerator.GenerateAsync<TCategory>();
 		}
 		
-		protected override Task<TCategory> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TCategory> ctx)
+		protected override Task<TCategory> OnLoadModelForUpdate(ObjectKey<long> Id, IQueryable<TCategory> ctx)
 		{
 			//DataSet.AsQueryable(false)
 			//	.Where(s => s.Id.Equals(Id.Id))

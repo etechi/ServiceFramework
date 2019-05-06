@@ -30,10 +30,12 @@ namespace SF.Sys.Services
 					   var cfg = sp.Resolve<IConfiguration>();
 					   var connStr = cfg.GetValue(Path);
                        var UseRowNumberForPaging = cfg.GetValue("DbConfigs:UseRowNumberForPaging");
+                       var UseSqlLog = cfg.GetValue("DbConfigs:UseSqlLog");
                        return new DataSourceConfig
 					   {
 						   ConnectionString = connStr,
-                           UseRowNumberForPaging= UseRowNumberForPaging==null?(bool?)null: UseRowNumberForPaging == "true"
+                           UseRowNumberForPaging= UseRowNumberForPaging==null?(bool?)null: UseRowNumberForPaging == "true",
+                           UseSqlLog = UseSqlLog == null ? (bool?)null : UseSqlLog == "true"
                        };
 				   }
 				   );

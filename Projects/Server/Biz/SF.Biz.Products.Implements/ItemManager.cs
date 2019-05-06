@@ -58,7 +58,7 @@ namespace SF.Biz.Products.Entity
 			"time",
 			b => b.Add("time", i => i.UpdatedTime)
 			);
-		protected override IContextQueryable<TItem> OnBuildQuery(IContextQueryable<TItem> Query, ItemQueryArgument Arg)
+		protected override IQueryable<TItem> OnBuildQuery(IQueryable<TItem> Query, ItemQueryArgument Arg)
 		{
 			if (Arg == null)
 				return Query;
@@ -76,7 +76,7 @@ namespace SF.Biz.Products.Entity
 				.Filter(Arg.TypeId, i => i.Product.TypeId)
 				;
 		}
-		protected override IContextQueryable<TInternal> OnMapModelToDetail(IContextQueryable<TItem> Query)
+		protected override IQueryable<TInternal> OnMapModelToDetail(IQueryable<TItem> Query)
 		{
 			return from c in Query
 				   select new TInternal
@@ -89,7 +89,7 @@ namespace SF.Biz.Products.Entity
 						Image=c.Image
 					};
 		}
-		protected override Task<TEditable> OnMapModelToEditable(IDataContext Context, IContextQueryable<TItem> Query)
+		protected override Task<TEditable> OnMapModelToEditable(IDataContext Context, IQueryable<TItem> Query)
 		{
 			return (from c in Query
 				   select new TEditable

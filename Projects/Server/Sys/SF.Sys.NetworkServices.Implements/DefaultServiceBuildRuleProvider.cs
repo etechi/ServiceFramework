@@ -76,7 +76,8 @@ namespace SF.Sys.NetworkService
 				BindingFlags.FlattenHierarchy
 				))
 			{
-                if (method.GetCustomAttribute<LocalMethodAttribute>(true) != null)
+                if (method.GetCustomAttribute<LocalMethodAttribute>(true) != null ||
+                    method.GetCustomAttribute<Annotations.HiddenAttribute>(true)!=null)
                     continue;
 				if (methods.Add(method))
 					yield return method;

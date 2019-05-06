@@ -54,6 +54,10 @@ namespace SF.Sys
 			var offset = q[0] == '?' ? 1 : 0;
 			return DecodeQueryString(q, offset);
 		}
+        public static Dictionary<string, string> ParseQueryToDictionary(this Uri uri) =>
+            uri.ParseQuery().ToDictionary(p => p.key, p => p.value);
+
+
         private class UrlDecoder
         {
             private int _bufferSize;

@@ -174,7 +174,8 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddSqlServerEFCoreDbContext<TDbContext>(
 			   this IServiceCollection Services,
 			   bool AutoMigrate = true,
-               bool? UseRowNumberForPaging=null
+               bool? UseRowNumberForPaging=null,
+               bool? UseSqlLog = null
                ) where TDbContext : DbContext
 			=> AddEFCoreDbContext<TDbContext>(
 				Services,
@@ -183,6 +184,8 @@ namespace SF.Sys.Services
                     var dataSource = isp.Resolve<IDataSource>();
                     if (!UseRowNumberForPaging.HasValue)
                         UseRowNumberForPaging = dataSource.UseRowNumberForPaging;
+                    if (UseSqlLog ?? dataSource.UseSqlLog ?? false)
+                        options.UseLoggerFactory(isp.Resolve<IEnumerable<Microsoft.Extensions.Logging.ILoggerFactory>>().Last());
                     return options.UseSqlServer(
                         dataSource.ConnectionString,
                         b =>
@@ -192,7 +195,7 @@ namespace SF.Sys.Services
                         });
                  },
 				AutoMigrate
-				);
+                );
 
 		public static IServiceCollection AddInMemoryEFCoreDbContext<TDbContext>(
 			   this IServiceCollection Services,
@@ -208,13 +211,12 @@ namespace SF.Sys.Services
 			this IServiceCollection Services,
 			Func<DbContextOptionsBuilder,IServiceProvider, DbContextOptionsBuilder> OptionBuilder,
 			bool AutoMigrate=true
-			) where TDbContext:DbContext
+            ) where TDbContext:DbContext
 		{
 			Services.AddEFCoreDbContext<TDbContext>(
 				(IServiceProvider isp, DbContextOptionsBuilder options) =>
-					OptionBuilder(options,isp)
-						//.UseLoggerFactory(ls.AsMSLoggerFactory())
-						//.UseSqlServer(isp.Resolve<IDataSource>().ConnectionString)
+                         OptionBuilder(options, isp)
+                         //.UseSqlServer(isp.Resolve<IDataSource>().ConnectionString)
 				);
 
 			if(AutoMigrate)

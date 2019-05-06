@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System;
 using System.Collections.Generic;
 using System.Net;
 
@@ -25,6 +26,13 @@ namespace SF.Sys.NetworkService
 		IReadOnlyDictionary<string,IEnumerable<string>> Headers { get; }
 		string GetCookie(string Key);
 	}
+    public static class InvokeRequestExtensions
+    {
+        public static Uri GetUri(this IInvokeRequest req) =>
+            new Uri(req.Uri);
+        public static Dictionary<string,string> GetQueryAsDictionary(this IInvokeRequest req) =>
+            req.GetUri().ParseQueryToDictionary();
+    }
 	public interface IInvokeResponse
 	{
 		string Status { get; set; }

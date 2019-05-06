@@ -30,11 +30,24 @@ namespace SF.Biz.Products.Entity
 		ItemSource<
 			ItemSource,
 			ItemCached, ProductCached, ProductContentCached, CategoryCached,
-			DataModels.Product, DataModels.ProductDetail, DataModels.ProductType, DataModels.Category, DataModels.CategoryItem, DataModels.PropertyScope, DataModels.Property, DataModels.PropertyItem, DataModels.Item, DataModels.ProductSpec
+			DataModels.Product,
+            DataModels.ProductDetail, 
+            DataModels.ProductType, 
+            DataModels.Category, 
+            DataModels.CategoryItem,
+            DataModels.PropertyScope, 
+            DataModels.Property, 
+            DataModels.PropertyItem, 
+            DataModels.Item,
+            DataModels.ProductSpec
 		>,
 		IItemSource
 	{
-		public ItemSource(IServiceScopeFactory ScopeFactory, [EntityIdent(typeof(CategoryInternal), null, 0, null)] long MainCategoryId, IEventSubscriber<ServiceInstanceChanged> ServiceInstanceChanged) : base(ScopeFactory, MainCategoryId, ServiceInstanceChanged)
+		public ItemSource(
+            IDataScope DataScope,
+            [EntityIdent(typeof(CategoryInternal), null, 0, null)] long MainCategoryId, 
+            IEventSubscriber<ServiceInstanceChanged> ServiceInstanceChanged
+            ) : base(DataScope, MainCategoryId, ServiceInstanceChanged)
 		{
 		}
 	}
@@ -83,8 +96,8 @@ namespace SF.Biz.Products.Entity
 
 			public async Task<long[]> Load(long Id)
 			{
-				return await NewDataContext(source.ScopeFactory, async ctx =>
-				{
+                return await source.DataScope.Use("载入子目录商品", async ctx =>
+                {
 					return await ctx.Set<TCategory>().AsQueryable()
 						.Where(c => c.ParentId == Id)
 						.Select(c => c.Id)
@@ -102,8 +115,8 @@ namespace SF.Biz.Products.Entity
 
 			public async Task<long[]> Load(long Id)
 			{
-				return await NewDataContext(source.ScopeFactory, async ctx =>
-				{
+                return await source.DataScope.Use("载入目录商品", async ctx =>
+                {
 					return await ctx.Set<TCategoryItem>()
 						.AsQueryable()
 						.Where(c => c.CategoryId == Id)
@@ -123,8 +136,8 @@ namespace SF.Biz.Products.Entity
 
 			public async Task<ICategoryCached[]> Load(long[] Ids)
 			{
-				return await NewDataContext(source.ScopeFactory, async ctx =>
-				{
+                return await source.DataScope.Use("载入目录", async ctx =>
+                {
 					return await source.MapModelToPublic(
 						ctx.Set<TCategory>().AsQueryable().Where(c => Ids.Contains(c.Id))
 						).ToArrayAsync();
@@ -142,8 +155,8 @@ namespace SF.Biz.Products.Entity
 
             public async Task<long[]> Load(string tag)
             {
-				return await NewDataContext(source.ScopeFactory, async ctx =>
-				{
+                return await source.DataScope.Use("载入标签目录", async ctx =>
+                {
 					return await ctx.Set<TCategory>()
 						.AsQueryable()
 						.Where(c =>
@@ -166,8 +179,8 @@ namespace SF.Biz.Products.Entity
 
 			public async Task<IItemCached[]> Load(long[] Ids)
 			{
-				return await NewDataContext(source.ScopeFactory, async ctx =>
-				{
+                return await source.DataScope.Use("载入商品", async ctx =>
+                {
 					var re = await source.MapModelToPublic(
 						ctx.Set<TItem>().AsQueryable().Where(c => Ids.Contains(c.Id))
 						).ToArrayAsync();
@@ -186,8 +199,8 @@ namespace SF.Biz.Products.Entity
 
 			public async Task<IProductCached[]> Load(long[] Ids)
 			{
-				return await NewDataContext(source.ScopeFactory, async ctx =>
-				{
+                return await source.DataScope.Use("载入产品", async ctx =>
+                {
 					var re = await source.MapModelToPublic(
 						ctx.Set<TProduct>().AsQueryable().Where(c => Ids.Contains(c.Id))
 						).ToArrayAsync();
@@ -206,7 +219,7 @@ namespace SF.Biz.Products.Entity
 
 			public async Task<IProductContentCached[]> Load(long[] Ids)
 			{
-				return await NewDataContext(source.ScopeFactory, async ctx =>
+				return await source.DataScope.Use("载入产品内容", async ctx =>
 				{
 					var re = await source.MapModelToPublic(
 						ctx.Set<TProductDetail>().AsQueryable().Where(c => Ids.Contains(c.Id))
@@ -216,7 +229,7 @@ namespace SF.Biz.Products.Entity
 
 			}
 		}
-		public IServiceScopeFactory ScopeFactory { get; }
+		public IDataScope DataScope { get; }
 		public IRelationLoader CategoryChildrenLoader { get; }
 		public IRelationLoader CategoryItemsLoader { get; }
 		public IBatchLoader<ICategoryCached> CategoryLoader { get; }
@@ -239,7 +252,7 @@ namespace SF.Biz.Products.Entity
 				};
 			}
 		}
-		protected virtual IContextQueryable<ProductContentResult> MapModelToPublic(IContextQueryable<TProductDetail> query)
+		protected virtual IQueryable<ProductContentResult> MapModelToPublic(IQueryable<TProductDetail> query)
 		{
 			return from c in query
 				   select new ProductContentResult
@@ -247,7 +260,7 @@ namespace SF.Biz.Products.Entity
 					   Detail=c					  
 				   };
 		}
-		protected virtual IContextQueryable<TCategoryCached> MapModelToPublic(IContextQueryable<TCategory> query)
+		protected virtual IQueryable<TCategoryCached> MapModelToPublic(IQueryable<TCategory> query)
 		{
             return from c in query
                    select new TCategoryCached
@@ -280,7 +293,7 @@ namespace SF.Biz.Products.Entity
 		}
 
 
-		protected virtual IContextQueryable<ProductResult> MapModelToPublic(IContextQueryable<TProduct> query)
+		protected virtual IQueryable<ProductResult> MapModelToPublic(IQueryable<TProduct> query)
 		{
 			return
 				from p in query
@@ -303,7 +316,7 @@ namespace SF.Biz.Products.Entity
 				};
 		}
 
-		protected virtual IContextQueryable<TItemCached> MapModelToPublic(IContextQueryable<TItem> query)
+		protected virtual IQueryable<TItemCached> MapModelToPublic(IQueryable<TItem> query)
 		{
 			return
 				from item in query
@@ -315,7 +328,7 @@ namespace SF.Biz.Products.Entity
 				};
 		}
 		public ItemSource(
-			IServiceScopeFactory ScopeFactory,
+			IDataScope DataScope,
 			[EntityIdent(typeof(CategoryInternal))]
 			long MainCategoryId,
 			IEventSubscriber<ServiceInstanceChanged> ServiceInstanceChanged
@@ -323,7 +336,7 @@ namespace SF.Biz.Products.Entity
 		{
 			this.MainCategoryId = MainCategoryId;
 
-			this.ScopeFactory = ScopeFactory;
+			this.DataScope = DataScope;
 			this.CategoryChildrenLoader = new CategoryChildrenLoaderInstance((TItemSource)this);
 			this.CategoryItemsLoader = new CategoryItemsLoaderInstance((TItemSource)this);
 			this.CategoryLoader = new CategoryLoaderInstance((TItemSource)this);

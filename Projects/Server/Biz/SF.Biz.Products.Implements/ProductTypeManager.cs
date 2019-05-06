@@ -48,7 +48,7 @@ namespace SF.Biz.Products.Entity
 		public ProductTypeManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
 		{
 		}
-        protected override IContextQueryable<TInternal> OnMapModelToDetail(IContextQueryable<TProductType> Query)
+        protected override IQueryable<TInternal> OnMapModelToDetail(IQueryable<TProductType> Query)
 		{
 			return from c in Query
 				   select new TInternal
@@ -65,7 +65,7 @@ namespace SF.Biz.Products.Entity
 						ProductCount = c.ProductCount
 					};
 		}
-        protected override Task<TEditable> OnMapModelToEditable(IDataContext ctx,IContextQueryable<TProductType> Query)
+        protected override Task<TEditable> OnMapModelToEditable(IDataContext ctx,IQueryable<TProductType> Query)
 		{
 			return (from c in Query
 					select new TEditable
@@ -101,14 +101,14 @@ namespace SF.Biz.Products.Entity
 			Model.Id = await IdentGenerator.GenerateAsync<TProductType>();
 			Model.CreatedTime = Now;
 		}
-		protected override Task<TProductType> OnLoadModelForUpdate(ObjectKey<long> Id, IContextQueryable<TProductType> ctx)
+		protected override Task<TProductType> OnLoadModelForUpdate(ObjectKey<long> Id, IQueryable<TProductType> ctx)
 		{
 			return ctx
 				.Where(s => s.Id == Id.Id)
 				//.Include(s => s.Items)
 				.SingleOrDefaultAsync();
 		}
-		protected override IContextQueryable<TProductType> OnBuildQuery(IContextQueryable<TProductType> Query, ProductTypeQueryArgument Arg)
+		protected override IQueryable<TProductType> OnBuildQuery(IQueryable<TProductType> Query, ProductTypeQueryArgument Arg)
 		{
 			return Query
 				.Filter(Arg.ObjectState, p => p.ObjectState)

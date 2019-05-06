@@ -55,7 +55,7 @@ namespace SF.Biz.Products.Entity
 		{
 			this.ItemNotifier = ItemNotifier;
 		}
-        protected override IContextQueryable<TInternal> OnMapModelToDetail(IContextQueryable<TProduct> Query)
+        protected override IQueryable<TInternal> OnMapModelToDetail(IQueryable<TProduct> Query)
 		{
 			return from c in Query
 				   select new TInternal
@@ -81,7 +81,7 @@ namespace SF.Biz.Products.Entity
 		{
 			return Task.CompletedTask;
 		}
-        protected override async Task<TEditable> OnMapModelToEditable(IDataContext ctx, IContextQueryable<TProduct> Query)
+        protected override async Task<TEditable> OnMapModelToEditable(IDataContext ctx, IQueryable<TProduct> Query)
 		{
 			var q = from m in Query
 					select new {
@@ -298,7 +298,7 @@ namespace SF.Biz.Products.Entity
 								notifier.NotifyCategoryItemsChanged(cid);
 					});
 		}
-		protected override IContextQueryable<TProduct> OnLoadChildObjectsForUpdate(ObjectKey<long> Id, IContextQueryable<TProduct> query)
+		protected override IQueryable<TProduct> OnLoadChildObjectsForUpdate(ObjectKey<long> Id, IQueryable<TProduct> query)
 		{
 			return query.Include(p => p.Detail).Include(p => p.Specs);
 		}
@@ -491,7 +491,7 @@ namespace SF.Biz.Products.Entity
         //    else
         //        return Empty.Array<IDataObject>();
         //}
-        IContextQueryable<ProductSpec> MapSpec(IContextQueryable<TProductSpec> query)
+        IQueryable<ProductSpec> MapSpec(IQueryable<TProductSpec> query)
         {
             return query.Select(s => new ProductSpec
             {
@@ -525,7 +525,7 @@ namespace SF.Biz.Products.Entity
 
         }
 		
-		protected override IContextQueryable<TProduct> OnBuildQuery(IContextQueryable<TProduct> Query, ProductInternalQueryArgument Arg)
+		protected override IQueryable<TProduct> OnBuildQuery(IQueryable<TProduct> Query, ProductInternalQueryArgument Arg)
 		{
 			Query = Query
 				   .Filter(Arg.State, p => p.ObjectState)

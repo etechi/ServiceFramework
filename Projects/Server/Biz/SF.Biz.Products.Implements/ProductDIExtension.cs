@@ -16,28 +16,31 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Biz.Products;
 using SF.Biz.Products.Entity;
+using SF.Sys.BackEndConsole;
 using SF.Sys.Services.Management;
 
 namespace SF.Sys.Services
 {
-	public static class ProductDIExtension
+    
+
+    public static class ProductDIExtension
 	{
 		public static IServiceCollection AddProductServices(this IServiceCollection Services,string TablePrifex=null)
 		{
 			Services.EntityServices(
 				"Product",
 				"产品管理",
-				b => b.Add<IProductManager, ProductManager>("Product", "产品")
-					.Add<IProductTypeManager, ProductTypeManager>("ProductType", "产品类型")
-					.Add<IProductCategoryManager, CategoryManager>("ProductItemCategory", "商品目录")
-					.Add<IProductItemManager, ItemManager>("ProductItem", "商品")
+				b => b.Add<IProductManager, ProductManager>("Product", "产品",typeof(ProductBase))
+					.Add<IProductTypeManager, ProductTypeManager>("ProductType", "产品类型",typeof(ProductType))
+					.Add<IProductCategoryManager, CategoryManager>("ProductItemCategory", "商品目录",typeof(CategoryInternal))
+					.Add<IProductItemManager, ItemManager>("ProductItem", "商品",typeof(Item))
 				);
 			Services.AddSingleton<IItemService, CacheItemService>();
 			Services.AddSingleton<IItemSource, ItemSource>();
 			Services.AddSingleton<IItemNotifier>(sp => (IItemNotifier)sp.Resolve<IItemService>());
 
 			Services.AddDataModules(
-				TablePrifex,
+				TablePrifex ?? "Biz",
 				typeof(SF.Biz.Products.Entity.DataModels.Product),
 				typeof(SF.Biz.Products.Entity.DataModels.ProductDetail),
 				typeof(SF.Biz.Products.Entity.DataModels.ProductType),
@@ -49,37 +52,30 @@ namespace SF.Sys.Services
 				typeof(SF.Biz.Products.Entity.DataModels.Item),
 				typeof(SF.Biz.Products.Entity.DataModels.ProductSpec)
 				);
+            Services.InitServices("Products", async (sp, sim, parent) =>
+            {
+                await sim.DefaultService<IProductManager, ProductManager>(null)
+                   .WithConsolePages("业务管理/产品管理")
+                   .Ensure(sp, parent);
 
-			return Services;
-		}
-		public static IServiceInstanceInitializer<IProductManager> NewProductManager(this IServiceInstanceManager sim)
-		{
-			return sim.DefaultService<IProductManager, ProductManager>(new { })
-				.WithMenuItems(
-				"产品管理"
-				);
-		}
-		public static IServiceInstanceInitializer<IProductTypeManager> NewProductTypeManager(this IServiceInstanceManager sim)
-		{
-			return sim.DefaultService<IProductTypeManager, ProductTypeManager>(new { }).WithMenuItems(
-				"产品管理"
-				);
-		}
-		public static IServiceInstanceInitializer<IProductCategoryManager> NewProductCategoryManager(this IServiceInstanceManager sim)
-		{
-			return sim.DefaultService<IProductCategoryManager, CategoryManager>(new { }).WithMenuItems(
-				"产品管理"
-				);
-		}
-		public static IServiceInstanceInitializer<IProductItemManager> NewProductItemManager(
-			this IServiceInstanceManager sim
-			)
-		{
-			return sim.DefaultService<IProductItemManager, ItemManager>(new { }).WithMenuItems(
-				"产品管理"
-				);
-		}
+                await sim.DefaultService<IProductTypeManager, ProductTypeManager>(null)
+                   .WithConsolePages("业务内容/工单管理")
+                   .Ensure(sp, parent);
 
+                await sim.DefaultService<IProductCategoryManager, CategoryManager>(null)
+                   .WithConsolePages("前端内容/工单管理")
+                   .Ensure(sp, parent);
 
+                await sim.DefaultService<IProductItemManager, ItemManager>(null)
+                   .WithConsolePages("前端内容/工单管理")
+                   .Ensure(sp, parent);
+            });
+            Services.AddInitializer("Products", "产品数据", async sp => {
+                
+
+            });
+            return Services;
+		}
+		
 	}
 }

@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Auth\Permissions\**" />
+    <Compile Remove="Auth\Sessions\**" />
+    <Compile Remove="Auth\Users1\**" />
+    <Compile Remove="Auth\Users\**" />
+    <Compile Remove="Bizness\**" />
+    <Compile Remove="Common\**" />
+    <EmbeddedResource Remove="Auth\Permissions\**" />
+    <EmbeddedResource Remove="Auth\Sessions\**" />
+    <EmbeddedResource Remove="Auth\Users1\**" />
+    <EmbeddedResource Remove="Auth\Users\**" />
+    <EmbeddedResource Remove="Bizness\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <None Remove="Auth\Permissions\**" />
+    <None Remove="Auth\Sessions\**" />
+    <None Remove="Auth\Users1\**" />
+    <None Remove="Auth\Users\**" />
+    <None Remove="Bizness\**" />
+    <None Remove="Common\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SF.Biz.Products.Implements\SF.Biz.Products.Implements.csproj" />
+    <ProjectReference Include="..\SF.Biz.Products\SF.Biz.Products.csproj" />
+  </ItemGroup>
+
+</Project>

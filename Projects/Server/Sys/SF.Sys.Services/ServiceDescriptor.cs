@@ -55,7 +55,21 @@ namespace SF.Sys.Services
 		public IManagedServiceInitializer ManagedServiceInitializer { get; }
 		public bool IsDataScope { get; }
 
-		public ServiceDescriptor(
+        public override string ToString()
+        {
+            string impl;
+            switch (ServiceImplementType) {
+                case ServiceImplementType.Creator: impl = "func"; break;
+                case ServiceImplementType.Instance: impl = "instance"; break;
+                case ServiceImplementType.Type: impl = ImplementType.FullName; break;
+                case ServiceImplementType.Method: impl = ImplementMethod.ReflectedType.FullName + "." + ImplementMethod.Name; break;
+                default:
+                    impl = "unknown"; break;
+            }
+            return $"{InterfaceType.Name}->{impl} {Lifetime}{(IsManagedService ? " managed" : "")}";
+        }
+
+        public ServiceDescriptor(
 			Type InterfaceType, 
 			Type ImplementType, 
 			ServiceImplementLifetime Lifetime,

@@ -27,6 +27,7 @@ namespace SF.Sys.Data
 		DbConnection Connect();
 		string ConnectionString { get; }
         bool? UseRowNumberForPaging { get; }
+        bool? UseSqlLog { get; }
 
     }
 }
