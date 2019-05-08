@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Sys.Events;
 using SF.Sys.Linq;
 using SF.Sys.Threading;
 using System;
@@ -67,8 +68,26 @@ namespace SF.Sys.Data
 				)
 			);
 		}
-
-		public static IQueryable<TModel> Queryable<TModel>(this IDataContext Context,bool ReadOnly=true) where TModel:class
+        public static async Task EmitEvent<T>(
+            this IDataContext Context,
+            IEventEmitService EventEmitService,
+            T EventPayload
+            )
+        {
+            var eve = await EventEmitService.Create(EventPayload);
+            Context.AddCommitTracker(
+                new CommitTracker(
+                    TransactionCommitNotifyType.AfterCommit | TransactionCommitNotifyType.Rollback,
+                    async (t, e) => {
+                        if (t == TransactionCommitNotifyType.AfterCommit)
+                            await eve.Commit();
+                        else if (t == TransactionCommitNotifyType.Rollback)
+                            await eve.Cancel(e);
+                    }
+                )
+            );
+        }
+        public static IQueryable<TModel> Queryable<TModel>(this IDataContext Context,bool ReadOnly=true) where TModel:class
 			=> Context.Set<TModel>().AsQueryable(ReadOnly);
 
 		
@@ -151,54 +170,58 @@ namespace SF.Sys.Data
 				return Enumerable.Empty<string>();
 			return ext.GetUnderlingCommandTexts(Queryable);
 		}
+        public static Task<T> FindAsync<T>(this IDataContext ctx, object Id) where T : class =>
+            ctx.Set<T>().FindAsync(Id);
+        public static Task<T> FindAsync<T>(this IDataContext ctx, params object[] Ids) where T : class =>
+            ctx.Set<T>().FindAsync(Ids);
 
-		//public static Task<T> UseTransaction< T>(
-		//	this IDataContext Context,
-		//	string TransMessage,
-		//	Func<DbTransaction,Task<T>> Action
-		//	)
-		//{
-		//	var tm = Context.TransactionScopeManager;
-		//	return tm.UseTransaction(
-		//		TransMessage,
-		//		async s =>
-		//		{
-		//			var tran = tm.CurrentDbTransaction;
-		//			var provider = Context.Provider;
-		//			var orgTran = provider.Transaction;
-		//			if (orgTran == tran)
-		//				return await Action(tran);
+        //public static Task<T> UseTransaction< T>(
+        //	this IDataContext Context,
+        //	string TransMessage,
+        //	Func<DbTransaction,Task<T>> Action
+        //	)
+        //{
+        //	var tm = Context.TransactionScopeManager;
+        //	return tm.UseTransaction(
+        //		TransMessage,
+        //		async s =>
+        //		{
+        //			var tran = tm.CurrentDbTransaction;
+        //			var provider = Context.Provider;
+        //			var orgTran = provider.Transaction;
+        //			if (orgTran == tran)
+        //				return await Action(tran);
 
-		//			provider.Transaction = tran;
-		//			T re;
-		//			try
-		//			{
-		//				re=await Action(tran);
-		//			}
-		//			catch
-		//			{
-		//				provider.Transaction = orgTran;
-		//				throw;
-		//			}
+        //			provider.Transaction = tran;
+        //			T re;
+        //			try
+        //			{
+        //				re=await Action(tran);
+        //			}
+        //			catch
+        //			{
+        //				provider.Transaction = orgTran;
+        //				throw;
+        //			}
 
-		//			//不能在此时将事务修改回来，否者在CommitTracker中访问DataContext时，会发生Command没有事务的异常
-		//			try
-		//			{
-		//				tm.AddCommitTracker(
-		//					TransactionCommitNotifyType.BeforeCommit | TransactionCommitNotifyType.Rollback,
-		//					(t, e) =>
-		//					{
-		//						provider.Transaction = orgTran;
-		//					});
-		//				return re;
-		//			}
-		//			catch
-		//			{
-		//				provider.Transaction = orgTran;
-		//				throw;
-		//			}
-		//		}
-		//	);
-		//}
-	}
+        //			//不能在此时将事务修改回来，否者在CommitTracker中访问DataContext时，会发生Command没有事务的异常
+        //			try
+        //			{
+        //				tm.AddCommitTracker(
+        //					TransactionCommitNotifyType.BeforeCommit | TransactionCommitNotifyType.Rollback,
+        //					(t, e) =>
+        //					{
+        //						provider.Transaction = orgTran;
+        //					});
+        //				return re;
+        //			}
+        //			catch
+        //			{
+        //				provider.Transaction = orgTran;
+        //				throw;
+        //			}
+        //		}
+        //	);
+        //}
+    }
 }

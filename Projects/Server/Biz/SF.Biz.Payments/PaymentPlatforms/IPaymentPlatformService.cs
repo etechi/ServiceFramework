@@ -20,6 +20,8 @@ namespace SF.Biz.Payments
     public interface IPaymentPlatformService
     {
         Task<PaymentPlatform[]> List(ClientDeviceType Type);
+        TimeSpan? GetCollectRequestTimeout(long Id);
+
     }
 
 }

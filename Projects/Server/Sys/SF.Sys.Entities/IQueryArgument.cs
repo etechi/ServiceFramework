@@ -79,6 +79,7 @@ namespace SF.Sys.Entities
 		/// </summary>		
 		public DateQueryRange Time { get; set; }
 
+       
 	}
 	public class EventQueryArgument : EventQueryArgument<ObjectKey<long>>
 	{

@@ -62,13 +62,13 @@ namespace SF.Biz.Payments.Platforms.Weichat
 			public string qr { get; set; }
 		}
 
-		public async Task<CollectStartStatus> Start(CollectStartArgument StartArgument, StartRequestInfo Request, string callback_url, string notify_url)
+		public async Task<CollectStartStatus> Start(long Ident,CollectStartArgument StartArgument, StartRequestInfo Request, string callback_url, string notify_url)
 		{
 			var data = new WxPayAPI.WxPayData();
 
 			data.SetValue("body", StartArgument.Title);
 			data.SetValue("detail", StartArgument.Title);
-			data.SetValue("out_trade_no", StartArgument.Ident);
+			data.SetValue("out_trade_no", Ident);
 			data.SetValue("total_fee", ((int)(StartArgument.Amount * 100)).ToString());
 			data.SetValue("time_start", DateTime.Now.ToString("yyyyMMddHHmmss"));
 			data.SetValue("time_expire", DateTime.Now.AddMinutes(10).ToString("yyyyMMddHHmmss"));
@@ -80,7 +80,7 @@ namespace SF.Biz.Payments.Platforms.Weichat
 			//data.SetValue("notify_url", StartArgument.NotifyUrl);
 			//微信支付必须提供openid
 			if (StartArgument.ClientType=="weichat")
-				data.SetValue("openid",await UserOpenIdProvider.Value.GetOpenIdByUserId(StartArgument.CurUserId));
+				data.SetValue("openid",await UserOpenIdProvider.Value.GetOpenIdByUserId(StartArgument.CurUserId.ToString()));
 
 			//data.SetValue("openid", openid);
 			//扫码支付必须提供产品ID
@@ -130,7 +130,7 @@ namespace SF.Biz.Payments.Platforms.Weichat
 			if (StartArgument.ClientType == "weichat")
 				result["data"] = Json.Stringify(res.GetValues());
 			else
-				result["redirect"] = "/payment/qrcode/" + StartArgument.Ident;
+				result["redirect"] = "/payment/qrcode/" + Ident;
 
 			var code_url = Convert.ToString(re.GetValue("code_url"));
 			return new CollectStartStatus
@@ -152,7 +152,7 @@ namespace SF.Biz.Payments.Platforms.Weichat
 			var r = new CollectResponse();
 			var args = InvokeContext.Request.GetQueryAsDictionary();
             r.CompletedTime = TimeService.Now;
-			r.Ident = args.Get("id");
+			r.Ident = args.Get("id").ToInt64();
 			r.AmountCollected = decimal.Parse(args.Get("amount"));
 			r.ExtIdent = "EXT-" + r.Ident;
 			r.ExtUserId = args.Get("user-id");
@@ -178,7 +178,7 @@ namespace SF.Biz.Payments.Platforms.Weichat
 			var r = new CollectResponse();
 			var args = InvokeContext.Request.GetQueryAsDictionary();
             r.CompletedTime = TimeService.Now;
-			r.Ident = args.Get("id");
+			r.Ident = args.Get("id").ToInt64();
 			r.AmountCollected = decimal.Parse(args.Get("amount"));
 			r.ExtIdent = "EXT-" + r.Ident;
 			r.ExtUserId = args.Get("user-id");

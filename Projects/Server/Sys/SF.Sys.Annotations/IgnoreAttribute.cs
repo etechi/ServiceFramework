@@ -22,7 +22,7 @@ namespace SF.Sys.Annotations
 	/// <summary>
 	/// 隐藏属性，在编辑页面中不显示
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Property)]
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 	public class IgnoreAttribute : Attribute
 	{
 	}

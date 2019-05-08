@@ -81,4 +81,5 @@ namespace SF.Sys.Data
 	{
 		string State { get; set; }
 	}
+    
 }

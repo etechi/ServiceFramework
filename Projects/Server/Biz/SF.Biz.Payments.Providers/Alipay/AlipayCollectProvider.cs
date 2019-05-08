@@ -1,4 +1,5 @@
-﻿using SF.Sys.Collections.Generic;
+﻿using SF.Sys;
+using SF.Sys.Collections.Generic;
 using SF.Sys.NetworkService;
 using SF.Sys.TimeServices;
 using System;
@@ -31,10 +32,10 @@ namespace SF.Biz.Payments.Platforms.Alipay
 			return Task.FromResult(r);
 		}
 
-		public Task<CollectStartStatus> Start(CollectStartArgument StartArgument, StartRequestInfo requestInfo, string callbackUrl,string notifyUrl)
+		public Task<CollectStartStatus> Start(long Ident,CollectStartArgument StartArgument, StartRequestInfo requestInfo, string callbackUrl,string notifyUrl)
 		{
 			var re = new Dictionary<string, string>();
-			re["redirect"] = $"/Test/TestCollectPayment/{StartArgument.Ident}?amount={StartArgument.Amount}&callback={Uri.EscapeDataString(callbackUrl)}";
+			re["redirect"] = $"/Test/TestCollectPayment/{Ident}?amount={StartArgument.Amount}&callback={Uri.EscapeDataString(callbackUrl)}";
 			return Task.FromResult(new CollectStartStatus { Result = re });
 		}
 
@@ -43,7 +44,7 @@ namespace SF.Biz.Payments.Platforms.Alipay
 			var r = new CollectResponse();
 			var args = InvokeContext.Request.GetQueryAsDictionary();
             r.CompletedTime = TimeService.Now;
-			r.Ident = args.Get("id");
+			r.Ident = args.Get("id").ToInt64(); 
 			r.AmountCollected = decimal.Parse(args.Get("amount"));
 			r.ExtIdent = "EXT-" + r.Ident;
 			r.ExtUserId = args.Get("user-id") ?? "user-id";
@@ -69,7 +70,7 @@ namespace SF.Biz.Payments.Platforms.Alipay
 			var r = new CollectResponse();
 			var args = InvokeContext.Request.GetQueryAsDictionary();
             r.CompletedTime = TimeService.Now;
-			r.Ident = args.Get("id");
+			r.Ident = args.Get("id").ToInt64();
 			r.AmountCollected = decimal.Parse(args.Get("amount"));
 			r.ExtIdent = "EXT-" + r.Ident;
 			r.ExtUserId = args.Get("user-id") ?? "user-id";

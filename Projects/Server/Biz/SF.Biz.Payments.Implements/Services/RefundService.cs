@@ -27,7 +27,7 @@ namespace SF.Biz.Payments
 
         public IDataScope DataScope { get; }
 
-        public Lazy<IIdentGenerator<RefundService>> IdentGenerator { get; }
+        public Lazy<IIdentGenerator<DataModels.DataRefundRecord>> IdentGenerator { get; }
         public RefundService(
             TypedInstanceResolver<ICollectProvider> CollectProviderResolver,
             ITimeService TimeService,
@@ -35,7 +35,7 @@ namespace SF.Biz.Payments
             Lazy<IEventEmitService> EventEmitService,
             ILogger<CollectService> Logger,
             IDataScope DataScope,
-            Lazy<IIdentGenerator<RefundService>> IdentGenerator
+            Lazy<IIdentGenerator<DataModels.DataRefundRecord>> IdentGenerator
             )
         {
             this.CollectProviderResolver = CollectProviderResolver;
@@ -93,7 +93,7 @@ namespace SF.Biz.Payments
                      CollectExtIdent = collectState.extIdent,
                      Title = Argument.Title,
                      Desc = Argument.Desc,
-                     ///CallbackName = Argument.CallbackName,
+                     //CallbackName = Argument.CallbackName,
                      //CallbackContext = Argument.CallbackContext,
                      Time = time,
                      StartTime = time,
@@ -134,7 +134,7 @@ namespace SF.Biz.Payments
             {
                 if (Request.SubmitTime == DateTime.MinValue)
                     Request.SubmitTime = TimeService.Now;
-                Response = await((IRefundProvider)provider).TryRefund(Request);
+                Response = await((IRefundProvider)provider).TryRefund(Ident,Request);
             }
             catch (Exception ex)
             {

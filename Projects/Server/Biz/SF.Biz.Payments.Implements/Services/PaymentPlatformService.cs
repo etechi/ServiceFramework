@@ -12,6 +12,7 @@ using SF.Sys.Auth;
 using SF.Sys.Services.Management.Models;
 using SF.Sys.NetworkService;
 using SF.Sys.Services.Management;
+using SF.Sys.Services;
 
 namespace SF.Biz.Payments
 {
@@ -19,9 +20,11 @@ namespace SF.Biz.Payments
     public class PaymentPlatformService: IPaymentPlatformService
     {
         public IServiceInstanceManager ServiceInstanceManager { get; }
-        public PaymentPlatformService(IServiceInstanceManager ServiceInstanceManager)
+        public TypedInstanceResolver<ICollectProvider> CollectProviderResolver { get; }
+        public PaymentPlatformService(IServiceInstanceManager ServiceInstanceManager, TypedInstanceResolver<ICollectProvider> CollectProviderResolver)
         {
             this.ServiceInstanceManager = ServiceInstanceManager;
+            this.CollectProviderResolver = CollectProviderResolver;
         }
         public async Task<PaymentPlatform[]> List(ClientDeviceType Type)
         {
@@ -46,6 +49,11 @@ namespace SF.Biz.Payments
                 LogicState=i.LogicState
 
             }).ToArray();
+        }
+
+        public TimeSpan? GetCollectRequestTimeout(long Id)
+        {
+            return CollectProviderResolver(Id).CollectRequestTimeout;
         }
     }
 

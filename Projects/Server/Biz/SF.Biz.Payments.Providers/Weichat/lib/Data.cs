@@ -168,17 +168,14 @@ namespace WxPayAPI
         }
 
 
-        /**
-        * @Dictionary格式化成Json
-         * @return json串数据
-        */
+        
         //public string ToJson()
         //{
         //    string jsonStr = JsonMapper.ToJson(m_values);
         //    return jsonStr;
         //}
 
-        /**
+        /*
         * @values格式化成能在Web页面上显示的结果（因为web页面上不能直接输出xml格式的字符串）
         */
         public string ToPrintStr()

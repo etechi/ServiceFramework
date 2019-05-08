@@ -4,7 +4,7 @@ using SF.Sys.Services.Management.Models;
 using SF.Sys.Clients;
 using SF.Sys.Entities.Models;
 
-namespace SF.Biz.Payments.Managers
+namespace SF.Biz.Payments
 {
     [EntityObject]
     public class RefundRecord : EventEntityBase<string>

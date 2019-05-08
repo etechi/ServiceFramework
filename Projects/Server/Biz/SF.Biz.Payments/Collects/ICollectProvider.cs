@@ -35,6 +35,7 @@ namespace SF.Biz.Payments
 		string Name { get; }
         TimeSpan? CollectRequestTimeout { get; }
 		Task<CollectStartStatus> Start(
+            long ident,
             CollectStartArgument StartArgument, 
             StartRequestInfo Request,
             string CallbackUrl,

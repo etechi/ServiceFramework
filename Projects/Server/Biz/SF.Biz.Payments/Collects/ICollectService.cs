@@ -43,9 +43,9 @@ namespace SF.Biz.Payments
 	}
 	public class CollectRequest : CollectStartArgument
     {
-        public string CallbackName { get; set; }
-		public string CallbackContext { get; set; }
-	}
+        public long RemindId { get; set; }
+        public DateTime? StartTime { get; set; }
+    }
 	public class CollectStatus 
 	{
 		public string Title { get; set; }
@@ -81,25 +81,13 @@ namespace SF.Biz.Payments
 		Task<IDictionary<string,string>> Start(long Id, StartRequestInfo RequestInfo);
 
         /// <summary>
-        /// 查询第三方收款状态
-        /// </summary>
-        /// <param name="Id">收款ID</param>
-        /// <returns></returns>
-		Task<CollectSession> TryCompleteByQuery(long Id);
-        
-        /// <summary>
-        /// 最后一次查询第三方收款状态
-        /// </summary>
-        /// <param name="Id">收款ID</param>
-        /// <returns></returns>
-        Task<CollectSession> LastTryCompleteByQuery(long Id);
-
-        /// <summary>
         /// 获取收款结果
         /// </summary>
         /// <param name="Id">收款ID</param>
+        /// <param name="Query">是否查询第三方平台的交易状态</param>
+        /// <param name="Remind">交易完成时是否激活提醒</param>
         /// <returns></returns>
-        Task<CollectSession> GetResult(long Id);
+        Task<CollectSession> GetResult(long Id,bool Query=false,bool Remind=false);
 
         /// <summary>
         /// 获取收款提供者参数

@@ -46,18 +46,9 @@ namespace SF.Biz.Payments.DataModels
         public string Desc { get; set; }
 
         /// <summary>
-        /// 收款回调名称
+        /// 提醒
         /// </summary>
-        [Required]
-		[MaxLength(50)]
-        public string CallbackName { get; set; }
-
-        /// <summary>
-        /// 收款回调上下文
-        /// </summary>
-		[Required]
-		[MaxLength(100)]
-        public string CallbackContext { get; set; }
+        public long RemindId { get; set; }
 
         /// <summary>
         /// 第三方平台交易号

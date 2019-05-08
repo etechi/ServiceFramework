@@ -17,6 +17,7 @@ namespace SF.Biz.Payments
     public interface IRefundProvider
     {
         Task<RefundResponse> TryRefund(
+            long Ident,
             RefundStartArgument StartArgument
             );
     }

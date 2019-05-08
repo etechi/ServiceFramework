@@ -38,17 +38,17 @@ namespace SF.Biz.Payments.Platforms.Tests
 			return Task.FromResult(r);
 		}
 
-		public Task<CollectStartStatus> Start(CollectStartArgument StartArgument,StartRequestInfo request, string callbackUrl, string notifyUrl)
+		public Task<CollectStartStatus> Start(long Ident, CollectStartArgument StartArgument,StartRequestInfo request, string callbackUrl, string notifyUrl)
 		{
 			var re = new Dictionary<string, string>();
-			re["redirect"] = $"/Test/TestCollectPayment/{StartArgument.Ident}?amount={StartArgument.Amount}&callback={Uri.EscapeDataString(callbackUrl)}";
-			re["id"] = StartArgument.Ident;
+			re["redirect"] = $"/Test/TestCollectPayment/{Ident}?amount={StartArgument.Amount}&callback={Uri.EscapeDataString(callbackUrl)}";
+			re["id"] = Ident.ToString();
 			return Task.FromResult(
 				new CollectStartStatus {
 					Result = re,
 					ExtraData = Json.Stringify(
 						new ExtraData {
-							qr = "http://"+StartArgument.Ident
+							qr = "http://"+Ident
 						}
 						)
 					}
@@ -60,8 +60,8 @@ namespace SF.Biz.Payments.Platforms.Tests
 			var r = new CollectResponse();
             var args = InvokeContext.Request.GetQueryAsDictionary();
 			r.CompletedTime = TimeService.Now;
-			r.Ident = args.Get("id");
-			r.AmountCollected = decimal.Parse(args.Get("amount"));
+			r.Ident = args.Get("id").ToInt64();
+            r.AmountCollected = args.Get("amount").ToDecimal();
 			r.ExtIdent = "EXT-" + r.Ident;
 			r.ExtUserId = args.Get("user-id");
 			r.ExtUserName = args.Get("user-name");
@@ -86,8 +86,8 @@ namespace SF.Biz.Payments.Platforms.Tests
 			var r = new CollectResponse();
             var args = InvokeContext.Request.GetQueryAsDictionary();
 			r.CompletedTime = TimeService.Now;
-			r.Ident = args.Get("pid");
-			r.AmountCollected = decimal.Parse(args.Get("amount"));
+			r.Ident = args.Get("pid").ToInt64(); 
+			r.AmountCollected = args.Get("amount").ToDecimal();
 			r.ExtIdent = "EXT-" + r.Ident;
 			r.ExtUserId = args.Get("user-id");
 			r.ExtUserName = args.Get("user-name");
@@ -122,7 +122,7 @@ namespace SF.Biz.Payments.Platforms.Tests
 
 		}
 
-        Task<RefundResponse> IRefundProvider.TryRefund(RefundStartArgument StartArgument)
+        Task<RefundResponse> IRefundProvider.TryRefund(long Ident,RefundStartArgument StartArgument)
         {
             var time = TimeService.Now;
             var past = time.Subtract(StartArgument.SubmitTime).TotalSeconds / 60;
@@ -131,7 +131,7 @@ namespace SF.Biz.Payments.Platforms.Tests
 
             return Task.FromResult(new RefundResponse
             {
-                Ident=StartArgument.Ident,
+                Ident=Ident,
                 RefundAmount=StartArgument.Amount,
                 State=state,
                 UpdatedTime=time,

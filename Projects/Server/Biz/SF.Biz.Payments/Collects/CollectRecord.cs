@@ -3,10 +3,11 @@ using SF.Sys.Auth;
 using SF.Sys.Clients;
 using SF.Sys.Entities;
 using SF.Sys.Entities.Models;
+using SF.Sys.Reminders.Models;
 using SF.Sys.Services.Management.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
-namespace SF.Biz.Payments.Managers
+namespace SF.Biz.Payments
 {
 
     [EntityObject]
@@ -105,6 +106,12 @@ namespace SF.Biz.Payments.Managers
         [MultipleLines]
         public string Error { get; set; }
 
+
+        /// <summary>
+        /// 提醒
+        /// </summary>
+        [EntityIdent(typeof(Reminder))]
+        public long RemindId { get; set; }
 
     }
 }
