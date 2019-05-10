@@ -186,7 +186,7 @@ namespace SF.Biz.Trades
         /// <summary>
         /// 退款记录
         /// </summary>
-        [EntityIdent(typeof(RefundRecord))]
+        [EntityIdent(typeof(DrawbackRecord))]
         public long? RefundRecordId { get; set; }
 
         /// <summary>

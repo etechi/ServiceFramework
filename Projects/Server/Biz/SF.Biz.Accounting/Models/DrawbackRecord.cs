@@ -8,7 +8,7 @@ using SF.Sys.Services.Management.Models;
 
 namespace SF.Biz.Accounting
 {
-    public enum RefundState
+    public enum DrawbackState
     {
         /// <summary>
         /// 提交中
@@ -35,7 +35,7 @@ namespace SF.Biz.Accounting
     /// 账户退款记录
     /// </summary>
     [EntityObject]
-    public class RefundRecord : EventEntityBase
+    public class DrawbackRecord : EventEntityBase
 	{
         
         [Ignore]
@@ -104,7 +104,7 @@ namespace SF.Biz.Accounting
         [TableVisible]
         [Display(Name = "")]
         [Layout(4, 2)]
-        public RefundState State { get; set; }
+        public DrawbackState State { get; set; }
 
         /// <summary>
         /// 标题

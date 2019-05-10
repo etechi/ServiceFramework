@@ -102,7 +102,7 @@ namespace SF.Biz.Payments
                      //ClientType=Argument.ClientType,
                      TrackEntityIdent = Argument.TrackEntityIdent,
                      UserId = Argument.CurUserId,
-                     State = PaymentRefundState.Submitting,
+                     State = RefundState.Submitting,
                      OpAddress = Argument.OpAddress,
                      OpDevice = Argument.OpDevice
                  });
@@ -185,18 +185,18 @@ namespace SF.Biz.Payments
                      throw new ArgumentException("找不到收款支付记录:" + Response.Ident);
                  switch (Response.State)
                  {
-                     case PaymentRefundState.Failed:
+                     case RefundState.Failed:
                          r.CompletedTime = Response.UpdatedTime;
                          r.ExtIdent = Response.ExtIdent;
                          break;
-                     case PaymentRefundState.Processing:
+                     case RefundState.Processing:
                          r.ExtIdent = Response.ExtIdent;
                          if (r.SubmitTime == null)
                              r.SubmitTime = Response.UpdatedTime;
                          break;
-                     case PaymentRefundState.Submitting:
+                     case RefundState.Submitting:
                          break;
-                     case PaymentRefundState.Success:
+                     case RefundState.Success:
                          r.AmountRefund = Response.RefundAmount;
                          r.CompletedTime = Response.UpdatedTime;
                          r.ExtIdent = Response.ExtIdent;

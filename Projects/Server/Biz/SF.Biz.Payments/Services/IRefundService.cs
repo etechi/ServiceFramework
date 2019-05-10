@@ -27,7 +27,7 @@ namespace SF.Biz.Payments
         public string OpAddress { get; set; }
         public ClientDeviceType OpDevice { get; set; }
         public long PaymentPlatformId { get; set; }
-        public PaymentRefundState CurState { get; set; }
+        public RefundState CurState { get; set; }
     }
     public class RefundRequest : RefundStartArgument
     {
@@ -37,7 +37,7 @@ namespace SF.Biz.Payments
     {
         public DateTime UpdatedTime { set; get; }
         public string Error { get; set; }
-        public PaymentRefundState State { get; set; }
+        public RefundState State { get; set; }
         public string Desc { get; set; }
     }
 

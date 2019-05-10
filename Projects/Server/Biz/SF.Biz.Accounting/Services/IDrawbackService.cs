@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SF.Biz.Accounting
 {
-    public class RefundArgument
+    public class DrawbackArgument
     {
         public long DepositRecordId { get; set; }
         public long OperatorId { get; set; }
@@ -24,10 +24,10 @@ namespace SF.Biz.Accounting
         public string Reason { get; set; }
     }
  
-    public interface IRefundService
+    public interface IDrawbackService
     {
-        Task<long> CreateRefund(RefundArgument Arg);
-        Task<RefundState> RefreshRefundRecord(long Id, long DstId);
+        Task<long> Create(DrawbackArgument Arg);
+        Task<DrawbackState> Refresh(long Id, long DstId);
 
 
     }

@@ -6,6 +6,9 @@ using SF.Sys.Entities.Models;
 
 namespace SF.Biz.Payments
 {
+    /// <summary>
+    /// 退款记录
+    /// </summary>
     [EntityObject]
     public class RefundRecord : EventEntityBase<string>
     {
@@ -27,7 +30,7 @@ namespace SF.Biz.Payments
         /// 状态
         /// </summary>
         [TableVisible]
-        public PaymentRefundState State { get; set; }
+        public RefundState State { get; set; }
 
         /// <summary>
         /// 最后更新

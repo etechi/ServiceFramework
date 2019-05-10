@@ -30,11 +30,11 @@ namespace SF.Biz.Accounting
 
     public interface IDepositService
 	{
-        Task<long> CreateDeposit(DepositArgument Arg);
-        Task<DepositStartResult> StartDeposit(long Id, Biz.Payments.StartRequestInfo RequestInfo);
+        Task<long> Create(DepositArgument Arg);
+        Task<DepositStartResult> Start(long Id, Biz.Payments.StartRequestInfo RequestInfo);
         
         
-        Task<DepositRecord> GetDepositResult(long Id,bool Query=false,bool Remind=false);
+        Task<DepositRecord> GetResult(long Id,bool Query=false,bool Remind=false);
 
     }
 }

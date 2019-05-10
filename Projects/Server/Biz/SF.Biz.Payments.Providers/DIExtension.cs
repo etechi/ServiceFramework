@@ -13,34 +13,24 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
-using System.Linq;
-using SF.Sys.Services;
+using SF.Biz.Payments;
+using SF.Biz.Payments.Platforms.Alipay;
+using SF.Biz.Payments.Platforms.Tests;
+using SF.Biz.Payments.Platforms.Weichat;
+using SF.Sys.BackEndConsole;
 
-namespace SF.Sys
+namespace SF.Sys.Services
 {
-	public class BizServicesSetting
+    public static class DeliveryDIExtension
+		
 	{
-	}
-	public static class SetupExtension
-	{
-		public static IServiceCollection AddBizServices(
-			this IServiceCollection Services,
-            BizServicesSetting Setting
-			)
+		public static IServiceCollection AddPaymentProvidersServices(this IServiceCollection sc)
 		{
-			Services.AddProductServices();
-            Services.AddPaymentServices();
-            Services.AddPaymentProvidersServices();
-            Services.AddAccountingServices();
-            Services.AddDeliveryServices();
-            Services.AddShoppingCartServices();
-            Services.AddTradeServices();
-            return Services;
+			sc.AddManagedScoped<ICollectProvider,AlipayCollectProvider>();
+            sc.AddManagedScoped<ICollectProvider, WeichatCollectProvider>();
+            sc.AddManagedScoped<ICollectProvider, TestCollectProvider>();
 
+            return sc;
 		}
 	}
 }

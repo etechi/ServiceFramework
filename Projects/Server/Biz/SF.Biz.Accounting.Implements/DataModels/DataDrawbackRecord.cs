@@ -10,7 +10,7 @@ namespace SF.Biz.Accounting.DataModels
     /// <summary>
     /// 退款记录
     /// </summary>
-    public class DataRefundRecord : DataEventEntityBase
+    public class DataDrawbackRecord : DataEventEntityBase
     {
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace SF.Biz.Accounting.DataModels
         /// <summary>
         /// 退款状态
         /// </summary>
-        public RefundState State { get; set; }
+        public DrawbackState State { get; set; }
 
         /// <summary>
         /// 退款平台ID

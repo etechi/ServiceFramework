@@ -75,7 +75,7 @@ namespace SF.Biz.Payments.DataModels
         /// 退款状态
         /// </summary>
         [Index]
-        public PaymentRefundState State { get; set; }
+        public RefundState State { get; set; }
 
 
         /// <summary>

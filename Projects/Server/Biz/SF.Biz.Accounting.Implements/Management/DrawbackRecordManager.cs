@@ -20,11 +20,11 @@ namespace SF.Biz.Accounting
 {
 
 
-    public class RefundRecordManager :
-        AutoQueryableEntitySource<ObjectKey<long>, RefundRecord, RefundRecord, RefundRecordQueryArguments, DataModels.DataRefundRecord>,
-        IRefundRecordManager
+    public class DrawbackRecordManager :
+        AutoQueryableEntitySource<ObjectKey<long>, DrawbackRecord, DrawbackRecord,  DrawbackRecordQueryArguments, DataModels.DataDrawbackRecord>,
+        IDrawbackRecordManager
     {
-        public RefundRecordManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+        public DrawbackRecordManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
         {
         }
 

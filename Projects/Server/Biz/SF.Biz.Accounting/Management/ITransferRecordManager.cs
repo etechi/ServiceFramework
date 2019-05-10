@@ -2,6 +2,7 @@
 using SF.Sys.Auth;
 using SF.Sys.Clients;
 using SF.Sys.Entities;
+using SF.Sys.NetworkService;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -45,6 +46,15 @@ namespace SF.Biz.Accounting
         /// </summary>
         public QueryRange<decimal> Amount { get; set; }
     }
+
+    /// <summary>
+    /// 转账记录管理器
+    /// </summary>
+    [NetworkService]
+    [EntityManager]
+    [DefaultAuthorize(PredefinedRoles.财务专员)]
+    [DefaultAuthorize(PredefinedRoles.系统管理员)]
+
     public interface ITransferRecordManager :
         IEntitySource<ObjectKey<long>,TransferRecord,TransferRecordQueryArguments>
     {

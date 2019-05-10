@@ -7,6 +7,7 @@ using SF.Sys.Annotations;
 using SF.Biz.Products;
 using SF.Sys.Clients;
 using SF.Sys;
+using SF.Sys.NetworkService;
 
 namespace SF.Biz.Trades.Managements
 {
@@ -131,6 +132,15 @@ namespace SF.Biz.Trades.Managements
         BuyerComplete,
         BuyerSettlementCompleted
     }
+
+
+    /// <summary>
+    /// 交易管理器
+    /// </summary>
+    [NetworkService]
+    [EntityManager]
+    [DefaultAuthorize(PredefinedRoles.运营专员)]
+    [DefaultAuthorize(PredefinedRoles.系统管理员)]
 
     public interface ITradeManager:
          IEntitySource<ObjectKey<long>, Trade, TradeQueryArguments>

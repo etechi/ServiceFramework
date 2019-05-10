@@ -126,8 +126,8 @@ namespace SF.Biz.Payments.Platforms.Tests
         {
             var time = TimeService.Now;
             var past = time.Subtract(StartArgument.SubmitTime).TotalSeconds / 60;
-            var state = past > 3 ? PaymentRefundState.Success :
-                    PaymentRefundState.Processing;
+            var state = past > 3 ? RefundState.Success :
+                    RefundState.Processing;
 
             return Task.FromResult(new RefundResponse
             {

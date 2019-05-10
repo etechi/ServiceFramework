@@ -9,7 +9,9 @@ using System;
 using System.ComponentModel.DataAnnotations;
 namespace SF.Biz.Payments
 {
-
+    /// <summary>
+    /// 收款记录
+    /// </summary>
     [EntityObject]
     public class CollectRecord : EventEntityBase
     {

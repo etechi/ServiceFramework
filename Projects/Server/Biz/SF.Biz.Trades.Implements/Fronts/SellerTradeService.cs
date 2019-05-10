@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SF.Biz.Trades.Entity
+namespace SF.Biz.Trades
 {
     public class SellerTradeService:
         ISellerTradeService

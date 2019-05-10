@@ -10,6 +10,7 @@ using SF.Sys.Clients;
 using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Services.Management.Models;
+using SF.Sys.NetworkService;
 
 namespace SF.Biz.Payments.Managers
 {
@@ -23,7 +24,7 @@ namespace SF.Biz.Payments.Managers
         public string CollectIdent { get; set; }
 
         [Display(Name = "状态")]
-        public PaymentRefundState? State { get; set; }
+        public RefundState? State { get; set; }
 
         [Display(Name = "时间")]
         public DateQueryRange Time { get; set; }
@@ -37,6 +38,15 @@ namespace SF.Biz.Payments.Managers
         public string UserId { get; set; }
 
     }
+
+    /// <summary>
+    /// 退款记录管理器
+    /// </summary>
+    [NetworkService]
+    [EntityManager]
+    [DefaultAuthorize(PredefinedRoles.财务专员)]
+    [DefaultAuthorize(PredefinedRoles.系统管理员)]
+
     public interface IRefundRecordManager:
         IEntitySource<ObjectKey<long>, RefundRecord, RefundRecordDetail, RefundRecordQueryArgument>
     {

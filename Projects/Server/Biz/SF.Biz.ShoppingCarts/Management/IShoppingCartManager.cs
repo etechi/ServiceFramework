@@ -2,6 +2,7 @@
 using SF.Sys.Annotations;
 using SF.Biz.Products;
 using SF.Sys.Auth;
+using SF.Sys.NetworkService;
 
 namespace SF.Biz.ShoppingCarts.Managements
 {
@@ -41,6 +42,16 @@ namespace SF.Biz.ShoppingCarts.Managements
         /// </summary>
         public QueryRange<decimal> Price { get; set; }
     }
+
+    /// <summary>
+    /// 购物车管理器
+    /// </summary>
+    [NetworkService]
+    [EntityManager]
+    [DefaultAuthorize(PredefinedRoles.运营专员)]
+    [DefaultAuthorize(PredefinedRoles.系统管理员)]
+
+
     public interface IShoppingCartManager:
         IEntityManager<ObjectKey<long>, ShoppingCartItem>,
         IEntitySource<ObjectKey<long>, ShoppingCartItem, ShoppingCartItemQueryArgument>

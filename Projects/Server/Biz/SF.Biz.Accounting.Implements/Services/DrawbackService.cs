@@ -13,20 +13,20 @@ using SF.Sys.TimeServices;
 namespace SF.Biz.Accounting
 {
 
-    public class RefundService :
-        IRefundService
+    public class DrawbackService :
+        IDrawbackService
     {
         public IDataScope DataScope { get; }
         public ITimeService TimeService { get; }
         public Payments.IRefundService PaymentsRefundService { get; }
-        public Lazy<IIdentGenerator<DataModels.DataRefundRecord>> IdentGenerator { get; }
+        public Lazy<IIdentGenerator<DataModels.DataDrawbackRecord>> IdentGenerator { get; }
         public ILogger Logger { get; }
         public Lazy<IEventEmitService> EventEmitService { get; }
-        public RefundService(
+        public DrawbackService(
             IDataScope DataScope,
             ITimeService TimeService,
             Payments.IRefundService PaymentsRefundService,
-            Lazy<IIdentGenerator<DataModels.DataRefundRecord>> IdentGenerator,
+            Lazy<IIdentGenerator<DataModels.DataDrawbackRecord>> IdentGenerator,
             ILogger<DepositService> Logger,
             Lazy<IEventEmitService> EventEmitService
             )
@@ -40,7 +40,7 @@ namespace SF.Biz.Accounting
         }
 
 
-        public async Task<long> CreateRefund(RefundArgument Arg)
+        public async Task<long> Create(DrawbackArgument Arg)
         {
             return await DataScope.Use("创建退款操作", async ctx =>
             {
@@ -63,7 +63,7 @@ namespace SF.Biz.Accounting
                     )
                     throw new ArgumentException("充值未成功，不能退款");
 
-                var refundedAmount = await ctx.Queryable<DataModels.DataRefundRecord>()
+                var refundedAmount = await ctx.Queryable<DataModels.DataDrawbackRecord>()
                     .Where(r => r.DepositRecordId == Arg.DepositRecordId)
                     .Select(r => r.Amount)
                     .DefaultIfEmpty(0)
@@ -72,14 +72,14 @@ namespace SF.Biz.Accounting
                 if (refundedAmount + Arg.Amount > depositRecord.Amount)
                     throw new ArgumentException("退款金额已超出充值未退款金额");
 
-                if (depositRecord.RefundRequest + Arg.Amount > depositRecord.Amount)
+                if (depositRecord.DrawbackRequest + Arg.Amount > depositRecord.Amount)
                     throw new ArgumentException("退款金额已超出充值未退款金额");
 
                 var time = TimeService.Now;
                 depositRecord.State = DepositState.Refunding;
-                depositRecord.RefundRequest += Arg.Amount;
-                depositRecord.LastRefundRequestTime = time;
-                depositRecord.LastRefundReason = Arg.Reason.Limit(100);
+                depositRecord.DrawbackRequest += Arg.Amount;
+                depositRecord.LastDrawbackRequestTime = time;
+                depositRecord.LastDrawbackReason = Arg.Reason.Limit(100);
                 ctx.Update(depositRecord);
 
                 var rid = await IdentGenerator.Value.GenerateAsync();
@@ -99,7 +99,7 @@ namespace SF.Biz.Accounting
                 });
 
 
-                var record = ctx.Add(new DataModels.DataRefundRecord
+                var record = ctx.Add(new DataModels.DataDrawbackRecord
                 {
                     DepositRecordId = Arg.DepositRecordId,
                     AccountTitleId = title,
@@ -112,7 +112,7 @@ namespace SF.Biz.Accounting
                     CallbackName = Arg.CallbackName,
                     CallbackContext = Arg.CallbackContext,
                     PaymentPlatformId = depositRecord.PaymentPlatformId,
-                    State = RefundState.Processing,
+                    State = DrawbackState.Processing,
                     DepositRecordCreateTime = depositRecord.Time,
                     Reason = Arg.Reason.Limit(100),
                     PaymentsRefundRecordId=prid
@@ -123,12 +123,12 @@ namespace SF.Biz.Accounting
             });
         }
 
-        public async Task<RefundState> RefreshRefundRecord(long Id, long DstId)
+        public async Task<DrawbackState> Refresh(long Id, long DstId)
         {
             return await DataScope.Use("刷新退款结果", async ctx =>
             {
-                var record = await ctx.FindAsync<DataModels.DataRefundRecord>(Id);
-                if (record.State == RefundState.Error || record.State == RefundState.Success)
+                var record = await ctx.FindAsync<DataModels.DataDrawbackRecord>(Id);
+                if (record.State == DrawbackState.Error || record.State == DrawbackState.Success)
                     return record.State;
 
 
@@ -140,21 +140,21 @@ namespace SF.Biz.Accounting
                     var result = await PaymentsRefundService.RefreshRefundRecord(record.PaymentsRefundRecordId);
                     switch (result.State)
                     {
-                        case Payments.PaymentRefundState.Failed:
+                        case Payments.RefundState.Failed:
                             record.CompletedTime = result.UpdatedTime;
-                            record.State = RefundState.Error;
+                            record.State = DrawbackState.Error;
                             break;
-                        case Payments.PaymentRefundState.Processing:
+                        case Payments.RefundState.Processing:
                             //旧通知，忽略
-                            if (record.State == RefundState.Sending)
+                            if (record.State == DrawbackState.Sending)
                                 record.SubmittedTime = result.UpdatedTime;
-                            record.State = RefundState.Processing;
+                            record.State = DrawbackState.Processing;
                             break;
-                        case Payments.PaymentRefundState.Submitting:
-                            record.State = RefundState.Sending;
+                        case Payments.RefundState.Submitting:
+                            record.State = DrawbackState.Sending;
                             break;
-                        case Payments.PaymentRefundState.Success:
-                            record.State = RefundState.Success;
+                        case Payments.RefundState.Success:
+                            record.State = DrawbackState.Success;
                             record.CompletedTime = result.UpdatedTime;
                             break;
                         default:
@@ -163,7 +163,7 @@ namespace SF.Biz.Accounting
 
                     record.UpdatedTime = time;
 
-                    if (result.State == Payments.PaymentRefundState.Success)
+                    if (result.State == Payments.RefundState.Success)
                     {
                         var acc = await ctx.Queryable<DataModels.DataAccount>()
                             .Where(a => a.AccountTitleId == record.AccountTitleId && a.OwnerId.Equals(record.SrcId))
@@ -189,9 +189,9 @@ namespace SF.Biz.Accounting
 
 
                         var depositRecord = await ctx.FindAsync<DataModels.DataDepositRecord>(record.DepositRecordId);
-                        depositRecord.RefundSuccess += depositRecord.Amount;
-                        depositRecord.LastRefundSuccessTime = time;
-                        if (depositRecord.RefundSuccess >= depositRecord.RefundRequest)
+                        depositRecord.DrawbackSuccess += depositRecord.Amount;
+                        depositRecord.LastDrawbackSuccessTime = time;
+                        if (depositRecord.DrawbackSuccess >= depositRecord.DrawbackRequest)
                             depositRecord.State = DepositState.Refunded;
                         ctx.Update(depositRecord);
                     }
@@ -209,7 +209,7 @@ namespace SF.Biz.Accounting
                 await ctx.SaveChangesAsync();
 
                 Logger.Warn($"退款状态更新,ID:{record.Id} 状态：{record.State} 错误:{record.Error}");
-                if (record.State == RefundState.Error || record.State == RefundState.Success)
+                if (record.State == DrawbackState.Error || record.State == DrawbackState.Success)
                 {
                     //var e = Event.Create("账户", "充值完成", Tuple.Create(RecordId, record.DstId, record.Amount, Desc));
                     var e = await EventEmitService.Value.Create(new AccountRefundCompleted(
@@ -217,7 +217,7 @@ namespace SF.Biz.Accounting
                         record.SrcId,
                         record.PaymentDesc,
                         record.Amount,
-                        record.State == RefundState.Success
+                        record.State == DrawbackState.Success
                         ));
                     await e.Commit();
                 }

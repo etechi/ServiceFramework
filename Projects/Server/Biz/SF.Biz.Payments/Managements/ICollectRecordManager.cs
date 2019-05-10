@@ -10,6 +10,7 @@ using SF.Sys.Entities;
 using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Services.Management.Models;
+using SF.Sys.NetworkService;
 
 namespace SF.Biz.Payments.Managers
 {
@@ -35,6 +36,13 @@ namespace SF.Biz.Payments.Managers
         public long UserId { get; set; }
 
     }
+    /// <summary>
+    /// 收款记录管理器
+    /// </summary>
+    [NetworkService]
+    [EntityManager]
+    [DefaultAuthorize(PredefinedRoles.财务专员)]
+    [DefaultAuthorize(PredefinedRoles.系统管理员)]
     public interface ICollectRecordManager:
         IEntitySource<ObjectKey<long>, CollectRecord, CollectRecordDetail, CollectRecordQueryArgument>
     {

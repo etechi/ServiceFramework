@@ -3,6 +3,7 @@ using SF.Sys.Entities;
 using System.ComponentModel.DataAnnotations;
 using SF.Sys.Annotations;
 using SF.Sys.Services.Management.Models;
+using SF.Sys.NetworkService;
 
 namespace SF.Biz.Accounting
 {
@@ -43,6 +44,14 @@ namespace SF.Biz.Accounting
         /// </summary>
         public QueryRange<decimal> Amount { get; set; }
     }
+
+    /// <summary>
+    /// 充值记录管理器
+    /// </summary>
+    [NetworkService]
+    [EntityManager]
+    [DefaultAuthorize(PredefinedRoles.财务专员)]
+    [DefaultAuthorize(PredefinedRoles.系统管理员)]
 
     public interface IDepositRecordManager :
        IEntitySource<ObjectKey<long>, DepositRecord, DepositRecordQueryArguments>

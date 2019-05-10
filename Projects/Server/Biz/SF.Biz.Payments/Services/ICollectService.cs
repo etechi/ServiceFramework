@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using SF.Sys.Clients;
 using SF.Sys.Entities;
 using SF.Sys.Annotations;
-using SF.Sys.Auth;
 using SF.Sys.Services.Management.Models;
-using SF.Sys.NetworkService;
 
 namespace SF.Biz.Payments
 {
@@ -103,25 +100,4 @@ namespace SF.Biz.Payments
         /// <returns></returns>
 		Task<QrCodePaymentStatus> GetQrCodePaymentStatus(long Id);
 	}
-
-    /// <summary>
-    /// 第三方回调接口
-    /// </summary>
-    [NetworkService]
-    [AnonymousAllowed]
-    public interface ICollectCallback
-    {
-        /// <summary>
-        /// 第三方易步通知
-        /// </summary>
-        /// <param name="Id">平台ID</param>
-        /// <returns>通知应答</returns>
-        Task<HttpResponseMessage> Notify(long Id);
-        /// <summary>
-        /// 第三方页面返回
-        /// </summary>
-        /// <param name="Id">平台ID</param>
-        /// <returns>页面返回应答</returns>
-        Task<HttpResponseMessage> Return(long Id);
-    }
 }

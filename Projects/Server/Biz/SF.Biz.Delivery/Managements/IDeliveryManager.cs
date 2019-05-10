@@ -2,6 +2,7 @@
 using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.Entities.Models;
+using SF.Sys.NetworkService;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -214,6 +215,14 @@ namespace SF.Biz.Delivery.Management
         public long? TransportId { get; set; }
         public string TransportCode { get; set; }
     }
+
+    /// <summary>
+    /// 发货管理器
+    /// </summary>
+    [NetworkService]
+    [EntityManager]
+    [DefaultAuthorize(PredefinedRoles.运营专员)]
+    [DefaultAuthorize(PredefinedRoles.系统管理员)]
 
     public interface IDeliveryManager :
         IEntitySource<ObjectKey<long>, DeliveryInternal, DeliveryQueryArguments>

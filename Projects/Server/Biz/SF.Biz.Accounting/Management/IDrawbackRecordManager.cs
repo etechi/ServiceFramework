@@ -2,6 +2,7 @@
 using SF.Sys.Auth;
 using SF.Sys.Clients;
 using SF.Sys.Entities;
+using SF.Sys.NetworkService;
 using SF.Sys.Services.Management.Models;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 namespace SF.Biz.Accounting
 {
   
-    public class RefundRecordQueryArguments:QueryArgument
+    public class  DrawbackRecordQueryArguments:QueryArgument
     {
         /// <summary>
         /// 充值记录
@@ -46,15 +47,23 @@ namespace SF.Biz.Accounting
         /// <summary>
         /// 退款状态
         /// </summary>
-        public RefundState? State { get; set; }
+        public DrawbackState? State { get; set; }
         /// <summary>
         /// 金额
         /// </summary>
         public QueryRange<decimal> Amount { get; set; }
     }
 
-    public interface IRefundRecordManager :
-        IEntitySource<ObjectKey<long>,RefundRecord,RefundRecordQueryArguments>
+    /// <summary>
+    /// 退款记录管理器
+    /// </summary>
+    [NetworkService]
+    [EntityManager]
+    [DefaultAuthorize(PredefinedRoles.财务专员)]
+    [DefaultAuthorize(PredefinedRoles.系统管理员)]
+
+    public interface IDrawbackRecordManager :
+        IEntitySource<ObjectKey<long>,DrawbackRecord, DrawbackRecordQueryArguments>
     {
 
     }

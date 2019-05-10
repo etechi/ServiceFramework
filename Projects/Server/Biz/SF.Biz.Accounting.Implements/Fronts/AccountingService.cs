@@ -99,7 +99,7 @@ namespace SF.Biz.Accounting
         public async Task<DepositRecord> RefreshDepositRecord(long Id)
         {
             var uid = EnsureUserIdent();
-            var re = await DepositService.Value.GetDepositResult(Id,true,true);
+            var re = await DepositService.Value.GetResult(Id,true,true);
             if (re.DstId != uid)
                 return null;
             return re;
@@ -109,7 +109,7 @@ namespace SF.Biz.Accounting
         {
             var uid = EnsureUserIdent();
 
-            var did = await DepositService.Value.CreateDeposit(
+            var did = await DepositService.Value.Create(
                 new DepositArgument
                 {
                     Amount = Args.Amount,
@@ -135,7 +135,7 @@ namespace SF.Biz.Accounting
                 RemindTime = DepositRemindable.GetEndTime(PaymentPlatformService.Value,Args.PaymentPlatformId,TimeService.Value.Now)
             });
 
-            var re = await DepositService.Value.StartDeposit(
+            var re = await DepositService.Value.Start(
                 did,
                 new Payments.StartRequestInfo
                 {

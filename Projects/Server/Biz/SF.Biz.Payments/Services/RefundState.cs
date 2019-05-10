@@ -1,6 +1,6 @@
 ﻿namespace SF.Biz.Payments
 {
-    public enum PaymentRefundState
+    public enum RefundState
     {
         /// <summary>
         /// 提交中

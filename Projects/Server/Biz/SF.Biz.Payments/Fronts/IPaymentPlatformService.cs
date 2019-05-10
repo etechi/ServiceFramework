@@ -14,12 +14,25 @@ using SF.Sys.NetworkService;
 
 namespace SF.Biz.Payments
 {
-  
+    /// <summary>
+    /// 支付平台服务
+    /// </summary>
     [NetworkService]
     [AnonymousAllowed]
     public interface IPaymentPlatformService
     {
+        /// <summary>
+        /// 列表
+        /// </summary>
+        /// <param name="Type">设备类型</param>
+        /// <returns>支付平台</returns>
         Task<PaymentPlatform[]> List(ClientDeviceType Type);
+
+        /// <summary>
+        /// 获取收款请求超时
+        /// </summary>
+        /// <param name="Id">支付平台ID</param>
+        /// <returns></returns>
         TimeSpan? GetCollectRequestTimeout(long Id);
 
     }

@@ -116,24 +116,24 @@ namespace SF.Biz.Accounting.DataModels
         /// <summary>
         /// 退款请求总金额
         /// </summary>
-        public decimal RefundRequest { get; set; }
+        public decimal DrawbackRequest { get; set; }
         /// <summary>
         /// 退款成功总金额
         /// </summary>
-        public decimal RefundSuccess { get; set; }
+        public decimal DrawbackSuccess { get; set; }
         /// <summary>
         /// 最后退款请求时间
         /// </summary>
-        public DateTime? LastRefundRequestTime { get; set; }
+        public DateTime? LastDrawbackRequestTime { get; set; }
         /// <summary>
         /// 最后退款成功时间
         /// </summary>
-        public DateTime? LastRefundSuccessTime { get; set; }
+        public DateTime? LastDrawbackSuccessTime { get; set; }
         /// <summary>
         /// 最后退款原因
         /// </summary>
         [MaxLength(100)]
-        public string LastRefundReason { get; set; }
+        public string LastDrawbackReason { get; set; }
 
         /// <summary>
         /// 支付模块收款ID

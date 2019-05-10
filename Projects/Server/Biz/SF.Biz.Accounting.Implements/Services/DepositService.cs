@@ -47,7 +47,7 @@ namespace SF.Biz.Accounting
         }
 
 
-        public async Task<long> CreateDeposit(DepositArgument Arg)
+        public async Task<long> Create(DepositArgument Arg)
         {
            
             Arg.Amount = Math.Round(Arg.Amount);
@@ -102,7 +102,7 @@ namespace SF.Biz.Accounting
                 return id;
             });
         }
-        public async Task<DepositStartResult> StartDeposit(long Id, Biz.Payments.StartRequestInfo RequestInfo)
+        public async Task<DepositStartResult> Start(long Id, Biz.Payments.StartRequestInfo RequestInfo)
         {
             return await DataScope.Use("开始充值操作", async ctx =>
             {
@@ -148,7 +148,7 @@ namespace SF.Biz.Accounting
                 }
             });
         }
-        public async Task<DepositRecord> GetDepositResult(long Id, bool Query=false, bool Remind=false)
+        public async Task<DepositRecord> GetResult(long Id, bool Query=false, bool Remind=false)
         {
             return await DataScope.Use("刷新充值结果", async ctx =>
             {
@@ -248,11 +248,11 @@ namespace SF.Biz.Accounting
                        PaymentPlatformId = r.PaymentPlatformId,
                        TrackEntityIdent = r.TrackEntityIdent,
                        Error = r.Error,
-                       RefundRequest = r.RefundRequest,
-                       RefundSuccess = r.RefundSuccess,
-                       LastRefundRequestTime = r.LastRefundRequestTime,
-                       LastRefundSuccessTime = r.LastRefundSuccessTime,
-                       LastRefundReason = r.LastRefundReason,
+                       RefundRequest = r.DrawbackRequest,
+                       RefundSuccess = r.DrawbackSuccess,
+                       LastRefundRequestTime = r.LastDrawbackRequestTime,
+                       LastRefundSuccessTime = r.LastDrawbackSuccessTime,
+                       LastRefundReason = r.LastDrawbackReason,
 
                        OpAddress = r.OpAddress,
                        OpDevice = r.OpDevice

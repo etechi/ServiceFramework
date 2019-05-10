@@ -11,7 +11,7 @@ namespace SF.Biz.Payments
         public DateTime? UpdatedTime { get; set; }
         public string Error { get; set; }
         public decimal RefundAmount { get; set; }
-        public PaymentRefundState State { get; set; }
+        public RefundState State { get; set; }
     }
 
     public interface IRefundProvider
