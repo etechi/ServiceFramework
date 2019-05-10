@@ -1,4 +1,5 @@
 ﻿using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities.Models;
 using SF.Sys.NetworkService;
 using System.ComponentModel.DataAnnotations;
@@ -12,6 +13,19 @@ namespace SF.Biz.Delivery.Management
     [EntityObject]
     public class UserDeliveryAddress : ObjectEntityBase
     {
+        /// <summary>
+        /// 用户
+        /// </summary>
+        [EntityIdent(typeof(User),nameof(UserName))]
+        public long UserId { get; set; }
+
+        /// <summary>
+        /// 用户
+        /// </summary>
+        [TableVisible]
+        [Ignore]
+        public string UserName { get; set; }
+
         /// <summary>
         /// 联系人
         /// </summary>

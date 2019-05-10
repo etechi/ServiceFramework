@@ -25,6 +25,9 @@ using System;
 
 namespace SF.Common.ShortLinks
 {
+    /// <summary>
+    /// 短链接管理
+    /// </summary>
 	public class ShortLinkManager :
 		AutoModifiableEntityManager<ObjectKey<string>, ShortLink, ShortLink, ShortLinkQueryArguments, ShortLink, DataShortLink>,
 		IShortLinkManager,

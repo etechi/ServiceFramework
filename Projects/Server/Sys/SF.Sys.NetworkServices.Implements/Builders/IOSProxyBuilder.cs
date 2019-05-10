@@ -358,11 +358,7 @@ namespace SF.Sys.NetworkService
 						TryImport(sb, import.Key, import.Value);
 
 
-					/**
-					*  请求名
-					* @param params    实体类提交
-					* @return          post请求json方式提交
-					*/
+					
 					sb.AppendLine($"/**");
 					sb.AppendLine($"* {t.Title}");
 					sb.AppendLine($"* {t.Description}");

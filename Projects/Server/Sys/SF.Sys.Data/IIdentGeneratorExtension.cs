@@ -30,7 +30,10 @@ namespace SF.Sys.Data
 		public static async Task<long> GenerateAsync<T>(this IIdentGenerator g)
 			=> (await g.GenerateAsync(typeof(T).FullName, 1, 0))[0];
 
-		public static async Task<long> GenerateAsync<T>(this IIdentGenerator<T> g)
+        public static async Task<long[]> GenerateAsync<T>(this IIdentGenerator g,int count)
+            => await g.GenerateAsync(typeof(T).FullName, count, 0);
+
+        public static async Task<long> GenerateAsync<T>(this IIdentGenerator<T> g)
 		=> (await g.GenerateAsync(1, 0))[0];
 
 

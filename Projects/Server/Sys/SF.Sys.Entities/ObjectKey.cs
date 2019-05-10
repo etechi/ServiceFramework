@@ -25,47 +25,52 @@ using System.Threading.Tasks;
 
 namespace SF.Sys.Entities
 {
-	public class ObjectKey<T>:
-		IEntityWithId<T>,
-		IEquatable<ObjectKey<T>>,
-		IComparable<ObjectKey<T>>
-		 where T:IEquatable<T>
+    public class ObjectKey<T> :
+        IEntityWithId<T>,
+        IEquatable<ObjectKey<T>>,
+        IComparable<ObjectKey<T>>
+         where T : IEquatable<T>
 
-	{
-		/// <summary>
-		/// 标识
-		/// </summary>
-		[Key]
-		[TableVisible]
-		[Optional]
-		public T Id { get; set; }
+    {
+        /// <summary>
+        /// 标识
+        /// </summary>
+        [Key]
+        [TableVisible]
+        [Optional]
+        public T Id { get; set; }
 
-		public int CompareTo(ObjectKey<T> other)
-		{
-			return Comparer<T>.Default.Compare(Id, other.Id);
-		}
+        public int CompareTo(ObjectKey<T> other)
+        {
+            return Comparer<T>.Default.Compare(Id, other.Id);
+        }
 
-		public bool Equals(ObjectKey<T> other)
-		{
-			return EqualityComparer<T>.Default.Equals(Id, other.Id);
-		}
-		public override bool Equals(object obj)
-		{
-			if (!(obj is ObjectKey<T>))
-				return false;
-			return Equals((ObjectKey<T>)obj);
-		}
-		public override int GetHashCode()
-		{
-			return EqualityComparer<T>.Default.GetHashCode(Id);
-		}
+        public bool Equals(ObjectKey<T> other)
+        {
+            return EqualityComparer<T>.Default.Equals(Id, other.Id);
+        }
+        public override bool Equals(object obj)
+        {
+            if (!(obj is ObjectKey<T>))
+                return false;
+            return Equals((ObjectKey<T>)obj);
+        }
+        public override int GetHashCode()
+        {
+            return EqualityComparer<T>.Default.GetHashCode(Id);
+        }
 
-		public override string ToString()
-		{
-			return EqualityComparer<T>.Default.Equals(Id, default(T)) ? "" : Id.ToString();
-		}
-	}
-	public class ObjectKey<T1,T2> :
+        public override string ToString()
+        {
+            return EqualityComparer<T>.Default.Equals(Id, default(T)) ? "" : Id.ToString();
+        }
+        public static implicit operator ObjectKey<T>(T d)
+        {
+            return ObjectKey.From(d);
+        }
+    }
+
+    public class ObjectKey<T1,T2> :
 		IEquatable<ObjectKey<T1,T2>>,
 		IComparable<ObjectKey<T1,T2>>
 		 where T1 : IEquatable<T1>
@@ -292,5 +297,7 @@ namespace SF.Sys.Entities
 				throw new NotSupportedException();
 			return GenericTypes[Types.Length - 1].MakeGenericType(Types);
 		}
+
+        
 	}
 }

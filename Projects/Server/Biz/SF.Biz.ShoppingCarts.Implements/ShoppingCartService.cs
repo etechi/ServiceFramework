@@ -55,7 +55,7 @@ namespace SF.Biz.ShoppingCarts
                 ProductId = m.ProductId,
                 SkuId = m.SkuId,
                 ItemId = m.ItemId,
-                Title = m.Title,
+                Name = m.Name,
                 Image = m.Image,
                 Spec = m.Spec,
                 Quantity = m.Quantity,
@@ -108,7 +108,7 @@ namespace SF.Biz.ShoppingCarts
         protected virtual Task OnUpdateResult(long BuyerId, ShoppingCartItem result, IItem item, bool IgnoreQuantityCheck)
         {
             result.Image = item.Image;
-            result.Title = item.Title;
+            result.Name = item.Title;
             result.SettlementPrice = item.Price;
             return Task.CompletedTask;
         }
@@ -150,7 +150,7 @@ namespace SF.Biz.ShoppingCarts
             model.SellerTitle = null;
             model.ItemId = item.ItemId;
             model.ProductId = item.ProductId;
-            model.Title = item.Title;
+            model.Name = item.Title;
             model.Image = item.Image;
             model.Spec = null;
             model.MarketPrice = item.MarketPrice;

@@ -1,6 +1,7 @@
 ﻿using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.NetworkService;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SF.Biz.Delivery
@@ -49,4 +50,21 @@ namespace SF.Biz.Delivery
 		Task<Location> Get(long Id);
 		Task<Location[]> List(long? ParentId);
 	}
+
+    public static class DeliveryLocationServiceExtensions
+    {
+        public static async Task<Location[]> GetPath(this IDeliveryLocationService Service,long Id)
+        {
+            var l = await Service.Get(Id);
+            var list = new List<Location>() { l };
+            while(l.ParentId.HasValue)
+            {
+                var p = await Service.Get(l.ParentId.Value);
+                list.Add(p);
+                l = p;
+            }
+            list.Reverse();
+            return list.ToArray();
+        }
+    }
 }

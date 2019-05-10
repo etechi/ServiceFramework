@@ -40,7 +40,7 @@ namespace SF.Auth.IdentityServices.Managers
 				e =>
 				{
 					e.Name = Name;
-					e.Title = Title??Name;
+					e.Name = Title??Name;
 					e.ClientSecrets = Secret;
 					e.ClientConfigId = ConfigId;
 					e.RedirectUris = "http://localhost:52706/";

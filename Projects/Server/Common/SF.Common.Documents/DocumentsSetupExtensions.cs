@@ -80,7 +80,7 @@ namespace SF.Common.Documents
 				s =>
 				{
 					s.Name = name;
-					s.Title = name;
+					s.Name = name;
 					s.Ident = ident;
 					s.ContainerId= cid;
 					s.Content = content;
@@ -112,7 +112,7 @@ namespace SF.Common.Documents
 				(TInternal s) =>
 				{
 					s.Name = name;
-					s.Title = title??name;
+					s.Name = title??name;
 					s.ContainerId = pid;
 					s.Image = image;
 					s.LogicState = EntityLogicState.Enabled;

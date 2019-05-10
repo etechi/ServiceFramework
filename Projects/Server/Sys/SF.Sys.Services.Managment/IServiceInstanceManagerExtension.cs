@@ -72,7 +72,7 @@ namespace SF.Sys.Services.Management
 			e.Name = Name ?? e.ImplementName;
 
 			var comment = ImplementType.Comment();
-			e.Title = Title ?? e.Name;
+			e.Name = Title ?? e.Name;
 			e.ContainerId = ParentId;
 			e.Description = Description ?? comment?.Summary;
 			e.Setting = Json.Stringify(Setting);

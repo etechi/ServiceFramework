@@ -188,7 +188,7 @@ namespace SF.Sys.Services.Management
 			UIEnsure.HasContent(e.ImplementType,"服务实现");
 			UIEnsure.HasContent(e.ServiceType,"服务定义");
 			UIEnsure.HasContent(e.Name,"服务名称");
-			UIEnsure.HasContent(e.Title, "服务标题");
+			UIEnsure.HasContent(e.Name, "服务标题");
 
 			if (ctx.Action == ModifyAction.Create)
 			{

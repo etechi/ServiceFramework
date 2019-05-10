@@ -10,20 +10,16 @@ namespace SF.Biz.Delivery
     public class DeliveryEvent
     {
         public string Title { get; }
-        public int DeliveryId { get; }
+        public long DeliveryId { get; }
         public string UserId { get; }
         public string ExpressCode { get; }
         public string ExpressName { get; }
-        public bool HasVirtualItem { get; }
-        public bool HasObjectItem { get;  }
         public DeliveryEvent(
-            int DeliveryId, 
+            long DeliveryId, 
             string UserId, 
             string Title,
             string ExpressName, 
-            string ExpressCode,
-            bool HasObjectItem,
-            bool HasVirtualItem
+            string ExpressCode
             )
         {
             this.DeliveryId = DeliveryId;
@@ -31,8 +27,6 @@ namespace SF.Biz.Delivery
             this.ExpressName = ExpressName;
             this.ExpressCode = ExpressCode;
             this.Title = Title;
-            this.HasVirtualItem = HasVirtualItem;
-            this.HasObjectItem = HasObjectItem;
         }
     }
     public enum DeliveryState

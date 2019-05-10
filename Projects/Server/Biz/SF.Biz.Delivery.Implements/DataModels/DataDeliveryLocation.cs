@@ -1,15 +1,8 @@
-﻿using ServiceProtocol.Annotations;
-using ServiceProtocol.Biz.Delivery;
-using ServiceProtocol.Data.Entity;
-using SF.Sys.Data;
+﻿using SF.Sys.Data;
 using SF.Sys.Entities.DataModels;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SF.Biz.Delivery.DataModels
 {

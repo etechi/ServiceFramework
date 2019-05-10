@@ -36,7 +36,7 @@ namespace SF.Sys
 	}
 	public class PublicDeniedException : PublicException
 	{
-		public PublicDeniedException(string message) : base(message) { }
+		public PublicDeniedException(string message="无权访问此对象") : base(message) { }
 		public PublicDeniedException(string message, System.Exception innerException) : base(message, innerException) { }
 	}
 	public class PublicNotSigninException : PublicDeniedException

@@ -266,6 +266,7 @@ namespace SF.Sys.Entities
 			_SyncQueue = new EntityModifySyncQueue<TEditable, TSyncKey>(Queue, GetSyncKey);
 		}
 
+
 		#region create
 
 		protected virtual async Task OnNewModel(IModifyContext ctx)

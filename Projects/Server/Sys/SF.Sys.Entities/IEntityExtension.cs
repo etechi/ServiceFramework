@@ -45,7 +45,7 @@ namespace SF.Sys.Entities
 		public static IUIObjectEntity Update(this IUIObjectEntity model, IUIObjectEntity entity, DateTime time) 
 		{
 			((IObjectEntity)model).Update(entity, time);
-			model.Title = entity.Title ?? entity.Name;
+			model.Name = entity.Name ?? entity.Name;
 			model.SubTitle = entity.SubTitle;
 			model.Remarks = entity.Remarks;
 			model.Description = entity.Description;

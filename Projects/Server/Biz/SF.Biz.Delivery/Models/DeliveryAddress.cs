@@ -26,7 +26,7 @@ namespace SF.Biz.Delivery
 		public string ContactPhoneNumber { get; set; }
 
 		[Ignore]
-		public int LocationId { get; set; }
+		public long LocationId { get; set; }
 	}
 	public class DeliveryAddressDetail : DeliveryAddress
 	{

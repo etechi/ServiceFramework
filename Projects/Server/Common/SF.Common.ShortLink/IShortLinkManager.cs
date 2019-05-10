@@ -21,6 +21,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.ShortLinks
 {
+    /// <summary>
+    /// 短链接查询参数
+    /// </summary>
 	public class ShortLinkQueryArguments : QueryArgument<string>
 	{
 		/// <summary>

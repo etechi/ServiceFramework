@@ -15,6 +15,10 @@
 	</PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\DeliveryTransportDataFull.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove=".licenseheader" />
   </ItemGroup>
 
@@ -25,10 +29,6 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Plans\SF.Sys.Plans.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
     <ProjectReference Include="..\SF.Biz.Delivery\SF.Biz.Delivery.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Managements\" />
   </ItemGroup>
 
 

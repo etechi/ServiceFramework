@@ -34,8 +34,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SF.Biz.Accounting.Implements\SF.Biz.Accounting.Implements.csproj" />
+    <ProjectReference Include="..\SF.Biz.Accounting\SF.Biz.Accounting.csproj" />
+    <ProjectReference Include="..\SF.Biz.Delivery.Implements\SF.Biz.Delivery.Implements.csproj" />
+    <ProjectReference Include="..\SF.Biz.Delivery\SF.Biz.Delivery.csproj" />
+    <ProjectReference Include="..\SF.Biz.Payments.Implements\SF.Biz.Payments.Implements.csproj" />
+    <ProjectReference Include="..\SF.Biz.Payments.Providers\SF.Biz.Payments.Providers.csproj" />
+    <ProjectReference Include="..\SF.Biz.Payments\SF.Biz.Payments.csproj" />
     <ProjectReference Include="..\SF.Biz.Products.Implements\SF.Biz.Products.Implements.csproj" />
     <ProjectReference Include="..\SF.Biz.Products\SF.Biz.Products.csproj" />
+    <ProjectReference Include="..\SF.Biz.ShoppingCarts.Implements\SF.Biz.ShoppingCarts.Implements.csproj" />
+    <ProjectReference Include="..\SF.Biz.ShoppingCarts\SF.Biz.ShoppingCarts.csproj" />
+    <ProjectReference Include="..\SF.Biz.Trades.Implements\SF.Biz.Trades.Implements.csproj" />
+    <ProjectReference Include="..\SF.Biz.Trades\SF.Biz.Trades.csproj" />
   </ItemGroup>
 
 </Project>

@@ -20,6 +20,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SF.Common.ShortLinks
 {
+    /// <summary>
+    /// 短链接
+    /// </summary>
 	[EntityObject]
 	public class ShortLink : ObjectEntityBase<string>
 	{

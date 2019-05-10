@@ -1,83 +1,83 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using SF.Biz.Delivery.Data;
+using SF.Biz.Delivery.Management;
+using SF.Sys.Collections.Generic;
+using SF.Sys.Data;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using ServiceProtocol.ObjectManager;
-using ServiceProtocol.Data.Entity;
-using ServiceProtocol.DI;
 
-namespace ServiceProtocol.Biz.Delivery.Entity
+namespace SF.Biz.Delivery.Init
 {
-	public static class Setup
+    public static class Setup
 	{
-		public static async Task EnsureTransport<TModel>(this IDIScope DIScope)
-			where TModel : Models.DeliveryTransport, new()
+		public static async Task EnsureTransport(this IDataScope DataScope)
 		{
-			var context = DIScope.Resolve<IDataContext>();
-			var items = Models.DeliveryTransportData.Items;
-			var count = await context.ReadOnly<TModel>().CountAsync();
-			if (count == items.Length)
-				return;
+            await DataScope.Use("初始化快递公司数据", async context =>
+            {
+                var items = DeliveryTransportData.Items;
+                var count = await context.Queryable<DataModels.DataDeliveryTransport>().CountAsync();
+                if (count == items.Length)
+                    return;
 
-			var dics = await context.ReadOnly<TModel>().ToDictionaryAsync(m => m.Ident);
-			foreach (var it in items)
-			{
-				var o = dics.Get(it.Ident);
-				var is_new = o == null;
-				if (is_new) o = new TModel();
+                var dics = await context.Queryable<DataModels.DataDeliveryTransport>().ToDictionaryAsync(m => m.Code);
+                foreach (var it in items)
+                {
+                    var o = dics.Get(it.Code);
+                    var is_new = o == null;
+                    if (is_new) o = new DataModels.DataDeliveryTransport();
 
-				o.Order = it.Order;
-				o.Name = it.Name;
-				o.Site = it.Site;
-				o.ContactName = it.ContactName;
-				o.ContactPhone = it.ContactPhone;
-				o.Ident = it.Ident;
+                    o.Order = it.Order;
+                    o.Name = it.Name;
+                    o.Site = it.Site;
+                    o.ContactName = it.ContactName;
+                    o.ContactPhone = it.ContactPhone;
+                    o.Code = it.Code;
 
-				if (is_new)
-					context.Add(o);
-				else
-					context.Update(o);
-			}
-			await context.SaveChangesAsync();
+                    if (is_new)
+                        context.Add(o);
+                    else
+                        context.Update(o);
+                }
+                await context.SaveChangesAsync();
+            });
 		}
-		public static async Task EnsureLocations<TModel>(this IDIScope DIScope)
-			where TModel : Models.DeliveryLocation,new()
+		public static async Task EnsureLocations(this IDataScope DataScope)
 		{
-			var context = DIScope.Resolve<IDataContext>();
-			var items = Models.DeliveryLocationData.Locations;
-			var count = await context.ReadOnly<TModel>().CountAsync();
-			if (count == items.Length)
-				return;
+            await DataScope.Use("初始化地区数据", async context =>
+            {
+                var items = DeliveryLocationData.Locations;
+                var count = await context.Queryable<DataModels.DataDeliveryLocation>().CountAsync();
+                if (count == items.Length)
+                    return;
 
-			var dics = await context.ReadOnly<TModel>().ToDictionaryAsync(m => m.Id);
-			foreach(var it in items)
-			{
-				var o = dics.Get(it.Id);
-				var is_new = o == null;
-				if (is_new) o = new TModel();
+                var dics = await context.Queryable<DataModels.DataDeliveryLocation>().ToDictionaryAsync(m => m.Id);
+                foreach (var it in items)
+                {
+                    var o = dics.Get(it.Id);
+                    var is_new = o == null;
+                    if (is_new) o = new DataModels.DataDeliveryLocation();
 
-				o.Id = it.Id;
-				o.ParentId = it.ParentId;
-				o.Order = it.Order;
-				o.Level = it.Level;
-				o.L1Code = it.L1Code;
-				o.L2Code = it.L2Code;
-				o.L3Code = it.L3Code;
-				o.L4Code = it.L4Code;
-				o.Name = it.Name;
-				o.EnName = it.EnName;
-				o.Code = it.Code;
-				o.PhonePrefix = it.PhonePrefix;
-				o.TimeZone = it.TimeZone;
-				o.Disabled = it.Disabled;
+                    o.Id = it.Id;
+                    o.ParentId = it.ParentId;
+                    o.Order = it.Order;
+                    o.Level = it.Level;
+                    o.L1Code = it.L1Code;
+                    o.L2Code = it.L2Code;
+                    o.L3Code = it.L3Code;
+                    o.L4Code = it.L4Code;
+                    o.Name = it.Name;
+                    o.EnName = it.EnName;
+                    o.Code = it.Code;
+                    o.PhonePrefix = it.PhonePrefix;
+                    o.TimeZone = it.TimeZone;
+                    o.LogicState = it.LogicState;
 
-				if (is_new)
-					context.Add(o);
-				else
-					context.Update(o);
-			}
-			await context.SaveChangesAsync();
+                    if (is_new)
+                        context.Add(o);
+                    else
+                        context.Update(o);
+                }
+                await context.SaveChangesAsync();
+            });
 		}
 	}
 }
