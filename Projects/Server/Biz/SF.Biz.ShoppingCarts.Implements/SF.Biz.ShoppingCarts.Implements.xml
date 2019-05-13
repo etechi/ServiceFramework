@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Biz.ShoppingCarts.Implements</name>
+    </assembly>
+    <members>
+        <member name="T:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem">
+            <summary>
+            购物车项目
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.BuyerId">
+            <summary>
+            买家ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.Type">
+            <summary>
+            购物车类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.SellerId">
+            <summary>
+            卖家ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.ItemId">
+            <summary>
+            商品ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.SkuId">
+            <summary>
+            SKUID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.SellerTitle">
+            <summary>
+            卖家标题
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.ProductId">
+            <summary>
+            产品ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.Spec">
+            <summary>
+            规格
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.Quantity">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.Selected">
+            <summary>
+            是否选中
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.MarketPrice">
+            <summary>
+            市场价
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.Price">
+            <summary>
+            售价
+            </summary>
+        </member>
+    </members>
+</doc>

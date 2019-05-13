@@ -15,7 +15,7 @@ namespace SF.Biz.Delivery
         /// <summary>
         /// 地区
         /// </summary>
-        public long LocationId { get; set; }
+        public int LocationId { get; set; }
 
         /// <summary>
         /// 地区Id
@@ -48,6 +48,11 @@ namespace SF.Biz.Delivery
         /// </summary>
         public bool PhoneNumberVerified { get; set; }
 
+        /// <summary>
+        /// 是否为默认地址
+        /// </summary>
+        public bool IsDefaultAddress { get; set; }
+
     }
     public class UserAddressEditable
     {
@@ -69,17 +74,17 @@ namespace SF.Biz.Delivery
         /// <summary>
         /// 省
         /// </summary>
-        public long ProvinceId { get; set; }
+        public int ProvinceId { get; set; }
 
         /// <summary>
         /// 市
         /// </summary>
-        public long CityId { get; set; }
+        public int CityId { get; set; }
 
         /// <summary>
         /// 县/区
         /// </summary>
-        public long DistrictId { get; set; }
+        public int DistrictId { get; set; }
 
         /// <summary>
         /// 地址

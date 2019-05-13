@@ -29,6 +29,8 @@ using SF.Common.UnitTest;
 using SF.Sys;
 using SF.Biz.Products;
 using SF.Sys.Entities;
+using SF.Biz.ShoppingCarts;
+using SF.Sys.Clients;
 
 namespace SF.Biz.UnitTest
 {
@@ -37,84 +39,95 @@ namespace SF.Biz.UnitTest
     public class 购物车测试 : TestBase
 	{
 
-        public async Task Sync(int user, ItemStatus[] status)
+        public async Task Sync(IServiceProvider sp,long user, ItemStatus[] status)
         {
-            var scs = ShoppingCartService(DIScopeDefault);
-            await scs.Sync(user, null, status);
-        }
-        public async Task<IItem[]> Items()
-        {
-            var items = (await ItemService(DIScopeDefault).ListItems(
-              Setting(DIScopeDefault).MainCategoryId,
-              true,
-              null,
-              new ServiceProtocol.ObjectManager.Paging { Count = 10 }
-              )).Items.ToArray();
-            return items;
-        }
-        public async Task Validate(int user, ItemStatus[] status)
-        {
-            var scs = ShoppingCartService(DIScopeDefault);
-            var citems = await scs.List(user, null, false, false);
-            Assert.Equal(citems.Length, status.Length);
-            foreach (var s in status)
+            await sp.WithScopedServices(async ((IAccessToken accToken, IShoppingCartService scs) svcs) =>
             {
-                Assert.NotNull(citems.Single(i => i.ItemId == s.ItemId && i.Quantity == s.Quantity && i.Selected == s.Selected));
-            }
+                return await svcs.accToken.UseUser(user, async () =>
+                 {
+                     await svcs.scs.Sync(new SyncArguments
+                     {
+                         Items = status
+                     });
+                     return 0;
+                 });
+            });
+        }
+        
+        public async Task Validate(IServiceProvider sp,long user, ItemStatus[] status)
+        {
+            await sp.WithScopedServices(async ((IAccessToken accToken, IShoppingCartService scs) svcs) =>
+            {
+                return await svcs.accToken.UseUser(user, async () =>
+                {
+                    var citems = await svcs.scs.List(new QueryArguments { });
+                    Assert.AreEqual(citems.Length, status.Length);
+                    foreach (var s in status)
+                    {
+                        Assert.IsNotNull(citems.Single(i => i.ItemId == s.ItemId && i.Quantity == s.Quantity && i.Selected == s.Selected));
+                    }
+                    return 0;
+                });
+            });
 
         }
         [TestMethod]
         public async Task 同步测试()
         {
-            var scs = DIScopeDefault.Resolve<CrowdMall.Bizness.ShoppingCarts.IShoppingCartService>();
-            scs.DisableQuantityLimit = true;
+            await (from sp in NewServiceScope().InitServices()
+                   from user in sp.UserCreate()
+                   from pro in sp.ProductEnsure(user.User.Id)
+                   select (sp, user, pro))
+               .Use(async (ctx) =>
+               {
+                   (IServiceProvider sp, Common.UnitTest.UserInfo user, ProductInternal product) = ctx;
+                   var items = await sp.ProductItemsEnsure(user.User.Id, 7);
 
-            var user = await UserEnsure();
-            var items = await Items();
-            var status = new[] {
-                new ItemStatus{ItemId=items[0].ItemId,Quantity=1,Selected=true },
-                new ItemStatus{ItemId=items[1].ItemId,Quantity=2,Selected=true },
-                new ItemStatus{ItemId=items[2].ItemId,Quantity=4,Selected=false },
-                new ItemStatus{ItemId=items[3].ItemId,Quantity=8,Selected=true }
-                };
-            //Init
-            await Sync(user.Id, status);
-            await Validate(user.Id, status);
+                   var status = new[] {
+                       new ItemStatus { ItemId = items[0].Id, Quantity = 1, Selected = true },
+                       new ItemStatus { ItemId = items[1].Id, Quantity = 2, Selected = true },
+                       new ItemStatus { ItemId = items[2].Id, Quantity = 4, Selected = false },
+                       new ItemStatus { ItemId = items[3].Id, Quantity = 8, Selected = true }
+                   };
+                   //Init  
+                   await Sync(sp, user.User.Id, status);
+                   await Validate(sp, user.User.Id, status);
 
-            //Update
-            status[1].Quantity = 20;
-            await Sync(user.Id, status);
-            await Validate(user.Id, status);
+                   //Update
+                   status[1].Quantity = 20;
+                   await Sync(sp, user.User.Id, status);
+                   await Validate(sp, user.User.Id, status);
 
-            //Add
-            status = status.Concat(
-                new[] {
-                new ItemStatus { ItemId = items[4].ItemId, Quantity = 16, Selected = false },
-                new ItemStatus { ItemId = items[5].ItemId, Quantity = 32, Selected = true }
-                }
-            );
-            await Sync(user.Id, status);
-            await Validate(user.Id, status);
+                   //Add
+                   status = status.Concat(
+                       new[] {
+                           new ItemStatus { ItemId = items[4].Id, Quantity = 16, Selected = false },
+                           new ItemStatus { ItemId = items[5].Id, Quantity = 32, Selected = true }
+                       }
+                   );
+                   await Sync(sp, user.User.Id, status);
+                   await Validate(sp, user.User.Id, status);
 
-            //Remove
-            status = status.Copy(0, status.Length - 1);
-            await Sync(user.Id, status);
-            await Validate(user.Id, status);
+                   //Remove
+                   status = status.Copy(0, status.Length - 1);
+                   await Sync(sp, user.User.Id, status);
+                   await Validate(sp, user.User.Id, status);
 
-            //UpdateAddRemove
-            status = status.Copy(0, status.Length - 1).Concat(
-                new[] {
-                new ItemStatus { ItemId = items[6].ItemId, Quantity = 64, Selected = true }
-                });
-            status[0].Quantity = 100;
-            await Sync(user.Id, status);
-            await Validate(user.Id, status);
+                   //UpdateAddRemove
+                   status = status.Copy(0, status.Length - 1).Concat(
+                       new[] {
+                           new ItemStatus { ItemId = items[6].Id, Quantity = 64, Selected = true }
+                       });
+                   status[0].Quantity = 100;
+                   await Sync(sp, user.User.Id, status);
+                   await Validate(sp, user.User.Id, status);
 
 
-            //Clear
-            status = new ItemStatus[0];
-            await Sync(user.Id, status);
-            await Validate(user.Id, status);
+                   //Clear
+                   status = new ItemStatus[0];
+                   await Sync(sp, user.User.Id, status);
+                   await Validate(sp, user.User.Id, status);
+               });
         }
 
 

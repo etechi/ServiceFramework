@@ -5,6 +5,8 @@ using System.Linq;
 using SF.Sys;
 using System.Text;
 using System.Collections.Generic;
+using SF.Biz.Delivery.DataModels;
+using System;
 
 namespace SF.Biz.Delivery.Management
 {
@@ -13,8 +15,48 @@ namespace SF.Biz.Delivery.Management
         IUserDeliveryAddressManager
 
     {
-        public UserDeliveryAddressManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
+        Lazy<IDeliveryLocationManager> DeliveryLocationManager { get; }
+        public UserDeliveryAddressManager(IEntityServiceContext ServiceContext, Lazy<IDeliveryLocationManager> DeliveryLocationManager) : base(ServiceContext)
         {
+            this.DeliveryLocationManager = DeliveryLocationManager;
+        }
+
+        protected override async Task OnUpdateModel(IModifyContext ctx)
+        {
+            var e = ctx.Editable;
+            var m = ctx.Model;
+
+            var province = await DeliveryLocationManager.Value.GetAsync(e.ProvinceId);
+            var city = await DeliveryLocationManager.Value.GetAsync(e.CityId);
+            var district = await DeliveryLocationManager.Value.GetAsync(e.DistrictId);
+
+            m.LocationName = province.Name + city.Name + district.Name;
+
+            if (e.IsDefaultAddress)
+            {
+                var curs = await ctx.DataContext.Queryable<DataModels.DataDeliveryAddress>(false)
+                    .Where(i => i.OwnerId.Equals(m.UserId) && i.IsDefaultAddress)
+                    .ToArrayAsync();
+                if (curs.Length > 0)
+                {
+                    foreach (var c in curs)
+                    {
+                        c.IsDefaultAddress = false;
+                        ctx.DataContext.Update(c);
+                    }
+                }
+            }
+            else
+            {
+                if (!await ctx.DataContext
+                    .Queryable<DataModels.DataDeliveryAddress>()
+                    .AnyAsync(i => i.OwnerId.Equals(e.UserId) && i.Id != m.Id && i.IsDefaultAddress)
+                    )
+                    e.IsDefaultAddress = true;
+            }
+
+
+            await base.OnUpdateModel(ctx);
         }
 
         protected virtual void OnCollectDeliveryAddressContent(

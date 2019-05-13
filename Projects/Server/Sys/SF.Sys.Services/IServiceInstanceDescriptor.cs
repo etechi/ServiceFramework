@@ -22,6 +22,14 @@ namespace SF.Sys.Services
 	{
 
 	}
+    public interface IServiceInstanceMeta
+    {
+        string Name { get; }
+        string Title { get; }
+        string Image { get; }
+        string Icon { get; }
+        string Description { get; }
+    }
 
 	[AutoBind]
 	public interface IServiceInstanceDescriptor
@@ -30,7 +38,8 @@ namespace SF.Sys.Services
 		long? ParentInstanceId { get; }
 		long? DataScopeId { get; }
 		bool IsManaged { get; }
-		IServiceDeclaration ServiceDeclaration { get; }
+        IServiceInstanceMeta Meta { get; }
+        IServiceDeclaration ServiceDeclaration { get; }
 		IServiceImplement ServiceImplement { get; }
 		IDisposable OnSettingChanged<T>(Action<T> Callback);
 	}

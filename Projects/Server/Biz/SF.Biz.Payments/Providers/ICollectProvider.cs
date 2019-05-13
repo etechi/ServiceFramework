@@ -20,7 +20,7 @@ namespace SF.Biz.Payments
     /// </summary>
     public class CollectStartStatus
     {
-        public IDictionary<string, string> Result { get; set; }
+        public IReadOnlyDictionary<string, string> Result { get; set; }
         public string ExtraData { get; set; }
         public string ExtIdent { get; set; }
     }
@@ -32,7 +32,7 @@ namespace SF.Biz.Payments
 
     public interface ICollectProvider
 	{
-		string Name { get; }
+		string Title { get; }
         TimeSpan? CollectRequestTimeout { get; }
 		Task<CollectStartStatus> Start(
             long ident,

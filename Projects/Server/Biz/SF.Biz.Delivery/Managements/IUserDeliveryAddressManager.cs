@@ -18,7 +18,7 @@ namespace SF.Biz.Delivery.Management
         /// 地区
         /// </summary>
         [EntityIdent(typeof(DeliveryLocation))]
-        public long? DistinctId { get; set; }
+        public int? DistinctId { get; set; }
 
         /// <summary>
         /// 默认地址

@@ -38,17 +38,19 @@ namespace SF.Sys.Services.Internals
 		public IServiceCreateParameterTemplate CreateParameterTemplate { get; }
 		public ServiceCreator Creator { get; }
 		public ServiceConfigLoader ConfigLoader { get; }
+        public IServiceInstanceMeta Meta { get; }
 		public ServiceFactory(
 			long Id,
 			long? ParentServiceId,
 			Func<long?> LazyDataScopeId,
-			IServiceDeclaration ServiceDeclaration,
+            IServiceDeclaration ServiceDeclaration,
 			IServiceImplement ServiceImplement,
 			IServiceCreateParameterTemplate CreateParameterTemplate,
 			ServiceCreator Creator,
-			ServiceConfigLoader ConfigLoader
-			)
-		{
+			ServiceConfigLoader ConfigLoader,
+            IServiceInstanceMeta Meta
+            )
+        {
 			this.InstanceId = Id;
 			this.ParentInstanceId = ParentServiceId;
 			this.ServiceDeclaration = ServiceDeclaration;
@@ -57,6 +59,7 @@ namespace SF.Sys.Services.Internals
 			this.Creator = Creator;
 			this.ConfigLoader = ConfigLoader;
 			this.LazyDataScopeId = LazyDataScopeId;
+            this.Meta = Meta;
 		}
 
 		public object Create(
@@ -117,7 +120,8 @@ namespace SF.Sys.Services.Internals
 			Type ServiceType, 
 			ServiceCreatorCache CreatorCache,
 			IServiceMetadata ServiceMetadata,
-			string Setting
+			string Setting,
+            IServiceInstanceMeta Meta
 			)
 		{
 			ServiceCreator Creator;
@@ -174,7 +178,8 @@ namespace SF.Sys.Services.Internals
 				impl,
 				CreateParameterTemplate,
 				Creator,
-				ConfigLoader
+				ConfigLoader,
+                Meta
 				);
 		}
 

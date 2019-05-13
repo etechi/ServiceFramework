@@ -9,13 +9,21 @@ namespace SF.Biz.Delivery.Management
     /// 地区
     /// </summary>
     [EntityObject]
-    public class DeliveryLocation : ObjectEntityBase
+    public class DeliveryLocation : ObjectEntityBase<int>
     {
+        /// <summary>
+        /// ID
+        /// </summary>
+        [Key]
+        [Uneditable]
+        [TableVisible]
+        public override int Id { get; set; }
+
         /// <summary>
         /// 父地区
         /// </summary>
         [EntityIdent(typeof(DeliveryLocation),nameof(ParentName))]
-        public long? ParentId { get; set; }
+        public int? ParentId { get; set; }
 
         /// <summary>
         /// 父地区

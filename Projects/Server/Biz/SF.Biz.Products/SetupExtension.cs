@@ -167,7 +167,8 @@ namespace SF.Biz.Products
 				string[] images,
 				string[] contentImages,
 				bool isVirtual = false,
-                DateTime? publishTime=null
+                DateTime? publishTime=null,
+                EntityLogicState logicState=EntityLogicState.Enabled
 			)where TProductManager:IEntityIdentQueryable<ObjectKey<long>,ProductInternalQueryArgument>,
 									IEntityEditableLoader<ObjectKey<long>,ProductEditable>,
 								IEntityUpdator<ProductEditable>,
@@ -191,7 +192,8 @@ namespace SF.Biz.Products
 						Images = images?.Select(i => new ProductImage { Image = i }) ?? null,
 						Descs = contentImages?.Select(i => new  ProductDescItem { Image = i }) ?? null
 					};
-					o.PublishedTime = publishTime ?? DateTime.Now;
+                    o.ObjectState = logicState;
+                    o.PublishedTime = publishTime ?? DateTime.Now;
 				}
 				);
 		}

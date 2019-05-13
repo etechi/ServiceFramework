@@ -5,6 +5,13 @@ using SF.Sys.NetworkService;
 
 namespace SF.Biz.Accounting
 {    
+    public class AccountTitleQueryArgument : ObjectQueryArgument
+    {
+        /// <summary>
+        /// 科目标识
+        /// </summary>
+        public string Ident { get; set; }
+    }
     /// <summary>
      /// 科目管理器
      /// </summary>
@@ -14,7 +21,7 @@ namespace SF.Biz.Accounting
     [DefaultAuthorize(PredefinedRoles.系统管理员)]
     public interface IAccountTitleManager:
         IEntityManager<ObjectKey<long>, AccountTitle>,
-        IEntitySource<ObjectKey<long>, AccountTitle, ObjectQueryArgument>
+        IEntitySource<ObjectKey<long>, AccountTitle, AccountTitleQueryArgument>
 
     {
     }

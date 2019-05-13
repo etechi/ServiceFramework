@@ -6,6 +6,7 @@ using SF.Sys.Events;
 using SF.Sys.Linq;
 using SF.Sys.Logging;
 using SF.Sys.Reminders;
+using SF.Sys.Services;
 using SF.Sys.TimeServices;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ namespace SF.Biz.Accounting
         public Lazy<IRemindService> RemindService { get; }
         public Lazy<IEventEmitService> EventEmitService { get; }
         public Lazy<IUserProfileService> UserProfileService { get; }
+        public Lazy<IPaymentPlatformService> PaymentPlatformService { get; }
+
         public DepositService(
             IDataScope DataScope,
             ITimeService TimeService,
@@ -33,7 +36,8 @@ namespace SF.Biz.Accounting
             ILogger<DepositService> Logger,
             Lazy<IRemindService> RemindService,
             Lazy<IEventEmitService> EventEmitService,
-            Lazy<IUserProfileService> UserProfileService
+            Lazy<IUserProfileService> UserProfileService,
+            Lazy<IPaymentPlatformService> PaymentPlatformService
             )
         {
             this.DataScope = DataScope;
@@ -44,6 +48,7 @@ namespace SF.Biz.Accounting
             this.RemindService = RemindService;
             this.EventEmitService = EventEmitService;
             this.UserProfileService = UserProfileService;
+            this.PaymentPlatformService = PaymentPlatformService;
         }
 
 
@@ -65,6 +70,17 @@ namespace SF.Biz.Accounting
                 if (title == 0)
                     throw new ArgumentException("账户科目不存在:" + Arg.AccountTitle);
 
+                if (!Arg.RemindId.HasValue)
+                    Arg.RemindId = await RemindService.Value.Setup(new RemindSetupArgument
+                    {
+                        BizIdent = id,
+                        BizIdentType = "DepositRecord",
+                        BizType = "充值",
+                        Name = "充值",
+                        RemindableName = typeof(DepositRemindable).FullName,
+                        RemindTime = DepositRemindable.GetEndTime(PaymentPlatformService.Value, Arg.PaymentPlatformId, TimeService.Now)
+                    });
+
                 var cid = await CollectService.Create(new Payments.CollectRequest
                 {
                     Amount = Arg.Amount,
@@ -77,7 +93,7 @@ namespace SF.Biz.Accounting
                     TrackEntityIdent = "账户充值记录-" + id,
                     CurUserId = Arg.DstId,
                     HttpRedirect = Arg.HttpRedirest.Replace(new Dictionary<string, object> { { "DepositId", id.ToString() } }),
-                    RemindId= Arg.RemindId
+                    RemindId= Arg.RemindId.Value
                 });
 
                 var time = TimeService.Now;
@@ -91,7 +107,7 @@ namespace SF.Biz.Accounting
                     Title = desc,
                     TrackEntityIdent = Arg.TrackEntityIdent,
                     Time = time,
-                    RemindId = Arg.RemindId,
+                    RemindId = Arg.RemindId.Value,
                     PaymentPlatformId = Arg.PaymentPlatformId,
                     State = DepositState.New,
                     OpAddress = Arg.OpAddress,
@@ -164,9 +180,32 @@ namespace SF.Biz.Accounting
                     var re = await this.CollectService.GetResult(record.CollectRecordId, Query, Remind);
                     await Complete(ctx, record, re.Response, re.Request.Desc);
                 }
-               
-                return await MapDepositRecord(EnumerableEx.From(record).AsQueryable())
-                       .SingleOrDefaultAsync();
+                var r = record;
+                return new DepositRecord
+                {
+                    Id = r.Id,
+                    Time = r.Time,
+                    DstId = r.DstId,
+                    Amount = r.Amount,
+                    CurValue = r.CurValue,
+                    Title = r.Title,
+                    AccountTitleId = r.AccountTitleId,
+                    AccountTitle = await ctx.Queryable<DataModels.DataAccountTitle>().Where(t => t.Id == r.AccountTitleId).Select(t => t.Title).SingleAsync(),
+                    CompletedTime = r.CompletedTime,
+                    State = r.State,
+                    PaymentDesc = r.PaymentDesc,
+                    PaymentPlatformId = r.PaymentPlatformId,
+                    TrackEntityIdent = r.TrackEntityIdent,
+                    Error = r.Error,
+                    RefundRequest = r.DrawbackRequest,
+                    RefundSuccess = r.DrawbackSuccess,
+                    LastRefundRequestTime = r.LastDrawbackRequestTime,
+                    LastRefundSuccessTime = r.LastDrawbackSuccessTime,
+                    LastRefundReason = r.LastDrawbackReason,
+
+                    OpAddress = r.OpAddress,
+                    OpDevice = r.OpDevice
+                };
             });
 
         }
@@ -199,6 +238,7 @@ namespace SF.Biz.Accounting
                         acc.Inbound += resp.AmountCollected;
                         acc.CurValue = acc.Inbound - acc.Outbound;
                         acc.UpdatedTime = TimeService.Now;
+                        ctx.Update(acc);
                     }
                     record.CurValue = acc.CurValue;
                 }
@@ -229,36 +269,7 @@ namespace SF.Biz.Accounting
             }
         }
 
-        public virtual IQueryable<DepositRecord> MapDepositRecord(IQueryable<DataModels.DataDepositRecord> query)
-        {
-            return from r in query
-                   select new DepositRecord
-                   {
-                       Id = r.Id,
-                       Time = r.Time,
-                       DstId = r.DstId,
-                       Amount = r.Amount,
-                       CurValue = r.CurValue,
-                       Title = r.Title,
-                       AccountTitleId = r.AccountTitleId,
-                       AccountTitle = r.AccountTitle.Title,
-                       CompletedTime = r.CompletedTime,
-                       State = r.State,
-                       PaymentDesc = r.PaymentDesc,
-                       PaymentPlatformId = r.PaymentPlatformId,
-                       TrackEntityIdent = r.TrackEntityIdent,
-                       Error = r.Error,
-                       RefundRequest = r.DrawbackRequest,
-                       RefundSuccess = r.DrawbackSuccess,
-                       LastRefundRequestTime = r.LastDrawbackRequestTime,
-                       LastRefundSuccessTime = r.LastDrawbackSuccessTime,
-                       LastRefundReason = r.LastDrawbackReason,
-
-                       OpAddress = r.OpAddress,
-                       OpDevice = r.OpDevice
-                   };
-        }
-
+      
 
 
     }

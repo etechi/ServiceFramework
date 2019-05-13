@@ -20,10 +20,10 @@ namespace SF.Biz.Delivery.DataModels
 
 		[Index("src",Order =1)]
 		[Index("dst", Order = 2)]
-		public long SrcLocationId { get; set; }
+		public int SrcLocationId { get; set; }
 		[Index("src", Order = 2)]
 		[Index("dst", Order = 1)]
-		public long DstLocationId { get; set; }
+		public int DstLocationId { get; set; }
 
 		[ForeignKey(nameof(SrcLocationId))]
 		public DataDeliveryLocation SrcLocation { get; set; }

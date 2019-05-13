@@ -21,7 +21,7 @@ namespace SF.Biz.Payments.Platforms.Alipay
 			this.TimeService = TimeService;
             this.InvokeContext = InvokeContext;
         }
-        public string Name
+        public string Title
 		{
 			get { return "支付宝"; }
 		}

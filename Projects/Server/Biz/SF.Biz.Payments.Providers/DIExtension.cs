@@ -27,9 +27,20 @@ namespace SF.Sys.Services
 		public static IServiceCollection AddPaymentProvidersServices(this IServiceCollection sc)
 		{
 			sc.AddManagedScoped<ICollectProvider,AlipayCollectProvider>();
-            sc.AddManagedScoped<ICollectProvider, WeichatCollectProvider>();
+            //sc.AddManagedScoped<ICollectProvider, WeichatCollectProvider>();
             sc.AddManagedScoped<ICollectProvider, TestCollectProvider>();
+            sc.InitServices("Payments", async (sp, sim, parent) =>
+            {
 
+                await sim.ServiceWithIdent<ICollectProvider, AlipayCollectProvider>("alipay",null)
+                    .WithDisplay(Title:"支付宝")
+                   .Ensure(sp, parent);
+
+                await sim.ServiceWithIdent<ICollectProvider, TestCollectProvider>("test",null)
+                    .WithDisplay(Title: "支付测试")
+                   .Ensure(sp, parent);
+
+            });
             return sc;
 		}
 	}

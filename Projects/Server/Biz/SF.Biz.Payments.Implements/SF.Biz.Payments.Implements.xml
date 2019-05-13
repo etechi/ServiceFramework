@@ -1,0 +1,262 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Biz.Payments.Implements</name>
+    </assembly>
+    <members>
+        <member name="T:SF.Biz.Payments.DataModels.DataCollectRecord">
+            <summary>
+            第三方收款记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.PaymentPlatformId">
+            <summary>
+            收款系统服务ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.ClientType">
+            <summary>
+            收款发起客户端类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.HttpRedirect">
+            <summary>
+            收款结束重定向Url
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.Title">
+            <summary>
+            收款标题
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.Desc">
+            <summary>
+            收款描述
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.RemindId">
+            <summary>
+            提醒
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.ExtIdent">
+            <summary>
+            第三方平台交易号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.State">
+            <summary>
+            收款状态
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.CreatedTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.StartTime">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.CompletedTime">
+            <summary>
+            结束时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.Error">
+            <summary>
+            错误信息
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.Amount">
+            <summary>
+            收款金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.AmountCollected">
+            <summary>
+            确认收款金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.ExtUserId">
+            <summary>
+            第三方平台用户ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.ExtUserName">
+            <summary>
+            第三方平台用户名
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.ExtUserAccount">
+            <summary>
+            第三方平台用户账号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.TrackEntityIdent">
+            <summary>
+            业务跟踪ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.TimeStamp">
+            <summary>
+            乐观锁时间戳
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.ExtraData">
+            <summary>
+            附加数据
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.OpAddress">
+            <summary>
+            收款发起地址
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.OpDevice">
+            <summary>
+            收款发起设备
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Payments.DataModels.DataRefundRecord">
+            <summary>
+            第三方退款记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.PaymentPlatformId">
+            <summary>
+            退款系统服务ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.CollectIdent">
+            <summary>
+            对应收款交易号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.CollectExtIdent">
+            <summary>
+            对应第三方收款交易号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.ClientType">
+            <summary>
+            发起客户端类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.Title">
+            <summary>
+            退款标题
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.Desc">
+            <summary>
+            退款描述
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.CallbackName">
+            <summary>
+            回调名称
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.CallbackContext">
+            <summary>
+            回调上下文
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.ExtIdent">
+            <summary>
+            第三方平台退款交易号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.State">
+            <summary>
+            退款状态
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.StartTime">
+            <summary>
+            开始时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.SubmitTime">
+            <summary>
+            提交时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.LastUpdateTime">
+            <summary>
+            最后更新时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.CompletedTime">
+            <summary>
+            完成时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.UpdateCount">
+            <summary>
+            更新次数
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.Error">
+            <summary>
+            错误信息
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.Amount">
+            <summary>
+            退款金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.AmountRefund">
+            <summary>
+            实际退款金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.TrackEntityIdent">
+            <summary>
+            业务跟踪ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.TimeStamp">
+            <summary>
+            乐观锁时间戳
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.ExtraData">
+            <summary>
+            附加数据
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.OpAddress">
+            <summary>
+            退款发起地址
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.OpDevice">
+            <summary>
+            退款发起设备
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Payments.CollectService">
+            <summary>
+            常规收款
+            </summary>
+        </member>
+        <member name="M:SF.Biz.Payments.CollectService.SF#Biz#Payments#ICollectCallback#Notify(System.Int64)">
+            <summary>
+            第三方平台异步通知
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:SF.Biz.Payments.CollectService.SF#Biz#Payments#ICollectCallback#Return(System.Int64)">
+            <summary>
+            第三方平台跳回
+            </summary>
+            <param name="Id"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

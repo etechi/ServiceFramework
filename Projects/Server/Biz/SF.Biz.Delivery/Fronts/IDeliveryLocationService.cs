@@ -15,7 +15,7 @@ namespace SF.Biz.Delivery
         /// <summary>
         /// ID
         /// </summary>
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         /// <summary>
         /// 名称
@@ -28,7 +28,7 @@ namespace SF.Biz.Delivery
         /// <summary>
         /// 父区域
         /// </summary>
-		public long? ParentId { get; set; }
+		public int? ParentId { get; set; }
 
         /// <summary>
         /// 邮编
@@ -47,13 +47,13 @@ namespace SF.Biz.Delivery
     [AnonymousAllowed]
     public interface IDeliveryLocationService
 	{
-		Task<Location> Get(long Id);
-		Task<Location[]> List(long? ParentId);
+		Task<Location> Get(int Id);
+		Task<Location[]> List(int? ParentId);
 	}
 
     public static class DeliveryLocationServiceExtensions
     {
-        public static async Task<Location[]> GetPath(this IDeliveryLocationService Service,long Id)
+        public static async Task<Location[]> GetPath(this IDeliveryLocationService Service, int Id)
         {
             var l = await Service.Get(Id);
             var list = new List<Location>() { l };

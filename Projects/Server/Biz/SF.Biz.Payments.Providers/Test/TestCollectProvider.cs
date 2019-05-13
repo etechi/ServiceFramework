@@ -2,6 +2,7 @@
 using SF.Sys.Clients;
 using SF.Sys.Collections.Generic;
 using SF.Sys.NetworkService;
+using SF.Sys.Services;
 using SF.Sys.TimeServices;
 using System;
 using System.Collections.Generic;
@@ -21,15 +22,17 @@ namespace SF.Biz.Payments.Platforms.Tests
 		public ITimeService TimeService { get; }
         public IInvokeContext InvokeContext { get; }
         public TimeSpan? CollectRequestTimeout => null;// TimeSpan.FromMinutes(1);
-        public TestCollectProvider(ITimeService TimeService, IInvokeContext InvokeContext)
+        public IServiceInstanceDescriptor ServiceInstanceDescriptor { get; }
+        public TestCollectProvider(ITimeService TimeService, IInvokeContext InvokeContext, IServiceInstanceDescriptor ServiceInstanceDescriptor)
         {
 			this.TimeService = TimeService;
             this.InvokeContext = InvokeContext;
+            this.ServiceInstanceDescriptor = ServiceInstanceDescriptor;
 
         }
-		public string Name
+		public string Title
 		{
-			get { return "支付测试"; }
+			get { return ServiceInstanceDescriptor.Meta.Title; }
 		}
 
 		public Task<CollectResponse> GetResultByQuery(CollectStartArgument StartArgument)
@@ -43,7 +46,8 @@ namespace SF.Biz.Payments.Platforms.Tests
 			var re = new Dictionary<string, string>();
 			re["redirect"] = $"/Test/TestCollectPayment/{Ident}?amount={StartArgument.Amount}&callback={Uri.EscapeDataString(callbackUrl)}";
 			re["id"] = Ident.ToString();
-			return Task.FromResult(
+            re["unittest-notify"] = $"http://localhost/api/collectcallback/{StartArgument.PaymentPlatformId}?id={Ident}&amount={StartArgument.Amount}&user-id={StartArgument.CurUserId}&user-name=name-{StartArgument.CurUserId}&user-account=account-{StartArgument.CurUserId}";
+            return Task.FromResult(
 				new CollectStartStatus {
 					Result = re,
 					ExtraData = Json.Stringify(

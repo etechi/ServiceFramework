@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using SF.Sys.Entities.DataModels;
 using SF.Sys.Data;
 using SF.Sys.Clients;
+using System.Collections.Generic;
 
 namespace SF.Biz.Accounting.DataModels
 {
@@ -105,6 +106,9 @@ namespace SF.Biz.Accounting.DataModels
         /// </summary>
         public ClientDeviceType OpDevice { get; set; }
 
+
+        [InverseProperty(nameof(DataTransferRecordItem.Record))]
+        public ICollection<DataTransferRecordItem> Items { get; set; }
 
     }
 }

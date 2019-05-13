@@ -7,9 +7,7 @@ using SF.Sys.Data;
 
 namespace SF.Biz.Trades.Managements
 {
-    public interface ITradeSyncQueue: SF.Sys.Threading.ISyncQueue<long>
-    {
-    }
+
     public class TradeManager :
         AutoQueryableEntitySource<ObjectKey<long>, Trade, Trade, TradeQueryArguments, DataModels.DataTrade>,
         ITradeManager

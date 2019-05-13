@@ -60,11 +60,12 @@ namespace SF.Biz.UnitTest
         {
             await (from sp in NewServiceScope().InitServices()
                    from user in sp.UserCreate()
-                   select (sp, user))
+                   from pro in sp.ProductEnsure(user.User.Id)
+                    select (sp, user,pro))
                    .Use(async (ctx) =>
                    {
-                       var (sp, env) = ctx;
-                       var productInternal = await sp.ProductEnsure(env.User.Id);
+                       var (sp, env, productInternal) = ctx;
+                       
                        await sp.ProductEnable(productInternal.Id);
                        var item = await sp.ProductItemEnsure(env.User.Id, productInternal.Id);
                        var re = await sp.Resolve<IItemService>().GetItem(item.Id);

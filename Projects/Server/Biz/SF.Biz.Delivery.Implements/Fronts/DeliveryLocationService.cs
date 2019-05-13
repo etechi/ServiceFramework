@@ -1,4 +1,5 @@
-﻿using SF.Sys.Data;
+﻿using SF.Sys;
+using SF.Sys.Data;
 using System.Linq;
 using System.Threading.Tasks;
 namespace SF.Biz.Delivery
@@ -26,15 +27,18 @@ namespace SF.Biz.Delivery
 				   };
 		}
 
-		public async Task<Location> Get(long Id)
+		public async Task<Location> Get(int Id)
 		{
-            return await DataScope.Use("获取地区", ctx =>
-                MapModelToPublic(ctx.Queryable<DataModels.DataDeliveryLocation>().Where(l => l.Id == Id && l.LogicState==Sys.Entities.EntityLogicState.Enabled))
-                    .SingleOrDefaultAsync()
+            var re = await DataScope.Use("获取地区", ctx =>
+                  MapModelToPublic(ctx.Queryable<DataModels.DataDeliveryLocation>().Where(l => l.Id == Id && l.LogicState == Sys.Entities.EntityLogicState.Enabled))
+                      .SingleOrDefaultAsync()
                 );
+            if (re == null) throw new PublicArgumentException("找不到地区:" + Id);
+            return re;
+
 		}
 
-		public async Task<Location[]> List(long? ParentId)
+		public async Task<Location[]> List(int? ParentId)
 		{
 			if (ParentId == null)
 				ParentId = 37000000;

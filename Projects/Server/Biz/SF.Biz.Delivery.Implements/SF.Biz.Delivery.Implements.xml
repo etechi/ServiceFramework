@@ -1,0 +1,313 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Biz.Delivery.Implements</name>
+    </assembly>
+    <members>
+        <member name="T:SF.Biz.Delivery.DataModels.DataDelivery">
+            <summary>
+            发货
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.TrackEntityIdent">
+            <summary>
+            业务跟踪ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.SellerId">
+            <summary>
+            卖家ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.BuyerId">
+            <summary>
+            买家ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.State">
+            <summary>
+            发货状态
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.CreatedTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.DeliveryTime">
+            <summary>
+            发货时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.ReceivedTime">
+            <summary>
+            签收时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.SourceAddressSnapshotId">
+            <summary>
+            发货地址快照ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.DestAddressSnapshotId">
+            <summary>
+            收货地址快照ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.TotalQuantity">
+            <summary>
+            总数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.TransportCode">
+            <summary>
+            运单号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.TransportId">
+            <summary>
+            物流公司ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDelivery.DeliveryOperatorId">
+            <summary>
+            发货操作人ID
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Delivery.DataModels.DataDeliveryAddress">
+            <summary>
+            发货地址
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.IsDefaultAddress">
+            <summary>
+            是否为默认地址
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.ContactName">
+            <summary>
+            联系人
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.ContactPhoneNumber">
+            <summary>
+            联系人电话
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.PhoneNumberVerified">
+            <summary>
+            电话是否已确认
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.ProvinceId">
+            <summary>
+            地址位置ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.CityId">
+            <summary>
+            市
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.DistrictId">
+            <summary>
+            县/区
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.LocationName">
+            <summary>
+            地址位置名
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.Address">
+            <summary>
+            街道
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddress.ZipCode">
+            <summary>
+            邮编
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Delivery.DataModels.DataDeliveryAddressSnapshot">
+            <summary>
+            地址快照
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddressSnapshot.Hash">
+            <summary>
+            地址摘要(MD5)
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddressSnapshot.ContactName">
+            <summary>
+            联系人
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddressSnapshot.ContactPhoneNumber">
+            <summary>
+            联系电话
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddressSnapshot.LocationId">
+            <summary>
+            地址位置ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddressSnapshot.LocationName">
+            <summary>
+            地址位置名
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddressSnapshot.ZipCode">
+            <summary>
+            邮编
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryAddressSnapshot.Address">
+            <summary>
+            街道
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Delivery.DataModels.DataDeliveryItem">
+            <summary>
+            发货明细项
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryItem.Order">
+            <summary>
+            排位
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryItem.Quantity">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryItem.PayloadEntityIdent">
+            <summary>
+            负载业务跟踪标识
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryItem.PayloadSpecEntityIdent">
+            <summary>
+            负载业务跟踪标识规格
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryItem.DeliveryId">
+            <summary>
+            发货ID
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Delivery.DataModels.DataDeliveryLocation">
+            <summary>
+            地区
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.L1Code">
+            <summary>
+            一级编号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.L2Code">
+            <summary>
+            二级编号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.L3Code">
+            <summary>
+            三级编号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.L4Code">
+            <summary>
+            四级编号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.ParentId">
+            <summary>
+            父地区
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.Order">
+            <summary>
+            排位
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.Remarks">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.EnName">
+            <summary>
+            英文名
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.FullName">
+            <summary>
+            全名
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.Code">
+            <summary>
+            代码
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.PhonePrefix">
+            <summary>
+            电话区号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.TimeZone">
+            <summary>
+            时区
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryLocation.Level">
+            <summary>
+            级别
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Delivery.DataModels.DataDeliveryPrice">
+            <summary>
+            运费
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Delivery.DataModels.DataDeliveryTransport">
+            <summary>
+            快递公司
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryTransport.Order">
+            <summary>
+            排位
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryTransport.ContactName">
+            <summary>
+            联系人
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryTransport.ContactPhone">
+            <summary>
+            联系电话
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryTransport.Code">
+            <summary>
+            代号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Delivery.DataModels.DataDeliveryTransport.Site">
+            <summary>
+            网站
+            </summary>
+        </member>
+    </members>
+</doc>

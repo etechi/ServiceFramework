@@ -36,6 +36,8 @@ namespace SF.Sys.Services
 			sc.AddManagedScoped<IBuyerTradeService, BuyerTradeService>();
             sc.AddManagedScoped<ISellerTradeService, SellerTradeService>();
 
+            sc.AddSingleton<ITradeSyncQueue, TradeSyncQueue>();
+
             sc.AddDataModules<
 				SF.Biz.Trades.DataModels.DataTrade,
                 SF.Biz.Trades.DataModels.DataTradeItem

@@ -25,21 +25,33 @@ namespace SF.Sys.Services.Storages
 {
 	public class MemoryServiceSource : IServiceConfigLoader, IServiceInstanceLister
 	{
+        public class Meta : IServiceInstanceMeta
+        {
+            public string Name { get; set; }
 
-		public class Config : IServiceConfig
+            public string Title { get; set; }
+
+            public string Image { get; set; }
+
+            public string Icon { get; set; }
+
+            public string Description { get; set; }
+        }
+        public class Config : IServiceConfig
 		{
 			public long Id { get; set; }
-
 			public long? ContainerId { get; set; }
 
 			public string ServiceType { get; set; }
-
+            public string ServiceIdent { get; set; }
 			public string ImplementType { get; set; }
 
 			public string Setting { get; set; }
 			public int Priority { get; set; } = -1;
-			public string Name { get; set; }
-		}
+            public Meta Meta { get; set; }
+            IServiceInstanceMeta IServiceConfig.Meta => Meta;
+
+        }
 		Dictionary<string, SortedList<int,Config> > ServiceList { get; } = new Dictionary<string, SortedList<int, Config>>();
 		Dictionary<long, Config> Configs { get; } = new Dictionary<long, Config>();
 
@@ -61,7 +73,7 @@ namespace SF.Sys.Services.Storages
 		public void SetDefaultService<I>(long Id)
 		{
 			var cfg = GetConfig(Id);
-			SetConfig(cfg.ServiceType, cfg.ImplementType, cfg.Id, cfg.Setting, 0, cfg.ContainerId,cfg.Name);
+			SetConfig(cfg.ServiceType, cfg.ImplementType, cfg.Id, cfg.Setting, 0, cfg.ContainerId,cfg.ServiceIdent);
 		}
 		Config SetConfig(
 			string ServiceType,
@@ -70,16 +82,21 @@ namespace SF.Sys.Services.Storages
 			object Settings, 
 			int Priority = -1, 
 			long? ParentId = null,
-			string Name=null
+			string ServiceIdent = null,
+            string Name=null,
+            string Title=null
 			)
 		{
 			var svcs = GetServices(ServiceType, ParentId);
 			var cfg = Configs.Get(Id);
 
-			if (cfg == null)
-				cfg = new Config();
-			else if (cfg.ContainerId != ParentId)
-				throw new ArgumentException();
+            if (cfg == null)
+            {
+                cfg = new Config();
+                cfg.Meta = new Meta();
+            }
+            else if (cfg.ContainerId != ParentId)
+                throw new ArgumentException();
 
 			cfg.ContainerId = ParentId;
 			cfg.ImplementType = ImplementType;
@@ -88,7 +105,9 @@ namespace SF.Sys.Services.Storages
 				cfg.Priority = Priority;
 			cfg.Setting = Settings is string ? (string)Settings : Json.Stringify(Settings);
 			cfg.Id = Id;
-			cfg.Name = Name;
+            cfg.ServiceIdent= ServiceIdent;
+            cfg.Meta.Name = Name ?? ImplementType;
+            cfg.Meta.Title = Title ?? cfg.Meta.Name;
 			Configs[Id] = cfg;
 
 			var idx = svcs.IndexOfValue(cfg);
@@ -135,7 +154,7 @@ namespace SF.Sys.Services.Storages
 			var svcs = GetServices(Type, ScopeId);
 			return svcs.Values
 				.Take(Limit)
-				.Select(c =>new ServiceReference { Id = c.Id, ServiceIdent = c.Name })
+				.Select(c =>new ServiceReference { Id = c.Id, ServiceIdent = c.ServiceIdent })
 				.ToArray();
 		}
 	}

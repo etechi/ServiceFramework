@@ -25,8 +25,9 @@ namespace SF.Sys.Services.Internals
 	public interface IServiceConfig
 	{
 		long Id { get; }
-		string Name { get; }
-		long? ContainerId { get; }
+        IServiceInstanceMeta Meta { get; }
+        long? ContainerId { get; }
+        string ServiceIdent { get; }
 		string ServiceType { get; }
 		string ImplementType { get; }
 		string Setting { get; }

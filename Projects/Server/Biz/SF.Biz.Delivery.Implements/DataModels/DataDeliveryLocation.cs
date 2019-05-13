@@ -10,7 +10,7 @@ namespace SF.Biz.Delivery.DataModels
     /// <summary>
     /// 地区
     /// </summary>
-    public class DataDeliveryLocation : DataObjectEntityBase
+    public class DataDeliveryLocation : DataObjectEntityBase<int>
 	{
 		public DataDeliveryLocation()
 		{
@@ -51,6 +51,7 @@ namespace SF.Biz.Delivery.DataModels
 			this.LogicState = hidden?Sys.Entities.EntityLogicState.Disabled:Sys.Entities.EntityLogicState.Enabled;
 		}
 
+        public override int Id { get; set; }
 
         /// <summary>
         /// 一级编号
@@ -74,7 +75,7 @@ namespace SF.Biz.Delivery.DataModels
         /// 父地区
         /// </summary>
 		[Index("parent", Order = 1)]
-        public long? ParentId { get; set; }
+        public int? ParentId { get; set; }
 
         /// <summary>
         /// 排位

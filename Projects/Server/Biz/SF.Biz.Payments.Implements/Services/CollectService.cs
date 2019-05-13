@@ -84,7 +84,7 @@ namespace SF.Biz.Payments
             });
 		}
 
-		public async Task<IDictionary<string, string>> Start(long Ident, StartRequestInfo RequestInfo)
+		public async Task<IReadOnlyDictionary<string, string>> Start(long Ident, StartRequestInfo RequestInfo)
 		{
             try
             {
@@ -160,7 +160,7 @@ namespace SF.Biz.Payments
 			if (Response.Error == null)
 			{
 				var user = Response.ExtUserName ?? Response.ExtUserAccount ?? Response.ExtUserId;
-				var platform = provider.Name;
+				var platform = provider.Title;
 				desc = $"充值{Response.AmountCollected}成功，来自{platform}的用户{user}";
 			}
 			else

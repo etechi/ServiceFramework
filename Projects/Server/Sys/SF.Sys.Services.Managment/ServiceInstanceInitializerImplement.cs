@@ -130,7 +130,7 @@ namespace SF.Sys.Services
 			edit(sii.Config);
 			return sii;
 		}
-		public static T WithDisplay<T>(this T sii, string Name,string Description=null, string Title = null)
+		public static T WithDisplay<T>(this T sii, string Name=null,string Description=null, string Title = null)
 			where T: IServiceInstanceInitializer
 		{
 			sii.Config.Name = Name;

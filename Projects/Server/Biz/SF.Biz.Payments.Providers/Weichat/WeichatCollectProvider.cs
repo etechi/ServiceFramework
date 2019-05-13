@@ -46,7 +46,7 @@ namespace SF.Biz.Payments.Platforms.Weichat
             this.InvokeContext = InvokeContext;
 
         }
-		public string Name
+		public string Title
 		{
 			get { return "微信支付"; }
 		}

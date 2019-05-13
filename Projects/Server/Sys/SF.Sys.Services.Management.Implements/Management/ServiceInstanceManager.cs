@@ -141,9 +141,20 @@ namespace SF.Sys.Services.Management
 			}
 		}
 
-		
-		
-		IServiceFactory TestConfig(
+        class Meta : IServiceInstanceMeta
+        {
+            public string Name => "TestName";
+
+            public string Title => "TestTitle";
+
+            public string Image => "TestImage";
+
+            public string Icon => "TestIcon";
+
+            public string Description => "TestDescription";
+        }
+
+        IServiceFactory TestConfig(
 			long Id, 
 			long? ParentId,
 			string ServiceType, 
@@ -170,7 +181,8 @@ namespace SF.Sys.Services.Management
 					impl,
 					decl.ServiceType,
 					ServiceResolver.Resolve<IServiceMetadata>(),
-					string.IsNullOrWhiteSpace(CreateArguments) ? "{}" : CreateArguments
+					string.IsNullOrWhiteSpace(CreateArguments) ? "{}" : CreateArguments,
+                    new Meta()
 					);
 				var svr = factory.Create(ServiceResolver);
 				if (svr == null)
@@ -303,8 +315,8 @@ namespace SF.Sys.Services.Management
 		class InstanceDescriptor : IServiceInstanceDescriptor
 		{
 			public long InstanceId { get; set; }
-
-			public long? ParentInstanceId { get; set; }
+            public IServiceInstanceMeta Meta { get; set; }
+            public long? ParentInstanceId { get; set; }
 			public long? DataScopeId { get; set; }
 
 			public bool IsManaged { get; set; }

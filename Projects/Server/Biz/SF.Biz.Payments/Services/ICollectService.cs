@@ -75,7 +75,7 @@ namespace SF.Biz.Payments
         /// <param name="Id">收款ID</param>
         /// <param name="RequestInfo">收款开始请求信息</param>
         /// <returns></returns>
-		Task<IDictionary<string,string>> Start(long Id, StartRequestInfo RequestInfo);
+		Task<IReadOnlyDictionary<string,string>> Start(long Id, StartRequestInfo RequestInfo);
 
         /// <summary>
         /// 获取收款结果

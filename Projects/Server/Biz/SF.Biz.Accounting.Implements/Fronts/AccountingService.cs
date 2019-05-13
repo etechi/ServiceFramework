@@ -125,21 +125,12 @@ namespace SF.Biz.Accounting
                     TrackEntityIdent = "充值操作-" + uid + "-" + TimeService.Value.Now.ToString("yyyyMMddHHmmss")
                 });
 
-            await RemindService.Value.Setup(new RemindSetupArgument
-            {
-                BizIdent = did,
-                BizIdentType = "DepositRecord",
-                BizType = "充值",
-                Name = "充值",
-                RemindableName = typeof(DepositRemindable).FullName,
-                RemindTime = DepositRemindable.GetEndTime(PaymentPlatformService.Value,Args.PaymentPlatformId,TimeService.Value.Now)
-            });
 
             var re = await DepositService.Value.Start(
                 did,
                 new Payments.StartRequestInfo
                 {
-                   ClientAddress = ClientService.Value.UserAgent.Address,
+                    ClientAddress = ClientService.Value.UserAgent.Address,
                     DeviceType = ClientService.Value.UserAgent.DeviceType,
                     Uri = InvokeContext.Value.Request.GetUri()
                 }

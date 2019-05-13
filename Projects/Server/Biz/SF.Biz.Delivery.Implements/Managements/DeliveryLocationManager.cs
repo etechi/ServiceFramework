@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace SF.Biz.Delivery.Management
 {
     public class DeliveryLocationManager:
-        AutoModifiableEntityManager<ObjectKey<long>, DeliveryLocation, DeliveryLocation, DeliveryLocationQueryArguments, DeliveryLocation, DataModels.DataDeliveryLocation>,
+        AutoModifiableEntityManager<ObjectKey<int>, DeliveryLocation, DeliveryLocation, DeliveryLocationQueryArguments, DeliveryLocation, DataModels.DataDeliveryLocation>,
         IDeliveryLocationManager
     {
         public DeliveryLocationManager(IEntityServiceContext ServiceContext) : base(ServiceContext)

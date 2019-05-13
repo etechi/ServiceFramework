@@ -36,6 +36,7 @@ namespace SF.Sys.Services
 			sc.AddManagedScoped<ICollectService, CollectService>();
             sc.AddManagedScoped<IRefundService, RefundService>();
             sc.AddManagedScoped<IPaymentPlatformService, PaymentPlatformService>();
+            sc.AddTransient(sp => (ICollectCallback)sp.Resolve<ICollectService>());
 
 
             sc.AddDataModules<
@@ -55,7 +56,17 @@ namespace SF.Sys.Services
 					.WithConsolePages("支付管理/退款记录管理")
 					.Ensure(sp, parent);
 
-			 });
+
+                 await sim.DefaultService<ICollectService, CollectService>(null)
+                    .Ensure(sp, parent);
+
+                 await sim.DefaultService<IRefundService, RefundService>(null)
+                    .Ensure(sp, parent);
+
+                 await sim.DefaultService<IPaymentPlatformService, PaymentPlatformService>(null)
+                    .Ensure(sp, parent);
+
+             });
 
 
 			return sc;

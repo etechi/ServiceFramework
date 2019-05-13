@@ -107,7 +107,12 @@ namespace SF.Sys
 			}
 			return value;
 		}
-		public static void NotEqual<T>(T value, T unexcept, string name)
+        public static async Task<T> IsNotNull<T>(this Task<T> value, Func<string> Message = null) where T : class
+        {
+            var re = await value;
+            return re.IsNotNull(Message);
+        }
+        public static void NotEqual<T>(T value, T unexcept, string name)
 			where T:IEquatable<T>
 		{
 			if (value.Equals(unexcept))

@@ -143,6 +143,9 @@ namespace SF.Common.Documents
 			where TCategoryInternal:CategoryInternal,new()
 		{
 			var items = new List<Item>();
+            if (!System.IO.File.Exists(folder))
+                return Array.Empty<Item>();
+
 			var files = System.IO.Directory.GetFiles(folder)
 			   .Where(f => f.EndsWith(".htm") || f.EndsWith(".uri"))
 			   .Select(f =>

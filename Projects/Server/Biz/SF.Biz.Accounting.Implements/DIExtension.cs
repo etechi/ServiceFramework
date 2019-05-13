@@ -30,7 +30,7 @@ namespace SF.Sys.Services
 				"财务管理",
 				d => d.Add<IAccountManager, AccountManager>("Account", "账户", typeof(Account))
                     .Add<IAccountTitleManager, AccountTitleManager>("AccountTitle", "账户科目", typeof(AccountTitle))
-                    .Add<ITransferRecordManager, TransferRecordManager>("TransferRecord", "转账记录", typeof(TransferRecord))
+                    .Add<IDepositRecordManager, DepositRecordManager>("DepositRecord", "充值记录", typeof(DepositRecord))
                     .Add<IDrawbackRecordManager, DrawbackRecordManager>("DrawbackRecord", "退款记录", typeof(DrawbackRecord))
                     .Add<ITransferRecordManager, TransferRecordManager>("TransferRecord", "转账记录", typeof(TransferRecord))
                 );
@@ -50,6 +50,9 @@ namespace SF.Sys.Services
                 SF.Biz.Accounting.DataModels.DataTransferRecord,
                 SF.Biz.Accounting.DataModels.DataTransferRecordItem
                 >(TablePrefix ?? "Biz");
+
+            sc.AddRemindable<DepositRemindable>();
+
 
 			sc.InitServices("Accounting", async (sp, sim, parent) =>
 			 {
@@ -73,10 +76,42 @@ namespace SF.Sys.Services
                     .WithConsolePages("财务管理/转账管理")
                     .Ensure(sp, parent);
 
+
+                 await sim.DefaultService<IDepositService, DepositService>(null)
+                    .Ensure(sp, parent);
+
+                 await sim.DefaultService<IDrawbackService, DrawbackService>(null)
+                   .Ensure(sp, parent);
+
+                 await sim.DefaultService<ITransferService, TransferService>(null)
+                    .Ensure(sp, parent);
+
+                 await sim.DefaultService<IAccountService, AccountService>(null)
+                    .Ensure(sp, parent);
+
+                 await sim.DefaultService<IAccountingService, AccountingService>(null)
+                    .Ensure(sp, parent);
+
              });
 
+            sc.AddInitializer("data","accounting", async (sp) =>
+            {
+                var atm = sp.Resolve<IAccountTitleManager>();
+                await atm.EnsureEntity(
+                    await atm.QuerySingleEntityIdent(new AccountTitleQueryArgument
+                    {
+                        Ident = "balance"
+                    }),
+                    () => new AccountTitle { Ident = "balance" },
+                    e =>
+                    {
+                        e.Name = "余额";
+                        e.SettlementEnabled = true;
+                    });
 
-			return sc;
-		}
+            });
+
+            return sc;
+        }
 	}
 }

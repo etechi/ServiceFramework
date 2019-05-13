@@ -1,0 +1,402 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Biz.Accounting.Implements</name>
+    </assembly>
+    <members>
+        <member name="T:SF.Biz.Accounting.DataModels.DataAccount">
+            <summary>
+            账户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataAccount.OwnerId">
+            <summary>
+            账户所有人
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataAccount.AccountTitleId">
+            <summary>
+            账户科目ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataAccount.Inbound">
+            <summary>
+            转入金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataAccount.Outbound">
+            <summary>
+            转出金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataAccount.CurValue">
+            <summary>
+            账户余额
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Accounting.DataModels.DataAccountTitle">
+            <summary>
+            账户科目
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataAccountTitle.Ident">
+            <summary>
+            科目标识
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataAccountTitle.Title">
+            <summary>
+            科目标题
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataAccountTitle.Order">
+            <summary>
+            排位
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataAccountTitle.SettlementEnabled">
+            <summary>
+            是否用于结算
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataAccountTitle.SettlementOrder">
+            <summary>
+            结算排位
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Accounting.DataModels.DataDepositRecord">
+            <summary>
+            充值记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.AccountTitleId">
+            <summary>
+            账户科目ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.DstId">
+            <summary>
+            目标账户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.OperatorId">
+            <summary>
+            操作者ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.Amount">
+            <summary>
+            充值金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.AmountCollected">
+            <summary>
+            实际收款金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.CurValue">
+            <summary>
+            充值后账户余额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.Title">
+            <summary>
+            充值标题
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.TrackEntityIdent">
+            <summary>
+            业务跟踪ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.RemindId">
+            <summary>
+            提醒Id
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.CompletedTime">
+            <summary>
+            完成时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.State">
+            <summary>
+            充值状态
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.PaymentPlatformId">
+            <summary>
+            支付平台ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.PaymentDesc">
+            <summary>
+            支付描述
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.Error">
+            <summary>
+            错误信息
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.OpAddress">
+            <summary>
+            操作地址
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.OpDevice">
+            <summary>
+            操作设备
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.DrawbackRequest">
+            <summary>
+            退款请求总金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.DrawbackSuccess">
+            <summary>
+            退款成功总金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.LastDrawbackRequestTime">
+            <summary>
+            最后退款请求时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.LastDrawbackSuccessTime">
+            <summary>
+            最后退款成功时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.LastDrawbackReason">
+            <summary>
+            最后退款原因
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.CollectRecordId">
+            <summary>
+            支付模块收款ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.TimeStamp">
+            <summary>
+            乐观锁时间戳
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Accounting.DataModels.DataDrawbackRecord">
+            <summary>
+            退款记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.DepositRecordId">
+            <summary>
+            相关充值记录ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.DepositRecordCreateTime">
+            <summary>
+            相关充值记录创建时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.AccountTitleId">
+            <summary>
+            账户科目ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.SrcId">
+            <summary>
+            退款用户ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.CreatedTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.OperatorId">
+            <summary>
+            操作者ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.Amount">
+            <summary>
+            退款金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.CurValue">
+            <summary>
+            退款成功后账户余额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.Title">
+            <summary>
+            退款标题
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.TrackEntityIdent">
+            <summary>
+            业务跟踪标识
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.TrackEntityIndex">
+            <title>业务跟踪标识索引</title>
+             <summary>
+             当一个业务有多次退款时，使用此字段区分
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.CallbackName">
+            <summary>
+            回调过程名
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.CallbackContext">
+            <summary>
+            回调上下文
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.SubmittedTime">
+            <summary>
+            第三方平台提交时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.UpdatedTime">
+            <summary>
+            更新时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.CompletedTime">
+            <summary>
+            完成时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.State">
+            <summary>
+            退款状态
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.PaymentPlatformId">
+            <summary>
+            退款平台ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.PaymentDesc">
+            <summary>
+            退款描述
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.Reason">
+            <summary>
+            退款原因
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.Error">
+            <summary>
+            错误信息
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.OpAddress">
+            <summary>
+            操作地址
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.OpDevice">
+            <summary>
+            操作设备
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.PaymentsRefundRecordId">
+            <summary>
+            支付退款记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.TimeStamp">
+            <summary>
+            乐观锁时间戳
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Accounting.DataModels.DataTransferRecord">
+            <summary>
+            转账记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.SrcTitleId">
+            <summary>
+            源科目ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.DstTitleId">
+            <summary>
+            目标科目ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.SrcId">
+            <summary>
+            源用户ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.DstId">
+            <summary>
+            目标用户ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.Time">
+            <summary>
+            转账时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.Amount">
+            <summary>
+            金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.SrcCurValue">
+            <title>原账户转账后余额</title>
+             <summary>
+             系统虚拟账户总为0
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.DstCurValue">
+            <title>目标账户转账后余额</title>
+             <summary>
+             系统虚拟账户总为0
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.Title">
+            <summary>
+            转账标题
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.TrackEntityIdent">
+            <summary>
+            业务跟踪对象
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.BizRecordIndex">
+            <title>业务记录索引</title>
+             <summary>
+             一个业务有多个转账记录时，以此字段区分
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.OpAddress">
+            <summary>
+            操作地址
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.OpDevice">
+            <summary>
+            操作设备
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Accounting.AccountingService">
+            <summary>
+            账户充值记录
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Accounting.TransferService">
+            <summary>
+            账户充值记录
+            </summary>
+        </member>
+    </members>
+</doc>

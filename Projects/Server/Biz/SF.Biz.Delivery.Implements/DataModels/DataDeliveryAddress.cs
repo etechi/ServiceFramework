@@ -43,10 +43,28 @@ namespace SF.Biz.Delivery.DataModels
         /// 地址位置ID
         /// </summary>
         [Index]
-        public int LocationId { get; set; }
+        public int ProvinceId { get; set; }
 
-		[ForeignKey(nameof(LocationId))]
-		public DataDeliveryLocation Location { get; set; }
+        /// <summary>
+        /// 市
+        /// </summary>
+        [Index]
+        public int CityId { get; set; }
+
+        /// <summary>
+        /// 县/区
+        /// </summary>
+        [Index]
+        public int DistrictId { get; set; }
+
+        [ForeignKey(nameof(ProvinceId))]
+        public DataDeliveryLocation Province { get; set; }
+
+        [ForeignKey(nameof(CityId))]
+        public DataDeliveryLocation City { get; set; }
+
+        [ForeignKey(nameof(DistrictId))]
+		public DataDeliveryLocation District { get; set; }
 
         /// <summary>
         /// 地址位置名

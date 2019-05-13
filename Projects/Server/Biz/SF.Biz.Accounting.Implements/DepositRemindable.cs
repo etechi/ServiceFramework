@@ -11,7 +11,7 @@ namespace SF.Biz.Accounting
         public IDepositService DepositService { get; }
         public ITimeService TimeService { get; }
         public IPaymentPlatformService PaymentPlatformService { get; }
-        public DepositRemindable(DepositService DepositService, ITimeService TimeService, IPaymentPlatformService PaymentPlatformService)
+        public DepositRemindable(IDepositService DepositService, ITimeService TimeService, IPaymentPlatformService PaymentPlatformService)
         {
             this.DepositService = DepositService;
             this.TimeService = TimeService;

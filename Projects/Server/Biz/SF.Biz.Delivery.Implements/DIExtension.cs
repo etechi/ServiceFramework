@@ -14,8 +14,11 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 #endregion Apache License Version 2.0
 
 using SF.Biz.Delivery;
+using SF.Biz.Delivery.Init;
 using SF.Biz.Delivery.Management;
 using SF.Sys.BackEndConsole;
+using SF.Sys.Collections.Generic;
+using SF.Sys.Data;
 
 namespace SF.Sys.Services
 {
@@ -65,9 +68,23 @@ namespace SF.Sys.Services
                     .WithConsolePages("财务管理/快递公司管理")
                     .Ensure(sp, parent);
 
+                 await sim.DefaultService<IDeliveryLocationService, DeliveryLocationService>(null)
+                    .Ensure(sp, parent);
 
-             });
+                 await sim.DefaultService<IUserAddressService, UserAddressService>(null)
+                    .Ensure(sp, parent);
+            });
 
+            sc.AddInitializer("data", "delivery", async (sp,args) =>
+            {
+                var useTransaction = args.Get("disableTransaction") != "true";
+                var testMode = args.Get("unittest") == "true";
+                if (testMode)
+                    useTransaction = false;
+
+                await sp.EnsureLocations(useTransaction,testMode);
+                await sp.EnsureTransport(useTransaction);
+            });
 
 			return sc;
 		}

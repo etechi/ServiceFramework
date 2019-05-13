@@ -34,20 +34,36 @@ namespace SF.Sys.Services.Storages
 			this.ScopedDataScope= ScopedDataScope;
 			this.Metadata = Metadata;
 		}
-		class Config : IServiceConfig
+
+        class Meta : IServiceInstanceMeta
+        {
+            public string Name { get; set; }
+
+            public string Title { get; set; }
+
+            public string Image { get; set; }
+
+            public string Icon { get; set; }
+
+            public string Description { get; set; }
+        }
+        class Config : IServiceConfig
 		{
 			public long Id { get; set; }
-
+            
 			public long? ContainerId { get; set; }
 
 			public string ServiceType { get; set; }
+            public string ServiceIdent { get; set; }
 
-			public string ImplementType { get; set; }
+            public string ImplementType { get; set; }
 
 			public string Setting { get; set; }
-			public string Name { get; set; }
-		}
-		public IServiceConfig GetConfig(long Id)
+            public Meta Meta { get; set; }
+            IServiceInstanceMeta IServiceConfig.Meta => Meta;
+
+        }
+        public IServiceConfig GetConfig(long Id)
 		{
 			return ScopedDataScope.Use(scope => scope.Use("²éÑ¯ÅäÖÃ", ctx =>
 			{
@@ -59,7 +75,17 @@ namespace SF.Sys.Services.Storages
 								ServiceType = ins.ServiceType,
 								ImplementType = ins.ImplementType,
 								Setting = ins.Setting,
-								ContainerId = ins.ContainerId
+								ContainerId = ins.ContainerId,
+                                ServiceIdent=ins.ServiceIdent,
+                                Meta =new Meta
+                                {
+                                    Name = ins.Name,
+
+                                    Title = ins.Title,
+                                    Icon = ins.Icon,
+                                    Image = ins.Image,
+                                    Description = ins.Description
+                                }
 							}
 						).SingleOrDefault();
 

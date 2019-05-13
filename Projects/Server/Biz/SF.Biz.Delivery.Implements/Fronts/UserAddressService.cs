@@ -41,10 +41,11 @@ namespace SF.Biz.Delivery
                 ContactName = a.ContactName,
                 ContactPhoneNumber = a.ContactPhoneNumber,
                 Id = a.Id,
-                LocationId = a.LocationId,
+                LocationId = a.DistrictId,
                 LocationName = a.LocationName,
                 ZipCode = a.ZipCode,
-                PhoneNumberVerified=a.PhoneNumberVerified
+                PhoneNumberVerified=a.PhoneNumberVerified,
+                IsDefaultAddress=a.IsDefaultAddress
                 
             });
         }
@@ -80,28 +81,21 @@ namespace SF.Biz.Delivery
             {
                 var q = ctx.Queryable<DataModels.DataDeliveryAddress>();
                 q = q.Where(a => a.Id == AddressId && a.UserId == uid);
-                var addr = await q.Select(a => new
-                {
-                    editable = new UserAddressEditable
+                var addr = await q.Select(a =>new UserAddressEditable
                     {
                         Address = a.Address,
                         Id = a.Id,
                         ContactName = a.ContactName,
                         ContactPhoneNumber = a.ContactPhoneNumber,
-                        IsDefaultAddress = a.IsDefaultAddress
-                    },
-                    locId = a.LocationId
-                }).SingleOrDefaultAsync();
+                        IsDefaultAddress = a.IsDefaultAddress,
+                        ProvinceId=a.ProvinceId,
+                        DistrictId=a.DistrictId,
+                        CityId=a.CityId
+                    }).SingleOrDefaultAsync();
 
                 if (addr == null)
-                    return null;
-
-                var ls = await DeliveryLocationService.Value.GetPath(addr.locId);
-                if (ls.Length >= 4) addr.editable.DistrictId = ls[3].Id;
-                if(ls.Length>=3) addr.editable.CityId = ls[2].Id;
-                if(ls.Length>=2) addr.editable.ProvinceId = ls[1].Id;
-
-                return addr.editable;
+                    throw new PublicArgumentException("找不到指定的地址");
+                return addr;
             });
         }
 
@@ -133,9 +127,7 @@ namespace SF.Biz.Delivery
                     e.ContactPhoneNumber = address.ContactPhoneNumber;
                     e.DistrictId = address.DistrictId;
                     e.IsDefaultAddress = address.IsDefaultAddress;
-                    e.LocationName = loc.FullName;
                     e.Name = address.Address;
-                    e.UserId = uid;
                     e.ProvinceId = address.ProvinceId;
                 }
                 );

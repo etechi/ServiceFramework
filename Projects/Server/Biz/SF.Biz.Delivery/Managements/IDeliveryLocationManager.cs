@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace SF.Biz.Delivery.Management
 {
-    public class DeliveryLocationQueryArguments : ObjectQueryArgument
+    public class DeliveryLocationQueryArguments : ObjectQueryArgument<int>
     {
         /// <summary>
         /// 父地区
         /// </summary>
         [EntityIdent(typeof(DeliveryLocation))]
-        public long? ParentId { get; set; }
+        public int? ParentId { get; set; }
 
         /// <summary>
         /// 英文名
@@ -49,8 +49,8 @@ namespace SF.Biz.Delivery.Management
     [DefaultAuthorize(PredefinedRoles.运营专员)]
     [DefaultAuthorize(PredefinedRoles.系统管理员)]
     public interface IDeliveryLocationManager :
-        IEntitySource<ObjectKey<long>, DeliveryLocation, DeliveryLocationQueryArguments>,
-        IEntityManager<ObjectKey<long>, DeliveryLocation>
+        IEntitySource<ObjectKey<int>, DeliveryLocation, DeliveryLocationQueryArguments>,
+        IEntityManager<ObjectKey<int>, DeliveryLocation>
     {
     }
 }

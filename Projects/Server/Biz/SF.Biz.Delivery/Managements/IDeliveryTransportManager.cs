@@ -37,6 +37,17 @@ namespace SF.Biz.Delivery.Management
         [StringLength(20)]
         public string Code { get; set; }
 
+        /// <summary>
+        /// 网站
+        /// </summary>
+        [StringLength(100)]
+        public string Site { get; set; }
+
+        /// <summary>
+        /// 排序
+        /// </summary>
+        public int Order { get; set; }
+
     }
     public class DeliveryTransportQueryArguments : ObjectQueryArgument
     {

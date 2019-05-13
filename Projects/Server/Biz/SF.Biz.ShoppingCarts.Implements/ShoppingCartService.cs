@@ -17,16 +17,22 @@ namespace SF.Biz.ShoppingCarts
         public IItemService ItemService { get; }
         public ITimeService TimeService { get; }
         public IAccessToken AccessToken { get; }
-
+        public Lazy<IIdentGenerator<DataModels.DataShoppingCartItem>> IdentGenerator { get; }
         long EnsureUserIdent()
             => AccessToken.User.EnsureUserIdent();
 
-        public ShoppingCartService(IItemService ItemService, ITimeService TimeService, IDataScope DataScope, IAccessToken AccessToken)
+        public ShoppingCartService(
+            IItemService ItemService, 
+            ITimeService TimeService, 
+            IDataScope DataScope, 
+            IAccessToken AccessToken,
+            Lazy<IIdentGenerator<DataModels.DataShoppingCartItem>> IdentGenerator)
         {
             this.TimeService = TimeService;
             this.ItemService = ItemService;
             this.DataScope = DataScope;
             this.AccessToken = AccessToken;
+            this.IdentGenerator = IdentGenerator;
         }
 
         string TypeNormalize(string Type)
@@ -235,6 +241,7 @@ namespace SF.Biz.ShoppingCarts
                         if (item == null)
                             continue;
                         var m = new DataModels.DataShoppingCartItem();
+                        m.Id = await IdentGenerator.Value.GenerateAsync();
                         m.BuyerId = BuyerId;
                         m.Type = Type;
                         m.Quantity = SkipLimitEnsure ? it.Quantity : EnsureItemLimit(item, it.Quantity);

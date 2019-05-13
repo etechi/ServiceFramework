@@ -2,6 +2,7 @@
 using SF.Sys.Auth;
 using SF.Sys.Entities.Models;
 using SF.Sys.NetworkService;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -52,23 +53,24 @@ namespace SF.Biz.Delivery.Management
         /// 省
         /// </summary>
         [EntityIdent(typeof(Location))]
-        public long ProvinceId { get; set; }
+        public int ProvinceId { get; set; }
 
         /// <summary>
         /// 市
         /// </summary>
         [EntityIdent(typeof(Location), ScopeField = nameof(ProvinceId))]
-        public long CityId { get; set; }
+        public int CityId { get; set; }
 
         /// <summary>
         /// 县/区
         /// </summary>
         [EntityIdent(typeof(Location), ScopeField = nameof(CityId))]
-        public long DistrictId { get; set; }
+        public int DistrictId { get; set; }
 
         [FromEntityProperty(nameof(DistrictId),nameof(Location.FullName))]
         [TableVisible]
         [Ignore]
+        [ReadOnly(true)]
         public string LocationName { get; set; }
 
         /// <summary>

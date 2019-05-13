@@ -36,7 +36,7 @@ namespace SF.Biz.Delivery.DataModels
         /// 地址位置ID
         /// </summary>
 		[Index]
-        public long LocationId { get; set; }
+        public int LocationId { get; set; }
 
 		[ForeignKey(nameof(LocationId))]
 		public DataDeliveryLocation Location { get; set; }

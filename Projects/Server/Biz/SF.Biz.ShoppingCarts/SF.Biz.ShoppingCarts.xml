@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Biz.ShoppingCarts</name>
+    </assembly>
+    <members>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItemQueryArgument.ProductId">
+            <summary>
+            产品
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItemQueryArgument.ItemId">
+            <summary>
+            商品
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItemQueryArgument.BuyerId">
+            <summary>
+            买家
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItemQueryArgument.SellerId">
+            <summary>
+            卖家
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItemQueryArgument.Quantity">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItemQueryArgument.Price">
+            <summary>
+            价格
+            </summary>
+        </member>
+        <member name="T:SF.Biz.ShoppingCarts.Managements.IShoppingCartManager">
+            <summary>
+            购物车管理器
+            </summary>
+        </member>
+        <member name="T:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem">
+            <summary>
+            购物车项目
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.Type">
+            <summary>
+            购物车类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.BuyerId">
+            <summary>
+            买家
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.BuyerName">
+            <summary>
+            买家
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.SellerId">
+            <summary>
+            卖家
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.SellerName">
+            <summary>
+            卖家
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.ItemId">
+            <summary>
+            商品
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.SkuId">
+            <summary>
+            SKUID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.SellerTitle">
+            <summary>
+            卖家标题
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.ProductId">
+            <summary>
+            产品
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.ProductName">
+            <summary>
+            产品
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.Spec">
+            <summary>
+            规格
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.Quantity">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.Selected">
+            <summary>
+            是否选中
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.MarketPrice">
+            <summary>
+            市场价
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.Managements.ShoppingCartItem.Price">
+            <summary>
+            售价
+            </summary>
+        </member>
+        <member name="T:SF.Biz.ShoppingCarts.ShoppingCartItem">
+            <summary>
+            购物车项目
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.SellerId">
+            <summary>
+            卖家
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.ProductId">
+            <summary>
+            产品
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.SkuId">
+            <summary>
+            SKU
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.ItemId">
+            <summary>
+            商品
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.Spec">
+            <summary>
+            规格
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.Discount">
+            <summary>
+            折扣
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.CouponDisabled">
+            <summary>
+            不适用优惠券
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.SettlementPrice">
+            <summary>
+            结算价格
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.Quantity">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.Amount">
+            <summary>
+            小计
+            </summary>
+        </member>
+        <member name="P:SF.Biz.ShoppingCarts.ShoppingCartItem.Selected">
+            <summary>
+            是否选择
+            </summary>
+        </member>
+    </members>
+</doc>

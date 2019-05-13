@@ -48,7 +48,8 @@ namespace SF.Sys.Services
 			IServiceImplement impl,
 			Type ServiceType,
 			IServiceMetadata ServiceMetadata,
-			string Setting
+            string Setting,
+			IServiceInstanceMeta Meta
 			) => Internals.ServiceFactory.Create(
 				Id,
 				ParentId,
@@ -58,8 +59,9 @@ namespace SF.Sys.Services
 				ServiceType,
 				null,
 				ServiceMetadata,
-				Setting
-				);
+				Setting,
+                Meta
+                );
 		}
 
 }

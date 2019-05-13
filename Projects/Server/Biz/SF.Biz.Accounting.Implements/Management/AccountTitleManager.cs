@@ -20,7 +20,7 @@ namespace SF.Biz.Accounting
 {
 	
 	public class AccountTitleManager:
-        AutoModifiableEntityManager<ObjectKey<long>, AccountTitle, AccountTitle, ObjectQueryArgument, AccountTitle, DataModels.DataAccountTitle>,
+        AutoModifiableEntityManager<ObjectKey<long>, AccountTitle, AccountTitle, AccountTitleQueryArgument, AccountTitle, DataModels.DataAccountTitle>,
         IAccountTitleManager
     {
 		public AccountTitleManager(IEntityServiceContext ServiceContext) : base(ServiceContext)

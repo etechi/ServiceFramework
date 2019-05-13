@@ -30,7 +30,6 @@ namespace SF.Sys.UnitTest
 					sc.AddLocalInvokeContext();
 
 					sc.AddInMemoryEFCoreDbContext<TestDbContext>("test");
-					sc.AddSingleton(new Moq.Mock<IInvokeContext>().Object);
 					sc.AddSingleton(new Moq.Mock<IAccessTokenGenerator>().Object);
 					sc.AddSingleton(new Moq.Mock<IAccessTokenValidator>().Object);
 					sc.AddSingleton(new Moq.Mock<IUploadedFileCollection>().Object);

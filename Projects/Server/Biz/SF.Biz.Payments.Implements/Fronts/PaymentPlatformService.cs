@@ -13,7 +13,7 @@ using SF.Sys.Services.Management.Models;
 using SF.Sys.NetworkService;
 using SF.Sys.Services.Management;
 using SF.Sys.Services;
-
+using SF.Sys.Reflection;
 namespace SF.Biz.Payments
 {
   
@@ -30,7 +30,7 @@ namespace SF.Biz.Payments
         {
             var svcs=await ServiceInstanceManager.QueryAsync(new ServiceInstanceQueryArgument
             {
-                ServiceType = typeof(ICollectProvider).FullName,
+                ServiceType = typeof(ICollectProvider).GetFullName(),
                 LogicState=EntityLogicState.Enabled
 
             });

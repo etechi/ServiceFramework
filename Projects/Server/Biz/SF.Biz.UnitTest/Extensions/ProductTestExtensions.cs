@@ -27,6 +27,7 @@ using SF.Biz.Products;
 using System.Linq;
 using SF.Sys.Entities;
 using SF.Sys.Linq;
+using System.Collections.Generic;
 
 namespace SF.Biz.UnitTest
 {
@@ -35,13 +36,16 @@ namespace SF.Biz.UnitTest
 	{
         public static async Task<ProductTypeEditable> ProductTypeEnsure(
             this IServiceProvider sp,
-            string name,
+            string name=null,
             string unit="unit",
             string title=null,
             string icon="icon",
             string image="image"
             )
         {
+            if (name == null)
+                name = "type-" + Strings.NumberAndLowerChars.Random(8);
+
             title = title ?? name;
             var e = await sp.Resolve<IProductTypeManager>().ProductTypeEnsure(new ProductTypeEditable
             {
@@ -66,27 +70,46 @@ namespace SF.Biz.UnitTest
             Assert.AreEqual(image, re.Image);
             return re;
         }
+
+        public static async Task<ProductInternal[]> ProductsEnsure(
+            this IServiceProvider sp,
+            long? type,
+            int Count,
+            long seller,
+            string name=null
+            )
+        {
+            if(!type.HasValue)
+                type = (await sp.ProductTypeEnsure()).Id;
+            name = name ?? "product-" + Strings.Numbers.Random(8);
+            var re = new List<ProductInternal>();
+            for (var i = 0; i < Count; i++)
+                re.Add(await sp.ProductEnsure(seller,name="product-"+i,typeId:type));
+            return re.ToArray();
+        }
+
         public static async Task<ProductInternal> ProductEnsure(
             this IServiceProvider sp,
             long seller,
-            string type = null, 
             string name = null,
             decimal price = 100, 
-            int priceunit = 1, 
-            bool enabled = true,
+            int priceunit = 1,
+            long? typeId=null,
+            EntityLogicState state = EntityLogicState.Enabled,
             bool isVirtual = false
             )
         {
             name = name??"product-" + Strings.Numbers.Random(8);
             var marketPrice = price * 2;
-            var image = "image1";
-            var images = new[] { "image2", "image3" };
-            var contents = new[] { "image4", "image5" };
-            
-            var t = await sp.ProductTypeEnsure(type ?? "TestProductType");
+            var image = name+ "image1";
+            var images = new[] { name+"image2", name + "image3" };
+            var contents = new[] { name + "image4", name + "image5" };
+
+            if (!typeId.HasValue)
+                typeId = (await sp.ProductTypeEnsure()).Id;
             var e = await sp.Resolve<IProductManager>().ProductEnsure(
                 sellerId: seller,
-                type: t.Id,
+                type: typeId.Value,
                 name: name,
                 marketPrice: marketPrice,
                 price: price,
@@ -95,7 +118,8 @@ namespace SF.Biz.UnitTest
                 images: images,
                 contentImages: contents,
                 isVirtual: isVirtual,
-                publishTime: null
+                publishTime: null,
+                logicState:state
                 );
             Assert.AreEqual(name, e.Name);
             Assert.AreEqual(seller, e.OwnerUserId);
@@ -116,17 +140,37 @@ namespace SF.Biz.UnitTest
             Assert.AreEqual(isVirtual, re.IsVirtual);
             //Assert.AreEqual(images, re.Content.Images.Select(i => i.Image).ToArray());
             //Assert.AreEqual(contents, re.Content.Descs.Select(i => i.Image).ToArray());
+
             return re;
+        }
+        public static async Task<ItemEditable[]> ProductItemsEnsure(
+            this IServiceProvider sp,
+            long seller,
+            int Count,
+            long? type = null,
+            string name=null
+            )
+        {
+            var ps = await sp.ProductsEnsure(type, Count, seller,name);
+            var re = new List<ItemEditable>();
+            foreach(var p in ps)
+            {
+                re.Add(await sp.ProductItemEnsure(seller, p.Id));
+            }
+            return re.ToArray();
         }
         public static async Task<ItemEditable> ProductItemEnsure(
             this IServiceProvider sp,
             long seller,
-            long product)
+            long? product=null
+            )
         {
+            if (product == null)
+                product = (await sp.ProductEnsure(seller)).Id;
 
             var e = await sp.Resolve<IProductItemManager>().ItemEnsure(
                 seller,
-                product
+                product.Value
                 );
             var it = (await sp.Resolve<IItemService>().GetItems(new[] { e.Id })).First();
             Assert.AreEqual(seller, it.SellerId);

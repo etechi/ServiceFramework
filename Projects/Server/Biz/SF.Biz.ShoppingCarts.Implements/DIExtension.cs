@@ -38,12 +38,14 @@ namespace SF.Sys.Services
 				SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem
                 >(TablePrefix ?? "Biz");
 
-			sc.InitServices("Delivery", async (sp, sim, parent) =>
+			sc.InitServices("ShoppingCart", async (sp, sim, parent) =>
 			 {
 				 await sim.DefaultService<IShoppingCartManager, ShoppingCartManager>(null)
 					.WithConsolePages("购物车管理/购物车管理")
 					.Ensure(sp, parent);
-
+                 await sim.DefaultService<IShoppingCartService, ShoppingCartService>(null)
+                     .WithConsolePages("购物车管理/购物车管理")
+                     .Ensure(sp, parent);
              });
 
 

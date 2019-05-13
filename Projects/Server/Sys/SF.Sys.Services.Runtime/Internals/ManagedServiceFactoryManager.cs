@@ -166,7 +166,8 @@ namespace SF.Sys.Services.Internals
 				decl.ServiceType,
 				ServiceCreatorCache,
 				ServiceMetadata,
-				cfg.Setting
+				cfg.Setting,
+                cfg.Meta
 				);
 			return Entry.Factories.GetOrAdd(ServiceType, factory);
 		}
@@ -289,7 +290,7 @@ namespace SF.Sys.Services.Internals
 		{
 			factory = null;
 
-				var isd = GetManagedScopedServiceData(ServiceResolver, ScopeServiceId, ServiceType);
+			var isd = GetManagedScopedServiceData(ServiceResolver, ScopeServiceId, ServiceType);
 			if (Name != null)
 			{
 				if (!isd.TryGetValue(Name, out var ids) || ids.Length == 0)

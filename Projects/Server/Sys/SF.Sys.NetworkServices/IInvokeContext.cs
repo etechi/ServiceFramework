@@ -39,9 +39,32 @@ namespace SF.Sys.NetworkService
 		IDictionary<string, IEnumerable<string>> Headers { get; }
 		void SetCookie(Cookie Cookie);
 	}
-	public interface IInvokeContext
+   
+
+    public interface IInvokeContext
 	{
 		IInvokeRequest Request { get; }
 		IInvokeResponse Response { get; }
 	}
+
+
+    
+    public interface ILocalInvokeRequest : IInvokeRequest
+    {
+        new string Method { get; set; }
+        new string Uri { get; set; }
+        new IDictionary<string, IEnumerable<string>> Headers { get; }
+        void SetCookie(Cookie Cookie);
+    }
+    public interface ILocalInvokeResponse : IInvokeResponse
+    {
+        Cookie GetCookie(string Key);
+    }
+    public interface ILocalInvokeContext
+    {
+        ILocalInvokeRequest Request { get; }
+        ILocalInvokeResponse Response { get; }
+    }
+
+
 }

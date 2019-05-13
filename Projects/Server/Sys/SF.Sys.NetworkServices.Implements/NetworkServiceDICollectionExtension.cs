@@ -22,20 +22,21 @@ using SF.Sys.NetworkService;
 using SF.Sys.Serialization;
 using SF.Sys.Reflection;
 using System.Net;
+using SF.Sys.Collections.Generic;
 
 namespace SF.Sys.Services
 {
 	public static class NetworkServiceDICollectionExtension
 	{
-		class LocalInvokeContext : IInvokeContext,IInvokeRequest,IInvokeResponse, IUploadedFileCollection
+		class LocalInvokeContext : ILocalInvokeContext, IInvokeContext,ILocalInvokeRequest, ILocalInvokeResponse, IUploadedFileCollection
 		{
 			public IInvokeRequest Request => this;
 
 			public IInvokeResponse Response => this;
 
-			public string Method => "Direct";
+			public string Method { get; set; } = "Direct";
 
-			public string Uri => "local:";
+			public string Uri { get; set; } = "local:";
 
 			public IReadOnlyDictionary<string, IEnumerable<string>> Headers { get; } = new Dictionary<string, IEnumerable<string>>();
 
@@ -45,17 +46,40 @@ namespace SF.Sys.Services
 
 			IDictionary<string, IEnumerable<string>> IInvokeResponse.Headers { get; } = new Dictionary<string, IEnumerable<string>>();
 
-			public string GetCookie(string Key) => null;
+            IDictionary<string, IEnumerable<string>> ILocalInvokeRequest.Headers => throw new NotImplementedException();
 
-			public void SetCookie(Cookie Cookie)
-			{
-				throw new NotImplementedException();
-			}
-		}
+            ILocalInvokeRequest ILocalInvokeContext.Request => this;
+            ILocalInvokeResponse ILocalInvokeContext.Response=> this;
+            Dictionary<string, string> _RequestCookies;
+
+            string IInvokeRequest.GetCookie(string Key) => _RequestCookies?.Get(Key);
+            void ILocalInvokeRequest.SetCookie(Cookie Cookie)
+            {
+                if (_RequestCookies == null)
+                    _RequestCookies = new Dictionary<string, string>();
+                _RequestCookies[Cookie.Name] = Cookie.Value;
+            }
+
+
+            Dictionary<string, Cookie> _ResponseCookies;
+            void IInvokeResponse.SetCookie(Cookie Cookie)
+            {
+                if (_ResponseCookies == null)
+                    _ResponseCookies = new Dictionary<string, Cookie>();
+                _ResponseCookies[Cookie.Name] = Cookie;
+            }
+            Cookie ILocalInvokeResponse.GetCookie(string Key)
+            {
+                return _ResponseCookies?.Get(Key);
+            }
+
+        }
 		public static IServiceCollection AddLocalInvokeContext(this IServiceCollection sc)
 		{
-			sc.AddSingleton<IInvokeContext, LocalInvokeContext>();
-			sc.AddSingleton<IUploadedFileCollection, LocalInvokeContext>();
+			
+            sc.AddScoped<ILocalInvokeContext, LocalInvokeContext>();
+            sc.AddScoped<IInvokeContext>(sp=>(IInvokeContext)sp.Resolve<ILocalInvokeContext>());
+            sc.AddScoped<IUploadedFileCollection, LocalInvokeContext>();
 
 
 			return sc;
