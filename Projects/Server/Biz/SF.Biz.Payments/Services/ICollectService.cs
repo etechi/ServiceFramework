@@ -40,7 +40,6 @@ namespace SF.Biz.Payments
 	}
 	public class CollectRequest : CollectStartArgument
     {
-        public long RemindId { get; set; }
         public DateTime? StartTime { get; set; }
     }
 	public class CollectStatus 
@@ -60,22 +59,30 @@ namespace SF.Biz.Payments
 		public DateTime? CompletedTime { get; set; }
 		public string HttpRedirect { get; set; }
 	}
+    public class StartResult
+    {
+        public long Id { get; set; }
+        public IReadOnlyDictionary<string, string> Data { get; set; }
+        public DateTime Expires { get; set; }
+    }
 	public interface ICollectService
     {
-        /// <summary>
-        /// 创建收款会话
-        /// </summary>
-        /// <param name="Argument">收款请求参数</param>
-        /// <returns></returns>
-		Task<long> Create(CollectRequest Argument);
 
         /// <summary>
         /// 开始收款操作
         /// </summary>
-        /// <param name="Id">收款ID</param>
-        /// <param name="RequestInfo">收款开始请求信息</param>
+        /// <param name="Argument">收款启动参数</param>
         /// <returns></returns>
-		Task<IReadOnlyDictionary<string,string>> Start(long Id, StartRequestInfo RequestInfo);
+		Task<StartResult> Start(CollectRequest Argument);
+        
+        /// <summary>
+        /// 取消收款操作
+        /// </summary>
+        /// <remarks>取消后，如果收款成功，直接退款</remarks>
+        /// <param name="Id">收款ID</param>
+        /// <param name="ClientInfo">收款开始请求信息</param>
+        /// <returns></returns>
+        Task Cancel(long Id, ClientInfo ClientInfo);
 
         /// <summary>
         /// 获取收款结果

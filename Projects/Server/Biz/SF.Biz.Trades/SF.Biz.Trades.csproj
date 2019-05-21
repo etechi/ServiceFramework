@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -23,7 +23,6 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Entities\SF.Sys.Entities.csproj" />
     <ProjectReference Include="..\SF.Biz.Accounting\SF.Biz.Accounting.csproj" />
     <ProjectReference Include="..\SF.Biz.Payments\SF.Biz.Payments.csproj" />
-    <ProjectReference Include="..\SF.Biz.Products\SF.Biz.Products.csproj" />
   </ItemGroup>
 
 

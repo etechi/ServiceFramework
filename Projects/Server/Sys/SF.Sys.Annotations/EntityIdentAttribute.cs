@@ -23,13 +23,14 @@ namespace SF.Sys.Annotations
 	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter)]
 	public class EntityTypeAttribute : Attribute
 	{
+        public string Tag { get; set; }
 
 	}
-
-	/// <summary>
-	/// 用于标注当前字段为实体标识
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = true)]
+    
+    /// <summary>
+    /// 用于标注当前字段为实体标识
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Parameter, AllowMultiple = true)]
 	public class EntityIdentAttribute : Attribute
 	{
 		/// <summary>
@@ -71,6 +72,11 @@ namespace SF.Sys.Annotations
 		/// 实体类型字段，若制定，则为此字段指定实体的实体标识
 		/// </summary>
 		public string EntityTypeField { get; set; }
+
+        /// <summary>
+        /// 是否包含业务类型
+        /// </summary>
+        public bool WithBizType { get; set; }
 
 		public EntityIdentAttribute(Type EntityType = null, string NameField = null, int Column = 0, string MultipleKeyField = null)
 		{

@@ -84,10 +84,10 @@ namespace SF.Biz.UnitTest
                    var items = await sp.ProductItemsEnsure(user.User.Id, 7);
 
                    var status = new[] {
-                       new ItemStatus { ItemId = items[0].Id, Quantity = 1, Selected = true },
-                       new ItemStatus { ItemId = items[1].Id, Quantity = 2, Selected = true },
-                       new ItemStatus { ItemId = items[2].Id, Quantity = 4, Selected = false },
-                       new ItemStatus { ItemId = items[3].Id, Quantity = 8, Selected = true }
+                       new ItemStatus { ItemId ="Item-"+items[0].Id, Quantity = 1, Selected = true },
+                       new ItemStatus { ItemId = "Item-"+items[1].Id, Quantity = 2, Selected = true },
+                       new ItemStatus { ItemId = "Item-"+items[2].Id, Quantity = 4, Selected = false },
+                       new ItemStatus { ItemId = "Item-"+items[3].Id, Quantity = 8, Selected = true }
                    };
                    //Init  
                    await Sync(sp, user.User.Id, status);
@@ -101,8 +101,8 @@ namespace SF.Biz.UnitTest
                    //Add
                    status = status.Concat(
                        new[] {
-                           new ItemStatus { ItemId = items[4].Id, Quantity = 16, Selected = false },
-                           new ItemStatus { ItemId = items[5].Id, Quantity = 32, Selected = true }
+                           new ItemStatus { ItemId = "Item-"+items[4].Id, Quantity = 16, Selected = false },
+                           new ItemStatus { ItemId = "Item-"+items[5].Id, Quantity = 32, Selected = true }
                        }
                    );
                    await Sync(sp, user.User.Id, status);
@@ -116,7 +116,7 @@ namespace SF.Biz.UnitTest
                    //UpdateAddRemove
                    status = status.Copy(0, status.Length - 1).Concat(
                        new[] {
-                           new ItemStatus { ItemId = items[6].Id, Quantity = 64, Selected = true }
+                           new ItemStatus { ItemId = "Item-"+items[6].Id, Quantity = 64, Selected = true }
                        });
                    status[0].Quantity = 100;
                    await Sync(sp, user.User.Id, status);

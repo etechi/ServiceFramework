@@ -79,13 +79,23 @@ namespace SF.Biz.Accounting.DataModels
 		[MaxLength(200)]
         public string Title { get; set; }
 
+
         /// <summary>
-        /// 业务跟踪对象
+        /// 根业务
         /// </summary>
         [MaxLength(100)]
         [Required]
-        [Index("biz-ident", IsUnique = true,Order =1)]
-        public string TrackEntityIdent { get; set; }
+        [Index(IsUnique = true)]
+        public string BizRoot { get; set; }
+
+        /// <summary>
+        /// 父业务
+        /// </summary>
+		[MaxLength(100)]
+        [Required]
+        [Index("biz-ident", IsUnique = true, Order = 1)]
+        public string BizParent { get; set; }
+
 
         ///<title>业务记录索引</title>
         /// <summary>

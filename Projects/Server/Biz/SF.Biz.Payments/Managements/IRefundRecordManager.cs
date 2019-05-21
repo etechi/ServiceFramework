@@ -31,7 +31,7 @@ namespace SF.Biz.Payments.Managers
 
         [Display(Name = "支付平台")]
         [EntityIdent(typeof(ServiceInstance))]
-        public int? PaymentPlatformId { get; set; }
+        public long? PaymentPlatformId { get; set; }
 
         [EntityIdent(typeof(User))]
         [Display(Name = "用户")]

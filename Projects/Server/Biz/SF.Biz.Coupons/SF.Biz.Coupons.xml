@@ -1,0 +1,457 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Biz.Coupons</name>
+    </assembly>
+    <members>
+        <member name="P:SF.Biz.Coupons.CouponQueryArgument.TemplateId">
+            <summary>
+            模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecordQueryArgument.CouponId">
+            <summary>
+            优惠券
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecordQueryArgument.TemplateId">
+            <summary>
+            优惠券模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecordQueryArgument.State">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecordQueryArgument.CouponId">
+            <summary>
+            优惠券
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecordQueryArgument.TemplateId">
+            <summary>
+            优惠券模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Managements.CouponQueryArgument.OwnerId">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Managements.CouponQueryArgument.TemplateId">
+            <summary>
+            模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Managements.CouponQueryArgument.ClearEmptyCoupons">
+            <summary>
+            隐藏用完
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.Managements.ICouponManager">
+            <summary>
+            优惠券管理
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Managements.CouponRewardRecordQueryArgument.UserId">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Managements.CouponRewardRecordQueryArgument.CouponId">
+            <summary>
+            优惠券
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Managements.CouponRewardRecordQueryArgument.TemplateId">
+            <summary>
+            优惠券模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Managements.CouponRewardRecordQueryArgument.State">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.Managements.ICouponRewardRecordManager">
+            <summary>
+            优惠券发放记录管理
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Managements.CouponUseRecordQueryArgument.UserId">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Managements.CouponUseRecordQueryArgument.CouponId">
+            <summary>
+            优惠券
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Managements.CouponUseRecordQueryArgument.TemplateId">
+            <summary>
+            优惠券模板
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.Managements.ICouponUseRecordManager">
+            <summary>
+            优惠券使用记录管理
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.ICouponTemplateManager">
+            <summary>
+            优惠券模板管理
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.Coupon">
+            <summary>
+            优惠券
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.OwnerId">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.OwnerName">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.TemplateId">
+            <summary>
+            模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.Name">
+            <summary>
+            模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.BeginTime">
+            <summary>
+            启用时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.ExpireTime">
+            <summary>
+            过期时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.LastUseTime">
+            <summary>
+            最后使用时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.LastUseCount">
+            <summary>
+            最后使用数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.LastRewardTime">
+            <summary>
+            最后获得时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.LastRewardCount">
+            <summary>
+            最后获得数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.Type">
+            <summary>
+            类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.ConditionValue">
+            <summary>
+            最低金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.AdjustValue">
+            <summary>
+            优惠额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.Count">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.Coupon.LeftCount">
+            <summary>
+            剩余
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponRewardState.Invalid">
+            <summary>
+            无效
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponRewardState.Valid">
+            <summary>
+            有效
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponRewardState.Expired">
+            <summary>
+            过期
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponRewardState.Used">
+            <summary>
+            已使用
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponRewardState.NotReady">
+            <summary>
+            未生效
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.CouponRewardRecord">
+            <summary>
+            优惠券获取记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.OwnerId">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.CouponId">
+            <summary>
+            优惠券
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.OwnerName">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.TemplateId">
+            <summary>
+            模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.Name">
+            <summary>
+            模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.BeginTime">
+            <summary>
+            生效时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.ExpiresTime">
+            <summary>
+            过期时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.LastUsedTime">
+            <summary>
+            最后使用时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.LastUsedCount">
+            <summary>
+            最后使用个数
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.State">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.SrcEntityIdent">
+            <summary>
+            来源
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.SrcDesc">
+            <summary>
+            来源
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.Count">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponRewardRecord.LeftCount">
+            <summary>
+            剩余
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponType.DecreaseCoupon">
+            <summary>
+            抵价券
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponType.DiscountCoupon">
+            <summary>
+            折扣券
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.CouponTemplate">
+            <summary>
+            优惠券模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponTemplate.Title">
+            <title>标题</title>
+             <summary>
+             优惠券名称，如：1元直减红包
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponTemplate.Description">
+            <title>说明</title>
+             <summary>
+             优惠券简要描述，如：直减1元，3天有效
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponTemplate.TargetEntityIdent">
+            <title>使用范围</title>
+             <summary>
+             优惠券使用范围，暂不支持。已生成的优惠券会随之调整
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponTemplate.BeginTime">
+            <title>起效时间</title>
+             <summary>
+             优惠券生效时间，如过设置，在此时间以后优惠券才能使用
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponTemplate.EndTime">
+            <title>失效时间</title>
+             <summary>
+             优惠券失效时间，如过设置，在此时间以后优惠券不能再使用。
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponTemplate.ExpireDays">
+            <title>有效期</title>
+             <summary>
+             有效期2天的优惠券，1月2日15:30获得，1月4日15:30过期，已生成的优惠券不会随之调整。如果同时设置两个时间，以最先到达时间作为实际失效时间。0-不设有效期，默认为1年
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponTemplate.Type">
+            <title>优惠券类型</title>
+             <summary>
+             已生成的优惠券类型不会调整
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponTemplate.ConditionValue">
+            <title>折扣条件</title>
+             <summary>
+             可使用的最小金额(如100表示订单金额必须>=100)，已生成的优惠券不会调整。
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponTemplate.AdjustValue">
+            <title>优惠额度</title>
+             <summary>
+             抵价券为金额，折扣券为折扣比例（如20表示打八折），已生成的优惠券不会调整。
+             </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponRecordType.Increment">
+            <summary>
+            获得
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponRecordType.Decrement">
+            <summary>
+            使用
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponRecordState.Normal">
+            <summary>
+            正常
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponRecordState.NotReady">
+            <summary>
+            未生效
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Coupons.CouponRecordState.Expires">
+            <summary>
+            失效
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.CouponUseRecord">
+            <summary>
+            优惠券使用记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.CouponId">
+            <summary>
+            优惠券
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.OwnerId">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.OwnerName">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.TemplateId">
+            <summary>
+            模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.Name">
+            <summary>
+            模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.CreatedTime">
+            <summary>
+            获得时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.Time">
+            <summary>
+            使用时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.Count">
+            <summary>
+            使用数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.ConditionValue">
+            <summary>
+            最低金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.AdjustValue">
+            <summary>
+            优惠额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.SrcEntityIdent">
+            <summary>
+            来源
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.SrcDesc">
+            <summary>
+            来源
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.DstEntityIdent">
+            <summary>
+            用途
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponUseRecord.DstDesc">
+            <summary>
+            用途
+            </summary>
+        </member>
+    </members>
+</doc>

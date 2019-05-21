@@ -39,6 +39,30 @@ namespace SF.Biz.UnitTest
 	
 	public static class AccountingTestExtensions
 	{
+        public static async Task<Dictionary<string,string>> TestPaymentNotify(this IServiceProvider sp,long platformId, IReadOnlyDictionary<string,string> args)
+        {
+            var pid = args.Get("id");
+            var redirect = args.Get("redirect");
+            Assert.IsNotNull(redirect);
+
+            return await sp.WithScope(async isp =>
+            {
+                var callback = isp.Resolve<ICollectCallback>();
+                var ctx = isp.Resolve<ILocalInvokeContext>();
+                ctx.Request.Uri = args.Get("unittest-notify");
+                await callback.Notify(platformId);
+                return new Uri(ctx.Request.Uri).ParseQueryToDictionary();
+            });
+        }
+        public static Task<long> GetAccountTitleId(this IServiceProvider sp,string Title)
+        {
+            return sp.Resolve<IAccountService>().GetTitleId(Title);
+        }
+        public static async Task<decimal> GetAccountTitleValue(this IServiceProvider sp, string Title,long user)
+        {
+            var ass = sp.Resolve<IAccountService>();
+            return (await ass.GetAccount(await ass.GetTitleId(Title), user)).CurValue;
+        }
         public static async Task<decimal> Deposit(this IServiceProvider sp,long user, decimal amount)
         {
             var depositResult = await sp.WithScope(isp =>
@@ -49,14 +73,13 @@ namespace SF.Biz.UnitTest
                       var acc_service = isp.Resolve<IAccountingService>();
                       var balance = await acc_service.Balance();
                       var pps = isp.Resolve<IPaymentPlatformService>();
-                      var platforms = await pps.List(Sys.Clients.ClientDeviceType.PCBrowser);
+                      var platforms = await pps.List();
                       var platform = platforms.Where(p => p.Title == "支付测试").Single();
 
                       
                       var result = await acc_service.Deposit(new ClientDepositArguments
                       {
                           Amount = amount,
-                          ClientType = "test",
                           PaymentPlatformId = platform.Id,
                           Redirect = "/asdasd/"
                       });
@@ -74,19 +97,7 @@ namespace SF.Biz.UnitTest
                   });
               });
 
-
-            var pid = depositResult.result.PaymentStartResult.Get("id");
-            var redirect = depositResult.result.PaymentStartResult.Get("redirect");
-            Assert.IsNotNull(redirect);
-
-            await sp.WithScope(async isp =>
-            {
-                var callback = isp.Resolve<ICollectCallback>();
-                var ctx = isp.Resolve<ILocalInvokeContext>();
-                ctx.Request.Uri = depositResult.result.PaymentStartResult.Get("unittest-notify");
-                await callback.Notify(depositResult.platform.Id);
-                return 0;
-            });
+            await sp.TestPaymentNotify( depositResult.platform.Id, depositResult.result.PaymentArguments);
 
             return await sp.WithScope(isp =>
             {

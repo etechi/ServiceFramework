@@ -1,12 +1,5 @@
-﻿using SF.Biz.Products;
-using SF.Sys.Annotations;
-using SF.Sys.Auth;
+﻿using SF.Sys.Annotations;
 using SF.Sys.Entities.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SF.Biz.ShoppingCarts
 {
@@ -22,19 +15,9 @@ namespace SF.Biz.ShoppingCarts
         public long SellerId { get; set; }
 
         /// <summary>
-        /// 产品
-        /// </summary>
-        public long ProductId { get; set; }
-
-        /// <summary>
-        /// SKU
-        /// </summary>
-        public long SkuId { get; set; }
-
-        /// <summary>
         /// 商品
         /// </summary>
-        public long ItemId { get; set; }
+        public string ItemId { get; set; }
 
         /// <summary>
         /// 规格
@@ -77,7 +60,7 @@ namespace SF.Biz.ShoppingCarts
     {
         public bool Selected { get; set; }
         public int Quantity { get; set; }
-        public long ItemId { get; set; }
+        public string ItemId { get; set; }
 
     }
 }

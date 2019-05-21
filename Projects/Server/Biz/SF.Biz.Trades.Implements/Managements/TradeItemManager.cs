@@ -3,7 +3,7 @@
 namespace SF.Biz.Trades.Managements
 {
     public class TradeItemManager :
-        AutoQueryableEntitySource<ObjectKey<long>, TradeItem, TradeItem, TradeItemQueryArguments, DataModels.DataTradeItem>,
+        AutoQueryableEntitySource<ObjectKey<long>, TradeItemInternal, TradeItemInternal, TradeItemQueryArguments, DataModels.DataTradeItem>,
         ITradeItemManager
     {
 

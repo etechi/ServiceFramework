@@ -60,20 +60,7 @@ namespace SF.Biz.Accounting.DataModels
 		[Required]
         public string Title { get; set; }
 
-        /// <summary>
-        /// 业务跟踪ID
-        /// </summary>
-		[MaxLength(100)]
-		[Required]
-		[Index(IsUnique =true)]
-        public string TrackEntityIdent { get; set; }
-
-
-        /// <summary>
-        /// 提醒Id
-        /// </summary>
-        public long RemindId { get; set; }
-
+        
 
         /// <summary>
         /// 完成时间

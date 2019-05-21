@@ -14,6 +14,12 @@ namespace SF.Biz.Trades.DataModels
     public class DataTrade : DataObjectEntityBase
 	{
         /// <summary>
+        /// 标题
+        /// </summary>
+        [Required]
+        [MaxLength(100)]
+        public string Title { get; set; }
+        /// <summary>
         /// 总数量
         /// </summary>
         public int TotalQuantity { get; set; }
@@ -22,6 +28,16 @@ namespace SF.Biz.Trades.DataModels
         /// 合计金额
         /// </summary>
         public decimal TotalAmount { get; set; }
+        
+        /// <summary>
+        /// 合计折扣金额
+        /// </summary>
+        public decimal TotalDiscountAmount { get; set; }
+
+        /// <summary>
+        /// 合计折扣后金额
+        /// </summary>
+        public decimal TotalAmountAfterDiscount { get; set; }
 
         ///<title>结算金额</title>
         /// <summary>
@@ -96,6 +112,11 @@ namespace SF.Biz.Trades.DataModels
         /// 最后状态变更时间
         /// </summary>
         public DateTime LastStateTime { get; set; }
+        
+        /// <summary>
+        /// 状态开始执行时间
+        /// </summary>
+        public DateTime? StateExecStartTime{ get; set; }
 
         /// <summary>
         /// 状态过期时间
@@ -130,13 +151,9 @@ namespace SF.Biz.Trades.DataModels
         public int DiscountEntityCount { get; set; }
 
         /// <summary>
-        /// 交易充值记录ID
+        /// 结算记录ID
         /// </summary>
-        public long? DepositRecordId { get; set; }
-        /// <summary>
-        /// 交易退款记录ID
-        /// </summary>
-        public long? RefundRecordId { get; set; }
+        public long? SettlementRecordId { get; set; }
 
         /// <summary>
         /// 交易类型
@@ -178,8 +195,33 @@ namespace SF.Biz.Trades.DataModels
         /// <summary>
         /// 发货地址
         /// </summary>
-		[MaxLength(20)]
-        public string DeliveryAddressId { get; set; }
+        public long? DeliveryAddressId { get; set; }
+
+        /// <summary>
+        /// 是否需要地址
+        /// </summary>
+        public bool DeliveryAddressRequired { get; set; }
+
+        /// <summary>
+        /// 根业务
+        /// </summary>
+        [Required]
+        [MaxLength(100)]
+        [Index]
+        public string BizRoot { get; set; }
+
+        /// <summary>
+        /// 父业务
+        /// </summary>
+        [Required]
+        [MaxLength(100)]
+        [Index(IsUnique =true)]
+        public string BizParent { get; set; }
+
+        /// <summary>
+        /// 是否已注册提醒
+        /// </summary>
+        public bool ReminderSetuped { get; set; }
 
         public void SyncItemsState(IDataContext ctx)
         {

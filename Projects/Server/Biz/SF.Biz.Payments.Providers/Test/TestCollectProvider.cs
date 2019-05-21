@@ -41,14 +41,15 @@ namespace SF.Biz.Payments.Platforms.Tests
 			return Task.FromResult(r);
 		}
 
-		public Task<CollectStartStatus> Start(long Ident, CollectStartArgument StartArgument,StartRequestInfo request, string callbackUrl, string notifyUrl)
+		public Task<CollectStartStatus> Start(long Ident, CollectStartArgument StartArgument,ClientInfo request, string callbackUrl, string notifyUrl)
 		{
 			var re = new Dictionary<string, string>();
 			re["redirect"] = $"/Test/TestCollectPayment/{Ident}?amount={StartArgument.Amount}&callback={Uri.EscapeDataString(callbackUrl)}";
 			re["id"] = Ident.ToString();
-            re["unittest-notify"] = $"http://localhost/api/collectcallback/{StartArgument.PaymentPlatformId}?id={Ident}&amount={StartArgument.Amount}&user-id={StartArgument.CurUserId}&user-name=name-{StartArgument.CurUserId}&user-account=account-{StartArgument.CurUserId}";
+            re["unittest-notify"] = $"http://localhost/api/collectcallback/{StartArgument.PaymentPlatformId}?id={Ident}&amount={StartArgument.Amount}&user-id={StartArgument.ClientInfo.OperatorId}&user-name=name-{StartArgument.ClientInfo.OperatorId}&user-account=account-{StartArgument.ClientInfo.OperatorId}";
             return Task.FromResult(
 				new CollectStartStatus {
+                    Expires=TimeService.Now.AddDays(1),
 					Result = re,
 					ExtraData = Json.Stringify(
 						new ExtraData {

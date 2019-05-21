@@ -34,12 +34,6 @@ namespace SF.Biz.Payments.DataModels
         public string CollectExtIdent { get; set; }
 
         /// <summary>
-        /// 发起客户端类型
-        /// </summary>
-        [MaxLength(10)]
-        public string ClientType { get; set; }
-
-        /// <summary>
         /// 退款标题
         /// </summary>
 		[Required]
@@ -117,10 +111,20 @@ namespace SF.Biz.Payments.DataModels
         public decimal AmountRefund { get; set; }
 
         /// <summary>
-        /// 业务跟踪ID
+        /// 根业务
         /// </summary>
+        [Index]
         [MaxLength(100)]
-        public string TrackEntityIdent { get; set; }
+        [Required]
+        public string BizRoot { get; set; }
+
+        /// <summary>
+        /// 父业务
+        /// </summary>
+        [Index(IsUnique = true)]
+        [MaxLength(100)]
+        [Required]
+        public string BizParent { get; set; }
 
 
         /// <summary>

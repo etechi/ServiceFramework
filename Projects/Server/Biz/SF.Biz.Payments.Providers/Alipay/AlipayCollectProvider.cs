@@ -1,4 +1,5 @@
 ﻿using SF.Sys;
+using SF.Sys.Clients;
 using SF.Sys.Collections.Generic;
 using SF.Sys.NetworkService;
 using SF.Sys.TimeServices;
@@ -32,7 +33,7 @@ namespace SF.Biz.Payments.Platforms.Alipay
 			return Task.FromResult(r);
 		}
 
-		public Task<CollectStartStatus> Start(long Ident,CollectStartArgument StartArgument, StartRequestInfo requestInfo, string callbackUrl,string notifyUrl)
+		public Task<CollectStartStatus> Start(long Ident,CollectStartArgument StartArgument, ClientInfo requestInfo, string callbackUrl,string notifyUrl)
 		{
 			var re = new Dictionary<string, string>();
 			re["redirect"] = $"/Test/TestCollectPayment/{Ident}?amount={StartArgument.Amount}&callback={Uri.EscapeDataString(callbackUrl)}";
@@ -91,7 +92,7 @@ namespace SF.Biz.Payments.Platforms.Alipay
 			};
 		}
 
-	}
+    }
 
 
 }

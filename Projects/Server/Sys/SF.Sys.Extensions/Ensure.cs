@@ -90,7 +90,12 @@ namespace SF.Sys
 				throw new InvalidOperationException(Message(value));
 			return value;
 		}
-		public static T Error<T>(this T value, Func<T, bool> Test, Func<T, string> Message)
+        public static void Assert(this bool value, string Message)
+        {
+            if (!value)
+                throw new InvalidOperationException(Message);
+        }
+        public static T Error<T>(this T value, Func<T, bool> Test, Func<T, string> Message)
 		{
 			if (Test(value))
 				throw new InvalidOperationException(Message(value));

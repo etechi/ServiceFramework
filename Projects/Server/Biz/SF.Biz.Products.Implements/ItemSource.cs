@@ -305,13 +305,16 @@ namespace SF.Biz.Products.Entity
                         IsVirtual=p.IsVirtual,
                         CouponDisabled=p.CouponDisabled,
 						Title = p.Title,
+                        Name=p.Name,
 						MarketPrice = p.MarketPrice,
 						Price = p.Price,
 						Image = p.Image,
 						PublishedTime = p.PublishedTime,
 						Visited = p.Visited,
 						MainItemId = p.Items.Where(it => it.SellerId == p.OwnerUserId).Select(it => it.Id).FirstOrDefault(),
-						OnSale=p.ObjectState==EntityLogicState.Enabled
+						OnSale=p.ObjectState==EntityLogicState.Enabled,
+                        DeliveryProvider=p.Type.DeliveryProvider
+
 					}
 				};
 		}

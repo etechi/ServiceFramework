@@ -263,7 +263,15 @@ namespace SF.Sys.Entities
 		{
 			return new ObjectKey<T> { Id = Id };
 		}
-		public static ObjectKey<T1,T2> From<T1,T2>(T1 Id1,T2 Id2)
+        public static ObjectKey<T>[] From<T>(T[] Ids)
+            where T : IEquatable<T>
+        {
+            var re = new ObjectKey<T>[Ids.Length];
+            for (var i = 0; i < Ids.Length; i++)
+                re[i] = Ids[i];
+            return re;
+        }
+        public static ObjectKey<T1,T2> From<T1,T2>(T1 Id1,T2 Id2)
 			where T1 : IEquatable<T1>
 			where T2 : IEquatable<T2>
 		{

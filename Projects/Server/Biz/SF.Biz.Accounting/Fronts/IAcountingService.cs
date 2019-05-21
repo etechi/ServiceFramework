@@ -21,7 +21,6 @@ namespace SF.Biz.Accounting
         public decimal Amount { get; set; }
         public long PaymentPlatformId { get; set; }
         public string Redirect { get; set; }
-        public string ClientType { get; set; }
     }
     public interface IAccountingService
     {

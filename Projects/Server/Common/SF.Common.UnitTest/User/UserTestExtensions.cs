@@ -201,6 +201,15 @@ namespace SF.Common.UnitTest
 				   from re in UserCreate(sp, prefix)
 				   select re;
 		}
+
+        public static Task<T> WithUserScope<T>(this IServiceProvider sp,long user,Func<IServiceProvider,Task<T>> Callback)
+        {
+            return sp.WithScope(isp =>
+            {
+                var at = isp.Resolve<IAccessToken>();
+                return at.UseUser(user, () => Callback(isp));
+            });
+        }
 	}
 	
 

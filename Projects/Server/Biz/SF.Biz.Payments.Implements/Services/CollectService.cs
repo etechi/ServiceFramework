@@ -1,4 +1,5 @@
 ﻿using SF.Sys;
+using SF.Sys.Clients;
 using SF.Sys.Data;
 using SF.Sys.Events;
 using SF.Sys.Logging;
@@ -32,7 +33,7 @@ namespace SF.Biz.Payments
         public IDataScope DataScope { get; }
 
         public Lazy<IIdentGenerator<DataModels.DataCollectRecord>> IdentGenerator { get; }
-
+        public Lazy<IRefundService> RefundService { get; }
         public CollectService(
             TypedInstanceResolver<ICollectProvider> CollectProviderResolver,
             ITimeService TimeService,
@@ -40,7 +41,8 @@ namespace SF.Biz.Payments
 			Lazy<IEventEmitService> EventEmitService,
             ILogger<CollectService> Logger,
             IDataScope DataScope,
-            Lazy<IIdentGenerator<DataModels.DataCollectRecord>> IdentGenerator
+            Lazy<IIdentGenerator<DataModels.DataCollectRecord>> IdentGenerator,
+            Lazy<IRefundService> RefundService
             )
 		{
 			this.CollectProviderResolver = CollectProviderResolver;
@@ -50,87 +52,98 @@ namespace SF.Biz.Payments
             this.Logger = Logger;
             this.DataScope = DataScope;
             this.IdentGenerator = IdentGenerator;
-
+            this.RefundService = RefundService;
         }
 
-		public Task<long> Create(CollectRequest Argument)
-		{
-			if (CollectProviderResolver(Argument.PaymentPlatformId) == null)
-				throw new ArgumentException("不支持指定的支付平台:" + Argument.PaymentPlatformId);
+        public async Task<StartResult> Start(CollectRequest Argument)
+        {
+            var provider = CollectProviderResolver(Argument.PaymentPlatformId);
 
-            return DataScope.Use("创建收款记录", async ctx =>
-            {
-                var id = await IdentGenerator.Value.GenerateAsync();
-                ctx.Add(new DataModels.DataCollectRecord
-                {
-                    Id = id,
-                    Title = Argument.Title,
-                    Desc = Argument.Desc,
-                    RemindId = Argument.RemindId,
-                    CreatedTime = DateTime.Now,
-                    Amount = Argument.Amount,
-                    PaymentPlatformId = Argument.PaymentPlatformId,
-                    ClientType = Argument.ClientType,
-                    TrackEntityIdent = Argument.TrackEntityIdent,
-                    UserId = Argument.CurUserId,
-                    HttpRedirect = Argument.HttpRedirect,
-                    State = CollectState.Init,
-                    OpAddress = Argument.OpAddress,
-                    OpDevice = Argument.OpDevice,
-                    Time=TimeService.Now
-                });
-                await ctx.SaveChangesAsync();
-                return id;
-            });
-		}
-
-		public async Task<IReadOnlyDictionary<string, string>> Start(long Ident, StartRequestInfo RequestInfo)
-		{
+            if (provider == null)
+                throw new ArgumentException("不支持指定的支付平台:" + Argument.PaymentPlatformId);
             try
             {
-                var arg = await GetRequest(Ident);
-                var provider = CollectProviderResolver(arg.PaymentPlatformId);
-
-                
-                var notifyUrl = new UriBuilder(new Uri(RequestInfo.Uri, "/api/CollectCallback/Notify/" + arg.PaymentPlatformId));
-                //第三方支付平台可能不支持https方式异步通知，需要总是使用http方式。
-                //notifyUrl.Scheme = "http";
-                //notifyUrl.Port = 80;
-                var re = await provider.Start(
-                    Ident,
-                    arg,
-                    RequestInfo,
-                    new Uri(RequestInfo.Uri, "/api/CollectCallback/Return/" + arg.PaymentPlatformId).ToString(),
-                    notifyUrl.ToString()
-                    );
-
-                await DataScope.Use("开始收款", async ctx =>
+                return await DataScope.Use("开始收款", async ctx =>
                 {
-                    var r = await ctx.Set<DataModels.DataCollectRecord>().FindAsync(Ident);
-                    if (r == null)
-                        throw new ArgumentException("找不到收款支付记录");
+                    var id = await IdentGenerator.Value.GenerateAsync();
+                    var r = ctx.Add(new DataModels.DataCollectRecord
+                    {
+                        Id = id,
+                        Title = Argument.Title,
+                        Desc = Argument.Desc,
+                        CreatedTime = DateTime.Now,
+                        Amount = Argument.Amount,
+                        PaymentPlatformId = Argument.PaymentPlatformId,
+                        BizRoot = Argument.BizRoot,
+                        BizParent = Argument.BizParent,
+                        UserId = Argument.ClientInfo.OperatorId,
+                        HttpRedirect = Argument.HttpRedirect,
+                        State = CollectState.Init,
+                        OpAddress = Argument.ClientInfo.ClientAddress,
+                        OpDevice = Argument.ClientInfo.DeviceType,
+                        Time = TimeService.Now
+                    });
+
+
+                    var notifyUrl = new UriBuilder(new Uri(Argument.ClientInfo.EntryUri, "/api/CollectCallback/Notify/" + Argument.PaymentPlatformId));
+                    //第三方支付平台可能不支持https方式异步通知，需要总是使用http方式。
+                    //notifyUrl.Scheme = "http";
+                    //notifyUrl.Port = 80;
+                    var re = await provider.Start(
+                        id,
+                        Argument,
+                        Argument.ClientInfo,
+                        new Uri(Argument.ClientInfo.EntryUri, "/api/CollectCallback/Return/" + Argument.PaymentPlatformId).ToString(),
+                        notifyUrl.ToString()
+                        );
+
+
+
                     r.StartTime = TimeService.Now;
                     r.ExtraData = re.ExtraData;
                     r.ExtIdent = re.ExtIdent;
                     r.State = CollectState.Collecting;
                     ctx.Update(r);
                     await ctx.SaveChangesAsync();
+
+                    //await CollectStorage.Start(Ident, TimeService.Now, re.ExtIdent, re.ExtraData);
+                    //var redirect = re.Result.Get("redirect");
+                    //if(redirect!=null  && arg.ClientType== "desktop")
+                    //{
+                    //    re.Result["redirect"] = "/payment/status/" + Ident;
+                    //    re.Result["openWindow"] = redirect;
+                    //}
+                    return new StartResult
+                    {
+                        Id = id,
+                        Data = re.Result,
+                        Expires = re.Expires
+                    };
                 });
-                //await CollectStorage.Start(Ident, TimeService.Now, re.ExtIdent, re.ExtraData);
-                //var redirect = re.Result.Get("redirect");
-                //if(redirect!=null  && arg.ClientType== "desktop")
-                //{
-                //    re.Result["redirect"] = "/payment/status/" + Ident;
-                //    re.Result["openWindow"] = redirect;
-                //}
-                return re.Result;
-            }catch(Exception e)
+
+            }
+            catch (Exception e)
             {
                 Logger.Error(e, "第三方支付请求异常，请使用其他支付方式，或联系客服人员处理：" + e);
                 throw new PublicInvalidOperationException("第三方支付请求异常，请使用其他支付方式，或联系客服人员处理", e);
             }
-		}
-		public async Task<string> GetStartProviderExtraData(long Ident)
+        }
+        public async Task Cancel(long Id, ClientInfo ClientInfo)
+        {
+            await DataScope.Use("取消收款", async ctx =>
+            {
+                var r = await ctx.Set<DataModels.DataCollectRecord>().FindAsync(Id);
+                if (r == null)
+                    throw new ArgumentException("找不到收款支付记录:"+Id);
+                if (r.State == CollectState.Collecting || r.State == CollectState.Canceled)
+                    r.State = CollectState.Canceled;
+                else
+                    throw new InvalidOperationException($"当前收款操作{Id}不能取消，状态:{r.State}");
+                ctx.Update(r);
+                await ctx.SaveChangesAsync();
+            });
+        }
+        public async Task<string> GetStartProviderExtraData(long Ident)
 		{
             return await DataScope.Use("获取提供者数据",ctx=>
                 ctx.Queryable<DataModels.DataCollectRecord>()
@@ -194,23 +207,52 @@ namespace SF.Biz.Payments
                 r.ExtIdent = Response.ExtIdent;
                 r.AmountCollected = Response.AmountCollected;
                 r.Error = Response.Error;
-                r.State = Response.Error == null ? CollectState.Success : CollectState.Failed;
-                ctx.Update(r);
-                if (Remind)
-                    ctx.AddCommitTracker(TransactionCommitNotifyType.AfterCommit, async (type, err) =>
-                    {
-                        await this.RemindService.Value.Remind(req.RemindId, null);
-                    });
 
-                await ctx.EmitEvent(EventEmitService.Value, new CollectComplete
-                {
-                    Id = Ident,
-                    Amount = req.Amount,
-                    AmountCompleted = Response.AmountCollected,
-                    Name = desc,
-                    UserId = req.CurUserId
-                });
                 
+                if (r.State != CollectState.Canceled)
+                {
+                    r.State = Response.Error == null ? CollectState.Success : CollectState.Failed;
+
+                    if (Remind)
+                        ctx.AddCommitTracker(TransactionCommitNotifyType.AfterCommit, async (type, err) =>
+                        {
+                            await this.RemindService.Value.Remind(req.BizRoot, null);
+                        });
+
+                    await ctx.EmitEvent(EventEmitService.Value, new CollectComplete
+                    {
+                        Id = Ident,
+                        Amount = req.Amount,
+                        AmountCompleted = Response.AmountCollected,
+                        Name = desc,
+                        UserId = req.ClientInfo.OperatorId.Value
+                    });
+                }
+                //如果已取消，直接退款
+                else if (!Response.Error.HasContent())
+                { 
+                    var rid=await ctx.Queryable<DataModels.DataRefundRecord>()
+                        .Where(rr => rr.CollectIdent == r.Id)
+                        .Select(rr=>rr.Id)
+                        .SingleOrDefaultAsync();
+                    if(rid==0)
+                        rid=await RefundService.Value.Create(new RefundRequest
+                        {
+                            Amount = Response.AmountCollected,
+                            BizParent = r.BizParent,
+                            BizRoot = r.BizRoot,
+                            ClientInfo = req.ClientInfo,
+                            CollectExtIdent = r.ExtIdent,
+                            CollectIdent = r.Id,
+                            CurState = RefundState.Processing,
+                            Desc = r.Desc,
+                            PaymentPlatformId = r.PaymentPlatformId,
+                            SubmitTime = TimeService.Now,
+                            Title = r.Title
+                        });
+                    await RefundService.Value.RefreshRefundRecord(rid);
+                }
+                ctx.Update(r);
                 await ctx.SaveChangesAsync();
                 return Response;
             });
@@ -229,18 +271,20 @@ namespace SF.Biz.Payments
                      ExtraData = r.ExtraData,
                      Request = new CollectRequest
                      {
-                         ClientType = r.ClientType,
                          HttpRedirect = r.HttpRedirect,
-                         CurUserId = r.UserId.HasValue ? r.UserId.Value : 0,
-                         TrackEntityIdent = r.TrackEntityIdent,
+                         ClientInfo=new Sys.Clients.ClientInfo
+                         {
+                             OperatorId = r.UserId.HasValue ? r.UserId.Value : 0,
+                             ClientAddress= r.OpAddress,
+                             DeviceType = r.OpDevice
+                         },
+                         BizRoot =r.BizRoot,
+                         BizParent=r.BizParent,
                          Amount = r.Amount,
                          Desc = r.Desc,
                          PaymentPlatformId = r.PaymentPlatformId,
                          Title = r.Title,
-                         OpAddress = r.OpAddress,
-                         OpDevice = r.OpDevice,
-                         StartTime=r.StartTime,
-                         RemindId=r.RemindId
+                         StartTime=r.StartTime
                      },
                      Response = new CollectResponse
                      {
@@ -277,7 +321,7 @@ namespace SF.Biz.Payments
 			if (re.Session != null)
 			{
                 var req = (CollectRequest)re.Session.Request;
-                var sess=await TryComplete(re.Session.Id, req, re.Session.Response,provider,true);
+                await TryComplete(re.Session.Id, req, re.Session.Response,provider,true);
             }
             return re.HttpResponse;
 		}
@@ -294,40 +338,37 @@ namespace SF.Biz.Payments
 			if (re.Session != null)
 			{
                 var req = (CollectRequest)re.Session.Request;
-                var sess=await TryComplete(re.Session.Id,req, re.Session.Response, provider,true);
+                await TryComplete(re.Session.Id,req, re.Session.Response, provider,true);
             }
 			return re.HttpResponse;
 		}
 
-        async Task<CollectStartArgument> ICollectStartArgumentLoader.GetRequest(long ident) =>
-            await GetRequest(ident);
-        
-        public async Task<CollectRequest> GetRequest(long ident)
-		{
-            var req= await DataScope.Use("获取收款请求", ctx =>
-                 ctx.Queryable<DataModels.DataCollectRecord>().Where(r => r.Id == ident)
-                 .Select(r => new CollectRequest
-                 {
-                     Amount = r.Amount,
-                     Desc = r.Desc,
-                     TrackEntityIdent = r.TrackEntityIdent,
-                     CurUserId = r.UserId.HasValue ? r.UserId.Value : 0,
-                     PaymentPlatformId = r.PaymentPlatformId,
-                     ClientType = r.ClientType,
-                     HttpRedirect = r.HttpRedirect,
-                     Title = r.Title,
-                     RemindId = r.RemindId,
-                     OpAddress = r.OpAddress,
-                     OpDevice = r.OpDevice,
-                     StartTime=r.StartTime.Value
-                 })
-                 .SingleOrDefaultAsync()
-                );
-            if (req == null)
-                throw new ArgumentException("找不到收款支付记录");
-            return req;
-
-        }
+        Task<CollectStartArgument> ICollectStartArgumentLoader.GetRequest(long ident) =>
+            DataScope.Use("获取收款请求", async ctx =>
+            {
+                var req = await ctx.Queryable<DataModels.DataCollectRecord>().Where(r => r.Id == ident)
+                    .Select(r => new CollectRequest
+                    {
+                        Amount = r.Amount,
+                        Desc = r.Desc,
+                        BizRoot = r.BizRoot,
+                        BizParent = r.BizParent,
+                        ClientInfo = new Sys.Clients.ClientInfo
+                        {
+                            OperatorId = r.UserId.HasValue ? r.UserId.Value : 0,
+                            ClientAddress = r.OpAddress,
+                            DeviceType = r.OpDevice,
+                        },
+                        PaymentPlatformId = r.PaymentPlatformId,
+                        HttpRedirect = r.HttpRedirect,
+                        Title = r.Title,
+                        StartTime = r.StartTime.Value
+                    })
+                    .SingleOrDefaultAsync();
+                if (req == null)
+                    throw new ArgumentException("找不到收款支付记录");
+                return (CollectStartArgument)req;
+            });
 
 		public async Task<QrCodePaymentStatus> GetQrCodePaymentStatus(long Ident)
 		{

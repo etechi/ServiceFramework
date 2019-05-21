@@ -1,4 +1,6 @@
-﻿using SF.Sys.Auth;
+﻿using SF.Biz.Trades.Managements;
+using SF.Biz.Trades.StateProviders;
+using SF.Sys.Auth;
 using SF.Sys.Clients;
 using SF.Sys.Data;
 using SF.Sys.Entities;
@@ -13,11 +15,13 @@ namespace SF.Biz.Trades
 	{
 		public IDataScope DataScope { get; }
         public IAccessToken AccessToken { get; }
+        public Lazy<ITradeManager> TradeManager { get; }
         long EnsureUserIdent() => AccessToken.User.EnsureUserIdent();
-        public SellerTradeService(IDataScope DataScope, IAccessToken AccessToken)
+        public SellerTradeService(IDataScope DataScope, IAccessToken AccessToken, Lazy<ITradeManager> TradeManager)
         {
 			this.DataScope= DataScope;
             this.AccessToken = AccessToken;
+            this.TradeManager = TradeManager;
         }
 		protected virtual IQueryable<Trade> MapModelToPublic(IQueryable<DataModels.DataTrade> query)
 		{
@@ -50,13 +54,12 @@ namespace SF.Biz.Trades
 					   Id = i.Id,
 					   Image = i.Image,
 					   Name= i.Name,
-					   ProductType = i.ProductType,
 					   ProductId = i.ProductId,
 					   Price = i.Price,
 					   Quantity = i.Quantity,
 					   Amount = i.Amount,
-
-					   DiscountDesc = i.AmountDiscountDesc,
+                       
+                       AmountAfterDiscount=i.AmountAfterDiscount,
                        DiscountEntityIdent = i.DiscountEntityIdent,
                        SettlementAmount = i.SettlementAmount,
 					   SellerRemarks = i.SellerRemarks,
@@ -105,5 +108,13 @@ namespace SF.Biz.Trades
             });
 
 		}
-	}
+
+        public async Task Delivery(long tradeId)
+        {
+            await TradeManager.Value.Advance(tradeId, TradeState.SellerComplete, new SellerCompleteArgument
+            {
+                
+            });
+        }
+    }
 }

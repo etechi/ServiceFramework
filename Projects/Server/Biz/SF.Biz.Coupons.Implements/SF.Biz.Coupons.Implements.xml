@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Biz.Coupons.Implements</name>
+    </assembly>
+    <members>
+        <member name="T:SF.Biz.Coupons.DataModels.DataCoupon">
+            <summary>
+            优惠券
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCoupon.OwnerId">
+            <summary>
+            所有人ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCoupon.TemplateId">
+            <summary>
+            优惠券模板ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCoupon.Type">
+            <summary>
+            优惠券类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCoupon.ConditionValue">
+            <summary>
+            优惠券使用条件
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCoupon.AdjustValue">
+            <summary>
+            优惠券调整额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCoupon.TotalUsedCount">
+            <summary>
+            已用总数
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCoupon.LastRewardTime">
+            <summary>
+            最后获得时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCoupon.LastRewardCount">
+            <summary>
+            最后获得个数
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCoupon.LastUseTime">
+            <summary>
+            最后使用时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCoupon.LastUseCount">
+            <summary>
+            最后使用个数
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.DataModels.DataCouponRewardRecord">
+            <summary>
+            优惠券领取记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.UserId">
+            <summary>
+            所有人ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.CouponId">
+            <summary>
+            优惠券ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.TemplateId">
+            <summary>
+            优惠券模板ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.ValidTime">
+             <summary>
+             有效时间
+             </summary>
+            <remarks>使用前为过期时间，使用后为使用时间</remarks>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.ExpiresTime">
+            <summary>
+            过期时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.BeginTime">
+            <summary>
+            生效时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.LastUsedCount">
+            <summary>
+            最后使用个数
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.LastUsedTime">
+            <summary>
+            最后使用时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.SrcDesc">
+            <summary>
+            来源描述
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.SrcEntityIdent">
+            <summary>
+            来源标识
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.Count">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.LeftCount">
+            <summary>
+            剩余数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponRewardRecord.TimeStamp">
+            <summary>
+            乐观锁时间戳
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.DataModels.DataCouponTemplate">
+            <summary>
+            优惠券模板
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponTemplate.BeginTime">
+            <summary>
+            生效时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponTemplate.EndTime">
+            <summary>
+            过期时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponTemplate.ExpireDays">
+            <summary>
+            过期天数
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponTemplate.Type">
+            <summary>
+            类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponTemplate.ConditionValue">
+            <summary>
+            使用条件
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponTemplate.AdjustValue">
+            <summary>
+            调整额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponTemplate.TargetEntityIdent">
+            <summary>
+            目标标识
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Coupons.DataModels.DataCouponUseRecord">
+            <summary>
+            优惠券使用记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponUseRecord.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponUseRecord.CouponId">
+            <summary>
+            优惠券ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponUseRecord.TemplateId">
+            <summary>
+            优惠券模板ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponUseRecord.Time">
+            <summary>
+            时间
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponUseRecord.DstDesc">
+            <summary>
+            用途描述
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponUseRecord.DstEntityIdent">
+            <summary>
+            用途业务标识
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.DataModels.DataCouponUseRecord.Count">
+            <summary>
+            使用数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Coupons.CouponServiceSetting.MaxDiscountPercent">
+            <title>最大折扣百分比</title>
+             <summary>
+             不填或为0时不限最大折扣率。最大促销比例是指能优惠的比例, 自动四舍五入，比如： 100元产品，最大促销比例是36.6,那么用户最低能买到的价格是63元。
+             </summary>
+        </member>
+    </members>
+</doc>

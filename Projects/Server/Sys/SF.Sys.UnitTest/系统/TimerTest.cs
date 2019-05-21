@@ -58,9 +58,7 @@ namespace SF.UT.系统
 
 				await rs.Setup(new RemindSetupArgument
 				{
-					BizIdent = await ig.GenerateAsync("test"),
-					BizIdentType = "test",
-					BizType = nameof(ReminderBasicTest),
+                    BizSource=new Sys.Entities.TrackIdent(nameof(ReminderBasicTest),"test", await ig.GenerateAsync("test")),
 					Name = "test",
 					RemindableName = typeof(TestRemindable).FullName,
 					RemindData = "1",
@@ -68,20 +66,16 @@ namespace SF.UT.系统
 				});
 				await rs.Setup(new RemindSetupArgument
 				{
-					BizIdent = await ig.GenerateAsync("test"),
-					BizIdentType = "test",
-					BizType = nameof(ReminderBasicTest),
-					Name = "test",
+                    BizSource = new Sys.Entities.TrackIdent(nameof(ReminderBasicTest), "test", await ig.GenerateAsync("test")),
+                    Name = "test",
 					RemindableName = typeof(TestRemindable).FullName,
 					RemindData = "2",
 					RemindTime = ts.Now.AddSeconds(3),
 				});
 				await rs.Setup(new RemindSetupArgument
 				{
-					BizIdent = await ig.GenerateAsync("test"),
-					BizIdentType = "test",
-					BizType = nameof(ReminderBasicTest),
-					Name = "test",
+                    BizSource = new Sys.Entities.TrackIdent(nameof(ReminderBasicTest), "test", await ig.GenerateAsync("test")),
+                    Name = "test",
 					RemindableName = typeof(TestRemindable).FullName,
 					RemindData = "3",
 					RemindTime = ts.Now.AddSeconds(6),

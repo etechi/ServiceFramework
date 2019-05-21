@@ -41,6 +41,7 @@ namespace SF.Sys.Reminders
 		Lazy<IAtLeastOnceTaskExecutor<long,DataModels.DataReminder, long>> AtLeastOnceTaskExecutor { get; }
 		Lazy<RemindSyncQueue> RemindSyncQueue { get; }
 		Lazy<ILogger<RemindService>> Logger { get; }
+
 		public RemindService(
 			IDataScope DataScope,
 			Lazy<RemindableManager> RemindableManager,
@@ -80,13 +81,13 @@ namespace SF.Sys.Reminders
 			});
 		}
 
-		public Task<bool> Remove(string BizType, string BizIdentType, long BizIdent)
+		public Task<bool> Remove(TrackIdent BizSource )
 		{
 			return DataScope.Use("删除提醒", async ctx =>
 			{
 				var remind = await ctx
 					.Queryable<DataModels.DataReminder>(false)
-					.Where(r =>r.BizType==BizType && r.BizIdentType == BizIdentType && r.BizIdent == BizIdent)
+					.Where(r =>r.BizType== BizSource.Type && r.BizIdentType == BizSource.IdentType && r.BizIdent == BizSource.Ident)
 					.SingleOrDefaultAsync();
 				if (remind == null)
 					return false;
@@ -112,7 +113,9 @@ namespace SF.Sys.Reminders
 			{
 				var remind = await ctx
 					.Queryable<DataModels.DataReminder>(false)
-					.Where(r => r.BizIdentType == Argument.BizType && r.BizIdent == Argument.BizIdent)
+					.Where(r => r.BizType==Argument.BizSource.Type &&
+                                r.BizIdentType == Argument.BizSource.IdentType && 
+                                r.BizIdent == Argument.BizSource.Ident)
 					.SingleOrDefaultAsync();
 
 				var now = TimeService.Value.Now;
@@ -121,9 +124,10 @@ namespace SF.Sys.Reminders
 					remind = new DataModels.DataReminder
 					{
 						Id = await IdentGenerator.Value.GenerateAsync<DataModels.DataReminder>(),
-						BizIdent = Argument.BizIdent,
-						BizIdentType = Argument.BizType,
-						CreatedTime = now,
+						BizIdent = Argument.BizSource.Ident,
+						BizIdentType = Argument.BizSource.IdentType,
+                        BizType = Argument.BizSource.Type,
+                        CreatedTime = now,
 						OwnerId = Argument.UserId,
 					};
 					ctx.Add(remind);
@@ -163,32 +167,30 @@ namespace SF.Sys.Reminders
 		class RemindContext: IRemindContext
 		{
 			public long? ServiceScopeId { get; set; }
-			public string BizType { get; set; }
-			public string BizIdentType { get; set; }
-			public long BizIdent { get; set; }
+            public TrackIdent BizSource { get; set; }
 			public string Data { get; set; }
 			public object Argument { get; set; }
 			public string RemindableName { get; set; }
 			public string Message { get; set; }
 			public DateTime? NextRemindTime { get; set; }
 			public DateTime Time { get; set; }
+            public DateTime? CurrentRemindTime{get;set;}
 		}
 
-		public async Task Remind(IServiceProvider sp,DataModels.DataReminder entity,object ActiveArgument)
+		public async Task Remind(IServiceProvider sp,DataModels.DataReminder entity,object ActiveArgument,DateTime? CurExecTime)
 		{
 			var def = RemindableManager.Value.GetDefination(entity.RemindableName);
 			try
 			{
-				var ctx = new RemindContext
-				{
-					Data = entity.Data,
-					Argument = ActiveArgument,
-					BizIdent = entity.BizIdent,
-					BizIdentType = entity.BizIdentType,
-					RemindableName = entity.RemindableName,
-					Time=TimeService.Value.Now,
-					BizType=entity.BizType
-				};
+                var ctx = new RemindContext
+                {
+                    Data = entity.Data,
+                    Argument = ActiveArgument,
+                    BizSource=new TrackIdent(entity.BizType, entity.BizIdentType, entity.BizIdent),
+                    RemindableName = entity.RemindableName,
+                    Time = TimeService.Value.Now,
+                    CurrentRemindTime= CurExecTime
+                };
 				var remindable = def.CreateRemindable(sp,null);
 				Logger.Value.Trace(()=>$"提醒开始:{entity.Id} {entity.BizType} {entity.BizIdentType} {entity.BizIdent}");
 
@@ -264,17 +266,17 @@ namespace SF.Sys.Reminders
 			}
 		}
 
-		public async Task Remind(string BizType, string BizIdentType, long BizIdent, object Argument)
+		public async Task Remind(TrackIdent BizSource, object Argument)
 		{
 			var rid = await DataScope.Use(
 				"查找提醒",ctx =>ctx
 				.Queryable<DataModels.DataReminder>(false)
-				.Where(r => r.BizType == BizType && r.BizIdentType== BizIdentType && r.BizIdent == BizIdent)
+				.Where(r => r.BizType == BizSource.Type && r.BizIdentType== BizSource.IdentType && r.BizIdent == BizSource.Ident)
 				.Select(r => r.Id)
 				.SingleOrDefaultAsync()
 				);
 			if (rid == 0)
-				throw new ArgumentException($"找不到提醒:{BizType} {BizIdentType} {BizIdent}");
+				throw new ArgumentException($"找不到提醒:{BizSource}");
 			await AtLeastOnceTaskExecutor.Value.Execute(
 				rid, 
 				rid,//SF.Sys.Services.RemindSyncQueue.BuildKey(BizType,BizIdentType,BizIdent), 
@@ -291,17 +293,17 @@ namespace SF.Sys.Reminders
 				CancellationToken.None
 				);
 		}
-		public async Task<T> Sync<T>(string BizType, string BizIdentType, long BizIdent, Func<Task<T>> Callback)
+		public async Task<T> Sync<T>(TrackIdent BizSource, Func<Task<T>> Callback)
 		{
 			var rid = await DataScope.Use(
 				"查找提醒", ctx => ctx
 				 .Queryable<DataModels.DataReminder>(false)
-				 .Where(r => r.BizType == BizType && r.BizIdentType == BizIdentType && r.BizIdent == BizIdent)
+				 .Where(r => r.BizType == BizSource.Type && r.BizIdentType == BizSource.IdentType && r.BizIdent == BizSource.Ident)
 				 .Select(r => r.Id)
 				 .SingleOrDefaultAsync()
 				);
 			if (rid == 0)
-				throw new ArgumentException($"找不到提醒:{BizType} {BizIdentType} {BizIdent}");
+				throw new ArgumentException($"找不到提醒:{BizSource}");
 
 			return await RemindSyncQueue.Value.Queue(
 				rid,//SF.Sys.Services.RemindSyncQueue.BuildKey(BizType, BizIdentType, BizIdent),

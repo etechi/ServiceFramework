@@ -157,7 +157,7 @@ namespace SF.Sys.Services
 			string Name=null
 			)
 		{
-			sc.Add(typeof(T), sp => ImplementCreator(sp), ServiceImplementLifetime.Singleton);
+			sc.Add(typeof(T), sp => ImplementCreator(sp), ServiceImplementLifetime.Singleton,Name);
 			return sc;
 		}
 		public static IServiceCollection AddTransient(this IServiceCollection sc,Type Service,Type Implement,string Name=null)

@@ -28,11 +28,10 @@
             支付平台服务
             </summary>
         </member>
-        <member name="M:SF.Biz.Payments.IPaymentPlatformService.List(SF.Sys.Clients.ClientDeviceType)">
+        <member name="M:SF.Biz.Payments.IPaymentPlatformService.List">
             <summary>
             列表
             </summary>
-            <param name="Type">设备类型</param>
             <returns>支付平台</returns>
         </member>
         <member name="M:SF.Biz.Payments.IPaymentPlatformService.GetCollectRequestTimeout(System.Int64)">
@@ -97,9 +96,14 @@
             客户端类型
             </summary>
         </member>
-        <member name="P:SF.Biz.Payments.CollectRecordDetail.TrackEntityIdent">
+        <member name="P:SF.Biz.Payments.CollectRecordDetail.BizRoot">
             <summary>
-            业务来源
+            根业务
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.CollectRecordDetail.BizParent">
+            <summary>
+            父业务
             </summary>
         </member>
         <member name="P:SF.Biz.Payments.CollectRecordDetail.ExtIdent">
@@ -207,9 +211,14 @@
             客户端类型
             </summary>
         </member>
-        <member name="P:SF.Biz.Payments.RefundRecordDetail.TrackEntityIdent">
+        <member name="P:SF.Biz.Payments.RefundRecordDetail.BizRoot">
             <summary>
-            业务来源
+            根业务
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.RefundRecordDetail.BizParent">
+            <summary>
+            父业务
             </summary>
         </member>
         <member name="P:SF.Biz.Payments.RefundRecordDetail.ExtIdent">
@@ -277,19 +286,25 @@
             失败
             </summary>
         </member>
-        <member name="M:SF.Biz.Payments.ICollectService.Create(SF.Biz.Payments.CollectRequest)">
+        <member name="F:SF.Biz.Payments.CollectState.Canceled">
             <summary>
-            创建收款会话
+            取消
             </summary>
-            <param name="Argument">收款请求参数</param>
-            <returns></returns>
         </member>
-        <member name="M:SF.Biz.Payments.ICollectService.Start(System.Int64,SF.Biz.Payments.StartRequestInfo)">
+        <member name="M:SF.Biz.Payments.ICollectService.Start(SF.Biz.Payments.CollectRequest)">
             <summary>
             开始收款操作
             </summary>
+            <param name="Argument">收款启动参数</param>
+            <returns></returns>
+        </member>
+        <member name="M:SF.Biz.Payments.ICollectService.Cancel(System.Int64,SF.Sys.Clients.ClientInfo)">
+            <summary>
+            取消收款操作
+            </summary>
+            <remarks>取消后，如果收款成功，直接退款</remarks>
             <param name="Id">收款ID</param>
-            <param name="RequestInfo">收款开始请求信息</param>
+            <param name="ClientInfo">收款开始请求信息</param>
             <returns></returns>
         </member>
         <member name="M:SF.Biz.Payments.ICollectService.GetResult(System.Int64,System.Boolean,System.Boolean)">

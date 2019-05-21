@@ -100,11 +100,12 @@ namespace SF.Biz.Payments
                      Amount = Argument.Amount,
                      PaymentPlatformId = collectState.platformId,
                      //ClientType=Argument.ClientType,
-                     TrackEntityIdent = Argument.TrackEntityIdent,
-                     UserId = Argument.CurUserId,
+                     BizParent=Argument.BizParent,
+                     BizRoot=Argument.BizRoot,
+                     UserId = Argument.ClientInfo.OperatorId,
                      State = RefundState.Submitting,
-                     OpAddress = Argument.OpAddress,
-                     OpDevice = Argument.OpDevice
+                     OpAddress = Argument.ClientInfo.ClientAddress,
+                     OpDevice = Argument.ClientInfo.DeviceType
                  });
                 await ctx.SaveChangesAsync();
                 return ident;
@@ -252,14 +253,20 @@ namespace SF.Biz.Payments
                                Desc = r.Desc,
                                CollectIdent = r.CollectIdent,
                                CollectExtIdent = r.CollectExtIdent,
-                               TrackEntityIdent = r.TrackEntityIdent,
-                               CurUserId = r.UserId.HasValue?r.UserId.Value:0,
+                               BizRoot=r.BizRoot,
+                               BizParent=r.BizParent,
+                               ClientInfo=new Sys.Clients.ClientInfo
+                               {
+                                   OperatorId= r.UserId.HasValue ? r.UserId.Value : 0,
+                                   ClientAddress = r.OpAddress,
+                                   DeviceType = r.OpDevice
+                               },
+                               
                                //ClientType=r.ClientType,
                                Title = r.Title,
                                //CallbackName=r.CallbackName,
                                //CallbackContext=r.CallbackContext,
-                               OpAddress = r.OpAddress,
-                               OpDevice = r.OpDevice
+                               
                            }
                        });
                 var re = await q.SingleOrDefaultAsync();

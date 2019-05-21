@@ -197,6 +197,26 @@ namespace SF.Auth.IdentityServices
 			}
 			));
 		}
-	}
+        public async Task<User[]> GetUsers(long[] UserIds)
+        {
+            return await DataScope.Use(ds => ds.Use("查找用户", async ctx =>
+            {
+                var users = await (
+                    from u in ctx.Set<DataModels.DataUser>().AsQueryable()
+                    where UserIds.Contains(u.Id) && u.LogicState == EntityLogicState.Enabled
+                    select new User
+                    {
+                        Id = u.Id,
+                        Icon = u.Icon,
+                        Name = u.Name,
+                        Roles = u.Roles.Select(r => r.RoleId).ToArray()
+                    }
+                    )
+                    .ToArrayAsync();
+                return users;
+            }
+            ));
+        }
+    }
 
 }

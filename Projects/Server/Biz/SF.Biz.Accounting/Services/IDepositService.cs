@@ -1,4 +1,5 @@
 ﻿using SF.Sys.Clients;
+using SF.Sys.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,24 +15,21 @@ namespace SF.Biz.Accounting
 		public long OperatorId { get; set; }
 		public decimal Amount { get; set; }
 		public string Description { get; set; }
-		public string TrackEntityIdent { get; set; }
-		public long? RemindId { get; set; }
-		public string ClientType { get; set; }
-		public string HttpRedirest { get; set; }
-        public string OpAddress { get; set; }
-        public ClientDeviceType OpDevice { get; set; }
+        public string HttpRedirest { get; set; }
+
+		public ClientInfo ClientInfo { get; set; }
 	}
    
     public class DepositStartResult
 	{
         public long Id { get; set; }
-		public IReadOnlyDictionary<string,string> PaymentStartResult { get; set; }
+        public DateTime Expires { get; set; }
+		public IReadOnlyDictionary<string,string> PaymentArguments { get; set; }
 	}
 
     public interface IDepositService
 	{
-        Task<long> Create(DepositArgument Arg);
-        Task<DepositStartResult> Start(long Id, Biz.Payments.StartRequestInfo RequestInfo);
+        Task<DepositStartResult> Start(DepositArgument Arg);
         
         
         Task<DepositRecord> GetResult(long Id,bool Query=false,bool Remind=false);

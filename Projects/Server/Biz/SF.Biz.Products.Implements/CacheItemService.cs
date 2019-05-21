@@ -21,17 +21,29 @@ using System.Collections.Concurrent;
 using System.Threading;
 using SF.Sys.Entities;
 using SF.Sys.Threading;
+using SF.Biz.Trades;
+using SF.Sys;
 
 namespace SF.Biz.Products
 {
 	public class CacheItemService :
 		CacheItemService<ICategoryCached, IItemSource>,
-		IItemService
-	{
+		IItemService,
+        ITradableItemResolver
+    {
 		public CacheItemService(Func<IItemSource> ItemSource) : base(ItemSource)
 		{
 		}
-	}
+
+        public async Task<ITradableItem[]> Resolve(string[] Idents)
+        {
+            var ids = Idents.Select(i => i.RightAfter('-').ToInt64()).ToArray();
+            var re = new List<ITradableItem>(ids.Length);
+            foreach (var i in await GetItems(ids))
+                re.Add((ITradableItem)i);
+            return re.ToArray();
+        }
+    }
 	public class CacheItemService<TCategory,TItemSource>:
 		CacheItemService<IItem, TCategory, TItemSource>
 		 where TCategory : ICategoryCached

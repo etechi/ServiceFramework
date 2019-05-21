@@ -6,7 +6,7 @@ namespace SF.Biz.ShoppingCarts
     public class ModifyArguments
     {
         public string Type { get; set; }
-        public long[] Items { get; set; }
+        public string[] Items { get; set; }
         public int Quantity { get; set; }
     }
     public class QueryArguments
@@ -22,6 +22,8 @@ namespace SF.Biz.ShoppingCarts
         public ItemStatus[] Items { get; set; }
         public bool SkipLimitEnsure { get; set; }
     }
+
+
     public interface IShoppingCartService
     {
         Task<int> Count(string Type);
@@ -31,6 +33,8 @@ namespace SF.Biz.ShoppingCarts
         Task<int> TryAdd(ModifyArguments Args);
         Task<int> Remove(ModifyArguments Args);
         Task Sync(SyncArguments Args);
-        Task Clear(string Type);
+        Task Clear(string Type,bool Selected);
+        Task<long> CreateTrade(string Type);
+
     }
 }

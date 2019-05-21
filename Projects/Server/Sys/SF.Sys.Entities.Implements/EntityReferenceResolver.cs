@@ -38,9 +38,9 @@ namespace SF.Sys.Entities
 			}
 			public string Name { get => Instance.Name; set => Instance.Name = value; }
 
-			public Task<object> Resolve()
+			public T Cast<T>()
 			{
-				return Task.FromResult((object)Instance);
+				return (T)(object)Instance;
 			}
 		}
 

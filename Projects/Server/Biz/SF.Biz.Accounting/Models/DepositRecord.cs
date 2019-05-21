@@ -5,6 +5,7 @@ using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Clients;
 using SF.Sys.Services.Management.Models;
+using System.ComponentModel;
 
 namespace SF.Biz.Accounting
 {
@@ -25,11 +26,6 @@ namespace SF.Biz.Accounting
         /// </summary>
         Failed,
 
-        /// <summary>
-        /// 新建
-        /// </summary>
-        [Ignore]
-        New,
 
         /// <summary>
         /// 退款中
@@ -155,12 +151,8 @@ namespace SF.Biz.Accounting
         /// </summary>
         public string PaymentDesc { get; set; }
 
-        /// <summary>
-        /// 业务来源
-        /// </summary>
-        [EntityIdent]
-        public string TrackEntityIdent { get; set; }
 
+ 
         /// <summary>
         /// 错误信息
         /// </summary>

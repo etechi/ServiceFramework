@@ -31,7 +31,7 @@ namespace SF.Sys.Data
 	{
 		Task<T> FindAsync(object Ident);
 		Task<T> FindAsync(params object[] Idents);
-
+        IEnumerable<T> CachedEntities();
 		T Add(T Model);
 		void AddRange(IEnumerable<T> Items);
 

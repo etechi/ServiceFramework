@@ -44,7 +44,8 @@ namespace SF.Biz.Accounting
                 .Select(a => new Account
                 {
                     Inbound = a.Inbound,
-                    Outbound = a.Outbound
+                    Outbound = a.Outbound,
+                    CurValue=a.CurValue
 
                 })
                 .SingleOrDefaultAsync()
@@ -88,7 +89,20 @@ namespace SF.Biz.Accounting
             return re;
         }
 
+        public Task<(string Title, decimal Value)[]> GetSettlementAccounts(long OwnerId)
+        {
+            return DataScope.Use("查询可结算余额", async ctx =>
+            {
+            var re = await (from a in ctx.Queryable<DataModels.DataAccount>()
+                            join t in ctx.Queryable<DataModels.DataAccountTitle>() on a.AccountTitleId equals t.Id
+                            where a.OwnerId.Value == OwnerId && t.SettlementEnabled
+                            orderby t.SettlementOrder
+                            select new { title = t.Ident, value = a.CurValue }
+                        ).ToArrayAsync();
 
+                return re.Select(i => (i.title, i.value)).ToArray();
+            });
+        }
 
     }
 }

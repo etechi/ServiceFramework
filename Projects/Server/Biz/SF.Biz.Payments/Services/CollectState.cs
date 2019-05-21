@@ -17,6 +17,10 @@
         /// <summary>
         /// 失败
         /// </summary>
-        Failed
+        Failed,
+        /// <summary>
+        /// 取消
+        /// </summary>
+        Canceled
     }
 }

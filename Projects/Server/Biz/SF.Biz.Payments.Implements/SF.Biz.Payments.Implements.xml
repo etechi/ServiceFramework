@@ -14,11 +14,6 @@
             收款系统服务ID
             </summary>
         </member>
-        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.ClientType">
-            <summary>
-            收款发起客户端类型
-            </summary>
-        </member>
         <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.HttpRedirect">
             <summary>
             收款结束重定向Url
@@ -94,9 +89,14 @@
             第三方平台用户账号
             </summary>
         </member>
-        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.TrackEntityIdent">
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.BizRoot">
             <summary>
-            业务跟踪ID
+            根业务
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.BizParent">
+            <summary>
+            父业务
             </summary>
         </member>
         <member name="P:SF.Biz.Payments.DataModels.DataCollectRecord.TimeStamp">
@@ -137,11 +137,6 @@
         <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.CollectExtIdent">
             <summary>
             对应第三方收款交易号
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.ClientType">
-            <summary>
-            发起客户端类型
             </summary>
         </member>
         <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.Title">
@@ -214,9 +209,14 @@
             实际退款金额
             </summary>
         </member>
-        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.TrackEntityIdent">
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.BizRoot">
             <summary>
-            业务跟踪ID
+            根业务
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.BizParent">
+            <summary>
+            父业务
             </summary>
         </member>
         <member name="P:SF.Biz.Payments.DataModels.DataRefundRecord.TimeStamp">

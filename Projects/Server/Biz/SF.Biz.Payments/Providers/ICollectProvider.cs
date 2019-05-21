@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SF.Sys.Clients;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace SF.Biz.Payments
         public IReadOnlyDictionary<string, string> Result { get; set; }
         public string ExtraData { get; set; }
         public string ExtIdent { get; set; }
+        public DateTime Expires { get; set; }
     }
     public interface ICollectStartArgumentLoader
     {
@@ -37,7 +39,7 @@ namespace SF.Biz.Payments
 		Task<CollectStartStatus> Start(
             long ident,
             CollectStartArgument StartArgument, 
-            StartRequestInfo Request,
+            ClientInfo ClientInfo,
             string CallbackUrl,
             string NotifyUrl
             );

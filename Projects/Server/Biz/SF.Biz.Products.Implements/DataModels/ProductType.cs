@@ -85,10 +85,17 @@ namespace SF.Biz.Products.Entity.DataModels
 		[Index]
         public int Order { get; set; }
 
-		/// <summary>
-		/// 对象逻辑状态
-		/// </summary>
-		public EntityLogicState ObjectState { get; set; }
+        /// <summary>
+        /// 发货类型
+        /// </summary>
+        [Required]
+        [MaxLength(100)]
+        public string DeliveryProvider { get; set; }
+
+        /// <summary>
+        /// 对象逻辑状态
+        /// </summary>
+        public EntityLogicState ObjectState { get; set; }
 
 		/// <summary>
 		/// 图标

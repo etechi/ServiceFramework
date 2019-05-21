@@ -25,7 +25,7 @@ namespace SF.Biz.Accounting
         }
         public async Task Remind(IRemindContext Context)
         {
-            var re=await DepositService.GetResult(Context.BizIdent, true, false);
+            var re=await DepositService.GetResult(Context.BizSource.Ident, true, false);
             //如果已完成,直接返回，结束提醒
             if (re.State != DepositState.Processing)
                 return;

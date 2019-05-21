@@ -1,12 +1,6 @@
-﻿using SF.Biz.Products;
-using SF.Sys.Annotations;
+﻿using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Entities.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SF.Biz.ShoppingCarts.Managements
 {
@@ -49,31 +43,13 @@ namespace SF.Biz.ShoppingCarts.Managements
         /// <summary>
         /// 商品
         /// </summary>
-        [EntityIdent(typeof(Item))]
-        public long ItemId { get; set; }
-
-        /// <summary>
-        /// SKUID
-        /// </summary>
-        public long SkuId { get; set; }
+        [EntityIdent]
+        public string ItemId { get; set; }
 
         /// <summary>
         /// 卖家标题
         /// </summary>
         public string SellerTitle { get; set; }
-
-        /// <summary>
-        /// 产品
-        /// </summary>
-        [EntityIdent(typeof(ProductBase), nameof(ProductName))]
-        public long ProductId { get; set; }
-
-        /// <summary>
-        /// 产品
-        /// </summary>
-        [TableVisible]
-        [Ignore]
-        public string ProductName { get; set; }
 
 
         /// <summary>

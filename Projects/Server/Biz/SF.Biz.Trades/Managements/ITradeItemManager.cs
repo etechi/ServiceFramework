@@ -1,10 +1,6 @@
 ﻿using SF.Sys.Entities;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
 using SF.Sys.Annotations;
 using SF.Sys.Auth;
-using SF.Biz.Products;
 using SF.Sys.NetworkService;
 
 namespace SF.Biz.Trades.Managements
@@ -31,13 +27,19 @@ namespace SF.Biz.Trades.Managements
         /// 交易
         /// </summary>
         [EntityIdent(typeof(Trade))]
-        public int? TradeId { get; set; }
+        public long? TradeId { get; set; }
+
+        /// <summary>
+        /// 商品类型
+        /// </summary>
+        [EntityType(Tag ="可交易")]
+        public virtual string ItemType { get; set; }
 
         /// <summary>
         /// 商品
         /// </summary>
-        [EntityIdent(typeof(Item))]
-        public virtual int? ItemId { get; set; }
+        [EntityIdent(EntityTypeField =nameof(ItemType))]
+        public virtual long? ItemId { get; set; }
 
         /// <summary>
         /// 创建时间
@@ -65,7 +67,7 @@ namespace SF.Biz.Trades.Managements
     [DefaultAuthorize(PredefinedRoles.系统管理员)]
 
     public interface ITradeItemManager:
-        IEntitySource<ObjectKey<long>, TradeItem, TradeItemQueryArguments>
+        IEntitySource<ObjectKey<long>, TradeItemInternal, TradeItemQueryArguments>
     {
     }
 

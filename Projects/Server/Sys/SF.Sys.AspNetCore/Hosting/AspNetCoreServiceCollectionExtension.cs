@@ -34,7 +34,7 @@ namespace SF.Sys.Services
 		}
 		public static IServiceCollection AddAspNetCoreAccessToken(this IServiceCollection sc)
 		{
-			sc.AddScoped<IAccessToken, AspNetCoreAccessToken>();
+            sc.AddTransient(sp => sp.Resolve<IClientService>().AccessToken);
 			return sc;
 		}
 		public static IServiceCollection AddAspNetCoreHostingService(this IServiceCollection sc)

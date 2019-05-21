@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>E:\work\ServiceFramework.Demo\SFShop\SF.Server\Biz\SF.Biz.Coupons\SF.Biz.Coupons.xml</DocumentationFile>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+	</PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>E:\work\ServiceFramework.Demo\SFShop\SF.Server\Biz\SF.Biz.Coupons\SF.Biz.Coupons.xml</DocumentationFile>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <None Remove=".licenseheader" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Sys\SF.Sys.Entities.ServiceSupport\SF.Sys.Entities.ServiceSupport.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Entities\SF.Sys.Entities.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.NetworkServices\SF.Sys.NetworkServices.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+
+</Project>

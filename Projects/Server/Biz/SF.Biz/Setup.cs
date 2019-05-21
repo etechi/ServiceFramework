@@ -38,7 +38,9 @@ namespace SF.Sys
             Services.AddAccountingServices();
             Services.AddDeliveryServices();
             Services.AddShoppingCartServices();
+            Services.AddCouponsServices();
             Services.AddTradeServices();
+            
             return Services;
 
 		}

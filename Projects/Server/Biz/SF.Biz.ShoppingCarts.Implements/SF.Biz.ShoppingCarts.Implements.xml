@@ -29,19 +29,9 @@
             商品ID
             </summary>
         </member>
-        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.SkuId">
-            <summary>
-            SKUID
-            </summary>
-        </member>
         <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.SellerTitle">
             <summary>
             卖家标题
-            </summary>
-        </member>
-        <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.ProductId">
-            <summary>
-            产品ID
             </summary>
         </member>
         <member name="P:SF.Biz.ShoppingCarts.DataModels.DataShoppingCartItem.Spec">

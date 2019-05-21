@@ -27,7 +27,8 @@ namespace SF.Sys.Clients
 		public IUserAgent UserAgent => this;
 
 		public long? CurrentScopeId { get; set; }
-
+        public Uri EntryUri { get; set; } = new Uri("http://localhost/");
+        public IAccessToken AccessToken => this;
 		IReadOnlyDictionary<string, string> IUserAgent.ExtraValues { get; } = new Dictionary<string, string>();
 
 		string _ClientAddress = "local";

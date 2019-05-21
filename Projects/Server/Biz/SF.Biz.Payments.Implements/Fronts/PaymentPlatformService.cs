@@ -21,12 +21,18 @@ namespace SF.Biz.Payments
     {
         public IServiceInstanceManager ServiceInstanceManager { get; }
         public TypedInstanceResolver<ICollectProvider> CollectProviderResolver { get; }
-        public PaymentPlatformService(IServiceInstanceManager ServiceInstanceManager, TypedInstanceResolver<ICollectProvider> CollectProviderResolver)
+        public IClientService ClientSerice { get; }
+        public PaymentPlatformService(
+            IServiceInstanceManager ServiceInstanceManager, 
+            TypedInstanceResolver<ICollectProvider> CollectProviderResolver,
+            IClientService ClientSerice
+            )
         {
             this.ServiceInstanceManager = ServiceInstanceManager;
             this.CollectProviderResolver = CollectProviderResolver;
+            this.ClientSerice = ClientSerice;
         }
-        public async Task<PaymentPlatform[]> List(ClientDeviceType Type)
+        public async Task<PaymentPlatform[]> List()
         {
             var svcs=await ServiceInstanceManager.QueryAsync(new ServiceInstanceQueryArgument
             {

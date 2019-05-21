@@ -14,14 +14,14 @@ namespace SF.Biz.Accounting.DataModels
         /// <summary>
         /// 账户所有人
         /// </summary>
-        [Index("pk",IsUnique = true,Order =1)]
+        [Index("pk",IsUnique = true,Order =2)]
         [Required]
         public override long? OwnerId { get; set; }
 
         /// <summary>
         /// 账户科目ID
         /// </summary>
-        [Index("pk",IsUnique =true, Order = 2)]
+        [Index("pk",IsUnique =true, Order = 1)]
         public long AccountTitleId { get; set; }
 
 		[ForeignKey(nameof(AccountTitleId))]

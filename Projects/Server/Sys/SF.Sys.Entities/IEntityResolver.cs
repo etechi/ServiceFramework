@@ -23,7 +23,8 @@ namespace SF.Sys.Entities
 		IEntityWithId<string>,
 		IEntityWithName
 	{
-		Task<object> Resolve();
+		T Cast<T>();
+        
 	}
 	public interface IEntityReferenceResolver
 	{

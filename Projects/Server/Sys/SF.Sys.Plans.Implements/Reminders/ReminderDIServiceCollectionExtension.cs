@@ -82,10 +82,10 @@ namespace SF.Sys.Services
 							SyncKey =e.Id,
 							TaskNextTryTime = e.TaskNextExecTime.Value
 						},
-					TaskExecutor = (sp, entity, arg) =>
+					TaskExecutor = (sp, entity, arg, curExecTime) =>
 					{
 						var rs = (RemindService)sp.Resolve<IRemindService>();
-						return rs.Remind(sp, entity, arg);
+						return rs.Remind(sp, entity, arg, curExecTime);
 					}
 				});
 

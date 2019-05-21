@@ -3,6 +3,7 @@ using SF.Sys.Auth;
 using SF.Sys.Clients;
 using SF.Sys.Entities.Models;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SF.Biz.Accounting
@@ -36,7 +37,7 @@ namespace SF.Biz.Accounting
         /// </summary>
         [EntityIdent(typeof(AccountTitle),nameof(SrcTitleName))]
 
-        public int SrcTitleId { get; set; }
+        public long SrcTitleId { get; set; }
 
         /// <summary>
         /// 源科目
@@ -51,7 +52,7 @@ namespace SF.Biz.Accounting
         /// </summary>
         [EntityIdent(typeof(User), nameof(DstName))]
         [Layout(3,1)]
-        public int DstId { get; set; }
+        public long DstId { get; set; }
 
         /// <summary>
         /// 目标用户
@@ -65,7 +66,7 @@ namespace SF.Biz.Accounting
         /// 目标科目
         /// </summary>
         [EntityIdent(typeof(AccountTitle), nameof(DstTitleName))]
-        public int DstTitleId { get; set; }
+        public long DstTitleId { get; set; }
 
         /// <summary>
         /// 目标科目
@@ -111,10 +112,32 @@ namespace SF.Biz.Accounting
         public ClientDeviceType OpDevice { get; set; }
 
         /// <summary>
-        /// 业务来源
+        /// 根业务
         /// </summary>
-        [EntityIdent]
-        public string TrackEntityIdent { get; set; }
+        [EntityIdent(NameField: nameof(BizRootName), WithBizType = true)]
+        [ReadOnly(true)]
+        public string BizRoot { get; set; }
+
+        /// <summary>
+        /// 根业务
+        /// </summary>
+        [Ignore]
+        [TableVisible]
+        public string BizRootName { get; set; }
+
+        /// <summary>
+        /// 父业务
+        /// </summary>
+        [EntityIdent(NameField: nameof(BizParentName), WithBizType = true)]
+        [ReadOnly(true)]
+        public string BizParent { get; set; }
+
+        /// <summary>
+        /// 父业务
+        /// </summary>
+        [Ignore]
+        [TableVisible]
+        public string BizParentName { get; set; }
 
     }
 }

@@ -27,54 +27,49 @@ namespace SF.Sys.AspNetCore
 {
 
 
-	public class AspNetCoreAccessToken : IAccessToken
-	{
-		public Microsoft.AspNetCore.Http.HttpContext Context { get; }
-		public AspNetCoreAccessToken(IServiceProvider Services)
-		{
-			Context = Services.Resolve<IHttpContextAccessor>().HttpContext;
-		}
-		public ClaimsPrincipal User 
-			{
-				get
-				{
-					//Context.ChallengeAsync("Bearer").Wait();
-					return (_Users?.Count ?? 0) == 0 ? Operator : _Users.Peek();
-			}
-			}
-		Stack<ClaimsPrincipal> _Users;
-
-		public ClaimsPrincipal Operator => Context?.User;
-		
-
-		public async Task<T> UseUser<T>(ClaimsPrincipal NewUser,Func<Task<T>> Callback)
-		{
-			if (_Users == null)
-				_Users = new Stack<ClaimsPrincipal>();
-			_Users.Push(NewUser);
-			try
-			{
-				return await Callback();
-			}
-			finally
-			{
-				_Users.Pop();
-			}
-		}
-	}
 	
-	public class AspNetCoreClientService : IClientService, IUserAgent
-	{
+	public class AspNetCoreClientService : IClientService, IUserAgent, IAccessToken
+    {
 		public Microsoft.AspNetCore.Http.HttpContext Context { get; }
 		public IClientDeviceTypeDetector ClientDeviceTypeDetector { get; }
+
 		public AspNetCoreClientService(IServiceProvider Services, IClientDeviceTypeDetector ClientDeviceTypeDetector)
 		{
 			Context = Services.Resolve<IHttpContextAccessor>().HttpContext;
 			this.ClientDeviceTypeDetector = ClientDeviceTypeDetector;
 		}
-		public IUserAgent UserAgent => this;
+        public ClaimsPrincipal User
+        {
+            get
+            {
+                //Context.ChallengeAsync("Bearer").Wait();
+                return (_Users?.Count ?? 0) == 0 ? Operator : _Users.Peek();
+            }
+        }
+        Stack<ClaimsPrincipal> _Users;
 
-		public long? CurrentScopeId { get; set; }
+        public ClaimsPrincipal Operator => Context?.User;
+
+
+        public async Task<T> UseUser<T>(ClaimsPrincipal NewUser, Func<Task<T>> Callback)
+        {
+            if (_Users == null)
+                _Users = new Stack<ClaimsPrincipal>();
+            _Users.Push(NewUser);
+            try
+            {
+                return await Callback();
+            }
+            finally
+            {
+                _Users.Pop();
+            }
+        }
+
+        public IUserAgent UserAgent => this;
+        public IAccessToken AccessToken => this;
+        public Uri EntryUri => Context.Request.Uri();
+        public long? CurrentScopeId { get; set; }
 
 		IReadOnlyDictionary<string, string> IUserAgent.ExtraValues { get; } = new Dictionary<string, string>();
 

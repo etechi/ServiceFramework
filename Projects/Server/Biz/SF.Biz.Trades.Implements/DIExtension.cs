@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Biz.Trades;
 using SF.Biz.Trades.Managements;
+using SF.Biz.Trades.StateProviders;
 using SF.Sys.BackEndConsole;
 
 namespace SF.Sys.Services
@@ -35,13 +36,20 @@ namespace SF.Sys.Services
 
 			sc.AddManagedScoped<IBuyerTradeService, BuyerTradeService>();
             sc.AddManagedScoped<ISellerTradeService, SellerTradeService>();
-
             sc.AddSingleton<ITradeSyncQueue, TradeSyncQueue>();
+
+            sc.AddManagedScoped<ITradeStateProvider, BuyerConfirmProvider>();
+            sc.AddManagedScoped<ITradeStateProvider, BuyerCompleteProvider>();
+            sc.AddManagedScoped<ITradeStateProvider, SellerConfirmProvider>();
+            sc.AddManagedScoped<ITradeStateProvider, SellerCompleteProvider>();
+            sc.AddManagedScoped<ITradeStateProvider, SellerSettlementProvider>();
 
             sc.AddDataModules<
 				SF.Biz.Trades.DataModels.DataTrade,
                 SF.Biz.Trades.DataModels.DataTradeItem
                 >(TablePrefix ?? "Biz");
+
+            sc.AddRemindable<TradeRemindable>();
 
 			sc.InitServices("Trade", async (sp, sim, parent) =>
 			 {
@@ -51,6 +59,28 @@ namespace SF.Sys.Services
                  await sim.DefaultService<ITradeItemManager, TradeItemManager>(null)
                     .WithConsolePages("交易管理/交易明细管理")
                     .Ensure(sp, parent);
+
+                 await sim.DefaultService<IBuyerTradeService, BuyerTradeService>(null)
+                   .Ensure(sp, parent);
+                 await sim.DefaultService<ISellerTradeService, SellerTradeService>(null)
+                   .Ensure(sp, parent);
+
+                 await sim.Service<ITradeStateProvider, BuyerConfirmProvider>(null)
+                    .WithIdent(TradeState.BuyerConfirm.ToString())
+                    .Ensure(sp, parent);
+                 await sim.Service<ITradeStateProvider, BuyerCompleteProvider>(null)
+                    .WithIdent(TradeState.BuyerComplete.ToString())
+                    .Ensure(sp, parent);
+                 await sim.Service<ITradeStateProvider, SellerConfirmProvider>(null)
+                    .WithIdent(TradeState.SellerConfirm.ToString())
+                    .Ensure(sp, parent);
+                 await sim.Service<ITradeStateProvider, SellerCompleteProvider>(null)
+                    .WithIdent(TradeState.SellerComplete.ToString())
+                    .Ensure(sp, parent);
+                 await sim.Service<ITradeStateProvider, SellerSettlementProvider>(null)
+                    .WithIdent(TradeState.SellerSettlement.ToString())
+                    .Ensure(sp, parent);
+
              });
 
 

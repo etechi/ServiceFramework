@@ -13,6 +13,7 @@ namespace SF.Biz.Accounting
         Task<Account> GetAccount(long TitleId, long OwnerId);
         Task<decimal> GetSettlementBalance(long OwnerId);
         Task<Dictionary<long, decimal>> GetSettlementBalances(long[] OwnerIds);
+        Task<(string Title, decimal Value)[]> GetSettlementAccounts(long OwnerId);
 
     }
 }

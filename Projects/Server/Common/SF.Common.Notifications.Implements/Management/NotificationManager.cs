@@ -227,9 +227,7 @@ namespace SF.Common.Notifications.Management
 			await RemindService.Value.Setup(
 				new RemindSetupArgument
 				{
-					BizIdent = model.Id,
-					BizIdentType = "Notification",
-					BizType = "发送通知",
+                    BizSource=new TrackIdent("发送通知", "Notification", model.Id),
 					Name = editable.Name,
 					RemindableName = typeof(Remindable).FullName,
 					RemindTime = editable.Time,
@@ -240,11 +238,7 @@ namespace SF.Common.Notifications.Management
 		{
 			await RemoveStatus(ctx);
 
-			await RemindService.Value.Remove(
-				"发送通知",
-				"Notification",
-				ctx.Model.Id
-				);
+			await RemindService.Value.Remove(new TrackIdent("发送通知", "Notification", ctx.Model.Id));
 			await base.OnRemoveModel(ctx);
 		}
 

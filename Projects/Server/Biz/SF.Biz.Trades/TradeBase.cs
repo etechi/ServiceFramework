@@ -3,57 +3,32 @@ using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Entities.Models;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SF.Biz.Trades
 {
-    public enum TradeType
-    {
-        /// <summary>
-        /// 常规交易
-        /// </summary>
-        Normal,
-        /// <summary>
-        /// 模拟交易
-        /// </summary>
-        Simulated
-    }
     /// <summary>
     /// 交易
     /// </summary>
-    public class Trade:UIObjectEntityBase
+    public class TradeBase:ObjectEntityBase
 	{
-        public static string CreateIdent(long Id,DateTime CreatedTime)
-        {
-            return "T" + CreatedTime.ToString("yyyyMMdd") + Id.ToString().PadLeft(8, '0');
-        }
-
-        ///<title>订单编号</title>
+        ///<title>名称</title>
         /// <summary>
-        /// 订单编号格式为：T+年月日+8位交易ID
+        /// 订单名称，一般为首个商品的名称
         /// </summary>
-        [TableVisible]
-        [Layout(1, 2)]
-        [EntityTitle]
-        public string Ident { get { return CreateIdent(Id, CreatedTime); } }
+        [ReadOnly(true)]
+        public override string Name { get; set; }
 
-        ///<title>下单时间</title>
-        /// <summary>
-        /// 用户创建订单的时间
-        /// </summary>
-        [TableVisible]
-        [Layout(2)]
-        public override DateTime CreatedTime { get; set; }
 
         ///<title>标题</title>
         /// <summary>
-        /// 订单描述，一般为首个商品的标题
+        /// 订单标题，一般为首个商品的标题
         /// </summary>
-        [TableVisible]
-        [Layout(3)]
-        public override string Name{ get; set; }
+        [Layout(4)]
+        [MaxLength(100)]
+        [ReadOnly(true)]
+        public string Title { get; set; }
 
         ///<title>照片</title>
         /// <summary>
@@ -61,7 +36,8 @@ namespace SF.Biz.Trades
         /// </summary>
         [Image]
         [Layout(4)]
-        public override string Image { get; set; }
+        [ReadOnly(true)]
+        public string Image { get; set; }
 
         ///<title>总金额</title>
         /// <summary>
@@ -69,7 +45,24 @@ namespace SF.Biz.Trades
         /// </summary>
         [TableVisible]
         [Layout(10,1)]
+        [ReadOnly(true)]
         public decimal Amount { get; set; }
+
+        /// <summary>
+        /// 合计折扣金额
+        /// </summary>
+        [TableVisible]
+        [Layout(10, 1)]
+        [ReadOnly(true)]
+        public decimal DiscountAmount { get; set; }
+
+        /// <summary>
+        /// 合计折扣后金额
+        /// </summary>
+        [TableVisible]
+        [Layout(10, 1)]
+        [ReadOnly(true)]
+        public decimal AmountAfterDiscount { get; set; }
 
         ///<title>结算金额</title>
         /// <summary>
@@ -89,7 +82,6 @@ namespace SF.Biz.Trades
 
         ///<title>折扣说明</title>
         /// <summary>
-        /// 当结算金额比总金额少时，说明折扣的来源
         /// </summary>
         [Layout(11, 1)]
         [TableVisible]
@@ -173,21 +165,11 @@ namespace SF.Biz.Trades
         public string SellerRemarks { get; set; }
 
         /// <summary>
-        /// 订单条目
+        /// 结算记录
         /// </summary>
-        public IEnumerable<TradeItem> Items { get; set; }
+        [EntityIdent(typeof(SettlementRecord))]
+        public long? SettlementRecordId { get; set; }
 
-        /// <summary>
-        /// 充值记录
-        /// </summary>
-        [EntityIdent(typeof(DepositRecord))]
-        public long? DepositRecordId { get; set; }
-
-        /// <summary>
-        /// 退款记录
-        /// </summary>
-        [EntityIdent(typeof(DrawbackRecord))]
-        public long? RefundRecordId { get; set; }
 
         /// <summary>
         /// 交易类型

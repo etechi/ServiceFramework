@@ -13,21 +13,15 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-using SF.Sys.Entities;
-
-namespace SF.Biz.Accounting
+namespace SF.Sys.Entities
 {
-
-
-    public class DrawbackRecordManager :
-        AutoQueryableEntitySource<ObjectKey<long>, DrawbackRecord, DrawbackRecord,  DrawbackRecordQueryArguments, DataModels.DataDrawbackRecord>,
-        IDrawbackRecordManager
+    public interface IEntityInterfaceResolver<K, T> where K : IEquatable<K>
     {
-        public DrawbackRecordManager(IEntityServiceContext ServiceContext) : base(ServiceContext)
-        {
-        }
-
+        Task<Dictionary<K,T>> Resolve(string EntityIdent,K[] Ids);
+        Task<T> Resolve(string EntityIdent, K Id);
     }
-
 }

@@ -1,9 +1,12 @@
-﻿using SF.Biz.Products;
+﻿using SF.Biz.Trades;
+using SF.Biz.Trades.Managements;
 using SF.Sys;
 using SF.Sys.Auth;
 using SF.Sys.Clients;
 using SF.Sys.Collections.Generic;
 using SF.Sys.Data;
+using SF.Sys.Entities;
+using SF.Sys.Services;
 using SF.Sys.TimeServices;
 using System;
 using System.Collections.Generic;
@@ -14,25 +17,29 @@ namespace SF.Biz.ShoppingCarts
     public class ShoppingCartService:IShoppingCartService
     {
         public IDataScope DataScope { get; }
-        public IItemService ItemService { get; }
+        public NamedServiceResolver<ITradableItemResolver> ItemResolver { get; }
         public ITimeService TimeService { get; }
         public IAccessToken AccessToken { get; }
+        public Lazy<ITradeManager> TradeManager { get; }
         public Lazy<IIdentGenerator<DataModels.DataShoppingCartItem>> IdentGenerator { get; }
         long EnsureUserIdent()
             => AccessToken.User.EnsureUserIdent();
 
         public ShoppingCartService(
-            IItemService ItemService, 
+            NamedServiceResolver<ITradableItemResolver> ItemResolver, 
             ITimeService TimeService, 
             IDataScope DataScope, 
             IAccessToken AccessToken,
-            Lazy<IIdentGenerator<DataModels.DataShoppingCartItem>> IdentGenerator)
+            Lazy<IIdentGenerator<DataModels.DataShoppingCartItem>> IdentGenerator,
+            Lazy<ITradeManager> TradeManager
+            )
         {
             this.TimeService = TimeService;
-            this.ItemService = ItemService;
+            this.ItemResolver = ItemResolver;
             this.DataScope = DataScope;
             this.AccessToken = AccessToken;
             this.IdentGenerator = IdentGenerator;
+            this.TradeManager = TradeManager;
         }
 
         string TypeNormalize(string Type)
@@ -58,8 +65,6 @@ namespace SF.Biz.ShoppingCarts
             return q.Select(m => new ShoppingCartItem
             {
                 SellerId = m.SellerId,
-                ProductId = m.ProductId,
-                SkuId = m.SkuId,
                 ItemId = m.ItemId,
                 Name = m.Name,
                 Image = m.Image,
@@ -73,45 +78,60 @@ namespace SF.Biz.ShoppingCarts
             var BuyerId = EnsureUserIdent();
             var Type = TypeNormalize(Args.Type);
             return await DataScope.Use("查询项目", async Context =>
-             {
-                 var mq = Context.Queryable<DataModels.DataShoppingCartItem>()
-                         .Where(m => m.BuyerId.Equals(BuyerId) && m.Type == Type);
-                 if (Args.Selected)
-                     mq = mq.Where(i => i.Selected == true);
+            {
+                var mq = Context.Queryable<DataModels.DataShoppingCartItem>()
+                        .Where(m => m.BuyerId.Equals(BuyerId) && m.Type == Type);
+                if (Args.Selected)
+                    mq = mq.Where(i => i.Selected == true);
 
-                 var q = MapModelToPublic(mq);
+                var q = MapModelToPublic(mq);
 
-                 var results = await q.ToArrayAsync();
+                var results = await q.ToArrayAsync();
 
-                 var pids = results.Select(i => i.ItemId).ToArray();
-                 var items = (await ItemService.GetItems(pids)).ToDictionary(p => p.ItemId);
-                 foreach (var result in results)
-                 {
-                     IItem item;
-                     if (!items.TryGetValue(result.ItemId, out item))
-                     {
-                         result.LogicState = Sys.Entities.EntityLogicState.Disabled;
-                         continue;
-                     }
-                     result.LogicState = !item.OnSale ? Sys.Entities.EntityLogicState.Disabled : Sys.Entities.EntityLogicState.Enabled;
-                     result.CouponDisabled = item.CouponDisabled;
-                     await OnUpdateResult(BuyerId, result, item, Args.IgnoreQuantityCheck);
-                     if (!Args.IgnoreQuantityCheck)
-                         result.Quantity = EnsureItemLimit(item, result.Quantity);
-                 }
-                 if (Args.Enabled)
-                     return results.Where(t => t.LogicState == Sys.Entities.EntityLogicState.Enabled).ToArray();
+                var pids = results.Select(i => i.ItemId).ToArray();
 
-                 if (!Args.IgnoreQuantityCheck)
-                 {
-                     foreach (var it in results)
-                         if (it.LogicState != Sys.Entities.EntityLogicState.Enabled)
-                             it.Selected = false;
-                 }
-                 return results;
-             });
+                var items = await GetTradableItems(pids);
+                foreach (var result in results)
+                {
+                    ITradableItem item;
+                    if (!items.TryGetValue(result.ItemId, out item))
+                    {
+                        result.LogicState = Sys.Entities.EntityLogicState.Disabled;
+                        continue;
+                    }
+                    result.LogicState = item.LogicState;
+                    result.CouponDisabled = item.CouponDisabled;
+                    await OnUpdateResult(BuyerId, result, item, Args.IgnoreQuantityCheck);
+                    if (!Args.IgnoreQuantityCheck)
+                        result.Quantity = EnsureItemLimit(item, result.Quantity);
+                }
+                if (Args.Enabled)
+                    return results.Where(t => t.LogicState == Sys.Entities.EntityLogicState.Enabled).ToArray();
+
+                if (!Args.IgnoreQuantityCheck)
+                {
+                    foreach (var it in results)
+                        if (it.LogicState != Sys.Entities.EntityLogicState.Enabled)
+                            it.Selected = false;
+                }
+                return results;
+            });
         }
-        protected virtual Task OnUpdateResult(long BuyerId, ShoppingCartItem result, IItem item, bool IgnoreQuantityCheck)
+
+        private async Task<Dictionary<string, ITradableItem>> GetTradableItems(string[] pids)
+        {
+            var items = new Dictionary<string, ITradableItem>();
+            foreach (var g in pids.Select(i => i.Split2('-')).GroupBy(p => p.Item1, p => p.Item2))
+            {
+                foreach (var item in await ItemResolver(g.Key).Resolve(g.ToArray()))
+                    items.Add(item.Id, item);
+
+            }
+
+            return items;
+        }
+
+        protected virtual Task OnUpdateResult(long BuyerId, ShoppingCartItem result, ITradableItem item, bool IgnoreQuantityCheck)
         {
             result.Image = item.Image;
             result.Name = item.Title;
@@ -149,20 +169,18 @@ namespace SF.Biz.ShoppingCarts
             await UpdateInternal(Args.Type, Args.Items, (o, i) => i.Quantity, true, Args.SkipLimitEnsure);
         }
 
-        protected virtual void OnInitModel(DataModels.DataShoppingCartItem model, IItem item, ItemStatus status)
+        protected virtual void OnInitModel(DataModels.DataShoppingCartItem model, ITradableItem item, ItemStatus status)
         {
-            model.SkuId = 0;
             model.SellerId = item.SellerId;
             model.SellerTitle = null;
-            model.ItemId = item.ItemId;
-            model.ProductId = item.ProductId;
+            model.ItemId = item.Id;
             model.Name = item.Title;
             model.Image = item.Image;
             model.Spec = null;
             model.MarketPrice = item.MarketPrice;
             model.Price = item.Price;
         }
-        protected virtual void OnUpdateModel(DataModels.DataShoppingCartItem model, IItem item, ItemStatus status)
+        protected virtual void OnUpdateModel(DataModels.DataShoppingCartItem model, ITradableItem item, ItemStatus status)
         {
 
         }
@@ -188,9 +206,8 @@ namespace SF.Biz.ShoppingCarts
 
             return await DataScope.Retry("更新购物车项目",async Context =>{
                 var added = 0;
-                Type = "main";
 
-                Dictionary<long, DataModels.DataShoppingCartItem> orgCartItems;
+                Dictionary<string, DataModels.DataShoppingCartItem> orgCartItems;
                 if (RemoveMissing)
                     orgCartItems = await Context.Queryable<DataModels.DataShoppingCartItem>()
                         .Where(m => m.BuyerId.Equals(BuyerId) && m.Type == Type)
@@ -211,8 +228,7 @@ namespace SF.Biz.ShoppingCarts
 
                 var time = TimeService.Now;
                 var newItems = new List<ItemStatus>();
-                var productItems = (await ItemService.GetItems(Items.Select(i => i.ItemId).ToArray()))
-                    .ToDictionary(p => p.ItemId);
+                var productItems = await GetTradableItems(Items.Select(i => i.ItemId).ToArray());
 
                 foreach (var it in Items)
                 {
@@ -258,20 +274,23 @@ namespace SF.Biz.ShoppingCarts
             });
         }
 
-        protected virtual int EnsureItemLimit(IItem item, int Quantity)
+        protected virtual int EnsureItemLimit(ITradableItem item, int Quantity)
         {
             return Quantity;
         }
 
-        public async Task Clear(string Type)
+        public async Task Clear(string Type,bool Selected)
         {
             var BuyerId = EnsureUserIdent();
             Type = TypeNormalize(Type);
             await DataScope.Use("清除项目", async Context =>
             {
-                var items = await Context.Queryable<DataModels.DataShoppingCartItem>()
-                .Where(m => m.BuyerId.Equals(BuyerId) && m.Type == Type)
-                .ToArrayAsync();
+                var q = Context.Queryable<DataModels.DataShoppingCartItem>(false)
+                            .Where(m => m.BuyerId.Equals(BuyerId) && m.Type == Type);
+                if (Selected)
+                    q = q.Where(i => i.Selected);
+
+                var items = await q.ToArrayAsync();
                 Context.RemoveRange(items);
                 await Context.SaveChangesAsync();
             });
@@ -289,6 +308,42 @@ namespace SF.Biz.ShoppingCarts
                 await Context.SaveChangesAsync();
                 return items.Length;
             });
+        }
+
+
+
+        public async Task<long> CreateTrade(string Type)
+        {
+            var BuyerId = EnsureUserIdent();
+
+            Type = TypeNormalize(Type);
+            var items = await DataScope.Use("创建订单", ctx =>
+             {
+                 return ctx.Queryable<DataModels.DataShoppingCartItem>()
+                .Where(i =>
+                    i.BuyerId == BuyerId &&
+                    i.Type == Type &&
+                    i.LogicState == EntityLogicState.Enabled &&
+                    i.Selected
+                    )
+                .Select(i => new { i.Quantity, i.ItemId,i.SellerId })
+                .ToArrayAsync();
+             });
+            if (items.Length == 0)
+                throw new PublicArgumentException("请选择购买的项目");
+
+            var re = await TradeManager.Value.CreateAsync(new TradeInternal
+            {
+                BuyerId=BuyerId,
+                SellerId=items.Select(i=>i.SellerId).Distinct().Single(),
+                Items = items.Select(i => new TradeItemInternal
+                {
+                    ProductId = i.ItemId,
+                    Quantity = i.Quantity                    
+                }).ToArray()
+            });
+            await Clear(Type, true);
+            return re.Id;
         }
     }
 }

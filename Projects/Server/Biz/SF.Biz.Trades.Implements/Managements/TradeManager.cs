@@ -4,206 +4,299 @@ using System.Threading.Tasks;
 using SF.Sys;
 using SF.Sys.Entities;
 using SF.Sys.Data;
+using SF.Biz.Trades.DataModels;
+using System.Collections.Generic;
+using SF.Sys.Services;
+using System.Collections.Concurrent;
+using SF.Sys.Reflection;
+using SF.Sys.Linq;
+using SF.Sys.Reminders;
+using SF.Biz.Trades.StateProviders;
 
 namespace SF.Biz.Trades.Managements
 {
 
+
+    public class TradeSetting {
+        
+    }
+
     public class TradeManager :
-        AutoQueryableEntitySource<ObjectKey<long>, Trade, Trade, TradeQueryArguments, DataModels.DataTrade>,
+        AutoModifiableEntityManager<ObjectKey<long>, TradeInternal, TradeInternal, TradeQueryArguments, TradeInternal, DataModels.DataTrade>,
         ITradeManager
     {
         ITradeSyncQueue SyncQueue { get; }
-        public TradeManager(IEntityServiceContext ServiceContext, ITradeSyncQueue SyncQueue) : base(ServiceContext)
+        TradeSetting Setting { get; }
+        public TradeManager(IEntityServiceContext ServiceContext, ITradeSyncQueue SyncQueue ,TradeSetting Setting) : base(ServiceContext)
         {
+            this.Setting = Setting;
             this.SyncQueue = SyncQueue;
         }
+                     
 
-        void VerifyDiscount(
-             string Name,
-             decimal OrgValue,
-             decimal SettlementValue,
-             string DiscountDesc,
-             string DiscountEntityId
-             )
+
+        void UpdateSettlementAmount(DataModels.DataTrade model,TradeInternal editable,Dictionary<long,TradeItemInternal> itemDict = null)
         {
-            if (OrgValue == SettlementValue)
-                return;
-            if (OrgValue < SettlementValue)
-                throw new ArgumentException($"结算{Name}不能比原始{Name}高");
-            if (string.IsNullOrWhiteSpace(DiscountDesc))
-                throw new ArgumentException($"结算{Name}比原始{Name}低时，必须提供折扣说明");
-            if (string.IsNullOrWhiteSpace(DiscountEntityId))
-                throw new ArgumentException($"结算{Name}比原始{Name}低时，必须提供折扣编号");
-        }
-        void VerifyRange(string Name, decimal Value, bool CanBeZero, decimal MaxValue)
-        {
-            if (CanBeZero)
+            if (itemDict == null)
+                itemDict = editable.Items.ToDictionary(ti => ti.Id);
+
+            model.TotalSettlementAmount = 0;
+
+            int itemCount = 0;
+            foreach (var mi in model.Items)
             {
-                if (Value < 0)
-                    throw new ArgumentException($"{Name}不能小于0");
+                var ei = itemDict[mi.Id];
+                mi.SettlementAmount = ei.SettlementAmount;
+                model.TotalSettlementAmount += mi.SettlementAmount;
+                itemCount++;
             }
-            else if (Value <= 0)
-                throw new ArgumentException($"{Name}不能小于等于0");
 
-            if (Value > MaxValue)
-                throw new ArgumentException($"{Name}不能超过{MaxValue}");
+            var left = model.TotalSettlementAmount;
+            var i = 0;
+            foreach (var mi in model.Items)
+            {
+                i++;
+                if (i == itemCount)
+                {
+                    mi.ApportionAmount = left;
+                    mi.ApportionPrice = Math.Floor(mi.ApportionAmount * 100m / mi.Quantity) * 0.01m;
+                }
+                else
+                {
+                    mi.ApportionPrice = Math.Floor(mi.Amount * model.TotalSettlementAmount * 100m / model.TotalAmount / mi.Quantity) * 0.01m;
+                    mi.ApportionAmount = mi.ApportionPrice * mi.Quantity;
+                    left -= mi.ApportionAmount;
+                }
+            }
         }
-        protected virtual void OnVerifyTradeItemArgument(
-            TradeCreateArgument args,
-            TradeItemCreateArgument TradeItem
+
+
+        async Task FillTradeItemFields(TradeInternal editable)
+        {
+            var eir = ServiceContext.ServiceProvider.Resolve<ITradableItemResolver>();
+            editable.Amount = 0;
+            foreach (var g in editable.Items.GroupBy(i => i.ProductId.LeftBefore('-')))
+            {
+                if (g.Key.IsNullOrEmpty())
+                    throw new PublicArgumentException("部分项目未提供商品类型");
+
+                var tradables = (await eir.Resolve(g.Select(i => i.ProductId).ToArray())).ToDictionary(i=>i.Id);
+                foreach (var i in g)
+                {   
+                    if (!tradables.TryGetValue(i.ProductId, out var tradable))
+                        throw new PublicArgumentException($"找不到商品:{i.ProductId}");
+
+                    if (i.LogicState != EntityLogicState.Enabled)
+                        throw new PublicArgumentException($"{tradable.Title}已下架");
+
+                    i.Name = tradable.Name;
+                    i.Title = tradable.Title;
+                    i.Price = tradable.Price;
+                    i.Image = tradable.Image;
+                    i.Amount = i.Quantity * i.Price;
+                    i.DeliveryProvider = tradable.DeliveryProvider;
+                    editable.Amount += i.Amount;
+                }
+            }
+        }
+        async Task ResolveDiscounts(TradeInternal trade)
+        {
+            var ids=trade.Items.Select(i => i.DiscountEntityIdent).WithLast(trade.DiscountEntityId).Where(i => i.HasContent()).ToArray();
+            var discounts=await ServiceContext.ServiceProvider.Resolve<IEntityReferenceResolver>().Resolve(null, ids);
+            var discountDict=discounts.ToDictionary(d => d.Id, d => d.Cast<IDiscountItem>());
+
+            trade.AmountAfterDiscount = 0;
+            trade.DiscountAmount = 0;
+            foreach(var item in trade.Items)
+            {
+                item.PriceAfterDiscount = item.Price;
+                item.AmountAfterDiscount = item.Amount;
+                item.DiscountAmount = 0;
+                item.DiscountDesc = null;
+
+                if (item.DiscountEntityIdent.HasContent())
+                {
+                    if (!discountDict.TryGetValue(item.DiscountEntityIdent, out var discount))
+                        throw new PublicArgumentException("找不到优惠券:" + item.DiscountEntityIdent);
+
+                    await discount.Apply(item, trade);
+
+                    Ensure.Equal(item.AmountAfterDiscount - item.Amount, item.DiscountAmount, "则扣金额错误");
+                    Ensure.Equal(item.AmountAfterDiscount, item.Quantity * item.PriceAfterDiscount, "则扣后小计错误");
+                    Ensure.HasContent(item.DiscountDesc, "折扣说明");
+                }
+
+                item.SettlementAmount = item.AmountAfterDiscount;
+                trade.DiscountAmount += item.DiscountAmount;
+                trade.AmountAfterDiscount += item.AmountAfterDiscount;
+            }
+            trade.SettlementAmount = trade.AmountAfterDiscount;
+
+
+            if (trade.DiscountEntityId.HasContent())
+            {
+                if (!discountDict.TryGetValue(trade.DiscountEntityId, out var discount))
+                    throw new PublicArgumentException("找不到优惠券:" + trade.DiscountEntityId);
+                await discount.Apply(trade);
+                Ensure.Equal(trade.AmountAfterDiscount - trade.Amount, trade.DiscountAmount, "则扣金额错误");
+                Ensure.HasContent(trade.DiscountDesc, "折扣说明");
+            }
+        }
+
+
+        private static void InitModel(DataTrade model, TradeInternal editable, Dictionary<long, TradeItemInternal> itemDict)
+        {
+
+            if (editable.BizRoot == null)
+                editable.BizRoot = editable.BizParent = new TrackIdent("交易", "Trade", model.Id);
+            model.BizRoot = editable.BizRoot;
+            model.BizParent = editable.BizParent;
+
+            model.Name = editable.Name;
+            model.Title = editable.Title;
+            model.Image = editable.Image;
+
+            model.TotalAmount = 0;
+            model.TotalSettlementAmount = 0;
+            model.TotalQuantity = 0;
+            model.TotalAmountAfterDiscount = 0;
+            model.TotalDiscountAmount = 0;
+            model.State = TradeState.BuyerConfirm;
+            foreach (var mi in model.Items)
+            {
+                var ei = itemDict[mi.Id];
+
+                mi.Name = ei.Name;
+                mi.Title = ei.Title;
+
+                mi.Price = ei.Price;
+                mi.DeliveryProvider = ei.DeliveryProvider;
+                mi.Amount = ei.Amount = ei.Quantity * ei.Price;
+
+                Ensure.Equal(ei.Quantity * ei.PriceAfterDiscount, ei.AmountAfterDiscount, "折扣后小计错误");
+                Ensure.Equal(ei.DiscountAmount, ei.Amount - ei.AmountAfterDiscount, "则扣金额错误");
+
+                mi.PriceAfterDiscount = ei.PriceAfterDiscount;
+                mi.AmountAfterDiscount = ei.AmountAfterDiscount;
+                mi.DiscountAmount = ei.DiscountAmount;
+
+                model.TotalAmount += mi.Amount;
+                model.TotalDiscountAmount += mi.DiscountAmount;
+                model.TotalAmountAfterDiscount += mi.AmountAfterDiscount;
+                model.TotalQuantity += mi.Quantity;
+            }
+        }
+        protected override async Task OnNewModel(IModifyContext ctx)
+        {
+            var editable = ctx.Editable;
+            if ((editable.BizRoot == null) != (editable.BizParent==null))
+                throw new ArgumentException("必须同时指定根业务和父业务");
+            await base.OnNewModel(ctx);
+            
+        }
+        protected override async Task OnUpdateModel(IModifyContext ctx)
+        {
+            var model = ctx.Model;
+            if (model.State != TradeState.BuyerConfirm || model.StateExecStartTime.HasValue)
+                throw new PublicInvalidOperationException("订单不支持修改");
+
+            var editable = ctx.Editable;
+                        
+            await base.OnUpdateModel(ctx);
+
+            if (ctx.Action == ModifyAction.Create)
+                foreach (var p in editable.Items.Zip(ctx.Model.Items, (ii, mi) => (ii, mi)))
+                    p.ii.Id = p.mi.Id;
+
+            var itemDict = editable.Items.ToDictionary(i => i.Id);
+
+            if (ctx.Action == ModifyAction.Create)
+            {
+                //填充商品信息
+                await FillTradeItemFields(editable);
+
+                //常规批价
+                await ResolveDiscounts(editable);
+
+                InitModel(model, editable, itemDict);
+
+            }
+
+            //计算结算价格
+            UpdateSettlementAmount(model, editable, itemDict);
+            
+            //验证交易信息
+            foreach (var tv in ServiceContext.ServiceProvider.Resolve<IEnumerable<ITradeValidator>>())
+                await tv.Validate(editable);
+            
+            if(ctx.Action==ModifyAction.Create)
+                await WithTrade(model,null, Advance);
+
+        }
+
+
+
+        async Task<TradeExecResult> WithTrade(
+            DataTrade trade,
+            IArgumentWithExpires Argument,
+            Func<DataModels.DataTrade, IArgumentWithExpires, Task<TradeExecResult>> callback
             )
         {
-            Ensure.HasContent(TradeItem.Name, "必须提供订单项目描述");
-            Ensure.HasContent(TradeItem.ProductType, "必须指定产品类型");
-            Ensure.Positive(TradeItem.ProductId, "必须指定产品ID");
+            TradeExecResult result = null;
 
-
-            VerifyRange("数量", TradeItem.Quantity, false, 1000000);
-            VerifyRange("价格金额", TradeItem.Price, true, 10000000);
-            var OrgAmount = TradeItem.SettlementPrice * TradeItem.Quantity;
-            VerifyRange("小计金额", OrgAmount, true, 10000000);
-            VerifyRange("小计结算金额", TradeItem.SettlementAmount, true, 10000000);
-
-
-            VerifyDiscount("单价金额", TradeItem.Price, TradeItem.SettlementPrice, TradeItem.PriceDiscountDesc, TradeItem.DiscountEntityIdent);
-
-            VerifyDiscount("小计金额", OrgAmount, TradeItem.SettlementAmount, TradeItem.AmmountDiscountDesc, TradeItem.DiscountEntityIdent);
-
-        }
-        protected virtual void OnVerifyTradeArgument(TradeCreateArgument args)
-        {
-            Ensure.HasContent(args.Name, "必须提供订单描述");
-
-            Ensure.NotDefault(args.SellerId, "必须提供卖家ID");
-            Ensure.NotDefault(args.BuyerId, "必须提供买家ID");
-            Ensure.NotDefault(args.SellerName, "必须提供卖家名称");
-            Ensure.NotDefault(args.BuyerName, "必须提供买家名称");
-
-            Ensure.NotNull(args.Items, "订单项");
-            Ensure.Positive(args.Items.Length, "订单项数目");
-
-            decimal amount = 0;
-            var quantity = 0;
-            foreach (var it in args.Items)
+            var bizRoot = TrackIdent.Parse(trade.BizRoot);
+            if (trade.ReminderSetuped && !(Argument is TradeStateRemindArgument))
             {
-                OnVerifyTradeItemArgument(args, it);
-                amount += it.SettlementAmount;
-                quantity += it.Quantity;
+                //如果提醒器已注册且调用不是来自提醒器
+                await ServiceContext.ServiceProvider.Resolve<IRemindService>().Remind(
+                    bizRoot,
+                    new Func<IArgumentWithExpires, Task<TradeExecResult>>(async (arg) =>
+                    {
+                        if (Argument == null)
+                            Argument = arg;
+                        else if (!Argument.Expires.HasValue)
+                            Argument.Expires = arg.Expires;
+                        result = await callback(trade, Argument);
+                        if (!result.Expires.HasValue)
+                            trade.ReminderSetuped = false;
+                        return result;
+                    }));
             }
-
-            VerifyRange("总金额", amount, true, 10000000);
-            VerifyRange("总结算金额", args.SettlementAmount, true, 10000000);
-            VerifyDiscount("总金额", amount, args.SettlementAmount, args.DiscountDesc, args.DiscountEntityId);
-        }
-
-        protected virtual void OnInitTradeItem(DataModels.DataTradeItem Model, TradeItemCreateArgument item, TradeCreateArgument arg)
-        {
-
-        }
-        protected virtual void OnInitTrade(DataModels.DataTrade Model, TradeCreateArgument arg)
-        {
-
-        }
-        public async Task<long> Create(TradeCreateArgument args)
-        {
-            OnVerifyTradeArgument(args);
-
-            var tid = await IdentGenerator.GenerateAsync<DataModels.DataTrade>();
-            var iids = await IdentGenerator.GenerateAsync<DataModels.DataTradeItem>(args.Items.Length);
-            var items = args.Items.Select((it, idx) =>
+            else
             {
-                var item = new DataModels.DataTradeItem
+
+                result = await callback(trade, Argument);
+                //如果交易为顶层业务，需要注册提醒器
+                if (result.Expires.HasValue )
                 {
-                    Id=iids[idx],
-                    Order = idx,
-                    Image = it.Image,
-                    Name = it.Name,
-                    ProductType = it.ProductType,
-                    ProductId = it.ProductId,
-                    SellerId = args.SellerId,
-                    BuyerId = args.BuyerId,
-                    Price = it.Price,
-                    Quantity = it.Quantity,
-                    PriceDiscountDesc = it.PriceDiscountDesc,
-                    SettlementPrice = it.SettlementPrice,
-                    Amount = it.Price * it.Quantity,
-                    AmountDiscountDesc = it.AmmountDiscountDesc,
-                    DiscountEntityIdent = it.DiscountEntityIdent,
-                    SettlementAmount = it.SettlementAmount,
-                    BuyerRemarks = it.BuyerRemarks,
-                    SellerRemarks = it.SellerRemarks,
-                    OpAddress = args.OpAddress,
-                    OpDevice = args.OpDevice,
-                    TradeType = args.TradeType,
-
-                    State = TradeState.Created,
-                    EndType = TradeEndType.InProcessing,
-                    CreatedTime = args.Time,
-                    LastStateTime = args.Time,
-                };
-
-                OnInitTradeItem(item, it, args);
-                return item;
-            }).ToArray();
-
-            var trade = new DataModels.DataTrade
-            {
-                Id=tid,
-                TotalAmount = items.Sum(it => it.Amount),
-                TotalSettlementAmount = items.Sum(it => it.SettlementAmount),
-                TotalQuantity = items.Sum(it => it.Quantity),
-                SellerId = args.SellerId,
-                BuyerId = args.BuyerId,
-                OpAddress = args.OpAddress,
-                OpDevice = args.OpDevice,
-                TradeType = args.TradeType,
-                State = TradeState.Created,
-                EndType = TradeEndType.InProcessing,
-                CreatedTime = args.Time,
-                LastStateTime = args.Time,
-                DiscountEntityIdent = args.DiscountEntityId,
-                DiscountEntityCount = args.DiscountEntityCount,
-                Image = args.Image,
-                Name = args.Name,
-                DiscountDesc = args.DiscountDesc,
-
-                BuyerRemarks = args.Remarks,
-                SellerRemarks = null,
-                DeliveryAddressId = args.AddressId,
-                SellerName = args.SellerName,
-                BuyerName = args.BuyerName,
-                Items = items
-            };
-            trade.CalcItemsApportionAmount();
-
-            OnInitTrade(trade, args);
-
-            return await DataScope.Use("创建订单", async ctx =>
-            {
-                ctx.Add(trade);
-                await ctx.SaveChangesAsync();
-                return trade.Id;
-            });
+                    if(bizRoot.IdentType == "Trade")
+                        await ServiceContext.ServiceProvider.Resolve<IRemindService>().Setup(new RemindSetupArgument
+                        {
+                            BizSource = bizRoot,
+                            Name = trade.Name,
+                            RemindableName = typeof(TradeRemindable).FullName,
+                            RemindTime = result.Expires.Value,
+                            UserId = trade.SellerId
+                        });
+                    trade.ReminderSetuped = true;
+                }
+                else
+                    trade.ReminderSetuped = false;
+            }
+            return result;
         }
 
-
-        protected class Result
-        {
-            public TradeState NewState { get; set; }
-            public string EventName { get; set; }
-        }
-        protected virtual Task<DataModels.DataTrade> Process(
+        Task<TradeExecResult> WithTrade(
             long TradeId,
-            TradeActionType ActionType,
-            TradeState[] StateRequired,
-            Func<DataModels.DataTrade, DateTime, Task<Result>> action
+            TradeState? ExpectState,
+            IArgumentWithExpires Argument,
+            Func<DataModels.DataTrade, IArgumentWithExpires, Task<TradeExecResult>> callback
             )
         {
             return SyncQueue.Queue(
                 TradeId,
                 () => DataScope.Use("处理订单", async ctx =>
                 {
-                    var time = Now;
                     var trade = await ctx.Queryable<DataModels.DataTrade>()
                         .Where(t => t.Id.Equals(TradeId))
                         .Include(t => t.Items)
@@ -212,286 +305,479 @@ namespace SF.Biz.Trades.Managements
                     if (trade == null)
                         throw new TradeException("订单不存在");
 
-                    //if (ctx.pre_executor != null)
-                    //await ctx.pre_executor(order);
+                    if (trade.LogicState != EntityLogicState.Enabled)
+                        throw new PublicDeniedException("订单不能操作");
+                    if (ExpectState.HasValue && trade.State != ExpectState.Value)
+                        throw new PublicInvalidOperationException($"订单{trade.Id}操作状态错误，期望状态{ExpectState},当前状态{trade.State}");
 
-                    if (!StateRequired.Contains(trade.State))
-                        throw new TradeException($"订单状态错误，当前状态:{trade.State} 当前操作:{ActionType}");
+                    var result = await WithTrade(trade, Argument, callback);
 
-                    var org_state = trade.State;
-                    var org_end_type = trade.EndType;
-
-                    //清除超时时间
-                    trade.StateExpires = null;
-                    var re = await action(trade, time);
-                    trade.State = re.NewState;
-                    trade.LastStateTime = time;
                     trade.SyncItemsState(ctx);
                     ctx.Update(trade);
                     await ctx.SaveChangesAsync();
-                    return trade;
-                })
-               );
-        }
-        Result OK(TradeState state, string eventName)
-        {
-            return new Result { EventName = eventName, NewState = state };
+                    return result;
+                }));
         }
 
-        void CalcAmount(DataModels.DataTrade trade, decimal PlatformPercent, decimal SellerPercent)
+
+        async Task<TradeExecResult> Step(DataModels.DataTrade trade, ITradeStateProvider provider, IArgumentWithExpires arg)
         {
-            var buyer_amount = trade.TotalSettlementAmount;
-            if (PlatformPercent + SellerPercent > 1)
-                throw new TradeException("金额比例错误");
-
-            trade.PlatformAmount = Math.Round(trade.TotalSettlementAmount * PlatformPercent, 2);
-
-            //价格很小的情况下，比如0.01，舍入误差会让卖家拿不到钱
-            if (SellerPercent > 0)
+            //超时
+            var expires = arg?.Expires;
+            var expired = (arg is TradeStateRemindArgument) && expires.HasValue && expires.Value < Now;
+            TradeExecResult result;
+            if (expired)
             {
-                trade.BuyerAmount = Math.Round(trade.TotalSettlementAmount * (1m - PlatformPercent - SellerPercent), 2);
-                trade.TotalSellerAmount = trade.TotalSettlementAmount - trade.PlatformAmount - trade.BuyerAmount;
-            }
-            else
-            {
-                trade.TotalSellerAmount = 0;
-                trade.BuyerAmount = trade.TotalSettlementAmount - trade.PlatformAmount;
-            }
-
-
-            //order.tourist_amount = Math.Min(order.amount, ext.money.ceiling((1 - cost_percent) * order.amount));
-            //var left = order.amount - order.tourist_amount;
-            //order.platform_amount = ext.money.floor(left * config.instance.brokerage_percent);
-            //order.guide_amount = left - order.platform_amount;
-        }
-        Task<TradeState> EvalSettlementState(DataModels.DataTrade trade, decimal PlatformPercent, decimal SellerPercent)
-        {
-            if (trade.State == TradeState.Created)
-            {
-                if (SellerPercent != 0)
-                    throw new ArgumentException("买家未付款时无法退款");
-                trade.BuyerAmount =
-                trade.TotalSellerAmount =
-                trade.PlatformAmount = 0;
-                return Task.FromResult(TradeState.Closed);
-            }
-            CalcAmount(trade, PlatformPercent, SellerPercent);
-
-            if (trade.BuyerAmount > 0)
-            {
-                if (trade.TotalSellerAmount > 0)
-                    return Task.FromResult(TradeState.WaitSettlement);
+                if (trade.StateExecStartTime.HasValue)
+                    result = await provider.ExecutingExpired(trade);
                 else
-                    return Task.FromResult(TradeState.WaitBuyerSettlement);
+                    result = await provider.AdvanceExpired(trade);
             }
-            else if (trade.TotalSellerAmount > 0)
-                return Task.FromResult(TradeState.WaitSellerSettlement);
             else
             {
-                return Task.FromResult(TradeState.Closed);
+                if (trade.StateExecStartTime.HasValue && (!provider.Restartable || arg == null || arg is TradeStateRemindArgument))
+                {
+                    if (!provider.Restartable && arg != null && !(arg is TradeStateRemindArgument))
+                        throw new InvalidOperationException($"订单状态{trade.State}正在执行,不接受类型为{arg.GetType()}的参数");
+
+                    result = await provider.UpdateStatus(trade, expires);
+                }
+                else
+                {
+                    result = await provider.Advance(trade, arg);
+                }
+            }
+            switch (result.Status)
+            {
+                case TradeExecStatus.ArgumentRequired:
+                    var timeout = provider.AdvanceWaitTimeout;
+                    if (timeout.HasValue && !trade.ReminderSetuped)
+                        result.Expires = Now.Add(timeout.Value);
+                    break;
+                case TradeExecStatus.Executing:
+                    if (!trade.StateExecStartTime.HasValue)
+                        trade.StateExecStartTime = Now;
+                    break;
+                case TradeExecStatus.IsCompleted:
+                    trade.StateExecStartTime = null;
+                    trade.State = result.NextState;
+                    trade.LastStateTime = Now;
+                    trade.EndType = result.EndType;
+                    trade.EndReason = result.EndReason;
+                    break;
+            }
+            return result;
+        }
+        public ITradeStateProvider GetStateProvider(TradeState State)
+        {
+            return ServiceContext.ServiceProvider.Resolve<ITradeStateProvider>(State.ToString());
+        }
+        async Task<TradeExecResult> Advance(DataTrade trade,IArgumentWithExpires arg)
+        {
+            if (trade.State == TradeState.Closed)
+                return new TradeExecResult
+                {
+                    Status = TradeExecStatus.IsCompleted
+                };
+
+            var firstRun = true;
+            TradeExecResult result = null;
+            for (; ; )
+            {
+                var provider = GetStateProvider(trade.State);
+                if (provider == null)
+                    throw new PublicInvalidOperationException("不支持此状态:" + trade.State);
+                if (firstRun)
+                    firstRun = false;
+                else if (provider.AdvanceWaitTimeout.HasValue)
+                {
+                    result.Expires = Now.Add(provider.AdvanceWaitTimeout.Value);
+                    return result;
+                }
+
+                result = await Step(trade, provider, arg);
+
+                if (result.Status == TradeExecStatus.ArgumentRequired ||
+                    result.Status == TradeExecStatus.Executing ||
+                    trade.State == TradeState.Closed
+                    )
+                    return result;
+
+                arg = null;
             }
         }
-        public async Task BuyerAbort(long tradeId, string reason)
+        public Task<TradeExecResult> Advance(long TradeId, TradeState? ExpectState, IArgumentWithExpires Argument)
         {
-            await Process(
-            tradeId,
-            TradeActionType.BuyerAbort,
-            new[] { TradeState.Established },
-            async (trade, time) =>
-            {
-                trade.EndType = TradeEndType.BuyerAborted;
-                trade.EndReason = reason;
-                trade.EndTime = time;
-                var new_state = await EvalSettlementState(trade, 0, 1);
-
-                return OK(new_state, $"买家终止订单");
-            });
+            return WithTrade(TradeId, ExpectState, Argument, Advance);
         }
 
-        public async Task BuyerCancel(long tradeId, string reason, bool expired)
-        {
-            var re = await Process(
-                    tradeId,
-                    TradeActionType.BuyerCancel,
-                    new[] { TradeState.Created, TradeState.WaitSellerConfirm },
-                    async (trade, time) =>
-                    {
-                        trade.EndType =
-                            expired ? TradeEndType.BuyerConfirmExpired :
-                            trade.State == TradeState.WaitSellerConfirm ? TradeEndType.BuyerCancelledAfterConfirm :
-                            TradeEndType.BuyerCancelledBeforeConfirm;
+        //protected class Result
+        //{
+        //    public TradeState NewState { get; set; }
+        //    public DateTime? NextTimeout { get; set; }
+        //    public string EventName { get; set; }
+        //}
+        //protected virtual Task<DataModels.DataTrade> Process(
+        //    long TradeId,
+        //    TradeActionType ActionType,
+        //    TradeState[] StateRequired,
+        //    Func<DataModels.DataTrade, DateTime, Task<Result>> action
+        //    )
+        //{
+        //    return SyncQueue.Queue(
+        //        TradeId,
+        //        () =>DataScope.Use("处理订单", async ctx =>
+        //        {
+        //            var time = Now;
+        //            var trade = await ctx.Queryable<DataModels.DataTrade>()
+        //                .Where(t => t.Id.Equals(TradeId))
+        //                .Include(t => t.Items)
+        //                .SingleOrDefaultAsync();
 
-                        trade.EndReason = reason;
+        //            if (trade == null)
+        //                throw new TradeException("订单不存在");
+        //            if (!StateRequired.Contains(trade.State))
+        //                throw new TradeException($"订单状态错误，当前状态:{trade.State} 当前操作:{ActionType}");
 
-                        var new_state = await EvalSettlementState(trade, 0, 0);
-                        return OK(new_state, trade.BuyerAmount > 0 ? "买家取消订单,等待退款。" : "买家取消订单");
-                    });
+        //            await ServiceContext.ServiceProvider.Resolve<IRemindService>().Remind(
+        //                "交易",
+        //                "Trade", 
+        //                TradeId, 
+        //                new Func<Task<DateTime?>>(async () => { 
+        //                    var org_state = trade.State;
+        //                    var org_end_type = trade.EndType;
 
-            //var event_id =
-            //	expired ? sys_events.sys_order_tourist_confirm_expired :
-            //	re.state == order_state.closed ? sys_events.sys_order_tourist_cancelled_before_pay :
-            //	sys_events.sys_order_tourist_cancelled_after_pay;
-            //await order_event_service.raise_event(order_id, event_id);
+        //                    //清除超时时间
+        //                    trade.StateExpires = null;
+        //                    var re = await action(trade, time);
+        //                    trade.State = re.NewState;
+        //                    trade.LastStateTime = time;
+        //                    trade.StateExpires = re.NextTimeout;
 
-            //return re;
-        }
+        //                    return re.NextTimeout;
+        //                })
+        //               );
+        //            trade.SyncItemsState(ctx);
+        //            ctx.Update(trade);
+        //            await ctx.SaveChangesAsync();
+        //            return trade;
+        //        })
+        //        );
 
-        public async Task BuyerComplete(long tradeId, bool expired)
-        {
-            await Process(
-                tradeId,
-                TradeActionType.BuyerComplete,
-                new[] { TradeState.WaitBuyerComplete },
-                async (trade, time) =>
-                {
-                    var new_state = await EvalSettlementState(trade, 0, 1);
-                    trade.EndTime = time;
-                    trade.EndType = TradeEndType.Completed;
-                    return OK(
-                        new_state,
-                        expired ? $"买家评价超时" : $"买家已完成订单"
-                        );
-                });
-        }
+        //}
+        //Result OK(TradeState state, string eventName)
+        //{
+        //    return new Result { EventName = eventName, NewState = state };
+        //}
 
-        public async Task BuyerConfirm(long tradeId, string paymentRecordId)
-        {
-            await Process(
-                tradeId,
-                TradeActionType.BuyerConfirm,
-                new[] { TradeState.Created },
-                (trade, time) =>
-                {
-                    //await payment_success(payment_log_id);
+        //void CalcAmount(DataModels.DataTrade trade, decimal PlatformPercent, decimal SellerPercent)
+        //{
+        //    var buyer_amount = trade.TotalSettlementAmount;
+        //    if (PlatformPercent + SellerPercent > 1)
+        //        throw new TradeException("金额比例错误");
 
-                    //卖家确认超时
-                    //order.expires = time.AddHours(config.instance.order_timer_guide_confirm_expire);
+        //    trade.PlatformAmount = Math.Round(trade.TotalSettlementAmount * PlatformPercent, 2);
 
-                    return Task.FromResult(OK(TradeState.WaitSellerConfirm, "买家支付成功,等待确认"));
-                });
+        //    //价格很小的情况下，比如0.01，舍入误差会让卖家拿不到钱
+        //    if (SellerPercent > 0)
+        //    {
+        //        trade.BuyerAmount = Math.Round(trade.TotalSettlementAmount * (1m - PlatformPercent - SellerPercent), 2);
+        //        trade.TotalSellerAmount = trade.TotalSettlementAmount - trade.PlatformAmount - trade.BuyerAmount;
+        //    }
+        //    else
+        //    {
+        //        trade.TotalSellerAmount = 0;
+        //        trade.BuyerAmount = trade.TotalSettlementAmount - trade.PlatformAmount;
+        //    }
 
-        }
 
-        public async Task BuyerSettlementCompleted(long tradeId, string paymentRecordId)
-        {
-            await Process(
-                tradeId,
-                TradeActionType.BuyerSettlementCompleted,
-                new[] { TradeState.WaitSettlement, TradeState.WaitBuyerSettlement },
-                (trade, time) =>
-                {
-                    //await payment_success(payment_log_id);
+        //    //order.tourist_amount = Math.Min(order.amount, ext.money.ceiling((1 - cost_percent) * order.amount));
+        //    //var left = order.amount - order.tourist_amount;
+        //    //order.platform_amount = ext.money.floor(left * config.instance.brokerage_percent);
+        //    //order.guide_amount = left - order.platform_amount;
+        //}
+        //Task<TradeState> EvalSettlementState(DataModels.DataTrade trade, decimal PlatformPercent, decimal SellerPercent)
+        //{
+        //    if (trade.State == TradeState.WaitBuyerStartConfirm)
+        //    {
+        //        if (SellerPercent != 0)
+        //            throw new ArgumentException("买家未付款时无法退款");
+        //        trade.BuyerAmount =
+        //        trade.TotalSellerAmount =
+        //        trade.PlatformAmount = 0;
+        //        return Task.FromResult(TradeState.Closed);
+        //    }
+        //    CalcAmount(trade, PlatformPercent, SellerPercent);
 
-                    var name = trade.State == TradeState.WaitSettlement ? "买家已结算，等待卖家结算" : "买家已结算,订单完成";
-                    return Task.FromResult(OK(
-                        trade.State == TradeState.WaitSettlement ? TradeState.WaitSellerSettlement : TradeState.Closed,
-                        name
-                        ));
-                });
-        }
+        //    if (trade.BuyerAmount > 0)
+        //    {
+        //        if (trade.TotalSellerAmount > 0)
+        //            return Task.FromResult(TradeState.WaitSettlement);
+        //        else
+        //            return Task.FromResult(TradeState.WaitBuyerSettlement);
+        //    }
+        //    else if (trade.TotalSellerAmount > 0)
+        //        return Task.FromResult(TradeState.WaitSellerSettlement);
+        //    else
+        //    {
+        //        return Task.FromResult(TradeState.Closed);
+        //    }
+        //}
+        //public async Task BuyerAbort(long tradeId, string reason)
+        //{
+        //    await Process(
+        //    tradeId,
+        //    TradeActionType.BuyerAbort,
+        //    new[] { TradeState.Established },
+        //    async (trade, time) =>
+        //    {
+        //        trade.EndType = TradeEndType.BuyerAborted;
+        //        trade.EndReason = reason;
+        //        trade.EndTime = time;
+        //        var new_state = await EvalSettlementState(trade, 0, 1);
 
-        public async Task SellerAbort(long tradeId, string reason)
-        {
-            await Process(
-                tradeId,
-                TradeActionType.SellerAbort,
-                new[] { TradeState.Established },
-                async (trade, time) =>
-                {
-                    trade.EndType = TradeEndType.BuyerAborted;
-                    trade.EndReason = reason;
-                    trade.EndTime = time;
+        //        return OK(new_state, $"买家终止订单");
+        //    });
+        //}
 
-                    var new_state = await EvalSettlementState(trade, 0, 0);
+        //public async Task BuyerCancel(long tradeId, string reason, bool expired)
+        //{
+        //    var re = await Process(
+        //            tradeId,
+        //            TradeActionType.BuyerCancel,
+        //            new[] { TradeState.WaitBuyerStartConfirm, TradeState.WaitSellerConfirm },
+        //            async (trade, time) =>
+        //            {
+        //                trade.EndType =
+        //                    expired ? TradeEndType.BuyerConfirmExpired :
+        //                    trade.State == TradeState.WaitSellerConfirm ? TradeEndType.BuyerCancelledAfterConfirm :
+        //                    TradeEndType.BuyerCancelledBeforeConfirm;
 
-                    var desc = "";
-                    if (trade.BuyerAmount > 0)
-                        desc += $",退还买家{trade.BuyerAmount}元";
-                    if (trade.TotalSellerAmount > 0)
-                        desc += $",卖家保留{trade.TotalSellerAmount}元";
-                    if (trade.PlatformAmount > 0)
-                        desc += $",平台保留{trade.PlatformAmount}元";
+        //                trade.EndReason = reason;
 
-                    return OK(new_state, $"卖家终止订单{desc}");
-                });
-        }
+        //                var new_state = await EvalSettlementState(trade, 0, 0);
+        //                return OK(new_state, trade.BuyerAmount > 0 ? "买家取消订单,等待退款。" : "买家取消订单");
+        //            });
 
-        public async Task SellerCancel(long tradeId, string reason, bool expired)
-        {
-            await Process(
-                tradeId,
-                TradeActionType.SellerCancel,
-                new[] { TradeState.Created, TradeState.WaitSellerConfirm },
-                async (trade, time) =>
-                {
-                    trade.EndType =
-                        expired ? TradeEndType.BuyerConfirmExpired :
-                        trade.State == TradeState.WaitSellerConfirm ? TradeEndType.BuyerCancelledAfterConfirm :
-                        TradeEndType.BuyerCancelledBeforeConfirm;
+        //    //var event_id =
+        //    //	expired ? sys_events.sys_order_tourist_confirm_expired :
+        //    //	re.state == order_state.closed ? sys_events.sys_order_tourist_cancelled_before_pay :
+        //    //	sys_events.sys_order_tourist_cancelled_after_pay;
+        //    //await order_event_service.raise_event(order_id, event_id);
 
-                    trade.EndReason = reason;
+        //    //return re;
+        //}
 
-                    var new_state = await EvalSettlementState(trade, 0, 0);
-                    return OK(new_state, trade.BuyerAmount > 0 ? "卖家取消订单,等待退款。" : "买家取消订单");
-                });
+        //public async Task BuyerComplete(long tradeId, bool expired)
+        //{
+        //    await Process(
+        //        tradeId,
+        //        TradeActionType.BuyerComplete,
+        //        new[] { TradeState.WaitBuyerComplete },
+        //        async (trade, time) =>
+        //        {
+        //            var new_state = await EvalSettlementState(trade, 0, 1);
+        //            trade.EndTime = time;
+        //            trade.EndType = TradeEndType.Completed;
+        //            return OK(
+        //                new_state,
+        //                expired ? $"买家评价超时" : $"买家已完成订单"
+        //                );
+        //        });
+        //}
 
-        }
+        //public async Task BuyerConfirm(long tradeId, string paymentRecordId)
+        //{
+        //    await Process(
+        //        tradeId,
+        //        TradeActionType.BuyerConfirm,
+        //        new[] { TradeState.WaitBuyerStartConfirm },
+        //        (trade, time) =>
+        //        {
+        //            //await payment_success(payment_log_id);
 
-        public async Task SellerComplete(long tradeId)
-        {
-            await Process(
-                tradeId,
-                TradeActionType.SellerComplete,
-                new[] { TradeState.Established },
-                (trade, time) =>
-                {
+        //            //卖家确认超时
+        //            //order.expires = time.AddHours(config.instance.order_timer_guide_confirm_expire);
 
-                    return Task.FromResult(new Result
-                    {
-                        NewState = TradeState.WaitBuyerComplete,
-                        EventName = $"卖家完成订单",//，给买家评分为:{Math.Round(score, 1)}",
-                                              //timers = timers.ToArray()
-                    });
-                });
-        }
+        //            return Task.FromResult(OK(TradeState.WaitSellerConfirm, "买家支付成功,等待确认"));
+        //        });
 
-        public async Task SellerConfirm(long tradeId)
-        {
-            await Process(
-                tradeId,
-                TradeActionType.SellerConfirm,
-                new[] { TradeState.WaitSellerConfirm },
-                (trade, time) =>
-                {
-                    //trade.begintime = time;
+        //}
 
-                    return Task.FromResult(new Result
-                    {
-                        NewState = TradeState.Established,
-                        EventName = "卖家已接受预定"
-                    });
-                });
-        }
+        //public async Task BuyerSettlementCompleted(long tradeId, string paymentRecordId)
+        //{
+        //    await Process(
+        //        tradeId,
+        //        TradeActionType.BuyerSettlementCompleted,
+        //        new[] { TradeState.WaitSettlement, TradeState.WaitBuyerSettlement },
+        //        (trade, time) =>
+        //        {
+        //            //await payment_success(payment_log_id);
 
-        public async Task SellerSettlementCompleted(long tradeId, string paymentRecordId)
-        {
-            await Process(
-               tradeId,
-               TradeActionType.SellerSettlementCompleted,
-               new[] { TradeState.WaitSettlement, TradeState.WaitSellerSettlement },
-               (trade, time) =>
-               {
-                   //await payment_success(payment_log_id);
+        //            var name = trade.State == TradeState.WaitSettlement ? "买家已结算，等待卖家结算" : "买家已结算,订单完成";
+        //            return Task.FromResult(OK(
+        //                trade.State == TradeState.WaitSettlement ? TradeState.WaitSellerSettlement : TradeState.Closed,
+        //                name
+        //                ));
+        //        });
+        //}
 
-                   var name = trade.State == TradeState.WaitSettlement ? "卖家已结算，等待买家结算" : "卖家已结算,订单完成";
-                   return Task.FromResult(OK(
-                       trade.State == TradeState.WaitSettlement ?
-                           TradeState.WaitSellerSettlement :
-                           TradeState.Closed,
-                           name
-                           ));
-               });
-        }
+        //public async Task SellerAbort(long tradeId, string reason)
+        //{
+        //    await Process(
+        //        tradeId,
+        //        TradeActionType.SellerAbort,
+        //        new[] { TradeState.Established },
+        //        async (trade, time) =>
+        //        {
+        //            trade.EndType = TradeEndType.BuyerAborted;
+        //            trade.EndReason = reason;
+        //            trade.EndTime = time;
 
+        //            var new_state = await EvalSettlementState(trade, 0, 0);
+
+        //            var desc = "";
+        //            if (trade.BuyerAmount > 0)
+        //                desc += $",退还买家{trade.BuyerAmount}元";
+        //            if (trade.TotalSellerAmount > 0)
+        //                desc += $",卖家保留{trade.TotalSellerAmount}元";
+        //            if (trade.PlatformAmount > 0)
+        //                desc += $",平台保留{trade.PlatformAmount}元";
+
+        //            return OK(new_state, $"卖家终止订单{desc}");
+        //        });
+        //}
+
+        //public async Task SellerCancel(long tradeId, string reason, bool expired)
+        //{
+        //    await Process(
+        //        tradeId,
+        //        TradeActionType.SellerCancel,
+        //        new[] { TradeState.WaitBuyerStartConfirm, TradeState.WaitSellerConfirm },
+        //        async (trade, time) =>
+        //        {
+        //            trade.EndType =
+        //                expired ? TradeEndType.BuyerConfirmExpired :
+        //                trade.State == TradeState.WaitSellerConfirm ? TradeEndType.BuyerCancelledAfterConfirm :
+        //                TradeEndType.BuyerCancelledBeforeConfirm;
+
+        //            trade.EndReason = reason;
+
+        //            var new_state = await EvalSettlementState(trade, 0, 0);
+        //            return OK(new_state, trade.BuyerAmount > 0 ? "卖家取消订单,等待退款。" : "买家取消订单");
+        //        });
+
+        //}
+
+        //public async Task SellerComplete(long tradeId)
+        //{
+        //    await Process(
+        //        tradeId,
+        //        TradeActionType.SellerComplete,
+        //        new[] { TradeState.Established },
+        //        (trade, time) =>
+        //        {
+
+        //            return Task.FromResult(new Result
+        //            {
+        //                NewState = TradeState.WaitBuyerComplete,
+        //                EventName = $"卖家完成订单",//，给买家评分为:{Math.Round(score, 1)}",
+        //                                      //timers = timers.ToArray()
+        //            });
+        //        });
+        //}
+
+        //public async Task SellerConfirm(long tradeId)
+        //{
+        //    await Process(
+        //        tradeId,
+        //        TradeActionType.SellerConfirm,
+        //        new[] { TradeState.WaitSellerConfirm },
+        //        (trade, time) =>
+        //        {
+        //            //trade.begintime = time;
+
+        //            return Task.FromResult(new Result
+        //            {
+        //                NewState = TradeState.Established,
+        //                EventName = "卖家已接受预定"
+        //            });
+        //        });
+        //}
+
+        //public async Task SellerSettlementCompleted(long tradeId, string paymentRecordId)
+        //{
+        //    await Process(
+        //       tradeId,
+        //       TradeActionType.SellerSettlementCompleted,
+        //       new[] { TradeState.WaitSettlement, TradeState.WaitSellerSettlement },
+        //       (trade, time) =>
+        //       {
+        //           //await payment_success(payment_log_id);
+
+        //           var name = trade.State == TradeState.WaitSettlement ? "卖家已结算，等待买家结算" : "卖家已结算,订单完成";
+        //           return Task.FromResult(OK(
+        //               trade.State == TradeState.WaitSettlement ?
+        //                   TradeState.WaitSellerSettlement :
+        //                   TradeState.Closed,
+        //                   name
+        //                   ));
+        //       });
+        //}
+
+        //Task ITradeController.SellerCancel(long tradeId, string reason, bool expired)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //Task ITradeController.SellerConfirm(long tradeId)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //Task ITradeController.SellerAbort(long tradeId, string reason)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //Task ITradeController.SellerComplete(long tradeId)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //Task ITradeController.SellerSettlementCompleted(long tradeId, string paymentRecordId)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //Task ITradeController.BuyerCancel(long tradeId, string reason, bool expired)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //Task ITradeController.BuyerConfirm(long tradeId, string paymentRecordId)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //Task ITradeController.BuyerAbort(long tradeId, string reason)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //Task ITradeController.BuyerComplete(long tradeId, bool expired)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //Task ITradeController.BuyerSettlementCompleted(long tradeId, string paymentRecordId)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //Task<DateTime?> ITradeController.Advance(long tradeId,bool Expired)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

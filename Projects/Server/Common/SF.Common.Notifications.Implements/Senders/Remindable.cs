@@ -42,7 +42,7 @@ namespace SF.Common.Notifications.Senders
 			var recs = await DataScope.Use("执行通知", async DataContext =>
 			  {
 				  var q = from r in DataContext.Set<DataModels.DataNotificationSendRecord>().AsQueryable()
-						  where r.NotificationId == Context.BizIdent &&
+						  where r.NotificationId == Context.BizSource.Ident &&
 								  r.Status == Models.SendStatus.Sending
 						  select r;
 				  var irecs = await q.ToListAsync();

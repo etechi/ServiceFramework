@@ -104,16 +104,6 @@
             充值标题
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.TrackEntityIdent">
-            <summary>
-            业务跟踪ID
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.RemindId">
-            <summary>
-            提醒Id
-            </summary>
-        </member>
         <member name="P:SF.Biz.Accounting.DataModels.DataDepositRecord.CompletedTime">
             <summary>
             完成时间
@@ -184,135 +174,193 @@
             乐观锁时间戳
             </summary>
         </member>
-        <member name="T:SF.Biz.Accounting.DataModels.DataDrawbackRecord">
+        <!-- 对于成员“T:SF.Biz.Accounting.DataModels.DataSettlementItemRecord”忽略有格式错误的 XML 注释 -->
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementItemRecord.State">
             <summary>
-            退款记录
+            状态
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.DepositRecordId">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementItemRecord.TotalAmount">
             <summary>
-            相关充值记录ID
+            总金额
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.DepositRecordCreateTime">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementItemRecord.LeftAmount">
             <summary>
-            相关充值记录创建时间
+            剩余金额
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.AccountTitleId">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementItemRecord.RollbackAmount">
             <summary>
-            账户科目ID
+            退回金额
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.SrcId">
+        <!-- 对于成员“T:SF.Biz.Accounting.DataModels.DataSettlementRecord”忽略有格式错误的 XML 注释 -->
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.State">
             <summary>
-            退款用户ID
+            状态
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.CreatedTime">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.Desc">
             <summary>
-            创建时间
+            描述
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.OperatorId">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.BuyerId">
             <summary>
-            操作者ID
+            买家
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.Amount">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.SellerId">
             <summary>
-            退款金额
+            卖家
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.CurValue">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.TotalAmount">
             <summary>
-            退款成功后账户余额
+            总结算数额
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.Title">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.LeftAmount">
             <summary>
-            退款标题
+            剩余数额
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.TrackEntityIdent">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.RollbackAmount">
             <summary>
-            业务跟踪标识
+            退回数额
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.TrackEntityIndex">
-            <title>业务跟踪标识索引</title>
-             <summary>
-             当一个业务有多次退款时，使用此字段区分
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.CallbackName">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.PrepayTitleId">
             <summary>
-            回调过程名
+            预收科目
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.CallbackContext">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.DstTitleId">
             <summary>
-            回调上下文
+            目标科目
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.SubmittedTime">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.LastTransferRecordId">
             <summary>
-            第三方平台提交时间
+            确认转账记录ID
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.UpdatedTime">
-            <summary>
-            更新时间
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.CompletedTime">
-            <summary>
-            完成时间
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.State">
-            <summary>
-            退款状态
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.PaymentPlatformId">
-            <summary>
-            退款平台ID
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.PaymentDesc">
-            <summary>
-            退款描述
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.Reason">
-            <summary>
-            退款原因
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.Error">
-            <summary>
-            错误信息
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.OpAddress">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.OpAddress">
             <summary>
             操作地址
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.OpDevice">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.OpDevice">
             <summary>
             操作设备
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.PaymentsRefundRecordId">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.BizRoot">
             <summary>
-            支付退款记录
+            根业务
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataDrawbackRecord.TimeStamp">
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.BizParent">
             <summary>
-            乐观锁时间戳
+            父业务
+            </summary>
+        </member>
+        <!-- 对于成员“T:SF.Biz.Accounting.DataModels.DataSettlementRollbackItemRecord”忽略有格式错误的 XML 注释 -->
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackItemRecord.SettlementRollbackRecordId">
+            <summary>
+            结算ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackItemRecord.Amount">
+            <summary>
+            回退数额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackItemRecord.TitleId">
+            <summary>
+            退回科目Id
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackItemRecord.TransferRecordId">
+            <summary>
+            转账记录
+            </summary>
+        </member>
+        <!-- 对于成员“T:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord”忽略有格式错误的 XML 注释 -->
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.State">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.BuyerId">
+            <summary>
+            买家
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.SellerId">
+            <summary>
+            卖家
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.Desc">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.SettlementRecordId">
+            <summary>
+            结算ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.Amount">
+            <summary>
+            总回退数额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.RefundRecordId">
+            <summary>
+            退款记录ID
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.RefundPlatformPlatformId">
+            <summary>
+            退款支付平台Id
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.RefundTitleId">
+            <summary>
+            退款科目Id
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.RefundAmount">
+            <summary>
+            支付平台退款金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.Error">
+            <summary>
+            错误信息
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.OpAddress">
+            <summary>
+            操作地址
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.OpDevice">
+            <summary>
+            操作设备
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.BizRoot">
+            <summary>
+            根业务
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.BizParent">
+            <summary>
+            父业务
             </summary>
         </member>
         <member name="T:SF.Biz.Accounting.DataModels.DataTransferRecord">
@@ -367,9 +415,14 @@
             转账标题
             </summary>
         </member>
-        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.TrackEntityIdent">
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.BizRoot">
             <summary>
-            业务跟踪对象
+            根业务
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.BizParent">
+            <summary>
+            父业务
             </summary>
         </member>
         <member name="P:SF.Biz.Accounting.DataModels.DataTransferRecord.BizRecordIndex">

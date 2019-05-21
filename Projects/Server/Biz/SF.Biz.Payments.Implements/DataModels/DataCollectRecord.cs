@@ -19,12 +19,6 @@ namespace SF.Biz.Payments.DataModels
         [Index]
         public long PaymentPlatformId { get; set; }
 
-        /// <summary>
-        /// 收款发起客户端类型
-        /// </summary>
-		[Required]
-		[MaxLength(10)]
-        public string ClientType { get; set; }
 
         /// <summary>
         /// 收款结束重定向Url
@@ -109,16 +103,25 @@ namespace SF.Biz.Payments.DataModels
         public string ExtUserAccount { get; set; }
 
         /// <summary>
-        /// 业务跟踪ID
+        /// 根业务
         /// </summary>
-		[MaxLength(100)]
-        [Display(Name = "")]
-        public string TrackEntityIdent { get; set; }
+        [Index]
+        [MaxLength(100)]
+        [Required]
+        public string BizRoot { get; set; }
+
+        /// <summary>
+        /// 父业务
+        /// </summary>
+        [Index(IsUnique = true)]
+        [MaxLength(100)]
+        [Required]
+        public string BizParent { get; set; }
+
 
         /// <summary>
         /// 乐观锁时间戳
         /// </summary>
-
         [ConcurrencyCheck]
 		[Timestamp]
 		public byte[] TimeStamp { get; set; }

@@ -24,9 +24,8 @@ namespace SF.Biz.Payments
         /// <summary>
         /// 列表
         /// </summary>
-        /// <param name="Type">设备类型</param>
         /// <returns>支付平台</returns>
-        Task<PaymentPlatform[]> List(ClientDeviceType Type);
+        Task<PaymentPlatform[]> List();
 
         /// <summary>
         /// 获取收款请求超时

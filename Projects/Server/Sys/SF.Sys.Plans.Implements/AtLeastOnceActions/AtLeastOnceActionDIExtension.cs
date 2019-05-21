@@ -72,7 +72,7 @@ namespace SF.Sys.Services
 						SyncKey=e.Type+"/"+e.Ident,
 						TaskNextTryTime=e.TaskNextExecTime.Value
 					},
-					TaskExecutor = (sp, entity,arg) =>
+					TaskExecutor = (sp, entity,arg, curExecTime) =>
 					{
 						return ((AtLeastOnceActionProvider)sp.Resolve<IAtLeastOnceActionProvider>()).ActiveByTimer(entity);
 

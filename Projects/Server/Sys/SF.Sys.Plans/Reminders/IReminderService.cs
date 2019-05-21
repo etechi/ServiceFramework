@@ -27,23 +27,23 @@ namespace SF.Sys.Reminders
 	public interface IRemindContext
 	{
 		long? ServiceScopeId { get; }
-		string BizType { get;  }
-		string BizIdentType { get; }
-		long BizIdent { get; }
-		object Argument { get; }
+        TrackIdent BizSource { get; }
+        object Argument { get; }
 		string Message { get; set; }
 		string RemindableName { get; }
 		string Data { get; set; }
 		DateTime? NextRemindTime { get; set; }
-		
-		DateTime Time { get;  }
+        DateTime? CurrentRemindTime { get; set; }
+        DateTime Time { get;  }
 	}
+    
 
 
 	public interface IRemindable
 	{
 		Task Remind(IRemindContext Context);
 	}
+    
 	public interface IRemindableDefination
 	{
 		string Name { get; }
@@ -58,9 +58,7 @@ namespace SF.Sys.Reminders
 
 	public class RemindSetupArgument
 	{
-		public string BizType { get; set; }
-		public string BizIdentType { get; set; }
-		public long BizIdent { get; set; }
+        public TrackIdent BizSource { get; set; }
 		public string RemindableName { get; set; }
 		public string Name { get; set; }
 		public long? UserId { get; set; }
@@ -76,9 +74,10 @@ namespace SF.Sys.Reminders
 		Task<long> Setup(RemindSetupArgument Argument);
 
 		Task<bool> Remove(long Id);
-		Task<bool> Remove(string BizType,string BizIdentType, long BizIdent);
+		Task<bool> Remove(TrackIdent BizSource);
 		Task Remind(long Id, object Argument);
-		Task Remind(string BizType, string BizIdentType, long BizIdent, object Argument);
-		Task<T> Sync<T>(string BizType, string BizIdentType, long BizIdent, Func<Task<T>> Callback);
+		Task Remind(TrackIdent BizSource, object Argument);
+		Task<T> Sync<T>(TrackIdent BizSource, Func<Task<T>> Callback);
 	}
+   
 }

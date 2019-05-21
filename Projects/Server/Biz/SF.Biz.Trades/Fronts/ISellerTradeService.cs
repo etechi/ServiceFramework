@@ -14,6 +14,8 @@ namespace SF.Biz.Trades
     {
         Task<Trade> Get(long tradeId, bool withItems);
         Task<QueryResult<Trade>> Query(SellerTradeQueryArgument Arg);
+
+        Task Delivery(long tradeId);
     }
 
 

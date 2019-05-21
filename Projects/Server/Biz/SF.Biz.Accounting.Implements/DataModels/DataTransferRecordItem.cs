@@ -47,6 +47,9 @@ namespace SF.Biz.Accounting.DataModels
 		[Index("inbound", Order = 1)]
 		public long AccountTitleId { get; set; }
 
+		[ForeignKey(nameof(AccountTitleId))]
+		public DataAccountTitle AccountTitle { get; set; }
+
 		[Index("outbound", Order = 2)]
 		public long SrcId { get; set; }
 
@@ -57,9 +60,6 @@ namespace SF.Biz.Accounting.DataModels
 		[Index("inbound", Order = 3)]
 		public DateTime Time { get; set; }
 
-
-		[ForeignKey(nameof(AccountTitleId))]
-		public DataAccountTitle AccountTitle { get; set; }
 
 		public decimal Amount { get; set; }
 

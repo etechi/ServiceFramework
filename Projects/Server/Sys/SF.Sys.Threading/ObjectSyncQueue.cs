@@ -53,8 +53,8 @@ namespace SF.Sys.Threading
 			public Item() : base(1) { }
 			public int WaitCount;
 		}
-		static Stack<Item> ItemCache { get; } = new Stack<Item>();
-		static Dictionary<K, Item> Dicts { get; } = new Dictionary<K, Item>();
+		Stack<Item> ItemCache { get; } = new Stack<Item>();
+		Dictionary<K, Item> Dicts { get; } = new Dictionary<K, Item>();
 
 		public Task Queue(K key, Func<Task> callback)
 		{

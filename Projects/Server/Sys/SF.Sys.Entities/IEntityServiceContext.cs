@@ -85,17 +85,18 @@ namespace SF.Sys.Entities
 		IEventEmitService EventEmitService { get; }
 		IServiceProvider ServiceProvider { get; }
 		IServiceInstanceDescriptor ServiceInstanceDescroptor { get; }
-		//IClientService ClientService { get; }
+		IClientService ClientService { get; }
 		IEntityMetadata EntityMetadata { get; }
 		IEntityMetadataCollection EntityMetadataCollection { get; }
 		IQueryResultBuildHelperCache QueryResultBuildHelperCache { get; }
 		IPagingQueryBuilderCache PagingQueryBuilderCache { get; }
 		IQueryFilterCache QueryFilterCache { get; }
 		IEntityModifierCache EntityModifierCache { get; }
-		//IDataContext DataContext { get; }
-		IDataScope DataScope { get;  }
+        IAccessToken AccessToken { get; }
+        //IDataContext DataContext { get; }
+        IDataScope DataScope { get;  }
 		IUserAgent UserAgent { get; }
-		IAccessToken AccessToken { get; }
+		
 		DateTime Now { get; }
 	}
 

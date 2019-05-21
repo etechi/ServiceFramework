@@ -109,7 +109,7 @@ namespace SF.Biz.Accounting
         {
             var uid = EnsureUserIdent();
 
-            var did = await DepositService.Value.Create(
+            var re = await DepositService.Value.Start(
                 new DepositArgument
                 {
                     Amount = Args.Amount,
@@ -118,23 +118,10 @@ namespace SF.Biz.Accounting
                     DstId = uid,
                     OperatorId = uid,
                     PaymentPlatformId = Args.PaymentPlatformId,
-                    ClientType = Args.ClientType,
-                    OpAddress = ClientService.Value.UserAgent.Address,
-                    OpDevice = ClientService.Value.UserAgent.DeviceType,
-                    HttpRedirest = Args.Redirect,
-                    TrackEntityIdent = "充值操作-" + uid + "-" + TimeService.Value.Now.ToString("yyyyMMddHHmmss")
+                    
+                    ClientInfo=ClientService.Value.GetClientInfo(),
+                    HttpRedirest = Args.Redirect
                 });
-
-
-            var re = await DepositService.Value.Start(
-                did,
-                new Payments.StartRequestInfo
-                {
-                    ClientAddress = ClientService.Value.UserAgent.Address,
-                    DeviceType = ClientService.Value.UserAgent.DeviceType,
-                    Uri = InvokeContext.Value.Request.GetUri()
-                }
-            );
             return re;
         }
     }

@@ -65,7 +65,7 @@ namespace SF.Sys.Services
 		public ISyncQueue<TSyncKey> SyncQueue { get; set; }
 		public int StartRescheduleDuetime { get; set; } = 5 * 60;
 		public Expression<Func<TEntity, AtLeastOnceTaskSetting<TKey, TSyncKey>>> TaskSettingSelector { get; set; }
-		public Func<IServiceProvider,TEntity,object,Task> TaskExecutor { get; set; }
+		public Func<IServiceProvider,TEntity,object,DateTime?,Task> TaskExecutor { get; set; }
 	}
 
 	public interface IAtLeastOnceTaskExecutor<TKey,TEntity,TSyncKey> 
@@ -129,7 +129,7 @@ namespace SF.Sys.Services
 						);
 			}
 
-			public Task Execute(TKey Id, TSyncKey SyncKey,object Argument,CancellationToken cancelToken)
+            public Task Execute(TKey Id, TSyncKey SyncKey,object Argument,CancellationToken cancelToken)
 			{
 				if (cancelToken.IsCancellationRequested)
 					return Task.CompletedTask;
@@ -161,11 +161,12 @@ namespace SF.Sys.Services
 				var now = timeService.Now;
 				task.TaskLastExecTime = now;
 				task.TaskExecCount++;
+                var curNextExecTime = task.TaskNextExecTime;
 				task.TaskNextExecTime = null;
 				task.TaskState = AtLeastOnceTaskState.Running;
 				try
 				{
-					await Setting.TaskExecutor(sp, task, Argument);
+					await Setting.TaskExecutor(sp, task, Argument, curNextExecTime);
 				}
 				catch (Exception ex)
 				{

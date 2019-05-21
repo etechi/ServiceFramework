@@ -161,8 +161,10 @@ namespace SF.Sys.Data.EntityFrameworkCore
 		{
 			return Set.FindAsync(Ident);
 		}
-
-	
-	}
+        public IEnumerable<T> CachedEntities()
+        {
+            return Context.DbContext.ChangeTracker.Entries<T>().Where(e=>e.State!=EntityState.Detached).Select(e=>e.Entity);
+        }
+    }
 	
 }

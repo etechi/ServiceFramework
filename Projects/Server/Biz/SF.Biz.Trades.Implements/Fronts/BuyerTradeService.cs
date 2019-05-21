@@ -1,8 +1,11 @@
-﻿using SF.Sys.Auth;
+﻿using SF.Biz.Trades.Managements;
+using SF.Biz.Trades.StateProviders;
+using SF.Sys.Auth;
 using SF.Sys.Clients;
 using SF.Sys.Data;
 using SF.Sys.Entities;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,11 +16,15 @@ namespace SF.Biz.Trades
 	{
         public IDataScope DataScope { get; }
         public IAccessToken AccessToken { get; }
+        public Lazy<IClientService> ClientService { get; }
+        public Lazy<ITradeManager> TradeManager { get; }
         long EnsureUserIdent() => AccessToken.User.EnsureUserIdent();
-        public BuyerTradeService(IDataScope DataScope, IAccessToken AccessToken)
+        public BuyerTradeService(IDataScope DataScope, IAccessToken AccessToken, Lazy<ITradeManager> TradeManager, Lazy<IClientService> ClientService)
         {
             this.DataScope = DataScope;
             this.AccessToken = AccessToken;
+            this.TradeManager = TradeManager;
+            this.ClientService = ClientService;
         }
         protected virtual IQueryable<Trade> MapModelToPublic(IQueryable<DataModels.DataTrade> query)
 		{
@@ -39,8 +46,7 @@ namespace SF.Biz.Trades
                        EndReason=t.EndReason,
 					   LastStateTime = t.LastStateTime,
 					   BuyerRemarks = t.BuyerRemarks,
-                       DepositRecordId=t.DepositRecordId,
-                       RefundRecordId=t.RefundRecordId
+                       
 				   };
 		}
 		protected virtual IQueryable<TradeItem> MapItemModelToPublic(IQueryable<DataModels.DataTradeItem> query)
@@ -51,12 +57,11 @@ namespace SF.Biz.Trades
 					   Id = i.Id,
 					   Image = i.Image,
 					   Name = i.Name,
-					   ProductType = i.ProductType,
 					   ProductId = i.ProductId,
 					   Price = i.Price,
 					   Quantity = i.Quantity,
 					   Amount = i.Amount,
-					   DiscountDesc = i.AmountDiscountDesc,
+					   //PriceDiscountDesc = i.AmountDiscountDesc,
                        DiscountEntityIdent = i.DiscountEntityIdent,
                        SettlementAmount = i.SettlementAmount,
 					   SellerRemarks = i.SellerRemarks,
@@ -104,5 +109,36 @@ namespace SF.Biz.Trades
                     );
             });
 		}
-	}
+
+        public async Task<PaymentResult> Payment(PaymentArgument Arg)
+        {
+            var re=await TradeManager.Value.Advance(
+                Arg.TradeId,
+                TradeState.BuyerConfirm,
+                new TradeBuyerConfirmArgument
+                {
+                    ClientInfo = ClientService.Value.GetClientInfo(),
+                    HttpRedirect=Arg.HttpRedirect,
+                    PaymentPlatformId=Arg.PaymentPlatformId,
+                    UseBalance=Arg.UseBalance
+                }
+            );
+            return new PaymentResult
+            {
+                Completed = re.Status == TradeExecStatus.IsCompleted,
+                PaymentArguments = (IReadOnlyDictionary<string, string>)re.Results,
+                TradeId = Arg.TradeId
+            };
+        }
+
+        public async Task<bool> Confirm(long TradeId)
+        {
+            var re = await TradeManager.Value.Advance(
+                TradeId,
+                TradeState.BuyerComplete,
+                null
+                );
+            return re.Status == TradeExecStatus.IsCompleted;
+        }
+    }
 }

@@ -557,6 +557,7 @@ namespace SF.Sys.Services
 			var timeService = ServiceProvider.Resolve<ITimeService>();
 			var now = timeService.Now;
 			var permissionIdMap = new Dictionary<string, long>();
+            var grantDict = new Dictionary<string, DataGrant>();
 
 			await ds.Use("初始化权限", async ctx =>
 			{
@@ -571,20 +572,24 @@ namespace SF.Sys.Services
 					if (m == null)
 					{
 						var id = await idg.GenerateAsync<DataGrant>();
+                        if (grantDict.TryGetValue(e.Name, out var g))
+                            throw new InvalidOperationException($"项目已存在:{Json.Stringify(g)}");
 						permissionIdMap.Add(e.Name, id);
-						permissionSet.Add(new DataGrant
-						{
-							Id = id,
-							Name = e.Name,
-							Items = e.Select(pi => new DataGrantItem
-							{
-								GrantId = id,
-								ServiceId = pi.svc,
-								ServiceMethodId = pi.method 
-							}).ToArray(),
-							CreatedTime = now,
-							UpdatedTime = now
-						});
+                        g = new DataGrant
+                        {
+                            Id = id,
+                            Name = e.Name,
+                            Items = e.Select(pi => new DataGrantItem
+                            {
+                                GrantId = id,
+                                ServiceId = pi.svc,
+                                ServiceMethodId = pi.method
+                            }).ToArray(),
+                            CreatedTime = now,
+                            UpdatedTime = now
+                        };
+                        grantDict.Add(e.Name, g);
+                        permissionSet.Add(g);
 					}
 					else
 					{

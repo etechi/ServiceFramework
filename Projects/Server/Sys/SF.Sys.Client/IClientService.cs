@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -61,8 +62,10 @@ namespace SF.Sys.Clients
 	//}
 	public interface IClientService
 	{
+        IAccessToken AccessToken { get; }
 		IUserAgent UserAgent { get; }
 		long? CurrentScopeId { get; }
+        Uri EntryUri { get; }
 		Task SignInAsync(ClaimsPrincipal User,DateTime? Expires);
 		Task SignOutAsync();
 
@@ -75,4 +78,35 @@ namespace SF.Sys.Clients
 		//Task<Dictionary<string, string>> GetItems(string Session);
 		//Task ClearItems(string Session,string[] Options);
 	}
+
+    public class ClientInfo
+    {
+        public long? OperatorId { get; set; }
+        public ClientDeviceType DeviceType { get; set; }
+        public string ClientAddress { get; set; }
+        public Uri EntryUri { get; set; }
+    }
+
+    public static class ClientServiceExtension
+    {
+        public static ClientInfo GetClientInfo(this IClientService ClientService)
+        {
+            long opId = 0;
+            var user = ClientService.AccessToken.User;
+            if (user?.Identity?.IsAuthenticated ?? false)
+            {
+                var suid = user.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+                if (suid != null)
+                    long.TryParse(suid, out opId);
+            }
+
+            return new ClientInfo
+            {
+                OperatorId = opId==0?(long?)null:opId,
+                ClientAddress=ClientService.UserAgent.Address,
+                DeviceType=ClientService.UserAgent.DeviceType,
+                EntryUri=ClientService.EntryUri
+            };
+        }
+    }
 }

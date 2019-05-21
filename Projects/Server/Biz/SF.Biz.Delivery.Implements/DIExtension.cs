@@ -57,15 +57,15 @@ namespace SF.Sys.Services
 					.Ensure(sp, parent);
 
                  await sim.DefaultService<IUserDeliveryAddressManager, UserDeliveryAddressManager>(null)
-                    .WithConsolePages("财务管理/收货地址管理")
+                    .WithConsolePages("发货管理/收货地址管理")
                     .Ensure(sp, parent);
 
                  await sim.DefaultService<IDeliveryLocationManager, DeliveryLocationManager>(null)
-                    .WithConsolePages("财务管理/地区管理")
+                    .WithConsolePages("发货管理/地区管理")
                     .Ensure(sp, parent);
 
                  await sim.DefaultService<IDeliveryTransportManager, DeliveryTransportManager>(null)
-                    .WithConsolePages("财务管理/快递公司管理")
+                    .WithConsolePages("发货管理/快递公司管理")
                     .Ensure(sp, parent);
 
                  await sim.DefaultService<IDeliveryLocationService, DeliveryLocationService>(null)

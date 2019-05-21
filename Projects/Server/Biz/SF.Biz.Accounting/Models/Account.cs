@@ -20,6 +20,7 @@ namespace SF.Biz.Accounting
     {
 		public decimal Inbound { get; set; }
 		public decimal Outbound { get; set; }
+        public decimal CurValue { get; set; }
 	}
 
     /// <summary>

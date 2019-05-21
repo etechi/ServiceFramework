@@ -4,6 +4,26 @@
         <name>SF.Biz.Trades</name>
     </assembly>
     <members>
+        <member name="P:SF.Biz.Trades.Trade.Items">
+            <summary>
+            订单条目
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Trades.ITradeDiscountAmountResolver">
+            <summary>
+            订单标准结算金额生成接口
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Trades.ITradeNormalAmountResolver">
+            <summary>
+            订单标准结算金额生成接口
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Trades.ITradeValidator">
+            <summary>
+            交易有效性验证
+            </summary>
+        </member>
         <member name="P:SF.Biz.Trades.Managements.TradeItemQueryArguments.State">
             <summary>
             订单状态
@@ -22,6 +42,11 @@
         <member name="P:SF.Biz.Trades.Managements.TradeItemQueryArguments.TradeId">
             <summary>
             交易
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.Managements.TradeItemQueryArguments.ItemType">
+            <summary>
+            商品类型
             </summary>
         </member>
         <member name="P:SF.Biz.Trades.Managements.TradeItemQueryArguments.ItemId">
@@ -74,6 +99,11 @@
             卖家
             </summary>
         </member>
+        <member name="P:SF.Biz.Trades.Managements.TradeQueryArguments.ItemType">
+            <summary>
+            商品类型
+            </summary>
+        </member>
         <member name="P:SF.Biz.Trades.Managements.TradeQueryArguments.ItemId">
             <summary>
             商品
@@ -99,230 +129,43 @@
             交易管理器
             </summary>
         </member>
-        <member name="F:SF.Biz.Trades.TradeType.Normal">
+        <member name="M:SF.Biz.Trades.Managements.ITradeManager.Advance(System.Int64,System.Nullable{SF.Biz.Trades.TradeState},SF.Biz.Trades.Managements.IArgumentWithExpires)">
             <summary>
-            常规交易
+            推进订单
             </summary>
+            <param name="TradeId">订单ID</param>
+            <param name="ExpectState">期望状态</param>
+            <param name="Argument">参数, 必须是个状态的启动参数或激活参数</param>
+            <returns></returns>
         </member>
-        <member name="F:SF.Biz.Trades.TradeType.Simulated">
-            <summary>
-            模拟交易
-            </summary>
-        </member>
-        <member name="T:SF.Biz.Trades.Trade">
+        <member name="T:SF.Biz.Trades.TradeInternal">
             <summary>
             交易
             </summary>
         </member>
-        <member name="P:SF.Biz.Trades.Trade.Ident">
-            <title>订单编号</title>
-             <summary>
-             订单编号格式为：T+年月日+8位交易ID
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.CreatedTime">
-            <title>下单时间</title>
-             <summary>
-             用户创建订单的时间
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.Name">
-            <title>标题</title>
-             <summary>
-             订单描述，一般为首个商品的标题
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.Image">
-            <title>照片</title>
-             <summary>
-             订单图片，一般为首个商品的照片
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.Amount">
-            <title>总金额</title>
-             <summary>
-             订单总金额，所有订单项金额的合计
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.SettlementAmount">
-            <title>结算金额</title>
-             <summary>
-             扣除优惠后的剩余金额，买家需要支付的金额。
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.DiscountEntityId">
-            <title>折扣编号</title>
-             <summary>
-             相关折扣对象ID，一般为优惠券的ID
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.DiscountDesc">
-            <title>折扣说明</title>
-             <summary>
-             当结算金额比总金额少时，说明折扣的来源
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.DiscountEntityCount">
-            <title>折扣数量</title>
-             <summary>
-             相关折扣对象数量
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.State">
-            <title>订单状态</title>
-             <summary>
-             订单进行状态
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.EndType">
-            <title>结束状态</title>
-             <summary>
-             当订单已经结束时，此项为订单结束结果状态
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.LastStateTime">
-            <title>状态时间</title>
-             <summary>
-             最后一次订单状态变化的时间
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.EndReason">
-            <title>失败原因</title>
-             <summary>
-             当订单未正常结束时，此项为订单未正常结束原因
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.BuyerId">
+        <member name="P:SF.Biz.Trades.TradeInternal.BizRoot">
             <summary>
-            买方
+            根业务
             </summary>
         </member>
-        <member name="P:SF.Biz.Trades.Trade.BuyerName">
+        <member name="P:SF.Biz.Trades.TradeInternal.BizRootName">
             <summary>
-            买方
+            根业务
             </summary>
         </member>
-        <member name="P:SF.Biz.Trades.Trade.SellerId">
+        <member name="P:SF.Biz.Trades.TradeInternal.BizParent">
             <summary>
-            卖方
+            父业务
             </summary>
         </member>
-        <member name="P:SF.Biz.Trades.Trade.SellerName">
+        <member name="P:SF.Biz.Trades.TradeInternal.BizParentName">
             <summary>
-            卖方
+            父业务
             </summary>
         </member>
-        <member name="P:SF.Biz.Trades.Trade.BuyerRemarks">
-            <summary>
-            买方备注
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.SellerRemarks">
-            <summary>
-            卖方备注
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.Items">
+        <member name="P:SF.Biz.Trades.TradeInternal.Items">
             <summary>
             订单条目
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.DepositRecordId">
-            <summary>
-            充值记录
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.RefundRecordId">
-            <summary>
-            退款记录
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.Trade.TradeType">
-            <summary>
-            交易类型
-            </summary>
-        </member>
-        <member name="T:SF.Biz.Trades.TradeItem">
-            <summary>
-            交易项目
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.ProductType">
-            <title>商品类型</title>
-             <summary>
-             对应商品类型，一般为系统默认商品类型
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.ProductId">
-            <title>商品</title>
-             <summary>
-             对应商品
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.Name">
-            <title>标题</title>
-             <summary>
-             订单项目标题，一般为相关商品的标题。
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.Price">
-            <summary>
-            销售价格
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.Quantity">
-            <summary>
-            购买数量
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.Amount">
-            <title>金额</title>
-             <summary>
-             商品总金额，等于销售价格 x 购买数量
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.SettlementAmount">
-            <title>结算金额</title>
-             <summary>
-             扣除优惠后的剩余金额，买家需要支付的金额。
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.ApportionAmount">
-            <title>分摊金额</title>
-             <summary>
-             订单结算价格按照各项结算金额分摊后的金额，前几项分摊金额元整到分，最后一项分摊金额为去除前几项后的余额。
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.TradeType">
-            <summary>
-            交易类型
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.DiscountDesc">
-            <title>折扣说明</title>
-             <summary>
-             当结算金额比总金额少时，说明折扣的来源
-             </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.DiscountEntityIdent">
-            <summary>
-            折扣编号
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.BuyerRemarks">
-            <summary>
-            买方备注
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.SellerRemarks">
-            <summary>
-            卖方备注
-            </summary>
-        </member>
-        <member name="P:SF.Biz.Trades.TradeItem.Image">
-            <title>照片</title>
-            <summary>
-            一般为相应产品的照片
             </summary>
         </member>
         <member name="P:SF.Biz.Trades.TradeItemInternal.State">
@@ -353,6 +196,249 @@
         <member name="P:SF.Biz.Trades.TradeItemInternal.TradeId">
             <summary>
             交易
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Trades.TradeBase">
+            <summary>
+            交易
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.Name">
+            <title>名称</title>
+             <summary>
+             订单名称，一般为首个商品的名称
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.Title">
+            <title>标题</title>
+             <summary>
+             订单标题，一般为首个商品的标题
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.Image">
+            <title>照片</title>
+             <summary>
+             订单图片，一般为首个商品的照片
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.Amount">
+            <title>总金额</title>
+             <summary>
+             订单总金额，所有订单项金额的合计
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.DiscountAmount">
+            <summary>
+            合计折扣金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.AmountAfterDiscount">
+            <summary>
+            合计折扣后金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.SettlementAmount">
+            <title>结算金额</title>
+             <summary>
+             扣除优惠后的剩余金额，买家需要支付的金额。
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.DiscountEntityId">
+            <title>折扣编号</title>
+             <summary>
+             相关折扣对象ID，一般为优惠券的ID
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.DiscountDesc">
+            <title>折扣说明</title>
+             <summary>
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.DiscountEntityCount">
+            <title>折扣数量</title>
+             <summary>
+             相关折扣对象数量
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.State">
+            <title>订单状态</title>
+             <summary>
+             订单进行状态
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.EndType">
+            <title>结束状态</title>
+             <summary>
+             当订单已经结束时，此项为订单结束结果状态
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.LastStateTime">
+            <title>状态时间</title>
+             <summary>
+             最后一次订单状态变化的时间
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.EndReason">
+            <title>失败原因</title>
+             <summary>
+             当订单未正常结束时，此项为订单未正常结束原因
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.BuyerId">
+            <summary>
+            买方
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.BuyerName">
+            <summary>
+            买方
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.SellerId">
+            <summary>
+            卖方
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.SellerName">
+            <summary>
+            卖方
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.BuyerRemarks">
+            <summary>
+            买方备注
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.SellerRemarks">
+            <summary>
+            卖方备注
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.SettlementRecordId">
+            <summary>
+            结算记录
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.TradeType">
+            <summary>
+            交易类型
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Trades.TradeItemBase">
+            <summary>
+            交易项目
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.Ident">
+            <title>订单编号</title>
+             <summary>
+             订单编号格式为：T+年月日+8位交易ID
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.ProductId">
+            <title>商品</title>
+             <summary>
+             商品
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.Name">
+            <title>商品名</title>
+             <summary>
+             订单项目标题，默认为商品的标题。
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.Title">
+            <title>商品标题</title>
+             <summary>
+             订单项目标题，默认为商品的标题。
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.Price">
+            <summary>
+            销售价格
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.DeliveryProvider">
+            <summary>
+            发货类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.PriceAfterDiscount">
+            <title>折扣后单价</title>
+             <summary>
+             优惠后的单价
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.Quantity">
+            <summary>
+            购买数量
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.Amount">
+            <title>金额</title>
+             <summary>
+             商品总金额，等于销售价格 x 购买数量
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.DiscountAmount">
+            <summary>
+            折扣金额
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.AmountAfterDiscount">
+            <title>折扣后小计</title>
+             <summary>
+             优惠后的小计
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.SettlementAmount">
+            <title>结算金额</title>
+             <summary>
+             最终结算金额，买家需要支付的金额。
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.ApportionPrice">
+            <title>分摊单价</title>
+             <summary>
+             订单结算价格按照各项结算金额分摊后的金额，前几项分摊金额元整到分，最后一项分摊金额为去除前几项后的余额，最后一项单价*数量可能比分摊金额少。
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.ApportionAmount">
+            <title>分摊金额</title>
+             <summary>
+             订单结算价格按照各项结算金额分摊后的金额，前几项分摊金额元整到分，最后一项分摊金额为去除前几项后的余额。
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.TradeType">
+            <summary>
+            交易类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.DiscountDesc">
+            <title>折扣说明</title>
+             <summary>
+             当使用则扣时，说明折扣的来源
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.DiscountEntityIdent">
+            <summary>
+            折扣编号
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.BuyerRemarks">
+            <summary>
+            买方备注
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.SellerRemarks">
+            <summary>
+            卖方备注
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.Image">
+            <title>照片</title>
+            <summary>
+            一般为相应产品的照片
             </summary>
         </member>
         <member name="F:SF.Biz.Trades.TradeEndType.InProcessing">
@@ -390,6 +476,11 @@
             买方未支付
             </summary>
         </member>
+        <member name="F:SF.Biz.Trades.TradeEndType.BuyerConfirmError">
+            <summary>
+            买方支付失败
+            </summary>
+        </member>
         <member name="F:SF.Biz.Trades.TradeEndType.BuyerAborted">
             <summary>
             买方终止
@@ -400,49 +491,49 @@
             正常完成
             </summary>
         </member>
-        <member name="F:SF.Biz.Trades.TradeState.Invalid">
+        <member name="T:SF.Biz.Trades.TradeState">
             <summary>
-            无效
+            交易状态
             </summary>
         </member>
-        <member name="F:SF.Biz.Trades.TradeState.Created">
+        <member name="F:SF.Biz.Trades.TradeState.BuyerConfirm">
             <summary>
-            新订单
+            支付
             </summary>
         </member>
-        <member name="F:SF.Biz.Trades.TradeState.WaitSellerConfirm">
+        <member name="F:SF.Biz.Trades.TradeState.SellerConfirm">
             <summary>
-            待卖方确认
+            待确认
             </summary>
         </member>
-        <member name="F:SF.Biz.Trades.TradeState.Established">
+        <member name="F:SF.Biz.Trades.TradeState.SellerComplete">
             <summary>
             待发货
             </summary>
         </member>
-        <member name="F:SF.Biz.Trades.TradeState.WaitBuyerComplete">
+        <member name="F:SF.Biz.Trades.TradeState.BuyerComplete">
             <summary>
             待收货
             </summary>
         </member>
-        <member name="F:SF.Biz.Trades.TradeState.WaitSettlement">
+        <member name="F:SF.Biz.Trades.TradeState.SellerSettlement">
             <summary>
-            待双方结算
-            </summary>
-        </member>
-        <member name="F:SF.Biz.Trades.TradeState.WaitBuyerSettlement">
-            <summary>
-            待买方结算
-            </summary>
-        </member>
-        <member name="F:SF.Biz.Trades.TradeState.WaitSellerSettlement">
-            <summary>
-            待卖方结算
+            卖方收款
             </summary>
         </member>
         <member name="F:SF.Biz.Trades.TradeState.Closed">
             <summary>
             已结束
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Trades.TradeType.Normal">
+            <summary>
+            常规交易
+            </summary>
+        </member>
+        <member name="F:SF.Biz.Trades.TradeType.Simulated">
+            <summary>
+            模拟交易
             </summary>
         </member>
     </members>

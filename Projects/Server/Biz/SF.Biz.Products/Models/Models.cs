@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Biz.Trades;
 using SF.Sys.Entities;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace SF.Biz.Products
 	public interface IProductCached : IEntityWithId<long>
 	{
         bool IsVirtual { get; }
+        string Name { get; }
 		string Title { get; }
 		decimal MarketPrice { get; }
 		decimal Price { get; }
@@ -38,6 +40,7 @@ namespace SF.Biz.Products
 		long ProviderId { get; }
         bool OnSale { get; }
         bool CouponDisabled { get;}
+        string DeliveryProvider { get; }
     }
 
 	public class ItemCached : IItemCached
@@ -52,6 +55,7 @@ namespace SF.Biz.Products
 		public long Id { get; set; }
         public bool IsVirtual { get; set; }
 		public string Title { get; set; }
+        public string Name { get; set; }
 		public decimal MarketPrice { get; set; }
 		public decimal Price { get; set; }
 		public string Image { get; set; }
@@ -62,6 +66,7 @@ namespace SF.Biz.Products
 		public long ProviderId { get; set; }
         public bool OnSale{ get; set; }
         public bool CouponDisabled { get; set; }
+        public string DeliveryProvider { get; set; }
     }
 
 
@@ -135,8 +140,8 @@ namespace SF.Biz.Products
 
     }
 
-	public class Item : IItem
-	{
+	public class Item : IItem, ITradableItem
+    {
 		protected IItemCached ItemCached { get; }
 		protected IProductCached ProductCached { get; }
 		protected IProductContentCached Content { get; }
@@ -154,7 +159,8 @@ namespace SF.Biz.Products
 		public virtual long SellerId { get { return ItemCached?.SellerId ?? ProductCached.ProviderId; } }
 		public virtual long ProductId { get { return ProductCached.Id; } }
         public virtual bool IsVirtual { get { return ProductCached.IsVirtual; } }
-		public virtual string Title { get { return ProductCached.Title; } }
+        public virtual string Name { get { return ProductCached.Name; } }
+        public virtual string Title { get { return ProductCached.Title; } }
 		public virtual string Image { get { return ProductCached.Image; } }
 		public virtual decimal MarketPrice { get { return ProductCached.MarketPrice; } }
 		public virtual decimal Price { get { return ProductCached.Price; } }
@@ -167,5 +173,13 @@ namespace SF.Biz.Products
         public virtual bool OnSale{ get { return ProductCached.OnSale; } }
         public virtual bool CouponDisabled { get { return ProductCached.CouponDisabled; } }
 
+        string ITradableItem.Id => "Item-"+ItemId;
+
+
+        int? ITradableItem.StockLeft => null;
+
+        EntityLogicState ITradableItem.LogicState => EntityLogicState.Enabled;
+
+        string ITradableItem.DeliveryProvider => ProductCached.DeliveryProvider;
     }
 }

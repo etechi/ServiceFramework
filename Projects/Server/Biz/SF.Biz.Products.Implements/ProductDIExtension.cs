@@ -16,6 +16,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Biz.Products;
 using SF.Biz.Products.Entity;
+using SF.Biz.Trades;
 using SF.Sys.BackEndConsole;
 using SF.Sys.Services.Management;
 
@@ -38,7 +39,7 @@ namespace SF.Sys.Services
 			Services.AddSingleton<IItemService, CacheItemService>();
 			Services.AddSingleton<IItemSource, ItemSource>();
 			Services.AddSingleton<IItemNotifier>(sp => (IItemNotifier)sp.Resolve<IItemService>());
-
+            Services.AddSingleton(sp => (ITradableItemResolver)sp.Resolve<IItemService>(), "Item");
 			Services.AddDataModules(
 				TablePrifex ?? "Biz",
 				typeof(SF.Biz.Products.Entity.DataModels.Product),

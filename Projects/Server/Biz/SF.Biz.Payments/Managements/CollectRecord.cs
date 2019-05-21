@@ -81,11 +81,18 @@ namespace SF.Biz.Payments
         /// </summary>
         public string ClientType { get; set; }
 
+        
         /// <summary>
-        /// 业务来源
+        /// 根业务
         /// </summary>
-        [EntityIdent]
-        public string TrackEntityIdent { get; set; }
+        [EntityIdent( WithBizType =true)]
+        public string BizRoot { get; set; }
+
+        /// <summary>
+        /// 父业务
+        /// </summary>
+        [EntityIdent(WithBizType = true)]
+        public string BizParent { get; set; }
 
         /// <summary>
         /// 第三方平台单号

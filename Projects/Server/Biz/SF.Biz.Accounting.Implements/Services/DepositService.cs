@@ -1,7 +1,9 @@
 ﻿using SF.Biz.Payments;
 using SF.Sys;
 using SF.Sys.Auth;
+using SF.Sys.Clients;
 using SF.Sys.Data;
+using SF.Sys.Entities;
 using SF.Sys.Events;
 using SF.Sys.Linq;
 using SF.Sys.Logging;
@@ -52,7 +54,7 @@ namespace SF.Biz.Accounting
         }
 
 
-        public async Task<long> Create(DepositArgument Arg)
+        public async Task<DepositStartResult> Start(DepositArgument Arg)
         {
            
             Arg.Amount = Math.Round(Arg.Amount);
@@ -62,7 +64,7 @@ namespace SF.Biz.Accounting
             var id = await IdentGenerator.Value.GenerateAsync<DataModels.DataDepositRecord>();
             
 
-            return await DataScope.Use("创建充值操作", async ctx =>
+            return await DataScope.Use("开始充值操作", async ctx =>
             {
                 var title = await ctx.Queryable<DataModels.DataAccountTitle>()
                          .Where(t => t.Ident == Arg.AccountTitle)
@@ -70,31 +72,8 @@ namespace SF.Biz.Accounting
                 if (title == 0)
                     throw new ArgumentException("账户科目不存在:" + Arg.AccountTitle);
 
-                if (!Arg.RemindId.HasValue)
-                    Arg.RemindId = await RemindService.Value.Setup(new RemindSetupArgument
-                    {
-                        BizIdent = id,
-                        BizIdentType = "DepositRecord",
-                        BizType = "充值",
-                        Name = "充值",
-                        RemindableName = typeof(DepositRemindable).FullName,
-                        RemindTime = DepositRemindable.GetEndTime(PaymentPlatformService.Value, Arg.PaymentPlatformId, TimeService.Now)
-                    });
-
-                var cid = await CollectService.Create(new Payments.CollectRequest
-                {
-                    Amount = Arg.Amount,
-                    Desc = desc,
-                    Title = desc,
-                    PaymentPlatformId = Arg.PaymentPlatformId,
-                    ClientType = Arg.ClientType,
-                    OpAddress = Arg.OpAddress,
-                    OpDevice = Arg.OpDevice,
-                    TrackEntityIdent = "账户充值记录-" + id,
-                    CurUserId = Arg.DstId,
-                    HttpRedirect = Arg.HttpRedirest.Replace(new Dictionary<string, object> { { "DepositId", id.ToString() } }),
-                    RemindId= Arg.RemindId.Value
-                });
+                var trackIdent = new Sys.Entities.TrackIdent("充值", "DepositRecord", id).ToString();
+                
 
                 var time = TimeService.Now;
                 var record = ctx.Add(new DataModels.DataDepositRecord
@@ -105,63 +84,43 @@ namespace SF.Biz.Accounting
                     OperatorId = Arg.OperatorId,
                     Amount = Arg.Amount,
                     Title = desc,
-                    TrackEntityIdent = Arg.TrackEntityIdent,
                     Time = time,
-                    RemindId = Arg.RemindId.Value,
                     PaymentPlatformId = Arg.PaymentPlatformId,
-                    State = DepositState.New,
-                    OpAddress = Arg.OpAddress,
-                    OpDevice = Arg.OpDevice,
-                    CollectRecordId=cid
+                    State = DepositState.Processing,
+                    OpAddress = Arg.ClientInfo.ClientAddress,
+                    OpDevice = Arg.ClientInfo.DeviceType,
                 });
 
-                return id;
-            });
-        }
-        public async Task<DepositStartResult> Start(long Id, Biz.Payments.StartRequestInfo RequestInfo)
-        {
-            return await DataScope.Use("开始充值操作", async ctx =>
-            {
-                var record = await ctx.Set<DataModels.DataDepositRecord>().FindAsync(Id);
-                if (record == null)
-                    throw new ArgumentException("充值记录不存在");
-                if (record.State != DepositState.New)
-                    throw new ArgumentException("充值记录状态错误:" + record.State + ":" + record.Id);
-
-                try
+                var re = await CollectService.Start(new Payments.CollectRequest
                 {
-                    var re = await CollectService.Start(record.CollectRecordId, RequestInfo);
-                    record.State = DepositState.Processing;
-                    ctx.Update(record);
-                    await ctx.SaveChangesAsync();
+                    BizRoot = trackIdent,
+                    BizParent = trackIdent,
+                    Amount = Arg.Amount,
+                    Desc = desc,
+                    Title = desc,
+                    PaymentPlatformId = Arg.PaymentPlatformId,
+                    ClientInfo = Arg.ClientInfo,
+                    HttpRedirect = Arg.HttpRedirest.Replace(new Dictionary<string, object> { { "DepositId", id.ToString() } })
+                });
 
-                    return new DepositStartResult
-                    {
-                        PaymentStartResult = re,
-                        Id = record.Id
-                    };
-                }
-                catch (Exception e)
+                record.CollectRecordId = re.Id;
+
+                await RemindService.Value.Setup(new RemindSetupArgument
                 {
-                    await Complete(
-                        ctx,
-                        record,
-                        new CollectResponse
-                        {
-                            CompletedTime = TimeService.Now,
-                            Error = "充值失败:"+e.Message
-                        },
-                        "充值失败"
-                        );
-                    try
-                    {
-                        await RemindService.Value.Remind(record.RemindId, null);
-                    }catch(Exception ex)
-                    {
-                        Logger.Error(ex, "充值失败提醒激活异常");
-                    }
-                    throw;
-                }
+                    BizSource = trackIdent,
+                    Name = $"充值{record.Amount}元",
+                    RemindableName = typeof(DepositRemindable).FullName,
+                    RemindTime = re.Expires
+                });
+
+                await ctx.SaveChangesAsync();
+
+                return new DepositStartResult
+                {
+                    PaymentArguments= re.Data,
+                    Expires=re.Expires,
+                    Id = record.Id
+                };
             });
         }
         public async Task<DepositRecord> GetResult(long Id, bool Query=false, bool Remind=false)
@@ -195,7 +154,6 @@ namespace SF.Biz.Accounting
                     State = r.State,
                     PaymentDesc = r.PaymentDesc,
                     PaymentPlatformId = r.PaymentPlatformId,
-                    TrackEntityIdent = r.TrackEntityIdent,
                     Error = r.Error,
                     RefundRequest = r.DrawbackRequest,
                     RefundSuccess = r.DrawbackSuccess,
@@ -216,31 +174,10 @@ namespace SF.Biz.Accounting
             {
                 if (resp.Error == null)
                 {
-                    var acc = await ctx.Queryable<DataModels.DataAccount>()
-                        .Where(a => a.AccountTitleId == record.AccountTitleId && a.OwnerId.Equals(record.DstId))
-                        .SingleOrDefaultAsync();
-
-                    if (acc == null)
-                        acc = ctx.Add(new DataModels.DataAccount
-                        {
-                            Id = await IdentGenerator.Value.GenerateAsync<DataModels.DataAccount>(),
-                            OwnerId = record.DstId,
-                            AccountTitleId = record.AccountTitleId,
-                            Inbound = resp.AmountCollected,
-                            Outbound = 0,
-                            CurValue = resp.AmountCollected,
-                            UpdatedTime = TimeService.Now,
-                            CreatedTime = TimeService.Now,
-                            Name = (await UserProfileService.Value.GetUser(record.DstId)).Name,
-                        });
-                    else
-                    {
-                        acc.Inbound += resp.AmountCollected;
-                        acc.CurValue = acc.Inbound - acc.Outbound;
-                        acc.UpdatedTime = TimeService.Now;
-                        ctx.Update(acc);
-                    }
-                    record.CurValue = acc.CurValue;
+                    var updater = new AccountUpdater(ctx,IdentGenerator.Value);
+                    await updater.LoadAccounts((record.AccountTitleId, record.DstId));
+                    
+                    record.CurValue = await updater.Update(record.AccountTitleId, record.DstId, resp.AmountCollected, 0, TimeService.Now);
                 }
                 record.AmountCollected = resp.AmountCollected;
                 record.State = resp.Error == null ? DepositState.Completed : DepositState.Failed;

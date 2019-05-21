@@ -36,6 +36,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SF.Biz.Accounting.Implements\SF.Biz.Accounting.Implements.csproj" />
     <ProjectReference Include="..\SF.Biz.Accounting\SF.Biz.Accounting.csproj" />
+    <ProjectReference Include="..\SF.Biz.Coupons.Implements\SF.Biz.Coupons.Implements.csproj" />
+    <ProjectReference Include="..\SF.Biz.Coupons\SF.Biz.Coupons.csproj" />
     <ProjectReference Include="..\SF.Biz.Delivery.Implements\SF.Biz.Delivery.Implements.csproj" />
     <ProjectReference Include="..\SF.Biz.Delivery\SF.Biz.Delivery.csproj" />
     <ProjectReference Include="..\SF.Biz.Payments.Implements\SF.Biz.Payments.Implements.csproj" />

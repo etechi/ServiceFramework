@@ -13,6 +13,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Biz.Trades;
 using SF.Common.Members.Models;
 using SF.Sys.Annotations;
 using SF.Sys.Entities;

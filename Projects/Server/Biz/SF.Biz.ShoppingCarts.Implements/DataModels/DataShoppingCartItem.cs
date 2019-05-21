@@ -38,29 +38,16 @@ namespace SF.Biz.ShoppingCarts.DataModels
         /// <summary>
         /// 商品ID
         /// </summary>
-        [Index("pk", IsUnique = true, Order = 4)]
-        [Index]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public long ItemId { get; set; }
-
-        /// <summary>
-        /// SKUID
-        /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Index("pk", IsUnique = true, Order = 5)]
-        [Display(Name = "")]
-        public long SkuId { get; set; }
+        [Index]
+        [MaxLength(100)]
+        [Required]
+        public string ItemId { get; set; }
 
         /// <summary>
         /// 卖家标题
         /// </summary>
         public string SellerTitle { get; set; }
-
-        /// <summary>
-        /// 产品ID
-        /// </summary>
-        [Index]        
-        public long ProductId { get; set; }
 
 
         /// <summary>

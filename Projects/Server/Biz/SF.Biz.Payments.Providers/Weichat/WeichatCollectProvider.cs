@@ -1,4 +1,5 @@
 ﻿using SF.Sys;
+using SF.Sys.Clients;
 using SF.Sys.Collections.Generic;
 using SF.Sys.NetworkService;
 using SF.Sys.TimeServices;
@@ -62,7 +63,7 @@ namespace SF.Biz.Payments.Platforms.Weichat
 			public string qr { get; set; }
 		}
 
-		public async Task<CollectStartStatus> Start(long Ident,CollectStartArgument StartArgument, StartRequestInfo Request, string callback_url, string notify_url)
+		public async Task<CollectStartStatus> Start(long Ident,CollectStartArgument StartArgument, ClientInfo Request, string callback_url, string notify_url)
 		{
 			var data = new WxPayAPI.WxPayData();
 
@@ -76,16 +77,21 @@ namespace SF.Biz.Payments.Platforms.Weichat
 			data.SetValue("spbill_create_ip",Request.ClientAddress);
 			data.SetValue("notify_url", notify_url);
 			//data.SetValue("goods_tag", "test");
-			data.SetValue("trade_type", StartArgument.ClientType=="weichat"?"JSAPI": StartArgument.ClientType == "app"?"APP":"NATIVE");
+			data.SetValue("trade_type",
+                StartArgument.ClientInfo.DeviceType==ClientDeviceType.WinXin?"JSAPI": 
+                StartArgument.ClientInfo.DeviceType == ClientDeviceType.iPhone || StartArgument.ClientInfo.DeviceType == ClientDeviceType.Andriod? 
+                "APP" :
+                "NATIVE"
+                );
 			//data.SetValue("notify_url", StartArgument.NotifyUrl);
 			//微信支付必须提供openid
-			if (StartArgument.ClientType=="weichat")
-				data.SetValue("openid",await UserOpenIdProvider.Value.GetOpenIdByUserId(StartArgument.CurUserId.ToString()));
+			//if (StartArgument.ClientType=="weichat")
+			//	data.SetValue("openid",await UserOpenIdProvider.Value.GetOpenIdByUserId(StartArgument.CurUserId.ToString()));
 
-			//data.SetValue("openid", openid);
-			//扫码支付必须提供产品ID
-			if (StartArgument.ClientType == "desktop")
-				data.SetValue("product_id", StartArgument.TrackEntityIdent);
+			////data.SetValue("openid", openid);
+			////扫码支付必须提供产品ID
+			//if (StartArgument.ClientType == "desktop")
+			//	data.SetValue("product_id", StartArgument.TrackEntityIdent);
 
 			var re = WxPayApi.UnifiedOrder(data);
 			if (re.GetValue("return_code") as string != "SUCCESS")
@@ -127,7 +133,7 @@ namespace SF.Biz.Payments.Platforms.Weichat
 			res.SetValue("sign", res.MakeSign(Config));
 
 			var result = new Dictionary<string, string>();
-			if (StartArgument.ClientType == "weichat")
+			if (StartArgument.ClientInfo.DeviceType ==  ClientDeviceType.WinXin )
 				result["data"] = Json.Stringify(res.GetValues());
 			else
 				result["redirect"] = "/payment/qrcode/" + Ident;

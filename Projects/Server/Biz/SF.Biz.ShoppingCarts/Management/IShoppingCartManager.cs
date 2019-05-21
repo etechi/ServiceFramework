@@ -1,6 +1,5 @@
 ﻿using SF.Sys.Entities;
 using SF.Sys.Annotations;
-using SF.Biz.Products;
 using SF.Sys.Auth;
 using SF.Sys.NetworkService;
 
@@ -8,17 +7,12 @@ namespace SF.Biz.ShoppingCarts.Managements
 {
     public class ShoppingCartItemQueryArgument : ObjectQueryArgument
     {
-        /// <summary>
-        /// 产品
-        /// </summary>
-        [EntityIdent(typeof(ProductBase))]
-        public long? ProductId { get; set; }
-
+        
         /// <summary>
         /// 商品
         /// </summary>
-        [EntityIdent(typeof(Item))]
-        public long? ItemId { get; set; }
+        [EntityIdent]
+        public string ItemId { get; set; }
 
         /// <summary>
         /// 买家
