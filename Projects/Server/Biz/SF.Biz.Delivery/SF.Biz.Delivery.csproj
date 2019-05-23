@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Common\SF.Common.Addresses\SF.Common.Addresses.csproj" />
     <ProjectReference Include="..\..\Common\SF.Common.Members\SF.Common.Members.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Entities\SF.Sys.Entities.csproj" />
     <ProjectReference Include="..\SF.Biz.Payments\SF.Biz.Payments.csproj" />

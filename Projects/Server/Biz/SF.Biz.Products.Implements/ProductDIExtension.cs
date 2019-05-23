@@ -42,16 +42,15 @@ namespace SF.Sys.Services
             Services.AddSingleton(sp => (ITradableItemResolver)sp.Resolve<IItemService>(), "Item");
 			Services.AddDataModules(
 				TablePrifex ?? "Biz",
-				typeof(SF.Biz.Products.Entity.DataModels.Product),
-				typeof(SF.Biz.Products.Entity.DataModels.ProductDetail),
-				typeof(SF.Biz.Products.Entity.DataModels.ProductType),
-				typeof(SF.Biz.Products.Entity.DataModels.Category),
-				typeof(SF.Biz.Products.Entity.DataModels.CategoryItem),
-				typeof(SF.Biz.Products.Entity.DataModels.PropertyScope),
-				typeof(SF.Biz.Products.Entity.DataModels.Property),
-				typeof(SF.Biz.Products.Entity.DataModels.PropertyItem),
-				typeof(SF.Biz.Products.Entity.DataModels.Item),
-				typeof(SF.Biz.Products.Entity.DataModels.ProductSpec)
+				typeof(SF.Biz.Products.Entity.DataModels.DataProduct),
+				typeof(SF.Biz.Products.Entity.DataModels.DataProductType),
+				typeof(SF.Biz.Products.Entity.DataModels.DataCategory),
+				typeof(SF.Biz.Products.Entity.DataModels.DataCategoryItem),
+				typeof(SF.Biz.Products.Entity.DataModels.DataPropertyScope),
+				typeof(SF.Biz.Products.Entity.DataModels.DataProperty),
+				typeof(SF.Biz.Products.Entity.DataModels.DataPropertyItem),
+				typeof(SF.Biz.Products.Entity.DataModels.DataItem),
+				typeof(SF.Biz.Products.Entity.DataModels.DataProductSpec)
 				);
             Services.InitServices("Products", async (sp, sim, parent) =>
             {
@@ -71,8 +70,7 @@ namespace SF.Sys.Services
                    .WithConsolePages("前端内容/工单管理")
                    .Ensure(sp, parent);
             });
-            Services.AddInitializer("Products", "产品数据", async sp => {
-                
+            Services.AddInitializer("Products", "产品数据", async sp => {                
 
             });
             return Services;

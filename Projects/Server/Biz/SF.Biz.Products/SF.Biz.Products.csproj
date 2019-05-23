@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Common\SF.Common.Members\SF.Common.Members.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Entities\SF.Sys.Entities.csproj" />
+    <ProjectReference Include="..\SF.Biz.Shops\SF.Biz.Shops.csproj" />
     <ProjectReference Include="..\SF.Biz.Trades\SF.Biz.Trades.csproj" />
   </ItemGroup>
 

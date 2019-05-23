@@ -20,36 +20,30 @@ namespace SF.Biz.Products
 {
 	public static class ItemServiceExtension
 	{
-		public static async Task<TCategory> GetCategory<TItem, TCategory>(
-			this IItemService<TItem, TCategory> service,
+		public static async Task<ICategoryCached> GetCategory(
+			this IItemService service,
 			long id
 			)
-			where TItem : IItem
-			where TCategory : ICategoryCached
 		{
 			var re = await service.GetCategories(new[] { id });
-			if (re == null || re.Length == 0) return default(TCategory);
+			if (re == null || re.Length == 0) return default;
 			return re[0];
 		}
-		public static async Task<TItem> GetItem<TItem, TCategory>(
-			this IItemService<TItem, TCategory> service,
+		public static async Task<IItem> GetItem(
+			this IItemService service,
 			long id
 			)
-			where TItem : IItem
-			where TCategory : ICategoryCached
 		{
 			var re = await service.GetItems(new[] { id });
-			if (re == null || re.Length == 0) return default(TItem);
+			if (re == null || re.Length == 0) return default;
 			return re[0];
 		}
 
-		public static Task<QueryResult<TCategory>> ListCategories<TItem, TCategory>(
-			this IItemService<TItem, TCategory> service,
+		public static Task<QueryResult<ICategoryCached>> ListCategories(
+			this IItemService service,
 			long ParentCategoryId,
 			int count=0
 			)
-			where TItem : IItem
-			where TCategory : ICategoryCached
 		{
 			return service.ListCategories(
 				ParentCategoryId, 
@@ -57,14 +51,12 @@ namespace SF.Biz.Products
 				);
 		}
 
-		public static Task<QueryResult<TItem>> ListItems<TItem, TCategory>(
-			this IItemService<TItem, TCategory> service,
+		public static Task<QueryResult<IItem>> ListItems(
+			this IItemService service,
 			long CategoryId, 
 			bool WithChildCategoryItems, 
 			Paging paging
 			)
-			where TItem : IItem
-			where TCategory : ICategoryCached
 		{
 			return service.ListItems(
 				CategoryId,
@@ -72,14 +64,12 @@ namespace SF.Biz.Products
 				paging
 				);
 		}
-		public static Task<QueryResult<TItem>> ListItems<TItem, TCategory>(
-			this IItemService<TItem, TCategory> service,
+		public static Task<QueryResult<IItem>> ListItems(
+			this IItemService service,
 			long CategoryId,
 			bool WithChildCategoryItems,
 			int count=0
 			)
-			where TItem : IItem
-			where TCategory : ICategoryCached
 		{
 			return service.ListItems(
 				CategoryId,
@@ -87,15 +77,13 @@ namespace SF.Biz.Products
 				count == 0 ? null : new Paging { Count = count }
 				);
 		}
-		public static Task<QueryResult<TItem>> Search<TItem, TCategory>(
-			this IItemService<TItem, TCategory> service,
+		public static Task<QueryResult<IItem>> Search(
+			this IItemService service,
 			long CategoryId,
 			bool WithChildCategoryItems,
 			string keyword,
 			int count = 0
 			)
-			where TItem : IItem
-			where TCategory : ICategoryCached
 		{
 			return service.ListCategoryItems(
 				CategoryId,

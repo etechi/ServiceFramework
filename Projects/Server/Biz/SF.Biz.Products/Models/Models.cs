@@ -41,6 +41,8 @@ namespace SF.Biz.Products
         bool OnSale { get; }
         bool CouponDisabled { get;}
         string DeliveryProvider { get; }
+        IEnumerable<IProductImage> Images { get; }
+        IEnumerable<IProductDescItem> Descs { get; }
     }
 
 	public class ItemCached : IItemCached
@@ -67,22 +69,11 @@ namespace SF.Biz.Products
         public bool OnSale{ get; set; }
         public bool CouponDisabled { get; set; }
         public string DeliveryProvider { get; set; }
+        public IEnumerable<IProductImage> Images { get; set; }
+        public IEnumerable<IProductDescItem> Descs { get; set; }
     }
 
 
-    public interface IProductContentCached : IEntityWithId<long>
-	{
-		IEnumerable<IProductImage> Images { get; }
-		IEnumerable<IProductDescItem> Descs { get; }
-	}
-
-
-	public class ProductContentCached : IProductContentCached
-	{
-		public long Id { get; set; }
-		public IEnumerable<IProductImage> Images { get; set; }
-		public IEnumerable<IProductDescItem> Descs { get; set; }
-	}
 
 	public interface ICategoryCached : IEntityWithId<long>
 	{
@@ -144,12 +135,10 @@ namespace SF.Biz.Products
     {
 		protected IItemCached ItemCached { get; }
 		protected IProductCached ProductCached { get; }
-		protected IProductContentCached Content { get; }
-		public Item(IItemCached ItemCached, IProductCached ProductCached, IProductContentCached Content)
+		public Item(IItemCached ItemCached, IProductCached ProductCached)
 		{
 			this.ItemCached = ItemCached;
 			this.ProductCached = ProductCached;
-			this.Content = Content;
 		}
         public override string ToString()
         {
@@ -168,8 +157,8 @@ namespace SF.Biz.Products
 		public virtual DateTime? PublishedTime { get { return ProductCached.PublishedTime; } }
 		public virtual int Visited { get { return ProductCached.Visited; } }
 		public virtual long MainItemId { get { return ProductCached.MainItemId; } }
-		public virtual IEnumerable<IProductImage> Images { get { return Content?.Images ?? null; } }
-		public virtual IEnumerable<IProductDescItem> Descs { get { return Content?.Descs ?? null; } }
+		public virtual IEnumerable<IProductImage> Images { get { return ProductCached?.Images ?? null; } }
+		public virtual IEnumerable<IProductDescItem> Descs { get { return ProductCached?.Descs ?? null; } }
         public virtual bool OnSale{ get { return ProductCached.OnSale; } }
         public virtual bool CouponDisabled { get { return ProductCached.CouponDisabled; } }
 

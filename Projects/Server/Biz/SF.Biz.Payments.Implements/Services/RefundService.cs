@@ -47,9 +47,10 @@ namespace SF.Biz.Payments
             this.IdentGenerator = IdentGenerator;
         }
 
-        public async Task<long> Create(RefundRequest Argument)
+        public async Task<RefundRefreshResult> Create(RefundRequest Argument)
         {
-            if (CollectProviderResolver(Argument.PaymentPlatformId) == null)
+            var provider = CollectProviderResolver(Argument.PaymentPlatformId);
+            if (provider == null)
                 throw new ArgumentException("不支持指定的支付平台:" + Argument.PaymentPlatformId);
 
 
@@ -86,7 +87,7 @@ namespace SF.Biz.Payments
                  }
                  var time = TimeService.Now;
                  var ident = await IdentGenerator.Value.GenerateAsync();
-                 ctx.Add(new DataModels.DataRefundRecord
+                 var record=ctx.Add(new DataModels.DataRefundRecord
                  {
                      Id= ident,
                      CollectIdent = Argument.CollectIdent,
@@ -107,8 +108,18 @@ namespace SF.Biz.Payments
                      OpAddress = Argument.ClientInfo.ClientAddress,
                      OpDevice = Argument.ClientInfo.DeviceType
                  });
+                var response = await GetRefundResponse(ident, Argument, provider);
+                UpdateRecord(record, response);
                 await ctx.SaveChangesAsync();
-                return ident;
+                return new RefundRefreshResult
+                {
+                    Id=ident,
+                    UpdatedTime = response.UpdatedTime ?? TimeService.Now,
+                    Error = response.Error,
+                    State = response.State,
+                    Desc = Argument.Desc,
+                    Expires=response.Expires
+                }; 
                 ////注册定时器，每小时检查退款状态，直到退款成功
                 //await this.CallGuarantor.Schedule(
                 //    "SP.Payments.Refund.Update",
@@ -123,24 +134,22 @@ namespace SF.Biz.Payments
             });
         }
 
-
-
-        public async Task<RefundRefreshResult> RefreshRefundRecord(long Ident)
+        async Task<RefundResponse> GetRefundResponse(
+            long Ident,
+            RefundRequest Request,
+            ICollectProvider provider
+            )
         {
-            var Request=await GetRequest(Ident);
-
-            var provider = CollectProviderResolver(Request.PaymentPlatformId);
-            RefundResponse Response;
             try
             {
                 if (Request.SubmitTime == DateTime.MinValue)
                     Request.SubmitTime = TimeService.Now;
-                Response = await((IRefundProvider)provider).TryRefund(Ident,Request);
+                return await((IRefundProvider)provider).TryRefund(Ident, Request);
             }
             catch (Exception ex)
             {
                 Logger.Error(ex, "刷新退款状态时发生异常：" + ex);
-                Response = new RefundResponse
+                return new RefundResponse
                 {
                     UpdatedTime = TimeService.Now,
                     Error = ex.Message,
@@ -148,6 +157,40 @@ namespace SF.Biz.Payments
                     State = Request.CurState
                 };
             }
+        }
+        void UpdateRecord(DataModels.DataRefundRecord record,RefundResponse Response)
+        {
+            switch (Response.State)
+            {
+                case RefundState.Failed:
+                    record.CompletedTime = Response.UpdatedTime;
+                    record.ExtIdent = Response.ExtIdent;
+                    break;
+                case RefundState.Processing:
+                    record.ExtIdent = Response.ExtIdent;
+                    if (record.SubmitTime == null)
+                        record.SubmitTime = Response.UpdatedTime;
+                    break;
+                case RefundState.Submitting:
+                    break;
+                case RefundState.Success:
+                    record.AmountRefund = Response.RefundAmount;
+                    record.CompletedTime = Response.UpdatedTime;
+                    record.ExtIdent = Response.ExtIdent;
+                    break;
+            }
+
+            record.Error = Response.Error;
+            record.State = Response.State;
+            record.LastUpdateTime = TimeService.Now;
+            record.UpdateCount++;
+        }
+        public async Task<RefundRefreshResult> RefreshRefundRecord(long Ident)
+        {
+            var Request=await GetRequest(Ident);
+
+            var provider = CollectProviderResolver(Request.PaymentPlatformId);
+
 
             //string desc = "";
             //switch (Response.State)
@@ -179,46 +222,25 @@ namespace SF.Biz.Payments
             //    0,
             //    5 * 60
             //    );
+            var Response = await GetRefundResponse(Ident, Request, provider);
             await DataScope.Use("保存退款记录", async ctx =>
              {
                  var r = await ctx.Set<DataModels.DataRefundRecord>().FindAsync(Response.Ident);
                  if (r == null)
                      throw new ArgumentException("找不到收款支付记录:" + Response.Ident);
-                 switch (Response.State)
-                 {
-                     case RefundState.Failed:
-                         r.CompletedTime = Response.UpdatedTime;
-                         r.ExtIdent = Response.ExtIdent;
-                         break;
-                     case RefundState.Processing:
-                         r.ExtIdent = Response.ExtIdent;
-                         if (r.SubmitTime == null)
-                             r.SubmitTime = Response.UpdatedTime;
-                         break;
-                     case RefundState.Submitting:
-                         break;
-                     case RefundState.Success:
-                         r.AmountRefund = Response.RefundAmount;
-                         r.CompletedTime = Response.UpdatedTime;
-                         r.ExtIdent = Response.ExtIdent;
-                         break;
-                 }
-
-                 r.Error = Response.Error;
-                 r.State = Response.State;
-                 r.LastUpdateTime = TimeService.Now;
-                 r.UpdateCount++;
-
+                 UpdateRecord(r, Response);
                  ctx.Update(r);
                  await ctx.SaveChangesAsync();
              });
             //await RefundStorage.SaveResponse(Response);
             return new RefundRefreshResult
             {
+                Id=Ident,
                 UpdatedTime = Response.UpdatedTime ?? TimeService.Now,
                 Error = Response.Error,
                 State = Response.State,
-                Desc = Request.Desc
+                Desc = Request.Desc,
+                Expires=Response.Expires
             };
             //if (Response.State != RefundState.Failed && Response.State != RefundState.Success)
             //   throw new ServiceProtocol.CallGuarantors.RepeatCallException(TimeService.Now.AddHours(1));

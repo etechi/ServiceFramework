@@ -32,7 +32,6 @@ namespace SF.Biz.Trades
 
         Task<PaymentResult> Payment(PaymentArgument Arg);
 
-        Task<bool> Confirm(long TradeId);
     }
 	
 

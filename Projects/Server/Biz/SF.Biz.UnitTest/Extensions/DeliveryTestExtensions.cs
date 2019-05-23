@@ -29,16 +29,22 @@ using SF.Sys.Entities;
 using SF.Sys.Linq;
 using System.Collections.Generic;
 using SF.Biz.Delivery;
+using SF.Common.Addresses;
+using SF.Common.UnitTest;
 
 namespace SF.Biz.UnitTest
 {
 	
 	public static class DeliveryTestExtensions
 	{
-
-        public static async Task<UserAddress> CreateUserAddress(this IServiceProvider sp,long UserId)
+        public static Task<UserAddress> CreateUserAddress(this IServiceProvider sp,long UserId)
         {
-            var dls = sp.Resolve<IDeliveryLocationService>();
+            return sp.WithUserScope(UserId, isp => isp.CreateCurUserAddress());
+
+        }
+        public static async Task<UserAddress> CreateCurUserAddress(this IServiceProvider sp)
+        {
+            var dls = sp.Resolve<ILocationService>();
 
             var Name =Strings.LowerChars.Random(10);
             var Phone = "131"+ Strings.Numbers.Random(8);

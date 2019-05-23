@@ -174,7 +174,7 @@
             乐观锁时间戳
             </summary>
         </member>
-        <!-- 对于成员“T:SF.Biz.Accounting.DataModels.DataSettlementItemRecord”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "T:SF.Biz.Accounting.DataModels.DataSettlementItemRecord" -->
         <member name="P:SF.Biz.Accounting.DataModels.DataSettlementItemRecord.State">
             <summary>
             状态
@@ -195,7 +195,7 @@
             退回金额
             </summary>
         </member>
-        <!-- 对于成员“T:SF.Biz.Accounting.DataModels.DataSettlementRecord”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "T:SF.Biz.Accounting.DataModels.DataSettlementRecord" -->
         <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRecord.State">
             <summary>
             状态
@@ -266,7 +266,7 @@
             父业务
             </summary>
         </member>
-        <!-- 对于成员“T:SF.Biz.Accounting.DataModels.DataSettlementRollbackItemRecord”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "T:SF.Biz.Accounting.DataModels.DataSettlementRollbackItemRecord" -->
         <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackItemRecord.SettlementRollbackRecordId">
             <summary>
             结算ID
@@ -287,7 +287,7 @@
             转账记录
             </summary>
         </member>
-        <!-- 对于成员“T:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord”忽略有格式错误的 XML 注释 -->
+        <!-- Badly formed XML comment ignored for member "T:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord" -->
         <member name="P:SF.Biz.Accounting.DataModels.DataSettlementRollbackRecord.State">
             <summary>
             状态

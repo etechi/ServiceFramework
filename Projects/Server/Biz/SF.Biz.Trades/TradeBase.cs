@@ -1,4 +1,5 @@
 ﻿using SF.Biz.Accounting;
+using SF.Common.Addresses;
 using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Entities.Models;
@@ -70,7 +71,21 @@ namespace SF.Biz.Trades
         /// </summary>
         [TableVisible]
         [Layout(10, 2)]
-        public decimal SettlementAmount { get; set; }
+        public decimal TotalSettlementAmount { get; set; }
+
+        ///<title>退回金额</title>
+        /// <summary>
+        /// 结算金额中已退回的金额
+        /// </summary>
+        [TableVisible]
+        public decimal TotalSettlementRollbackAmount { get; set; }
+
+        ///<title>剩余金额</title>
+        /// <summary>
+        /// 结算金额中剩余金额
+        /// </summary>
+        [TableVisible]
+        public decimal TotalSettlementLeftAmount { get; set; }
 
         ///<title>折扣编号</title>
         /// <summary>
@@ -176,5 +191,18 @@ namespace SF.Biz.Trades
         /// </summary>
         [TableVisible]
         public TradeType TradeType { get; set; }
+
+
+        /// <summary>
+        /// 收件地址
+        /// </summary>
+        [EntityIdent(typeof(UserAddress))]
+        public long? DeliveryAddressId { get; set; }
+
+        /// <summary>
+        /// 是否需要收件地址
+        /// </summary>
+        [ReadOnly(true)]
+        public bool DeliveryAddressRequired { get; set; }
     }
 }

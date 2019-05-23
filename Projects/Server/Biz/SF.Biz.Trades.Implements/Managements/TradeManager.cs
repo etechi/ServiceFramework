@@ -12,6 +12,7 @@ using SF.Sys.Reflection;
 using SF.Sys.Linq;
 using SF.Sys.Reminders;
 using SF.Biz.Trades.StateProviders;
+using SF.Common.Addresses.Management;
 
 namespace SF.Biz.Trades.Managements
 {
@@ -27,6 +28,7 @@ namespace SF.Biz.Trades.Managements
     {
         ITradeSyncQueue SyncQueue { get; }
         TradeSetting Setting { get; }
+        
         public TradeManager(IEntityServiceContext ServiceContext, ITradeSyncQueue SyncQueue ,TradeSetting Setting) : base(ServiceContext)
         {
             this.Setting = Setting;
@@ -50,6 +52,7 @@ namespace SF.Biz.Trades.Managements
                 model.TotalSettlementAmount += mi.SettlementAmount;
                 itemCount++;
             }
+            model.TotalSettlementLeftAmount = model.TotalSettlementAmount;
 
             var left = model.TotalSettlementAmount;
             var i = 0;
@@ -75,6 +78,7 @@ namespace SF.Biz.Trades.Managements
         {
             var eir = ServiceContext.ServiceProvider.Resolve<ITradableItemResolver>();
             editable.Amount = 0;
+            var addressRequired = false;
             foreach (var g in editable.Items.GroupBy(i => i.ProductId.LeftBefore('-')))
             {
                 if (g.Key.IsNullOrEmpty())
@@ -95,8 +99,22 @@ namespace SF.Biz.Trades.Managements
                     i.Image = tradable.Image;
                     i.Amount = i.Quantity * i.Price;
                     i.DeliveryProvider = tradable.DeliveryProvider;
+                    i.SellerId = tradable.SellerId;
+                    i.BuyerId = editable.BuyerId;
+
                     editable.Amount += i.Amount;
+
+                    if (!addressRequired)
+                    {
+                        var dp = ServiceContext.ServiceProvider.Resolve<ITradeDeliveryProvider>(i.DeliveryProvider);
+                        if (dp.DeliveryAddressRequired)
+                            addressRequired = true;
+                    }
                 }
+            }
+            if(addressRequired)
+            {
+                editable.DeliveryAddressRequired = addressRequired;
             }
         }
         async Task ResolveDiscounts(TradeInternal trade)
@@ -130,7 +148,7 @@ namespace SF.Biz.Trades.Managements
                 trade.DiscountAmount += item.DiscountAmount;
                 trade.AmountAfterDiscount += item.AmountAfterDiscount;
             }
-            trade.SettlementAmount = trade.AmountAfterDiscount;
+            trade.TotalSettlementAmount = trade.AmountAfterDiscount;
 
 
             if (trade.DiscountEntityId.HasContent())
@@ -143,8 +161,22 @@ namespace SF.Biz.Trades.Managements
             }
         }
 
+        async Task FillDefaultDestAddress(DataTrade model)
+        {
 
-        private static void InitModel(DataTrade model, TradeInternal editable, Dictionary<long, TradeItemInternal> itemDict)
+            if (!model.DeliveryAddressRequired || model.DeliveryAddressId.HasValue)
+                return;
+            model.DeliveryAddressId = (await ServiceContext.ServiceProvider.Resolve<IUserAddressManager>()
+                .QueryIdentsAsync(new UserAddressQueryArguments
+                {
+                    OwnerId = model.BuyerId,
+                    IsDefaultAddress = true
+                }))
+                .Items
+                .FirstOrDefault()?.Id;
+
+        }
+        void InitModel(DataTrade model, TradeInternal editable, Dictionary<long, TradeItemInternal> itemDict)
         {
 
             if (editable.BizRoot == null)
@@ -162,13 +194,16 @@ namespace SF.Biz.Trades.Managements
             model.TotalAmountAfterDiscount = 0;
             model.TotalDiscountAmount = 0;
             model.State = TradeState.BuyerConfirm;
+            model.DeliveryAddressRequired = editable.DeliveryAddressRequired;
+
             foreach (var mi in model.Items)
             {
                 var ei = itemDict[mi.Id];
 
                 mi.Name = ei.Name;
                 mi.Title = ei.Title;
-
+                mi.BuyerId = ei.BuyerId;
+                mi.SellerId = ei.SellerId;
                 mi.Price = ei.Price;
                 mi.DeliveryProvider = ei.DeliveryProvider;
                 mi.Amount = ei.Amount = ei.Quantity * ei.Price;
@@ -185,6 +220,19 @@ namespace SF.Biz.Trades.Managements
                 model.TotalAmountAfterDiscount += mi.AmountAfterDiscount;
                 model.TotalQuantity += mi.Quantity;
             }
+            if (!model.Name.HasContent())
+            {
+                var item = model.Items.OrderByDescending(i => i.SettlementAmount).First();
+                model.Name = item.Name;
+                model.Title = item.Title;
+                var itemCount = model.Items.Count();
+                if (itemCount > 1)
+                {
+                    var profix = $"(等{itemCount}件";
+                    model.Name += profix;
+                    model.Title += profix;
+                }
+            }
         }
         protected override async Task OnNewModel(IModifyContext ctx)
         {
@@ -200,8 +248,9 @@ namespace SF.Biz.Trades.Managements
             if (model.State != TradeState.BuyerConfirm || model.StateExecStartTime.HasValue)
                 throw new PublicInvalidOperationException("订单不支持修改");
 
+
             var editable = ctx.Editable;
-                        
+
             await base.OnUpdateModel(ctx);
 
             if (ctx.Action == ModifyAction.Create)
@@ -220,6 +269,7 @@ namespace SF.Biz.Trades.Managements
 
                 InitModel(model, editable, itemDict);
 
+                await FillDefaultDestAddress(model);
             }
 
             //计算结算价格

@@ -9,13 +9,17 @@ namespace SF.Biz.Trades
 
     }
     
-
+    public class TradeDeliveryArgument
+    {
+        public long TradeId { get; set; }
+        public bool Abort { get; set; }
+    }
     public interface ISellerTradeService
     {
         Task<Trade> Get(long tradeId, bool withItems);
         Task<QueryResult<Trade>> Query(SellerTradeQueryArgument Arg);
 
-        Task Delivery(long tradeId);
+        Task Delivery(TradeDeliveryArgument Argument);
     }
 
 

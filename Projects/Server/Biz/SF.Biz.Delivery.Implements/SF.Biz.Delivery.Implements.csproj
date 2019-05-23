@@ -29,6 +29,11 @@
     <ProjectReference Include="..\..\Sys\SF.Sys.Plans\SF.Sys.Plans.csproj" />
     <ProjectReference Include="..\..\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
     <ProjectReference Include="..\SF.Biz.Delivery\SF.Biz.Delivery.csproj" />
+    <ProjectReference Include="..\SF.Biz.Trades\SF.Biz.Trades.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Fronts\" />
   </ItemGroup>
 
 

@@ -46,7 +46,12 @@ namespace SF.Biz.Delivery
         /// <summary>
         /// 已签收
         /// </summary>
-        Received = 30
+        Received = 30,
+
+        /// <summary>
+        /// 发货失败
+        /// </summary>
+        Failed=40
 	}
 	public class DeliveryStatus
 	{

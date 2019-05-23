@@ -266,7 +266,7 @@ namespace SF.Sys.Reminders
 			}
 		}
 
-		public async Task Remind(TrackIdent BizSource, object Argument)
+		public async Task Remind(TrackIdent BizSource, object Argument,bool IgnoreNotExists)
 		{
 			var rid = await DataScope.Use(
 				"查找提醒",ctx =>ctx
@@ -275,8 +275,12 @@ namespace SF.Sys.Reminders
 				.Select(r => r.Id)
 				.SingleOrDefaultAsync()
 				);
-			if (rid == 0)
-				throw new ArgumentException($"找不到提醒:{BizSource}");
+            if (rid == 0)
+            {
+                if (IgnoreNotExists)
+                    return;
+                throw new ArgumentException($"找不到提醒:{BizSource}");
+            }
 			await AtLeastOnceTaskExecutor.Value.Execute(
 				rid, 
 				rid,//SF.Sys.Services.RemindSyncQueue.BuildKey(BizType,BizIdentType,BizIdent), 

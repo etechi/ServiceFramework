@@ -12,6 +12,7 @@ namespace SF.Biz.Payments
         public string Error { get; set; }
         public decimal RefundAmount { get; set; }
         public RefundState State { get; set; }
+        public DateTime Expires { get; set; }
     }
 
     public interface IRefundProvider

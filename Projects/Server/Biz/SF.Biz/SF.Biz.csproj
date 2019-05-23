@@ -47,6 +47,8 @@
     <ProjectReference Include="..\SF.Biz.Products\SF.Biz.Products.csproj" />
     <ProjectReference Include="..\SF.Biz.ShoppingCarts.Implements\SF.Biz.ShoppingCarts.Implements.csproj" />
     <ProjectReference Include="..\SF.Biz.ShoppingCarts\SF.Biz.ShoppingCarts.csproj" />
+    <ProjectReference Include="..\SF.Biz.Shops.Implements\SF.Biz.Shops.Implements.csproj" />
+    <ProjectReference Include="..\SF.Biz.Shops\SF.Biz.Shops.csproj" />
     <ProjectReference Include="..\SF.Biz.Trades.Implements\SF.Biz.Trades.Implements.csproj" />
     <ProjectReference Include="..\SF.Biz.Trades\SF.Biz.Trades.csproj" />
   </ItemGroup>

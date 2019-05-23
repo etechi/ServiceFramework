@@ -38,7 +38,9 @@ namespace SF.Biz.Trades
 					   DiscountDesc = t.DiscountDesc,
                        DiscountEntityId = t.DiscountEntityIdent,
                        DiscountEntityCount = t.DiscountEntityCount,
-                       SettlementAmount = t.TotalSettlementAmount,
+                       TotalSettlementAmount = t.TotalSettlementAmount,
+                       TotalSettlementLeftAmount=t.TotalSettlementLeftAmount,
+                       TotalSettlementRollbackAmount=t.TotalSettlementRollbackAmount,
 					   State = t.State,
 					   EndType = t.EndType,
                        EndReason=t.EndReason,
@@ -109,11 +111,11 @@ namespace SF.Biz.Trades
 
 		}
 
-        public async Task Delivery(long tradeId)
+        public async Task Delivery(TradeDeliveryArgument Argument)
         {
-            await TradeManager.Value.Advance(tradeId, TradeState.SellerComplete, new SellerCompleteArgument
+            await TradeManager.Value.Advance(Argument.TradeId, TradeState.SellerComplete, new SellerCompleteArgument
             {
-                
+                Aborted= Argument.Abort
             });
         }
     }

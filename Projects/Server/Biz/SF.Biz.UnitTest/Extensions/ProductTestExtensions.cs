@@ -40,7 +40,8 @@ namespace SF.Biz.UnitTest
             string unit="unit",
             string title=null,
             string icon="icon",
-            string image="image"
+            string image="image",
+            string DeliveryProvider= "实物"
             )
         {
             if (name == null)
@@ -53,7 +54,8 @@ namespace SF.Biz.UnitTest
                 Unit = unit,
                 Title = title,
                 Icon=icon,
-                Image=image
+                Image=image,
+                DeliveryProvider= DeliveryProvider
             });
             Assert.AreEqual(unit, e.Unit);
             Assert.AreEqual(name, e.Name);
@@ -122,14 +124,14 @@ namespace SF.Biz.UnitTest
                 logicState:state
                 );
             Assert.AreEqual(name, e.Name);
-            Assert.AreEqual(seller, e.OwnerUserId);
+            Assert.AreEqual(seller, e.OwnerId.Value);
             Assert.AreEqual(marketPrice, e.MarketPrice);
             Assert.AreEqual(price, e.Price);
             //Assert.AreEqual(priceunit, re.CFPriceUnitExpect);
             Assert.AreEqual(image, e.Image);
             Assert.AreEqual(isVirtual, e.IsVirtual);
-            Assert.AreEqual(images.Join(","), e.Content.Images.Select(i => i.Image).Join(","));
-            Assert.AreEqual(contents.Join(","), e.Content.Descs.Select(i => i.Image).Join(","));
+            Assert.AreEqual(images.Join(","), e.Images.Select(i => i.Image).Join(","));
+            Assert.AreEqual(contents.Join(","), e.Detail.Select(i => i.Image).Join(","));
 
             var re = await sp.Resolve<IProductManager>().GetAsync(ObjectKey.From(e.Id));
             Assert.AreEqual(name, re.Name);

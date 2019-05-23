@@ -237,10 +237,22 @@
             合计折扣后金额
             </summary>
         </member>
-        <member name="P:SF.Biz.Trades.TradeBase.SettlementAmount">
+        <member name="P:SF.Biz.Trades.TradeBase.TotalSettlementAmount">
             <title>结算金额</title>
              <summary>
              扣除优惠后的剩余金额，买家需要支付的金额。
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.TotalSettlementRollbackAmount">
+            <title>退回金额</title>
+             <summary>
+             结算金额中已退回的金额
+             </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.TotalSettlementLeftAmount">
+            <title>剩余金额</title>
+             <summary>
+             结算金额中剩余金额
              </summary>
         </member>
         <member name="P:SF.Biz.Trades.TradeBase.DiscountEntityId">
@@ -324,6 +336,16 @@
             交易类型
             </summary>
         </member>
+        <member name="P:SF.Biz.Trades.TradeBase.DeliveryAddressId">
+            <summary>
+            收件地址
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeBase.DeliveryAddressRequired">
+            <summary>
+            是否需要收件地址
+            </summary>
+        </member>
         <member name="T:SF.Biz.Trades.TradeItemBase">
             <summary>
             交易项目
@@ -334,6 +356,16 @@
              <summary>
              订单编号格式为：T+年月日+8位交易ID
              </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.SellerId">
+            <summary>
+            卖家
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Trades.TradeItemBase.SellerName">
+            <summary>
+            卖家
+            </summary>
         </member>
         <member name="P:SF.Biz.Trades.TradeItemBase.ProductId">
             <title>商品</title>

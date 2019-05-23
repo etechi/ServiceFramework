@@ -16,21 +16,13 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 using System.Threading.Tasks;
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SF.Sys.UnitTest;
-using SF.Sys.Hosting;
-using SF.Auth.IdentityServices;
 using SF.Sys.Services;
-using SF.Auth.IdentityServices.Externals;
 using SF.Sys.Data;
 using SF.UT;
 using System.Linq;
-using SF.Sys.UnitTest;
 using SF.Common.UnitTest;
 using SF.Sys;
 using SF.Biz.Products;
-using SF.Sys.Entities;
-using System.Collections.Generic;
-using SF.Biz.Trades;
 using SF.Sys.Auth;
 
 namespace SF.Biz.UnitTest
@@ -39,21 +31,28 @@ namespace SF.Biz.UnitTest
 
     public class 交易测试 : TestBase
     {
-        async Task use_test_scope(Func<IServiceProvider,User,User,Task> callback)
+        async Task use_test_scope(int itemCount, Func<IServiceProvider, User, User, ItemEditable[], Task> callback)
         {
-            await(from sp in NewServiceScope().InitServices().InitData()
-                  from buyer in sp.UserCreate()
-                  from seller in sp.UserCreate()
-                  select (sp, buyer, seller))
-                  .Use((ctx) => callback(ctx.sp, ctx.buyer.User, ctx.seller.User));
+            await (from sp in NewServiceScope().InitServices().InitData()
+                   from buyer in sp.UserCreate()
+                   from seller in sp.UserCreate()
+                   from items in sp.ProductItemsEnsure(seller.User.Id, itemCount)
+                   select (sp, buyer, seller, items))
+                  .Use(async (ctx) =>
+                  {
+                      await ctx.sp.CreateUserAddress(ctx.buyer.User.Id);
+                      await ctx.sp.CreateUserAddress(ctx.seller.User.Id);
+
+                      await callback(ctx.sp, ctx.buyer.User, ctx.seller.User, ctx.items);
+                  }
+                );
         }
 
         [TestMethod]
         public async Task 简单交易_余额()
         {
-            await use_test_scope(async (sp, buyer,seller)=>
+            await use_test_scope(1,async (sp, buyer,seller,items)=>
             {
-                var items = await sp.ProductItemsEnsure(seller.Id, 1);
                 var trade = await sp.ExecTrade(
                     seller.Id,
                     buyer.Id,
@@ -63,15 +62,14 @@ namespace SF.Biz.UnitTest
                     },
                     1000
                     );
-                Assert.AreEqual(TradeState.Closed, trade.State);
             });
         }
+        
         [TestMethod]
-        public async Task 简单交易_直接支付()
+        public async Task 简单交易_充值()
         {
-            await use_test_scope(async (sp, buyer, seller) =>
+            await use_test_scope(1, async (sp, buyer, seller, items) =>
             {
-                var items = await sp.ProductItemsEnsure(seller.Id, 1);
                 var trade = await sp.ExecTrade(
                     seller.Id,
                     buyer.Id,
@@ -80,15 +78,13 @@ namespace SF.Biz.UnitTest
                     1000,
                     useBalance:false                             
                     );
-                Assert.AreEqual(TradeState.Closed, trade.State);
             });
         }
         [TestMethod]
-        public async Task 简单交易_余额加支付()
+        public async Task 简单交易_余额加充值()
         {
-            await use_test_scope(async (sp, buyer, seller) =>
+            await use_test_scope(1, async (sp, buyer, seller, items) =>
             {
-                var items = await sp.ProductItemsEnsure(seller.Id, 1);
                 var trade = await sp.ExecTrade(
                     seller.Id,
                     buyer.Id,
@@ -97,7 +93,78 @@ namespace SF.Biz.UnitTest
                     500,
                     useBalance: true
                     );
-                Assert.AreEqual(TradeState.Closed, trade.State);
+            });
+        }
+
+        [TestMethod]
+        public async Task 买家确认超时()
+        {
+            await use_test_scope(1, async (sp, buyer, seller, items) =>
+            {
+                var trade = await sp.ExecTrade(
+                    seller.Id,
+                    buyer.Id,
+                    1000,
+                    new[]{
+                        ("Item-"+items[0].Id,10)
+                    },
+                    1000,
+                    buyerConfirmTimeout:true
+                    );
+            });
+        }
+        [TestMethod]
+        public async Task 买家余额_卖家取消发货()
+        {
+            await use_test_scope(1, async (sp, buyer, seller, items) =>
+            {
+                var trade = await sp.ExecTrade(
+                    seller.Id,
+                    buyer.Id,
+                    1000,
+                    new[]{
+                        ("Item-"+items[0].Id,10)
+                    },
+                    1000,
+                    useBalance:true,
+                    sellerCompleteFailed:true
+                    );
+            });
+        }
+        [TestMethod]
+        public async Task 买家充值_卖家取消发货()
+        {
+            await use_test_scope(1, async (sp, buyer, seller, items) =>
+            {
+                var trade = await sp.ExecTrade(
+                    seller.Id,
+                    buyer.Id,
+                    1000,
+                    new[]{
+                        ("Item-"+items[0].Id,10)
+                    },
+                    0,
+                    useBalance: false,
+                    sellerCompleteFailed: true
+                    );
+            });
+        }
+        [TestMethod]
+        public async Task 买家余额加充值_卖家取消发货()
+        {
+            await use_test_scope(1, async (sp, buyer, seller, items) =>
+            {
+                var trade = await sp.ExecTrade(
+                    seller.Id,
+                    buyer.Id,
+                    1000,
+                    new[]{
+                        ("Item-"+items[0].Id,10)
+                    },
+                    600,
+                    useBalance: true,
+                    sellerCompleteFailed: true
+                    );
             });
         }
     }

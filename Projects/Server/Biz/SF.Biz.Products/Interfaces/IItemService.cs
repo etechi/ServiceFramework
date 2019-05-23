@@ -60,25 +60,19 @@ namespace SF.Biz.Products
     }
 
 
-	public interface IItemService :
-		IItemService<IItem, ICategoryCached>
-	{ }
-
 	[NetworkService]
-	public interface IItemService<TItem, TCategory>:
-		IEntityQueryable<TItem,ItemQueryArgument>
-		where TItem: IItem
-		where TCategory: ICategoryCached
+	public interface IItemService:
+		IEntityQueryable<IItem, ItemQueryArgument>
 	{
-		Task<TItem> GetItemDetail(long ItemId);
-		Task<TItem> GetProductDetail(long ProductId);
-		Task<TItem[]> GetProducts(long[] ProductIds);
-		Task<TItem[]> GetItems(long[] ItemIds);
-        Task<QueryResult<TItem>> ListTaggedItems(string Tag, bool WithChildCategoryItems, string Filter, Paging Paging);
-        Task<QueryResult<TItem>> ListCategoryItems(long CategoryId, bool WithChildCategoryItems, string Filter, Paging Paging);
-        Task<TCategory[]> GetTaggedCategories(string Tag);
-		Task<TCategory[]> GetCategories(long[] CategoryIds);
-		Task<QueryResult<TCategory>> ListCategories(long ParentCategoryId, Paging Paging);
+		Task<IItem> GetItemDetail(long ItemId);
+		Task<IItem> GetProductDetail(long ProductId);
+		Task<IItem[]> GetProducts(long[] ProductIds);
+		Task<IItem[]> GetItems(long[] ItemIds);
+        Task<QueryResult<IItem>> ListTaggedItems(string Tag, bool WithChildCategoryItems, string Filter, Paging Paging);
+        Task<QueryResult<IItem>> ListCategoryItems(long CategoryId, bool WithChildCategoryItems, string Filter, Paging Paging);
+        Task<ICategoryCached[]> GetTaggedCategories(string Tag);
+		Task<ICategoryCached[]> GetCategories(long[] CategoryIds);
+		Task<QueryResult<ICategoryCached>> ListCategories(long ParentCategoryId, Paging Paging);
 	}
 	
 }

@@ -20,21 +20,14 @@ using SF.Sys.NetworkService;
 
 namespace SF.Biz.Products
 {
-	public interface IProductItemManager : IProductItemManager<ItemInternal, ItemEditable>
-	{ }
-
 	/// <summary>
 	/// 商品管理
 	/// </summary>
-	/// <typeparam name="TInternal"></typeparam>
-	/// <typeparam name="TEditable"></typeparam>
 	[NetworkService]
 	[EntityManager]
-	public interface IProductItemManager<TInternal, TEditable> :
-		IEntityManager<ObjectKey<long>, TEditable>,
-		IEntitySource<ObjectKey<long>, TInternal,ItemQueryArgument>
-		where TInternal : ItemInternal
-		where TEditable : ItemEditable
+	public interface IProductItemManager :
+		IEntityManager<ObjectKey<long>, ItemEditable>,
+		IEntitySource<ObjectKey<long>, ItemInternal, ItemQueryArgument>
 	{
 	}
 }

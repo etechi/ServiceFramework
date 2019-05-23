@@ -35,16 +35,18 @@ namespace SF.Biz.Payments
 
     public class RefundRefreshResult
     {
+        public long Id { get; set; }
         public DateTime UpdatedTime { set; get; }
         public string Error { get; set; }
         public RefundState State { get; set; }
         public string Desc { get; set; }
+        public DateTime? Expires { get; set; }
     }
 
 
     public interface IRefundService
     {
-        Task<long> Create(RefundRequest Argument);
+        Task<RefundRefreshResult> Create(RefundRequest Argument);
         Task<RefundRefreshResult> RefreshRefundRecord(long Ident);
     }
 

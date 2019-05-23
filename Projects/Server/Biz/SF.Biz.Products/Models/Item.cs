@@ -13,49 +13,65 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Biz.Shops.Managements;
 using SF.Sys.Annotations;
 using SF.Sys.Entities;
+using SF.Sys.Entities.Models;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SF.Biz.Products
 {
 	[EntityObject]
-    public class ItemInternal :
-		IEntityWithId<long>,
-		IEntityWithName
+    public class ItemInternal : UIObjectEntityBase
 	{
-		/// <summary>
-		/// ID
-		/// </summary>
-		[Key]
-        [ReadOnly(true)]
+        /// <summary>
+         /// 名称
+         /// </summary>
+        [MaxLength(100)]
+        [EntityTitle]
         [TableVisible]
-		public long Id { get; set; }
-        
+        public override string Name { get; set; }
+
+        ///<title>标题</title>
+        /// <summary>
+        /// 用于前端显示
+        /// </summary>
+        /// <group>前端展示</group>
+        [MaxLength(100)]
+        [TableVisible]
+        public override string Title { get; set; }
+
         [Ignore]
         public long? SourceItemId { get; set; }
+
+        /// <summary>
+        /// 店铺
+        /// </summary>
+        [EntityIdent(typeof(ShopInternal),nameof(ShopName))]
+        public long? ShopId { get; set; }
+        
+        /// <summary>
+        /// 店铺
+        /// </summary>
+        [Ignore]
+        [TableVisible]
+        public string ShopName { get; set; }
 
 		/// <summary>
 		/// 产品
 		/// </summary>
 		[Ignore]
-        [EntityIdent(typeof(ProductInternal),"Title")]
+        [EntityIdent(typeof(ProductInternal),nameof(ProductName))]
         [TableVisible]
         public long ProductId { get; set; }
 
-		/// <summary>
-		/// 图片
-		/// </summary>
-		[Image]
-        public string Image { get; set; }
 
-		/// <summary>
-		/// 标题
-		/// </summary>
-		[TableVisible]
-        public string Title { get; set; }
-
+        /// <summary>
+        /// 产品
+        /// </summary>
+        public string ProductName { get; set; }
+		
 		/// <summary>
 		/// 价格
 		/// </summary>
@@ -67,19 +83,13 @@ namespace SF.Biz.Products
 		/// </summary>
 		[TableVisible]
         public bool IsVirtual { get; set; }
-		string IEntityWithName.Name { get => Title; set { Title = value; } }
+		
 	}
     
 	public class ItemEditable :
-		IEntityWithId<long>
+        ItemInternal
 	{
-		public long Id { get; set; }
 		public long SellerId { get; set; }
-		public long? SourceItemId { get; set; }
-		public long ProductId { get; set; }
-		public decimal? Price { get; set; }
-		public string Title { get; set; }
-		public string Image { get; set; }
 	}
 
 }

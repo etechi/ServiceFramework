@@ -1,0 +1,378 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Common.Addresses</name>
+    </assembly>
+    <members>
+        <member name="T:SF.Common.Addresses.Location">
+            <summary>
+            地区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Location.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Location.Name">
+            <summary>
+            名称
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Location.FullName">
+            <summary>
+            全称
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Location.ParentId">
+            <summary>
+            父区域
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Location.ZipCode">
+            <summary>
+            邮编
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Location.Level">
+            <summary>
+            等级
+            </summary>
+        </member>
+        <member name="T:SF.Common.Addresses.ILocationService">
+            <summary>
+            地区服务
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddress.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddress.LocationId">
+            <summary>
+            地区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddress.LocationName">
+            <summary>
+            地区Id
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddress.ZipCode">
+            <summary>
+            邮编
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddress.Address">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddress.ContactName">
+            <summary>
+            联系人
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddress.ContactPhoneNumber">
+            <summary>
+            联系人手机
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddress.PhoneNumberVerified">
+            <summary>
+            电话是否验证
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddress.IsDefaultAddress">
+            <summary>
+            是否为默认地址
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddressEditable.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddressEditable.ContactName">
+            <summary>
+            联系人
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddressEditable.ContactPhoneNumber">
+            <summary>
+            联系人手机
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddressEditable.ProvinceId">
+            <summary>
+            省
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddressEditable.CityId">
+            <summary>
+            市
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddressEditable.DistrictId">
+            <summary>
+            县/区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddressEditable.Address">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.UserAddressEditable.IsDefaultAddress">
+            <summary>
+            默认地址
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.AddressSnapshotQueryArguments.UserId">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.AddressSnapshotQueryArguments.DistinctId">
+            <summary>
+            地区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.AddressSnapshotQueryArguments.IsDefaultAddress">
+            <summary>
+            默认地址
+            </summary>
+        </member>
+        <member name="T:SF.Common.Addresses.Management.IAddressSnapshotManager">
+            <summary>
+            地址快照管理
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationQueryArguments.ParentId">
+            <summary>
+            父地区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationQueryArguments.EnName">
+            <summary>
+            英文名
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationQueryArguments.FullName">
+            <summary>
+            全名
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationQueryArguments.Code">
+            <summary>
+            代码
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationQueryArguments.PhonePrefix">
+            <summary>
+            电话区号
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationQueryArguments.Level">
+            <summary>
+            级别
+            </summary>
+        </member>
+        <member name="T:SF.Common.Addresses.Management.ILocationManager">
+            <summary>
+            地区管理
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressQueryArguments.OwnerId">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressQueryArguments.DistinctId">
+            <summary>
+            地区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressQueryArguments.IsDefaultAddress">
+            <summary>
+            默认地址
+            </summary>
+        </member>
+        <member name="T:SF.Common.Addresses.Management.IUserAddressManager">
+            <summary>
+            发货地址管理
+            </summary>
+        </member>
+        <member name="T:SF.Common.Addresses.Management.LocationInternal">
+            <summary>
+            地区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.Id">
+            <summary>
+            ID
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.ParentId">
+            <summary>
+            父地区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.ParentName">
+            <summary>
+            父地区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.EnName">
+            <summary>
+            英文名
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.FullName">
+            <summary>
+            全名
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.Code">
+            <summary>
+            代码
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.PhonePrefix">
+            <summary>
+            电话区号
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.TimeZone">
+            <summary>
+            时区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.Level">
+            <summary>
+            级别
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.Order">
+            <summary>
+            排位
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.Remarks">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.L1Code">
+            <summary>
+            一级编号
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.L2Code">
+            <summary>
+            二级编号
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.L3Code">
+            <summary>
+            三级编号
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.LocationInternal.L4Code">
+            <summary>
+            四级编号
+            </summary>
+        </member>
+        <member name="T:SF.Common.Addresses.Management.UserAddressInternal">
+            <summary>
+            发货地址
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressInternal.OwnerId">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressInternal.UserName">
+            <summary>
+            用户
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressInternal.ContactName">
+            <summary>
+            联系人
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressInternal.ContactPhoneNumber">
+            <summary>
+            联系人手机
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressInternal.PhoneNumberVerified">
+            <summary>
+            手机是否验证
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressInternal.ProvinceId">
+            <summary>
+            省
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressInternal.CityId">
+            <summary>
+            市
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressInternal.DistrictId">
+            <summary>
+            县/区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressInternal.IsDefaultAddress">
+            <summary>
+            默认地址
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.Management.UserAddressInternal.Address">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.AddressBase.Address">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.AddressBase.ContactName">
+            <summary>
+            联系人
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.AddressBase.ContactPhoneNumber">
+            <summary>
+            联系人手机
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.AddressDetail.LocationName">
+            <summary>
+            地区
+            </summary>
+        </member>
+        <member name="T:SF.Common.Addresses.AddressSnapshot">
+            <summary>
+            地址快照
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.AddressSnapshot.Id">
+            <summary>
+            Id
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.AddressSnapshot.Name">
+            <summary>
+            快照名称
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -72,6 +72,7 @@ namespace SF.Biz.Accounting
         public long Id { get; set; }
         public SettlementRollbackState State { get; set; }
         public string Message { get; set; }
+        public DateTime? Expires { get; set; }
     }
 
     /// <summary>
@@ -85,7 +86,7 @@ namespace SF.Biz.Accounting
         IEntitySource<ObjectKey<long>, SettlementRollbackRecord, SettlementRollbackRecordDetail, SettlementRollbackRecordQueryArguments>
     {
         Task<SettlementRollbackStatus> Create(SettlementRollbackCreateArgument Argument);
-        Task<SettlementRollbackStatus> UpdateAndQueryStatus(long Id,ClientInfo clientInfo);
+        Task<SettlementRollbackStatus> UpdateAndQueryStatus(long Id,ClientInfo clientInfo=null);
 
     }
 }

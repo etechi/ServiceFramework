@@ -47,6 +47,7 @@ namespace SF.Biz.Accounting
 
         public Task<SettlementRollbackStatus> Create(SettlementRollbackCreateArgument Argument)
         {
+            Argument.ClientInfo = Argument.ClientInfo ?? ServiceContext.ClientService.GetClientInfo();
             Ensure.Assert(Argument.Amount > 0, "退回金额必须大于0");
 
             return DataScope.Use("创建结算回退记录", async ctx =>
@@ -75,7 +76,7 @@ namespace SF.Biz.Accounting
                     rollbackItems.Add(new DataSettlementRollbackItemRecord
                     {
                         Id = await IdentGenerator.GenerateAsync<DataSettlementRollbackItemRecord>(),
-                        Amount = item.LeftAmount- amountUsed,
+                        Amount = amountUsed,
                         SettlementItemRecordId = item.Id,
                         SettlementRollbackRecordId = rollbackId,
                         TitleId=item.TitleId
@@ -137,11 +138,16 @@ namespace SF.Biz.Accounting
                 ctx.Add(record);
 
 
+                DateTime? Expires = null;
                 var refundRollbackItem = rollbackItems.SingleOrDefault(i => i.TitleId == settlementRecord.CollectTitleId);
                 if (refundRollbackItem!=null)
                 {
+                    //如果支付平台需要退款
                     record.RefundPlatformPlatformId = settlementRecord.CollectPaymentPlatformId;
-                    record.RefundRecordId=await RefundService.Value.Create(new RefundRequest
+                    record.RefundTitleId = refundRollbackItem.TitleId;
+                    record.RefundAmount = refundRollbackItem.Amount;
+
+                    var re=await RefundService.Value.Create(new RefundRequest
                     {
                         Amount = refundRollbackItem.Amount,
                         BizParent = new TrackIdent("退款", "SettlementRollbackRecord", record.Id),
@@ -152,8 +158,9 @@ namespace SF.Biz.Accounting
                         Desc = Argument.Desc,
                         PaymentPlatformId = settlementRecord.CollectPaymentPlatformId.Value
                     });
-
-                    await UpdateRefundStatus(ctx, record, Argument.ClientInfo);
+                    record.RefundRecordId = re.Id;
+                    await UpdateRecordState(ctx, record, re, Argument.ClientInfo);
+                    Expires = re.Expires;
                 }
                 else
                 {
@@ -166,14 +173,13 @@ namespace SF.Biz.Accounting
                 {
                     Id=record.Id,
                     State=record.State,
-                    Message=record.Error
+                    Message=record.Error,
+                    Expires=Expires
                 };
             });
         }
-
-        async Task UpdateRefundStatus(IDataContext ctx,DataSettlementRollbackRecord record,ClientInfo clientInfo)
+        async Task UpdateRecordState(IDataContext ctx,DataSettlementRollbackRecord record,RefundRefreshResult re,ClientInfo clientInfo)
         {
-            var re = await RefundService.Value.RefreshRefundRecord(record.RefundRecordId.Value);
             if (re.State != RefundState.Failed && re.State != RefundState.Success)
             {
                 record.State = SettlementRollbackState.Processing;
@@ -191,14 +197,21 @@ namespace SF.Biz.Accounting
             record.State = SettlementRollbackState.Success;
             record.UpdatedTime = Now;
             record.UpdatorId = clientInfo.OperatorId.Value;
-            var updater = new AccountUpdater(ctx,IdentGenerator);
+            var updater = new AccountUpdater(ctx, IdentGenerator);
             await updater.LoadAccounts((record.RefundTitleId.Value, record.BuyerId));
             await updater.Update(record.RefundTitleId.Value, record.BuyerId, 0, record.RefundAmount.Value, Now);
+        }
+        async Task UpdateRefundStatus(IDataContext ctx,DataSettlementRollbackRecord record,ClientInfo clientInfo)
+        {
+            var re = await RefundService.Value.RefreshRefundRecord(record.RefundRecordId.Value);
+            await UpdateRecordState(ctx, record, re, clientInfo);
 
         }
 
         public Task<SettlementRollbackStatus> UpdateAndQueryStatus(long Id,ClientInfo ClientInfo)
         {
+            ClientInfo = ClientInfo ?? ServiceContext.ClientService.GetClientInfo();
+
             return DataScope.Use("更新结算退款记录", async ctx =>
             {
                 var record = await ctx.Queryable<DataModels.DataSettlementRollbackRecord>(false)

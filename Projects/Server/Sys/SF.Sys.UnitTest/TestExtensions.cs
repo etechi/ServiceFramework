@@ -1,6 +1,7 @@
 using SF.Sys.Data;
 using SF.Sys.Hosting;
 using SF.Sys.Services;
+using SF.Sys.TaskServices;
 using SF.Sys.TimeServices;
 using System;
 using System.Threading.Tasks;
@@ -34,6 +35,24 @@ namespace SF.Sys.UnitTest
 			var ig = sp.Resolve<IIdentGenerator>();
 			return await ig.GenerateAsync("≤‚ ‘–Ú∫≈");
 		}
+        public static DateTime Time(this IServiceProvider sp)
+        {
+            return sp.Resolve<ITimeService>().Now;
+        }
+        public static async Task WaitToTime(this IServiceProvider sp,DateTime Time,Func<Task<bool>> Condition=null)
+        {
+            var step = 0;
+            if (Condition == null)
+                Condition = () =>
+                 {
+                     step++;
+                     return Task.FromResult(step > 5);
+                 };
+            var task = sp.Resolve<ITimerService>().WaitFor(Condition, 1000);
+            sp.Resolve<ITimeService>().SetTime(Time);
+            await sp.Resolve<ITimedTaskService>().LoadTasks(System.Threading.CancellationToken.None);
+            await task;
+        }
 	}
 	
 

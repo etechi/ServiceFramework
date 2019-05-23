@@ -68,7 +68,8 @@ namespace SF.Sys.TaskServices
 				TCS.TrySetCanceled();
 			}
 		}
-		public static Task WaitFor(this ITimerService TimerService, Func<Task<bool>> Condition,int TimeoutSeconds=30)
+        
+        public static Task WaitFor(this ITimerService TimerService, Func<Task<bool>> Condition,int TimeoutSeconds=30)
 		{
 			var timer = new WaitTimer
 			{

@@ -20,7 +20,7 @@ using SF.Sys.NetworkService;
 
 namespace SF.Biz.Products
 {
-	public class CategoryQueryArgument : QueryArgument<ObjectKey<long>>
+	public class CategoryQueryArgument : ObjectQueryArgument<ObjectKey<long>>
     {
 
 		/// <summary>
@@ -36,30 +36,17 @@ namespace SF.Biz.Products
 		[EntityIdent(typeof(CategoryInternal))]
         public long? ParentId { get; set; }
 
-		/// <summary>
-		/// 对象状态
-		/// </summary>
-		public EntityLogicState? ObjectState { get; set; }
-
-		/// <summary>
-		/// 名称
-		/// </summary>
-		public string Name { get; set; }
 	}
 
-	public interface IProductCategoryManager : IProductCategoryManager<CategoryInternal>
-	{ }
 
 	/// <summary>
 	/// 产品目录管理
 	/// </summary>
-	/// <typeparam name="TEditable"></typeparam>
 	[NetworkService]
 	[EntityManager]
-	public interface IProductCategoryManager<TEditable> :
-		IEntityManager<ObjectKey<long>, TEditable>,
-		IEntitySource<ObjectKey<long>, TEditable, CategoryQueryArgument>
-		where TEditable : CategoryInternal
+	public interface IProductCategoryManager :
+		IEntityManager<ObjectKey<long>, CategoryInternal>,
+		IEntitySource<ObjectKey<long>, CategoryInternal, CategoryQueryArgument>
 	{
 		//Task<TEditable[]> BatchUpdate(long SellerId, TEditable[] Items);
 		//Task UpdateItems(long CategoryId, long[] Items);

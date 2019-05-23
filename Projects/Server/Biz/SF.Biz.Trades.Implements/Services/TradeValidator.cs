@@ -80,8 +80,8 @@ namespace SF.Biz.Trades.Services
             }
 
             VerifyRange("总金额", amount, true, 10000000);
-            VerifyRange("总结算金额", trade.SettlementAmount, true, 10000000);
-            VerifyDiscount("总金额", amount, trade.SettlementAmount, trade.DiscountDesc, trade.DiscountEntityId);
+            VerifyRange("总结算金额", trade.TotalSettlementAmount, true, 10000000);
+            VerifyDiscount("总金额", amount, trade.TotalSettlementAmount, trade.DiscountDesc, trade.DiscountEntityId);
 
             return Task.CompletedTask;
         }

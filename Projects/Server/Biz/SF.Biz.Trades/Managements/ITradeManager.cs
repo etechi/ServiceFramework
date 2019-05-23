@@ -113,6 +113,7 @@ namespace SF.Biz.Trades.Managements
 
     public class TradeExecResult
     {
+        
         public TradeExecStatus Status { get; set; }
         public DateTime? Expires { get; set; }
         public object Results { get; set; }

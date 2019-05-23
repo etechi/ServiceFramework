@@ -76,7 +76,7 @@ namespace SF.Sys.Reminders
 		Task<bool> Remove(long Id);
 		Task<bool> Remove(TrackIdent BizSource);
 		Task Remind(long Id, object Argument);
-		Task Remind(TrackIdent BizSource, object Argument);
+		Task Remind(TrackIdent BizSource, object Argument,bool IgnoreNotExists=false);
 		Task<T> Sync<T>(TrackIdent BizSource, Func<Task<T>> Callback);
 	}
    

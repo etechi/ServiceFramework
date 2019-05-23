@@ -58,8 +58,9 @@ namespace SF.Sys
 			Services.AddAdminServices();
 			Services.AddFrontEndServices(Setting.EnvType);
 			Services.AddFriendlyFrontEndServices();
+            Services.AddAddressServices();
 
-			Services.AddDefaultPhoneNumberValidator();
+            Services.AddDefaultPhoneNumberValidator();
 			Services.AddDocumentServices();
 			Services.AddTicketServices();
 			Services.AddConversationServices();

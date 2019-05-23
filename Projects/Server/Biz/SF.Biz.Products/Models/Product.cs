@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Annotations;
 using SF.Sys.Entities;
+using SF.Sys.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -63,55 +64,9 @@ namespace SF.Biz.Products
 		[Ignore]
 		public string Title { get; set; }
 	}
-
-	public class ProductContent
-	{
-		/// <summary>
-		/// 产品图片
-		/// </summary>
-		[Required]
-		[Range(1, 5, ErrorMessage = "需要提供1到5张产品图片")]
-		[Layout(1)]
-		[ArrayLayout(true)]
-		public IEnumerable<ProductImage> Images { get; set; }
-
-		/// <summary>
-		/// 产品介绍
-		/// </summary>
-		[Required]
-		[Layout(2)]
-		public IEnumerable<ProductDescItem> Descs { get; set; }
-	}
     [EntityObject]
-    public class ProductSpec : IEntityWithId<long>, IEntityWithName
+    public class ProductSpec : UIObjectEntityBase
 	{
-		/// <summary>
-		/// ID
-		/// </summary>
-		[Key]
-        [TableVisible]
-        [ReadOnly(true)]
-        public long Id { get; set; }
-
-		/// <summary>
-		/// 名称
-		/// </summary>
-		[TableVisible]
-        [MaxLength(100)]
-        [Required]
-        public string Name { get; set; }
-
-		/// <summary>
-		/// 图片
-		/// </summary>
-		[Image]
-        public string Image { get; set; }
-
-		/// <summary>
-		/// 描述
-		/// </summary>
-		[MaxLength(200)]
-        public string Desc { get; set; }
 
 		///<title>自动发货规格</title>
 		/// <summary>
@@ -125,43 +80,12 @@ namespace SF.Biz.Products
         [Ignore]
         public long Order { get; set; }
 
-		/// <summary>
-		/// 状态
-		/// </summary>
-		[TableVisible]
-        [Ignore]
-        public EntityLogicState ObjectState { get; set; }
-
-		/// <summary>
-		/// 创建时间
-		/// </summary>
-		[ReadOnly(true)]
-        [Ignore]
-        public DateTime CreatedTime { get; set; }
-
-		/// <summary>
-		/// 修改时间
-		/// </summary>
-		[TableVisible]
-        [ReadOnly(true)]
-        [Ignore]
-        public DateTime UpdatedTime { get; set; }
 
     }
     [EntityObject()]
-    public class ProductBase :
-		IEntityWithId<long>,
-		IEntityWithName
+    public class ProductBase : UIObjectEntityBase
 	{
-		///<title>ID</title>
-		/// <prompt>
-		/// 保存后自动产生
-		/// </prompt>
-		[Key]
-		[Layout(1, 1, 10)]
-		[ReadOnly(true)]
-		[TableVisible(10)]
-		public long Id { get; set; }
+		
 
 		/// <title>产品名称</title>
 		/// <summary>
@@ -172,7 +96,7 @@ namespace SF.Biz.Products
 		[StringLength( 100, ErrorMessage = "产品名称不能超过100个字")]
 		[Layout(1, 1, 20)]
 		[TableVisible(20)]
-		public string Name { get; set; }
+		public override string Name { get; set; }
 
 
 		/// <title>展示标题</title>
@@ -183,7 +107,7 @@ namespace SF.Biz.Products
 		[StringLength(100, MinimumLength = 4, ErrorMessage = "标题不能超过100个字")]
 		[Layout(1, 1, 30)]
 		[Required]
-		public string Title { get; set; }
+		public override string Title { get; set; }
 
 
 		/// <title>市场价</title>
@@ -215,7 +139,7 @@ namespace SF.Biz.Products
 		[Image]
 		[Required]
 		[Layout(1, 2)]
-		public string Image { get; set; }
+		public override string Image { get; set; }
 
 
 		/// <title>虚拟商品</title>
@@ -246,7 +170,7 @@ namespace SF.Biz.Products
 		[Layout(1, 1, 70)]
 		[Required]
 		[TableVisible(40)]
-		public EntityLogicState ObjectState { get; set; }
+		public override EntityLogicState LogicState { get; set; }
 
     }
 	public class ProductEditable : ProductBase
@@ -268,7 +192,7 @@ namespace SF.Biz.Products
 		//[EntityIdent("产品供应商")]
 		[Layout(1, 1, 2)]
 		[Required]
-		public long OwnerUserId { get; set; }
+		public long? OwnerId { get; set; }
 
 		/// <title>商品分类</title>
 		/// <summary>
@@ -278,15 +202,26 @@ namespace SF.Biz.Products
 		[Layout(1,1, 75)]
 		public IEnumerable<long> CategoryIds { get; set; }
 
-		[Required]
-		[Layout(3)]
-		public ProductContent Content { get; set; }
+        /// <summary>
+        /// 产品图片
+        /// </summary>
+        [Required]
+        [Range(1, 5, ErrorMessage = "需要提供1到5张产品图片")]
+        [Layout(1)]
+        [ArrayLayout(true)]
+        public IEnumerable<ProductImage> Images { get; set; }
 
+        /// <summary>
+        /// 产品介绍
+        /// </summary>
+        [Required]
+        [Layout(2)]
+        public IEnumerable<ProductDescItem> Detail { get; set; }
 
-		/// <title>产品规格</title>
-		/// <summary>
-		/// 注意：1.无规格的产品在发货记录中直接记录产品，有规格的奖品在发货记录中记录产品规格。2.产品规格在开始使用后，不要删除或修改名称(比如把移动改成联通)，否则和发货记录中记录的信息会不服。
-		/// </summary>
+        /// <title>产品规格</title>
+        /// <summary>
+        /// 注意：1.无规格的产品在发货记录中直接记录产品，有规格的奖品在发货记录中记录产品规格。2.产品规格在开始使用后，不要删除或修改名称(比如把移动改成联通)，否则和发货记录中记录的信息会不服。
+        /// </summary>
         [TableRows]
         public IEnumerable<ProductSpecDetail> Specs { get; set; }
 
@@ -302,13 +237,7 @@ namespace SF.Biz.Products
 	}
 	public class ProductInternal: ProductBase
 	{
-		/// <summary>
-		/// 更新时间
-		/// </summary>
-		[TableVisible(90)]
-		public DateTime UpdatedTime { get; set; }
-
-		public DateTime CreatedTime { get; set; }
+		
 
 		[EntityIdent(typeof(ProductType),nameof(ProductTypeName))]
 		public long ProductTypeId { get; set; }
@@ -320,7 +249,7 @@ namespace SF.Biz.Products
 		public string ProductTypeName { get; set; }
 	}
 
-	public class ProductInternalQueryArgument : QueryArgument<ObjectKey<long>>
+	public class ProductInternalQueryArgument : ObjectQueryArgument<ObjectKey<long>>
 	{
 		/// <summary>
 		/// 产品类型
@@ -332,7 +261,7 @@ namespace SF.Biz.Products
 		/// <summary>
 		/// 更新时间
 		/// </summary>
-		public DateQueryRange UpdateTime { get; set; }
+		public DateQueryRange UpdatedTime { get; set; }
 
 
 		/// <summary>
@@ -340,15 +269,6 @@ namespace SF.Biz.Products
 		/// </summary>
 		public QueryRange<decimal> Price { get; set; }
 
-		/// <summary>
-		/// 产品名称
-		/// </summary>
-		public string Name { get; set; }
-
-		/// <summary>
-		/// 状态
-		/// </summary>
-		public EntityLogicState? State { get; set; }
 
 	}
 }

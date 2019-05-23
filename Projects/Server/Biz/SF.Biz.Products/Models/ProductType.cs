@@ -15,6 +15,7 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 
 using SF.Sys.Annotations;
 using SF.Sys.Entities;
+using SF.Sys.Entities.Models;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -22,51 +23,8 @@ using System.ComponentModel.DataAnnotations;
 namespace SF.Biz.Products
 {
 	[EntityObject]
-    public class ProductType :
-		IEntityWithId<long>,
-		IEntityWithName
+    public class ProductType : UIObjectEntityBase
 	{
-		/// <summary>
-		/// ID
-		/// </summary>
-		[TableVisible]
-		[Key]
-		[ReadOnly(true)]
-		public long Id { get; set; }
-
-		/// <summary>
-		/// 名称
-		/// </summary>
-		[TableVisible]
-		[Required]
-		[StringLength(100)]
-		public string Name { get; set; }
-
-
-		/// <summary>
-		/// 标题
-		/// </summary>
-		[TableVisible]
-		[Required]
-		[StringLength(100)]
-		public string Title { get; set; }
-
-
-
-		/// <summary>
-		/// 图片
-		/// </summary>
-		[Layout(0, 1)]
-		[Image]
-		public string Image { get; set; }
-
-		/// <summary>
-		/// 图标
-		/// </summary>
-		[Layout(0, 2)]
-		[Image]
-		public string Icon { get; set; }
-
 		/// <summary>
 		/// 产品数量
 		/// </summary>
@@ -74,17 +32,19 @@ namespace SF.Biz.Products
 		[ReadOnly(true)]
 		public int ProductCount { get; set; }
 
-		[Ignore]
+        /// <summary>
+        /// 发货类型
+        /// </summary>
+        [Required]
+        [MaxLength(100)]
+        public string DeliveryProvider { get; set; }
+
+        [Ignore]
 		public PropertyScope[] PropertyScopes { get; set; }
 
     }
 	public class ProductTypeEditable : ProductType
 	{
-		/// <summary>
-		/// 状态
-		/// </summary>
-		[Required]
-		public EntityLogicState ObjectState { get; set; }
 
 		/// <summary>
 		/// 显示排位
@@ -103,12 +63,6 @@ namespace SF.Biz.Products
 	}
 	public class ProductTypeInternal : ProductTypeEditable
 	{
-		/// <summary>
-		/// 更新时间
-		/// </summary>
-		[TableVisible]
-		public DateTime UpdatedTime { get; set; }
-		public DateTime CreatedTime { get; set; }
 
 	}
 

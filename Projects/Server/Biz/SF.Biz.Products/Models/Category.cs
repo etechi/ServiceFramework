@@ -13,27 +13,19 @@ Detail: https://github.com/etechi/ServiceFramework/blob/master/license.md
 ----------------------------------------------------------------*/
 #endregion Apache License Version 2.0
 
+using SF.Biz.Shops.Managements;
 using SF.Sys.Annotations;
 using SF.Sys.Entities;
+using SF.Sys.Entities.Models;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace SF.Biz.Products
 {
 	[EntityObject]
-    public class CategoryInternal:
-		IEntityWithId<long>,
-		IEntityWithName
+    public class CategoryInternal:UIObjectEntityBase
 	{
-		/// <summary>
-		/// ID
-		/// </summary>
-		/// <prompt>保存后自动产生</prompt>
-		[Key]
-		[ReadOnly(true)]
-		[TableVisible]
-        [Layout(1)]
-        public long Id { get; set; }
+		
 
 		///<title>名称</title>
 		/// <summary>
@@ -43,7 +35,7 @@ namespace SF.Biz.Products
 		[Required]
 		[StringLength(100)]
         [Layout(2)]
-        public string Name { get; set; }
+        public override string Name { get; set; }
 
 
 		/// <summary>
@@ -53,7 +45,7 @@ namespace SF.Biz.Products
 		[TableVisible]
 		[StringLength(100)]
         [Layout(3)]
-        public string Title { get; set; }
+        public override string Title { get; set; }
 
 
 		///<title>销售人员</title>
@@ -95,7 +87,7 @@ namespace SF.Biz.Products
 		/// </summary>
 		[StringLength(100)]
         [Layout(8)]
-        public string Description { get; set; }
+        public override string Description { get; set; }
 
 		///<title>图片</title>
 		/// <summary>
@@ -103,7 +95,7 @@ namespace SF.Biz.Products
 		/// </summary>
 		[Image]
         [Layout(9)]
-        public string Image { get; set; }
+        public override string Image { get; set; }
 
 		///<title>图标</title>
 		/// <summary>
@@ -111,7 +103,7 @@ namespace SF.Biz.Products
 		/// </summary>
 		[Image]
         [Layout(10)]
-        public string Icon { get; set; }
+        public override string Icon { get; set; }
 
 		///<title>广告图</title>
 		/// <summary>
@@ -147,12 +139,24 @@ namespace SF.Biz.Products
         [MaxLength(200)]
         public string MobileBannerUrl { get; set; }
 
+        /// <summary>
+        /// 店铺
+        /// </summary>
+        [EntityIdent(typeof(ShopInternal),nameof(ShopName))]
+        public long? ShopId { get; set; }
 
-		///<title>列表排位</title>
-		/// <summary>
-		/// 商品分类在分类列表中的排位，小的在前
-		/// </summary>
-		[TableVisible]
+        /// <summary>
+        /// 店铺
+        /// </summary>
+        [Ignore]
+        [TableVisible]
+        public string ShopName { get; set; }
+
+        ///<title>列表排位</title>
+        /// <summary>
+        /// 商品分类在分类列表中的排位，小的在前
+        /// </summary>
+        [TableVisible]
         [Optional]
         public int Order { get; set; }
 

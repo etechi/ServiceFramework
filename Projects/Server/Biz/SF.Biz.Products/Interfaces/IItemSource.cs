@@ -34,7 +34,6 @@ namespace SF.Biz.Products
 	{
 		void NotifyProductChanged(long ProductId);
 		void NotifyItemChanged(long ItemId);
-		void NotifyProductContentChanged(long ProductId);
 		void NotifyCategoryChanged(long CategoryId);
 		void NotifyCategoryChildrenChanged(long CategoryId);
 		void NotifyCategoryItemsChanged(long CategoryId);
@@ -46,7 +45,6 @@ namespace SF.Biz.Products
 		IBatchLoader<IItemCached> ItemLoader { get; }
 		IBatchLoader<ICategoryCached> CategoryLoader { get; }
 		IBatchLoader<IProductCached> ProductLoader { get; }
-		IBatchLoader<IProductContentCached> ProductContentLoader { get; }
 		IRelationLoader CategoryChildrenLoader { get; }
 		IRelationLoader CategoryItemsLoader { get; }
         IRelationLoader<string> TaggedCategoryLoader { get; }

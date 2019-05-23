@@ -15,24 +15,32 @@ namespace SF.Biz.Delivery.DataModels
 	public class DataDelivery : DataObjectEntityBase
 	{
         /// <summary>
+        /// 根业务ID
+        /// </summary>
+		[Index]
+        [Required]
+        [MaxLength(100)]
+        public string BizRoot { get; set; }
+
+        /// <summary>
         /// 业务跟踪ID
         /// </summary>
 		[Index("biz-ident",IsUnique =true)]
 		[Required]
 		[MaxLength(100)]
-        public string TrackEntityIdent { get; set; }
+        public string BizParent { get; set; }
 
         /// <summary>
-        /// 卖家ID
+        /// 发货人
         /// </summary>
         [Index("seller",Order =1)]
-        public long SellerId { get; set; }
+        public long SenderId { get; set; }
 
         /// <summary>
-        /// 买家ID
+        /// 收货人ID
         /// </summary>
 		[Index("buyer", Order = 1)]
-        public long BuyerId { get; set; }
+        public long ReceiverId { get; set; }
 
         /// <summary>
         /// 发货状态
@@ -60,22 +68,31 @@ namespace SF.Biz.Delivery.DataModels
         public DateTime? ReceivedTime { get; set; }
 
         /// <summary>
+        /// 发货地址ID
+        /// </summary>
+        public long SourceAddressId { get; set; }
+
+        /// <summary>
+        /// 收货地址ID
+        /// </summary>
+        public long DestAddressId { get; set; }
+
+		
+
+        /// <summary>
         /// 发货地址快照ID
         /// </summary>
-        public long SourceAddressSnapshotId { get; set; }
+        public long? SourceAddressSnapshotId { get; set; }
 
         /// <summary>
         /// 收货地址快照ID
         /// </summary>
-        public long DestAddressSnapshotId { get; set; }
+        public long? DestAddressSnapshotId { get; set; }
 
-		[ForeignKey(nameof(SourceAddressSnapshotId))]
-		public DataDeliveryAddressSnapshot SourceAddressSnapshot { get; set; }
+        
 
-		[ForeignKey(nameof(DestAddressSnapshotId))]
-		public DataDeliveryAddressSnapshot DestAddressSnapshot { get; set; }
 
-		[InverseProperty(nameof(DataDeliveryItem.Delivery))]
+        [InverseProperty(nameof(DataDeliveryItem.Delivery))]
 		public ICollection<DataDeliveryItem> Items { get; set; }
 
 
@@ -103,6 +120,9 @@ namespace SF.Biz.Delivery.DataModels
         /// </summary>
         [Index]
 		public long DeliveryOperatorId { get; set; }
+
+        [MaxLength(200)]
+        public string Error { get; set; }
 
 	}
 }

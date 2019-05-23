@@ -1,4 +1,5 @@
 ﻿using SF.Sys.Annotations;
+using SF.Sys.Auth;
 using SF.Sys.Entities.Models;
 using System;
 using System.ComponentModel;
@@ -27,6 +28,20 @@ namespace SF.Biz.Trades
         public string Ident { get { return CreateIdent(Id, CreatedTime); } }
 
         
+        /// <summary>
+        /// 卖家
+        /// </summary>
+        [EntityIdent(typeof(User),nameof(SellerName))]
+        public long SellerId { get; set; }
+
+        /// <summary>
+        /// 卖家
+        /// </summary>
+        [Ignore]
+        [TableVisible]
+        public string SellerName { get; set; }
+
+
         ///<title>商品</title>
         /// <summary>
         /// 商品
@@ -133,6 +148,8 @@ namespace SF.Biz.Trades
         /// </summary>
         [TableVisible(60)]
         public TradeType TradeType { get; set; }
+
+
 
         ///<title>折扣说明</title>
         /// <summary>

@@ -30,6 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SF.Common.Addresses.Implements\SF.Common.Addresses.Implements.csproj" />
+    <ProjectReference Include="..\SF.Common.Addresses\SF.Common.Addresses.csproj" />
     <ProjectReference Include="..\SF.Common.Admins.Implements\SF.Common.Admins.Implements.csproj" />
     <ProjectReference Include="..\SF.Common.Admins\SF.Common.Admins.csproj" />
     <ProjectReference Include="..\SF.Common.BackEndConsoleServices.Implements\SF.Common.BackEndConsoleServices.Implements.csproj" />

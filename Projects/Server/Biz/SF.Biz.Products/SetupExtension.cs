@@ -38,7 +38,7 @@ namespace SF.Biz.Products
 				await ProductTypeManager.QuerySingleEntityIdent(new ProductTypeQueryArgument{Name=e.Name}),
 				(ProductTypeEditable o) =>
 				{
-					o.ObjectState = e.ObjectState;
+					o.LogicState = e.LogicState;
 					o.Icon = e.Icon;
 					o.Image = e.Image;
 					o.ProductCount = e.ProductCount;
@@ -46,6 +46,7 @@ namespace SF.Biz.Products
 					o.Title = e.Title;
 					o.Order = e.Order;
 					o.Unit = e.Unit;
+                    o.DeliveryProvider = e.DeliveryProvider;
 				}
 				);
 		}
@@ -80,16 +81,16 @@ namespace SF.Biz.Products
 		//	var re = await CategoryManager.BatchUpdate(SellerId, cats);
 		//	return re;
 		//}
-		public static async Task SetItems<TEditable>(
-			this IProductCategoryManager<TEditable> CategoryManager,
+		public static async Task SetItems(
+			this IProductCategoryManager CategoryManager,
 			long CategoryId,
 			long[] Items
-			) where TEditable:CategoryInternal
+			)
 		{
-			await CategoryManager.UpdateEntity< ObjectKey<long>,TEditable>(
+			await CategoryManager.UpdateEntity(
 				CategoryManager,
 				ObjectKey.From(CategoryId),
-				(TEditable e) =>
+				(CategoryInternal e) =>
 				{
 					e.Items = Items;
 				});
@@ -126,25 +127,23 @@ namespace SF.Biz.Products
 				});
 			return await Manager.LoadForEdit(id);
 		}
-		public static async Task<ProductEditable> ProductEnsure<TProductManager>(
-				  this TProductManager ProductManager,
+		public static async Task<ProductEditable> ProductEnsure(
+				  this IProductManager ProductManager,
 				  ProductEditable e
-			) where TProductManager : IEntityIdentQueryable<ObjectKey<long>, ProductInternalQueryArgument>,
-									IEntityEditableLoader<ObjectKey<long>,ProductEditable>,
-								IEntityUpdator< ProductEditable>,
-								IEntityCreator<ObjectKey<long>,ProductEditable>
+			) 
 		{
 			return await ProductManager.EnsureEntity(
 				await ProductManager.QuerySingleEntityIdent(new ProductInternalQueryArgument{Name = e.Name}),
 				(ProductEditable o) =>
 				{
-					o.Content = e.Content;
+					o.Images = e.Images;
+                    o.Detail = e.Detail;
 					o.Image = e.Image;
 					o.IsVirtual = e.IsVirtual;
 					o.CouponDisabled = e.CouponDisabled;
 					o.MarketPrice = e.MarketPrice;
 					o.Name = e.Name;
-					o.OwnerUserId = e.OwnerUserId;
+					o.OwnerId = e.OwnerId;
 					o.Price = e.Price;
 					o.PublishedTime = e.PublishedTime;
 					o.Title = e.Title;
@@ -155,8 +154,8 @@ namespace SF.Biz.Products
 
 
 
-		public static async Task<ProductEditable> ProductEnsure<TProductManager>(
-				this TProductManager ProductManager,
+		public static async Task<ProductEditable> ProductEnsure(
+				this IProductManager ProductManager,
 				long sellerId,
 				long type,
 				string name,
@@ -169,10 +168,7 @@ namespace SF.Biz.Products
 				bool isVirtual = false,
                 DateTime? publishTime=null,
                 EntityLogicState logicState=EntityLogicState.Enabled
-			)where TProductManager:IEntityIdentQueryable<ObjectKey<long>,ProductInternalQueryArgument>,
-									IEntityEditableLoader<ObjectKey<long>,ProductEditable>,
-								IEntityUpdator<ProductEditable>,
-								IEntityCreator<ObjectKey<long>,ProductEditable>
+			)
 		{
 			return await ProductManager.EnsureEntity(
 				await ProductManager.QuerySingleEntityIdent(new ProductInternalQueryArgument{Name = name,ProductTypeId = type}),
@@ -186,13 +182,10 @@ namespace SF.Biz.Products
 					o.IsVirtual = isVirtual;
 					o.CouponDisabled = false;
 					o.Image = image;
-					o.OwnerUserId = sellerId;
-					o.Content = new ProductContent
-					{
-						Images = images?.Select(i => new ProductImage { Image = i }) ?? null,
-						Descs = contentImages?.Select(i => new  ProductDescItem { Image = i }) ?? null
-					};
-                    o.ObjectState = logicState;
+					o.OwnerId = sellerId;
+                    o.Images = images?.Select(i => new ProductImage { Image = i });
+					o.Detail = contentImages?.Select(i => new ProductDescItem { Image = i });
+                    o.LogicState = logicState;
                     o.PublishedTime = publishTime ?? DateTime.Now;
 				}
 				);

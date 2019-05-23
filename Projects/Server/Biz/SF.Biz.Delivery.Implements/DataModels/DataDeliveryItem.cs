@@ -30,12 +30,6 @@ namespace SF.Biz.Delivery.DataModels
 		[Index("payload")]
         public string PayloadEntityIdent { get; set; }
 
-        /// <summary>
-        /// 负载业务跟踪标识规格
-        /// </summary>
-        [MaxLength(100)]
-        [Index("payloadspec")]
-        public string PayloadSpecEntityIdent { get; set; }
 
         /// <summary>
         /// 发货ID

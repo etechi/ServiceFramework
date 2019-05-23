@@ -45,6 +45,18 @@ namespace SF.Biz.Trades.DataModels
         /// </summary>
         public decimal TotalSettlementAmount { get; set; }
 
+        ///<title>退回金额</title>
+        /// <summary>
+        /// 结算金额中已退回的金额
+        /// </summary>
+        public decimal TotalSettlementRollbackAmount { get; set; }
+
+        ///<title>退回金额</title>
+        /// <summary>
+        /// 结算金额中剩余金额
+        /// </summary>
+        public decimal TotalSettlementLeftAmount { get; set; }
+
         /// <summary>
         /// 买方结算所得
         /// </summary>

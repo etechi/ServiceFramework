@@ -37,6 +37,7 @@ namespace SF.Sys
             Services.AddPaymentProvidersServices();
             Services.AddAccountingServices();
             Services.AddDeliveryServices();
+            Services.AddShopServices();
             Services.AddShoppingCartServices();
             Services.AddCouponsServices();
             Services.AddTradeServices();

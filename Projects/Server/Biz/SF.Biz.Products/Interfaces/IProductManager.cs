@@ -20,22 +20,15 @@ using System.Threading.Tasks;
 
 namespace SF.Biz.Products
 {
-	public interface IProductManager: IProductManager<ProductInternal,ProductEditable>
-	{
-	}
-
+	
 	/// <summary>
 	/// 产品管理
 	/// </summary>
-	/// <typeparam name="TInternal"></typeparam>
-	/// <typeparam name="TEditable"></typeparam>
 	[NetworkService]
 	[EntityManager]
-	public interface IProductManager<TInternal, TEditable> :
-		IEntityManager<ObjectKey<long>, TEditable>,
-		IEntitySource<ObjectKey<long>, TInternal , ProductInternalQueryArgument>
-		where TInternal : ProductInternal
-		where TEditable : ProductEditable
+	public interface IProductManager:
+		IEntityManager<ObjectKey<long>, ProductEditable>,
+		IEntitySource<ObjectKey<long>, ProductInternal, ProductInternalQueryArgument>
 	{
 		Task SetLogicState(long Id, EntityLogicState State);
 

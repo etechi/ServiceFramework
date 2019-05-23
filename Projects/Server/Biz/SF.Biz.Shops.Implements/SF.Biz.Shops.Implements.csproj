@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>E:\work\ServiceFramework.Demo\SFShop\SF.Server\Biz\SF.Biz.Shops.Implements\SF.Biz.Shops.Implements.xml</DocumentationFile>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+	</PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>E:\work\ServiceFramework.Demo\SFShop\SF.Server\Biz\SF.Biz.Shops.Implements\SF.Biz.Shops.Implements.xml</DocumentationFile>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <None Remove=".licenseheader" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Sys\SF.Sys.Data\SF.Sys.Data.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Entities\SF.Sys.Entities.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.BackEndConsole\SF.Sys.BackEndConsole.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
+    <ProjectReference Include="..\SF.Biz.Shops\SF.Biz.Shops.csproj" />
+  </ItemGroup>
+
+
+</Project>

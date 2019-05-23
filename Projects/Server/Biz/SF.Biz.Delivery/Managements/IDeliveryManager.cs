@@ -1,10 +1,12 @@
-﻿using SF.Sys.Annotations;
+﻿using SF.Common.Addresses;
+using SF.Sys.Annotations;
 using SF.Sys.Auth;
 using SF.Sys.Entities;
 using SF.Sys.Entities.Models;
 using SF.Sys.NetworkService;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
@@ -30,13 +32,6 @@ namespace SF.Biz.Delivery.Management
         public string ReceiverName { get; set; }
 
         /// <summary>
-        /// 内容
-        /// </summary>
-        [TableVisible]
-        public string Title { get; set; }
-
-
-        /// <summary>
         /// 发货状态
         /// </summary>
         [TableVisible]
@@ -44,22 +39,49 @@ namespace SF.Biz.Delivery.Management
 
         [Ignore]
         public long SenderId { get; set; }
-        //[EntityIdent("DeliveryAddressSnapshop")]
-        [Ignore]
+
+        /// <summary>
+        /// 发货地址
+        /// </summary>
+        [EntityIdent(typeof(UserAddress))]
         public long SourceAddressId { get; set; }
 
         //[EntityIdent("DeliveryAddressSnapshop")]
-        [Ignore]
+        /// <summary>
+        /// 收货地址
+        /// </summary>
+        [EntityIdent(typeof(UserAddress))]
         public long DestAddressId { get; set; }
 
         /// <summary>
-        /// 业务来源
+        /// 发货地址快照
         /// </summary>
-        [EntityIdent(null, nameof(Title))]
-        public string TrackEntityIdent { get; set; }
+        [ReadOnly(true)]
+        [EntityIdent(typeof(AddressSnapshot))]
+        public long? SourceAddressSnapshotId { get; set; }
+
+        //[EntityIdent("DeliveryAddressSnapshop")]
+        /// <summary>
+        /// 收货地址快照
+        /// </summary>
+        [ReadOnly(true)]
+        [EntityIdent(typeof(AddressSnapshot))]
+        public long? DestAddressSnapshotId { get; set; }
+
+        /// <summary>
+        /// 父业务
+        /// </summary>
+        [EntityIdent(WithBizType =true)]
+        public string BizParent{ get; set; }
+
+        /// <summary>
+        /// 根业务
+        /// </summary>
+        [EntityIdent(WithBizType = true)]
+        public string BizRoot { get; set; }
 
         [Ignore]
-        public int Weight { get; set; }
+        public decimal Weight { get; set; }
 
         /// <summary>
         /// 发货时间
@@ -76,12 +98,6 @@ namespace SF.Biz.Delivery.Management
         [Layout(10, 3)]
         public DateTime? ReceivedTime { get; set; }
 
-        /// <summary>
-        /// 卡密读取时间
-        /// </summary>
-        [TableVisible]
-        [Layout(10, 4)]
-        public DateTime? VirtualItemTokenReadTime { get; set; }
 
         /// <summary>
         /// 总数量
@@ -118,40 +134,44 @@ namespace SF.Biz.Delivery.Management
         /// <summary>
         /// 收件地址
         /// </summary>
-		public DeliveryAddressDetail DestAddress { get; set; }
+		public AddressDetail DestAddress { get; set; }
 
     }
-    public class DeliveryItemInternal
+    public class DeliveryItemInternal : ObjectEntityBase
     {
-        [Ignore]
-        public long Id { get; set; }
-
-        [Ignore]
-        public long DeliveryId { get; set; }
-
         /// <summary>
-        /// 项目
+        /// 发货
         /// </summary>
-        [Layout(1, 1)]
-        public string Title { get; set; }
+        [Ignore]
+        [EntityIdent(typeof(DeliveryInternal))]
+        public long DeliveryId { get; set; }
 
         /// <summary>
         /// 数量
         /// </summary>
         [Layout(1, 2)]
+        [Uneditable]
         public int Quantity { get; set; }
 
         /// <summary>
         /// 项目内容
         /// </summary>
-		[EntityIdent(null, nameof(Title))]
+		[EntityIdent]
+        [Uneditable]
         public string PayloadEntityIdent { get; set; }
 
         /// <summary>
-        /// 项目内容规格
+        /// 图片
         /// </summary>
-        [EntityIdent(null, nameof(PayloadEntityIdent))]
-        public string PayloadSpecEntityIdent { get; set; }
+        [Image]
+        [Uneditable]
+        public string Image { get; set; }
+
+        /// <summary>
+        /// 失败原因
+        /// </summary>
+        [ReadOnly(true)]
+        public string Error { get; set; }
 
     }
     public class DeliveryQueryArguments:QueryArgument
@@ -162,6 +182,12 @@ namespace SF.Biz.Delivery.Management
 		[EntityIdent(typeof(User))]
 		[Ignore]
 		public long ReceiverId { get; set; }
+
+        /// <summary>
+        /// 父业务
+        /// </summary>
+		[EntityIdent]
+        public string BizParent { get; set; }
 
         /// <summary>
         /// 发货状态
@@ -181,41 +207,18 @@ namespace SF.Biz.Delivery.Management
 
 
 
-    public class DeliveryCreateArgument
-    {
-        public string Title { get; set; }
-        public long SenderId { get; set; }
-        public long ReceiverId { get; set; }
-
-        public long SourceAddressId { get; set; }
-        public long DestAddressId { get; set; }
-        public string TrackEntityIdent { get; set; }
-        public long TotalQuantity { get; set; }
-        public long Weight { get; set; }
-        public DeliveryItemCreateArgument[] Items { get; set; }
-    }
-    public class DeliveryItemCreateArgument
-    {
-        public string Name { get; set; }
-        public string PayloadEntityIdent { get; set; }
-        public string PayloadSpecEntityIdent { get; set; }
-        public int Quantity { get; set; }
-        public bool VirtualItem { get; set; }
-    }
-    public class DeliveryCreateResult
-    {
-        public long DeliveryId { get; set; }
-        public long[] DeliveryItemIds { get; set; }
-    }
 
     public class UpdateTransportCodeArguments
     {
         public long DeliveryId { get; set; }
-        public long OperatorId { get; set; }
         public long? TransportId { get; set; }
         public string TransportCode { get; set; }
     }
-
+    public class DeliveryFailedArguments
+    {
+        public long DeliveryId { get; set; }
+        public string Error { get; set; }
+    }
     /// <summary>
     /// 发货管理器
     /// </summary>
@@ -227,11 +230,10 @@ namespace SF.Biz.Delivery.Management
     public interface IDeliveryManager :
         IEntitySource<ObjectKey<long>, DeliveryInternal, DeliveryQueryArguments>
     {
-
-        Task<DeliveryCreateResult> Create(DeliveryCreateArgument arg);
-        Task Delivery(long DeliveryId, long OperatorId);
+        Task Delivery(long DeliveryId);
         Task UpdateTransportCode(UpdateTransportCodeArguments Args);
-        Task Received(long DeliveryId, long OperatorId);
+        Task Received(long DeliveryId);
+        Task Failed(DeliveryFailedArguments Args);
 
     }
 

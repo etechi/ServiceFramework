@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Biz.Shops.Implements</name>
+    </assembly>
+    <members>
+        <member name="T:SF.Biz.Shops.DataModels.DataShop">
+            <summary>
+            店铺
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Shops.DataModels.DataShop.SellerId">
+            <summary>
+            卖家ID
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Shops.DataModels.DataShopType">
+            <summary>
+            店铺类型
+            </summary>
+        </member>
+    </members>
+</doc>

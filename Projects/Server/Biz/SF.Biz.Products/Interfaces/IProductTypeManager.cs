@@ -20,36 +20,19 @@ using SF.Sys.NetworkService;
 
 namespace SF.Biz.Products
 {
-	public class ProductTypeQueryArgument : QueryArgument<ObjectKey<long>>
+	public class ProductTypeQueryArgument : ObjectQueryArgument<ObjectKey<long>>
     {
 
-		/// <summary>
-		/// 对象状态
-		/// </summary>
-		public EntityLogicState? ObjectState { get; set; }
-
-		/// <summary>
-		/// 类型名称
-		/// </summary>
-		public string Name { get; set; }
     }
-	public interface IProductTypeManager: IProductTypeManager<ProductTypeInternal, ProductTypeEditable>
-	{
-
-	}
 
 	/// <summary>
 	/// 产品类型管理
 	/// </summary>
-	/// <typeparam name="TInternal"></typeparam>
-	/// <typeparam name="TEditable"></typeparam>
 	[NetworkService]
 	[EntityManager]
-	public interface IProductTypeManager<TInternal, TEditable> :
-		IEntityManager<ObjectKey<long>, TEditable>,
-		IEntitySource<ObjectKey<long>, TInternal,ProductTypeQueryArgument>
-		where TInternal : ProductTypeInternal
-		where TEditable : ProductTypeEditable
+	public interface IProductTypeManager:
+		IEntityManager<ObjectKey<long>, ProductTypeEditable>,
+		IEntitySource<ObjectKey<long>, ProductTypeInternal, ProductTypeQueryArgument>
 	{
 	}
 }

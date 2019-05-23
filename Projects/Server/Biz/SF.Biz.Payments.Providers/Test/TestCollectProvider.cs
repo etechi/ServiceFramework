@@ -140,6 +140,7 @@ namespace SF.Biz.Payments.Platforms.Tests
                 RefundAmount=StartArgument.Amount,
                 State=state,
                 UpdatedTime=time,
+                Expires= time.AddMinutes(3)
             });
 
         }

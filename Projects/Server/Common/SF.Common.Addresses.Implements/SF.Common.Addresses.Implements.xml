@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Common.Addresses.Implements</name>
+    </assembly>
+    <members>
+        <member name="T:SF.Common.Addresses.DataModels.DataAddress">
+            <summary>
+            发货地址
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddress.IsDefaultAddress">
+            <summary>
+            是否为默认地址
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddress.ContactName">
+            <summary>
+            联系人
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddress.ContactPhoneNumber">
+            <summary>
+            联系人电话
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddress.PhoneNumberVerified">
+            <summary>
+            电话是否已确认
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddress.ProvinceId">
+            <summary>
+            地址位置ID
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddress.CityId">
+            <summary>
+            市
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddress.DistrictId">
+            <summary>
+            县/区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddress.LocationName">
+            <summary>
+            地址位置名
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddress.Address">
+            <summary>
+            街道
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddress.ZipCode">
+            <summary>
+            邮编
+            </summary>
+        </member>
+        <member name="T:SF.Common.Addresses.DataModels.DataAddressSnapshot">
+            <summary>
+            地址快照
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddressSnapshot.Hash">
+            <summary>
+            地址摘要(MD5)
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddressSnapshot.ContactName">
+            <summary>
+            联系人
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddressSnapshot.ContactPhoneNumber">
+            <summary>
+            联系电话
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddressSnapshot.LocationId">
+            <summary>
+            地址位置ID
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddressSnapshot.LocationName">
+            <summary>
+            地址位置名
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddressSnapshot.ZipCode">
+            <summary>
+            邮编
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataAddressSnapshot.Address">
+            <summary>
+            街道
+            </summary>
+        </member>
+        <member name="T:SF.Common.Addresses.DataModels.DataLocation">
+            <summary>
+            地区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.L1Code">
+            <summary>
+            一级编号
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.L2Code">
+            <summary>
+            二级编号
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.L3Code">
+            <summary>
+            三级编号
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.L4Code">
+            <summary>
+            四级编号
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.ParentId">
+            <summary>
+            父地区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.Order">
+            <summary>
+            排位
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.Remarks">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.EnName">
+            <summary>
+            英文名
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.FullName">
+            <summary>
+            全名
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.Code">
+            <summary>
+            代码
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.PhonePrefix">
+            <summary>
+            电话区号
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.TimeZone">
+            <summary>
+            时区
+            </summary>
+        </member>
+        <member name="P:SF.Common.Addresses.DataModels.DataLocation.Level">
+            <summary>
+            级别
+            </summary>
+        </member>
+    </members>
+</doc>

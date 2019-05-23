@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>E:\work\ServiceFramework.Demo\SFShop\SF.Server\Common\SF.Common.Addresses.Implements\SF.Common.Addresses.Implements.xml</DocumentationFile>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+	</PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>E:\work\ServiceFramework.Demo\SFShop\SF.Server\Common\SF.Common.Addresses.Implements\SF.Common.Addresses.Implements.xml</DocumentationFile>
+		<NoWarn>1701;1702;1705;1591</NoWarn>
+	</PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\TransportDataFull.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".licenseheader" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Sys\SF.Sys.Data\SF.Sys.Data.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Entities\SF.Sys.Entities.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.BackEndConsole\SF.Sys.BackEndConsole.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Plans\SF.Sys.Plans.csproj" />
+    <ProjectReference Include="..\..\Sys\SF.Sys.Services.Managment\SF.Sys.Services.Management.csproj" />
+    <ProjectReference Include="..\SF.Common.Addresses\SF.Common.Addresses.csproj" />
+  </ItemGroup>
+
+
+</Project>

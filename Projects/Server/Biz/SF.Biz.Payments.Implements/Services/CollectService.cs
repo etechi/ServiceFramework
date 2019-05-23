@@ -235,8 +235,9 @@ namespace SF.Biz.Payments
                         .Where(rr => rr.CollectIdent == r.Id)
                         .Select(rr=>rr.Id)
                         .SingleOrDefaultAsync();
-                    if(rid==0)
-                        rid=await RefundService.Value.Create(new RefundRequest
+                    if (rid == 0)
+                    {
+                        await RefundService.Value.Create(new RefundRequest
                         {
                             Amount = Response.AmountCollected,
                             BizParent = r.BizParent,
@@ -250,7 +251,9 @@ namespace SF.Biz.Payments
                             SubmitTime = TimeService.Now,
                             Title = r.Title
                         });
-                    await RefundService.Value.RefreshRefundRecord(rid);
+                    }
+                    else
+                        await RefundService.Value.RefreshRefundRecord(rid);
                 }
                 ctx.Update(r);
                 await ctx.SaveChangesAsync();

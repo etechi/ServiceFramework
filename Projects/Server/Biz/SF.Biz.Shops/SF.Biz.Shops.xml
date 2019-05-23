@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SF.Biz.Shops</name>
+    </assembly>
+    <members>
+        <member name="P:SF.Biz.Shops.Managements.ShopQueryArgument.SellerId">
+            <summary>
+            卖家
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Shops.Managements.IShopManager">
+            <summary>
+            店铺管理器
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Shops.Managements.IShopTypeManager">
+            <summary>
+            店铺类型管理器
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Shops.Managements.ShopInternal">
+            <summary>
+            店铺
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Shops.Managements.ShopInternal.ShopTypeId">
+            <summary>
+            类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Shops.Managements.ShopInternal.ShopTypeName">
+            <summary>
+            类型
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Shops.Managements.ShopInternal.AddressId">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="P:SF.Biz.Shops.Managements.ShopInternal.AddressName">
+            <summary>
+            地址
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Shops.Managements.ShopTypeInternal">
+            <summary>
+            店铺类型
+            </summary>
+        </member>
+        <member name="T:SF.Biz.Shops.Shop">
+            <summary>
+            购物车项目
+            </summary>
+        </member>
+    </members>
+</doc>

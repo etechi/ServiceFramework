@@ -215,10 +215,11 @@ namespace SF.Sys.Services
 		
 		public static IServiceCollection AddTransient<T>(
 			this IServiceCollection sc,
-			Func<IServiceProvider, T> ImplementCreator
+			Func<IServiceProvider, T> ImplementCreator,
+            string Name=null
 			)
 		{
-			sc.Add(typeof(T), sp => ImplementCreator(sp), ServiceImplementLifetime.Transient);
+			sc.Add(typeof(T), sp => ImplementCreator(sp), ServiceImplementLifetime.Transient,Name:Name);
 			return sc;
 		}
 
